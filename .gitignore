@@ -1,0 +1,10 @@
+
+*.sublime-project
+*.sublime-workspace
+
+*.pyc
+
+*.offsets
+
+build/*
+*.egg-info
