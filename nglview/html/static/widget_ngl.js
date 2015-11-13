@@ -1,21 +1,42 @@
 
+require.config( {
+    paths: {
+        "THREE": "../nbextensions/nglview/js/build/three.custom.min",
+        "Detector": "../nbextensions/nglview/js/three/Detector",
+        "async": "../nbextensions/nglview/js/lib/async.min",
+        "Promise": "../nbextensions/nglview/js/lib/promise.min",
+        "sprintf": "../nbextensions/nglview/js/lib/sprintf.min",
+        "JSZip": "../nbextensions/nglview/js/lib/jszip.min",
+        "pako": "../nbextensions/nglview/js/lib/pako.min",
+        "LZMA": "../nbextensions/nglview/js/lib/lzma.min",
+        "bzip2": "../nbextensions/nglview/js/lib/bzip2.min",
+        "chroma": "../nbextensions/nglview/js/lib/chroma.min",
+        "jsfeat": "../nbextensions/nglview/js/lib/svd.min",
+        "signals": "../nbextensions/nglview/js/lib/signals.min",
+        "NGL": "../nbextensions/nglview/js/build/ngl.min",
+        "mdsrv": "../nbextensions/nglview/js/extra/mdsrv"
+    },
+    shim: {
+        THREE: { exports: "THREE" },
+        Detector: { exports: "Detector" },
+        Promise: { exports: "Promise" },
+        sprintf: { exports: "sprintf" },
+        JSZip: { exports: "JSZip" },
+        LZMA: { exports: "LZMA" },
+        bzip2: { exports: "bzip2" },
+        jsfeat: { exports: "jsfeat" },
+        NGL: {
+            deps: [ "THREE", "Detector", "async", "Promise", "sprintf", "JSZip", "pako", "LZMA", "bzip2", "chroma", "jsfeat", "signals" ],
+            exports: "NGL"
+        }
+    },
+} );
+
 define( [
     "nbextensions/widgets/widgets/js/widget",
     "nbextensions/widgets/widgets/js/manager",
-    "nbextensions/nglview/js/build/three.custom.min",
-    "nbextensions/nglview/js/three/Detector",
-    "nbextensions/nglview/js/lib/async.min",
-    "nbextensions/nglview/js/lib/promise.min",
-    "nbextensions/nglview/js/lib/sprintf.min",
-    "nbextensions/nglview/js/lib/jszip.min",
-    "nbextensions/nglview/js/lib/pako.min",
-    "nbextensions/nglview/js/lib/lzma.min",
-    "nbextensions/nglview/js/lib/bzip2",
-    "nbextensions/nglview/js/lib/chroma.min",
-    "nbextensions/nglview/js/lib/svd.min",
-    "nbextensions/nglview/js/lib/signals.min",
-    "nbextensions/nglview/js/build/ngl.min",
-    "nbextensions/nglview/js/extra/mdsrv"
+    "THREE", "Detector", "async", "Promise", "sprintf", "JSZip", "pako",
+    "LZMA", "bzip2", "chroma", "jsfeat", "signals", "NGL", "mdsrv"
 ], function(
     widget, manager, _THREE, _Detector, async, _Promise, _sprintf, _JSZip, pako,
     _LZMA, _bzip2, chroma, _jsfeat, signals, _NGL, _NGL_mdsrv
