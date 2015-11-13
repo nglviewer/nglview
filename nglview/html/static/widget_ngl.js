@@ -72,6 +72,9 @@ define( [
                     this.stage.toggleFullscreen();
                 }.bind( this ) );
 
+                // init model data
+                this.structureChanged();
+
             }.bind( this ) );
 
         },
