@@ -1,4 +1,6 @@
 
+from __future__ import print_function
+
 import warnings, os
 import ipywidgets as widgets
 from traitlets import Unicode, Bool, Dict, List
@@ -108,7 +110,7 @@ class NGLWidget(widgets.DOMWidget):
             coordinates = self.trajectory.get_coordinates( index )
             self.coordinates = coordinates
         else:
-            print "no trajectory available"
+            print( "no trajectory available" )
 
 
 staticdir = resource_filename('nglview', os.path.join('html', 'static'))
