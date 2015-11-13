@@ -13,6 +13,11 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     from pkg_resources import resource_filename
 
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
+
 
 class Structure():
     def __init__( self, ext="pdb" ):
@@ -30,6 +35,16 @@ class FileStructure(Structure):
     def get_string( self ):
         with open(self.path, "r") as f:
             return f.read()
+
+
+class PdbIdStructure(Structure):
+    def __init__( self, pdbid ):
+        self.pdbid = pdbid
+        self.ext = "cif"
+
+    def get_string( self ):
+        url = "http://www.rcsb.org/pdb/files/" + self.pdbid + ".cif"
+        return urlopen( url ).read()
 
 
 class Trajectory():
