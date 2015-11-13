@@ -64,6 +64,7 @@ define( [
                 // init NGL stage
                 NGL.useWorker = false;
                 this.stage = new NGL.Stage();
+                this.stage.setTheme( "light" );
                 this.structureComponent = undefined;
                 this.$el.append( this.stage.viewer.container );
                 this.setSize( WIDTH, HEIGHT );
