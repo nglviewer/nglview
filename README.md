@@ -1,5 +1,7 @@
 
-![nglview](nglview.png)
+![nglview](nglview-struc.png)
+
+![nglview](nglview-traj.png)
 
 
 An IPython widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering.
