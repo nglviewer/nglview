@@ -18,12 +18,13 @@ define( [
     "nbextensions/nglview/js/extra/mdsrv"
 ], function(
     widget, manager, _THREE, _Detector, async, _Promise, _sprintf, _JSZip, pako,
-    _LZMA, _bzip2, _chroma, _jsfeat, signals, _NGL, _NGL_mdsrv
+    _LZMA, _bzip2, chroma, _jsfeat, signals, _NGL, _NGL_mdsrv
 ){
 
     window.async = async;
     window.pako = pako;
     window.signals = signals;
+    window.chroma = chroma;
 
     console.log(NGL)
     console.log(_NGL_mdsrv)
@@ -41,15 +42,18 @@ define( [
 
             NGL.init( function(){
 
-                // init selection input
-                this.$selection = $( "<input />" );
-                this.$selection.val( this.model.get( "selection" ) );
-                this.$selection.change( function(){
-                    this.model.set( "selection", this.$selection.val() );
-                    this.model.save();
-                }.bind( this ) );
-                this.$el.append( this.$selection );
-                this.model.on( "change:selection", this.selectionChanged, this );
+                // // init selection input
+                // this.$selection = $( "<input />" );
+                // this.$selection.val( this.model.get( "selection" ) );
+                // this.$selection.change( function(){
+                //     this.model.set( "selection", this.$selection.val() );
+                //     this.model.save();
+                // }.bind( this ) );
+                // this.$el.append( this.$selection );
+                // this.model.on( "change:selection", this.selectionChanged, this );
+
+                // init representations handling
+                this.model.on( "change:representations", this.representationsChanged, this );
 
                 // init structure loading
                 this.model.on( "change:structure", this.structureChanged, this );
@@ -79,10 +83,21 @@ define( [
 
         },
 
-        selectionChanged: function(){
-            var selection = this.model.get( "selection" );
-            this.$selection.val( selection );
-            this.stage.getRepresentationsByName().setSelection( selection );
+        // selectionChanged: function(){
+        //     var selection = this.model.get( "selection" );
+        //     this.$selection.val( selection );
+        //     this.stage.getRepresentationsByName().setSelection( selection );
+        // },
+
+        representationsChanged: function(){
+            var representations = this.model.get( "representations" );
+            var component = this.structureComponent;
+            if( representations && component ){
+                component.clearRepresentations();
+                representations.forEach( function( repr ){
+                    component.addRepresentation( repr.type, repr.params );
+                } );
+            }
         },
 
         structureChanged: function(){
@@ -91,11 +106,12 @@ define( [
             if( structure.data && structure.ext ){
                 this.stage.loadFile(
                     new Blob( [ structure.data ], { type: "text/plain" } ),
-                    { ext: structure.ext, defaultRepresentation: true }
+                    { ext: structure.ext, defaultRepresentation: false }
                 ).then( function( component ){
                     console.log( "MOIN", component );
                     component.centerView();
                     this.structureComponent = component;
+                    this.representationsChanged();
                 }.bind( this ) );
             }
         },
