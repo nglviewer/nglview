@@ -6,5 +6,6 @@
 
 *.offsets
 
+dist/*
 build/*
 *.egg-info

@@ -1,20 +1,20 @@
 
 require.config( {
     paths: {
-        "THREE": "../nbextensions/nglview/js/build/three.custom.min",
-        "Detector": "../nbextensions/nglview/js/three/Detector",
-        "async": "../nbextensions/nglview/js/lib/async.min",
-        "Promise": "../nbextensions/nglview/js/lib/promise.min",
-        "sprintf": "../nbextensions/nglview/js/lib/sprintf.min",
-        "JSZip": "../nbextensions/nglview/js/lib/jszip.min",
-        "pako": "../nbextensions/nglview/js/lib/pako.min",
-        "LZMA": "../nbextensions/nglview/js/lib/lzma.min",
-        "bzip2": "../nbextensions/nglview/js/lib/bzip2.min",
-        "chroma": "../nbextensions/nglview/js/lib/chroma.min",
-        "jsfeat": "../nbextensions/nglview/js/lib/svd.min",
-        "signals": "../nbextensions/nglview/js/lib/signals.min",
-        "NGL": "../nbextensions/nglview/js/build/ngl.min",
-        "mdsrv": "../nbextensions/nglview/js/extra/mdsrv"
+        "THREE": "../nbextensions/nglview/three.custom.min",
+        "Detector": "../nbextensions/nglview/Detector",
+        "async": "../nbextensions/nglview/async.min",
+        "Promise": "../nbextensions/nglview/promise.min",
+        "sprintf": "../nbextensions/nglview/sprintf.min",
+        "JSZip": "../nbextensions/nglview/jszip.min",
+        "pako": "../nbextensions/nglview/pako.min",
+        "LZMA": "../nbextensions/nglview/lzma.min",
+        "bzip2": "../nbextensions/nglview/bzip2.min",
+        "chroma": "../nbextensions/nglview/chroma.min",
+        "jsfeat": "../nbextensions/nglview/svd.min",
+        "signals": "../nbextensions/nglview/signals.min",
+        "NGL": "../nbextensions/nglview/ngl.min",
+        "mdsrv": "../nbextensions/nglview/mdsrv"
     },
     shim: {
         THREE: { exports: "THREE" },
