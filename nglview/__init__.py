@@ -1,7 +1,8 @@
 
 from __future__ import print_function
 
-import warnings, os
+import os
+import warnings
 import ipywidgets as widgets
 from traitlets import Unicode, Bool, Dict, List
 
@@ -19,6 +20,12 @@ try:
     from urllib.request import urlopen
 except ImportError:
     from urllib2 import urlopen
+
+try:
+    import simpletraj
+except ImportError:
+    warnings.warn("simpletraj not available, some functions may not work!")
+
 
 
 class Structure():
@@ -60,7 +67,6 @@ class Trajectory():
 
 class SimpletrajTrajectory(Trajectory):
     def __init__( self, path ):
-        import simpletraj
         self.traj_cache = simpletraj.trajectory.TrajectoryCache()
         self.path = path
 
