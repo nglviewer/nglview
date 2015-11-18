@@ -21,12 +21,6 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
-try:
-    import simpletraj
-except ImportError:
-    warnings.warn("simpletraj not available, some functions may not work!")
-
-
 
 class Structure():
     def __init__( self, ext="pdb" ):
@@ -67,6 +61,10 @@ class Trajectory():
 
 class SimpletrajTrajectory(Trajectory):
     def __init__( self, path ):
+        try:
+            import simpletraj
+        except ImportError as e:
+            raise "'SimpletrajTrajectory' requires the 'simpletraj' package"
         self.traj_cache = simpletraj.trajectory.TrajectoryCache()
         self.path = path
 
