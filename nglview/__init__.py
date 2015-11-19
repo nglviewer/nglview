@@ -22,11 +22,11 @@ except ImportError:
     from urllib2 import urlopen
 
 
-class Structure():
-    def __init__( self, ext="pdb" ):
-        self.ext = ext
+class Structure(object):
+    def __init__( self ):
+        self.ext = "pdb"
 
-    def get_string( self ):
+    def get_structure_string( self ):
         raise NotImplementedError()
 
 
@@ -35,7 +35,7 @@ class FileStructure(Structure):
         self.path = path
         self.ext = ext
 
-    def get_string( self ):
+    def get_structure_string( self ):
         with open(self.path, "r") as f:
             return f.read()
 
@@ -45,16 +45,16 @@ class PdbIdStructure(Structure):
         self.pdbid = pdbid
         self.ext = "cif"
 
-    def get_string( self ):
+    def get_structure_string( self ):
         url = "http://www.rcsb.org/pdb/files/" + self.pdbid + ".cif"
         return urlopen( url ).read()
 
 
-class Trajectory():
+class Trajectory(object):
     def __init__( self ):
         pass
 
-    def get_coordinates( self, index ):
+    def get_coordinates_list( self, index ):
         # [ 1,1,1, 2,2,2 ]
         raise NotImplementedError()
 
@@ -68,7 +68,7 @@ class SimpletrajTrajectory(Trajectory):
         self.traj_cache = simpletraj.trajectory.TrajectoryCache()
         self.path = path
 
-    def get_coordinates( self, index ):
+    def get_coordinates_list( self, index ):
         traj = self.traj_cache.get( os.path.abspath( self.path ) )
         frame = traj.get_frame( int( index ) )
         return frame[ "coords" ].flatten().tolist()
@@ -82,12 +82,13 @@ class NGLWidget(widgets.DOMWidget):
     representations = List(sync=True)
     coordinates = List(sync=True)
 
-    def __init__( self, structure=None, trajectory=None, representations=None, **kwargs ):
+    def __init__( self, structure, trajectory=None, representations=None, **kwargs ):
         super(NGLWidget, self).__init__(**kwargs)
-        if structure:
-            self.set_structure( structure )
+        self.set_structure( structure )
         if trajectory:
             self.trajectory = trajectory
+        elif hasattr( structure, "get_coordinates_list" ):
+            self.trajectory = structure
         if representations:
             self.representations = representations
         else:
@@ -105,13 +106,13 @@ class NGLWidget(widgets.DOMWidget):
 
     def set_structure( self, structure ):
         self.structure = {
-            "data": structure.get_string(),
+            "data": structure.get_structure_string(),
             "ext": structure.ext
         }
 
     def set_frame( self, index ):
         if self.trajectory:
-            coordinates = self.trajectory.get_coordinates( index )
+            coordinates = self.trajectory.get_coordinates_list( index )
             self.coordinates = coordinates
         else:
             print( "no trajectory available" )
