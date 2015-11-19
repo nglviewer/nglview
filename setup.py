@@ -12,5 +12,8 @@ if __name__ == '__main__':
         url = "https://github.com/arose/ngl-widget",
         package_data = { "nglview.html": [ "static/*" ] },
         packages = [ "nglview", "nglview.html" ],
-        # install_requires = [ "simpletraj" ],
+        extras_require = {
+            "simpletraj": [ "simpletraj" ],
+            "mdtraj": [ "mdtraj" ]
+        }
     )
