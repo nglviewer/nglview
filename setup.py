@@ -7,7 +7,7 @@ if __name__ == '__main__':
         name = "nglview",
         author = "Alexander S. Rose",
         description = "An IPython widget to interactively view molecular structures and trajectories.",
-        version = "0.1",
+        version = "0.2dev",
         license = "MIT",
         url = "https://github.com/arose/ngl-widget",
         package_data = { "nglview.html": [ "static/*" ] },
