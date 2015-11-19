@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import os
 import warnings
+import tempfile
 import ipywidgets as widgets
 from traitlets import Unicode, Bool, Dict, List
 
@@ -72,6 +73,23 @@ class SimpletrajTrajectory(Trajectory):
         traj = self.traj_cache.get( os.path.abspath( self.path ) )
         frame = traj.get_frame( int( index ) )
         return frame[ "coords" ].flatten().tolist()
+
+
+class MDTrajTrajectory(Trajectory, Structure):
+    def __init__( self, trajectory ):
+        self.trajectory = trajectory
+        self.ext = "pdb"
+
+    def get_coordinates_list( self, index ):
+        frame = self.trajectory[ index ].xyz * 10  # convert from nm to A
+        return frame.flatten().tolist()
+
+    def get_structure_string( self ):
+        fd, fname = tempfile.mkstemp()
+        self.trajectory[ 0 ].save_pdb( fname )
+        pdb_string = os.fdopen( fd ).read()
+        # os.close( fd )
+        return pdb_string
 
 
 class NGLWidget(widgets.DOMWidget):
