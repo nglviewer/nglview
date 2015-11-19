@@ -112,10 +112,10 @@ class NGLWidget(widgets.DOMWidget):
         else:
             self.representations = [
                 { "type": "cartoon", "params": {
-                    "sele": "protein"
+                    "sele": "polymer"
                 } },
                 { "type": "ball+stick", "params": {
-                    "sele": "hetero"
+                    "sele": "hetero OR mol"
                 } }
             ]
 
