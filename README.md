@@ -88,6 +88,17 @@ w.representations = [
 ]
 ```
 
+The widget constructor also accepts a `representation` argument:
+
+```Python
+initial_repr = [
+    { "type": "cartoon", "params": {
+        "sele": "protein", "color": "sstruc"
+    } }
+]
+nglview.NGLWidget( struc, representation=initial_repr )
+```
+
 
 Adaptors
 --------
