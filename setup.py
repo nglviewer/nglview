@@ -10,6 +10,7 @@ if __name__ == '__main__':
         version = "0.2dev",
         license = "MIT",
         url = "https://github.com/arose/ngl-widget",
+        zip_safe = False,
         package_data = { "nglview.html": [ "static/*" ] },
         packages = [ "nglview", "nglview.html" ],
         extras_require = {
