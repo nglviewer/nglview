@@ -20,7 +20,9 @@ Table of contents
 Installation
 ============
 
-    python setup.py install
+From PyPI:
+
+    pip install nglview
 
 
 Usage
@@ -159,8 +161,8 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
 Changelog
 =========
 
-Version 0.2dev
---------------
+Version 0.2
+-----------
 
 * MIGRATION: changed `get_string` to `get_structure_string`
 * MIGRATION: changed `get_coordinates` to `get_coordinates_list`

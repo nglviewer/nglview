@@ -1,0 +1,4 @@
+include nglview/html/static/*
+include LICENSE
+include setup.py
+global-exclude *.pyc
