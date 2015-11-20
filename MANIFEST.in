@@ -1,4 +1,4 @@
 include nglview/html/static/*
-include LICENSE
+include LICENSE README.md
 include setup.py
 global-exclude *.pyc

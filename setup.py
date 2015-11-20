@@ -3,7 +3,7 @@
 from setuptools import setup
 
 
-VERSION = "0.2"
+VERSION = "0.3.dev0"
 CLASSIFIERS = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -36,6 +36,8 @@ if __name__ == '__main__':
         zip_safe = False,
         package_data = { "nglview.html": [ "static/*" ] },
         packages = [ "nglview", "nglview.html" ],
+        requires = [ "ipython" ],
+        install_requires = [ "ipython" ],
         extras_require = {
             "simpletraj": [ "simpletraj" ],
             "mdtraj": [ "mdtraj" ]

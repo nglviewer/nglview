@@ -161,6 +161,12 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
 Changelog
 =========
 
+Version 0.3dev
+--------------
+
+*
+
+
 Version 0.2
 -----------
 
