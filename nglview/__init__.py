@@ -105,6 +105,7 @@ class NGLWidget(widgets.DOMWidget):
     structure = Dict(sync=True)
     representations = List(sync=True)
     coordinates = List(sync=True)
+    picked = Dict(sync=True)
 
     def __init__( self, structure, trajectory=None, representations=None, **kwargs ):
         super(NGLWidget, self).__init__(**kwargs)

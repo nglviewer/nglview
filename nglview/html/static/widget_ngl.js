@@ -35,10 +35,11 @@ require.config( {
 define( [
     "nbextensions/widgets/widgets/js/widget",
     "nbextensions/widgets/widgets/js/manager",
+    "jqueryui",
     "THREE", "Detector", "async", "Promise", "sprintf", "JSZip", "pako",
     "LZMA", "bzip2", "chroma", "jsfeat", "signals", "NGL", "mdsrv"
 ], function(
-    widget, manager, _THREE, _Detector, async, _Promise, _sprintf, _JSZip, pako,
+    widget, manager, $, _THREE, _Detector, async, _Promise, _sprintf, _JSZip, pako,
     _LZMA, _bzip2, chroma, _jsfeat, signals, _NGL, _NGL_mdsrv
 ){
 
@@ -47,8 +48,6 @@ define( [
     window.signals = signals;
     window.chroma = chroma;
 
-    console.log(NGL)
-    console.log(_NGL_mdsrv)
 
     var WIDTH = 400;
     var HEIGHT = 300;
@@ -57,21 +56,11 @@ define( [
 
         render: function(){
 
-            console.log( "NGLView", this )
+            // console.log( "NGLView", this )
 
             if( !Detector.webgl ) Detector.addGetWebGLMessage();
 
             NGL.init( function(){
-
-                // // init selection input
-                // this.$selection = $( "<input />" );
-                // this.$selection.val( this.model.get( "selection" ) );
-                // this.$selection.change( function(){
-                //     this.model.set( "selection", this.$selection.val() );
-                //     this.model.save();
-                // }.bind( this ) );
-                // this.$el.append( this.$selection );
-                // this.model.on( "change:selection", this.selectionChanged, this );
 
                 // init representations handling
                 this.model.on( "change:representations", this.representationsChanged, this );
@@ -101,15 +90,34 @@ define( [
                 // init model data
                 this.structureChanged();
 
+                // init picking handling
+                this.$pickingInfo = $( "<div></div>" )
+                    .css( "position", "absolute" )
+                    .css( "top", "20px" )
+                    .css( "left", "30px" )
+                    .css( "background-color", "white" )
+                    .css( "padding", "2px 5px 2px 5px" )
+                    .css( "opacity", "0.7" )
+                    .appendTo( this.stage.viewer.container );
+                this.stage.signals.onPicking.add( function( pd ){
+                    var pd2 = {};
+                    if( pd.atom ) pd2.atom = pd.atom.toJSON();
+                    if( pd.bond ) pd2.bond = pd.bond.toJSON();
+                    if( pd.instance ) pd2.instance = pd.instance;
+                    this.model.set( "picked", pd2 );
+                    this.model.save();
+                    var pickingText = "";
+                    if( pd.atom ){
+                        pickingText = "Atom: " + pd.atom.qualifiedName();
+                    }else if( pd.bond ){
+                        pickingText = "Bond: " + pd.bond.atom1.qualifiedName() + " - " + pd.bond.atom2.qualifiedName();
+                    }
+                    this.$pickingInfo.prop( "innerText", pickingText );
+                }, this );
+
             }.bind( this ) );
 
         },
-
-        // selectionChanged: function(){
-        //     var selection = this.model.get( "selection" );
-        //     this.$selection.val( selection );
-        //     this.stage.getRepresentationsByName().setSelection( selection );
-        // },
 
         representationsChanged: function(){
             var representations = this.model.get( "representations" );
@@ -130,7 +138,6 @@ define( [
                     new Blob( [ structure.data ], { type: "text/plain" } ),
                     { ext: structure.ext, defaultRepresentation: false }
                 ).then( function( component ){
-                    console.log( "MOIN", component );
                     component.centerView();
                     this.structureComponent = component;
                     this.representationsChanged();
