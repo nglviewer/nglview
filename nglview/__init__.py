@@ -35,6 +35,8 @@ class FileStructure(Structure):
     def __init__( self, path, ext="pdb" ):
         self.path = path
         self.ext = ext
+        if not os.path.isfile( path ):
+            raise IOError( "Not a file: " + path )
 
     def get_structure_string( self ):
         with open(self.path, "r") as f:
@@ -68,6 +70,10 @@ class SimpletrajTrajectory(Trajectory):
             raise "'SimpletrajTrajectory' requires the 'simpletraj' package"
         self.traj_cache = simpletraj.trajectory.TrajectoryCache()
         self.path = path
+        try:
+            self.traj_cache.get( os.path.abspath( self.path ) )
+        except Exception as e:
+            raise e
 
     def get_coordinates_list( self, index ):
         traj = self.traj_cache.get( os.path.abspath( self.path ) )
