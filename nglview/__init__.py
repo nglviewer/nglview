@@ -5,7 +5,7 @@ import os
 import warnings
 import tempfile
 import ipywidgets as widgets
-from traitlets import Unicode, Bool, Dict, List
+from traitlets import Unicode, Bool, Dict, List, Int
 
 from IPython.display import display, Javascript
 try:
@@ -61,6 +61,9 @@ class Trajectory(object):
         # [ 1,1,1, 2,2,2 ]
         raise NotImplementedError()
 
+    def get_frame_count( self ):
+        raise NotImplementedError()
+
 
 class SimpletrajTrajectory(Trajectory):
     def __init__( self, path ):
@@ -80,6 +83,10 @@ class SimpletrajTrajectory(Trajectory):
         frame = traj.get_frame( int( index ) )
         return frame[ "coords" ].flatten().tolist()
 
+    def get_frame_count( self ):
+        traj = self.traj_cache.get( os.path.abspath( self.path ) )
+        return traj.numframes
+
 
 class MDTrajTrajectory(Trajectory, Structure):
     def __init__( self, trajectory ):
@@ -89,6 +96,9 @@ class MDTrajTrajectory(Trajectory, Structure):
     def get_coordinates_list( self, index ):
         frame = self.trajectory[ index ].xyz * 10  # convert from nm to A
         return frame.flatten().tolist()
+
+    def get_frame_count( self ):
+        return len( self.trajectory.xyz )
 
     def get_structure_string( self ):
         fd, fname = tempfile.mkstemp()
@@ -106,6 +116,8 @@ class NGLWidget(widgets.DOMWidget):
     representations = List(sync=True)
     coordinates = List(sync=True)
     picked = Dict(sync=True)
+    frame = Int(sync=True)
+    count = Int(sync=True)
 
     def __init__( self, structure, trajectory=None, representations=None, **kwargs ):
         super(NGLWidget, self).__init__(**kwargs)
@@ -114,6 +126,8 @@ class NGLWidget(widgets.DOMWidget):
             self.trajectory = trajectory
         elif hasattr( structure, "get_coordinates_list" ):
             self.trajectory = structure
+        if hasattr( self, "trajectory" ) and hasattr( self.trajectory, "get_frame_count" ):
+            self.count = self.trajectory.get_frame_count()
         if representations:
             self.representations = representations
         else:
@@ -135,12 +149,15 @@ class NGLWidget(widgets.DOMWidget):
             "ext": structure.ext
         }
 
-    def set_frame( self, index ):
+    def _set_coordinates( self, index ):
         if self.trajectory:
             coordinates = self.trajectory.get_coordinates_list( index )
             self.coordinates = coordinates
         else:
             print( "no trajectory available" )
+
+    def _frame_changed( self ):
+        self._set_coordinates( self.frame )
 
 
 staticdir = resource_filename('nglview', os.path.join('html', 'static'))

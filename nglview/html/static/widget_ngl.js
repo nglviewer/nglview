@@ -48,7 +48,6 @@ define( [
     window.signals = signals;
     window.chroma = chroma;
 
-
     var NGLView = widget.DOMWidgetView.extend( {
 
         render: function(){
@@ -123,6 +122,62 @@ define( [
                     }
                     this.$pickingInfo.prop( "innerText", pickingText );
                 }, this );
+
+                // init player
+                if( this.model.get( "count" ) ){
+                    var play = function(){
+                        this.$playerButton.prop( "innerText", "pause" );
+                        this.playerInterval = setInterval( function(){
+                            var frame = this.model.get( "frame" ) + 1;
+                            var count = this.model.get( "count" );
+                            if( frame >= count ) frame = 0;
+                            this.model.set( "frame", frame );
+                            this.model.save();
+                        }.bind( this ), 100 );
+                    }.bind( this );
+                    var pause = function(){
+                        this.$playerButton.prop( "innerText", "play" );
+                        if( this.playerInterval !== undefined ){
+                            clearInterval( this.playerInterval );
+                        }
+                    }.bind( this );
+                    this.$playerButton = $( "<button>play</button>" )
+                        .css( "float", "left" )
+                        .css( "width", "55px" )
+                        .css( "opacity", "0.7" )
+                        .click( function( event ){
+                            if( this.$playerButton.prop( "innerText" ) === "play" ){
+                                play();
+                            }else if( this.$playerButton.prop( "innerText" ) === "pause" ){
+                                pause();
+                            }
+                        }.bind( this ) );
+                    this.$playerSlider = $( "<div></div>" )
+                        .css( "margin-left", "70px" )
+                        .css( "position", "relative" )
+                        .css( "bottom", "-7px" )
+                        .slider( {
+                            min: 0,
+                            max: this.model.get( "count" ) - 1,
+                            slide: function( event, ui ){
+                                pause();
+                                this.model.set( "frame", ui.value );
+                                this.model.save();
+                            }.bind( this )
+                        } );
+                    this.$player = $( "<div></div>" )
+                        .css( "position", "relative" )
+                        .css( "bottom", "40px" )
+                        .css( "margin-left", "30px" )
+                        .css( "margin-right", "30px" )
+                        .css( "opacity", "0.7" )
+                        .append( this.$playerButton )
+                        .append( this.$playerSlider )
+                        .appendTo( this.stage.viewer.container );
+                    this.model.on( "change:frame", function(){
+                        this.$playerSlider.slider( "value", this.model.get( "frame" ) );
+                    }, this );
+                }
 
             }.bind( this ) );
 

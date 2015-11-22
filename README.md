@@ -141,6 +141,8 @@ class MyTrajectory(nglview.Trajectory):
     def get_coordinates_list( self, index ):
         # return list of coordinates for frame at given index
         return [ x1, y1, z1, x2, y2, z2 ]
+    def get_frame_count( self ):
+        return 2  # return number of frames
 ```
 
 
@@ -155,6 +157,8 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
     def get_coordinates_list( self, index ):
         # return list of coordinates for frame at given index
         return [ x1, y1, z1, x2, y2, z2 ]
+    def get_frame_count( self ):
+        return 2  # return number of frames
 ```
 
 
@@ -164,7 +168,12 @@ Changelog
 Version 0.3dev
 --------------
 
-*
+* MIGRATION: `Trajectory` classes need `get_frame_count` method
+* MIGRATION: removed `set_frame` method use new `frame` property
+* ADD: simple trajectory player
+* ADD: widget resizing support
+* ADD: picking support (gui info; `picked` property)
+* CODE: check for file existence in `FileStructure` and `SimpletrajTrajectory`
 
 
 Version 0.2
