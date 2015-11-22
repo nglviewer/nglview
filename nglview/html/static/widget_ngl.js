@@ -68,24 +68,22 @@ define( [
                 this.model.on( "change:coordinates", this.coordinatesChanged, this );
 
                 // init NGL stage
-                var height = "300px";
-                var width = "100%";
                 NGL.useWorker = false;
                 this.stage = new NGL.Stage();
                 this.stage.setTheme( "light" );
                 this.structureComponent = undefined;
-                this.$el.append( this.stage.viewer.container );
-                this.$el.first().height( height );
-                this.$el.first().resizable( {
+                this.$container = $( this.stage.viewer.container );
+                this.$el.append( this.$container );
+                this.$container.resizable( {
                     resize: function( event, ui ){
                         this.setSize( ui.size.width + "px", ui.size.height + "px" );
                     }.bind( this )
                 } );
-                this.setSize( width, height );
                 this.displayed.then( function(){
-                    this.$el.first().height( height );
-                    this.stage.handleResize();
-                    this.$el.first().resizable(
+                    var width = this.$el.parent().width() + "px";
+                    var height = "300px";
+                    this.setSize( width, height );
+                    this.$container.resizable(
                         "option", "maxWidth", this.$el.parent().width()
                     );
                 }.bind( this ) );
@@ -101,12 +99,12 @@ define( [
                 // init picking handling
                 this.$pickingInfo = $( "<div></div>" )
                     .css( "position", "absolute" )
-                    .css( "top", "20px" )
-                    .css( "left", "30px" )
+                    .css( "top", "5%" )
+                    .css( "left", "3%" )
                     .css( "background-color", "white" )
                     .css( "padding", "2px 5px 2px 5px" )
                     .css( "opacity", "0.7" )
-                    .appendTo( this.stage.viewer.container );
+                    .appendTo( this.$container );
                 this.stage.signals.onPicking.add( function( pd ){
                     var pd2 = {};
                     if( pd.atom ) pd2.atom = pd.atom.toJSON();
@@ -120,13 +118,13 @@ define( [
                     }else if( pd.bond ){
                         pickingText = "Bond: " + pd.bond.atom1.qualifiedName() + " - " + pd.bond.atom2.qualifiedName();
                     }
-                    this.$pickingInfo.prop( "innerText", pickingText );
+                    this.$pickingInfo.text( pickingText );
                 }, this );
 
                 // init player
                 if( this.model.get( "count" ) ){
                     var play = function(){
-                        this.$playerButton.prop( "innerText", "pause" );
+                        this.$playerButton.text( "pause" );
                         this.playerInterval = setInterval( function(){
                             var frame = this.model.get( "frame" ) + 1;
                             var count = this.model.get( "count" );
@@ -136,7 +134,7 @@ define( [
                         }.bind( this ), 100 );
                     }.bind( this );
                     var pause = function(){
-                        this.$playerButton.prop( "innerText", "play" );
+                        this.$playerButton.text( "play" );
                         if( this.playerInterval !== undefined ){
                             clearInterval( this.playerInterval );
                         }
@@ -146,9 +144,9 @@ define( [
                         .css( "width", "55px" )
                         .css( "opacity", "0.7" )
                         .click( function( event ){
-                            if( this.$playerButton.prop( "innerText" ) === "play" ){
+                            if( this.$playerButton.text() === "play" ){
                                 play();
-                            }else if( this.$playerButton.prop( "innerText" ) === "pause" ){
+                            }else if( this.$playerButton.text() === "pause" ){
                                 pause();
                             }
                         }.bind( this ) );
@@ -166,14 +164,14 @@ define( [
                             }.bind( this )
                         } );
                     this.$player = $( "<div></div>" )
-                        .css( "position", "relative" )
-                        .css( "bottom", "40px" )
-                        .css( "margin-left", "30px" )
-                        .css( "margin-right", "30px" )
+                        .css( "position", "absolute" )
+                        .css( "bottom", "5%" )
+                        .css( "width", "94%" )
+                        .css( "margin-left", "3%" )
                         .css( "opacity", "0.7" )
                         .append( this.$playerButton )
                         .append( this.$playerSlider )
-                        .appendTo( this.stage.viewer.container );
+                        .appendTo( this.$container );
                     this.model.on( "change:frame", function(){
                         this.$playerSlider.slider( "value", this.model.get( "frame" ) );
                     }, this );
