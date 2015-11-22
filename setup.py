@@ -3,13 +3,13 @@
 from setuptools import setup
 
 
-VERSION = "0.3.dev0"
+VERSION = "0.3"
 CLASSIFIERS = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: C",
+    "Programming Language :: JavaScript",
     "Programming Language :: Python",
     "Programming Language :: Python :: 2",
     "Programming Language :: Python :: 3",

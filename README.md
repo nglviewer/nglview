@@ -165,8 +165,8 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
 Changelog
 =========
 
-Version 0.3dev
---------------
+Version 0.3
+-----------
 
 * MIGRATION: `Trajectory` classes need `get_frame_count` method
 * MIGRATION: removed `set_frame` method use new `frame` property
