@@ -49,9 +49,6 @@ define( [
     window.chroma = chroma;
 
 
-    var WIDTH = 400;
-    var HEIGHT = 300;
-
     var NGLView = widget.DOMWidgetView.extend( {
 
         render: function(){
@@ -72,14 +69,26 @@ define( [
                 this.model.on( "change:coordinates", this.coordinatesChanged, this );
 
                 // init NGL stage
+                var height = "300px";
+                var width = "100%";
                 NGL.useWorker = false;
                 this.stage = new NGL.Stage();
                 this.stage.setTheme( "light" );
                 this.structureComponent = undefined;
                 this.$el.append( this.stage.viewer.container );
-                this.setSize( WIDTH, HEIGHT );
+                this.$el.first().height( height );
+                this.$el.first().resizable( {
+                    resize: function( event, ui ){
+                        this.setSize( ui.size.width + "px", ui.size.height + "px" );
+                    }.bind( this )
+                } );
+                this.setSize( width, height );
                 this.displayed.then( function(){
+                    this.$el.first().height( height );
                     this.stage.handleResize();
+                    this.$el.first().resizable(
+                        "option", "maxWidth", this.$el.parent().width()
+                    );
                 }.bind( this ) );
 
                 // init toggle fullscreen
@@ -156,8 +165,8 @@ define( [
         },
 
         setSize: function( width, height ){
-            this.stage.viewer.container.style.width = width + "px";
-            this.stage.viewer.container.style.height = height + "px";
+            this.stage.viewer.container.style.width = width;
+            this.stage.viewer.container.style.height = height;
             this.stage.handleResize();
         }
 
