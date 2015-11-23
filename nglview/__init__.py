@@ -117,7 +117,7 @@ class TrajectoryViewer(widgets.DOMWidget):
     >>> v = nv.TrajectoryViewer(structure=structure, trajectory=t)
     >>> v
     '''
-    # NGLWidget is weird name (vs TrajectoryViewer) for general users.
+    # NGLWidget is a weird name (vs TrajectoryViewer) for general users.
     _view_name = Unicode("NGLView", sync=True)
     _view_module = Unicode("nbextensions/nglview/widget_ngl", sync=True)
     selection = Unicode("*", sync=True)
@@ -128,11 +128,9 @@ class TrajectoryViewer(widgets.DOMWidget):
     frame = Int(sync=True)
     count = Int(sync=True)
 
-    def __init__(self, structure, trajectory=None,
-                 representations=None, **kwargs):
-        #super(NGLWidget, self).__init__(**kwargs)
+    def __init__(self, trajectory, representations=None, **kwargs):
         super(TrajectoryViewer, self).__init__(**kwargs)
-        self.set_structure(structure)
+        self.set_structure(trajectory.topology)
         # should we consider 'structure' as a Trajectory?
         self.trajectory = trajectory
         self.count = self.trajectory.n_frames
