@@ -71,6 +71,13 @@ strucTraj = nglview.MDTrajTrajectory( t )
 nglview.NGLWidget( strucTraj )
 ```
 
+The displayed frame can be changed by setting the `frame` property of the
+widget instance `w`:
+
+```Python
+w.frame = 100  # set to frame no 100
+```
+
 
 Representations
 ---------------
@@ -116,6 +123,45 @@ They can support either the `Structure` (S) or the `Trajectory` (T) interface as
 | `MDTrajTrajectory( t )`        | Wraps `MDTraj` trajectory `t`                     | S and T   |
 
 
+Multiple widgets
+----------------
+
+You can have multiple widgets per notebook cell:
+
+```Python
+from ipywidgets.widgets import Box
+w1 = NGLWidget(...)
+w2 = NGLWidget(...)
+Box(children=(w1,w2))
+```
+
+
+API
+===
+
+NGLWidget
+---------
+
+### Constructor
+
+```Python
+ngl_widget = NGLWidget( structure, trajectory=None, representations=None )
+```
+
+
+### Properties
+
+```Python
+# set the frame number
+ngl_widget.frame = 100
+```
+
+```Python
+# list of representations
+ngl_widget.representations = [ { "type": "cartoon" } ]
+```
+
+
 Interface classes
 =================
 
@@ -139,7 +185,7 @@ Trajectory
 ```Python
 class MyTrajectory(nglview.Trajectory):
     def get_coordinates_list( self, index ):
-        # return list of coordinates for frame at given index
+        # return list of coordinates in Angstrom for the frame at the given index
         return [ x1, y1, z1, x2, y2, z2 ]
     def get_frame_count( self ):
         return 2  # return number of frames
@@ -155,7 +201,7 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
     def get_structure_string( self ):
         return "structure in the self.ext format"
     def get_coordinates_list( self, index ):
-        # return list of coordinates for frame at given index
+        # return list of coordinates in Angstrom for the frame at the given index
         return [ x1, y1, z1, x2, y2, z2 ]
     def get_frame_count( self ):
         return 2  # return number of frames
@@ -164,6 +210,12 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
 
 Changelog
 =========
+
+Version 0.4dev
+--------------
+
+* DOC: more usage examples, API description
+
 
 Version 0.3
 -----------
