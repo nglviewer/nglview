@@ -24,49 +24,54 @@ except ImportError:
 
 
 class Structure(object):
-    def __init__( self ):
+
+    def __init__(self):
         self.ext = "pdb"
 
-    def get_structure_string( self ):
+    def get_structure_string(self):
         raise NotImplementedError()
 
 
 class FileStructure(Structure):
-    def __init__( self, path, ext="pdb" ):
+
+    def __init__(self, path, ext="pdb"):
         self.path = path
         self.ext = ext
-        if not os.path.isfile( path ):
-            raise IOError( "Not a file: " + path )
+        if not os.path.isfile(path):
+            raise IOError("Not a file: " + path)
 
-    def get_structure_string( self ):
+    def get_structure_string(self):
         with open(self.path, "r") as f:
             return f.read()
 
 
 class PdbIdStructure(Structure):
-    def __init__( self, pdbid ):
+
+    def __init__(self, pdbid):
         self.pdbid = pdbid
         self.ext = "cif"
 
-    def get_structure_string( self ):
+    def get_structure_string(self):
         url = "http://www.rcsb.org/pdb/files/" + self.pdbid + ".cif"
-        return urlopen( url ).read()
+        return urlopen(url).read()
 
 
 class Trajectory(object):
-    def __init__( self ):
+
+    def __init__(self):
         pass
 
-    def get_coordinates_list( self, index ):
+    def get_coordinates_list(self, index):
         # [ 1,1,1, 2,2,2 ]
         raise NotImplementedError()
 
-    def get_frame_count( self ):
+    def get_frame_count(self):
         raise NotImplementedError()
 
 
 class SimpletrajTrajectory(Trajectory):
-    def __init__( self, path ):
+
+    def __init__(self, path):
         try:
             import simpletraj
         except ImportError as e:
@@ -74,36 +79,37 @@ class SimpletrajTrajectory(Trajectory):
         self.traj_cache = simpletraj.trajectory.TrajectoryCache()
         self.path = path
         try:
-            self.traj_cache.get( os.path.abspath( self.path ) )
+            self.traj_cache.get(os.path.abspath(self.path))
         except Exception as e:
             raise e
 
-    def get_coordinates_list( self, index ):
-        traj = self.traj_cache.get( os.path.abspath( self.path ) )
-        frame = traj.get_frame( int( index ) )
-        return frame[ "coords" ].flatten().tolist()
+    def get_coordinates_list(self, index):
+        traj = self.traj_cache.get(os.path.abspath(self.path))
+        frame = traj.get_frame(int(index))
+        return frame["coords"].flatten().tolist()
 
-    def get_frame_count( self ):
-        traj = self.traj_cache.get( os.path.abspath( self.path ) )
+    def get_frame_count(self):
+        traj = self.traj_cache.get(os.path.abspath(self.path))
         return traj.numframes
 
 
 class MDTrajTrajectory(Trajectory, Structure):
-    def __init__( self, trajectory ):
+
+    def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
 
-    def get_coordinates_list( self, index ):
-        frame = self.trajectory[ index ].xyz * 10  # convert from nm to A
+    def get_coordinates_list(self, index):
+        frame = self.trajectory[index].xyz * 10  # convert from nm to A
         return frame.flatten().tolist()
 
-    def get_frame_count( self ):
-        return len( self.trajectory.xyz )
+    def get_frame_count(self):
+        return len(self.trajectory.xyz)
 
-    def get_structure_string( self ):
+    def get_structure_string(self):
         fd, fname = tempfile.mkstemp()
-        self.trajectory[ 0 ].save_pdb( fname )
-        pdb_string = os.fdopen( fd ).read()
+        self.trajectory[0].save_pdb(fname)
+        pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
 
@@ -119,45 +125,47 @@ class NGLWidget(widgets.DOMWidget):
     frame = Int(sync=True)
     count = Int(sync=True)
 
-    def __init__( self, structure, trajectory=None, representations=None, **kwargs ):
+    def __init__(self, structure, trajectory=None,
+                 representations=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
-        self.set_structure( structure )
+        self.set_structure(structure)
         if trajectory:
             self.trajectory = trajectory
-        elif hasattr( structure, "get_coordinates_list" ):
+        elif hasattr(structure, "get_coordinates_list"):
             self.trajectory = structure
-        if hasattr( self, "trajectory" ) and hasattr( self.trajectory, "get_frame_count" ):
+        if hasattr(self, "trajectory") and hasattr(
+                self.trajectory, "get_frame_count"):
             self.count = self.trajectory.get_frame_count()
         if representations:
             self.representations = representations
         else:
             self.representations = [
-                { "type": "cartoon", "params": {
+                {"type": "cartoon", "params": {
                     "sele": "polymer"
-                } },
-                { "type": "ball+stick", "params": {
+                }},
+                {"type": "ball+stick", "params": {
                     "sele": "hetero OR mol"
-                } }
+                }}
             ]
 
-    def set_representations( self, representations ):
+    def set_representations(self, representations):
         self.representations = representations
 
-    def set_structure( self, structure ):
+    def set_structure(self, structure):
         self.structure = {
             "data": structure.get_structure_string(),
             "ext": structure.ext
         }
 
-    def _set_coordinates( self, index ):
+    def _set_coordinates(self, index):
         if self.trajectory:
-            coordinates = self.trajectory.get_coordinates_list( index )
+            coordinates = self.trajectory.get_coordinates_list(index)
             self.coordinates = coordinates
         else:
-            print( "no trajectory available" )
+            print("no trajectory available")
 
-    def _frame_changed( self ):
-        self._set_coordinates( self.frame )
+    def _frame_changed(self):
+        self._set_coordinates(self.frame)
 
 
 staticdir = resource_filename('nglview', os.path.join('html', 'static'))
