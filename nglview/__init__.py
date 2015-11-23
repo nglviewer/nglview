@@ -25,8 +25,8 @@ except ImportError:
 
 class Structure(object):
 
-    def __init__(self, buffer, ext='pdb'):
-        self._buffer = buffer
+    def __init__(self, text, ext='pdb'):
+        self._buffer = text
         self.ext = ext
 
     def get_structure_string(self):
