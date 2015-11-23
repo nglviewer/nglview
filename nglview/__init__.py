@@ -96,27 +96,7 @@ class Trajectory(object):
 
 
 class TrajectoryViewer(widgets.DOMWidget):
-    '''
 
-    Examples
-    --------
-
-    >>> # with pytraj
-    >>> import pytraj as pt
-    >>> # load sample data
-    >>> traj = pt.datafiles.load_tz2()
-    >>> # save a pdb file to load to Structure
-    >>> # should make `convert_topology` method rather saving file
-    >>> traj[:1].save('test.pdb')
-    >>> import nglview as nv
-    >>> t = nv.Trajectory(xyz=traj.xyz, topology={})
-    >>> t.n_frames
-    101
-    >>> # ideally we just need traj.topology
-    >>> structure = nv.Structure(filename='test.pdb')
-    >>> v = nv.TrajectoryViewer(structure=structure, trajectory=t)
-    >>> v
-    '''
     # NGLWidget is a weird name (vs TrajectoryViewer) for general users.
     _view_name = Unicode("NGLView", sync=True)
     _view_module = Unicode("nbextensions/nglview/widget_ngl", sync=True)
