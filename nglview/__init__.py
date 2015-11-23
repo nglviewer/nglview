@@ -32,7 +32,7 @@ class Structure(object):
     def get_structure_string(self):
         return self._load_file(self._filename)
 
-    def _load_file(filename):
+    def _load_file(self, filename):
         '''We should convert Topology to dictionary and pass to Javascript?
     
         check: https://github.com/Amber-MD/pytraj/blob/master/pytraj/view.py
@@ -60,6 +60,10 @@ class FileStructure(Structure):
 class PdbIdStructure(Structure):
 
     def __init__(self, pdbid):
+        # Note: this should return a new Trajectory too.
+        '''
+        >>> traj = nv.fetch_pdb(pdbid)
+        '''
         self.pdbid = pdbid
         self.ext = "cif"
 
@@ -112,12 +116,32 @@ class Trajectory(object):
 
     @property
     def n_frames(self):
-        return xyz.shape[0]
+        return self.xyz.shape[0]
 
 
 
-#class TrajectoryViewer(widgets.DOMWidget):
-class NGLWidget(widgets.DOMWidget):
+class TrajectoryViewer(widgets.DOMWidget):
+    '''
+
+    Examples
+    --------
+
+    >>> # with pytraj
+    >>> import pytraj as pt
+    >>> # load sample data
+    >>> traj = pt.datafiles.load_tz2()
+    >>> # save a pdb file to load to Structure
+    >>> # should make `convert_topology` method rather saving file
+    >>> traj[:1].save('test.pdb')
+    >>> import nglview as nv
+    >>> t = nv.Trajectory(xyz=traj.xyz, topology={})
+    >>> t.n_frames
+    101
+    >>> # ideally we just need traj.topology
+    >>> structure = nv.Structure(filename='test.pdb')
+    >>> v = nv.TrajectoryViewer(structure=structure, trajectory=t)
+    >>> v
+    '''
     # NGLWidget is weird name (vs TrajectoryViewer) for general users.
     _view_name = Unicode("NGLView", sync=True)
     _view_module = Unicode("nbextensions/nglview/widget_ngl", sync=True)
@@ -131,12 +155,12 @@ class NGLWidget(widgets.DOMWidget):
 
     def __init__(self, structure, trajectory=None,
                  representations=None, **kwargs):
-        super(NGLWidget, self).__init__(**kwargs)
+        #super(NGLWidget, self).__init__(**kwargs)
+        super(TrajectoryViewer, self).__init__(**kwargs)
         self.set_structure(structure)
         # should we consider 'structure' as a Trajectory?
         self.trajectory = trajectory
         self.count = self.trajectory.n_frames
-        self.structure = structure
         if representations:
             self.representations = representations
         else:
@@ -155,7 +179,7 @@ class NGLWidget(widgets.DOMWidget):
     def set_structure(self, structure):
         self.structure = {
             "data": structure.get_structure_string(),
-            "ext": structure.ext
+            "ext": 'pdb'
         }
 
     def _set_coordinates(self, index):
