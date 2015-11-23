@@ -25,51 +25,26 @@ except ImportError:
 
 class Structure(object):
 
-    def __init__(self, filename=None):
-        self._filename = filename
-        self.ext = "pdb"
-
-    def get_structure_string(self):
-        return self._load_file(self._filename)
-
-    def _load_file(self, filename):
-        '''We should convert Topology to dictionary and pass to Javascript?
-    
-        check: https://github.com/Amber-MD/pytraj/blob/master/pytraj/view.py
-    
-        Is this method equal to returning a Topology?
-        '''
-        with open(filename, 'r') as fh:
-            pdb_string = fh.read()
-            return pdb_string
-    
-
-class FileStructure(Structure):
-
-    def __init__(self, path, ext="pdb"):
-        self.path = path
+    def __init__(self, buffer, ext='pdb'):
+        self._buffer = buffer
         self.ext = ext
-        if not os.path.isfile(path):
-            raise IOError("Not a file: " + path)
 
     def get_structure_string(self):
-        with open(self.path, "r") as f:
-            return f.read()
+        return self._buffer
 
 
-class PdbIdStructure(Structure):
+def load_file(path):
+    '''return a Structure
+    '''
+    with open(path, "r") as f:
+        return Structure(f.read())
 
-    def __init__(self, pdbid):
-        # Note: this should return a new Trajectory too.
-        '''
-        >>> traj = nv.fetch_pdb(pdbid)
-        '''
-        self.pdbid = pdbid
-        self.ext = "cif"
 
-    def get_structure_string(self):
-        url = "http://www.rcsb.org/pdb/files/" + self.pdbid + ".cif"
-        return urlopen(url).read()
+def fetch_pdb(pdbid):
+    '''return a Structure
+    '''
+    url = "http://www.rcsb.org/pdb/files/" + pdbid + ".cif"
+    return Structure(urlopen(url).read(), ext='cif')
 
 
 class Trajectory(object):
