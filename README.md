@@ -214,6 +214,7 @@ Changelog
 Version 0.4dev
 --------------
 
+* CODE: be less noisy when importing nglview
 * DOC: more usage examples, API description
 
 

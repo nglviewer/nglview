@@ -147,4 +147,4 @@ class TrajectoryViewer(widgets.DOMWidget):
 
 
 staticdir = resource_filename('nglview', os.path.join('html', 'static'))
-install_nbextension(staticdir, destination='nglview', user=True)
+install_nbextension(staticdir, destination='nglview', user=True, verbose=0)
