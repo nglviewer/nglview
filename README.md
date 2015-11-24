@@ -1,6 +1,4 @@
-
 ![nglview](nglview.png)
-
 
 An IPython widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering.
 
@@ -216,6 +214,7 @@ Version 0.4dev
 
 * CODE: be less noisy when importing nglview
 * DOC: more usage examples, API description
+* DOC: added CHANGELOG file
 
 
 Version 0.3
@@ -240,10 +239,10 @@ Version 0.2
 * CODE: suggested packages; mdtraj, simpletraj
 
 
-Version 0.1
------------
+Older versions
+--------------
 
-* initial version, no release
+For changes in older versions please see the [CHANGELOG](CHANGELOG.md) file.
 
 
 License
