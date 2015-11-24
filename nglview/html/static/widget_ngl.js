@@ -13,7 +13,7 @@ require.config( {
         "chroma": "../nbextensions/nglview/chroma.min",
         "jsfeat": "../nbextensions/nglview/svd.min",
         "signals": "../nbextensions/nglview/signals.min",
-        "NGL": "../nbextensions/nglview/ngl.min",
+        "NGL": "../nbextensions/nglview/ngl",
         "mdsrv": "../nbextensions/nglview/mdsrv"
     },
     shim: {
