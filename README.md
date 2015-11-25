@@ -212,6 +212,7 @@ Changelog
 Version 0.4dev
 --------------
 
+* ADD: `params` property for `Structure`, dict passed to NGL
 * CODE: be less noisy when importing nglview
 * DOC: more usage examples, API description
 * DOC: added CHANGELOG file

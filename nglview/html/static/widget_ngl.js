@@ -196,10 +196,11 @@ define( [
             this.structureComponent = undefined;
             var structure = this.model.get( "structure" );
             if( structure.data && structure.ext ){
-                this.stage.loadFile(
-                    new Blob( [ structure.data ], { type: "text/plain" } ),
-                    { ext: structure.ext, defaultRepresentation: false }
-                ).then( function( component ){
+                var blob = new Blob( [ structure.data ], { type: "text/plain" } );
+                var params = structure.params || {};
+                params.ext = structure.ext;
+                params.defaultRepresentation = false;
+                this.stage.loadFile( blob, params ).then( function( component ){
                     component.centerView();
                     this.structureComponent = component;
                     this.representationsChanged();
