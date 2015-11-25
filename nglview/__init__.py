@@ -25,10 +25,10 @@ except ImportError:
 
 class Structure(object):
 
-    def __init__(self, text, ext='pdb'):
+    def __init__(self, text, ext='pdb', params={}):
         self._buffer = text
         self.ext = ext
-        self.params = {}
+        self.params = params
 
     def get_structure_string(self):
         return self._buffer
@@ -83,7 +83,6 @@ class Trajectory(object):
         self.xyz = xyz
         self.topology = topology
         self.ext = "pdb"
-        self.params = {}
 
     def get_coordinates(self, index):
         '''return coordinate for index-th frame, length=n_atoms*3
