@@ -183,6 +183,7 @@ Structure
 ```Python
 class MyStructure(nglview.Structure):
     ext = "pdb"  # or gro, cif, mol2, sdf
+    params = {}  # loading options passed to NGL
     def get_structure_string( self ):
         return "structure in the self.ext format"
 ```
@@ -207,6 +208,7 @@ Combined
 ```Python
 class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
     ext = "pdb"  # or gro, cif, mol2, sdf
+    params = {}  # loading options passed to NGL
     def get_structure_string( self ):
         return "structure in the self.ext format"
     def get_coordinates_list( self, index ):
