@@ -67,6 +67,10 @@ define( [
                 // init setting of coordinates
                 this.model.on( "change:coordinates", this.coordinatesChanged, this );
 
+                // init clip/fog handling
+                this.model.on( "change:clip", this.clipChanged, this );
+                this.model.on( "change:fog", this.fogChanged, this );
+
                 // init NGL stage
                 NGL.useWorker = false;
                 this.stage = new NGL.Stage();
@@ -222,6 +226,16 @@ define( [
             this.stage.viewer.container.style.width = width;
             this.stage.viewer.container.style.height = height;
             this.stage.handleResize();
+        },
+
+        clipChanged: function(){
+            var clip = this.model.get( "clip" );
+            this.stage.viewer.setClip( clip.near, clip.far, clip.dist );
+        },
+
+        fogChanged: function(){
+            var fog = this.model.get( "fog" );
+            this.stage.viewer.setFog( null, fog.near, fog.far );
         }
 
     } );

@@ -29303,9 +29303,9 @@ NGL.Viewer.prototype = {
 
         var p = this.params;
 
-        if( color ) p.fogColor.set( color );
-        if( near ) p.fogNear = near;
-        if( far ) p.fogFar = far;
+        if( color !== undefined ) p.fogColor.set( color );
+        if( near !== undefined ) p.fogNear = near;
+        if( far !== undefined ) p.fogFar = far;
 
         this.requestRender();
 
@@ -29346,12 +29346,13 @@ NGL.Viewer.prototype = {
 
     },
 
-    setClip: function( near, far ){
+    setClip: function( near, far, dist ){
 
         var p = this.params;
 
-        if( near ) p.clipNear = near;
-        if( far ) p.clipFar = far;
+        if( near !== undefined ) p.clipNear = near;
+        if( far !== undefined ) p.clipFar = far;
+        if( dist !== undefined ) p.clipDist = dist;
 
         this.requestRender();
 

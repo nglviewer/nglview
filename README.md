@@ -159,6 +159,17 @@ ngl_widget.frame = 100
 ngl_widget.representations = [ { "type": "cartoon" } ]
 ```
 
+```Python
+# "near/far" are percentages, "dist" is distance too camera in Angstrom
+ngl_widget.clip = { "near": 0, "far": 100, "dist": 10 }
+```
+
+```Python
+# "near/far" are percentages
+# "near" is where the fog starts and "far" is where it's on full effect
+ngl_widget.fog = { "near": 0, "far": 100 }
+```
+
 
 Interface classes
 =================
@@ -212,6 +223,7 @@ Changelog
 Version 0.4dev
 --------------
 
+* ADD: `clip` and `fog` widget properties
 * ADD: `params` property for `Structure`, dict passed to NGL
 * CODE: be less noisy when importing nglview
 * DOC: more usage examples, API description

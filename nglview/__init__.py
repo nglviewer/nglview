@@ -122,6 +122,8 @@ class NGLWidget(widgets.DOMWidget):
     picked = Dict(sync=True)
     frame = Int(sync=True)
     count = Int(sync=True)
+    clip = Dict(sync=True)
+    fog = Dict(sync=True)
 
     def __init__( self, structure, trajectory=None, representations=None, **kwargs ):
         super(NGLWidget, self).__init__(**kwargs)
