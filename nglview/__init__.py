@@ -28,6 +28,7 @@ class Structure(object):
     def __init__(self, text, ext='pdb'):
         self._buffer = text
         self.ext = ext
+        self.params = {}
 
     def get_structure_string(self):
         return self._buffer
@@ -38,7 +39,6 @@ def load_file(path):
     '''
     with open(path, "r") as f:
         return Structure(f.read())
-
 
 def fetch_pdb(pdbid):
     '''return a Structure
@@ -83,6 +83,7 @@ class Trajectory(object):
         self.xyz = xyz
         self.topology = topology
         self.ext = "pdb"
+        self.params = {}
 
     def get_coordinates(self, index):
         '''return coordinate for index-th frame, length=n_atoms*3
@@ -107,6 +108,8 @@ class TrajectoryViewer(widgets.DOMWidget):
     picked = Dict(sync=True)
     frame = Int(sync=True)
     count = Int(sync=True)
+    clip = Dict(sync=True)
+    fog = Dict(sync=True)
 
     def __init__(self, trajectory, representations=None, **kwargs):
         super(TrajectoryViewer, self).__init__(**kwargs)
@@ -133,6 +136,7 @@ class TrajectoryViewer(widgets.DOMWidget):
         self.structure = {
             "data": structure.get_structure_string(),
             "ext": 'pdb'
+            "params": structure.params
         }
 
     def _set_coordinates(self, index):

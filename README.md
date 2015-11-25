@@ -1,6 +1,4 @@
-
 ![nglview](nglview.png)
-
 
 An IPython widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering.
 
@@ -161,6 +159,17 @@ ngl_widget.frame = 100
 ngl_widget.representations = [ { "type": "cartoon" } ]
 ```
 
+```Python
+# "near/far" are percentages, "dist" is distance too camera in Angstrom
+ngl_widget.clip = { "near": 0, "far": 100, "dist": 10 }
+```
+
+```Python
+# "near/far" are percentages
+# "near" is where the fog starts and "far" is where it's on full effect
+ngl_widget.fog = { "near": 0, "far": 100 }
+```
+
 
 Interface classes
 =================
@@ -174,6 +183,7 @@ Structure
 ```Python
 class MyStructure(nglview.Structure):
     ext = "pdb"  # or gro, cif, mol2, sdf
+    params = {}  # loading options passed to NGL
     def get_structure_string( self ):
         return "structure in the self.ext format"
 ```
@@ -198,6 +208,7 @@ Combined
 ```Python
 class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
     ext = "pdb"  # or gro, cif, mol2, sdf
+    params = {}  # loading options passed to NGL
     def get_structure_string( self ):
         return "structure in the self.ext format"
     def get_coordinates_list( self, index ):
@@ -214,8 +225,11 @@ Changelog
 Version 0.4dev
 --------------
 
+* ADD: `clip` and `fog` widget properties
+* ADD: `params` property for `Structure`, dict passed to NGL
 * CODE: be less noisy when importing nglview
 * DOC: more usage examples, API description
+* DOC: added CHANGELOG file
 
 
 Version 0.3
@@ -240,10 +254,10 @@ Version 0.2
 * CODE: suggested packages; mdtraj, simpletraj
 
 
-Version 0.1
------------
+Older versions
+--------------
 
-* initial version, no release
+For changes in older versions please see the [CHANGELOG](CHANGELOG.md) file.
 
 
 License

@@ -13,7 +13,7 @@ require.config( {
         "chroma": "../nbextensions/nglview/chroma.min",
         "jsfeat": "../nbextensions/nglview/svd.min",
         "signals": "../nbextensions/nglview/signals.min",
-        "NGL": "../nbextensions/nglview/ngl.min",
+        "NGL": "../nbextensions/nglview/ngl",
         "mdsrv": "../nbextensions/nglview/mdsrv"
     },
     shim: {
@@ -66,6 +66,10 @@ define( [
 
                 // init setting of coordinates
                 this.model.on( "change:coordinates", this.coordinatesChanged, this );
+
+                // init clip/fog handling
+                this.model.on( "change:clip", this.clipChanged, this );
+                this.model.on( "change:fog", this.fogChanged, this );
 
                 // init NGL stage
                 NGL.useWorker = false;
@@ -196,10 +200,11 @@ define( [
             this.structureComponent = undefined;
             var structure = this.model.get( "structure" );
             if( structure.data && structure.ext ){
-                this.stage.loadFile(
-                    new Blob( [ structure.data ], { type: "text/plain" } ),
-                    { ext: structure.ext, defaultRepresentation: false }
-                ).then( function( component ){
+                var blob = new Blob( [ structure.data ], { type: "text/plain" } );
+                var params = structure.params || {};
+                params.ext = structure.ext;
+                params.defaultRepresentation = false;
+                this.stage.loadFile( blob, params ).then( function( component ){
                     component.centerView();
                     this.structureComponent = component;
                     this.representationsChanged();
@@ -221,6 +226,16 @@ define( [
             this.stage.viewer.container.style.width = width;
             this.stage.viewer.container.style.height = height;
             this.stage.handleResize();
+        },
+
+        clipChanged: function(){
+            var clip = this.model.get( "clip" );
+            this.stage.viewer.setClip( clip.near, clip.far, clip.dist );
+        },
+
+        fogChanged: function(){
+            var fog = this.model.get( "fog" );
+            this.stage.viewer.setFog( null, fog.near, fog.far );
         }
 
     } );
