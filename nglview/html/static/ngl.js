@@ -24049,6 +24049,7 @@ NGL.StructureParser.prototype = NGL.createObject(
         output.asTrajectory = this.asTrajectory;
         output.cAlphaOnly = this.cAlphaOnly;
         output.reorderAtoms = this.reorderAtoms;
+        output.dontAutoBond = this.dontAutoBond;
 
         return output;
 
@@ -24062,6 +24063,7 @@ NGL.StructureParser.prototype = NGL.createObject(
         this.asTrajectory = input.asTrajectory;
         this.cAlphaOnly = input.cAlphaOnly;
         this.reorderAtoms = input.reorderAtoms;
+        this.dontAutoBond = input.dontAutoBond;
 
         return this;
 
