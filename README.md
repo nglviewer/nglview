@@ -225,6 +225,7 @@ Changelog
 Version 0.4dev
 --------------
 
+* ADD: append a "WebGL not supported message" to widget if so
 * ADD: `clip` and `fog` widget properties
 * ADD: `params` property for `Structure`, dict passed to NGL
 * CODE: be less noisy when importing nglview

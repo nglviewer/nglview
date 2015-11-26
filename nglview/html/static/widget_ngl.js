@@ -54,7 +54,10 @@ define( [
 
             // console.log( "NGLView", this )
 
-            if( !Detector.webgl ) Detector.addGetWebGLMessage();
+            if( !Detector.webgl ){
+                Detector.addGetWebGLMessage( { "parent": this.el } );
+                return;
+            }
 
             NGL.init( function(){
 
