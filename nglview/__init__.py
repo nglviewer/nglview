@@ -24,95 +24,80 @@ except ImportError:
 
 
 class Structure(object):
-    def __init__( self ):
-        self.ext = "pdb"
-        self.params = {}
 
-    def get_structure_string( self ):
-        raise NotImplementedError()
-
-
-class FileStructure(Structure):
-    def __init__( self, path, ext="pdb" ):
-        self.path = path
+    def __init__(self, text, ext='pdb', params={}):
+        self._buffer = text
         self.ext = ext
-        self.params = {}
-        if not os.path.isfile( path ):
-            raise IOError( "Not a file: " + path )
+        self.params = params
 
-    def get_structure_string( self ):
-        with open(self.path, "r") as f:
-            return f.read()
+    def get_structure_string(self):
+        return self._buffer
 
 
-class PdbIdStructure(Structure):
-    def __init__( self, pdbid ):
-        self.pdbid = pdbid
-        self.ext = "cif"
-        self.params = {}
+def load_file(path):
+    '''return a Structure
+    '''
+    with open(path, "r") as f:
+        return Structure(f.read())
 
-    def get_structure_string( self ):
-        url = "http://www.rcsb.org/pdb/files/" + self.pdbid + ".cif"
-        return urlopen( url ).read()
+def fetch_pdb(pdbid):
+    '''return a Structure
+    '''
+    url = "http://www.rcsb.org/pdb/files/" + pdbid + ".cif"
+    return Structure(urlopen(url).read(), ext='cif')
 
 
 class Trajectory(object):
-    def __init__( self ):
-        pass
 
-    def get_coordinates_list( self, index ):
-        # [ 1,1,1, 2,2,2 ]
-        raise NotImplementedError()
+    def __init__(self, xyz, topology):
+        '''
+        Parameters
+        ----------
+        xyz : ndarray, shape=(n_frames, n_atoms, 3)
+        topology : Topology (Structure?) or a dictionary?
 
-    def get_frame_count( self ):
-        raise NotImplementedError()
+        Proposed idea
+        ------------
+        >>> import nglview as nv
+        >>> traj = nv.fetch_pdb('1l2y')
+        >>> traj = nv.load_file('my_loca_file')
 
+        >>> # load from mdtraj
+        >>> import mdtraj as md
+        >>> mtraj = md.load('x.trr', 'x.gro')
+        >>> from nglview import convert_topology
+        >>> nv_top = convert_topology(mtraj.top)
+        >>> traj = nm.Trajectory(xyz=mtraj.xyz*10, topology=nv_top)
 
-class SimpletrajTrajectory(Trajectory):
-    def __init__( self, path ):
-        try:
-            import simpletraj
-        except ImportError as e:
-            raise "'SimpletrajTrajectory' requires the 'simpletraj' package"
-        self.traj_cache = simpletraj.trajectory.TrajectoryCache()
-        self.path = path
-        try:
-            self.traj_cache.get( os.path.abspath( self.path ) )
-        except Exception as e:
-            raise e
+        >>> # load from pytraj
+        >>> import pytraj as pt
+        >>> ptraj = pt.load('amber.nc', 'amber.prmtop')
+        >>> nv_top = convert_topology(ptraj.top)
+        >>> traj = nm.Trajectory(xyz=ptraj.xyz, topology=nv_top)
 
-    def get_coordinates_list( self, index ):
-        traj = self.traj_cache.get( os.path.abspath( self.path ) )
-        frame = traj.get_frame( int( index ) )
-        return frame[ "coords" ].flatten().tolist()
-
-    def get_frame_count( self ):
-        traj = self.traj_cache.get( os.path.abspath( self.path ) )
-        return traj.numframes
-
-
-class MDTrajTrajectory(Trajectory, Structure):
-    def __init__( self, trajectory ):
-        self.trajectory = trajectory
+        >>> # create viewer
+        >>> from nglview import TrajectoryViewer
+        >>> viwer = TrajectoryViewer(traj=traj, representations=rep, **kwd)
+        >>> viewer
+        '''
+        self.xyz = xyz
+        self.topology = topology
         self.ext = "pdb"
-        self.params = {}
 
-    def get_coordinates_list( self, index ):
-        frame = self.trajectory[ index ].xyz * 10  # convert from nm to A
-        return frame.flatten().tolist()
+    def get_coordinates(self, index):
+        '''return coordinate for index-th frame, length=n_atoms*3
+        '''
+        return self.xyz[index].flatten().tolist()
 
-    def get_frame_count( self ):
-        return len( self.trajectory.xyz )
-
-    def get_structure_string( self ):
-        fd, fname = tempfile.mkstemp()
-        self.trajectory[ 0 ].save_pdb( fname )
-        pdb_string = os.fdopen( fd ).read()
-        # os.close( fd )
-        return pdb_string
+    @property
+    def n_frames(self):
+        return self.xyz.shape[0]
 
 
-class NGLWidget(widgets.DOMWidget):
+
+class TrajectoryViewer(widgets.DOMWidget):
+
+    # NGLWidget is a weird name (vs TrajectoryViewer) for general users.
     _view_name = Unicode("NGLView", sync=True)
     _view_module = Unicode("nbextensions/nglview/widget_ngl", sync=True)
     selection = Unicode("*", sync=True)
@@ -125,46 +110,43 @@ class NGLWidget(widgets.DOMWidget):
     clip = Dict(sync=True)
     fog = Dict(sync=True)
 
-    def __init__( self, structure, trajectory=None, representations=None, **kwargs ):
-        super(NGLWidget, self).__init__(**kwargs)
-        self.set_structure( structure )
-        if trajectory:
-            self.trajectory = trajectory
-        elif hasattr( structure, "get_coordinates_list" ):
-            self.trajectory = structure
-        if hasattr( self, "trajectory" ) and hasattr( self.trajectory, "get_frame_count" ):
-            self.count = self.trajectory.get_frame_count()
+    def __init__(self, trajectory, representations=None, **kwargs):
+        super(TrajectoryViewer, self).__init__(**kwargs)
+        self.set_structure(trajectory.topology)
+        # should we consider 'structure' as a Trajectory?
+        self.trajectory = trajectory
+        self.count = self.trajectory.n_frames
         if representations:
             self.representations = representations
         else:
             self.representations = [
-                { "type": "cartoon", "params": {
+                {"type": "cartoon", "params": {
                     "sele": "polymer"
-                } },
-                { "type": "ball+stick", "params": {
+                }},
+                {"type": "ball+stick", "params": {
                     "sele": "hetero OR mol"
-                } }
+                }}
             ]
 
-    def set_representations( self, representations ):
+    def set_representations(self, representations):
         self.representations = representations
 
-    def set_structure( self, structure ):
+    def set_structure(self, structure):
         self.structure = {
             "data": structure.get_structure_string(),
-            "ext": structure.ext,
+            "ext": 'pdb'
             "params": structure.params
         }
 
-    def _set_coordinates( self, index ):
+    def _set_coordinates(self, index):
         if self.trajectory:
-            coordinates = self.trajectory.get_coordinates_list( index )
+            coordinates = self.trajectory.get_coordinates(index)
             self.coordinates = coordinates
         else:
-            print( "no trajectory available" )
+            print("no trajectory available")
 
-    def _frame_changed( self ):
-        self._set_coordinates( self.frame )
+    def _frame_changed(self):
+        self._set_coordinates(self.frame)
 
 
 staticdir = resource_filename('nglview', os.path.join('html', 'static'))
