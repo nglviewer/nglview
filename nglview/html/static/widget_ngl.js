@@ -74,6 +74,9 @@ define( [
                 this.model.on( "change:clip", this.clipChanged, this );
                 this.model.on( "change:fog", this.fogChanged, this );
 
+                // init rotation speed?
+                this.model.on( "change:rotate_speed", this.rotateSpeedChanged, this );
+
                 // init NGL stage
                 NGL.useWorker = false;
                 this.stage = new NGL.Stage();
@@ -223,6 +226,7 @@ define( [
                 component.structure.updatePosition( coords );
                 component.updateRepresentations( { "position": true } );
             }
+
         },
 
         setSize: function( width, height ){
@@ -239,7 +243,12 @@ define( [
         fogChanged: function(){
             var fog = this.model.get( "fog" );
             this.stage.viewer.setFog( null, fog.near, fog.far );
-        }
+        },
+
+        rotateSpeedChanged: function(){
+            var rotateSpeed = this.model.get( "rotate_speed" );
+            this.stage.viewer.controls.rotateSpeed = rotateSpeed; 
+        },
 
     } );
 
