@@ -5,7 +5,7 @@ import os
 import warnings
 import tempfile
 import ipywidgets as widgets
-from traitlets import Unicode, Bool, Dict, List, Int
+from traitlets import Unicode, Bool, Dict, List, Int, Float
 
 from IPython.display import display, Javascript
 try:
@@ -122,6 +122,7 @@ class NGLWidget(widgets.DOMWidget):
     picked = Dict(sync=True)
     frame = Int(sync=True)
     count = Int(sync=True)
+    rotate_speed = Float(sync=True)
     clip = Dict(sync=True)
     fog = Dict(sync=True)
 
