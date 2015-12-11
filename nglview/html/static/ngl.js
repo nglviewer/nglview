@@ -830,6 +830,12 @@ if( typeof importScripts === 'function' ){
  * @author Alexander Rose <alexander.rose@weirdbyte.de>
  */
 
+NGL.defaults = function( value, defaultValue ){
+
+    return value !== undefined ? value : defaultValue;
+
+};
+
 
 NGL.browser = function(){
 
@@ -10368,41 +10374,6 @@ NGL.Superposition.prototype = {
 
         }
 
-    },
-
-    transformMatrix4: function( _mat4 ){
-
-        console.log( "raw", _mat4.elements )
-
-        var mat4 = new THREE.Matrix4().fromArray( _mat4.elements );
-        var v3 = new THREE.Vector3().fromArray( this.mean1 );
-        var pos = new THREE.Vector3().setFromMatrixPosition( mat4 );
-
-        pos.sub( v3 );
-        mat4.setPosition( pos );
-
-        var rd = this.R.data;
-        var R = new THREE.Matrix4().set(
-            rd[0], rd[1], rd[2], 0,
-            rd[3], rd[4], rd[5], 0,
-            rd[6], rd[7], rd[8], 0,
-            0, 0, 0, 1
-        );
-        // mat4.transpose();
-        // R.transpose();
-
-        //mat4.multiply( R );
-
-        v3.fromArray( this.mean2 );
-        pos.setFromMatrixPosition( mat4 );
-        pos.add( v3 );
-        mat4.setPosition( pos );
-
-        mat4.transpose();
-        _mat4.elements.set( mat4.elements );
-
-        console.log( "super", _mat4.elements )
-
     }
 
 };
@@ -10560,29 +10531,6 @@ NGL.superpose = function( s1, s2, align, sele1, sele2, xsele1, xsele2 ){
 
     var atoms = new NGL.AtomSet( s1, new NGL.Selection( "*" ) );
     superpose.transform( atoms );
-
-    // if( s1.biomolDict ){
-
-    //     console.log( s1.biomolDict );
-    //     for( var biomolName in s1.biomolDict ){
-
-    //         if( biomolName !== "BU1" ) return;
-
-    //         var biomol = s1.biomolDict[ biomolName ];
-    //         console.log( biomol )
-
-    //         for( var matrixName in biomol.matrixDict ){
-
-    //             var matrix = biomol.matrixDict[ matrixName ];
-    //             console.log( matrix );
-
-    //             superpose.transformMatrix4( matrix );
-
-    //         }
-
-    //     }
-
-    // }
 
     s1.center = s1.atomCenter();
 
@@ -18303,7 +18251,8 @@ NGL.Surface.prototype = {
 
             }
 
-            return new Uint32Array( filteredIndex );
+            var TypedArray = filteredIndex.length > 65535 ? Uint32Array : Uint16Array;
+            return new TypedArray( filteredIndex );
 
         }else{
 
@@ -18682,7 +18631,7 @@ NGL.Volume.prototype = {
 
             var bg = new THREE.BufferGeometry();
             bg.addAttribute( "position", new THREE.BufferAttribute( sd.position, 3 ) );
-            bg.addIndex( new THREE.BufferAttribute( sd.index, 1 ) );
+            bg.setIndex( new THREE.BufferAttribute( sd.index, 1 ) );
             bg.computeVertexNormals();
             sd.normal = bg.attributes.normal.array;
             bg.dispose();
@@ -19339,10 +19288,11 @@ NGL.MarchingCubes = function( data, nx, ny, nz, isolevel ){
 
     NGL.timeEnd( "NGL.MarchingCubes" );
 
+    var TypedArray = faces.length > 65535 ? Uint32Array : Uint16Array;
     return {
         position: new Float32Array( vertices ),
         normal: undefined,
-        index: new Uint32Array( faces )
+        index: new TypedArray( faces )
     };
 
 };
@@ -19421,10 +19371,11 @@ NGL.MarchingCubes2 = function( field, nx, ny, nz, atomindex ){
 
         NGL.timeEnd( "NGL.MarchingCubes2.triangulate" );
 
+        var TypedArray = indexArray.length > 65535 ? Uint32Array : Uint16Array;
         return {
             position: new Float32Array( positionArray ),
             normal: noNormals ? undefined : new Float32Array( normalArray ),
-            index: new Uint32Array( indexArray ),
+            index: new TypedArray( indexArray ),
             atomindex: atomindex ? new Int32Array( atomindexArray ) : undefined,
         };
 
@@ -20553,7 +20504,7 @@ NGL.laplacianSmooth = function( verts, faces, numiter, inflate ){
 
         var bg = new THREE.BufferGeometry();
         bg.addAttribute( "position", new THREE.BufferAttribute( verts, 3 ) );
-        bg.addIndex( new THREE.BufferAttribute( faces, 1 ) );
+        bg.setIndex( new THREE.BufferAttribute( faces, 1 ) );
 
     }
 
@@ -21934,6 +21885,7 @@ NGL.Script = function( functionBody, name, path ){
     this.signals = {
 
         elementAdded: new SIGNALS.Signal(),
+        elementRemoved: new SIGNALS.Signal(),
         nameChanged: new SIGNALS.Signal(),
 
     };
@@ -21975,6 +21927,12 @@ NGL.Script.prototype = {
             add: function( element ){
 
                 this.signals.elementAdded.dispatch( arguments );
+
+            }.bind( this ),
+
+            remove: function( element ){
+
+                this.signals.elementRemoved.dispatch( arguments );
 
             }.bind( this ),
 
@@ -24947,13 +24905,23 @@ NGL.CifParser.prototype = NGL.createObject(
                         var category = ks[ 0 ].substring( 1 );
                         var name = ks[ 1 ];
 
-                        if( !cif[ category ] ) cif[ category ] = {};
-                        if( cif[ category ][ name ] ){
-                            NGL.warn( category, name, "already exists" );
+                        if( ks.length === 1 ){
+
+                            name = false;
+                            if( !cif[ category ] ) cif[ category ] = [];
+                            loopPointers.push( cif[ category ] );
+
                         }else{
-                            cif[ category ][ name ] = [];
-                            loopPointers.push( cif[ category ][ name ] );
-                            pointerNames.push( name );
+
+                            if( !cif[ category ] ) cif[ category ] = {};
+                            if( cif[ category ][ name ] ){
+                                NGL.warn( category, name, "already exists" );
+                            }else{
+                                cif[ category ][ name ] = [];
+                                loopPointers.push( cif[ category ][ name ] );
+                                pointerNames.push( name );
+                            }
+
                         }
 
                         currentCategory = category;
@@ -24969,12 +24937,22 @@ NGL.CifParser.prototype = NGL.createObject(
                         var category = ks[ 0 ].substring( 1 );
                         var name = ks[ 1 ];
 
-                        if( !cif[ category ] ) cif[ category ] = {};
+                        if( ks.length === 1 ){
 
-                        if( cif[ category ][ name ] ){
-                            NGL.warn( category, name, "already exists" );
+                            name = false;
+                            if( !cif[ category ] ) cif[ category ] = [];
+                            cif[ category ] = value
+
                         }else{
-                            cif[ category ][ name ] = value;
+
+                            if( !cif[ category ] ) cif[ category ] = {};
+
+                            if( cif[ category ][ name ] ){
+                                NGL.warn( category, name, "already exists" );
+                            }else{
+                                cif[ category ][ name ] = value;
+                            }
+
                         }
 
                         if( !value ) pendingValue = true;
@@ -25186,15 +25164,23 @@ NGL.CifParser.prototype = NGL.createObject(
 
                         // NGL.log( "NEWLINE STRING", line );
 
-                        cif[ currentCategory ][ currentName ] = line.substring(
-                            1, line.length - 2
-                        );
+                        var str = line.substring( 1, line.length - 2 );
+
+                        if( currentName === false ){
+                            cif[ currentCategory ] = str;
+                        }else{
+                            cif[ currentCategory ][ currentName ] = str;
+                        }
 
                     }else if( pendingValue ){
 
                         // NGL.log( "NEWLINE VALUE", line );
 
-                        cif[ currentCategory ][ currentName ] = line.trim();
+                        if( currentName === false ){
+                            cif[ currentCategory ] = line.trim();
+                        }else{
+                            cif[ currentCategory ][ currentName ] = line.trim();
+                        }
 
                     }else{
 
@@ -27977,19 +27963,6 @@ NGL.autoLoad = function( file, params ){
  */
 NGL.Resources = {
 
-    // fonts
-    // 'fonts/Arial.fnt': null,
-    // 'fonts/Arial.png': 'image',
-    // 'fonts/DejaVu.fnt': null,
-    // 'fonts/DejaVu.png': 'image',
-    'fonts/LatoBlack.fnt': null,
-    'fonts/LatoBlack.png': 'image',
-
-    // sprites
-    // 'img/circle.png': 'image',
-    // 'img/spark1.png': 'image',
-    'img/radial.png': 'image',
-
     // shaders
     'shader/CylinderImpostor.vert': null,
     'shader/CylinderImpostor.frag': null,
@@ -27997,28 +27970,30 @@ NGL.Resources = {
     'shader/HyperballStickImpostor.frag': null,
     'shader/Line.vert': null,
     'shader/Line.frag': null,
-    'shader/LineSprite.vert': null,
-    'shader/LineSprite.frag': null,
+    // 'shader/LineSprite.vert': null,
+    // 'shader/LineSprite.frag': null,
     'shader/Mesh.vert': null,
     'shader/Mesh.frag': null,
-    'shader/ParticleSprite.vert': null,
-    'shader/ParticleSprite.frag': null,
-    'shader/Quad.vert': null,
-    'shader/Quad.frag': null,
+    // 'shader/ParticleSprite.vert': null,
+    // 'shader/ParticleSprite.frag': null,
+    'shader/Point.vert': null,
+    'shader/Point.frag': null,
+    // 'shader/Quad.vert': null,
+    // 'shader/Quad.frag': null,
     'shader/Ribbon.vert': null,
-    'shader/Ribbon.frag': null,
     'shader/SDFFont.vert': null,
     'shader/SDFFont.frag': null,
-    'shader/SphereHalo.vert': null,
-    'shader/SphereHalo.frag': null,
+    // 'shader/SphereHalo.vert': null,
+    // 'shader/SphereHalo.frag': null,
     'shader/SphereImpostor.vert': null,
     'shader/SphereImpostor.frag': null,
 
     // shader chunks
-    'shader/chunk/fog.glsl': null,
-    'shader/chunk/fog_params.glsl': null,
-    'shader/chunk/light.glsl': null,
-    'shader/chunk/light_params.glsl': null,
+    'shader/chunk/dull_interior_fragment.glsl': null,
+    'shader/chunk/fog_fragment.glsl': null,
+    'shader/chunk/nearclip_fragment.glsl': null,
+    'shader/chunk/nearclip_vertex.glsl': null,
+    'shader/chunk/opaque_back_fragment.glsl': null,
 
 };
 
@@ -28257,7 +28232,8 @@ NGL.Utils = {
 
         var j, f;
         var n = faces.length;
-        var index = new Uint32Array( n * 3 );
+        var TypedArray = n * 3 > 65535 ? Uint32Array : Uint16Array;
+        var index = new TypedArray( n * 3 );
 
         for( var v = 0; v < n; v++ ){
 
@@ -28614,7 +28590,7 @@ NGL.getShader = function(){
 
         }
 
-        return lines.join( '\n' );
+        return lines.join( '\n' ) + "\n";
 
     }
 
@@ -28634,6 +28610,9 @@ NGL.getShader = function(){
             var definesText = getDefines( defines );
 
             var shaderText = NGL.Resources[ 'shader/' + name ];
+            if( !shaderText ){
+                throw "empty shader, '" + name + "'";
+            }
             shaderText = shaderText.replace( re, function( match, p1 ){
 
                 var path = 'shader/chunk/' + p1 + '.glsl';
@@ -28910,6 +28889,11 @@ NGL.Viewer.prototype = {
             clipFar: 100,
             clipDist: 10,
 
+            lightColor: new THREE.Color( 0xdddddd ),
+            lightIntensity: 1.0,
+            ambientColor: new THREE.Color( 0xdddddd ),
+            ambientIntensity: 0.2,
+
         };
 
     },
@@ -28943,57 +28927,24 @@ NGL.Viewer.prototype = {
         this.renderer.autoClear = false;
         this.renderer.sortObjects = true;
 
-        var gl = this.renderer.context;
+        NGL.extensionFragDepth = this.renderer.extensions.get( "EXT_frag_depth" );
+        NGL.indexUint16 = !this.renderer.extensions.get( 'OES_element_index_uint' );
 
-        NGL.extensionFragDepth = gl.getExtension( 'EXT_frag_depth' );
-        if( !NGL.extensionFragDepth ){
-            NGL.info( "EXT_frag_depth not supported" );
-        }
-
-        if( !this.renderer.extensions.get( 'OES_standard_derivatives' ) ){
-            NGL.warn( "OES_standard_derivatives not supported" );
-        }
-
-        if( !gl.getExtension( 'OES_element_index_uint' ) ){
-            NGL.indexUint16 = true;
-            NGL.info( "OES_element_index_uint not supported" );
-        }
+        NGL.supportsReadPixelsFloat = (
+            ( NGL.browser === "Chrome" &&
+                this.renderer.extensions.get( 'OES_texture_float' ) ) ||
+            ( this.renderer.extensions.get( 'OES_texture_float' ) &&
+                this.renderer.extensions.get( "WEBGL_color_buffer_float" ) )
+        );
 
         this.container.appendChild( this.renderer.domElement );
 
-        //
-
-        var scope = this;
-
-        var originalSetProgram = this.renderer.setProgram;
-
-        this.renderer.setProgram = function( camera, lights, fog, material, object ){
-
-            var program = originalSetProgram(
-                camera, lights, fog, material, object
-            );
-
-            scope.updateObjectUniforms( object, material, camera );
-
-            scope.renderer.loadUniformsGeneric(
-                scope.renderer.properties.get( material ).uniformsList
-            );
-
-            return program;
-
-        };
-
         // picking texture
 
-        if( !this.renderer.extensions.get( 'OES_texture_float' ) ){
-            NGL.warn( "OES_texture_float not supported" );
-        }
+        this.renderer.extensions.get( 'OES_texture_float' );
+        this.renderer.extensions.get( "WEBGL_color_buffer_float" );
 
-        if( !gl.getExtension( "WEBGL_color_buffer_float" ) ){
-            NGL.warn( "WEBGL_color_buffer_float not supported" );
-        }
-
-        this.pickingTexture = new THREE.WebGLRenderTarget(
+        this.pickingTarget = new THREE.WebGLRenderTarget(
             this.width * window.devicePixelRatio,
             this.height * window.devicePixelRatio,
             {
@@ -29001,40 +28952,12 @@ NGL.Viewer.prototype = {
                 magFilter: THREE.NearestFilter,
                 stencilBuffer: false,
                 format: THREE.RGBAFormat,
-                type: this.supportsReadPixelsFloat() ? THREE.FloatType : THREE.UnsignedByteType
+                type: NGL.supportsReadPixelsFloat ? THREE.FloatType : THREE.UnsignedByteType
             }
         );
-        this.pickingTexture.generateMipmaps = false;
+        this.pickingTarget.texture.generateMipmaps = false;
 
     },
-
-    supportsReadPixelsFloat: function(){
-
-        var value = undefined;
-
-        return function(){
-
-            if( value === undefined ){
-
-                var gl = this.renderer.context;
-
-                value = (
-
-                    ( NGL.browser === "Chrome" &&
-                        this.renderer.extensions.get( 'OES_texture_float' ) ) ||
-
-                    ( this.renderer.extensions.get( 'OES_texture_float' ) &&
-                        gl.getExtension( "WEBGL_color_buffer_float" ) )
-
-                );
-
-            }
-
-            return value;
-
-        }
-
-    }(),
 
     initScene: function(){
 
@@ -29058,7 +28981,21 @@ NGL.Viewer.prototype = {
         this.backgroundGroup.name = "backgroundGroup";
         this.rotationGroup.add( this.backgroundGroup );
 
+        // fog
+
         this.modelGroup.fog = new THREE.Fog();
+
+        // light
+
+        this.pointLight = new THREE.SpotLight(
+            this.params.lightColor, this.params.lightIntensity, 0, 1
+        );
+        this.modelGroup.add( this.pointLight );
+
+        this.ambientLight = new THREE.AmbientLight(
+            this.params.ambientLight, this.params.ambientIntensity
+        );
+        this.modelGroup.add( this.ambientLight );
 
     },
 
@@ -29073,7 +29010,6 @@ NGL.Viewer.prototype = {
         this.controls.panSpeed = 0.8;
         this.controls.staticMoving = true;
         // this.controls.dynamicDampingFactor = 0.3;
-        this.controls.cylindricalRotation = true;
         this.controls.keys = [ 65, 83, 68 ];
 
         this.controls.addEventListener(
@@ -29301,6 +29237,19 @@ NGL.Viewer.prototype = {
 
     },
 
+    setLight: function( color, intensity, ambientColor, ambientIntensity ){
+
+        var p = this.params;
+
+        if( color !== undefined ) p.lightColor.set( color );
+        if( intensity !== undefined ) p.lightIntensity = intensity;
+        if( ambientColor !== undefined ) p.ambientColor.set( ambientColor );
+        if( ambientIntensity !== undefined ) p.ambientIntensity = ambientIntensity;
+
+        this.requestRender();
+
+    },
+
     setFog: function( color, near, far ){
 
         var p = this.params;
@@ -29382,7 +29331,7 @@ NGL.Viewer.prototype = {
         this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize( this.width, this.height );
 
-        this.pickingTexture.setSize(
+        this.pickingTarget.setSize(
             this.width * window.devicePixelRatio,
             this.height * window.devicePixelRatio
         );
@@ -29451,42 +29400,27 @@ NGL.Viewer.prototype = {
 
         return function( x, y ){
 
-            var gid, object, instance, bondId;
+            x *= window.devicePixelRatio;
+            y *= window.devicePixelRatio;
 
-            var pixelBuffer = this.supportsReadPixelsFloat() ? pixelBufferFloat : pixelBufferUint;
+            var gid, object, instance, bondId;
+            var pixelBuffer = NGL.supportsReadPixelsFloat ? pixelBufferFloat : pixelBufferUint;
 
             this.render( null, true );
-
-            var gl = this.renderer.context;
-
-            this.renderer.setRenderTarget( this.pickingTexture );
-
-            gl.readPixels(
-                x * window.devicePixelRatio,
-                y * window.devicePixelRatio,
-                1,
-                1,
-                gl.RGBA,
-                this.supportsReadPixelsFloat() ? gl.FLOAT : gl.UNSIGNED_BYTE,
-                pixelBuffer
+            this.renderer.readRenderTargetPixels(
+                this.pickingTarget, x, y, 1, 1, pixelBuffer
             );
 
-            this.renderer.setRenderTarget();
-
-            if( this.supportsReadPixelsFloat() ){
-
+            if( NGL.supportsReadPixelsFloat ){
                 gid =
                     ( ( Math.round( pixelBuffer[0] * 255 ) << 16 ) & 0xFF0000 ) |
                     ( ( Math.round( pixelBuffer[1] * 255 ) << 8 ) & 0x00FF00 ) |
                     ( ( Math.round( pixelBuffer[2] * 255 ) ) & 0x0000FF );
-
             }else{
-
                 gid =
                     ( pixelBuffer[0] << 16 ) |
                     ( pixelBuffer[1] << 8 ) |
                     ( pixelBuffer[2] );
-
             }
 
             object = this.pickingGroup.getObjectById(
@@ -29494,17 +29428,12 @@ NGL.Viewer.prototype = {
             );
 
             if( object && object.userData.instance ){
-
                 instance = object.userData.instance;
-
             }
 
             if( NGL.debug ){
-
                 var rgba = Array.apply( [], pixelBuffer );
-
                 NGL.log( pixelBuffer );
-
                 NGL.log(
                     "picked color",
                     [
@@ -29518,7 +29447,6 @@ NGL.Viewer.prototype = {
                 NGL.log( "picked instance", instance );
                 NGL.log( "picked position", x, y );
                 NGL.log( "devicePixelRatio", window.devicePixelRatio );
-
             }
 
             return {
@@ -29553,13 +29481,17 @@ NGL.Viewer.prototype = {
 
         this._rendering = true;
 
+        var p = this.params;
+        var camera = this.camera;
+
         // clipping
 
-        var cDist = this.camera.position.length();
+        var cDist = camera.position.length();
+        // console.log( "cDist", cDist )
         if( !cDist ){
             // recover from a broken (NaN) camera position
-            this.camera.position.set( 0, 0, this.params.cameraZ );
-            cDist = Math.abs( this.params.cameraZ );
+            camera.position.set( 0, 0, p.cameraZ );
+            cDist = Math.abs( p.cameraZ );
         }
 
         var bRadius = Math.max( 10, this.boundingBox.size().length() * 0.5 );
@@ -29571,15 +29503,15 @@ NGL.Viewer.prototype = {
             .add( this.rotationGroup.position )
             .length();
 
-        var nearFactor = ( 50 - this.params.clipNear ) / 50;
-        var farFactor = - ( 50 - this.params.clipFar ) / 50;
+        var nearFactor = ( 50 - p.clipNear ) / 50;
+        var farFactor = - ( 50 - p.clipFar ) / 50;
         var nearClip = cDist - ( bRadius * nearFactor );
-        this.camera.near = Math.max(
+        camera.near = Math.max(
             0.1,
             // cDist - ( bRadius * nearFactor ),
-            this.params.clipDist
+            p.clipDist
         );
-        this.camera.far = Math.max(
+        camera.far = Math.max(
             1,
             cDist + ( bRadius * farFactor )
         );
@@ -29587,22 +29519,34 @@ NGL.Viewer.prototype = {
 
         // fog
 
-        var fogNearFactor = ( 50 - this.params.fogNear ) / 50;
-        var fogFarFactor = - ( 50 - this.params.fogFar ) / 50;
+        var fogNearFactor = ( 50 - p.fogNear ) / 50;
+        var fogFarFactor = - ( 50 - p.fogFar ) / 50;
         var fog = this.modelGroup.fog;
-        fog.color.set( this.params.fogColor );
+        fog.color.set( p.fogColor );
         fog.near = Math.max( 0.1, cDist - ( bRadius * fogNearFactor ) );
         fog.far = Math.max( 1, cDist + ( bRadius * fogFarFactor ) );
 
-        //
+        // camera
 
-        this.camera.updateMatrix();
-        this.camera.updateMatrixWorld( true );
-        this.camera.matrixWorldInverse.getInverse( this.camera.matrixWorld );
+        camera.updateMatrix();
+        camera.updateMatrixWorld( true );
+        camera.matrixWorldInverse.getInverse( camera.matrixWorld );
         if( !tileing ) this.camera.updateProjectionMatrix();
 
-        this.updateMaterialUniforms( this.scene, this.camera );
-        this.sortProjectedPosition( this.scene, this.camera );
+        this.updateMaterialUniforms( this.scene, camera );
+        this.sortProjectedPosition( this.scene, camera );
+
+        // light
+
+        var pointLight = this.pointLight;
+        pointLight.position.copy( camera.position ).multiplyScalar( 100 );
+        pointLight.updateMatrixWorld();
+        pointLight.color.set( p.lightColor );
+        pointLight.intensity = p.lightIntensity;
+
+        var ambientLight = this.ambientLight;
+        ambientLight.color.set( p.ambientColor );
+        ambientLight.intensity = p.ambientIntensity;
 
         // render
 
@@ -29610,32 +29554,27 @@ NGL.Viewer.prototype = {
 
         if( picking ){
 
-            this.renderer.clearTarget( this.pickingTexture );
-
+            this.renderer.clearTarget( this.pickingTarget );
             this.renderer.render(
-                this.pickingGroup, this.camera, this.pickingTexture
+                this.pickingGroup, camera, this.pickingTarget
             );
             this.updateInfo();
-
-            // FIXME required, maybe a three.js bug
-            this.renderer.setRenderTarget();
+            this.renderer.setRenderTarget();  // back to standard render target
 
             if( NGL.debug ){
-
                 this.renderer.clear();
-                this.renderer.render( this.pickingGroup, this.camera );
-
+                this.renderer.render( this.pickingGroup, camera );
             }
 
         }else{
 
             this.renderer.clear();
 
-            this.renderer.render( this.backgroundGroup, this.camera );
+            this.renderer.render( this.backgroundGroup, camera );
             this.renderer.clearDepth();
             this.updateInfo();
 
-            this.renderer.render( this.modelGroup, this.camera );
+            this.renderer.render( this.modelGroup, camera );
             this.updateInfo();
 
         }
@@ -29656,6 +29595,8 @@ NGL.Viewer.prototype = {
         return function( group, camera ){
 
             var nearClip = this.nearClip;
+            var canvasHeight = this.height;
+            var pixelRatio = this.renderer.getPixelRatio();
 
             projectionMatrixInverse.getInverse(
                 camera.projectionMatrix
@@ -29676,6 +29617,14 @@ NGL.Viewer.prototype = {
                     u.nearClip.value = nearClip;
                 }
 
+                if( u.canvasHeight ){
+                    u.canvasHeight.value = canvasHeight;
+                }
+
+                if( u.pixelRatio ){
+                    u.pixelRatio.value = pixelRatio;
+                }
+
                 if( u.projectionMatrixInverse ){
                     u.projectionMatrixInverse.value.copy(
                         projectionMatrixInverse
@@ -29689,69 +29638,6 @@ NGL.Viewer.prototype = {
                 }
 
             } );
-
-        }
-
-    }(),
-
-    updateObjectUniforms: function(){
-
-        var matrix = new THREE.Matrix4();
-
-        return function( object, material, camera ){
-
-            var o = object;
-
-            if( !o.material ) return;
-
-            var u = o.material.uniforms;
-            if( !u ) return;
-
-            if( u.objectId ){
-                u.objectId.value = this.supportsReadPixelsFloat() ? o.id : o.id / 255;
-            }
-
-            if( u.modelViewMatrixInverse ){
-                u.modelViewMatrixInverse.value.getInverse(
-                    o.modelViewMatrix
-                );
-            }
-
-            if( u.modelViewMatrixInverseTranspose ){
-                if( u.modelViewMatrixInverse ){
-                    u.modelViewMatrixInverseTranspose.value.copy(
-                        u.modelViewMatrixInverse.value
-                    ).transpose();
-                }else{
-                    u.modelViewMatrixInverseTranspose.value
-                        .getInverse( o.modelViewMatrix )
-                        .transpose();
-                }
-            }
-
-            if( u.modelViewProjectionMatrix ){
-                u.modelViewProjectionMatrix.value.multiplyMatrices(
-                    camera.projectionMatrix, o.modelViewMatrix
-                );
-            }
-
-            if( u.modelViewProjectionMatrixInverse ){
-                if( u.modelViewProjectionMatrix ){
-                    matrix.copy(
-                        u.modelViewProjectionMatrix.value
-                    );
-                    u.modelViewProjectionMatrixInverse.value.getInverse(
-                        matrix
-                    );
-                }else{
-                    matrix.multiplyMatrices(
-                        camera.projectionMatrix, o.modelViewMatrix
-                    );
-                    u.modelViewProjectionMatrixInverse.value.getInverse(
-                        matrix
-                    );
-                }
-            }
 
         }
 
@@ -29771,10 +29657,8 @@ NGL.Viewer.prototype = {
 
             scene.traverseVisible( function ( o ){
 
-                if( ! ( o instanceof THREE.PointCloud ) || ! o.sortParticles ){
-
+                if( !( o instanceof THREE.Points ) || !o.sortParticles ){
                     return;
-
                 }
 
                 matrix.multiplyMatrices(
@@ -30429,6 +30313,10 @@ NGL.Buffer = function( position, color, index, pickingColor, params ){
     this.linewidth = p.linewidth !== undefined ? p.linewidth : 1;
     this.wireframe = p.wireframe !== undefined ? p.wireframe : false;
     this.wireframeLinewidth = p.wireframeLinewidth || 1;
+    this.roughness = p.roughness !== undefined ? p.roughness : 0.4;
+    this.metalness = p.metalness !== undefined ? p.metalness : 0.0;
+    this.diffuse = p.diffuse !== undefined ? p.diffuse : 0xffffff;
+    this.forceTransparent = p.forceTransparent !== undefined ? p.forceTransparent : false;
 
     this.geometry = new THREE.BufferGeometry();
 
@@ -30438,10 +30326,10 @@ NGL.Buffer = function( position, color, index, pickingColor, params ){
     } );
 
     if( index ){
-        this.geometry.addIndex(
+        this.geometry.setIndex(
             new THREE.BufferAttribute( index, 1 )
         );
-        this.geometry.index.setDynamic( this.dynamic );
+        this.geometry.getIndex().setDynamic( this.dynamic );
     }
 
     if( pickingColor ){
@@ -30451,17 +30339,34 @@ NGL.Buffer = function( position, color, index, pickingColor, params ){
         this.pickable = true;
     }
 
-    this.uniforms = {
-        "fogColor": { type: "c", value: null },
-        "fogNear": { type: "f", value: 0.0 },
-        "fogFar": { type: "f", value: 0.0 },
-        "opacity": { type: "f", value: this.opacity },
-        "nearClip": { type: "f", value: 0.0 }
-    };
+    this.uniforms = THREE.UniformsUtils.merge( [
+        THREE.UniformsLib[ "common" ],
+        {
+            "fogColor": { type: "c", value: null },
+            "fogNear": { type: "f", value: 0.0 },
+            "fogFar": { type: "f", value: 0.0 },
+            "opacity": { type: "f", value: this.opacity },
+            "nearClip": { type: "f", value: 0.0 }
+        },
+        {
+            "emissive" : { type: "c", value: new THREE.Color( 0x000000 ) },
+            "roughness": { type: "f", value: this.roughness },
+            "metalness": { type: "f", value: this.metalness },
+            "envMapIntensity" : { type: "f", value: 1 } // temporary
+        },
+        THREE.UniformsLib[ "lights" ]
+    ] );
+
+    this.uniforms[ "diffuse" ].value.set( this.diffuse );
+
+    var objectId = new THREE.Uniform( "f", 0.0 )
+        .onUpdate( function( object, camera ){
+            this.value = NGL.supportsReadPixelsFloat ? object.id : object.id / 255;
+        } );
 
     this.pickingUniforms = {
         "nearClip": { type: "f", value: 0.0 },
-        "objectId": { type: "f", value: 0.0 },
+        "objectId": objectId
     };
 
     this.group = new THREE.Group();
@@ -30486,32 +30391,38 @@ NGL.Buffer.prototype = {
         flatShaded: { updateShader: true },
         background: { updateShader: true },
         linewidth: { property: true },
-        wireframe: { updateVisibility: true }
+        wireframe: { updateVisibility: true },
+        roughness: { uniform: true },
+        metalness: { uniform: true },
+        diffuse: { uniform: true },
 
     },
 
     get transparent () {
 
-        return this.opacity < 1;
+        return this.opacity < 1 || this.forceTransparent;
 
     },
 
     makeMaterial: function(){
 
-        this.material = new THREE.RawShaderMaterial( {
+        this.material = new THREE.ShaderMaterial( {
             uniforms: this.uniforms,
             vertexShader: "",
             fragmentShader: "",
             depthTest: true,
             transparent: this.transparent,
             depthWrite: true,
-            lights: false,
+            lights: true,
             fog: true,
             side: this.side,
             linewidth: this.linewidth
         } );
+        this.material.vertexColors = THREE.VertexColors;
+        this.material.extensions.derivatives = this.flatShaded;
+        this.material.extensions.fragDepth = this.impostor;
 
-        this.wireframeMaterial = new THREE.RawShaderMaterial( {
+        this.wireframeMaterial = new THREE.ShaderMaterial( {
             uniforms: this.uniforms,
             vertexShader: "Line.vert",
             fragmentShader: "Line.frag",
@@ -30523,8 +30434,9 @@ NGL.Buffer.prototype = {
             side: this.side,
             linewidth: this.linewidth
         } );
+        this.wireframeMaterial.vertexColors = THREE.VertexColors;
 
-        this.pickingMaterial = new THREE.RawShaderMaterial( {
+        this.pickingMaterial = new THREE.ShaderMaterial( {
             uniforms: this.pickingUniforms,
             vertexShader: "",
             fragmentShader: "",
@@ -30536,6 +30448,8 @@ NGL.Buffer.prototype = {
             side: this.side,
             linewidth: this.linewidth
         } );
+        this.pickingMaterial.vertexColors = THREE.VertexColors;
+        this.pickingMaterial.extensions.fragDepth = this.impostor;
 
         this.updateShader();
 
@@ -30551,11 +30465,11 @@ NGL.Buffer.prototype = {
 
         wireframeGeometry.attributes = geometry.attributes;
         if( wireframeIndex ){
-            wireframeGeometry.addIndex(
+            wireframeGeometry.setIndex(
                 new THREE.BufferAttribute( wireframeIndex, 1 )
                     .setDynamic( this.dynamic )
             );
-            wireframeGeometry.addGroup( 0, this.wireframeIndexCount );
+            wireframeGeometry.setDrawRange( 0, this.wireframeIndexCount );
         }
 
         this.wireframeGeometry = wireframeGeometry;
@@ -30602,14 +30516,15 @@ NGL.Buffer.prototype = {
 
                 var array = index.array;
                 var n = array.length;
-                if( this.geometry.groups.length ){
-                    n = this.geometry.groups[ 0 ].count;
+                if( this.geometry.drawRange.count !== Infinity ){
+                    n = this.geometry.drawRange.count;
                 }
                 var wireframeIndex;
                 if( this.wireframeIndex && this.wireframeIndex.length > n * 2 ){
                     wireframeIndex = this.wireframeIndex;
                 }else{
-                    wireframeIndex = new Uint32Array( n * 2 );
+                    var TypedArray = n * 2 > 65535 ? Uint32Array : Uint16Array;
+                    wireframeIndex = new TypedArray( n * 2 );
                 }
 
                 var j = 0;
@@ -30650,25 +30565,26 @@ NGL.Buffer.prototype = {
 
     updateWireframeIndex: function(){
 
-        this.wireframeGeometry.clearGroups();
+        this.wireframeGeometry.setDrawRange( 0, Infinity );
         this.makeWireframeIndex();
 
         if( this.wireframeIndex.length > this.wireframeGeometry.index.array.length ){
 
-            this.wireframeGeometry.addIndex(
+            this.wireframeGeometry.setIndex(
                 new THREE.BufferAttribute( this.wireframeIndex, 1 )
                     .setDynamic( this.dynamic )
             );
 
         }else{
 
-            this.wireframeGeometry.index.set( this.wireframeIndex );
-            this.wireframeGeometry.index.needsUpdate = this.wireframeIndexCount > 0;
-            this.wireframeGeometry.index.updateRange.count = this.wireframeIndexCount;
+            var index = this.wireframeGeometry.getIndex();
+            index.set( this.wireframeIndex );
+            index.needsUpdate = this.wireframeIndexCount > 0;
+            index.updateRange.count = this.wireframeIndexCount;
 
         }
 
-        this.wireframeGeometry.addGroup( 0, this.wireframeIndexCount );
+        this.wireframeGeometry.setDrawRange( 0, this.wireframeIndexCount );
 
     },
 
@@ -30706,8 +30622,8 @@ NGL.Buffer.prototype = {
 
         }else if( this.point ){
 
-            mesh = new THREE.PointCloud( this.geometry, this.material );
-            if( this.sort ) mesh.sortParticles = true;
+            mesh = new THREE.Points( this.geometry, this.material );
+            if( this.sortParticles ) mesh.sortParticles = true;
 
         }else{
 
@@ -30783,20 +30699,10 @@ NGL.Buffer.prototype = {
 
         if( type === "picking" ){
 
-            if( this.side === THREE.DoubleSide ){
-                defines[ "DOUBLE_SIDED" ] = 1;
-            }else if( this.side === THREE.BackSide ){
-                defines[ "FLIP_SIDED" ] = 1;
-            }
             defines[ "PICKING" ] = 1;
 
         }else{
 
-            if( this.side === THREE.DoubleSide ){
-                defines[ "DOUBLE_SIDED" ] = 1;
-            }else if( this.side === THREE.BackSide ){
-                defines[ "FLIP_SIDED" ] = 1;
-            }
             if( type === "background" || this.background ){
                 defines[ "NOLIGHT" ] = 1;
             }
@@ -30809,7 +30715,6 @@ NGL.Buffer.prototype = {
             if( this.dullInterior ){
                 defines[ "DULL_INTERIOR" ] = 1;
             }
-            defines[ "USE_FOG" ] = 1;
 
         }
 
@@ -30940,7 +30845,11 @@ NGL.Buffer.prototype = {
             }
 
             if( tp[ name ].uniform ){
-                uniformData[ name ] = p[ name ];
+                if( tp[ name ].uniform !== true ){
+                    uniformData[ tp[ name ].uniform ] = p[ name ];
+                }else{
+                    uniformData[ name ] = p[ name ];
+                }
             }
 
             if( tp[ name ].updateShader ){
@@ -30953,6 +30862,14 @@ NGL.Buffer.prototype = {
 
             if( this.dynamic && name === "wireframe" && p[ name ] === true ){
                 this.updateWireframeIndex();
+            }
+
+            if( name === "flatShaded" ){
+                this.material.extensions.derivatives = this.flatShaded;
+            }
+
+            if( name === "forceTransparent" ){
+                propertyData[ "transparent" ] = this.transparent;
             }
 
         }
@@ -30985,21 +30902,22 @@ NGL.Buffer.prototype = {
 
             if( name === "index" ){
 
-                geometry.clearGroups();
+                var index = geometry.getIndex();
+                geometry.setDrawRange( 0, Infinity );
 
-                if( length > geometry.index.array.length ){
+                if( length > index.array.length ){
 
-                    geometry.addIndex(
+                    geometry.setIndex(
                         new THREE.BufferAttribute( array, 1 )
                             .setDynamic( this.dynamic )
                     );
 
                 }else{
 
-                    geometry.index.set( array );
-                    geometry.index.needsUpdate = length > 0;
-                    geometry.index.updateRange.count = length;
-                    geometry.addGroup( 0, length );
+                    index.set( array );
+                    index.needsUpdate = length > 0;
+                    index.updateRange.count = length;
+                    geometry.setDrawRange( 0, length );
 
                 }
 
@@ -31042,19 +30960,31 @@ NGL.Buffer.prototype = {
         for( var name in data ){
 
             if( name === "opacity" ){
-                this.setProperties( { transparent: data[ name ] < 1 } );
+                this.setProperties( { transparent: this.transparent } );
             }
 
             if( u[ name ] !== undefined ){
-                u[ name ].value = data[ name ];
+                if( u[ name ].type === "c" ){
+                    u[ name ].value.set( data[ name ] );
+                }else{
+                    u[ name ].value = data[ name ];
+                }
             }
 
             if( wu[ name ] !== undefined ){
-                wu[ name ].value = data[ name ];
+                if( wu[ name ].type === "c" ){
+                    wu[ name ].value.set( data[ name ] );
+                }else{
+                    wu[ name ].value = data[ name ];
+                }
             }
 
             if( pu[ name ] !== undefined ){
-                pu[ name ].value = data[ name ];
+                if( pu[ name ].type === "c" ){
+                    pu[ name ].value.set( data[ name ] );
+                }else{
+                    pu[ name ].value = data[ name ];
+                }
             }
 
         }
@@ -31172,8 +31102,9 @@ NGL.MappedBuffer = function( params ){
     this.size = this.count;
     this.attributeSize = this.count * this.mappingSize;
 
-    this.index = new Uint32Array( this.count * this.mappingIndicesSize );
-
+    var n = this.count * this.mappingIndicesSize;
+    var TypedArray = n > 65535 ? Uint32Array : Uint16Array;
+    this.index = new TypedArray( n );
     this.makeIndex();
 
     NGL.Buffer.call( this, null, null, this.index, null, params );
@@ -31283,7 +31214,7 @@ NGL.QuadBuffer = function( params ){
          1.0, -1.0
     ]);
 
-    this.mappingIndices = new Uint32Array([
+    this.mappingIndices = new Uint16Array([
         0, 1, 2,
         1, 3, 2
     ]);
@@ -31315,7 +31246,7 @@ NGL.BoxBuffer = function( params ){
         -1.0,  1.0,  1.0
     ]);
 
-    this.mappingIndices = new Uint32Array([
+    this.mappingIndices = new Uint16Array([
         0, 1, 2,
         0, 2, 3,
         1, 5, 6,
@@ -31355,7 +31286,7 @@ NGL.AlignedBoxBuffer = function( params ){
          1.0, -1.0,  1.0
     ]);
 
-    this.mappingIndices = new Uint32Array([
+    this.mappingIndices = new Uint16Array([
         0, 1, 2,
         1, 4, 2,
         2, 4, 3,
@@ -31381,14 +31312,15 @@ NGL.AlignedBoxBuffer.prototype.constructor = NGL.AlignedBoxBuffer;
 
 NGL.SphereImpostorBuffer = function( position, color, radius, pickingColor, params ){
 
+    this.impostor = true;
     this.count = position.length / 3;
-    this.vertexShader = 'SphereImpostor.vert';
-    this.fragmentShader = 'SphereImpostor.frag';
+    this.vertexShader = "SphereImpostor.vert";
+    this.fragmentShader = "SphereImpostor.frag";
 
     NGL.QuadBuffer.call( this, params );
 
     this.addUniforms( {
-        'projectionMatrixInverse': { type: "m4", value: new THREE.Matrix4() },
+        "projectionMatrixInverse": { type: "m4", value: new THREE.Matrix4() }
     } );
 
     this.addAttributes( {
@@ -31434,15 +31366,21 @@ NGL.CylinderImpostorBuffer = function( from, to, color, color2, radius, pickingC
 
     this.cap = p.cap !== undefined ? p.cap : true;
 
+    this.impostor = true;
     this.count = from.length / 3;
-    this.vertexShader = 'CylinderImpostor.vert';
-    this.fragmentShader = 'CylinderImpostor.frag';
+    this.vertexShader = "CylinderImpostor.vert";
+    this.fragmentShader = "CylinderImpostor.frag";
 
     NGL.AlignedBoxBuffer.call( this, p );
 
+    var modelViewMatrixInverse = new THREE.Uniform( "m4", new THREE.Matrix4() )
+        .onUpdate( function( object, camera ){
+            this.value.getInverse( object.modelViewMatrix );
+        } );
+
     this.addUniforms( {
-        'modelViewMatrixInverse': { type: "m4", value: new THREE.Matrix4() },
-        'shift': { type: "f", value: this.shift },
+        "modelViewMatrixInverse": modelViewMatrixInverse,
+        "shift": { type: "f", value: this.shift },
     } );
 
     this.addAttributes( {
@@ -31510,17 +31448,75 @@ NGL.HyperballStickImpostorBuffer = function( position1, position2, color, color2
 
     var shrink = p.shrink !== undefined ? p.shrink : 0.14;
 
+    this.impostor = true;
     this.count = position1.length / 3;
-    this.vertexShader = 'HyperballStickImpostor.vert';
-    this.fragmentShader = 'HyperballStickImpostor.frag';
+    this.vertexShader = "HyperballStickImpostor.vert";
+    this.fragmentShader = "HyperballStickImpostor.frag";
 
     NGL.BoxBuffer.call( this, p );
 
+    var matrix = new THREE.Matrix4();
+
+    function matrixCalc( object, camera ){
+
+        var u = object.material.uniforms;
+
+        if( u.modelViewMatrixInverse ){
+            u.modelViewMatrixInverse.value.getInverse(
+                object.modelViewMatrix
+            );
+        }
+
+        if( u.modelViewMatrixInverseTranspose ){
+            if( u.modelViewMatrixInverse ){
+                u.modelViewMatrixInverseTranspose.value.copy(
+                    u.modelViewMatrixInverse.value
+                ).transpose();
+            }else{
+                u.modelViewMatrixInverseTranspose.value
+                    .getInverse( object.modelViewMatrix )
+                    .transpose();
+            }
+        }
+
+        if( u.modelViewProjectionMatrix ){
+            u.modelViewProjectionMatrix.value.multiplyMatrices(
+                camera.projectionMatrix, object.modelViewMatrix
+            );
+        }
+
+        if( u.modelViewProjectionMatrixInverse ){
+            if( u.modelViewProjectionMatrix ){
+                matrix.copy(
+                    u.modelViewProjectionMatrix.value
+                );
+                u.modelViewProjectionMatrixInverse.value.getInverse(
+                    matrix
+                );
+            }else{
+                matrix.multiplyMatrices(
+                    camera.projectionMatrix, object.modelViewMatrix
+                );
+                u.modelViewProjectionMatrixInverse.value.getInverse(
+                    matrix
+                );
+            }
+        }
+
+    }
+
+    var modelViewProjectionMatrix = new THREE.Uniform( "m4", new THREE.Matrix4() )
+        .onUpdate( matrixCalc );
+    var modelViewProjectionMatrixInverse = new THREE.Uniform( "m4", new THREE.Matrix4() )
+        .onUpdate( matrixCalc );
+    var modelViewMatrixInverseTranspose = new THREE.Uniform( "m4", new THREE.Matrix4() )
+        .onUpdate( matrixCalc );
+
     this.addUniforms( {
-        'modelViewProjectionMatrix': { type: "m4", value: new THREE.Matrix4() },
-        'modelViewProjectionMatrixInverse': { type: "m4", value: new THREE.Matrix4() },
-        'modelViewMatrixInverseTranspose': { type: "m4", value: new THREE.Matrix4() },
-        'shrink': { type: "f", value: shrink },
+        "modelViewProjectionMatrix": modelViewProjectionMatrix,
+        "modelViewProjectionMatrixInverse": modelViewProjectionMatrixInverse,
+        "modelViewMatrixInverseTranspose": modelViewMatrixInverseTranspose,
+        "shrink": { type: "f", value: shrink },
     } );
 
     this.addAttributes( {
@@ -31602,10 +31598,11 @@ NGL.GeometryBuffer = function( position, color, pickingColor, params ){
 
     this.meshPosition = new Float32Array( this.size * 3 );
     this.meshNormal = new Float32Array( this.size * 3 );
-    this.meshIndex = new Uint32Array( n * o * 3 );
     this.meshColor = new Float32Array( this.size * 3 );
     this.meshPickingColor = new Float32Array( this.size * 3 );
 
+    var TypedArray = n * o * 3 > 65535 ? Uint32Array : Uint16Array;
+    this.meshIndex = new TypedArray( n * o * 3 );
     this.makeIndex();
 
     NGL.MeshBuffer.call(
@@ -31948,6 +31945,65 @@ NGL.CylinderGeometryBuffer.prototype.setAttributes = function( data ){
 //////////////////////
 // Pixel Primitives
 
+NGL.makePointTexture = function( params ){
+
+    var p = Object.assign( {}, params );
+
+    var width = NGL.defaults( p.width, 256 );
+    var height = NGL.defaults( p.height, 256 );
+    var center = [ width / 2, height / 2 ];
+    var radius = Math.min( width / 2, height / 2 );
+    var delta = NGL.defaults( p.delta, 1 / ( radius + 1 ) ) * radius;
+
+    //
+
+    function clamp( value, min, max ){
+        return Math.min( Math.max( value, min ), max );
+    }
+
+    function distance( x0, y0, x1, y1 ){
+        var dx = x1 - x0, dy = y1 - y0;
+        return Math.sqrt( dx * dx + dy * dy );
+    }
+
+    function smoothStep( edge0, edge1, x ){
+        // Scale, bias and saturate x to 0..1 range
+        x = clamp( ( x - edge0 ) / ( edge1 - edge0 ), 0, 1 );
+        // Evaluate polynomial
+        return x * x * ( 3 - 2 * x );
+    }
+
+    //
+
+    var x = 0
+    var y = 0;
+    var data = new Uint8Array( width * height * 4 );
+
+    for ( var i = 0, il = data.length; i < il; i += 4 ) {
+
+        var dist = distance( x, y, center[ 0 ], center[ 1 ] );
+        var value = 1 - smoothStep( radius - delta, radius, dist );
+
+        data[ i     ] = value * 255;
+        data[ i + 1 ] = value * 255;
+        data[ i + 2 ] = value * 255;
+        data[ i + 3 ] = value * 255;
+
+        if( ++x === width ){
+            x = 0;
+            y++;
+        }
+
+    }
+
+    var tex = new THREE.DataTexture( data, width, height );
+    tex.needsUpdate = true;
+
+    return tex;
+
+};
+
+
 NGL.PointBuffer = function( position, color, params ){
 
     var p = params || {};
@@ -31955,22 +32011,25 @@ NGL.PointBuffer = function( position, color, params ){
     this.point = true;
     this.pointSize = p.pointSize !== undefined ? p.pointSize : 1;
     this.sizeAttenuation = p.sizeAttenuation !== undefined ? p.sizeAttenuation : true;
-    this.sort = p.sort !== undefined ? p.sort : false;
+    this.sortParticles = p.sortParticles !== undefined ? p.sortParticles : false;
+    this.alphaTest = p.alphaTest !== undefined ? p.alphaTest : 0.5;
+    this.useTexture = p.useTexture !== undefined ? p.useTexture : false;
+    this.forceTransparent = p.forceTransparent !== undefined ? p.forceTransparent : false;
+    this.edgeBleach = p.edgeBleach !== undefined ? p.edgeBleach : 0.0;
 
     this.size = position.length / 3;
     this.attributeSize = this.size;
-    // this.vertexShader = 'Point.vert';
-    // this.fragmentShader = 'Point.frag';
-
-    this.tex = new THREE.Texture(
-        NGL.Resources[ '../img/radial.png' ]
-        // NGL.Resources[ '../img/spark1.png' ]
-        // NGL.Resources[ '../img/circle.png' ]
-    );
-    this.tex.needsUpdate = true;
-    if( !this.sort ) this.tex.premultiplyAlpha = true;
+    this.vertexShader = 'Point.vert';
+    this.fragmentShader = 'Point.frag';
 
     NGL.Buffer.call( this, position, color, undefined, undefined, p );
+
+    this.addUniforms( {
+        "size": { type: "f", value: this.pointSize },
+        "canvasHeight": { type: "f", value: 1.0 },
+        "pixelRatio": { type: "f", value: 1.0 },
+        "map": { type: "t", value: null },
+    } );
 
 };
 
@@ -31980,68 +32039,65 @@ NGL.PointBuffer.prototype.constructor = NGL.PointBuffer;
 
 NGL.PointBuffer.prototype.parameters = Object.assign( {
 
-    pointSize: { property: "size" },
-    sizeAttenuation: { property: true },
-    sort: {}
+    pointSize: { uniform: "size" },
+    sizeAttenuation: { updateShader: true },
+    sortParticles: {},
+    alphaTest: { updateShader: true },
+    useTexture: { updateShader: true },
+    forceTransparent: {},
+    edgeBleach: { uniform: true },
 
-}, NGL.Buffer.prototype.parameters, {
-
-    opacity: { property: true },
-
-} );
+}, NGL.Buffer.prototype.parameters );
 
 NGL.PointBuffer.prototype.makeMaterial = function(){
 
-    var material;
+    NGL.Buffer.prototype.makeMaterial.call( this );
 
-    if( this.sort ){
+    this.makeTexture();
 
-        material = new THREE.PointCloudMaterial({
-            map: this.tex,
-            blending: THREE.NormalBlending,
-            // blending: THREE.AdditiveBlending,
-            depthTest:      true,
-            transparent:    true,
+    this.material.uniforms.map.value = this.tex;
+    this.material.blending = THREE.NormalBlending;
+    this.material.needsUpdate = true;
 
-            vertexColors: true,
-            size: this.pointSize,
-            sizeAttenuation: this.sizeAttenuation,
-            // transparent: this.transparent,
-            opacity: this.opacity,
-            fog: true
-        });
+};
 
-    }else{
+NGL.PointBuffer.prototype.makeTexture = function(){
 
-        material = new THREE.PointCloudMaterial({
-            map: this.tex,
-            // blending:       THREE.AdditiveBlending,
-            depthTest:      false,
-            // alphaTest:      0.001,
-            transparent:    true,
+    if( this.tex ) this.tex.dispose();
+    this.tex = NGL.makePointTexture( { delta: this.edgeBleach } );
 
-            blending: THREE.CustomBlending,
-            // blendSrc: THREE.SrcAlphaFactor,
-            // blendDst: THREE.OneMinusSrcAlphaFactor,
-            blendEquation: THREE.AddEquation,
+};
 
-            // requires premultiplied alpha
-            blendSrc: THREE.OneFactor,
-            blendDst: THREE.OneMinusSrcAlphaFactor,
+NGL.PointBuffer.prototype.getDefines = function( type ){
 
-            vertexColors: true,
-            size: this.pointSize,
-            sizeAttenuation: this.sizeAttenuation,
-            // transparent: this.transparent,
-            opacity: this.opacity,
-            fog: true
-        });
+    var defines = NGL.Buffer.prototype.getDefines.call( this, type );
+
+    if( this.sizeAttenuation ){
+        defines[ "USE_SIZEATTENUATION" ] = 1;
+    }
+
+    if( this.useTexture ){
+        defines[ "USE_MAP" ] = 1;
+    }
+
+    if( this.alphaTest > 0 && this.alphaTest <= 1 ){
+        defines[ "ALPHATEST" ] = this.alphaTest.toPrecision( 2 );
+    }
+
+    return defines;
+
+};
+
+NGL.PointBuffer.prototype.setUniforms = function( data ){
+
+    if( data && data[ "edgeBleach" ] !== undefined ){
+
+        this.makeTexture();
+        data[ "map" ] = this.tex;
 
     }
 
-    this.material = material;
-    this.wireframeMaterial = material;
-    this.pickingMaterial = material;
+    NGL.Buffer.prototype.setUniforms.call( this, data );
 
 };
 
@@ -32049,7 +32105,7 @@ NGL.PointBuffer.prototype.dispose = function(){
 
     NGL.Buffer.prototype.dispose.call( this );
 
-    this.tex.dispose();
+    if( this.tex ) this.tex.dispose();
 
 };
 
@@ -32266,35 +32322,35 @@ NGL.TraceBuffer.prototype.setAttributes = function( data ){
 //////////////////////
 // Sprite Primitives
 
-NGL.ParticleSpriteBuffer = function( position, color, radius ){
+// NGL.ParticleSpriteBuffer = function( position, color, radius ){
 
-    this.count = position.length / 3;
-    this.vertexShader = 'ParticleSprite.vert';
-    this.fragmentShader = 'ParticleSprite.frag';
+//     this.count = position.length / 3;
+//     this.vertexShader = 'ParticleSprite.vert';
+//     this.fragmentShader = 'ParticleSprite.frag';
 
-    NGL.QuadBuffer.call( this );
+//     NGL.QuadBuffer.call( this );
 
-    this.addUniforms({
-        'projectionMatrixInverse': { type: "m4", value: new THREE.Matrix4() },
-    });
+//     this.addUniforms({
+//         'projectionMatrixInverse': { type: "m4", value: new THREE.Matrix4() },
+//     });
 
-    this.addAttributes( {
-        "radius": { type: "f", value: null },
-    } );
+//     this.addAttributes( {
+//         "radius": { type: "f", value: null },
+//     } );
 
-    this.setAttributes( {
-        "position": position,
-        "color": color,
-        "radius": radius,
-    } );
+//     this.setAttributes( {
+//         "position": position,
+//         "color": color,
+//         "radius": radius,
+//     } );
 
-    this.material.lights = false;
+//     this.material.lights = false;
 
-};
+// };
 
-NGL.ParticleSpriteBuffer.prototype = Object.create( NGL.QuadBuffer.prototype );
+// NGL.ParticleSpriteBuffer.prototype = Object.create( NGL.QuadBuffer.prototype );
 
-NGL.ParticleSpriteBuffer.prototype.constructor = NGL.ParticleSpriteBuffer;
+// NGL.ParticleSpriteBuffer.prototype.constructor = NGL.ParticleSpriteBuffer;
 
 
 NGL.RibbonBuffer = function( position, normal, dir, color, size, pickingColor, params ){
@@ -32309,8 +32365,9 @@ NGL.RibbonBuffer = function( position, normal, dir, color, size, pickingColor, p
     this.meshColor = new Float32Array( x );
     this.meshNormal = new Float32Array( x );
     this.meshPickingColor = pickingColor ? new Float32Array( x ) : undefined;
-    this.meshIndex = new Uint32Array( x );
 
+    var TypedArray = x > 65535 ? Uint32Array : Uint16Array;
+    this.meshIndex = new TypedArray( x );
     this.makeIndex();
 
     NGL.MeshBuffer.call(
@@ -32319,7 +32376,7 @@ NGL.RibbonBuffer = function( position, normal, dir, color, size, pickingColor, p
     );
 
     this.vertexShader = 'Ribbon.vert';
-    this.fragmentShader = 'Ribbon.frag';
+    this.fragmentShader = 'Mesh.frag';
 
     this.geometry.addAttribute(
         'dir', new THREE.BufferAttribute( new Float32Array( x ), 3 )
@@ -32499,7 +32556,7 @@ NGL.RibbonBuffer.prototype.makeIndex = function(){
     var meshIndex = this.meshIndex;
     var n = meshIndex.length / 4 / 3;
 
-    var quadIndices = new Uint32Array([
+    var quadIndices = new Uint16Array([
         0, 1, 2,
         1, 3, 2
     ]);
@@ -32548,10 +32605,10 @@ NGL.TubeMeshBuffer = function( position, normal, binormal, tangent, color, size,
     this.meshColor = new Float32Array( x );
     this.meshNormal = new Float32Array( x );
     this.meshPickingColor = pickingColor ? new Float32Array( x ) : undefined;
-    this.meshIndex = new Uint32Array(
-        n1 * 2 * this.radialSegments * 3 + 2 * this.capTriangles * 3
-    );
 
+    var xi = n1 * 2 * this.radialSegments * 3 + 2 * this.capTriangles * 3
+    var TypedArray = xi > 65535 ? Uint32Array : Uint16Array;
+    this.meshIndex = new TypedArray( xi );
     this.makeIndex();
 
     NGL.MeshBuffer.call(
@@ -33002,66 +33059,222 @@ NGL.HyperballStickBuffer = function( from, to, color, color2, radius1, radius2, 
 ////////////////
 // Text & Font
 
+NGL.TextAtlas = function( params ){
 
-NGL.getFont = function( name ){
+    // adapted from https://github.com/unconed/mathbox
+    // MIT License Copyright (C) 2013+ Steven Wittens and contributors
 
-    var fnt = NGL.Resources[ 'fonts/' + name + '.fnt' ].split('\n');
-    var font = {};
-    var m, tWidth, tHeight, base, lineHeight;
+    var p = Object.assign( {}, params );
 
-    fnt.forEach( function( line ){
+    this.font = p.font !== undefined ? p.font : [ 'sans-serif' ];
+    this.size = p.size || 36;
+    this.style = p.style !== undefined ? p.style : 'normal';
+    this.variant = p.variant !== undefined ? p.variant : 'normal';
+    this.weight = p.weight !== undefined ? p.weight : 'normal';
+    this.outline = p.outline !== undefined ? p.outline : 0;
+    this.width = p.width || 1024;
+    this.height = p.height || 1024;
 
-        if( line.substr( 0, 5 ) === 'char ' ){
+    this.gamma = 1;
+    if( typeof navigator !== 'undefined' ){
+        var ua = navigator.userAgent;
+        if( ua.match( /Chrome/ ) && ua.match( /OS X/ ) ){
+            this.gamma = 0.5;
+        }
+    }
 
-            var character = {};
-            var ls = line.substr( 5 ).split( /\s+/ );
-            ls.forEach( function( field ){
-                var fs = field.split( '=' );
-                character[ fs[ 0 ] ] = parseInt( fs[ 1 ] );
-            });
-            var x = character.x;
-            var y = character.y;
-            var width = character.width;
-            var height = character.height;
-            character.textureCoords = new Float32Array([
-                x/tWidth            ,1 - y/tHeight,                 // top left
-                x/tWidth            ,1 - (y+height)/tHeight,        // bottom left
-                (x+width)/tWidth    ,1 - y/tHeight,                 // top right
-                (x+width)/tWidth    ,1 - (y+height)/tHeight,        // bottom right
-            ]);
-            character.width2 = (10*width)/tWidth;
-            character.height2 = (10*height)/tHeight;
-            character.xadvance2 = (10*(character.xadvance))/tWidth;
-            character.xoffset2 = (10*(character.xoffset))/tWidth;
-            character.yoffset2 = (10*(character.yoffset))/tHeight;
-            character.lineHeight = (10*lineHeight)/tHeight;
-            font[ character[ 'id' ] ] = character;
+    this.mapped = {};
+    this.scratchW = 0;
+    this.scratchH = 0;
+    this.currentX = 0;
+    this.currentY = 0;
 
-        }else if( line.substr( 0, 7 ) === 'common ' ){
+    this.build( p );
 
-            // common lineHeight=38 base=30 scaleW=512 scaleH=512 pages=1 packed=0
+}
 
-            m = line.match( /scaleW=([0-9]+)/ );
-            if( m !== null ) tWidth = m[ 1 ];
+NGL.TextAtlas.prototype = {
 
-            m = line.match( /scaleH=([0-9]+)/ );
-            if( m !== null ) tHeight = m[ 1 ];
+    build: function( params ){
 
-            m = line.match( /base=([0-9]+)/ );
-            if( m !== null ) base = m[ 1 ];
+        // Prepare line-height with room for outline and descenders/ascenders
+        var lineHeight = this.size + 2 * this.outline + Math.round( this.size / 4 );
+        var maxWidth = this.width / 4;
 
-            m = line.match( /lineHeight=([0-9]+)/ );
-            if( m !== null ) lineHeight = m[ 1 ];
+        // Prepare scratch canvas
+        var canvas = document.createElement( "canvas" );
+        canvas.width = maxWidth;
+        canvas.height = lineHeight;
 
-        }else{
+        // Font string
+        var quote = function(str) {
+            return "\"" + ( str.replace( /(['"\\])/g, "\\$1" ) ) + "\"";
+        };
+        var font = this.font.map( quote ).join( ", " );
 
-            //NGL.log( i, line );
+        var ctx = canvas.getContext( "2d" );
+        ctx.font = this.style + " " + this.variant + " " + this.weight + " " + this.size + "px " + this.font;
+        ctx.fillStyle = "#FF0000";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "bottom";
+        ctx.lineJoin = "round";
+
+        // document.body.appendChild( canvas );
+        // canvas.setAttribute( "style", "position: absolute; top: 0; left: 0; z-index: 100; border: 1px solid red; background: rgba(255,0,255,.25);" );
+
+        var colors = [];
+        var dilate = this.outline * 3;
+        for( var i = 0; i < dilate; ++i ){
+            // 8 rgb levels = 1 step = .5 pixel increase
+            var val = Math.max( 0, -i * 8 + 128 - ( !i ) * 8 );
+            var hex = ( "00" + val.toString( 16 ) ).slice( -2 );
+            colors.push( "#" + hex + hex + hex );
+        }
+        var scratch = new Uint8Array( maxWidth * lineHeight * 2 );
+
+        this.canvas = canvas;
+        this.context = ctx;
+        this.lineHeight = lineHeight;
+        this.maxWidth = maxWidth;
+        this.colors = colors;
+        this.scratch = scratch;
+
+        this.data = new Uint8Array( this.width * this.height * 4 );
+
+        this.canvas2 = document.createElement( 'canvas' );
+        this.canvas2.width = this.width;
+        this.canvas2.height = this.height;
+        this.context2 = this.canvas2.getContext( '2d' );
+        // document.body.appendChild( this.canvas2 );
+        // this.canvas2.setAttribute( "style", "position: absolute; bottom: 0; right: 0; z-index: 100; border: 1px solid green; background: rgba(255,0,255,.25);" );
+
+    },
+
+    map: function( text ){
+
+        if( this.mapped[ text ] === undefined ){
+
+            this.draw( text );
+
+            // ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+
+            if( this.currentX + this.scratchW > this.width ){
+                this.currentX = 0;
+                this.currentY += this.scratchH;
+            }
+            if( this.currentY + this.scratchH > this.height ){
+                console.warn( "canvas to small" );
+            }
+
+            this.mapped[ text ] = {
+                x: this.currentX,
+                y: this.currentY,
+                w: this.scratchW,
+                h: this.scratchH
+            };
+
+            this.context2.drawImage(
+                this.canvas,
+                0, 0,
+                this.scratchW, this.scratchH,
+                this.currentX, this.currentY,
+                this.scratchW, this.scratchH
+            );
+
+            this.currentX += this.scratchW;
 
         }
 
-    })
+        return this.mapped[ text ];
 
-    return font;
+    },
+
+    draw: function( text ){
+
+        var h = this.lineHeight;
+        var o = this.outline;
+        var ctx = this.context;
+        var dst = this.scratch;
+        var max = this.maxWidth;
+        var colors = this.colors;
+
+        // Bottom aligned, take outline into account
+        var x = o;
+        var y = h - this.outline;
+
+        // Measure text
+        var m = ctx.measureText( text );
+        var w = Math.min( max, Math.ceil( m.width + 2 * x + 1 ) );
+
+        // Clear scratch area
+        ctx.clearRect(0, 0, w, h);
+
+        if( this.outline === 0 ){
+
+            ctx.fillText( text, x, y );
+            var imageData = ctx.getImageData( 0, 0, w, h );
+            var data = imageData.data;
+
+            var j = 3;  // Skip to alpha channel
+            for( var i = 0, il = data.length / 4; i < il; ++i ){
+                dst[ i ] = data[ j ];
+                j += 4;
+            }
+
+        }else{
+
+            ctx.globalCompositeOperation = "source-over";
+            // Draw strokes of decreasing width to create
+            // nested outlines (absolute distance)
+            for( var i = o + 1; i > 0; --i ){
+                // Eliminate odd strokes once past > 1px,
+                // don't need the detail
+                var j = i > 1 ? i * 2 - 2 : i;
+                ctx.strokeStyle = colors[ j - 1 ];
+                ctx.lineWidth = j;
+                ctx.strokeText( text, x, y );
+            }
+            ctx.globalCompositeOperation = "multiply";
+            ctx.fillStyle = "#FF00FF";
+            ctx.fillText( text, x, y );
+            var imageData = ctx.getImageData( 0, 0, w, h );
+            var data = imageData.data;
+
+            var j = 0;
+            var gamma = this.gamma;
+            for( var i = 0, il = data.length / 4; i < il; ++i ){
+                // Get value + mask
+                var a = data[ j ];
+                var mask = a ? data[ j + 1 ] / a : 1;
+                if( gamma === 0.5 ){
+                    mask = Math.sqrt( mask );
+                }
+                mask = Math.min( 1, Math.max( 0, mask ) );
+
+                // Blend between positive/outside and negative/inside
+                var b = 256 - a;
+                var c = b + ( a - b ) * mask;
+
+                // Clamp (slight expansion to hide errors around the transition)
+                dst[ i ] = Math.max( 0, Math.min( 255, c + 2 ) );
+                data[ j + 3 ] = dst[ i ];
+                j += 4;
+            }
+
+        }
+
+        ctx.putImageData( imageData, 0, 0 );
+        this.scratchW = w;
+        this.scratchH = h;
+
+    },
+
+    dispose: function(){
+
+        // document.body.removeChild( this.canvas );
+        // document.body.removeChild( this.canvas2 );
+
+    }
 
 };
 
@@ -33069,14 +33282,13 @@ NGL.getFont = function( name ){
 NGL.TextBuffer = function( position, size, color, text, params ){
 
     var p = params || {};
+    p.forceTransparent = true;
 
-    var fontName = p.font !== undefined ? p.font : 'LatoBlack';
-    this.font = NGL.getFont( fontName );
-
-    this.tex = new THREE.Texture(
-        NGL.Resources[ 'fonts/' + fontName + '.png' ]
-    );
-    this.tex.needsUpdate = true;
+    this.fontFamily = p.fontFamily !== undefined ? p.fontFamily : "sans-serif";
+    this.fontStyle = p.fontStyle !== undefined ? p.fontStyle : "normal";
+    this.fontWeight = p.fontWeight !== undefined ? p.fontWeight : "bold";
+    this.fontSize = p.fontSize !== undefined ? p.fontSize : 48;
+    this.sdf = p.sdf !== undefined ? p.sdf : true;
 
     var n = position.length / 3;
 
@@ -33089,13 +33301,13 @@ NGL.TextBuffer = function( position, size, color, text, params ){
     this.count = charCount;
     this.positionCount = n;
 
-    this.vertexShader = 'SDFFont.vert';
-    this.fragmentShader = 'SDFFont.frag';
+    this.vertexShader = "SDFFont.vert";
+    this.fragmentShader = "SDFFont.frag";
 
     NGL.QuadBuffer.call( this, p );
 
     this.addUniforms( {
-        "fontTexture"  : { type: "t", value: this.tex }
+        "fontTexture"  : { type: "t", value: null }
     } );
 
     this.addAttributes( {
@@ -33109,6 +33321,7 @@ NGL.TextBuffer = function( position, size, color, text, params ){
         "color": color
     } );
 
+    this.makeTexture();
     this.makeMapping();
 
 };
@@ -33117,12 +33330,22 @@ NGL.TextBuffer.prototype = Object.create( NGL.QuadBuffer.prototype );
 
 NGL.TextBuffer.prototype.constructor = NGL.TextBuffer;
 
+NGL.TextBuffer.prototype.parameters = Object.assign( {
+
+    fontFamily: { uniform: true },
+    fontStyle: { uniform: true },
+    fontWeight: { uniform: true },
+    fontSize: { uniform: true },
+    sdf: { updateShader: true, uniform: true },
+
+}, NGL.Buffer.prototype.parameters );
+
 NGL.TextBuffer.prototype.makeMaterial = function(){
 
     NGL.Buffer.prototype.makeMaterial.call( this );
 
+    this.material.extensions.derivatives = true;
     this.material.lights = false;
-    this.material.transparent = true;
     this.material.uniforms.fontTexture.value = this.tex;
     this.material.needsUpdate = true;
 
@@ -33204,18 +33427,34 @@ NGL.TextBuffer.prototype.setAttributes = function( data ){
 
 };
 
-NGL.TextBuffer.prototype.setProperties = function( data ){
+NGL.TextBuffer.prototype.makeTexture = function(){
 
-    // alpha channel must stay enabled for anti-aliasing
-    if( data && data.transparent !== undefined ) data.transparent = true;
+    if( this.tex ) this.tex.dispose();
+    if( this.ta ) this.ta.dispose();
 
-    NGL.QuadBuffer.prototype.setProperties.call( this, data );
+    var ta = new NGL.TextAtlas( {
+        font: [ this.fontFamily ],
+        style: this.fontStyle,
+        weight: this.fontWeight,
+        size: this.fontSize,
+        outline: this.sdf ? 5 : 0
+    } );
+
+    for( var i = 0; i < 256; ++i ){
+        ta.map( String.fromCharCode( i ) );
+    }
+
+    this.ta = ta;
+
+    this.tex = new THREE.CanvasTexture( ta.canvas2 );
+    this.tex.flipY = false;
+    this.tex.needsUpdate = true;
 
 };
 
 NGL.TextBuffer.prototype.makeMapping = function(){
 
-    var font = this.font;
+    var ta = this.ta;
     var text = this.text;
 
     var inputTexCoord = this.geometry.attributes[ "inputTexCoord" ].array;
@@ -33237,29 +33476,74 @@ NGL.TextBuffer.prototype.makeMapping = function(){
 
         for( iChar = 0; iChar < nChar; iChar++, iCharAll++ ) {
 
-            c = font[ txt.charCodeAt( iChar ) ];
+            c = ta.mapped[ txt[ iChar ] ];
             i = iCharAll * 2 * 4;
 
             // top left
-            inputMapping[ i + 0 ] = xadvance + c.xoffset2;
-            inputMapping[ i + 1 ] = c.lineHeight - c.yoffset2;
+            inputMapping[ i + 0 ] = xadvance - ta.outline;
+            inputMapping[ i + 1 ] = c.h - ta.outline;
             // bottom left
-            inputMapping[ i + 2 ] = xadvance + c.xoffset2;
-            inputMapping[ i + 3 ] = c.lineHeight - c.yoffset2 - c.height2;
+            inputMapping[ i + 2 ] = xadvance - ta.outline;
+            inputMapping[ i + 3 ] = 0 - ta.outline;
             // top right
-            inputMapping[ i + 4 ] = xadvance + c.xoffset2 + c.width2;
-            inputMapping[ i + 5 ] = c.lineHeight - c.yoffset2;
+            inputMapping[ i + 4 ] = xadvance + c.w - ta.outline;
+            inputMapping[ i + 5 ] = c.h - ta.outline;
             // bottom right
-            inputMapping[ i + 6 ] = xadvance + c.xoffset2 + c.width2;
-            inputMapping[ i + 7 ] = c.lineHeight - c.yoffset2 - c.height2;
+            inputMapping[ i + 6 ] = xadvance + c.w - ta.outline;
+            inputMapping[ i + 7 ] = 0 - ta.outline;
 
-            inputTexCoord.set( c.textureCoords, i );
+            var texWidth = ta.width;
+            var texHeight = ta.height;
 
-            xadvance += c.xadvance2;
+            var texCoords = [
+                c.x/texWidth, c.y/texHeight,             // top left
+                c.x/texWidth, (c.y+c.h)/texHeight,       // bottom left
+                (c.x+c.w)/texWidth, c.y/texHeight,       // top right
+                (c.x+c.w)/texWidth, (c.y+c.h)/texHeight  // bottom right
+            ];
+            inputTexCoord.set( texCoords, i );
+
+            xadvance += c.w - 2 * ta.outline;
 
         }
 
     }
+
+    this.geometry.attributes[ "inputTexCoord" ].needsUpdate = true;
+    this.geometry.attributes[ "mapping" ].needsUpdate = true;
+
+};
+
+NGL.TextBuffer.prototype.getDefines = function( type ){
+
+    var defines = NGL.Buffer.prototype.getDefines.call( this, type );
+
+    if( this.sdf ){
+        defines[ "SDF" ] = 1;
+    }
+
+    return defines;
+
+};
+
+NGL.TextBuffer.prototype.setUniforms = function( data ){
+
+    if( data && (
+            data[ "fontFamily" ] !== undefined ||
+            data[ "fontStyle" ] !== undefined ||
+            data[ "fontWeight" ] !== undefined ||
+            data[ "fontSize" ] !== undefined ||
+            data[ "sdf" ] !== undefined
+        )
+    ){
+
+        this.makeTexture();
+        this.makeMapping();
+        data[ "fontTexture" ] = this.tex;
+
+    }
+
+    NGL.Buffer.prototype.setUniforms.call( this, data );
 
 };
 
@@ -33267,7 +33551,8 @@ NGL.TextBuffer.prototype.dispose = function(){
 
     NGL.Buffer.prototype.dispose.call( this );
 
-    this.tex.dispose();
+    if( this.tex ) this.tex.dispose();
+    if( this.ta ) this.ta.dispose();
 
 };
 
@@ -33457,7 +33742,7 @@ NGL.Representation.prototype = {
             type: "boolean", buffer: true
         },
         opacity: {
-            type: "number", precision: 1, max: 1, min: 0, buffer: true
+            type: "range", step: 0.01, max: 1, min: 0, buffer: true
         },
         side: {
             type: "select", options: NGL.SideTypes, buffer: true,
@@ -33489,6 +33774,16 @@ NGL.Representation.prototype = {
             options: NGL.ColorMakerRegistry.getModes()
         },
 
+        roughness: {
+            type: "range", step: 0.01, max: 1, min: 0, buffer: true
+        },
+        metalness: {
+            type: "range", step: 0.01, max: 1, min: 0, buffer: true
+        },
+        diffuse: {
+            type: "color", buffer: true
+        },
+
     },
 
     init: function( params ){
@@ -33512,6 +33807,10 @@ NGL.Representation.prototype = {
 
         this.visible = p.visible !== undefined ? p.visible : true;
         this.quality = p.quality;
+
+        this.roughness = p.roughness !== undefined ? p.roughness : 0.4;
+        this.metalness = p.metalness !== undefined ? p.metalness : 0.0;
+        this.diffuse = p.diffuse !== undefined ? p.diffuse : 0xffffff;
 
     },
 
@@ -33539,6 +33838,10 @@ NGL.Representation.prototype = {
             side: this.side,
             wireframe: this.wireframe,
             linewidth: this.linewidth,
+
+            roughness: this.roughness,
+            metalness: this.metalness,
+            diffuse: this.diffuse,
 
         }, p );
 
@@ -34252,22 +34555,36 @@ NGL.PointRepresentation.prototype = NGL.createObject(
     parameters: Object.assign( {
 
         pointSize: {
-            type: "integer", max: 20, min: 1, buffer: true
+            type: "number", precision: 1, max: 100, min: 0, buffer: true
         },
         sizeAttenuation: {
             type: "boolean", buffer: true
         },
-        sort: {
+        sortParticles: {
             type: "boolean", rebuild: true
-        }
+        },
+        useTexture: {
+            type: "boolean", buffer: true
+        },
+        alphaTest: {
+            type: "range", step: 0.001, max: 1, min: 0, buffer: true
+        },
+        forceTransparent: {
+            type: "boolean", buffer: true
+        },
+        edgeBleach: {
+            type: "range", step: 0.001, max: 1, min: 0, buffer: true
+        },
 
-        // FIXME nearClip support missing
     }, NGL.Representation.prototype.parameters, {
 
         nearClip: null,
         flatShaded: null,
         wireframe: null,
-        linewidth: null
+        linewidth: null,
+
+        roughness: null,
+        metalness: null
 
     } ),
 
@@ -34277,8 +34594,11 @@ NGL.PointRepresentation.prototype = NGL.createObject(
 
         this.pointSize = p.pointSize || 1;
         this.sizeAttenuation = p.sizeAttenuation !== undefined ? p.sizeAttenuation : true;
-        this.sort = p.sort !== undefined ? p.sort : false;
-        p.opacity = p.opacity !== undefined ? p.opacity : 0.6;
+        this.sortParticles = p.sortParticles !== undefined ? p.sortParticles : false;
+        this.useTexture = p.useTexture !== undefined ? p.useTexture : false;
+        this.alphaTest = p.alphaTest !== undefined ? p.alphaTest : 0.5;
+        this.forceTransparent = p.forceTransparent !== undefined ? p.forceTransparent : false;
+        this.edgeBleach = p.edgeBleach !== undefined ? p.edgeBleach : 0.0;
 
         NGL.StructureRepresentation.prototype.init.call( this, p );
 
@@ -34294,7 +34614,11 @@ NGL.PointRepresentation.prototype = NGL.createObject(
             this.getBufferParams( {
                 pointSize: this.pointSize,
                 sizeAttenuation: this.sizeAttenuation,
-                sort: this.sort,
+                sortParticles: this.sortParticles,
+                useTexture: this.useTexture,
+                alphaTest: this.alphaTest,
+                forceTransparent: this.forceTransparent,
+                edgeBleach: this.edgeBleach
             } )
         );
 
@@ -34320,7 +34644,7 @@ NGL.PointRepresentation.prototype = NGL.createObject(
         if( what[ "color" ] ){
 
             pointData[ "color" ] = this.atomSet.atomColor(
-                null, this.colorScheme, this.getColorParams()
+                null, this.getColorParams()
             );
 
         }
@@ -34351,18 +34675,40 @@ NGL.LabelRepresentation.prototype = NGL.createObject(
         labelType: {
             type: "select", options: NGL.LabelFactory.types, rebuild: true
         },
-        font: {
+        fontFamily: {
             type: "select", options: {
-                // "Arial": "Arial",
-                // "DejaVu": "DejaVu",
-                "LatoBlack": "LatoBlack"
+                "sans-serif": "sans-serif",
+                "monospace": "monospace",
+                "serif": "serif"
             },
-            rebuild: true
-        }
+            buffer: true
+        },
+        fontStyle: {
+            type: "select", options: {
+                "normal": "normal",
+                "italic": "italic"
+            },
+            buffer: true
+        },
+        fontWeight: {
+            type: "select", options: {
+                "normal": "normal",
+                "bold": "bold"
+            },
+            buffer: true
+        },
+        sdf: {
+            type: "boolean", buffer: true
+        },
 
     }, NGL.StructureRepresentation.prototype.parameters, {
 
-        side: null, flatShaded: null
+        side: null,
+        flatShaded: null,
+
+        roughness: null,
+        metalness: null,
+        diffuse: null,
 
     } ),
 
@@ -34372,7 +34718,10 @@ NGL.LabelRepresentation.prototype = NGL.createObject(
 
         this.labelType = p.labelType || "res";
         this.labelText = p.labelText || {};
-        this.font = p.font || 'LatoBlack';
+        this.fontFamily = p.fontFamily || "sans-serif";
+        this.fontStyle = p.fontStyle || "normal";
+        this.fontWeight = p.fontWeight || "bold";
+        this.sdf = p.sdf !== undefined ? p.sdf : NGL.browser !== "Firefox";  // FIXME
 
         NGL.StructureRepresentation.prototype.init.call( this, p );
 
@@ -34399,7 +34748,10 @@ NGL.LabelRepresentation.prototype = NGL.createObject(
             this.atomSet.atomColor( null, this.getColorParams() ),
             text,
             this.getBufferParams( {
-                font: this.font,
+                fontFamily: this.fontFamily,
+                fontStyle: this.fontStyle,
+                fontWeight: this.fontWeight,
+                sdf: this.sdf
             } )
         );
 
@@ -34747,7 +35099,11 @@ NGL.LineRepresentation.prototype = NGL.createObject(
 
         flatShaded: null,
         side: null,
-        wireframe: null
+        wireframe: null,
+
+        roughness: null,
+        metalness: null,
+        diffuse: null,
 
     } ),
 
@@ -38284,7 +38640,9 @@ NGL.SurfaceRepresentation.prototype = NGL.createObject(
             this, params, what, rebuild
         );
 
-        this.volume.getBox( this.boxCenter, this.boxSize, this.box );
+        if( this.volume ){
+            this.volume.getBox( this.boxCenter, this.boxSize, this.box );
+        }
 
         if( this.surface && (
                 params[ "isolevel" ] !== undefined ||
@@ -38353,10 +38711,10 @@ NGL.DotRepresentation.prototype = NGL.createObject(
             }
         },
         thresholdMin: {
-            type: "number", precision: 3, max: 1000, min: -1000, rebuild: true
+            type: "number", precision: 3, max: Infinity, min: -Infinity, rebuild: true
         },
         thresholdMax: {
-            type: "number", precision: 3, max: 1000, min: -1000, rebuild: true
+            type: "number", precision: 3, max: Infinity, min: -Infinity, rebuild: true
         },
         thresholdOut: {
             type: "boolean", rebuild: true
@@ -38384,11 +38742,27 @@ NGL.DotRepresentation.prototype = NGL.createObject(
         scale: {
             type: "number", precision: 3, max: 10.0, min: 0.001
         },
-        sort: {
-            type: "boolean", rebuild: true
-        },
         sphereDetail: {
             type: "integer", max: 3, min: 0, rebuild: "impostor"
+        },
+
+        pointSize: {
+            type: "number", precision: 1, max: 100, min: 0, buffer: true
+        },
+        sizeAttenuation: {
+            type: "boolean", buffer: true
+        },
+        sortParticles: {
+            type: "boolean", rebuild: true
+        },
+        useTexture: {
+            type: "boolean", buffer: true
+        },
+        alphaTest: {
+            type: "range", step: 0.001, max: 1, min: 0, buffer: true
+        },
+        forceTransparent: {
+            type: "boolean", buffer: true
         },
 
     }, NGL.Representation.prototype.parameters, {
@@ -38433,7 +38807,13 @@ NGL.DotRepresentation.prototype = NGL.createObject(
         this.dotType = p.dotType !== undefined ? p.dotType : "point";
         this.radius = p.radius !== undefined ? p.radius : 0.1;
         this.scale = p.scale !== undefined ? p.scale : 1.0;
-        this.sort = p.sort !== undefined ? p.sort : false;
+
+        this.pointSize = p.pointSize || 1;
+        this.sizeAttenuation = p.sizeAttenuation !== undefined ? p.sizeAttenuation : true;
+        this.sortParticles = p.sortParticles !== undefined ? p.sortParticles : false;
+        this.useTexture = p.useTexture !== undefined ? p.useTexture : false;
+        this.alphaTest = p.alphaTest !== undefined ? p.alphaTest : 0.5;
+        this.forceTransparent = p.forceTransparent !== undefined ? p.forceTransparent : false;
 
         NGL.Representation.prototype.init.call( this, p );
 
@@ -38504,9 +38884,12 @@ NGL.DotRepresentation.prototype = NGL.createObject(
                 position,
                 color,
                 this.getBufferParams( {
-                    pointSize: this.radius,
-                    sizeAttenuation: true,  // this.sizeAttenuation,
-                    sort: this.sort,
+                    pointSize: this.pointSize,
+                    sizeAttenuation: this.sizeAttenuation,
+                    sortParticles: this.sortParticles,
+                    useTexture: this.useTexture,
+                    alphaTest: this.alphaTest,
+                    forceTransparent: this.forceTransparent
                 } )
             );
 
@@ -38698,13 +39081,36 @@ NGL.DotRepresentation.prototype = NGL.createObject(
 //////////
 // Stage
 
-NGL.Stage = function( eid ){
+NGL.Stage = function( eid, params ){
+
+    var p = Object.assign( {}, params );
+    var preferencesId = p.preferencesId || "ngl-stage";
+
+    this.parameters = NGL.deepCopy( NGL.Stage.prototype.parameters );
+    this.preferences = new NGL.Preferences( preferencesId, p );
+
+    for( var name in this.parameters ){
+        p[ name ] = this.preferences.getKey( name );
+        if( p.overwritePreferences && params[ name ] !== undefined ){
+            p[ name ] = params[ name ];
+        }
+    }
+
+    this.preferences.signals.keyChanged.add( function( key, value ){
+        var sp = {};
+        sp[ key ] = value;
+        this.setParameters( sp );
+    }, this );
+
+    //
 
     var SIGNALS = signals;
 
     this.signals = {
 
         themeChanged: new SIGNALS.Signal(),
+        parametersChanged: new SIGNALS.Signal(),
+        fullscreenChanged: new SIGNALS.Signal(),
 
         componentAdded: new SIGNALS.Signal(),
         componentRemoved: new SIGNALS.Signal(),
@@ -38713,35 +39119,132 @@ NGL.Stage = function( eid ){
         bondPicked: new SIGNALS.Signal(),
         volumePicked: new SIGNALS.Signal(),
         nothingPicked: new SIGNALS.Signal(),
-        onPicking: new SIGNALS.Signal(),
-
-        requestTheme: new SIGNALS.Signal()
+        onPicking: new SIGNALS.Signal()
 
     };
 
+    //
+
     this.tasks = new NGL.Counter();
-
     this.compList = [];
-
-    this.preferences =  new NGL.Preferences( this );
-
-    this.viewer = new NGL.Viewer( eid );
-
-    this.preferences.setTheme();
-
     this.defaultFileParams = {};
 
+    //
+
+    this.viewer = new NGL.Viewer( eid );
+    this.setParameters( p );
     this.initFileDragDrop();
-
     this.viewer.animate();
-
     this.pickingControls = new NGL.PickingControls( this.viewer, this );
 
-}
+};
 
 NGL.Stage.prototype = {
 
     constructor: NGL.Stage,
+
+    parameters: {
+
+        theme: {
+            type: "select", options: { "light": "light", "dark": "dark" }
+        },
+        quality: {
+            type: "select", options: { "low": "low", "medium": "medium", "high": "high" }
+        },
+        impostor: {
+            type: "boolean"
+        },
+        overview: {
+            type: "boolean"
+        },
+        rotateSpeed: {
+            type: "number", precision: 1, max: 10, min: 0
+        },
+        zoomSpeed: {
+            type: "number", precision: 1, max: 10, min: 0
+        },
+        panSpeed: {
+            type: "number", precision: 1, max: 10, min: 0
+        },
+        clipNear: {
+            type: "range", step: 1, max: 100, min: 0
+        },
+        clipFar: {
+            type: "range", step: 1, max: 100, min: 0
+        },
+        clipDist: {
+            type: "range", step: 1, max: 100, min: 0
+        },
+        fogNear: {
+            type: "range", step: 1, max: 100, min: 0
+        },
+        fogFar: {
+            type: "range", step: 1, max: 100, min: 0
+        },
+        lightColor: {
+            type: "color"
+        },
+        lightIntensity: {
+            type: "number", precision: 2, max: 10, min: 0
+        },
+        ambientColor: {
+            type: "color"
+        },
+        ambientIntensity: {
+            type: "number", precision: 2, max: 10, min: 0
+        },
+
+    },
+
+    setParameters: function( params ){
+
+        var p = Object.assign( {}, params );
+        var tp = this.parameters;
+        var viewer = this.viewer;
+        var controls = viewer.controls;
+
+        for( var name in p ){
+
+            if( p[ name ] === undefined ) continue;
+            if( !tp[ name ] ) continue;
+
+            if( tp[ name ].int ) p[ name ] = parseInt( p[ name ] );
+            if( tp[ name ].float ) p[ name ] = parseFloat( p[ name ] );
+
+            tp[ name ].value = p[ name ];
+
+        }
+
+        // apply parameters
+        if( p.theme !== undefined ) this.setTheme( p.theme );
+        if( p.quality !== undefined ) this.setQuality( p.quality );
+        if( p.impostor !== undefined ) this.setImpostor( p.impostor );
+        if( p.rotateSpeed !== undefined ) controls.rotateSpeed = p.rotateSpeed;
+        if( p.zoomSpeed !== undefined ) controls.zoomSpeed = p.zoomSpeed;
+        if( p.panSpeed !== undefined ) controls.panSpeed = p.panSpeed;
+        viewer.setClip( p.clipNear, p.clipFar, p.clipDist );
+        viewer.setFog( undefined, p.fogNear, p.fogFar );
+        viewer.setLight(
+            p.lightColor, p.lightIntensity, p.ambientColor, p.ambientIntensity
+        );
+
+        this.signals.parametersChanged.dispatch(
+            this.getParameters()
+        );
+
+        return this;
+
+    },
+
+    getParameters: function(){
+
+        var params = {};
+        for( var name in this.parameters ){
+            params[ name ] = this.parameters[ name ].value;
+        }
+        return params;
+
+    },
 
     defaultFileRepresentation: function( object ){
 
@@ -38935,6 +39438,7 @@ NGL.Stage.prototype = {
                 document.removeEventListener( "msfullscreenchange", resizeElement );
 
                 self.handleResize();
+                self.signals.fullscreenChanged.dispatch( false );
 
             }
 
@@ -38948,8 +39452,6 @@ NGL.Stage.prototype = {
             element.dataset.normalHeight = element.style.height;
             element.style.width = screen.width + "px";
             element.style.height = screen.height + "px";
-
-            self.handleResize();
 
             if( element.requestFullscreen ){
                 element.requestFullscreen();
@@ -38965,6 +39467,9 @@ NGL.Stage.prototype = {
             document.addEventListener( "mozfullscreenchange", resizeElement );
             document.addEventListener( "webkitfullscreenchange", resizeElement );
             document.addEventListener( "msfullscreenchange", resizeElement );
+
+            this.handleResize();
+            this.signals.fullscreenChanged.dispatch( true );
 
         }else{
 
@@ -39109,16 +39614,83 @@ NGL.Stage.prototype = {
 
     setTheme: function( value ){
 
-        var viewerBackground;
+        this.parameters.theme.value = value;
 
+        var viewerBackground;
         if( value === "light" ){
             viewerBackground = "white";
         }else{
             viewerBackground = "black";
         }
 
-        this.signals.requestTheme.dispatch( value );
+        this.signals.themeChanged.dispatch( value );
         this.viewer.setBackground( viewerBackground );
+
+    },
+
+    setImpostor: function( value ) {
+
+        this.parameters.impostor.value = value;
+
+        var types = [
+            "spacefill", "ball+stick", "licorice", "hyperball",
+            "backbone", "rocket", "crossing", "contact",
+            "dot"
+        ];
+
+        this.eachRepresentation( function( repr ){
+
+            if( repr instanceof NGL.ScriptComponent ) return;
+
+            if( types.indexOf( repr.getType() ) === -1 ){
+                return;
+            }
+
+            var p = repr.getParameters();
+            p.disableImpostor = !value;
+            repr.build( p );
+
+        } );
+
+    },
+
+    setQuality: function( value ) {
+
+        this.parameters.quality.value = value;
+
+        var types = [
+            "tube", "cartoon", "ribbon", "trace", "rope"
+        ];
+
+        var impostorTypes = [
+            "spacefill", "ball+stick", "licorice", "hyperball",
+            "backbone", "rocket", "crossing", "contact",
+            "dot"
+        ];
+
+        this.eachRepresentation( function( repr ){
+
+            if( repr instanceof NGL.ScriptComponent ) return;
+
+            var p = repr.getParameters();
+
+            if( types.indexOf( repr.getType() ) === -1 ){
+
+                if( impostorTypes.indexOf( repr.getType() ) === -1 ){
+                    return;
+                }
+
+                if( NGL.extensionFragDepth && !p.disableImpostor ){
+                    repr.repr.quality = value;
+                    return;
+                }
+
+            }
+
+            p.quality = value;
+            repr.build( p );
+
+        } );
 
     },
 
@@ -39211,7 +39783,7 @@ NGL.Stage.prototype = {
 
     }
 
-}
+};
 
 
 ////////////
@@ -39372,44 +39944,54 @@ NGL.PickingControls = function( viewer, stage ){
 ////////////////
 // Preferences
 
-NGL.Preferences = function( stage, id ){
+NGL.Preferences = function( id, defaultParams ){
+
+    var SIGNALS = signals;
+
+    this.signals = {
+        keyChanged: new SIGNALS.Signal(),
+    };
 
     this.id = id || "ngl-stage";
-
-    this.stage = stage;
+    var dp = Object.assign( {}, defaultParams );
 
     this.storage = {
-
         impostor: true,
         quality: "medium",
         theme: "dark",
-        overview: true
-
+        overview: true,
+        rotateSpeed: 2.0,
+        zoomSpeed: 1.2,
+        panSpeed: 0.8,
+        clipNear: 0,
+        clipFar: 100,
+        clipDist: 10,
+        fogNear: 50,
+        fogFar: 100,
+        lightColor: 0xdddddd,
+        lightIntensity: 1.0,
+        ambientColor: 0xdddddd,
+        ambientIntensity: 0.2
     };
 
+    // overwrite default values with params
+    for( var key in this.storage ){
+        if( dp[ key ] !== undefined ){
+            this.storage[ key ] = dp[ key ];
+        }
+    }
 
     try{
-
         if ( window.localStorage[ this.id ] === undefined ) {
-
             window.localStorage[ this.id ] = JSON.stringify( this.storage );
-
         } else {
-
             var data = JSON.parse( window.localStorage[ this.id ] );
-
             for ( var key in data ) {
-
                 this.storage[ key ] = data[ key ];
-
             }
-
         }
-
     }catch( e ){
-
         NGL.error( "localStorage not accessible/available" );
-
     }
 
 };
@@ -39417,92 +39999,6 @@ NGL.Preferences = function( stage, id ){
 NGL.Preferences.prototype = {
 
     constructor: NGL.Preferences,
-
-    setImpostor: function( value ) {
-
-        if( value !== undefined ){
-            this.setKey( "impostor", value );
-        }else{
-            value = this.getKey( "impostor" );
-        }
-
-        var types = [
-            "spacefill", "ball+stick", "licorice", "hyperball",
-            "backbone", "rocket", "crossing", "contact",
-            "dot"
-        ];
-
-        this.stage.eachRepresentation( function( repr ){
-
-            if( repr instanceof NGL.ScriptComponent ) return;
-
-            if( types.indexOf( repr.getType() ) === -1 ){
-                return;
-            }
-
-            var p = repr.getParameters();
-            p.disableImpostor = !value;
-            repr.build( p );
-
-        } );
-
-    },
-
-    setQuality: function( value ) {
-
-        if( value !== undefined ){
-            this.setKey( "quality", value );
-        }else{
-            value = this.getKey( "quality" );
-        }
-
-        var types = [
-            "tube", "cartoon", "ribbon", "trace", "rope"
-        ];
-
-        var impostorTypes = [
-            "spacefill", "ball+stick", "licorice", "hyperball",
-            "backbone", "rocket", "crossing", "contact",
-            "dot"
-        ];
-
-        this.stage.eachRepresentation( function( repr ){
-
-            if( repr instanceof NGL.ScriptComponent ) return;
-
-            var p = repr.getParameters();
-
-            if( types.indexOf( repr.getType() ) === -1 ){
-
-                if( impostorTypes.indexOf( repr.getType() ) === -1 ){
-                    return;
-                }
-
-                if( NGL.extensionFragDepth && !p.disableImpostor ){
-                    repr.repr.quality = value;
-                    return;
-                }
-
-            }
-
-            p.quality = value;
-            repr.build( p );
-
-        } );
-
-    },
-
-    setTheme: function( value ) {
-
-        if( value !== undefined ){
-            this.setKey( "theme", value );
-        }else{
-            value = this.getKey( "theme" );
-        }
-
-        this.stage.setTheme( value );
-
-    },
 
     getKey: function( key ){
 
@@ -39515,23 +40011,15 @@ NGL.Preferences.prototype = {
         this.storage[ key ] = value;
 
         try{
-
             window.localStorage[ this.id ] = JSON.stringify( this.storage );
-
+            this.signals.keyChanged.dispatch( key, value );
         }catch( e ){
-
             // Webkit === 22 / Firefox === 1014
-
             if( e.code === 22 || e.code === 1014 ){
-
                 NGL.error( "localStorage full" );
-
             }else{
-
-                NGL.error( "localStorage not accessible/available" );
-
+                NGL.error( "localStorage not accessible/available", e );
             }
-
         }
 
     },
@@ -39539,13 +40027,9 @@ NGL.Preferences.prototype = {
     clear: function(){
 
         try{
-
             delete window.localStorage[ this.id ];
-
         }catch( e ){
-
             NGL.error( "localStorage not accessible/available" );
-
         }
 
     }
@@ -39631,11 +40115,11 @@ NGL.Component.prototype = {
 
     addRepresentation: function( type, object, params ){
 
-        var pref = this.stage.preferences;
         var p = params || {};
-        p.quality = p.quality || pref.getKey( "quality" );
-        p.disableImpostor = p.disableImpostor !== undefined ? p.disableImpostor : !pref.getKey( "impostor" );
-        p.visible = p.visible !== undefined ? p.visible : true;
+        var sp = this.stage.getParameters();
+        p.quality = p.quality || sp.quality;
+        p.disableImpostor = NGL.defaults( p.disableImpostor, !sp.impostor );
+        p.visible = NGL.defaults( p.visible, true );
 
         var p2 = Object.assign( {}, p, { visible: this.visible && p.visible } );
 
@@ -40512,117 +40996,81 @@ NGL.RepresentationCollection.prototype = NGL.createObject(
 
 // File:shader/CylinderImpostor.vert
 
-NGL.Resources[ 'shader/CylinderImpostor.vert' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n// uniform mat4 viewMatrix;\nuniform mat3 normalMatrix;\n// uniform vec3 cameraPosition;\n\nattribute vec3 position;\n\n// Open-Source PyMOL is Copyright (C) Schrodinger, LLC.\n\n//  All Rights Reserved\n\n//  Permission to use, copy, modify, distribute, and distribute modified\n//  versions of this software and its built-in documentation for any\n//  purpose and without fee is hereby granted, provided that the above\n//  copyright notice appears in all copies and that both the copyright\n//  notice and this permission notice appear in supporting documentation,\n//  and that the name of Schrodinger, LLC not be used in advertising or\n//  publicity pertaining to distribution of the software without specific,\n//  written prior permission.\n\n//  SCHRODINGER, LLC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,\n//  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN\n//  NO EVENT SHALL SCHRODINGER, LLC BE LIABLE FOR ANY SPECIAL, INDIRECT OR\n//  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS\n//  OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\n//  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE\n//  USE OR PERFORMANCE OF THIS SOFTWARE.\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n// - shift\n\nattribute vec3 mapping;\nattribute vec3 position1;\nattribute vec3 position2;\nattribute float radius;\n\nvarying vec3 axis;\nvarying vec4 base_radius;\nvarying vec4 end_b;\nvarying vec3 U;\nvarying vec3 V;\nvarying vec4 w;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    attribute vec3 pickingColor2;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    attribute vec3 color;\n    attribute vec3 color2;\n    varying vec3 vColor;\n    varying vec3 vColor2;\n#endif\n\nuniform mat4 modelViewMatrixInverse;\nuniform float shift;\n\n\nvoid main()\n{\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n        vPickingColor2 = pickingColor2;\n    #else\n        vColor = color;\n        vColor2 = color2;\n    #endif\n\n    // vRadius = radius;\n    base_radius.w = radius;\n\n    vec3 center = position;\n    vec3 dir = normalize( position2 - position1 );\n    float ext = length( position2 - position1 ) / 2.0;\n\n    vec3 cam_dir = normalize(\n        ( modelViewMatrixInverse * vec4( 0, 0, 0, 1 ) ).xyz - center\n    );\n\n    vec3 ldir;\n\n    float b = dot( cam_dir, dir );\n    end_b.w = b;\n    if( b < 0.0 ) // direction vector looks away, so flip\n        ldir = -ext * dir;\n    else // direction vector already looks in my direction\n        ldir = ext * dir;\n\n    vec3 left = normalize( cross( cam_dir, ldir ) );\n    vec3 leftShift = shift * left * radius;\n    if( b < 0.0 )\n        leftShift *= -1.0;\n    left = radius * left;\n    vec3 up = radius * normalize( cross( left, ldir ) );\n\n    // transform to modelview coordinates\n    axis = normalize( normalMatrix * ldir );\n    U = normalize( normalMatrix * up );\n    V = normalize( normalMatrix * left );\n\n    vec4 base4 = modelViewMatrix * vec4( center - ldir + leftShift, 1.0 );\n    base_radius.xyz = base4.xyz / base4.w;\n\n    vec4 top_position = modelViewMatrix * vec4( center + ldir + leftShift, 1.0 );\n    vec4 end4 = top_position;\n    end_b.xyz = end4.xyz / end4.w;\n\n    w = modelViewMatrix * vec4(\n        center + leftShift + mapping.x*ldir + mapping.y*left + mapping.z*up, 1.0\n    );\n\n    gl_Position = projectionMatrix * w;\n\n    // avoid clipping\n    gl_Position.z = 1.0;\n\n}\n\n\n";
+NGL.Resources[ 'shader/CylinderImpostor.vert' ] = "// Open-Source PyMOL is Copyright (C) Schrodinger, LLC.\n//\n//  All Rights Reserved\n//\n//  Permission to use, copy, modify, distribute, and distribute modified\n//  versions of this software and its built-in documentation for any\n//  purpose and without fee is hereby granted, provided that the above\n//  copyright notice appears in all copies and that both the copyright\n//  notice and this permission notice appear in supporting documentation,\n//  and that the name of Schrodinger, LLC not be used in advertising or\n//  publicity pertaining to distribution of the software without specific,\n//  written prior permission.\n//\n//  SCHRODINGER, LLC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,\n//  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN\n//  NO EVENT SHALL SCHRODINGER, LLC BE LIABLE FOR ANY SPECIAL, INDIRECT OR\n//  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS\n//  OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\n//  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE\n//  USE OR PERFORMANCE OF THIS SOFTWARE.\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n// - shift\n\nattribute vec3 mapping;\nattribute vec3 position1;\nattribute vec3 position2;\nattribute float radius;\n\nvarying vec3 axis;\nvarying vec4 base_radius;\nvarying vec4 end_b;\nvarying vec3 U;\nvarying vec3 V;\nvarying vec4 w;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    attribute vec3 pickingColor2;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    // attribute vec3 color;\n    attribute vec3 color2;\n    varying vec3 vColor1;\n    varying vec3 vColor2;\n#endif\n\nuniform mat4 modelViewMatrixInverse;\nuniform float shift;\n\nvoid main(){\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n        vPickingColor2 = pickingColor2;\n    #else\n        vColor1 = color;\n        vColor2 = color2;\n    #endif\n\n    // vRadius = radius;\n    base_radius.w = radius;\n\n    vec3 center = position;\n    vec3 dir = normalize( position2 - position1 );\n    float ext = length( position2 - position1 ) / 2.0;\n\n    vec3 cam_dir = normalize(\n        ( modelViewMatrixInverse * vec4( 0, 0, 0, 1 ) ).xyz - center\n    );\n\n    vec3 ldir;\n\n    float b = dot( cam_dir, dir );\n    end_b.w = b;\n    if( b < 0.0 ) // direction vector looks away, so flip\n        ldir = -ext * dir;\n    else // direction vector already looks in my direction\n        ldir = ext * dir;\n\n    vec3 left = normalize( cross( cam_dir, ldir ) );\n    vec3 leftShift = shift * left * radius;\n    if( b < 0.0 )\n        leftShift *= -1.0;\n    left = radius * left;\n    vec3 up = radius * normalize( cross( left, ldir ) );\n\n    // transform to modelview coordinates\n    axis = normalize( normalMatrix * ldir );\n    U = normalize( normalMatrix * up );\n    V = normalize( normalMatrix * left );\n\n    vec4 base4 = modelViewMatrix * vec4( center - ldir + leftShift, 1.0 );\n    base_radius.xyz = base4.xyz / base4.w;\n\n    vec4 top_position = modelViewMatrix * vec4( center + ldir + leftShift, 1.0 );\n    vec4 end4 = top_position;\n    end_b.xyz = end4.xyz / end4.w;\n\n    w = modelViewMatrix * vec4(\n        center + leftShift + mapping.x*ldir + mapping.y*left + mapping.z*up, 1.0\n    );\n\n    gl_Position = projectionMatrix * w;\n\n    // avoid clipping\n    gl_Position.z = 1.0;\n\n}";
 
 // File:shader/CylinderImpostor.frag
 
-NGL.Resources[ 'shader/CylinderImpostor.frag' ] = "\n#extension GL_EXT_frag_depth : enable\n\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 viewMatrix;\n// uniform vec3 cameraPosition;\n\n// Open-Source PyMOL is Copyright (C) Schrodinger, LLC.\n\n//  All Rights Reserved\n\n//  Permission to use, copy, modify, distribute, and distribute modified\n//  versions of this software and its built-in documentation for any\n//  purpose and without fee is hereby granted, provided that the above\n//  copyright notice appears in all copies and that both the copyright\n//  notice and this permission notice appear in supporting documentation,\n//  and that the name of Schrodinger, LLC not be used in advertising or\n//  publicity pertaining to distribution of the software without specific,\n//  written prior permission.\n\n//  SCHRODINGER, LLC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,\n//  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN\n//  NO EVENT SHALL SCHRODINGER, LLC BE LIABLE FOR ANY SPECIAL, INDIRECT OR\n//  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS\n//  OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\n//  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE\n//  USE OR PERFORMANCE OF THIS SOFTWARE.\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n\nuniform float opacity;\nuniform float nearClip;\n\nuniform mat4 projectionMatrix;\n// uniform mat3 normalMatrix;\n\nvarying vec3 axis;\nvarying vec4 base_radius;\nvarying vec4 end_b;\nvarying vec3 U;\nvarying vec3 V;\nvarying vec4 w;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    varying vec3 vColor;\n    varying vec3 vColor2;\n#endif\n\n#include light_params\n\n#include fog_params\n\n\nfloat distSq3( vec3 v3a, vec3 v3b ){\n\n    return (\n        ( v3a.x - v3b.x ) * ( v3a.x - v3b.x ) +\n        ( v3a.y - v3b.y ) * ( v3a.y - v3b.y ) +\n        ( v3a.z - v3b.z ) * ( v3a.z - v3b.z )\n    );\n\n}\n\n\n// round caps\n// http://sourceforge.net/p/pymol/code/HEAD/tree/trunk/pymol/data/shaders/cylinder.fs\n\n\n// void main2(void)\n// {\n//     #ifdef PICKING\n//         gl_FragColor = vec4( vPickingColor, 1.0 );\n//     #else\n//         gl_FragColor = vec4( vColor, 1.0 );\n//     #endif\n// }\n\n// Calculate depth based on the given camera position.\nfloat calcDepth( in vec3 cameraPos )\n{\n    vec2 clipZW = cameraPos.z * projectionMatrix[2].zw + projectionMatrix[3].zw;\n    return 0.5 + 0.5 * clipZW.x / clipZW.y;\n}\n\n\nfloat calcClip( vec3 cameraPos )\n{\n    return dot( vec4( cameraPos, 1.0 ), vec4( 0.0, 0.0, 1.0, nearClip - 0.5 ) );\n}\n\n\nvoid main()\n{\n    vec3 point = w.xyz / w.w;\n\n    // unpacking\n    vec3 base = base_radius.xyz;\n    float vRadius = base_radius.w;\n    vec3 end = end_b.xyz;\n    float b = end_b.w;\n\n    vec3 end_cyl = end;\n    vec3 surface_point = point;\n\n    const float ortho=0.0;\n\n    vec3 ray_target = surface_point;\n    vec3 ray_origin = vec3(0.0);\n    vec3 ray_direction = mix(normalize(ray_origin - ray_target), vec3(0.0, 0.0, 1.0), ortho);\n    mat3 basis = mat3( U, V, axis );\n\n    vec3 diff = ray_target - 0.5 * (base + end_cyl);\n    vec3 P = diff * basis;\n\n    // angle (cos) between cylinder cylinder_axis and ray direction\n    float dz = dot( axis, ray_direction );\n\n    float radius2 = vRadius*vRadius;\n\n    // calculate distance to the cylinder from ray origin\n    vec3 D = vec3(dot(U, ray_direction),\n                dot(V, ray_direction),\n                dz);\n    float a0 = P.x*P.x + P.y*P.y - radius2;\n    float a1 = P.x*D.x + P.y*D.y;\n    float a2 = D.x*D.x + D.y*D.y;\n\n    // calculate a dicriminant of the above quadratic equation\n    float d = a1*a1 - a0*a2;\n    if (d < 0.0)\n        // outside of the cylinder\n        discard;\n\n    float dist = (-a1 + sqrt(d)) / a2;\n\n    // point of intersection on cylinder surface\n    vec3 new_point = ray_target + dist * ray_direction;\n\n    vec3 tmp_point = new_point - base;\n    vec3 normal = normalize( tmp_point - axis * dot(tmp_point, axis) );\n\n    ray_origin = mix( ray_origin, surface_point, ortho );\n\n    // test front cap\n    float cap_test = dot( new_point - base, axis );\n\n    // to calculate caps, simply check the angle between\n    // the point of intersection - cylinder end vector\n    // and a cap plane normal (which is the cylinder cylinder_axis)\n    // if the angle < 0, the point is outside of cylinder\n    // test front cap\n\n    #ifndef CAP\n        vec3 new_point2 = ray_target + ( (-a1 - sqrt(d)) / a2 ) * ray_direction;\n        vec3 tmp_point2 = new_point2 - base;\n    #endif\n\n    // flat\n    if (cap_test < 0.0)\n    {\n        // ray-plane intersection\n        float dNV = dot(-axis, ray_direction);\n        if (dNV < 0.0)\n            discard;\n        float near = dot(-axis, (base)) / dNV;\n        new_point = ray_direction * near + ray_origin;\n        // within the cap radius?\n        if (dot(new_point - base, new_point-base) > radius2)\n            discard;\n\n        #ifdef CAP\n            normal = axis;\n        #else\n            normal = -normalize( tmp_point2 - axis * dot(tmp_point2, axis) );\n        #endif\n    }\n\n    // test end cap\n    cap_test = dot((new_point - end_cyl), axis);\n\n    // flat\n    if( cap_test > 0.0 )\n    {\n        // ray-plane intersection\n        float dNV = dot(axis, ray_direction);\n        if (dNV < 0.0)\n            discard;\n        float near = dot(axis, end_cyl) / dNV;\n        new_point = ray_direction * near + ray_origin;\n        // within the cap radius?\n        if( dot(new_point - end_cyl, new_point-base) > radius2 )\n            discard;\n\n        #ifdef CAP\n            normal = axis;\n        #else\n            normal = -normalize( tmp_point2 - axis * dot(tmp_point2, axis) );\n        #endif\n    }\n\n    gl_FragDepthEXT = calcDepth( new_point );\n\n    #ifdef NEAR_CLIP\n        if( calcClip( new_point ) > 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            if( calcClip( new_point ) > 0.0 )\n                discard;\n            normal = vec3( 0.0, 0.0, 0.4 );\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = max( 0.0, calcDepth( vec3( - ( nearClip - 0.5 ) ) ) + ( 0.0000001 / vRadius ) );\n            }\n        }else if( gl_FragDepthEXT <= 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            normal = vec3( 0.0, 0.0, 0.4 );\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        }\n    #else\n        if( gl_FragDepthEXT <= 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            normal = vec3( 0.0, 0.0, 0.4 );\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        }\n    #endif\n\n    // this is a workaround necessary for Mac\n    // otherwise the modified fragment won't clip properly\n    if (gl_FragDepthEXT < 0.0)\n        discard;\n    if (gl_FragDepthEXT > 1.0)\n        discard;\n\n\n    vec3 transformedNormal = normal;\n    vec3 vLightFront = vec3( 0.0, 0.0, 0.0 );\n\n    #include light\n\n    #ifdef PICKING\n        if( distSq3( new_point, end_cyl ) < distSq3( new_point, base ) ){\n            if( b < 0.0 ){\n                gl_FragColor = vec4( vPickingColor, objectId );\n            }else{\n                gl_FragColor = vec4( vPickingColor2, objectId );\n            }\n        }else{\n            if( b > 0.0 ){\n                gl_FragColor = vec4( vPickingColor, objectId );\n            }else{\n                gl_FragColor = vec4( vPickingColor2, objectId );\n            }\n        }\n    #else\n        if( distSq3( new_point, end_cyl ) < distSq3( new_point, base ) ){\n            if( b < 0.0 ){\n                gl_FragColor = vec4( vColor, opacity );\n            }else{\n                gl_FragColor = vec4( vColor2, opacity );\n            }\n        }else{\n            if( b > 0.0 ){\n                gl_FragColor = vec4( vColor, opacity );\n            }else{\n                gl_FragColor = vec4( vColor2, opacity );\n            }\n        }\n        gl_FragColor.rgb *= vLightFront;\n        //gl_FragColor.rgb = transformedNormal;\n    #endif\n\n    // #include fog\n\n    #ifdef USE_FOG\n        float depth = gl_FragDepthEXT / gl_FragCoord.w;\n        #ifdef FOG_EXP2\n            const float LOG2 = 1.442695;\n            float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\n            fogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\n        #else\n            float fogFactor = smoothstep( fogNear, fogFar, depth );\n        #endif\n        gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\n    #endif\n}\n\n\n\n\n\n\n\n\n";
+NGL.Resources[ 'shader/CylinderImpostor.frag' ] = "#define STANDARD\n#define IMPOSTOR\n\n// Open-Source PyMOL is Copyright (C) Schrodinger, LLC.\n//\n//  All Rights Reserved\n//\n//  Permission to use, copy, modify, distribute, and distribute modified\n//  versions of this software and its built-in documentation for any\n//  purpose and without fee is hereby granted, provided that the above\n//  copyright notice appears in all copies and that both the copyright\n//  notice and this permission notice appear in supporting documentation,\n//  and that the name of Schrodinger, LLC not be used in advertising or\n//  publicity pertaining to distribution of the software without specific,\n//  written prior permission.\n//\n//  SCHRODINGER, LLC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,\n//  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN\n//  NO EVENT SHALL SCHRODINGER, LLC BE LIABLE FOR ANY SPECIAL, INDIRECT OR\n//  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS\n//  OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\n//  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE\n//  USE OR PERFORMANCE OF THIS SOFTWARE.\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n// - custom clipping\n// - three.js lighting\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform float nearClip;\nuniform mat4 projectionMatrix;\n\nvarying vec3 axis;\nvarying vec4 base_radius;\nvarying vec4 end_b;\nvarying vec3 U;\nvarying vec3 V;\nvarying vec4 w;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    varying vec3 vColor1;\n    varying vec3 vColor2;\n    #include common\n    #include fog_pars_fragment\n    #include bsdfs\n    #include lights_pars\n    #include lights_standard_pars_fragment\n#endif\n\nbool interior = false;\n\nfloat distSq3( vec3 v3a, vec3 v3b ){\n\n    return (\n        ( v3a.x - v3b.x ) * ( v3a.x - v3b.x ) +\n        ( v3a.y - v3b.y ) * ( v3a.y - v3b.y ) +\n        ( v3a.z - v3b.z ) * ( v3a.z - v3b.z )\n    );\n\n}\n\n// round caps\n// http://sourceforge.net/p/pymol/code/HEAD/tree/trunk/pymol/data/shaders/cylinder.fs\n\n// void main2(void)\n// {\n//     #ifdef PICKING\n//         gl_FragColor = vec4( vPickingColor, 1.0 );\n//     #else\n//         gl_FragColor = vec4( vColor, 1.0 );\n//     #endif\n// }\n\n// Calculate depth based on the given camera position.\nfloat calcDepth( in vec3 cameraPos ){\n    vec2 clipZW = cameraPos.z * projectionMatrix[2].zw + projectionMatrix[3].zw;\n    return 0.5 + 0.5 * clipZW.x / clipZW.y;\n}\n\nfloat calcClip( vec3 cameraPos ){\n    return dot( vec4( cameraPos, 1.0 ), vec4( 0.0, 0.0, 1.0, nearClip - 0.5 ) );\n}\n\nvoid main(){\n\n    vec3 point = w.xyz / w.w;\n\n    // unpacking\n    vec3 base = base_radius.xyz;\n    float vRadius = base_radius.w;\n    vec3 end = end_b.xyz;\n    float b = end_b.w;\n\n    vec3 end_cyl = end;\n    vec3 surface_point = point;\n\n    const float ortho=0.0;\n\n    vec3 ray_target = surface_point;\n    vec3 ray_origin = vec3(0.0);\n    vec3 ray_direction = mix(normalize(ray_origin - ray_target), vec3(0.0, 0.0, 1.0), ortho);\n    mat3 basis = mat3( U, V, axis );\n\n    vec3 diff = ray_target - 0.5 * (base + end_cyl);\n    vec3 P = diff * basis;\n\n    // angle (cos) between cylinder cylinder_axis and ray direction\n    float dz = dot( axis, ray_direction );\n\n    float radius2 = vRadius*vRadius;\n\n    // calculate distance to the cylinder from ray origin\n    vec3 D = vec3(dot(U, ray_direction),\n                dot(V, ray_direction),\n                dz);\n    float a0 = P.x*P.x + P.y*P.y - radius2;\n    float a1 = P.x*D.x + P.y*D.y;\n    float a2 = D.x*D.x + D.y*D.y;\n\n    // calculate a dicriminant of the above quadratic equation\n    float d = a1*a1 - a0*a2;\n    if (d < 0.0)\n        // outside of the cylinder\n        discard;\n\n    float dist = (-a1 + sqrt(d)) / a2;\n\n    // point of intersection on cylinder surface\n    vec3 new_point = ray_target + dist * ray_direction;\n\n    vec3 tmp_point = new_point - base;\n    vec3 _normal = normalize( tmp_point - axis * dot(tmp_point, axis) );\n\n    ray_origin = mix( ray_origin, surface_point, ortho );\n\n    // test front cap\n    float cap_test = dot( new_point - base, axis );\n\n    // to calculate caps, simply check the angle between\n    // the point of intersection - cylinder end vector\n    // and a cap plane normal (which is the cylinder cylinder_axis)\n    // if the angle < 0, the point is outside of cylinder\n    // test front cap\n\n    #ifndef CAP\n        vec3 new_point2 = ray_target + ( (-a1 - sqrt(d)) / a2 ) * ray_direction;\n        vec3 tmp_point2 = new_point2 - base;\n    #endif\n\n    // flat\n    if (cap_test < 0.0)\n    {\n        // ray-plane intersection\n        float dNV = dot(-axis, ray_direction);\n        if (dNV < 0.0)\n            discard;\n        float near = dot(-axis, (base)) / dNV;\n        new_point = ray_direction * near + ray_origin;\n        // within the cap radius?\n        if (dot(new_point - base, new_point-base) > radius2)\n            discard;\n\n        #ifdef CAP\n            _normal = axis;\n        #else\n            _normal = -normalize( tmp_point2 - axis * dot(tmp_point2, axis) );\n        #endif\n    }\n\n    // test end cap\n    cap_test = dot((new_point - end_cyl), axis);\n\n    // flat\n    if( cap_test > 0.0 )\n    {\n        // ray-plane intersection\n        float dNV = dot(axis, ray_direction);\n        if (dNV < 0.0)\n            discard;\n        float near = dot(axis, end_cyl) / dNV;\n        new_point = ray_direction * near + ray_origin;\n        // within the cap radius?\n        if( dot(new_point - end_cyl, new_point-base) > radius2 )\n            discard;\n\n        #ifdef CAP\n            _normal = axis;\n        #else\n            _normal = -normalize( tmp_point2 - axis * dot(tmp_point2, axis) );\n        #endif\n    }\n\n    gl_FragDepthEXT = calcDepth( new_point );\n\n    #ifdef NEAR_CLIP\n        if( calcClip( new_point ) > 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            if( calcClip( new_point ) > 0.0 )\n                discard;\n            interior = true;\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = max( 0.0, calcDepth( vec3( - ( nearClip - 0.5 ) ) ) + ( 0.0000001 / vRadius ) );\n            }\n        }else if( gl_FragDepthEXT <= 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            interior = true;\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        }\n    #else\n        if( gl_FragDepthEXT <= 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            interior = true;\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        }\n    #endif\n\n    // this is a workaround necessary for Mac\n    // otherwise the modified fragment won't clip properly\n    if (gl_FragDepthEXT < 0.0)\n        discard;\n    if (gl_FragDepthEXT > 1.0)\n        discard;\n\n    #ifdef PICKING\n\n        if( distSq3( new_point, end_cyl ) < distSq3( new_point, base ) ){\n            if( b < 0.0 ){\n                gl_FragColor = vec4( vPickingColor, objectId );\n            }else{\n                gl_FragColor = vec4( vPickingColor2, objectId );\n            }\n        }else{\n            if( b > 0.0 ){\n                gl_FragColor = vec4( vPickingColor, objectId );\n            }else{\n                gl_FragColor = vec4( vPickingColor2, objectId );\n            }\n        }\n\n    #else\n\n        vec3 vViewPosition = -new_point;\n        vec3 vNormal = _normal;\n        vec3 vColor;\n\n        if( distSq3( new_point, end_cyl ) < distSq3( new_point, base ) ){\n            if( b < 0.0 ){\n                vColor = vColor1;\n            }else{\n                vColor = vColor2;\n            }\n        }else{\n            if( b > 0.0 ){\n                vColor = vColor1;\n            }else{\n                vColor = vColor2;\n            }\n        }\n\n        vec4 diffuseColor = vec4( diffuse, opacity );\n        ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n        vec3 totalEmissiveLight = emissive;\n\n        #include color_fragment\n        #include roughnessmap_fragment\n        #include metalnessmap_fragment\n        #include normal_fragment\n        if( interior ){\n            normal = vec3( 0.0, 0.0, 0.4 );\n        }\n\n        #include lights_standard_fragment\n        #include lights_template\n\n        vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveLight;\n\n        #include linear_to_gamma_fragment\n        #include fog_fragment\n\n        gl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n    #endif\n\n}";
 
 // File:shader/HyperballStickImpostor.vert
 
-NGL.Resources[ 'shader/HyperballStickImpostor.vert' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 modelMatrix;\n// uniform mat4 modelViewMatrix;\n// uniform mat4 projectionMatrix;\n// uniform mat4 viewMatrix;\n// uniform mat3 normalMatrix;\n// uniform vec3 cameraPosition;\n\nattribute vec3 position;\n\n// Copyright (C) 2010-2011 by\n// Laboratoire de Biochimie Theorique (CNRS),\n// Laboratoire d'Informatique Fondamentale d'Orleans (Universite d'Orleans), (INRIA) and\n// Departement des Sciences de la Simulation et de l'Information (CEA).\n\n// License: CeCILL-C license (http://www.cecill.info/)\n\n// Contact: Marc Baaden\n// E-mail: baaden@smplinux.de\n// Webpage: http://hyperballs.sourceforge.net\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n\nattribute vec3 mapping;\nattribute float radius;\nattribute float radius2;\nattribute vec3 position1;\nattribute vec3 position2;\n\nvarying mat4 matrix_near;\nvarying vec4 prime1;\nvarying vec4 prime2;\nvarying float vRadius;\nvarying float vRadius2;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    attribute vec3 pickingColor2;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    attribute vec3 color;\n    attribute vec3 color2;\n    varying vec3 vColor;\n    varying vec3 vColor2;\n#endif\n\nuniform float shrink;\nuniform mat4 modelViewProjectionMatrix;\nuniform mat4 modelViewProjectionMatrixInverse;\n\n\nvoid main()\n{\n\n    vRadius = radius;\n    vRadius2 = radius2;\n\n    vec4 spaceposition;\n    vec3 position_atom1;\n    vec3 position_atom2;\n    vec4 vertex_position;\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n        vPickingColor2 = pickingColor2;\n    #else\n        vColor = color;\n        vColor2 = color2;\n    #endif\n\n    float radius1 = radius;\n\n    position_atom1 = position1;\n    position_atom2 = position2;\n\n    float distance = distance( position_atom1, position_atom2 );\n\n    spaceposition.z = mapping.z * distance;\n\n    if (radius1 > radius2) {\n        spaceposition.y = mapping.y * 1.5 * radius1;\n        spaceposition.x = mapping.x * 1.5 * radius1;\n    } else {\n        spaceposition.y = mapping.y * 1.5 * radius2;\n        spaceposition.x = mapping.x * 1.5 * radius2;\n    }\n    spaceposition.w = 1.0;\n\n    vec4 e3 = vec4( 1.0 );\n    vec3 e1, e1_temp, e2, e2_temp;\n\n    // Calculation of bond direction: e3\n    e3.xyz = normalize(position_atom1-position_atom2);\n\n    // little hack to avoid some problems of precision due to graphic card limitation using float: To improve soon\n    if (e3.z == 0.0) { e3.z = 0.0000000000001;}\n    if ( (position_atom1.x - position_atom2.x) == 0.0) { position_atom1.x += 0.001;}\n    if ( (position_atom1.y - position_atom2.y) == 0.0) { position_atom1.y += 0.001;}\n    if ( (position_atom1.z - position_atom2.z) == 0.0) { position_atom1.z += 0.001;}\n\n    // Focus calculation\n    vec4 focus = vec4( 1.0 );\n    focus.x = ( position_atom1.x*position_atom1.x - position_atom2.x*position_atom2.x +\n        ( radius2*radius2 - radius1*radius1 )*e3.x*e3.x/shrink )/(2.0*(position_atom1.x - position_atom2.x));\n    focus.y = ( position_atom1.y*position_atom1.y - position_atom2.y*position_atom2.y +\n        ( radius2*radius2 - radius1*radius1 )*e3.y*e3.y/shrink )/(2.0*(position_atom1.y - position_atom2.y));\n    focus.z = ( position_atom1.z*position_atom1.z - position_atom2.z*position_atom2.z +\n        ( radius2*radius2 - radius1*radius1 )*e3.z*e3.z/shrink )/(2.0*(position_atom1.z - position_atom2.z));\n\n    // e1 calculation\n    e1.x = 1.0;\n    e1.y = 1.0;\n    e1.z = ( (e3.x*focus.x + e3.y*focus.y + e3.z*focus.z) - e1.x*e3.x - e1.y*e3.y)/e3.z;\n    e1_temp = e1 - focus.xyz;\n    e1 = normalize(e1_temp);\n\n    // e2 calculation\n    e2_temp = e1.yzx * e3.zxy - e1.zxy * e3.yzx;\n    e2 = normalize(e2_temp);\n\n    //ROTATION:\n    // final form of change of basis matrix:\n    mat3 R= mat3( e1.xyz, e2.xyz, e3.xyz );\n    // Apply rotation and translation to the bond primitive\n    vertex_position.xyz = R * spaceposition.xyz;\n    vertex_position.w = 1.0;\n\n    // TRANSLATION:\n    vertex_position.x += (position_atom1.x+position_atom2.x) / 2.0;\n    vertex_position.y += (position_atom1.y+position_atom2.y) / 2.0;\n    vertex_position.z += (position_atom1.z+position_atom2.z) / 2.0;\n\n    // New position\n    gl_Position = modelViewProjectionMatrix * vertex_position;\n\n    vec4 i_near, i_far;\n\n    // Calculate near from position\n    vec4 near = gl_Position;\n    near.z = 0.0 ;\n    near = modelViewProjectionMatrixInverse * near;\n    i_near = near;\n\n    // Calculate far from position\n    vec4 far = gl_Position;\n    far.z = far.w ;\n    i_far = modelViewProjectionMatrixInverse * far;\n\n    prime1 = vec4( position_atom1 - (position_atom1 - focus.xyz)*shrink, 1.0 );\n    prime2 = vec4( position_atom2 - (position_atom2 - focus.xyz)*shrink, 1.0 );\n\n    float Rsquare = (radius1*radius1/shrink) - (\n                        (position_atom1.x - focus.x)*(position_atom1.x - focus.x) +\n                        (position_atom1.y - focus.y)*(position_atom1.y - focus.y) +\n                        (position_atom1.z - focus.z)*(position_atom1.z - focus.z)\n                    );\n\n    focus.w = Rsquare;\n\n    matrix_near = mat4( i_near, i_far, focus, e3 );\n\n    // avoid clipping\n    gl_Position.z = 1.0;\n\n}\n\n";
+NGL.Resources[ 'shader/HyperballStickImpostor.vert' ] = "// Copyright (C) 2010-2011 by\n// Laboratoire de Biochimie Theorique (CNRS),\n// Laboratoire d'Informatique Fondamentale d'Orleans (Universite d'Orleans), (INRIA) and\n// Departement des Sciences de la Simulation et de l'Information (CEA).\n//\n// License: CeCILL-C license (http://www.cecill.info/)\n//\n// Contact: Marc Baaden\n// E-mail: baaden@smplinux.de\n// Webpage: http://hyperballs.sourceforge.net\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n\nattribute vec3 mapping;\nattribute float radius;\nattribute float radius2;\nattribute vec3 position1;\nattribute vec3 position2;\n\nvarying mat4 matrix_near;\nvarying vec4 prime1;\nvarying vec4 prime2;\nvarying float vRadius;\nvarying float vRadius2;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    attribute vec3 pickingColor2;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    // attribute vec3 color;\n    attribute vec3 color2;\n    varying vec3 vColor1;\n    varying vec3 vColor2;\n#endif\n\nuniform float shrink;\nuniform mat4 modelViewProjectionMatrix;\nuniform mat4 modelViewProjectionMatrixInverse;\n\nvoid main(){\n\n    vRadius = radius;\n    vRadius2 = radius2;\n\n    vec4 spaceposition;\n    vec3 position_atom1;\n    vec3 position_atom2;\n    vec4 vertex_position;\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n        vPickingColor2 = pickingColor2;\n    #else\n        vColor1 = color;\n        vColor2 = color2;\n    #endif\n\n    float radius1 = radius;\n\n    position_atom1 = position1;\n    position_atom2 = position2;\n\n    float distance = distance( position_atom1, position_atom2 );\n\n    spaceposition.z = mapping.z * distance;\n\n    if (radius1 > radius2) {\n        spaceposition.y = mapping.y * 1.5 * radius1;\n        spaceposition.x = mapping.x * 1.5 * radius1;\n    } else {\n        spaceposition.y = mapping.y * 1.5 * radius2;\n        spaceposition.x = mapping.x * 1.5 * radius2;\n    }\n    spaceposition.w = 1.0;\n\n    vec4 e3 = vec4( 1.0 );\n    vec3 e1, e1_temp, e2, e2_temp;\n\n    // Calculation of bond direction: e3\n    e3.xyz = normalize(position_atom1-position_atom2);\n\n    // little hack to avoid some problems of precision due to graphic card limitation using float: To improve soon\n    if (e3.z == 0.0) { e3.z = 0.0000000000001;}\n    if ( (position_atom1.x - position_atom2.x) == 0.0) { position_atom1.x += 0.001;}\n    if ( (position_atom1.y - position_atom2.y) == 0.0) { position_atom1.y += 0.001;}\n    if ( (position_atom1.z - position_atom2.z) == 0.0) { position_atom1.z += 0.001;}\n\n    // Focus calculation\n    vec4 focus = vec4( 1.0 );\n    focus.x = ( position_atom1.x*position_atom1.x - position_atom2.x*position_atom2.x +\n        ( radius2*radius2 - radius1*radius1 )*e3.x*e3.x/shrink )/(2.0*(position_atom1.x - position_atom2.x));\n    focus.y = ( position_atom1.y*position_atom1.y - position_atom2.y*position_atom2.y +\n        ( radius2*radius2 - radius1*radius1 )*e3.y*e3.y/shrink )/(2.0*(position_atom1.y - position_atom2.y));\n    focus.z = ( position_atom1.z*position_atom1.z - position_atom2.z*position_atom2.z +\n        ( radius2*radius2 - radius1*radius1 )*e3.z*e3.z/shrink )/(2.0*(position_atom1.z - position_atom2.z));\n\n    // e1 calculation\n    e1.x = 1.0;\n    e1.y = 1.0;\n    e1.z = ( (e3.x*focus.x + e3.y*focus.y + e3.z*focus.z) - e1.x*e3.x - e1.y*e3.y)/e3.z;\n    e1_temp = e1 - focus.xyz;\n    e1 = normalize(e1_temp);\n\n    // e2 calculation\n    e2_temp = e1.yzx * e3.zxy - e1.zxy * e3.yzx;\n    e2 = normalize(e2_temp);\n\n    //ROTATION:\n    // final form of change of basis matrix:\n    mat3 R= mat3( e1.xyz, e2.xyz, e3.xyz );\n    // Apply rotation and translation to the bond primitive\n    vertex_position.xyz = R * spaceposition.xyz;\n    vertex_position.w = 1.0;\n\n    // TRANSLATION:\n    vertex_position.x += (position_atom1.x+position_atom2.x) / 2.0;\n    vertex_position.y += (position_atom1.y+position_atom2.y) / 2.0;\n    vertex_position.z += (position_atom1.z+position_atom2.z) / 2.0;\n\n    // New position\n    gl_Position = modelViewProjectionMatrix * vertex_position;\n\n    vec4 i_near, i_far;\n\n    // Calculate near from position\n    vec4 near = gl_Position;\n    near.z = 0.0 ;\n    near = modelViewProjectionMatrixInverse * near;\n    i_near = near;\n\n    // Calculate far from position\n    vec4 far = gl_Position;\n    far.z = far.w ;\n    i_far = modelViewProjectionMatrixInverse * far;\n\n    prime1 = vec4( position_atom1 - (position_atom1 - focus.xyz)*shrink, 1.0 );\n    prime2 = vec4( position_atom2 - (position_atom2 - focus.xyz)*shrink, 1.0 );\n\n    float Rsquare = (radius1*radius1/shrink) - (\n                        (position_atom1.x - focus.x)*(position_atom1.x - focus.x) +\n                        (position_atom1.y - focus.y)*(position_atom1.y - focus.y) +\n                        (position_atom1.z - focus.z)*(position_atom1.z - focus.z)\n                    );\n\n    focus.w = Rsquare;\n\n    matrix_near = mat4( i_near, i_far, focus, e3 );\n\n    // avoid clipping\n    gl_Position.z = 1.0;\n\n}";
 
 // File:shader/HyperballStickImpostor.frag
 
-NGL.Resources[ 'shader/HyperballStickImpostor.frag' ] = "\n#extension GL_EXT_frag_depth : enable\n\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 viewMatrix;\n// uniform vec3 cameraPosition;\n\n// Copyright (C) 2010-2011 by\n// Laboratoire de Biochimie Theorique (CNRS),\n// Laboratoire d'Informatique Fondamentale d'Orleans (Universite d'Orleans), (INRIA) and\n// Departement des Sciences de la Simulation et de l'Information (CEA).\n\n// License: CeCILL-C license (http://www.cecill.info/)\n\n// Contact: Marc Baaden\n// E-mail: baaden@smplinux.de\n// Webpage: http://hyperballs.sourceforge.net\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n\n\nvarying mat4 matrix_near;\nvarying vec4 prime1;\nvarying vec4 prime2;\nvarying float vRadius;\nvarying float vRadius2;\n\nuniform float opacity;\nuniform float nearClip;\nuniform float shrink;\nuniform mat4 modelViewMatrix;\nuniform mat4 modelViewProjectionMatrix;\nuniform mat4 modelViewMatrixInverseTranspose;\nuniform mat4 projectionMatrix;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    varying vec3 vColor;\n    varying vec3 vColor2;\n#endif\n\n#include light_params\n\n#include fog_params\n\n\nfloat calcClip( vec4 cameraPos )\n{\n    return dot( cameraPos, vec4( 0.0, 0.0, 1.0, nearClip - 0.5 ) );\n}\nfloat calcClip( vec3 cameraPos )\n{\n    return calcClip( vec4( cameraPos, 1.0 ) );\n}\n\n\nfloat calcDepth( in vec3 cameraPos )\n{\n    vec2 clipZW = cameraPos.z * projectionMatrix[2].zw + projectionMatrix[3].zw;\n    return 0.5 + 0.5 * clipZW.x / clipZW.y;\n}\n\n\nstruct Ray {\n    vec3 origin ;\n    vec3 direction ;\n};\n\n\nbool cutoff_plane (vec3 M, vec3 cutoff, vec3 x3){\n    float a = x3.x;\n    float b = x3.y;\n    float c = x3.z;\n    float d = -x3.x*cutoff.x-x3.y*cutoff.y-x3.z*cutoff.z;\n    float l = a*M.x+b*M.y+c*M.z+d;\n    if (l<0.0) {return true;}\n    else{return false;}\n}\n\n\nvec3 isect_surf(Ray r, mat4 matrix_coef){\n    vec4 direction = vec4(r.direction, 0.0);\n    vec4 origin = vec4(r.origin, 1.0);\n    float a = dot(direction,(matrix_coef*direction));\n    float b = dot(origin,(matrix_coef*direction));\n    float c = dot(origin,(matrix_coef*origin));\n    float delta =b*b-a*c;\n    gl_FragColor.a = 1.0;\n    if (delta<0.0){\n        discard;\n        // gl_FragColor.a = 0.5;\n    }\n    float t1 =(-b-sqrt(delta))/a;\n\n    // Second solution not necessary if you don't want\n    // to see inside spheres and cylinders, save some fps\n    //float t2 = (-b+sqrt(delta)) / a  ;\n    //float t =(t1<t2) ? t1 : t2;\n\n    return r.origin+t1*r.direction;\n}\n\n\nvec3 isect_surf2(Ray r, mat4 matrix_coef){\n    vec4 direction = vec4(r.direction, 0.0);\n    vec4 origin = vec4(r.origin, 1.0);\n    float a = dot(direction,(matrix_coef*direction));\n    float b = dot(origin,(matrix_coef*direction));\n    float c = dot(origin,(matrix_coef*origin));\n    float delta =b*b-a*c;\n    gl_FragColor.a = 1.0;\n    if (delta<0.0){\n        discard;\n        // gl_FragColor.a = 0.5;\n    }\n    float t2 =(-b+sqrt(delta))/a;\n\n    return r.origin+t2*r.direction;\n}\n\n\nRay primary_ray(vec4 near1, vec4 far1){\n    vec3 near=near1.xyz/near1.w;\n    vec3 far=far1.xyz/far1.w;\n    return Ray(near,far-near);\n}\n\n\nfloat update_z_buffer(vec3 M, mat4 ModelViewP){\n    float  depth1;\n    vec4 Ms=(ModelViewP*vec4(M,1.0));\n    return depth1=(1.0+Ms.z/Ms.w)/2.0;\n}\n\n\n// void main2(void)\n// {\n//     gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );\n// }\n\n// void main(void)\n// {\n//     #ifdef PICKING\n//         gl_FragColor = vec4( vPickingColor, 1.0 );\n//     #else\n//         gl_FragColor = vec4( vColor, 1.0 );\n//     #endif\n// }\n\n\nvoid main()\n{\n\n    float radius = max( vRadius, vRadius2 );\n\n    vec4 i_near, i_far, focus;\n    vec3 e3, e1, e1_temp, e2;\n\n    i_near = vec4(matrix_near[0][0],matrix_near[0][1],matrix_near[0][2],matrix_near[0][3]);\n    i_far  = vec4(matrix_near[1][0],matrix_near[1][1],matrix_near[1][2],matrix_near[1][3]);\n    focus = vec4(matrix_near[2][0],matrix_near[2][1],matrix_near[2][2],matrix_near[2][3]);\n    e3 = vec3(matrix_near[3][0],matrix_near[3][1],matrix_near[3][2]);\n\n    e1.x = 1.0;\n    e1.y = 1.0;\n    e1.z = ( (e3.x*focus.x + e3.y*focus.y + e3.z*focus.z) - e1.x*e3.x - e1.y*e3.y)/e3.z;\n    e1_temp = e1 - focus.xyz;\n    e1 = normalize(e1_temp);\n\n    e2 = normalize(cross(e1,e3));\n\n\n    vec4 equation = focus;\n\n    float shrinkfactor = shrink;\n    float t1 = -1.0/(1.0-shrinkfactor);\n    float t2 = 1.0/(shrinkfactor);\n    // float t3 = 2.0/(shrinkfactor);\n\n    vec4 colonne1, colonne2, colonne3, colonne4;\n    mat4 mat;\n\n    vec3 equation1 = vec3(t2,t2,t1);\n\n\n    float A1 = - e1.x*equation.x - e1.y*equation.y - e1.z*equation.z;\n    float A2 = - e2.x*equation.x - e2.y*equation.y - e2.z*equation.z;\n    float A3 = - e3.x*equation.x - e3.y*equation.y - e3.z*equation.z;\n\n    float A11 = equation1.x*e1.x*e1.x +  equation1.y*e2.x*e2.x + equation1.z*e3.x*e3.x;\n    float A21 = equation1.x*e1.x*e1.y +  equation1.y*e2.x*e2.y + equation1.z*e3.x*e3.y;\n    float A31 = equation1.x*e1.x*e1.z +  equation1.y*e2.x*e2.z + equation1.z*e3.x*e3.z;\n    float A41 = equation1.x*e1.x*A1   +  equation1.y*e2.x*A2   + equation1.z*e3.x*A3;\n\n    float A22 = equation1.x*e1.y*e1.y +  equation1.y*e2.y*e2.y + equation1.z*e3.y*e3.y;\n    float A32 = equation1.x*e1.y*e1.z +  equation1.y*e2.y*e2.z + equation1.z*e3.y*e3.z;\n    float A42 = equation1.x*e1.y*A1   +  equation1.y*e2.y*A2   + equation1.z*e3.y*A3;\n\n    float A33 = equation1.x*e1.z*e1.z +  equation1.y*e2.z*e2.z + equation1.z*e3.z*e3.z;\n    float A43 = equation1.x*e1.z*A1   +  equation1.y*e2.z*A2   + equation1.z*e3.z*A3;\n\n    float A44 = equation1.x*A1*A1 +  equation1.y*A2*A2 + equation1.z*A3*A3 - equation.w;\n\n    colonne1 = vec4(A11,A21,A31,A41);\n    colonne2 = vec4(A21,A22,A32,A42);\n    colonne3 = vec4(A31,A32,A33,A43);\n    colonne4 = vec4(A41,A42,A43,A44);\n\n    mat = mat4(colonne1,colonne2,colonne3,colonne4);\n\n\n\n    // Ray calculation using near and far\n    Ray ray = primary_ray(i_near,i_far) ;\n\n    // Intersection between ray and surface for each pixel\n    vec3 M;\n    M = isect_surf(ray, mat);\n\n    // cut the extremities of bonds to superimpose bond and spheres surfaces\n    if (cutoff_plane(M, prime1.xyz, -e3) || cutoff_plane(M, prime2.xyz, e3)){ discard; }\n\n    // Transform normal to model space to view-space\n    vec4 M1 = vec4(M,1.0);\n    vec4 M2 =  mat*M1;\n    vec3 normal = normalize( ( modelViewMatrixInverseTranspose * M2 ).xyz );\n\n    // Recalculate the depth in function of the new pixel position\n    gl_FragDepthEXT = update_z_buffer(M, modelViewProjectionMatrix) ;\n\n    #ifdef NEAR_CLIP\n        if( calcClip( modelViewMatrix * vec4( M, 1.0 ) ) > 0.0 ){\n            M = isect_surf2(ray, mat);\n            if( calcClip( modelViewMatrix * vec4( M, 1.0 ) ) > 0.0 )\n                discard;\n            normal = vec3( 0.0, 0.0, 0.4 );\n            gl_FragDepthEXT = update_z_buffer(M, modelViewProjectionMatrix) ;\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = max( 0.0, calcDepth( vec3( - ( nearClip - 0.5 ) ) ) + ( 0.0000001 / radius ) );\n            }\n        }else if( gl_FragDepthEXT <= 0.0 ){\n            M = isect_surf2(ray, mat);\n            normal = vec3( 0.0, 0.0, 0.4 );\n            gl_FragDepthEXT = update_z_buffer(M, modelViewProjectionMatrix);\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / radius );\n            }\n        }\n    #else\n        if( gl_FragDepthEXT <= 0.0 ){\n            M = isect_surf2(ray, mat);\n            normal = vec3( 0.0, 0.0, 0.4 );\n            gl_FragDepthEXT = update_z_buffer(M, modelViewProjectionMatrix) ;\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / radius );\n            }\n        }\n    #endif\n\n    // cut the extremities of bonds to superimpose bond and spheres surfaces\n    if (cutoff_plane(M, prime1.xyz, -e3) || cutoff_plane(M, prime2.xyz, e3)){ discard; }\n\n    if (gl_FragDepthEXT < 0.0)\n        discard;\n    if (gl_FragDepthEXT > 1.0)\n        discard;\n\n    // Give color parameters to the Graphic card\n    //gl_FragColor.rgb = lighting.y * diffusecolor + lighting.z * specularcolor;\n    //gl_FragColor.a = 1.0;\n\n    vec3 transformedNormal = normal;\n    vec3 vLightFront = vec3( 0.0, 0.0, 0.0 );\n\n    #include light\n\n    // Mix the color bond in function of the two atom colors\n    float distance_ratio = ((M.x-prime2.x)*e3.x + (M.y-prime2.y)*e3.y +(M.z-prime2.z)*e3.z) /\n                                distance(prime2.xyz,prime1.xyz);\n\n    #ifdef PICKING\n        // lerp function not in GLSL. Find something else ...\n        vec3 diffusecolor = mix( vPickingColor2, vPickingColor, distance_ratio );\n        if( distance_ratio>0.5 ){\n            diffusecolor = vPickingColor;\n        }else{\n            diffusecolor = vPickingColor2;\n        }\n        gl_FragColor = vec4( diffusecolor, objectId );\n    #else\n        // lerp function not in GLSL. Find something else ...\n        vec3 diffusecolor = mix( vColor2, vColor, distance_ratio );\n        if( distance_ratio>0.5 ){\n            diffusecolor = vColor;\n        }else{\n            diffusecolor = vColor2;\n        }\n        gl_FragColor = vec4( diffusecolor, opacity );\n        gl_FragColor.rgb *= vLightFront;\n    #endif\n\n    // #include fog\n\n    #ifdef USE_FOG\n        float depth = gl_FragDepthEXT / gl_FragCoord.w;\n        #ifdef FOG_EXP2\n            const float LOG2 = 1.442695;\n            float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\n            fogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\n        #else\n            float fogFactor = smoothstep( fogNear, fogFar, depth );\n        #endif\n        gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\n    #endif\n\n    // ############## Fog effect #####################################################\n    // To use fog comment the two previous lines: ie  gl_FragColor.rgb = E and   gl_FragColor.a = 1.0;\n    // and uncomment the next lines.\n    // Color of the fog: white\n    //float fogDistance  = update_z_buffer(M, gl_ModelViewMatrix) ;\n    //float fogExponent  = fogDistance * fogDistance * 0.007;\n    //vec3 fogColor   = vec3(1.0, 1.0, 1.0);\n    //float fogFactor   = exp2(-abs(fogExponent));\n    //fogFactor = clamp(fogFactor, 0.0, 1.0);\n\n    //vec3 final_color = lighting.y * diffusecolor + lighting.z * specularcolor;\n    //gl_FragColor.rgb = mix(fogColor,final_color,fogFactor);\n    //gl_FragColor.a = 1.0;\n    // ##################################################################################\n\n}\n";
+NGL.Resources[ 'shader/HyperballStickImpostor.frag' ] = "#define STANDARD\n#define IMPOSTOR\n\n// Copyright (C) 2010-2011 by\n// Laboratoire de Biochimie Theorique (CNRS),\n// Laboratoire d'Informatique Fondamentale d'Orleans (Universite d'Orleans), (INRIA) and\n// Departement des Sciences de la Simulation et de l'Information (CEA).\n//\n// License: CeCILL-C license (http://www.cecill.info/)\n//\n// Contact: Marc Baaden\n// E-mail: baaden@smplinux.de\n// Webpage: http://hyperballs.sourceforge.net\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n// - custom clipping\n// - three.js lighting\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform float nearClip;\nuniform float shrink;\nuniform mat4 modelViewMatrix;\nuniform mat4 modelViewProjectionMatrix;\nuniform mat4 modelViewMatrixInverseTranspose;\nuniform mat4 projectionMatrix;\n\nvarying mat4 matrix_near;\nvarying vec4 prime1;\nvarying vec4 prime2;\nvarying float vRadius;\nvarying float vRadius2;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    varying vec3 vColor1;\n    varying vec3 vColor2;\n    #include common\n    #include fog_pars_fragment\n    #include bsdfs\n    #include lights_pars\n    #include lights_standard_pars_fragment\n#endif\n\nbool interior = false;\n\nfloat calcClip( vec4 cameraPos ){\n    return dot( cameraPos, vec4( 0.0, 0.0, 1.0, nearClip - 0.5 ) );\n}\n\nfloat calcClip( vec3 cameraPos ){\n    return calcClip( vec4( cameraPos, 1.0 ) );\n}\n\nfloat calcDepth( in vec3 cameraPos ){\n    vec2 clipZW = cameraPos.z * projectionMatrix[2].zw + projectionMatrix[3].zw;\n    return 0.5 + 0.5 * clipZW.x / clipZW.y;\n}\n\nstruct Ray {\n    vec3 origin ;\n    vec3 direction ;\n};\n\nbool cutoff_plane (vec3 M, vec3 cutoff, vec3 x3){\n    float a = x3.x;\n    float b = x3.y;\n    float c = x3.z;\n    float d = -x3.x*cutoff.x-x3.y*cutoff.y-x3.z*cutoff.z;\n    float l = a*M.x+b*M.y+c*M.z+d;\n    if (l<0.0) {return true;}\n    else{return false;}\n}\n\nvec3 isect_surf(Ray r, mat4 matrix_coef){\n    vec4 direction = vec4(r.direction, 0.0);\n    vec4 origin = vec4(r.origin, 1.0);\n    float a = dot(direction,(matrix_coef*direction));\n    float b = dot(origin,(matrix_coef*direction));\n    float c = dot(origin,(matrix_coef*origin));\n    float delta =b*b-a*c;\n    gl_FragColor.a = 1.0;\n    if (delta<0.0){\n        discard;\n        // gl_FragColor.a = 0.5;\n    }\n    float t1 =(-b-sqrt(delta))/a;\n\n    // Second solution not necessary if you don't want\n    // to see inside spheres and cylinders, save some fps\n    //float t2 = (-b+sqrt(delta)) / a  ;\n    //float t =(t1<t2) ? t1 : t2;\n\n    return r.origin+t1*r.direction;\n}\n\nvec3 isect_surf2(Ray r, mat4 matrix_coef){\n    vec4 direction = vec4(r.direction, 0.0);\n    vec4 origin = vec4(r.origin, 1.0);\n    float a = dot(direction,(matrix_coef*direction));\n    float b = dot(origin,(matrix_coef*direction));\n    float c = dot(origin,(matrix_coef*origin));\n    float delta =b*b-a*c;\n    gl_FragColor.a = 1.0;\n    if (delta<0.0){\n        discard;\n        // gl_FragColor.a = 0.5;\n    }\n    float t2 =(-b+sqrt(delta))/a;\n\n    return r.origin+t2*r.direction;\n}\n\nRay primary_ray(vec4 near1, vec4 far1){\n    vec3 near=near1.xyz/near1.w;\n    vec3 far=far1.xyz/far1.w;\n    return Ray(near,far-near);\n}\n\nfloat update_z_buffer(vec3 M, mat4 ModelViewP){\n    float  depth1;\n    vec4 Ms=(ModelViewP*vec4(M,1.0));\n    return depth1=(1.0+Ms.z/Ms.w)/2.0;\n}\n\nvoid main(){\n\n    float radius = max( vRadius, vRadius2 );\n\n    vec4 i_near, i_far, focus;\n    vec3 e3, e1, e1_temp, e2;\n\n    i_near = vec4(matrix_near[0][0],matrix_near[0][1],matrix_near[0][2],matrix_near[0][3]);\n    i_far  = vec4(matrix_near[1][0],matrix_near[1][1],matrix_near[1][2],matrix_near[1][3]);\n    focus = vec4(matrix_near[2][0],matrix_near[2][1],matrix_near[2][2],matrix_near[2][3]);\n    e3 = vec3(matrix_near[3][0],matrix_near[3][1],matrix_near[3][2]);\n\n    e1.x = 1.0;\n    e1.y = 1.0;\n    e1.z = ( (e3.x*focus.x + e3.y*focus.y + e3.z*focus.z) - e1.x*e3.x - e1.y*e3.y)/e3.z;\n    e1_temp = e1 - focus.xyz;\n    e1 = normalize(e1_temp);\n\n    e2 = normalize(cross(e1,e3));\n\n    vec4 equation = focus;\n\n    float shrinkfactor = shrink;\n    float t1 = -1.0/(1.0-shrinkfactor);\n    float t2 = 1.0/(shrinkfactor);\n    // float t3 = 2.0/(shrinkfactor);\n\n    vec4 colonne1, colonne2, colonne3, colonne4;\n    mat4 mat;\n\n    vec3 equation1 = vec3(t2,t2,t1);\n\n    float A1 = - e1.x*equation.x - e1.y*equation.y - e1.z*equation.z;\n    float A2 = - e2.x*equation.x - e2.y*equation.y - e2.z*equation.z;\n    float A3 = - e3.x*equation.x - e3.y*equation.y - e3.z*equation.z;\n\n    float A11 = equation1.x*e1.x*e1.x +  equation1.y*e2.x*e2.x + equation1.z*e3.x*e3.x;\n    float A21 = equation1.x*e1.x*e1.y +  equation1.y*e2.x*e2.y + equation1.z*e3.x*e3.y;\n    float A31 = equation1.x*e1.x*e1.z +  equation1.y*e2.x*e2.z + equation1.z*e3.x*e3.z;\n    float A41 = equation1.x*e1.x*A1   +  equation1.y*e2.x*A2   + equation1.z*e3.x*A3;\n\n    float A22 = equation1.x*e1.y*e1.y +  equation1.y*e2.y*e2.y + equation1.z*e3.y*e3.y;\n    float A32 = equation1.x*e1.y*e1.z +  equation1.y*e2.y*e2.z + equation1.z*e3.y*e3.z;\n    float A42 = equation1.x*e1.y*A1   +  equation1.y*e2.y*A2   + equation1.z*e3.y*A3;\n\n    float A33 = equation1.x*e1.z*e1.z +  equation1.y*e2.z*e2.z + equation1.z*e3.z*e3.z;\n    float A43 = equation1.x*e1.z*A1   +  equation1.y*e2.z*A2   + equation1.z*e3.z*A3;\n\n    float A44 = equation1.x*A1*A1 +  equation1.y*A2*A2 + equation1.z*A3*A3 - equation.w;\n\n    colonne1 = vec4(A11,A21,A31,A41);\n    colonne2 = vec4(A21,A22,A32,A42);\n    colonne3 = vec4(A31,A32,A33,A43);\n    colonne4 = vec4(A41,A42,A43,A44);\n\n    mat = mat4(colonne1,colonne2,colonne3,colonne4);\n\n    // Ray calculation using near and far\n    Ray ray = primary_ray(i_near,i_far) ;\n\n    // Intersection between ray and surface for each pixel\n    vec3 M;\n    M = isect_surf(ray, mat);\n\n    // cut the extremities of bonds to superimpose bond and spheres surfaces\n    if (cutoff_plane(M, prime1.xyz, -e3) || cutoff_plane(M, prime2.xyz, e3)){ discard; }\n\n    // Transform normal to model space to view-space\n    vec4 M1 = vec4(M,1.0);\n    vec4 M2 =  mat*M1;\n    // vec3 _normal = normalize( ( modelViewMatrixInverseTranspose * M2 ).xyz );\n    vec3 _normal = ( modelViewMatrixInverseTranspose * M2 ).xyz;\n\n    // Recalculate the depth in function of the new pixel position\n    gl_FragDepthEXT = update_z_buffer(M, modelViewProjectionMatrix) ;\n\n    #ifdef NEAR_CLIP\n        if( calcClip( modelViewMatrix * vec4( M, 1.0 ) ) > 0.0 ){\n            M = isect_surf2(ray, mat);\n            if( calcClip( modelViewMatrix * vec4( M, 1.0 ) ) > 0.0 )\n                discard;\n            interior = true;\n            gl_FragDepthEXT = update_z_buffer(M, modelViewProjectionMatrix) ;\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = max( 0.0, calcDepth( vec3( - ( nearClip - 0.5 ) ) ) + ( 0.0000001 / radius ) );\n            }\n        }else if( gl_FragDepthEXT <= 0.0 ){\n            M = isect_surf2(ray, mat);\n            interior = true;\n            gl_FragDepthEXT = update_z_buffer(M, modelViewProjectionMatrix);\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / radius );\n            }\n        }\n    #else\n        if( gl_FragDepthEXT <= 0.0 ){\n            M = isect_surf2(ray, mat);\n            interior = true;\n            gl_FragDepthEXT = update_z_buffer(M, modelViewProjectionMatrix) ;\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / radius );\n            }\n        }\n    #endif\n\n    // cut the extremities of bonds to superimpose bond and spheres surfaces\n    if (cutoff_plane(M, prime1.xyz, -e3) || cutoff_plane(M, prime2.xyz, e3)){ discard; }\n\n    if (gl_FragDepthEXT < 0.0)\n        discard;\n    if (gl_FragDepthEXT > 1.0)\n        discard;\n\n    // Mix the color bond in function of the two atom colors\n    float distance_ratio = ((M.x-prime2.x)*e3.x + (M.y-prime2.y)*e3.y +(M.z-prime2.z)*e3.z) /\n                                distance(prime2.xyz,prime1.xyz);\n\n    #ifdef PICKING\n\n        if( distance_ratio > 0.5 ){\n            gl_FragColor = vec4( vPickingColor, objectId );\n        }else{\n            gl_FragColor = vec4( vPickingColor2, objectId );\n        }\n\n    #else\n\n        vec3 vViewPosition = -( modelViewMatrix * vec4( M, 1.0 ) ).xyz;\n        vec3 vNormal = _normal;\n        vec3 vColor;\n\n        if( distance_ratio>0.5 ){\n            vColor = vColor1;\n        }else{\n            vColor = vColor2;\n        }\n\n        vec4 diffuseColor = vec4( diffuse, opacity );\n        ReflectedLight reflectedLight = ReflectedLight( vec3( 0.01 ), vec3( 0.01 ), vec3( 0.01 ), vec3( 0.0 ) );\n        vec3 totalEmissiveLight = emissive;\n\n        #include color_fragment\n        #include roughnessmap_fragment\n        #include metalnessmap_fragment\n        //#include normal_fragment\n        vec3 normal = normalize( vNormal );\n        if( interior ){\n            normal = vec3( 0.0, 0.0, 0.4 );\n        }\n\n        #include lights_standard_fragment\n        #include lights_template\n\n        vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveLight;\n\n        #include linear_to_gamma_fragment\n        #include fog_fragment\n\n        gl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n    #endif\n\n}";
 
 // File:shader/Line.vert
 
-NGL.Resources[ 'shader/Line.vert' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n// uniform mat4 viewMatrix;\n// uniform mat3 normalMatrix;\n// uniform vec3 cameraPosition;\n\nattribute vec3 position;\nattribute vec3 color;\n\nvarying vec3 vColor;\nvarying vec4 cameraPos;\n\n\nvoid main()\n{\n\n    vColor = color;\n\n    cameraPos =  modelViewMatrix * vec4( position, 1.0 );\n\n    gl_Position = projectionMatrix * vec4( cameraPos.xyz, 1.0 );\n\n}\n";
+NGL.Resources[ 'shader/Line.vert' ] = "varying vec3 vViewPosition;\n\n#include color_pars_vertex\n\nvoid main(){\n\n    #include color_vertex\n    #include begin_vertex\n    #include project_vertex\n\n    vViewPosition = -mvPosition.xyz;\n\n}";
 
 // File:shader/Line.frag
 
-NGL.Resources[ 'shader/Line.frag' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 viewMatrix;\n// uniform vec3 cameraPosition;\n\nuniform float opacity;\nuniform float nearClip;\n\nvarying vec3 vColor;\nvarying vec4 cameraPos;\n\n#ifdef PICKING\n    uniform float objectId;\n#endif\n\n#include fog_params\n\n\nvoid main()\n{\n\n	#ifdef NEAR_CLIP\n		if( dot( cameraPos, vec4( 0.0, 0.0, 1.0, nearClip ) ) > 0.0 )\n        	discard;\n    #endif\n\n    gl_FragColor = vec4( vColor, opacity );\n\n    #include fog\n\n}\n";
-
-// File:shader/LineSprite.vert
-
-NGL.Resources[ 'shader/LineSprite.vert' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n// uniform mat4 viewMatrix;\n// uniform mat3 normalMatrix;\nuniform vec3 cameraPosition;\n\n// Open-Source PyMOL is Copyright (C) Schrodinger, LLC.\n\n//  All Rights Reserved\n\n//  Permission to use, copy, modify, distribute, and distribute modified\n//  versions of this software and its built-in documentation for any\n//  purpose and without fee is hereby granted, provided that the above\n//  copyright notice appears in all copies and that both the copyright\n//  notice and this permission notice appear in supporting documentation,\n//  and that the name of Schrodinger, LLC not be used in advertising or\n//  publicity pertaining to distribution of the software without specific,\n//  written prior permission.\n\n//  SCHRODINGER, LLC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,\n//  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN\n//  NO EVENT SHALL SCHRODINGER, LLC BE LIABLE FOR ANY SPECIAL, INDIRECT OR\n//  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS\n//  OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\n//  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE\n//  USE OR PERFORMANCE OF THIS SOFTWARE.\n\n// Note: here the box screen aligned code from Open-Source PyMOL is used\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - adapted for line sprites\n\nattribute vec3 position;\nattribute lowp vec2 inputMapping;\nattribute lowp vec3 inputColor;\nattribute lowp vec3 inputColor2;\nattribute lowp vec3 inputAxis;\nattribute lowp float inputWidth;\n\nvarying float dist;\nvarying lowp vec3 color;\nvarying lowp vec3 color2;\n\n\n// void main2(void){\n//     colorx = inputColor;\n\n//     vec2 B;\n//     vec3 C;\n//     if (inputAxis.y != 0.0 || inputAxis.z != 0.0){\n//         C = vec3(1.0, 0.0, 0.0);\n//     }else{\n//         C = vec3(0.0, 1.0, 0.0);\n//     }\n//     B = normalize(cross(inputAxis, C).xy);\n\n//     vec4 cameraCornerPos = modelViewMatrix * vec4( position, 1.0 );\n//     cameraCornerPos.xy += inputMapping * (B.xy * inputWidth);\n\n//     gl_Position = projectionMatrix * cameraCornerPos;\n// }\n\n\nvoid main(void){\n    mat4 MVMatrix = modelViewMatrix;\n    mat4 PMatrix = projectionMatrix;\n    vec4 EyePoint = vec4( cameraPosition, 1.0 );\n\n    vec3 center = position.xyz;\n    vec3 dir = normalize(inputAxis);\n    // float ext = inputCylinderHeight/2.0;\n    vec3 ldir;\n\n    vec3 cam_dir = normalize(EyePoint.xyz - center);\n    float b = dot(cam_dir, dir);\n    if(b<0.0) // direction vector looks away, so flip\n        //ldir = -ext*dir;\n        ldir = -(length(inputAxis)/2.0) * normalize(inputAxis);\n    else // direction vector already looks in my direction\n        //ldir = ext*dir;\n        ldir = (length(inputAxis)/2.0) * normalize(inputAxis);\n\n    vec3 left = cross(cam_dir, ldir);\n    vec3 up = cross(left, ldir);\n    left = inputWidth*normalize(left);\n    up = inputWidth*normalize(up);\n\n    vec4 w = MVMatrix * vec4(\n        center + inputMapping.x*ldir + inputMapping.y*left, 1.0\n    );\n\n    gl_Position = PMatrix * w;\n\n\n    vec4 base4 = MVMatrix * vec4(center-ldir, 1.0);\n    vec3 base = base4.xyz / base4.w;\n\n    vec4 top_position = MVMatrix*(vec4(center+ldir,1.0));\n    vec4 end4 = top_position;\n    vec3 end = end4.xyz / end4.w;\n\n    vec3 point = w.xyz / w.w;\n\n    color = inputColor;\n    color2 = inputColor2;\n\n    // TODO compare without sqrt\n    if( distance( point, end ) < distance( point, base ) ){\n        dist = b > 0.0 ? 1.0 : 0.0;\n    }else{\n        dist = b < 0.0 ? 1.0 : 0.0;\n    }\n\n}";
-
-// File:shader/LineSprite.frag
-
-NGL.Resources[ 'shader/LineSprite.frag' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 viewMatrix;\n// uniform vec3 cameraPosition;\n\nvarying float dist;\nvarying highp vec3 color;\nvarying highp vec3 color2;\n\n#include fog_params\n\n\nvoid main() {\n\n    if( dist > 0.5 ){\n        gl_FragColor = vec4( color, 1.0 );\n    }else{\n        gl_FragColor = vec4( color2, 1.0 );\n    }\n\n    #include fog\n}\n";
+NGL.Resources[ 'shader/Line.frag' ] = "uniform float opacity;\nuniform float nearClip;\n\nvarying vec3 vViewPosition;\n\n#include common\n#include color_pars_fragment\n#include fog_pars_fragment\n\nvoid main(){\n\n    #include nearclip_fragment\n\n    vec3 outgoingLight = vColor;\n\n    #include linear_to_gamma_fragment\n    #include fog_fragment\n\n    gl_FragColor = vec4( outgoingLight, opacity );\n\n}";
 
 // File:shader/Mesh.vert
 
-NGL.Resources[ 'shader/Mesh.vert' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n// uniform mat4 viewMatrix;\nuniform mat3 normalMatrix;\n// uniform vec3 cameraPosition;\n\nattribute vec3 position;\n\nvarying vec4 cameraPos;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    varying vec3 vPickingColor;\n#else\n    attribute vec3 color;\n    attribute vec3 normal;\n    varying vec3 vColor;\n    varying vec3 vNormal;\n#endif\n\nvoid main()\n{\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n    #else\n        vColor = color;\n        vNormal = normalize( normalMatrix * normal );\n    #endif\n\n    cameraPos = modelViewMatrix * vec4( position, 1.0 );\n\n    gl_Position = projectionMatrix * vec4( cameraPos.xyz, 1.0 );\n\n}\n";
+NGL.Resources[ 'shader/Mesh.vert' ] = "#define STANDARD\n\nvarying vec3 vViewPosition;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    varying vec3 vPickingColor;\n#else\n    #include color_pars_vertex\n    #ifndef FLAT_SHADED\n        varying vec3 vNormal;\n    #endif\n#endif\n\n#include common\n\nvoid main(){\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n    #else\n        #include color_vertex\n        #include beginnormal_vertex\n        #include defaultnormal_vertex\n        #ifndef FLAT_SHADED  // Normal computed with derivatives when FLAT_SHADED\n            vNormal = normalize( transformedNormal );\n        #endif\n    #endif\n\n    #include begin_vertex\n    #include project_vertex\n    vViewPosition = -mvPosition.xyz;\n\n}";
 
 // File:shader/Mesh.frag
 
-NGL.Resources[ 'shader/Mesh.frag' ] = "\n#ifdef FLAT_SHADED\n    #extension GL_OES_standard_derivatives : enable\n#endif\n\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 viewMatrix;\n// uniform vec3 cameraPosition;\n\nuniform float opacity;\nuniform float nearClip;\n\nvarying vec4 cameraPos;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n#else\n    varying vec3 vColor;\n    varying vec3 vNormal;\n#endif\n\n#include light_params\n\n#include fog_params\n\nvoid main()\n{\n\n    #ifdef NEAR_CLIP\n        if( dot( cameraPos, vec4( 0.0, 0.0, 1.0, nearClip ) ) > 0.0 )\n            discard;\n    #endif\n\n    #ifdef PICKING\n\n        gl_FragColor = vec4( vPickingColor, objectId );\n\n    #else\n\n        #ifdef FLAT_SHADED\n            vec3 fdx = dFdx( cameraPos.xyz );\n            vec3 fdy = dFdy( cameraPos.xyz );\n            vec3 normal = normalize( cross( fdx, fdy ) );\n        #else\n            vec3 normal = normalize( vNormal );\n        #endif\n\n        vec3 transformedNormal = normalize( normal );\n        #ifndef FLAT_SHADED\n            #ifdef DOUBLE_SIDED\n                transformedNormal = transformedNormal * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\n            #endif\n            #ifdef FLIP_SIDED\n                transformedNormal = -transformedNormal;\n            #endif\n        #endif\n\n        #ifdef DULL_INTERIOR\n            if( !gl_FrontFacing ){\n                transformedNormal = vec3( 0.0, 0.0, 0.4 );\n            }\n        #endif\n\n        vec3 vLightFront = vec3( 0.0, 0.0, 0.0 );\n\n        #ifndef NOLIGHT\n            #include light\n        #endif\n\n        #ifdef OPAQUE_BACK\n            #ifdef FLIP_SIDED\n                if( float( gl_FrontFacing ) == 1.0 ){\n                    gl_FragColor = vec4( vColor, 1.0 );\n                }else{\n                    gl_FragColor = vec4( vColor, opacity );\n                }\n            #else\n                if( float( gl_FrontFacing ) == 1.0 ){\n                    gl_FragColor = vec4( vColor, opacity );\n                }else{\n                    gl_FragColor = vec4( vColor, 1.0 );\n                }\n            #endif\n        #else\n            gl_FragColor = vec4( vColor, opacity );\n        #endif\n\n        #ifndef NOLIGHT\n            gl_FragColor.rgb *= vLightFront;\n        #endif\n\n    #endif\n\n    #include fog\n\n}\n";
+NGL.Resources[ 'shader/Mesh.frag' ] = "#define STANDARD\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform float nearClip;\n\nvarying vec3 vViewPosition;\n\n#if defined( PICKING )\n    uniform float objectId;\n    varying vec3 vPickingColor;\n#elif defined( NOLIGHT )\n    varying vec3 vColor;\n#else\n    #ifndef FLAT_SHADED\n        varying vec3 vNormal;\n    #endif\n    #include common\n    #include color_pars_fragment\n    #include fog_pars_fragment\n    #include bsdfs\n    #include lights_pars\n    #include lights_standard_pars_fragment\n#endif\n\nvoid main(){\n\n    #include nearclip_fragment\n\n    #if defined( PICKING )\n\n        gl_FragColor = vec4( vPickingColor, objectId );\n\n    #elif defined( NOLIGHT )\n\n        gl_FragColor = vec4( vColor, 1.0 );\n\n    #else\n\n        vec4 diffuseColor = vec4( diffuse, opacity );\n        ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n        vec3 totalEmissiveLight = emissive;\n\n        #include color_fragment\n        #include roughnessmap_fragment\n        #include metalnessmap_fragment\n        #include normal_fragment\n\n        #include dull_interior_fragment\n\n        #include lights_standard_fragment\n        #include lights_template\n\n        vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveLight;\n\n        #include linear_to_gamma_fragment\n        #include fog_fragment\n\n        gl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n        #include opaque_back_fragment\n\n    #endif\n\n}";
 
-// File:shader/ParticleSprite.vert
+// File:shader/Point.vert
 
-NGL.Resources[ 'shader/ParticleSprite.vert' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 modelMatrix;\n// uniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n// uniform mat4 viewMatrix;\n// uniform mat3 normalMatrix;\n// uniform vec3 cameraPosition;\n\nattribute vec3 position;\nattribute vec2 mapping;\nattribute vec3 color;\nattribute float radius;\n\nvarying vec3 point;\nvarying vec3 vColor;\nvarying vec3 cameraSpherePos;\nvarying float sphereRadius;\n\nuniform mat4 projectionMatrixInverse;\n\nconst mat4 D = mat4(\n    1.0, 0.0, 0.0, 0.0,\n    0.0, 1.0, 0.0, 0.0,\n    0.0, 0.0, 1.0, 0.0,\n    0.0, 0.0, 0.0, -1.0\n);\n\nmat4 transpose( in mat4 inMatrix ) {\n    vec4 i0 = inMatrix[0];\n    vec4 i1 = inMatrix[1];\n    vec4 i2 = inMatrix[2];\n    vec4 i3 = inMatrix[3];\n\n    mat4 outMatrix = mat4(\n        vec4(i0.x, i1.x, i2.x, i3.x),\n        vec4(i0.y, i1.y, i2.y, i3.y),\n        vec4(i0.z, i1.z, i2.z, i3.z),\n        vec4(i0.w, i1.w, i2.w, i3.w)\n    );\n    return outMatrix;\n}\n\n\n//------------------------------------------------------------------------------\n// Compute point size and center using the technique described in:\n// \"GPU-Based Ray-Casting of Quadratic Surfaces\"\n// by Christian Sigg, Tim Weyrich, Mario Botsch, Markus Gross.\n//\n// Code based on\n/*=========================================================================\n\n Program:   Visualization Toolkit\n Module:    Quadrics_fs.glsl and Quadrics_vs.glsl\n\n Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen\n All rights reserved.\n See Copyright.txt or http://www.kitware.com/Copyright.htm for details.\n\n This software is distributed WITHOUT ANY WARRANTY; without even\n the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n PURPOSE.  See the above copyright notice for more information.\n\n =========================================================================*/\n\n// .NAME Quadrics_fs.glsl and Quadrics_vs.glsl\n// .SECTION Thanks\n// <verbatim>\n//\n//  This file is part of the PointSprites plugin developed and contributed by\n//\n//  Copyright (c) CSCS - Swiss National Supercomputing Centre\n//                EDF - Electricite de France\n//\n//  John Biddiscombe, Ugo Varetto (CSCS)\n//  Stephane Ploix (EDF)\n//\n// </verbatim>\n//\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - adapted to work with quads\nvoid ComputePointSizeAndPositionInClipCoordSphere(){\n\n    vec2 xbc;\n    vec2 ybc;\n\n    mat4 T = mat4(\n        sphereRadius, 0.0, 0.0, 0.0,\n        0.0, sphereRadius, 0.0, 0.0,\n        0.0, 0.0, sphereRadius, 0.0,\n        position.x, position.y, position.z, 1.0\n    );\n\n    mat4 R = transpose( projectionMatrix * modelViewMatrix * T );\n    float A = dot( R[ 3 ], D * R[ 3 ] );\n    float B = -2.0 * dot( R[ 0 ], D * R[ 3 ] );\n    float C = dot( R[ 0 ], D * R[ 0 ] );\n    xbc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    xbc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sx = abs( xbc[ 0 ] - xbc[ 1 ] ) * 0.5;\n\n    A = dot( R[ 3 ], D * R[ 3 ] );\n    B = -2.0 * dot( R[ 1 ], D * R[ 3 ] );\n    C = dot( R[ 1 ], D * R[ 1 ] );\n    ybc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    ybc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sy = abs( ybc[ 0 ] - ybc[ 1 ]  ) * 0.5;\n\n    gl_Position.xy = vec2( 0.5 * ( xbc.x + xbc.y ), 0.5 * ( ybc.x + ybc.y ) );\n    gl_Position.xy -= mapping * vec2( sx, sy );\n    gl_Position.xy *= gl_Position.w;\n}\n\n\nvoid main(void){\n\n    vColor = color;\n    cameraSpherePos = ( modelViewMatrix * vec4( position, 1.0 ) ).xyz;\n    sphereRadius = radius;\n\n    gl_Position = projectionMatrix * vec4( cameraSpherePos, 1.0 );\n    ComputePointSizeAndPositionInClipCoordSphere();\n\n    point = ( projectionMatrixInverse * gl_Position ).xyz;\n\n    // move out of viewing frustum to avoid clipping artifacts\n    if( gl_Position.z-sphereRadius<=1.0 )\n        gl_Position.z = -10.0;\n}\n\n\n\n\n";
+NGL.Resources[ 'shader/Point.vert' ] = "uniform float nearClip;\nuniform float size;\nuniform float canvasHeight;\nuniform float pixelRatio;\n\n#include color_pars_vertex\n#include common\n\nvoid main(){\n\n    #include color_vertex\n    #include begin_vertex\n    #include project_vertex\n\n    #ifdef USE_SIZEATTENUATION\n        gl_PointSize = size * pixelRatio * ( ( canvasHeight / 2.0 ) / -mvPosition.z );\n    #else\n        gl_PointSize = size * pixelRatio;\n    #endif\n\n    vec3 vViewPosition = -mvPosition.xyz;\n\n    #include nearclip_vertex\n\n}";
 
-// File:shader/ParticleSprite.frag
+// File:shader/Point.frag
 
-NGL.Resources[ 'shader/ParticleSprite.frag' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 viewMatrix;\n// uniform vec3 cameraPosition;\n\nvarying vec3 point;\nvarying vec3 vColor;\nvarying vec3 cameraSpherePos;\nvarying float sphereRadius;\n\n#include fog_params\n\n\nvoid main() {\n\n    vec3 rayDirection = normalize( point );\n\n    float B = -2.0 * dot(rayDirection, cameraSpherePos);\n    float C = dot(cameraSpherePos, cameraSpherePos) - (sphereRadius*sphereRadius);\n    float det = (B * B) - (4.0 * C);\n    if(det < 0.0)\n        discard;\n\n	gl_FragColor = vec4( vColor, 1.0 );\n\n    #include fog\n\n}\n";
-
-// File:shader/Quad.vert
-
-NGL.Resources[ 'shader/Quad.vert' ] = "\nprecision highp float;\nprecision highp int;\n\nattribute vec2 position;\nattribute vec2 texture;\nvarying vec2 texCoord;\n\nvoid main(void) {\n    texCoord = texture;\n    gl_Position = vec4(position, 0.0, 1.0);\n}\n";
-
-// File:shader/Quad.frag
-
-NGL.Resources[ 'shader/Quad.frag' ] = "\nprecision mediump float;\nprecision mediump int;\n\nuniform sampler2D diffuse;\nvarying vec2 texCoord;\n\nvoid main(void) {\n    vec4 color = texture2D(diffuse, texCoord);\n    gl_FragColor = vec4(color.rgb, color.a);\n}\n";
+NGL.Resources[ 'shader/Point.frag' ] = "uniform vec3 diffuse;\nuniform float opacity;\n\n#ifdef USE_MAP\n    uniform sampler2D map;\n#endif\n\n#include common\n#include color_pars_fragment\n#include fog_pars_fragment\n\nvoid main(){\n\n    vec3 outgoingLight = vec3( 0.0 );\n    vec4 diffuseColor = vec4( diffuse, 1.0 );\n\n    #ifdef USE_MAP\n        diffuseColor *= texture2D( map, vec2( gl_PointCoord.x, 1.0 - gl_PointCoord.y ) );\n    #endif\n\n    #include color_fragment\n    #include alphatest_fragment\n\n    outgoingLight = diffuseColor.rgb;\n\n    #include fog_fragment\n\n    gl_FragColor = vec4( outgoingLight, diffuseColor.a * opacity );\n\n}";
 
 // File:shader/Ribbon.vert
 
-NGL.Resources[ 'shader/Ribbon.vert' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n// uniform mat4 viewMatrix;\n#ifndef PICKING\n    uniform mat3 normalMatrix;\n#endif\n// uniform vec3 cameraPosition;\n\nattribute vec3 position;\nattribute vec3 dir;\nattribute float size;\nattribute vec3 normal;\n\nvarying vec4 cameraPos;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    varying vec3 vPickingColor;\n#else\n    attribute vec3 color;\n    varying vec3 vColor;\n    varying vec3 vNormal;\n#endif\n\nvoid main(void){\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n    #else\n        vColor = color;\n        vNormal = normalize( normalMatrix * normal );\n    #endif\n\n    cameraPos = modelViewMatrix * vec4(\n        position + ( normalize( dir ) * size ), 1.0\n    );\n\n    gl_Position = projectionMatrix * vec4( cameraPos.xyz, 1.0 );\n\n}\n";
-
-// File:shader/Ribbon.frag
-
-NGL.Resources[ 'shader/Ribbon.frag' ] = "\n#ifdef FLAT_SHADED\n    #extension GL_OES_standard_derivatives : enable\n#endif\n\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 viewMatrix;\n// uniform vec3 cameraPosition;\n\nuniform float opacity;\nuniform float nearClip;\n\nvarying vec4 cameraPos;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n#else\n    varying vec3 vColor;\n    varying vec3 vNormal;\n#endif\n\n#include light_params\n\n#include fog_params\n\n\nvoid main() {\n\n    #ifdef NEAR_CLIP\n        if( dot( cameraPos, vec4( 0.0, 0.0, 1.0, nearClip ) ) > 0.0 )\n            discard;\n    #endif\n\n    #ifdef PICKING\n        gl_FragColor = vec4( vPickingColor, objectId );\n        //gl_FragColor.rgb = vec3( 1.0, 0.0, 0.0 );\n    #else\n\n        #ifdef FLAT_SHADED\n            vec3 fdx = dFdx( cameraPos.xyz );\n            vec3 fdy = dFdy( cameraPos.xyz );\n            vec3 normal = cross( fdx, fdy );\n        #else\n            vec3 normal = vNormal;\n        #endif\n\n        vec3 transformedNormal = normalize( normal );\n        #ifndef FLAT_SHADED\n            #ifdef DOUBLE_SIDED\n                transformedNormal = transformedNormal * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\n            #endif\n            #ifdef FLIP_SIDED\n                transformedNormal = -transformedNormal;\n            #endif\n        #endif\n\n        vec3 vLightFront = vec3( 0.0, 0.0, 0.0 );\n\n        #include light\n\n        gl_FragColor = vec4( vColor, opacity );\n        // gl_FragColor.rgb = vec3( 1.0, 0.0, 0.0 );\n        gl_FragColor.rgb *= vLightFront;\n        // gl_FragColor.rgb = normalx;\n        //gl_FragColor.rgb = vColor;\n    #endif\n\n    #include fog\n}\n";
+NGL.Resources[ 'shader/Ribbon.vert' ] = "#define STANDARD\n\nvarying vec3 vViewPosition;\n\nattribute vec3 dir;\nattribute float size;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    varying vec3 vPickingColor;\n#else\n    #include color_pars_vertex\n    #ifndef FLAT_SHADED\n        varying vec3 vNormal;\n    #endif\n#endif\n\n#include common\n\nvoid main(void){\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n    #else\n        #include color_vertex\n        #include beginnormal_vertex\n        #include defaultnormal_vertex\n        #ifndef FLAT_SHADED  // Normal computed with derivatives when FLAT_SHADED\n            vNormal = normalize( transformedNormal );\n        #endif\n    #endif\n\n    #include begin_vertex\n    transformed += normalize( dir ) * size;\n    #include project_vertex\n    vViewPosition = -mvPosition.xyz;\n\n}";
 
 // File:shader/SDFFont.vert
 
-NGL.Resources[ 'shader/SDFFont.vert' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n// uniform mat4 viewMatrix;\n// uniform mat3 normalMatrix;\n// uniform vec3 cameraPosition;\n\nattribute vec3 position;\nattribute vec2 mapping;\nattribute vec2 inputTexCoord;\nattribute float inputSize;\nattribute vec3 color;\n\nvarying vec3 vColor;\nvarying vec2 texCoord;\n\nuniform float nearClip;\n\n\nvoid main(void){\n\n    vColor = color;\n    texCoord = inputTexCoord;\n\n    vec4 cameraPos = ( modelViewMatrix * vec4( position, 1.0 ) );\n    vec4 cameraCornerPos = vec4( cameraPos.xyz, 1.0 );\n    cameraCornerPos.xy += mapping * inputSize;\n\n    cameraCornerPos.z += 0.5;\n\n    gl_Position = projectionMatrix * cameraCornerPos;\n\n    #ifdef NEAR_CLIP\n        // move out of viewing frustum for custom clipping\n        if( dot( cameraPos, vec4( 0.0, 0.0, 1.0, nearClip ) ) > 0.0 )\n            gl_Position.w = -10.0;\n    #endif\n\n}\n";
+NGL.Resources[ 'shader/SDFFont.vert' ] = "uniform float nearClip;\n\nvarying vec3 vViewPosition;\nvarying vec2 texCoord;\n\nattribute vec2 mapping;\nattribute vec2 inputTexCoord;\nattribute float inputSize;\n\n#include color_pars_vertex\n#include common\n\nvoid main(void){\n\n    #include color_vertex\n    texCoord = inputTexCoord;\n\n    vec4 cameraPos = ( modelViewMatrix * vec4( position, 1.0 ) );\n    vec4 cameraCornerPos = vec4( cameraPos.xyz, 1.0 );\n    cameraCornerPos.xy += mapping * inputSize * 0.01;\n    cameraCornerPos.z += 0.5;\n\n    gl_Position = projectionMatrix * cameraCornerPos;\n\n    vViewPosition = -cameraCornerPos.xyz;\n\n    #include nearclip_vertex\n\n}";
 
 // File:shader/SDFFont.frag
 
-NGL.Resources[ 'shader/SDFFont.frag' ] = "\n#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 viewMatrix;\n// uniform vec3 cameraPosition;\n\nuniform sampler2D fontTexture;\nuniform float opacity;\n\nvarying vec3 vColor;\nvarying vec2 texCoord;\n\n#include fog_params\n\nconst float smoothness = 16.0;\nconst float gamma = 2.2;\n\nvoid main() {\n\n    // retrieve signed distance\n    float sdf = texture2D( fontTexture, texCoord ).a;\n\n    // perform adaptive anti-aliasing of the edges\n    float w = clamp(\n        smoothness * ( abs( dFdx( texCoord.x ) ) + abs( dFdy( texCoord.y ) ) ),\n        0.0,\n        0.5\n    );\n    float a = smoothstep( 0.5 - w, 0.5 + w, sdf );\n\n    // gamma correction for linear attenuation\n    a = pow( a, 1.0 / gamma );\n\n    if( a < 0.2 ) discard;\n\n    a *= opacity;\n\n    gl_FragColor = vec4( vColor, a );\n\n    #include fog\n\n}\n\n";
-
-// File:shader/SphereHalo.vert
-
-NGL.Resources[ 'shader/SphereHalo.vert' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n// uniform mat4 viewMatrix;\n// uniform mat3 normalMatrix;\n// uniform vec3 cameraPosition;\n\nattribute vec3 position;\nattribute vec2 mapping;\nattribute float radius;\n\nvarying vec3 point;\nvarying vec3 cameraSpherePos;\nvarying float sphereRadius;\n\nuniform mat4 projectionMatrixInverse;\n\nconst mat4 D = mat4(\n    1.0, 0.0, 0.0, 0.0,\n    0.0, 1.0, 0.0, 0.0,\n    0.0, 0.0, 1.0, 0.0,\n    0.0, 0.0, 0.0, -1.0\n);\n\nmat4 transpose( in mat4 inMatrix ) {\n    vec4 i0 = inMatrix[0];\n    vec4 i1 = inMatrix[1];\n    vec4 i2 = inMatrix[2];\n    vec4 i3 = inMatrix[3];\n\n    mat4 outMatrix = mat4(\n        vec4(i0.x, i1.x, i2.x, i3.x),\n        vec4(i0.y, i1.y, i2.y, i3.y),\n        vec4(i0.z, i1.z, i2.z, i3.z),\n        vec4(i0.w, i1.w, i2.w, i3.w)\n    );\n    return outMatrix;\n}\n\n\n//------------------------------------------------------------------------------\n// Compute point size and center using the technique described in:\n// \"GPU-Based Ray-Casting of Quadratic Surfaces\"\n// by Christian Sigg, Tim Weyrich, Mario Botsch, Markus Gross.\n//\n// Code based on\n/*=========================================================================\n\n Program:   Visualization Toolkit\n Module:    Quadrics_fs.glsl and Quadrics_vs.glsl\n\n Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen\n All rights reserved.\n See Copyright.txt or http://www.kitware.com/Copyright.htm for details.\n\n This software is distributed WITHOUT ANY WARRANTY; without even\n the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n PURPOSE.  See the above copyright notice for more information.\n\n =========================================================================*/\n\n// .NAME Quadrics_fs.glsl and Quadrics_vs.glsl\n// .SECTION Thanks\n// <verbatim>\n//\n//  This file is part of the PointSprites plugin developed and contributed by\n//\n//  Copyright (c) CSCS - Swiss National Supercomputing Centre\n//                EDF - Electricite de France\n//\n//  John Biddiscombe, Ugo Varetto (CSCS)\n//  Stephane Ploix (EDF)\n//\n// </verbatim>\n//\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - adapted to work with quads\nvoid ComputePointSizeAndPositionInClipCoordSphere(){\n\n    vec2 xbc;\n    vec2 ybc;\n\n    mat4 T = mat4(\n        sphereRadius, 0.0, 0.0, 0.0,\n        0.0, sphereRadius, 0.0, 0.0,\n        0.0, 0.0, sphereRadius, 0.0,\n        position.x, position.y, position.z, 1.0\n    );\n\n    mat4 R = transpose( projectionMatrix * modelViewMatrix * T );\n    float A = dot( R[ 3 ], D * R[ 3 ] );\n    float B = -2.0 * dot( R[ 0 ], D * R[ 3 ] );\n    float C = dot( R[ 0 ], D * R[ 0 ] );\n    xbc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    xbc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sx = abs( xbc[ 0 ] - xbc[ 1 ] ) * 0.5;\n\n    A = dot( R[ 3 ], D * R[ 3 ] );\n    B = -2.0 * dot( R[ 1 ], D * R[ 3 ] );\n    C = dot( R[ 1 ], D * R[ 1 ] );\n    ybc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    ybc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sy = abs( ybc[ 0 ] - ybc[ 1 ]  ) * 0.5;\n\n    gl_Position.xy = vec2( 0.5 * ( xbc.x + xbc.y ), 0.5 * ( ybc.x + ybc.y ) );\n    gl_Position.xy -= mapping * vec2( sx, sy );\n    gl_Position.xy *= gl_Position.w;\n}\n\n\nvoid main(void){\n\n    cameraSpherePos = ( modelViewMatrix * vec4( position, 1.0 ) ).xyz;\n    sphereRadius = radius * 1.3;\n\n    gl_Position = projectionMatrix * vec4( cameraSpherePos, 1.0 );\n    ComputePointSizeAndPositionInClipCoordSphere();\n\n    point = ( projectionMatrixInverse * gl_Position ).xyz;\n\n    // move out of viewing frustum to avoid clipping artifacts\n    if( gl_Position.z-sphereRadius<=1.0 )\n        gl_Position.z = -10.0;\n}\n\n\n\n\n\n";
-
-// File:shader/SphereHalo.frag
-
-NGL.Resources[ 'shader/SphereHalo.frag' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 viewMatrix;\n// uniform vec3 cameraPosition;\n\nvarying vec3 point;\nvarying vec3 cameraSpherePos;\nvarying float sphereRadius;\n\nuniform vec3 color;\n\n#include fog_params\n\n\nvoid main(void)\n{\n    vec3 rayDirection = normalize( point );\n\n    float B = -2.0 * dot(rayDirection, cameraSpherePos);\n    float C = dot(cameraSpherePos, cameraSpherePos) - (sphereRadius*sphereRadius);\n    float det = (B * B) - (4.0 * C);\n    if(det < 0.0)\n        discard;\n\n    float r2 = sphereRadius*0.97;\n    B = -2.0 * dot(rayDirection, cameraSpherePos);\n    C = dot(cameraSpherePos, cameraSpherePos) - (r2*r2);\n    det = (B * B) - (4.0 * C);\n\n    if(det < 0.0){\n        gl_FragColor = vec4( color, 1.0 );\n\n    }else{\n    	gl_FragColor = vec4( color, 0.5 );\n    }\n\n    #include fog\n}\n\n\n";
+NGL.Resources[ 'shader/SDFFont.frag' ] = "uniform sampler2D fontTexture;\nuniform float opacity;\n\nvarying vec2 texCoord;\n\n#include common\n#include color_pars_fragment\n#include fog_pars_fragment\n\n#ifdef SDF\n    const float smoothness = 16.0;\n#else\n    const float smoothness = 256.0;\n#endif\nconst float gamma = 2.2;\n\nvoid main(){\n\n    // retrieve signed distance\n    float sdf = texture2D( fontTexture, texCoord ).a;\n\n    // perform adaptive anti-aliasing of the edges\n    float w = clamp(\n        smoothness * ( abs( dFdx( texCoord.x ) ) + abs( dFdy( texCoord.y ) ) ),\n        0.0,\n        0.5\n    );\n    float a = smoothstep( 0.5 - w, 0.5 + w, sdf );\n\n    // gamma correction for linear attenuation\n    a = pow( a, 1.0 / gamma );\n    if( a < 0.2 ) discard;\n    a *= opacity;\n\n    vec3 outgoingLight = vColor;\n\n    #include linear_to_gamma_fragment\n    #include fog_fragment\n\n    gl_FragColor = vec4( outgoingLight, a );\n\n}";
 
 // File:shader/SphereImpostor.vert
 
-NGL.Resources[ 'shader/SphereImpostor.vert' ] = "\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n// uniform mat4 viewMatrix;\n// uniform mat3 normalMatrix;\n// uniform vec3 cameraPosition;\n\nattribute vec3 position;\nattribute vec2 mapping;\nattribute float radius;\n\nvarying vec3 point;\nvarying vec4 cameraSpherePos;\nvarying float sphereRadius;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    varying vec3 vPickingColor;\n#else\n    attribute vec3 color;\n    varying vec3 vColor;\n#endif\n\nuniform mat4 projectionMatrixInverse;\nuniform float nearClip;\n\nconst mat4 D = mat4(\n    1.0, 0.0, 0.0, 0.0,\n    0.0, 1.0, 0.0, 0.0,\n    0.0, 0.0, 1.0, 0.0,\n    0.0, 0.0, 0.0, -1.0\n);\n\nmat4 transpose( in mat4 inMatrix ) {\n    vec4 i0 = inMatrix[0];\n    vec4 i1 = inMatrix[1];\n    vec4 i2 = inMatrix[2];\n    vec4 i3 = inMatrix[3];\n\n    mat4 outMatrix = mat4(\n        vec4(i0.x, i1.x, i2.x, i3.x),\n        vec4(i0.y, i1.y, i2.y, i3.y),\n        vec4(i0.z, i1.z, i2.z, i3.z),\n        vec4(i0.w, i1.w, i2.w, i3.w)\n    );\n    return outMatrix;\n}\n\n\n//------------------------------------------------------------------------------\n// Compute point size and center using the technique described in:\n// \"GPU-Based Ray-Casting of Quadratic Surfaces\"\n// by Christian Sigg, Tim Weyrich, Mario Botsch, Markus Gross.\n//\n// Code based on\n/*=========================================================================\n\n Program:   Visualization Toolkit\n Module:    Quadrics_fs.glsl and Quadrics_vs.glsl\n\n Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen\n All rights reserved.\n See Copyright.txt or http://www.kitware.com/Copyright.htm for details.\n\n This software is distributed WITHOUT ANY WARRANTY; without even\n the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n PURPOSE.  See the above copyright notice for more information.\n\n =========================================================================*/\n\n// .NAME Quadrics_fs.glsl and Quadrics_vs.glsl\n// .SECTION Thanks\n// <verbatim>\n//\n//  This file is part of the PointSprites plugin developed and contributed by\n//\n//  Copyright (c) CSCS - Swiss National Supercomputing Centre\n//                EDF - Electricite de France\n//\n//  John Biddiscombe, Ugo Varetto (CSCS)\n//  Stephane Ploix (EDF)\n//\n// </verbatim>\n//\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - adapted to work with quads\nvoid ComputePointSizeAndPositionInClipCoordSphere(){\n\n    vec2 xbc;\n    vec2 ybc;\n\n    mat4 T = mat4(\n        sphereRadius, 0.0, 0.0, 0.0,\n        0.0, sphereRadius, 0.0, 0.0,\n        0.0, 0.0, sphereRadius, 0.0,\n        position.x, position.y, position.z, 1.0\n    );\n\n    mat4 R = transpose( projectionMatrix * modelViewMatrix * T );\n    float A = dot( R[ 3 ], D * R[ 3 ] );\n    float B = -2.0 * dot( R[ 0 ], D * R[ 3 ] );\n    float C = dot( R[ 0 ], D * R[ 0 ] );\n    xbc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    xbc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sx = abs( xbc[ 0 ] - xbc[ 1 ] ) * 0.5;\n\n    A = dot( R[ 3 ], D * R[ 3 ] );\n    B = -2.0 * dot( R[ 1 ], D * R[ 3 ] );\n    C = dot( R[ 1 ], D * R[ 1 ] );\n    ybc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    ybc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sy = abs( ybc[ 0 ] - ybc[ 1 ]  ) * 0.5;\n\n    gl_Position.xy = vec2( 0.5 * ( xbc.x + xbc.y ), 0.5 * ( ybc.x + ybc.y ) );\n    gl_Position.xy -= mapping * vec2( sx, sy );\n    gl_Position.xy *= gl_Position.w;\n\n}\n\n\nvoid main(void){\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n    #else\n        vColor = color;\n    #endif\n\n    cameraSpherePos = ( modelViewMatrix * vec4( position, 1.0 ) ).xyzw;\n    sphereRadius = radius;\n\n    // avoid clipping, added again in fragment shader\n    cameraSpherePos.z -= radius;\n\n    gl_Position = projectionMatrix * vec4( cameraSpherePos.xyz, 1.0 );\n    ComputePointSizeAndPositionInClipCoordSphere();\n\n    point = ( projectionMatrixInverse * gl_Position ).xyz;\n\n}\n\n\n\n\n\n";
+NGL.Resources[ 'shader/SphereImpostor.vert' ] = "uniform mat4 projectionMatrixInverse;\nuniform float nearClip;\n\nvarying float vRadius;\nvarying vec3 vPoint;\nvarying vec3 vViewPosition;\n\nattribute vec2 mapping;\nattribute float radius;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    varying vec3 vPickingColor;\n#else\n    #include color_pars_vertex\n#endif\n\nconst mat4 D = mat4(\n    1.0, 0.0, 0.0, 0.0,\n    0.0, 1.0, 0.0, 0.0,\n    0.0, 0.0, 1.0, 0.0,\n    0.0, 0.0, 0.0, -1.0\n);\n\nmat4 transpose( in mat4 inMatrix ) {\n    vec4 i0 = inMatrix[0];\n    vec4 i1 = inMatrix[1];\n    vec4 i2 = inMatrix[2];\n    vec4 i3 = inMatrix[3];\n\n    mat4 outMatrix = mat4(\n        vec4(i0.x, i1.x, i2.x, i3.x),\n        vec4(i0.y, i1.y, i2.y, i3.y),\n        vec4(i0.z, i1.z, i2.z, i3.z),\n        vec4(i0.w, i1.w, i2.w, i3.w)\n    );\n    return outMatrix;\n}\n\n//------------------------------------------------------------------------------\n// Compute point size and center using the technique described in:\n// \"GPU-Based Ray-Casting of Quadratic Surfaces\"\n// by Christian Sigg, Tim Weyrich, Mario Botsch, Markus Gross.\n//\n// Code based on\n/*=========================================================================\n\n Program:   Visualization Toolkit\n Module:    Quadrics_fs.glsl and Quadrics_vs.glsl\n\n Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen\n All rights reserved.\n See Copyright.txt or http://www.kitware.com/Copyright.htm for details.\n\n This software is distributed WITHOUT ANY WARRANTY; without even\n the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n PURPOSE.  See the above copyright notice for more information.\n\n =========================================================================*/\n\n// .NAME Quadrics_fs.glsl and Quadrics_vs.glsl\n// .SECTION Thanks\n// <verbatim>\n//\n//  This file is part of the PointSprites plugin developed and contributed by\n//\n//  Copyright (c) CSCS - Swiss National Supercomputing Centre\n//                EDF - Electricite de France\n//\n//  John Biddiscombe, Ugo Varetto (CSCS)\n//  Stephane Ploix (EDF)\n//\n// </verbatim>\n//\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - adapted to work with quads\nvoid ComputePointSizeAndPositionInClipCoordSphere(){\n\n    vec2 xbc;\n    vec2 ybc;\n\n    mat4 T = mat4(\n        radius, 0.0, 0.0, 0.0,\n        0.0, radius, 0.0, 0.0,\n        0.0, 0.0, radius, 0.0,\n        position.x, position.y, position.z, 1.0\n    );\n\n    mat4 R = transpose( projectionMatrix * modelViewMatrix * T );\n    float A = dot( R[ 3 ], D * R[ 3 ] );\n    float B = -2.0 * dot( R[ 0 ], D * R[ 3 ] );\n    float C = dot( R[ 0 ], D * R[ 0 ] );\n    xbc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    xbc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sx = abs( xbc[ 0 ] - xbc[ 1 ] ) * 0.5;\n\n    A = dot( R[ 3 ], D * R[ 3 ] );\n    B = -2.0 * dot( R[ 1 ], D * R[ 3 ] );\n    C = dot( R[ 1 ], D * R[ 1 ] );\n    ybc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    ybc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sy = abs( ybc[ 0 ] - ybc[ 1 ]  ) * 0.5;\n\n    gl_Position.xy = vec2( 0.5 * ( xbc.x + xbc.y ), 0.5 * ( ybc.x + ybc.y ) );\n    gl_Position.xy -= mapping * vec2( sx, sy );\n    gl_Position.xy *= gl_Position.w;\n\n}\n\nvoid main(void){\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n    #else\n        #include color_vertex\n    #endif\n\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n    mvPosition.z -= radius;  // avoid clipping, added again in fragment shader\n\n    gl_Position = projectionMatrix * vec4( mvPosition.xyz, 1.0 );\n    ComputePointSizeAndPositionInClipCoordSphere();\n\n    vRadius = radius;\n    vPoint = ( projectionMatrixInverse * gl_Position ).xyz;\n    vViewPosition = -mvPosition.xyz;\n\n}";
 
 // File:shader/SphereImpostor.frag
 
-NGL.Resources[ 'shader/SphereImpostor.frag' ] = "\n#extension GL_EXT_frag_depth : enable\n\n// not available in WebGL\n// #extension GL_ARB_conservative_depth : enable\n// layout(depth_less) out float gl_FragDepthEXT;\n\nprecision highp float;\nprecision highp int;\n\n// uniform mat4 viewMatrix;\n// uniform vec3 cameraPosition;\n\nuniform float opacity;\nuniform float nearClip;\nuniform mat4 projectionMatrix;\n\nvarying vec3 point;\nvarying vec4 cameraSpherePos;\nvarying float sphereRadius;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n#else\n    varying vec3 vColor;\n#endif\n\n#include light_params\n\n#include fog_params\n\n\nvec3 cameraPos;\nvec3 cameraNormal;\n\n\n// vec4 poly_color = gl_Color;\n\n//   if(uf_use_border_hinting == 1.0)\n//   {\n//     vec3 wc_eye_dir = normalize(wc_sp_pt);\n//     float n_dot_e   = abs(dot(wc_sp_nrml,wc_eye_dir));\n//     float alpha     = max(uf_border_color_start_cosine - n_dot_e,0.0)/uf_border_color_start_cosine;\n//     poly_color      = mix(gl_Color,uf_border_color,0.75*alpha);\n//   }\n\n//   color += (diff + amb)*poly_color + spec*gl_FrontMaterial.specular;\n\n\n// Calculate depth based on the given camera position.\nfloat calcDepth( in vec3 cameraPos )\n{\n    vec2 clipZW = cameraPos.z * projectionMatrix[2].zw + projectionMatrix[3].zw;\n    return 0.5 + 0.5 * clipZW.x / clipZW.y;\n}\n\n\nfloat calcClip( vec3 cameraPos )\n{\n    return dot( vec4( cameraPos, 1.0 ), vec4( 0.0, 0.0, 1.0, nearClip - 0.5 ) );\n}\n\n\nbool flag2 = false;\n\n\nbool Impostor(out vec3 cameraPos, out vec3 cameraNormal)\n{\n\n    vec3 cameraSpherePos2 = cameraSpherePos.xyz;\n    cameraSpherePos2.z += sphereRadius;\n\n    vec3 rayDirection = normalize( point );\n\n    float B = -2.0 * dot(rayDirection, cameraSpherePos2);\n    float C = dot(cameraSpherePos2, cameraSpherePos2) - (sphereRadius*sphereRadius);\n\n    float det = (B * B) - (4.0 * C);\n    if(det < 0.0){\n        discard;\n        return false;\n    }else{\n        float sqrtDet = sqrt(det);\n        float posT = (-B + sqrtDet)/2.0;\n        float negT = (-B - sqrtDet)/2.0;\n\n        float intersectT = min(posT, negT);\n        cameraPos = rayDirection * intersectT;\n\n        #ifdef NEAR_CLIP\n            if( calcDepth( cameraPos ) <= 0.0 ){\n                cameraPos = rayDirection * max(posT, negT);\n                cameraNormal = vec3( 0.0, 0.0, 0.4 );\n                return false;\n            }else if( calcClip( cameraPos ) > 0.0 ){\n                cameraPos = rayDirection * max(posT, negT);\n                cameraNormal = vec3( 0.0, 0.0, 0.4 );\n                flag2 = true;\n                return false;\n            }else{\n                cameraNormal = normalize(cameraPos - cameraSpherePos2);\n            }\n        #else\n            if( calcDepth( cameraPos ) <= 0.0 ){\n                cameraPos = rayDirection * max(posT, negT);\n                cameraNormal = vec3( 0.0, 0.0, 0.4 );\n                return false;\n            }else{\n                cameraNormal = normalize(cameraPos - cameraSpherePos2);\n            }\n        #endif\n\n        return true;\n    }\n\n    return false; // ensure that each control flow has a return\n\n}\n\n\nvoid main(void)\n{\n\n    bool flag = Impostor( cameraPos, cameraNormal );\n\n    #ifdef NEAR_CLIP\n        if( calcClip( cameraPos ) > 0.0 )\n            discard;\n    #endif\n\n    // FIXME not compatible with custom clipping plane\n    //Set the depth based on the new cameraPos.\n    gl_FragDepthEXT = calcDepth( cameraPos );\n    if( !flag ){\n\n        // clamp to near clipping plane and add a tiny value to\n        // make spheres with a greater radius occlude smaller ones\n        #ifdef NEAR_CLIP\n            if( flag2 ){\n                gl_FragDepthEXT = max( 0.0, calcDepth( vec3( - ( nearClip - 0.5 ) ) ) + ( 0.0000001 / sphereRadius ) );\n            }else if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / sphereRadius );\n            }\n        #else\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / sphereRadius );\n            }\n        #endif\n\n    }\n\n    // bugfix (mac only?)\n    if (gl_FragDepthEXT < 0.0)\n        discard;\n    if (gl_FragDepthEXT > 1.0)\n        discard;\n\n    #ifdef PICKING\n        gl_FragColor = vec4( vPickingColor, objectId );\n        //gl_FragColor.rgb = vec3( 1.0, 0.0, 0.0 );\n    #else\n        vec3 transformedNormal = cameraNormal;\n        vec3 vLightFront = vec3( 0.0, 0.0, 0.0 );\n\n        #include light\n\n        gl_FragColor = vec4( vColor, opacity );\n        gl_FragColor.rgb *= vLightFront;\n\n        // gl_FragColor.a = 0.5;\n        // gl_FragColor.rgb = transformedNormal;\n        // gl_FragColor.rgb = point;\n    #endif\n\n    // #include fog\n\n    #ifdef USE_FOG\n        float depth = gl_FragDepthEXT / gl_FragCoord.w;\n        #ifdef FOG_EXP2\n            const float LOG2 = 1.442695;\n            float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\n            fogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\n        #else\n            float fogFactor = smoothstep( fogNear, fogFar, depth );\n        #endif\n        gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\n    #endif\n\n}\n\n\n// void main2(void)\n// {\n//     gl_FragColor = vec4( vColor, 1.0 );\n// }\n\n\n\n";
+NGL.Resources[ 'shader/SphereImpostor.frag' ] = "#define STANDARD\n#define IMPOSTOR\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform float nearClip;\nuniform mat4 projectionMatrix;\n\nvarying float vRadius;\nvarying vec3 vPoint;\nvarying vec3 vViewPosition;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n#else\n    #include common\n    #include color_pars_fragment\n    #include fog_pars_fragment\n    #include bsdfs\n    #include lights_pars\n    #include lights_standard_pars_fragment\n#endif\n\nbool flag2 = false;\nbool interior = false;\nvec3 cameraPos;\nvec3 cameraNormal;\n\n// vec4 poly_color = gl_Color;\n//   if(uf_use_border_hinting == 1.0)\n//   {\n//     vec3 wc_eye_dir = normalize(wc_sp_pt);\n//     float n_dot_e   = abs(dot(wc_sp_nrml,wc_eye_dir));\n//     float alpha     = max(uf_border_color_start_cosine - n_dot_e,0.0)/uf_border_color_start_cosine;\n//     poly_color      = mix(gl_Color,uf_border_color,0.75*alpha);\n//   }\n//   color += (diff + amb)*poly_color + spec*gl_FrontMaterial.specular;\n\n// Calculate depth based on the given camera position.\nfloat calcDepth( in vec3 cameraPos ){\n    vec2 clipZW = cameraPos.z * projectionMatrix[2].zw + projectionMatrix[3].zw;\n    return 0.5 + 0.5 * clipZW.x / clipZW.y;\n}\n\nfloat calcClip( vec3 cameraPos ){\n    return dot( vec4( cameraPos, 1.0 ), vec4( 0.0, 0.0, 1.0, nearClip - 0.5 ) );\n}\n\nbool Impostor( out vec3 cameraPos, out vec3 cameraNormal ){\n\n    vec3 cameraSpherePos2 = -vViewPosition;\n    cameraSpherePos2.z += vRadius;\n\n    vec3 rayDirection = normalize( vPoint );\n\n    float B = -2.0 * dot( rayDirection, cameraSpherePos2 );\n    float C = dot( cameraSpherePos2, cameraSpherePos2 ) - ( vRadius * vRadius );\n\n    float det = ( B * B ) - ( 4.0 * C );\n    if( det < 0.0 ){\n        discard;\n        return false;\n    }else{\n        float sqrtDet = sqrt( det );\n        float posT = ( -B + sqrtDet ) / 2.0;\n        float negT = ( -B - sqrtDet ) / 2.0;\n\n        float intersectT = min(posT, negT);\n        cameraPos = rayDirection * intersectT;\n\n        #ifdef NEAR_CLIP\n            if( calcDepth( cameraPos ) <= 0.0 ){\n                cameraPos = rayDirection * max( posT, negT );\n                interior = true;\n                return false;\n            }else if( calcClip( cameraPos ) > 0.0 ){\n                cameraPos = rayDirection * max( posT, negT );\n                interior = true;\n                flag2 = true;\n                return false;\n            }else{\n                cameraNormal = normalize( cameraPos - cameraSpherePos2 );\n            }\n        #else\n            if( calcDepth( cameraPos ) <= 0.0 ){\n                cameraPos = rayDirection * max( posT, negT );\n                interior = true;\n                return false;\n            }else{\n                cameraNormal = normalize( cameraPos - cameraSpherePos2 );\n            }\n        #endif\n\n        return true;\n    }\n\n    return false; // ensure that each control flow has a return\n\n}\n\nvoid main(void){\n\n    bool flag = Impostor( cameraPos, cameraNormal );\n\n    #ifdef NEAR_CLIP\n        if( calcClip( cameraPos ) > 0.0 )\n            discard;\n    #endif\n\n    // FIXME not compatible with custom clipping plane\n    //Set the depth based on the new cameraPos.\n    gl_FragDepthEXT = calcDepth( cameraPos );\n    if( !flag ){\n\n        // clamp to near clipping plane and add a tiny value to\n        // make spheres with a greater radius occlude smaller ones\n        #ifdef NEAR_CLIP\n            if( flag2 ){\n                gl_FragDepthEXT = max( 0.0, calcDepth( vec3( - ( nearClip - 0.5 ) ) ) + ( 0.0000001 / vRadius ) );\n            }else if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        #else\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        #endif\n\n    }\n\n    // bugfix (mac only?)\n    if (gl_FragDepthEXT < 0.0)\n        discard;\n    if (gl_FragDepthEXT > 1.0)\n        discard;\n\n    #ifdef PICKING\n\n        gl_FragColor = vec4( vPickingColor, objectId );\n\n    #else\n\n        vec3 vNormal = cameraNormal;\n\n        vec4 diffuseColor = vec4( diffuse, opacity );\n        ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n        vec3 totalEmissiveLight = emissive;\n\n        #include color_fragment\n        #include roughnessmap_fragment\n        #include metalnessmap_fragment\n        #include normal_fragment\n        if( interior ){\n            normal = vec3( 0.0, 0.0, 0.4 );\n        }\n\n        #include lights_standard_fragment\n        #include lights_template\n\n        vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveLight;\n\n        #include linear_to_gamma_fragment\n        #include fog_fragment\n\n        gl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n    #endif\n\n}";
 
-// File:shader/chunk/fog.glsl
+// File:shader/chunk/dull_interior_fragment.glsl
 
-NGL.Resources[ 'shader/chunk/fog.glsl' ] = "#ifdef USE_FOG\n	float depth = gl_FragCoord.z / gl_FragCoord.w;\n	float fogFactor = smoothstep( fogNear, fogFar, depth );\n	gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\n#endif";
+NGL.Resources[ 'shader/chunk/dull_interior_fragment.glsl' ] = "#ifdef DULL_INTERIOR\n    if( !gl_FrontFacing ){\n        normal = vec3( 0.0, 0.0, 0.4 );\n    }\n#endif";
 
-// File:shader/chunk/fog_params.glsl
+// File:shader/chunk/fog_fragment.glsl
 
-NGL.Resources[ 'shader/chunk/fog_params.glsl' ] = "#ifdef USE_FOG\n	uniform vec3 fogColor;\n	uniform float fogNear;\n	uniform float fogFar;\n#endif";
+NGL.Resources[ 'shader/chunk/fog_fragment.glsl' ] = "#ifdef USE_FOG\n\n	#if defined( USE_LOGDEPTHBUF_EXT ) || defined( IMPOSTOR )\n\n		float depth = gl_FragDepthEXT / gl_FragCoord.w;\n\n	#else\n\n		float depth = gl_FragCoord.z / gl_FragCoord.w;\n\n	#endif\n\n	#ifdef FOG_EXP2\n\n		float fogFactor = whiteCompliment( exp2( - fogDensity * fogDensity * depth * depth * LOG2 ) );\n\n	#else\n\n		float fogFactor = smoothstep( fogNear, fogFar, depth );\n\n	#endif\n\n	outgoingLight = mix( outgoingLight, fogColor, fogFactor );\n\n#endif";
 
-// File:shader/chunk/light.glsl
+// File:shader/chunk/nearclip_fragment.glsl
 
-NGL.Resources[ 'shader/chunk/light.glsl' ] = "// LIGHT\n// IN: transformedNormal, vLightFront\n// OUT: vLightFront\n\n// Give light vector position perpendicular to the screen\nvec3 lightvec = normalize( vec3( 0.0, 0.0, 1.2 ) );\nvec3 eyepos = vec3( 0.0, 0.0, 1.0 );\n\n// calculate half-angle vector\nvec3 halfvec = normalize( lightvec + eyepos );\n\n// Parameters used to calculate per pixel lighting\n// see http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter05.html\nfloat diffuse = dot( transformedNormal,lightvec );\nfloat specular = dot( transformedNormal, halfvec );\nvec4 lighting = lit( diffuse, specular, 512.0 );\n\nvec3 specularcolor = vec3( 1.0, 1.0, 1.0 );\n\nvLightFront = ( vLightFront + lighting.y * vec3( 1.0, 1.0, 1.0 ) + lighting.z * specularcolor ).xyz;";
+NGL.Resources[ 'shader/chunk/nearclip_fragment.glsl' ] = "#ifdef NEAR_CLIP\n    if( dot( vec4( vViewPosition, 1.0 ), vec4( 0.0, 0.0, -1.0, nearClip ) ) > 0.0 )\n        discard;\n#endif";
 
-// File:shader/chunk/light_params.glsl
+// File:shader/chunk/nearclip_vertex.glsl
 
-NGL.Resources[ 'shader/chunk/light_params.glsl' ] = "vec4 lit( float NdotL, float NdotH, float m ){\n    float ambient = 1.0;\n    float diffuse = max( NdotL, 0.0 );\n    float specular = pow( abs( NdotH ), m );\n    if( NdotL < 0.0 || NdotH < 0.0 )\n        specular = 0.0;\n    return vec4( ambient, diffuse, specular, 1.0 );\n}";
+NGL.Resources[ 'shader/chunk/nearclip_vertex.glsl' ] = "#ifdef NEAR_CLIP\n    // move out of viewing frustum for custom clipping\n    if( dot( vec4( vViewPosition, 1.0 ), vec4( 0.0, 0.0, -1.0, nearClip ) ) > 0.0 )\n        gl_Position.w = -10.0;\n#endif";
 
-// File:fonts/LatoBlack.fnt
+// File:shader/chunk/opaque_back_fragment.glsl
 
-NGL.Resources[ 'fonts/LatoBlack.fnt' ] = "info face=\"Lato Black\" size=32 bold=0 italic=0 charset=\"\" unicode=0 stretchH=100 smooth=1 aa=1 padding=4,4,4,4 spacing=-8,-8\ncommon lineHeight=39 base=32 scaleW=512 scaleH=512 pages=1 packed=0\npage id=0 file=\"LatoBlack-sdf.png\"\nchars count=95\nchar id=32   x=0     y=0     width=0     height=0     xoffset=0     yoffset=32    xadvance=6     page=0  chnl=0\nchar id=41   x=0     y=0     width=17     height=41     xoffset=-3     yoffset=2    xadvance=10     page=0  chnl=0\nchar id=40   x=17     y=0     width=17     height=41     xoffset=-3     yoffset=2    xadvance=10     page=0  chnl=0\nchar id=36   x=34     y=0     width=27     height=40     xoffset=-4     yoffset=0    xadvance=19     page=0  chnl=0\nchar id=124   x=61     y=0     width=14     height=40     xoffset=-2     yoffset=2    xadvance=10     page=0  chnl=0\nchar id=125   x=75     y=0     width=19     height=40     xoffset=-4     yoffset=2    xadvance=10     page=0  chnl=0\nchar id=123   x=94     y=0     width=18     height=40     xoffset=-4     yoffset=2    xadvance=10     page=0  chnl=0\nchar id=93   x=112     y=0     width=18     height=40     xoffset=-4     yoffset=2    xadvance=10     page=0  chnl=0\nchar id=91   x=130     y=0     width=17     height=40     xoffset=-3     yoffset=2    xadvance=10     page=0  chnl=0\nchar id=106   x=147     y=0     width=18     height=38     xoffset=-5     yoffset=4    xadvance=9     page=0  chnl=0\nchar id=81   x=165     y=0     width=36     height=38     xoffset=-4     yoffset=3    xadvance=26     page=0  chnl=0\nchar id=92   x=201     y=0     width=24     height=36     xoffset=-5     yoffset=3    xadvance=13     page=0  chnl=0\nchar id=64   x=225     y=0     width=35     height=36     xoffset=-4     yoffset=5    xadvance=26     page=0  chnl=0\nchar id=47   x=260     y=0     width=24     height=36     xoffset=-5     yoffset=3    xadvance=13     page=0  chnl=0\nchar id=127   x=284     y=0     width=27     height=34     xoffset=-4     yoffset=3    xadvance=18     page=0  chnl=0\nchar id=38   x=311     y=0     width=33     height=34     xoffset=-4     yoffset=3    xadvance=23     page=0  chnl=0\nchar id=35   x=344     y=0     width=28     height=34     xoffset=-4     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=37   x=372     y=0     width=35     height=34     xoffset=-4     yoffset=3    xadvance=26     page=0  chnl=0\nchar id=63   x=407     y=0     width=23     height=34     xoffset=-4     yoffset=3    xadvance=14     page=0  chnl=0\nchar id=33   x=430     y=0     width=15     height=34     xoffset=-1     yoffset=3    xadvance=12     page=0  chnl=0\nchar id=48   x=445     y=0     width=27     height=34     xoffset=-4     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=56   x=472     y=0     width=27     height=34     xoffset=-4     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=55   x=0     y=41     width=26     height=34     xoffset=-3     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=54   x=26     y=41     width=26     height=34     xoffset=-3     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=53   x=52     y=41     width=26     height=34     xoffset=-4     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=52   x=78     y=41     width=28     height=34     xoffset=-4     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=51   x=106     y=41     width=26     height=34     xoffset=-3     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=50   x=132     y=41     width=26     height=34     xoffset=-3     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=49   x=158     y=41     width=25     height=34     xoffset=-2     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=108   x=183     y=41     width=15     height=34     xoffset=-2     yoffset=3    xadvance=9     page=0  chnl=0\nchar id=107   x=198     y=41     width=27     height=34     xoffset=-3     yoffset=3    xadvance=18     page=0  chnl=0\nchar id=104   x=225     y=41     width=25     height=34     xoffset=-3     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=100   x=250     y=41     width=26     height=34     xoffset=-4     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=98   x=276     y=41     width=26     height=34     xoffset=-3     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=90   x=302     y=41     width=28     height=34     xoffset=-4     yoffset=3    xadvance=20     page=0  chnl=0\nchar id=89   x=330     y=41     width=32     height=34     xoffset=-5     yoffset=3    xadvance=22     page=0  chnl=0\nchar id=88   x=362     y=41     width=32     height=34     xoffset=-4     yoffset=3    xadvance=23     page=0  chnl=0\nchar id=87   x=394     y=41     width=44     height=34     xoffset=-4     yoffset=3    xadvance=34     page=0  chnl=0\nchar id=86   x=438     y=41     width=33     height=34     xoffset=-4     yoffset=3    xadvance=24     page=0  chnl=0\nchar id=85   x=471     y=41     width=30     height=34     xoffset=-3     yoffset=3    xadvance=23     page=0  chnl=0\nchar id=84   x=0     y=75     width=28     height=34     xoffset=-4     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=83   x=28     y=75     width=26     height=34     xoffset=-4     yoffset=3    xadvance=17     page=0  chnl=0\nchar id=82   x=54     y=75     width=29     height=34     xoffset=-3     yoffset=3    xadvance=21     page=0  chnl=0\nchar id=80   x=83     y=75     width=28     height=34     xoffset=-3     yoffset=3    xadvance=20     page=0  chnl=0\nchar id=79   x=111     y=75     width=34     height=34     xoffset=-4     yoffset=3    xadvance=26     page=0  chnl=0\nchar id=78   x=145     y=75     width=31     height=34     xoffset=-3     yoffset=3    xadvance=24     page=0  chnl=0\nchar id=77   x=176     y=75     width=37     height=34     xoffset=-3     yoffset=3    xadvance=30     page=0  chnl=0\nchar id=76   x=213     y=75     width=24     height=34     xoffset=-3     yoffset=3    xadvance=17     page=0  chnl=0\nchar id=75   x=237     y=75     width=31     height=34     xoffset=-3     yoffset=3    xadvance=23     page=0  chnl=0\nchar id=74   x=268     y=75     width=21     height=34     xoffset=-4     yoffset=3    xadvance=14     page=0  chnl=0\nchar id=73   x=289     y=75     width=15     height=34     xoffset=-2     yoffset=3    xadvance=10     page=0  chnl=0\nchar id=72   x=304     y=75     width=31     height=34     xoffset=-3     yoffset=3    xadvance=24     page=0  chnl=0\nchar id=71   x=335     y=75     width=31     height=34     xoffset=-4     yoffset=3    xadvance=23     page=0  chnl=0\nchar id=70   x=366     y=75     width=25     height=34     xoffset=-3     yoffset=3    xadvance=18     page=0  chnl=0\nchar id=69   x=391     y=75     width=25     height=34     xoffset=-3     yoffset=3    xadvance=18     page=0  chnl=0\nchar id=68   x=416     y=75     width=32     height=34     xoffset=-3     yoffset=3    xadvance=24     page=0  chnl=0\nchar id=67   x=448     y=75     width=30     height=34     xoffset=-4     yoffset=3    xadvance=21     page=0  chnl=0\nchar id=66   x=478     y=75     width=28     height=34     xoffset=-3     yoffset=3    xadvance=21     page=0  chnl=0\nchar id=65   x=0     y=109     width=33     height=34     xoffset=-4     yoffset=3    xadvance=24     page=0  chnl=0\nchar id=57   x=33     y=109     width=27     height=33     xoffset=-3     yoffset=4    xadvance=19     page=0  chnl=0\nchar id=105   x=60     y=109     width=16     height=33     xoffset=-3     yoffset=4    xadvance=9     page=0  chnl=0\nchar id=102   x=76     y=109     width=21     height=33     xoffset=-4     yoffset=4    xadvance=12     page=0  chnl=0\nchar id=121   x=97     y=109     width=27     height=32     xoffset=-4     yoffset=10    xadvance=18     page=0  chnl=0\nchar id=116   x=124     y=109     width=22     height=32     xoffset=-4     yoffset=5    xadvance=13     page=0  chnl=0\nchar id=113   x=146     y=109     width=26     height=32     xoffset=-4     yoffset=10    xadvance=19     page=0  chnl=0\nchar id=112   x=172     y=109     width=26     height=32     xoffset=-3     yoffset=10    xadvance=19     page=0  chnl=0\nchar id=103   x=198     y=109     width=26     height=32     xoffset=-4     yoffset=10    xadvance=17     page=0  chnl=0\nchar id=59   x=224     y=109     width=16     height=31     xoffset=-3     yoffset=11    xadvance=9     page=0  chnl=0\nchar id=122   x=240     y=109     width=23     height=27     xoffset=-3     yoffset=10    xadvance=15     page=0  chnl=0\nchar id=120   x=263     y=109     width=27     height=27     xoffset=-4     yoffset=10    xadvance=18     page=0  chnl=0\nchar id=119   x=290     y=109     width=35     height=27     xoffset=-4     yoffset=10    xadvance=26     page=0  chnl=0\nchar id=118   x=325     y=109     width=27     height=27     xoffset=-4     yoffset=10    xadvance=18     page=0  chnl=0\nchar id=117   x=352     y=109     width=25     height=27     xoffset=-3     yoffset=10    xadvance=19     page=0  chnl=0\nchar id=115   x=377     y=109     width=23     height=27     xoffset=-4     yoffset=10    xadvance=14     page=0  chnl=0\nchar id=114   x=400     y=109     width=21     height=27     xoffset=-3     yoffset=10    xadvance=13     page=0  chnl=0\nchar id=110   x=421     y=109     width=25     height=27     xoffset=-3     yoffset=10    xadvance=19     page=0  chnl=0\nchar id=109   x=446     y=109     width=34     height=27     xoffset=-3     yoffset=10    xadvance=28     page=0  chnl=0\nchar id=101   x=480     y=109     width=26     height=27     xoffset=-4     yoffset=10    xadvance=17     page=0  chnl=0\nchar id=99   x=0     y=143     width=25     height=27     xoffset=-4     yoffset=10    xadvance=16     page=0  chnl=0\nchar id=97   x=25     y=143     width=24     height=27     xoffset=-3     yoffset=10    xadvance=17     page=0  chnl=0\nchar id=43   x=49     y=143     width=26     height=26     xoffset=-3     yoffset=8    xadvance=19     page=0  chnl=0\nchar id=58   x=75     y=143     width=16     height=26     xoffset=-3     yoffset=11    xadvance=9     page=0  chnl=0\nchar id=111   x=91     y=143     width=27     height=26     xoffset=-4     yoffset=11    xadvance=19     page=0  chnl=0\nchar id=62   x=118     y=143     width=23     height=25     xoffset=-1     yoffset=9    xadvance=19     page=0  chnl=0\nchar id=60   x=141     y=143     width=23     height=25     xoffset=-2     yoffset=9    xadvance=19     page=0  chnl=0\nchar id=42   x=164     y=143     width=21     height=21     xoffset=-4     yoffset=3    xadvance=13     page=0  chnl=0\nchar id=94   x=185     y=143     width=25     height=21     xoffset=-3     yoffset=3    xadvance=19     page=0  chnl=0\nchar id=44   x=210     y=143     width=15     height=20     xoffset=-3     yoffset=22    xadvance=8     page=0  chnl=0\nchar id=61   x=225     y=143     width=25     height=19     xoffset=-3     yoffset=12    xadvance=19     page=0  chnl=0\nchar id=39   x=250     y=143     width=15     height=19     xoffset=-3     yoffset=3    xadvance=8     page=0  chnl=0\nchar id=34   x=265     y=143     width=21     height=19     xoffset=-3     yoffset=3    xadvance=14     page=0  chnl=0\nchar id=126   x=286     y=143     width=26     height=17     xoffset=-3     yoffset=14    xadvance=19     page=0  chnl=0\nchar id=46   x=312     y=143     width=16     height=16     xoffset=-4     yoffset=21    xadvance=8     page=0  chnl=0\nchar id=96   x=328     y=143     width=18     height=15     xoffset=-5     yoffset=3    xadvance=11     page=0  chnl=0\nchar id=95   x=346     y=143     width=22     height=13     xoffset=-4     yoffset=29    xadvance=13     page=0  chnl=0\nchar id=45   x=368     y=143     width=19     height=13     xoffset=-3     yoffset=16    xadvance=12     page=0  chnl=0\n";
-
-// File:fonts/LatoBlack.png
-
-NGL.Resources[ 'fonts/LatoBlack.png' ] = NGL.dataURItoImage("data:image/png;base64,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CCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEKJM+X8Bl4tInGh6U68AAAAASUVORK5CYII=");
-
-// File:img/radial.png
-
-NGL.Resources[ 'img/radial.png' ] = NGL.dataURItoImage("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAJjUlEQVR4XuWbCXPbOhKEeQA85MS2/v+PtOXEEg+AfPVNZvggmvI61+6WySoEJGxF7p6engFF5dnOj/x/gX+e55vvm+f5/N/8m/46ASuw6fttvXcKfjn/m6T8FQIS0Pz/9h7r81uBNuDMb87/NBl/lAAFbkDfmwH/ngIM/M35TxHxRwjYAF4owPWcPz095RzCgM6cz/Ms0WY+Ho8p8EmVsJ7ld36XiN8i4AZwQC8DwIUeilmUkYDnegGvHAi4SQ8lBALWYyHqV4n4ZQIS8FeAAf/09FQq5jLP84JxuVyYOWx+895EX4+JuW1bZhnTNEX+OR6PcYMIUcevkPBLBCj4NfAS4BxFUQC8BDTn/NP3vRBhBAzDkKpApF9VVUrAVNe1iSAqGZAQOZSIN2T8LAk/RcBK8hBQ2jidTmB3AO+6Ts6HYRAixnEUIgDPuco/DyEs7++cEzlzeO+XqOt5rKoK3KFpmjjPs5w/PDxAQDrMJz6shg8TsCF5AU/UnXOuKArXdZ1T4FyXIQQXQhASYoxcS2YwGwlJLRTwzjmJOnNZlgLWOccIRL+qqqBEcB04EjWkivgQCR8i4AZ4dzqdBLCBDyF4zpljjE5HCR4IADxzjFG8APCcl2VpJgjoGeCQwAxfzGVZMgfn3Ahw5qZphARVQ8iyjPFTJHyUgDTfHZFX8J6oO+f8OI5egftpmhiE0g/D4AgseHSID0zTJATAhJXAoihE+sxwxcjzPBD1oijII5nLshwhwHs/hhCEiBjj+PDwYAQwS8XI85z55vEfCUgMz/Ldvby8SKT7vgd0VZalgO/7vgI0fgYhkMA6BJAO8zxDQjHPsxCw7gMAzh+ss8geAgALeADneT5AQl3XA+sAd84NdV2LMu7v78dECaKG94zxXQJWbk/kTfZEVkDGGAEtg7Usy1ivTA14mqUDRJACBn6a+Nt+KKAo4EVmkT7ATfZ5nqdRH7IsG6qqgggZZVkOkMNaogRLCVPC5ibrJgFJ3i+RP51Onmhb5BV8TcSHYahRQ4zRZlMBa+IHKAIVgDPGKF1ikgLkviggz3PLfSEBkAAEKNEuy7JnrqqqV0X09jOUoCSslbBpiu8RYHkPAe7p6cl576uu64hobeABnmVZ3XUdaxTuGiWEEIQI9QNJEfUASBACAI8KLPpGgOY6KYD0ZQDYOddr5AHcN03TZ1nGWk+rAQm6Po7jOByPxytj3PKDTQI28t5/+/aN6IvMAQfgeZ7rcRwbzqdpalQFjYE3ooZhwAcsFVCAqAAFsAXQLQERkuib6yP9qqok8hZ1SHDOdQq6gwTvfZfnuRBiJMUYh69fv6IChvUKb/zgFgEWfct775yrMDkFRZQbwPd93wDezmOMQoSmAgSJP8QYhQA1RFRF0i/vr0ZF/U/zn+gjf4k+JAC8LMuurusO4EVRLOdVVdGBye9hkiGE4eHhwVJBKsNaBVv9OGvW5SF9j/S3wCvYFvDDMLRcc67XjfmBGaRVA8qoVgMUIDbAwACJlrm/GZ3lPQABzYCEqqounDNzredXJGgqpH5wpYItAq6i//LyQpnD0MhppC8AY4wtoMdxbPu+l9mICCEYEaIEXosC8AH8hEoAyZAwTVNWFAVD3Br5U8bIf+q9914iygxAlb8A995f6rrm/KIkyHrTNPyevIZUuL+/p3IsVSFVwRUBq9xfR1+kjvRDCAtoBX9gZt0IgQSGpgO+IWmgfYIowJohuhRtfqwCWNmTEofsAc4wwM45A3+2NWbWUQqpoakyvKeCLQKs7HnKnnNOIkj0FSx5fyD6IYRD13UHQA/DAAkHSDBloAhepyowH5BqgBFiglYFdDsr3R+R1+ib+Un0LdIK/lxV1Zm1pmnOzjmuIYU1IcpUEELo1QsWQ7TmaE3AkvtZluH8kvtEXqMvUYYIJQHQdxBh1wpeCFIClqqgZVF6Aq0EVx6gFYC6TwpIzTfXt1z33gtQwAMW4HVdv9p1ogL24maSVATSYPECS4OFgBvyx+2JoLi9ypuIE2kBD/BxHO8ul4usM1CFpYOpQH1AmiLdJ1gplD5dW+C0AcL9paxZ9Ik80YYERtu2zK8QAQmQwbqqADWYWfbjOPbH4/GNGW4RQOm7kv/5fG64QQMwpA5IlfzdMAyAv4MEBc+apIepwEgwH1AFyJ5A7x1aD4AJ0v0tjY+5PlE3mTdN86okvLZtS/QhQVSgCjlDVJ7nl8PhQOr0qzSwkvhvHVYFSNeXyF/yF/CA0XyXyANWFfAFEjjvus7WTQ3yOjVEa5GpBrKjXJuglcCUgMT1cXiLLgANNPN3CNCfywwBkAYJ2hf0G2lwRcCb/Df5Q8Dr62s7TdOBaAOYiAPYSGBmnbVUJVYe09ZYy+EtAq5a38T80uguUTfwqgpZRxVFUZzv7u6MAOkct3wgTQEjwFvzQ8nT/DfzAyDSBqREvuu6Lxr5L5ATQkhJWCqCVgM8wDZHSzusFUB6AE0BKX+a/1LjtQJI5J1zAtJ7/53rpmm+A7yqKpmJvnqClEptmrqkHEo1kNZb78XbhxjS+j4/P1e0vtrwYIAtJkdkDWDf919UBRAgg2tTglUFLZFUBNssLRsjPMB2g2aCtgGy5icFj7lZvmN+ALehZiiEQBB+gEkaASiJ1vjx8TFtin6kwKoC+OfnZ9pf2eisDHDJdYi4XC4CHDVAiHqDKUBSIS2H2g+wJ7Be4MoErQfQra80P1b+AKTRJfKS/8ifqENC27bfAZ56w8oIUUD/+PiYbpCuFLCkwOl0WhRwuVzMyBbnN7A6C3iI0OhLSqS9ge0PdG+QEkAayG5Q7wFIE6RtsJU/8nep+QAENAQAXD3A5sUQeY1VjbZtpUXWzZH1Az/uFm0pQAmQDjAlgByPMVqEBfj5fLYqkJIghqhmaPsE2yHKPQK7M2Rl0O4E2d4/6f+X/Nc8l+gbeNYOh4MQoGp4LctSPGJFgJXCDxMgHrBLBezVA0iHfVYB9YH99gErApZWeG+dICmw672A3Qvc9W5wfTN0P/cDbvnAbu4IJR3hru8JvveZwOe/K5ykAV4gTdGuPhfY2Bjt75OhLRXo5wP7+GxwQwWY4r4+HV6pYH/PB6zuE+7zCZFVKixVwZ4O+/TPCNlzZbt+SiwhYb/PCa784OrBqd08KfoOCft4VnjlB/Yp0r6eFk8ftt3t9wU2SLDd4/prMp/7GyM3UuIWGZ/zO0M31JD6gxGSzp/rW2Prh/B3+73BG0TIs0+7+ubo1tcydvnd4dtfUPnxk/+nb4//A70E2lCUGWehAAAAAElFTkSuQmCC");
+NGL.Resources[ 'shader/chunk/opaque_back_fragment.glsl' ] = "#ifdef OPAQUE_BACK\n    #ifdef FLIP_SIDED\n        if( gl_FrontFacing ){\n            gl_FragColor.a = 1.0;\n        }\n    #else\n        if( !gl_FrontFacing ){\n            gl_FragColor.a = 1.0;\n        }\n    #endif\n#endif";
 
