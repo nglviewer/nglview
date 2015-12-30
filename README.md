@@ -21,7 +21,7 @@ Installation
 From PyPI:
 
     pip install nglview
-
+    pip install jupyter
 
 Usage
 =====
