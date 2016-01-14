@@ -236,6 +236,8 @@ Version 0.4dev
 Version 0.3
 -----------
 
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.44700.svg)](http://dx.doi.org/10.5281/zenodo.44700)
+
 * MIGRATION: `Trajectory` classes need `get_frame_count` method
 * MIGRATION: removed `set_frame` method use new `frame` property
 * ADD: simple trajectory player
@@ -246,6 +248,8 @@ Version 0.3
 
 Version 0.2
 -----------
+
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.44698.svg)](http://dx.doi.org/10.5281/zenodo.44698)
 
 * MIGRATION: changed `get_string` to `get_structure_string`
 * MIGRATION: changed `get_coordinates` to `get_coordinates_list`
