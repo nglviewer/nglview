@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import os
+import os.path
 import warnings
 import tempfile
 import ipywidgets as widgets
@@ -19,6 +20,37 @@ try:
     from urllib.request import urlopen
 except ImportError:
     from urllib2 import urlopen
+
+
+##############
+# Simple API
+
+
+def show_pdbid(pdbid, **kwargs):
+    structure = PdbIdStructure(pdbid)
+    return NGLWidget(structure, **kwargs)
+
+
+def show_structure_file(path, **kwargs):
+    extension = os.path.splitext(path)[1][1:]
+    structure = FileStructure(path, ext=extension)
+    return NGLWidget(structure, **kwargs)
+
+
+def show_simpletraj(structure_path, trajectory_path, **kwargs):
+    extension = os.path.splitext(structure_path)[1][1:]
+    structure = FileStructure(structure_path, ext=extension)
+    trajectory = SimpletrajTrajectory(trajectory_path)
+    return NGLWidget(structure, trajectory, **kwargs)
+
+
+def show_mdtraj(mdtraj_trajectory, **kwargs):
+    structure_trajectory = MDTrajTrajectory(mdtraj_trajectory)
+    return NGLWidget(structure_trajectory, **kwargs)
+
+
+###################
+# Adaptor classes
 
 
 class Structure(object):
@@ -113,6 +145,10 @@ class MDTrajTrajectory(Trajectory, Structure):
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
+
+
+###########################
+# Jupyter notebook widget
 
 
 class NGLWidget(widgets.DOMWidget):
