@@ -49,6 +49,11 @@ def show_mdtraj(mdtraj_trajectory, **kwargs):
     return NGLWidget(structure_trajectory, **kwargs)
 
 
+def show_pytraj(pytraj_trajectory, **kwargs):
+    structure_trajectory = PyTrajTrajectory(pytraj_trajectory)
+    return NGLWidget(structure_trajectory, **kwargs)
+
+
 ###################
 # Adaptor classes
 
@@ -142,6 +147,30 @@ class MDTrajTrajectory(Trajectory, Structure):
     def get_structure_string(self):
         fd, fname = tempfile.mkstemp()
         self.trajectory[0].save_pdb(fname)
+        pdb_string = os.fdopen(fd).read()
+        # os.close( fd )
+        return pdb_string
+
+
+class PyTrajTrajectory(Trajectory, Structure):
+
+    def __init__(self, trajectory):
+        self.trajectory = trajectory
+        self.ext = "pdb"
+        self.params = {}
+
+    def get_coordinates_list(self, index):
+        frame = self.trajectory.xyz[index]
+        return frame.flatten().tolist()
+
+    def get_frame_count(self):
+        return self.trajectory.n_frames
+
+    def get_structure_string(self):
+        import pytraj as pt
+        fd, fname = tempfile.mkstemp(suffix=".pdb")
+        pt.write_traj(fname, self.trajectory, frame_indices=[0],
+                      overwrite=True, options='model')
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
