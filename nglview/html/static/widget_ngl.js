@@ -70,12 +70,8 @@ define( [
                 // init setting of coordinates
                 this.model.on( "change:coordinates", this.coordinatesChanged, this );
 
-                // init clip/fog handling
-                this.model.on( "change:clip", this.clipChanged, this );
-                this.model.on( "change:fog", this.fogChanged, this );
-
-                // init rotation speed?
-                this.model.on( "change:rotate_speed", this.rotateSpeedChanged, this );
+                // init parameters handling
+                this.model.on( "change:parameters", this.parametersChanged, this );
 
                 // init NGL stage
                 NGL.useWorker = false;
@@ -235,20 +231,10 @@ define( [
             this.stage.handleResize();
         },
 
-        clipChanged: function(){
-            var clip = this.model.get( "clip" );
-            this.stage.viewer.setClip( clip.near, clip.far, clip.dist );
-        },
-
-        fogChanged: function(){
-            var fog = this.model.get( "fog" );
-            this.stage.viewer.setFog( null, fog.near, fog.far );
-        },
-
-        rotateSpeedChanged: function(){
-            var rotateSpeed = this.model.get( "rotate_speed" );
-            this.stage.viewer.controls.rotateSpeed = rotateSpeed; 
-        },
+        parametersChanged: function(){
+            var parameters = this.model.get( "parameters" );
+            this.stage.setParameters( parameters );
+        }
 
     } );
 

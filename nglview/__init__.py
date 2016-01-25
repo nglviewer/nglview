@@ -125,13 +125,13 @@ class NGLWidget(widgets.DOMWidget):
     picked = Dict(sync=True)
     frame = Int(sync=True)
     count = Int(sync=True)
-    rotate_speed = Float(sync=True)
-    clip = Dict(sync=True)
-    fog = Dict(sync=True)
+    parameters = Dict(sync=True)
 
     def __init__(self, structure, trajectory=None,
-                 representations=None, **kwargs):
+                 representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
+        if parameters:
+            self.parameters = parameters
         self.set_structure(structure)
         if trajectory:
             self.trajectory = trajectory
