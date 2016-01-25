@@ -25,21 +25,22 @@ CLASSIFIERS = [
 
 if __name__ == '__main__':
     setup(
-        name = "nglview",
-        author = "Alexander S. Rose",
-        author_email = "alexander.rose@weirdbyte.de",
-        description = "IPython widget to interactively view molecular structures and trajectories.",
-        version = VERSION,
-        classifiers = CLASSIFIERS,
-        license = "MIT",
-        url = "https://github.com/arose/nglview",
-        zip_safe = False,
-        package_data = { "nglview.html": [ "static/*" ] },
-        packages = [ "nglview", "nglview.html" ],
-        requires = [ "ipython" ],
-        install_requires = [ "ipython" ],
-        extras_require = {
-            "simpletraj": [ "simpletraj" ],
-            "mdtraj": [ "mdtraj" ]
+        name="nglview",
+        author="Alexander S. Rose",
+        author_email="alexander.rose@weirdbyte.de",
+        description="IPython widget to interactively view molecular\
+                     structures and trajectories.",
+        version=VERSION,
+        classifiers=CLASSIFIERS,
+        license="MIT",
+        url="https://github.com/arose/nglview",
+        zip_safe=False,
+        package_data={"nglview.html": ["static/*"]},
+        packages=["nglview", "nglview.html"],
+        requires=["ipython"],
+        install_requires=["ipython"],
+        extras_require={
+            "simpletraj": ["simpletraj"],
+            "mdtraj": ["mdtraj"]
         }
     )
