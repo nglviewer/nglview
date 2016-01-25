@@ -8,10 +8,8 @@ import ipywidgets as widgets
 from traitlets import Unicode, Bool, Dict, List, Int, Float
 
 from IPython.display import display, Javascript
-try:
-    from notebook.nbextensions import install_nbextension
-except ImportError:
-    from IPython.html.nbextensions import install_nbextension
+from notebook.nbextensions import install_nbextension
+from notebook.services.config import ConfigManager
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
@@ -175,5 +173,25 @@ class NGLWidget(widgets.DOMWidget):
         self._set_coordinates(self.frame)
 
 
-staticdir = resource_filename('nglview', os.path.join('html', 'static'))
-install_nbextension(staticdir, destination='nglview', user=True, verbose=0)
+def install(user=True, symlink=False):
+    """Install the widget nbextension.
+
+    Parameters
+    ----------
+    user: bool
+        Install for current user instead of system-wide.
+    symlink: bool
+        Symlink instead of copy (for development).
+    """
+    staticdir = resource_filename('nglview', os.path.join('html', 'static'))
+    install_nbextension(staticdir, destination='nglview',
+                        user=user, symlink=symlink)
+
+    cm = ConfigManager()
+    cm.update('notebook', {
+        "load_extensions": {
+            "widgets/notebook/js/extension": True,
+        }
+    })
+
+install(symlink=True)
