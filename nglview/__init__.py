@@ -160,8 +160,10 @@ class PyTrajTrajectory(Trajectory, Structure):
         self.params = {}
 
     def get_coordinates_list(self, index):
-        # use trajectory[index] to use both in-memory (from pytraj.load method)
-        # and out-of-core trajectory (from pytraj.iterload method)
+        # use trajectory[index] to use both in-memory
+        #   (via pytraj.load method)
+        # and out-of-core trajectory
+        #   (via pytraj.iterload method)
         frame = self.trajectory[index].xyz
         return frame.flatten().tolist()
 
@@ -169,7 +171,6 @@ class PyTrajTrajectory(Trajectory, Structure):
         return self.trajectory.n_frames
 
     def get_structure_string(self):
-        import pytraj as pt
         fd, fname = tempfile.mkstemp(suffix=".pdb")
         self.trajectory[:1].save(fname, overwrite=True)
         pdb_string = os.fdopen(fd).read()
@@ -238,13 +239,13 @@ class NGLWidget(widgets.DOMWidget):
     def _frame_changed(self):
         self._set_coordinates(self.frame)
 
-    def add_representation(self, reptype, selection='all', **kwd):
-        '''add representation.
+    def add_representation(self, repr_type, selection='all', **kwd):
+        '''Add representation.
 
         Parameters
         ----------
-        reptype : str
-            type of representation. Please check:
+        repr_type : str
+            type of representation. Please see:
             http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations
         selection : str, default 'all'
             atom selection
@@ -252,11 +253,15 @@ class NGLWidget(widgets.DOMWidget):
 
         Example
         -------
-        >>> tv.add_representation('cartoon', selection='protein', color='blue')
+        >>> import nglview as nv
+        >>> import pytraj as pt
+        >>> t = (pt.datafiles.load_dpdp()[:].superpose('@CA'))
+        >>> w = nv.show_pytraj(t)
+        >>> w.add_representation('cartoon', selection='protein', color='blue')
         '''
         rep = self.representations[:]
         d = {'params': {'sele': selection}}
-        d['type'] = reptype
+        d['type'] = repr_type
         d['params'].update(kwd)
         rep.append(d)
         # reassign representation to trigger change
