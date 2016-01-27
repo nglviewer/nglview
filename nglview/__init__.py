@@ -160,7 +160,9 @@ class PyTrajTrajectory(Trajectory, Structure):
         self.params = {}
 
     def get_coordinates_list(self, index):
-        frame = self.trajectory.xyz[index]
+        # use trajectory[index] to use both in-memory (from pytraj.load method)
+        # and out-of-core trajectory (from pytraj.iterload method)
+        frame = self.trajectory[index].xyz
         return frame.flatten().tolist()
 
     def get_frame_count(self):
@@ -169,8 +171,7 @@ class PyTrajTrajectory(Trajectory, Structure):
     def get_structure_string(self):
         import pytraj as pt
         fd, fname = tempfile.mkstemp(suffix=".pdb")
-        pt.write_traj(fname, self.trajectory, frame_indices=[0],
-                      overwrite=True, options='model')
+        self.trajectory[:1].save(fname, overwrite=True)
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
@@ -236,6 +237,30 @@ class NGLWidget(widgets.DOMWidget):
 
     def _frame_changed(self):
         self._set_coordinates(self.frame)
+
+    def add_representation(self, reptype, selection='all', **kwd):
+        '''add representation.
+
+        Parameters
+        ----------
+        reptype : str
+            type of representation. Please check:
+            http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations
+        selection : str, default 'all'
+            atom selection
+        **kwd: additional arguments for representation
+
+        Example
+        -------
+        >>> tv.add_representation('cartoon', selection='protein', color='blue')
+        '''
+        rep = self.representations[:]
+        d = {'params': {'sele': selection}}
+        d['type'] = reptype
+        d['params'].update(kwd)
+        rep.append(d)
+        # reassign representation to trigger change
+        self.representations = rep
 
 
 def install(user=True, symlink=False):
