@@ -53,6 +53,21 @@ def show_pytraj(pytraj_trajectory, **kwargs):
     structure_trajectory = PyTrajTrajectory(pytraj_trajectory)
     return NGLWidget(structure_trajectory, **kwargs)
 
+def show_mdanalysis(mdanalysis_universe, **kwargs):
+    '''Show NGL widget with MDAnalysis universe data.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import MDAnalysis as mda
+    >>> from MDAnalysisTests.datafiles import GRO, XTC
+    >>> u = mda.Universe(GRO, XTC)
+    >>> w = nv.show_mdanalysis(u)
+    >>> w
+    '''
+    structure_trajectory = MDAnalysisTrajectory(mdanalysis_universe)
+    return NGLWidget(structure_trajectory, **kwargs)
+
 
 ###################
 # Adaptor classes
@@ -175,6 +190,47 @@ class PyTrajTrajectory(Trajectory, Structure):
         self.trajectory[:1].save(fname, overwrite=True)
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
+        return pdb_string
+
+
+class MDAnalysisTrajectory(Trajectory, Structure):
+    '''MDAnalysis adaptor.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import MDAnalysis as mda
+    >>> from MDAnalysisTests.datafiles import GRO, XTC
+    >>> u = mda.Universe(GRO, XTC)
+    >>> t = nv.MDAnalysisTrajectory(u)
+    >>> w = nv.NGLWidget(t)
+    >>> w
+    '''
+
+    def __init__(self, universe):
+        self.universe = universe
+        self.ext = "pdb"
+        self.params = {}
+
+    def get_coordinates_list(self, index):
+        self.universe.trajectory[index]
+        frame = self.universe.atoms.positions
+        return frame.flatten().tolist()
+
+    def get_frame_count(self):
+        return self.universe.trajectory.n_frames
+
+    def get_structure_string(self):
+        import MDAnalysis as mda
+        import cStringIO
+        u = self.universe
+        u.trajectory[0]
+        f = mda.lib.util.NamedStream(cStringIO.StringIO(), 'tmp.pdb')
+        # add PDB output to the named stream
+        with mda.Writer(f, u.atoms.n_atoms, multiframe=False) as W:
+            W.write(u.atoms)
+        # extract from the stream
+        pdb_string = f.readlines()
         return pdb_string
 
 
