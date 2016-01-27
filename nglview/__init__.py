@@ -314,6 +314,7 @@ class NGLWidget(widgets.DOMWidget):
         >>> t = (pt.datafiles.load_dpdp()[:].superpose('@CA'))
         >>> w = nv.show_pytraj(t)
         >>> w.add_representation('cartoon', selection='protein', color='blue')
+        >>> w
         '''
         rep = self.representations[:]
         d = {'params': {'sele': selection}}
