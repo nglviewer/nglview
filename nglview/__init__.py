@@ -187,7 +187,7 @@ class PyTrajTrajectory(Trajectory, Structure):
 
     def get_structure_string(self):
         fd, fname = tempfile.mkstemp(suffix=".pdb")
-        self.trajectory[:1].save(fname, overwrite=True)
+        self.trajectory[:1].save(fname, overwrite=True, options='conect')
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
