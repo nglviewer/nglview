@@ -316,6 +316,13 @@ class NGLWidget(widgets.DOMWidget):
         >>> w.add_representation('cartoon', selection='protein', color='blue')
         >>> w
         '''
+        # avoid space sensitivity
+        repr_type = repr_type.strip()
+        selection = selection.strip()
+
+        for k, v in kwd.items():
+            kwd[k] = v.strip()
+
         rep = self.representations[:]
         d = {'params': {'sele': selection}}
         d['type'] = repr_type
