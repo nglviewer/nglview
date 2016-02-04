@@ -206,7 +206,6 @@ class MDAnalysisTrajectory(Trajectory, Structure):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
-
     def __init__(self, universe):
         self.universe = universe
         self.ext = "pdb"
@@ -230,7 +229,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         with mda.Writer(f, u.atoms.n_atoms, multiframe=False) as W:
             W.write(u.atoms)
         # extract from the stream
-        pdb_string = f.readlines()
+        pdb_string = f.read()
         return pdb_string
 
 
