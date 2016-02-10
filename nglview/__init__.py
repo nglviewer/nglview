@@ -55,7 +55,9 @@ def show_pytraj(pytraj_trajectory, **kwargs):
 
 
 def show_mdanalysis(atomgroup, **kwargs):
-    '''Show NGL widget with MDAnalysis AtomGroup data.
+    '''Show NGL widget with MDAnalysis AtomGroup.
+
+    Can take either a Universe or AtomGroup as its data input.
 
     Example
     -------
@@ -63,7 +65,8 @@ def show_mdanalysis(atomgroup, **kwargs):
     >>> import MDAnalysis as mda
     >>> from MDAnalysisTests.datafiles import GRO, XTC
     >>> u = mda.Universe(GRO, XTC)
-    >>> w = nv.show_mdanalysis(u)
+    >>> prot = u.select_atoms('protein')
+    >>> w = nv.show_mdanalysis(prot)
     >>> w
     '''
     structure_trajectory = MDAnalysisTrajectory(atomgroup)
