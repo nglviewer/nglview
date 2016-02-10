@@ -53,8 +53,9 @@ def show_pytraj(pytraj_trajectory, **kwargs):
     structure_trajectory = PyTrajTrajectory(pytraj_trajectory)
     return NGLWidget(structure_trajectory, **kwargs)
 
-def show_mdanalysis(mdanalysis_universe, **kwargs):
-    '''Show NGL widget with MDAnalysis universe data.
+
+def show_mdanalysis(atomgroup, **kwargs):
+    '''Show NGL widget with MDAnalysis AtomGroup data.
 
     Example
     -------
@@ -65,7 +66,7 @@ def show_mdanalysis(mdanalysis_universe, **kwargs):
     >>> w = nv.show_mdanalysis(u)
     >>> w
     '''
-    structure_trajectory = MDAnalysisTrajectory(mdanalysis_universe)
+    structure_trajectory = MDAnalysisTrajectory(atomgroup)
     return NGLWidget(structure_trajectory, **kwargs)
 
 
@@ -196,38 +197,41 @@ class PyTrajTrajectory(Trajectory, Structure):
 class MDAnalysisTrajectory(Trajectory, Structure):
     '''MDAnalysis adaptor.
 
+    Can take either a Universe or AtomGroup.
+
     Example
     -------
     >>> import nglview as nv
     >>> import MDAnalysis as mda
     >>> from MDAnalysisTests.datafiles import GRO, XTC
     >>> u = mda.Universe(GRO, XTC)
-    >>> t = nv.MDAnalysisTrajectory(u)
+    >>> prot = u.select_atoms('protein')
+    >>> t = nv.MDAnalysisTrajectory(prot)
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
-    def __init__(self, universe):
-        self.universe = universe
+    def __init__(self, atomgroup):
+        self.atomgroup = atomgroup 
         self.ext = "pdb"
         self.params = {}
 
     def get_coordinates_list(self, index):
-        self.universe.trajectory[index]
-        frame = self.universe.atoms.positions
+        self.atomgroup.universe.trajectory[index]
+        frame = self.atomgroup.positions
         return frame.flatten().tolist()
 
     def get_frame_count(self):
-        return self.universe.trajectory.n_frames
+        return self.atomgroup.universe.trajectory.n_frames
 
     def get_structure_string(self):
         import MDAnalysis as mda
         import cStringIO
-        u = self.universe
+        u = self.atomgroup.universe
         u.trajectory[0]
         f = mda.lib.util.NamedStream(cStringIO.StringIO(), 'tmp.pdb')
         # add PDB output to the named stream
-        with mda.Writer(f, u.atoms.n_atoms, multiframe=False) as W:
-            W.write(u.atoms)
+        with mda.Writer(f, self.atomgroup.atoms.n_atoms, multiframe=False) as W:
+            W.write(self.atomgroup.atoms)
         # extract from the stream
         pdb_string = f.read()
         return pdb_string
