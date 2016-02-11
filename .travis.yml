@@ -1,0 +1,25 @@
+language: generic
+
+matrix:
+  include:
+     - { os: linux, env: PYTHON_VERSION=2.7 }
+     - { os: linux, env: PYTHON_VERSION=3.5 }
+    # - { os: osx, env: PYTHON_VERSION=3.5 }
+
+sudo: false
+
+before_install:
+    - source devtools/travis-ci/set_env.py
+
+install:
+    - pip install . -e
+
+script:
+    - nosetests -v --with-coverage --cover-package=nglview nglview
+
+after_success:
+    - echo "after_success"
+    # - coveralls
+
+notifications:
+  email: false
