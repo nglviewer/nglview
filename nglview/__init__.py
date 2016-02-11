@@ -220,7 +220,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
 
     def get_coordinates_list(self, index):
         self.atomgroup.universe.trajectory[index]
-        frame = self.atomgroup.positions
+        frame = self.atomgroup.atoms.positions
         return frame.flatten().tolist()
 
     def get_frame_count(self):
