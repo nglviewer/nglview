@@ -9,7 +9,7 @@ matrix:
 sudo: false
 
 before_install:
-    - source devtools/travis-ci/set_env.sh
+    - source devtools/travis-ci/setup_env.sh
 
 install:
     - pip install . -e
