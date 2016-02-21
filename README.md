@@ -106,6 +106,14 @@ initial_repr = [
 nglview.NGLWidget( struc, representation=initial_repr )
 ```
 
+Additionally representations can be added with the `add_representation` method:
+
+```Python
+w.add_representation(
+    "cartoon", selection="protein", color="residueindex"
+)
+```
+
 
 Adaptors
 --------
@@ -166,10 +174,10 @@ ngl_widget.representations = [ { "type": "cartoon" } ]
 ngl_widget.clip = { "near": 0, "far": 100, "dist": 10 }
 ```
 
+### Methods
+
 ```Python
-# "near/far" are percentages
-# "near" is where the fog starts and "far" is where it's on full effect
-ngl_widget.fog = { "near": 0, "far": 100 }
+ngl_widget.add_representation( "cartoon", **kwds )
 ```
 
 
@@ -229,6 +237,7 @@ Version 0.4dev
 
 * ADD: `PyTrajTrajectory` adaptor
 * ADD: `MDAnalysisTrajectory` adaptor
+* ADD: `NGLWidget.add_representation()` method
 * ADD: append a "WebGL not supported message" to widget if so
 * ADD: `clip` and `fog` widget properties
 * ADD: `params` property for `Structure`, dict passed to NGL
