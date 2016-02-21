@@ -34,6 +34,30 @@ and issue
 
 ```Python
 import nglview
+show_pdbid( "3pqr" )  # load "3pqr" from RCSB PDB and display viewer widget
+```
+
+A number of convenience functions are available to quickly display data from
+the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/).
+
+| Function                            | Description                                           |
+|-------------------------------------|-------------------------------------------------------|
+| `show_structure_file( path )`       | Shows structure in `path`                             |
+| `show_pdbid( pdbid )`               | Shows `pdbid` fetched from RCSB PDB                   |
+| `show_simpletraj( s_path, t_path )` | Shows structure & trajectory loaded with `simpletraj` |
+| `show_mdtraj( t )`                  | Shows `MDTraj` trajectory `t`                         |
+| `show_pytraj( t )`                  | Shows `PyTraj` trajectory `t`                         |
+| `show_mdanalysis( t )`              | Shows `MDAnalysis` Universe or AtomGroup `t`          |
+
+
+
+Structures
+----------
+
+The above convenience functions first create an `adaptor` that implements an [interface](#Interface classes) for communication with the IPython/Jupyter widget.
+
+```Python
+import nglview
 struc = nglview.PdbIdStructure( "3pqr" )  # load file from RCSB PDB
 w = nglview.NGLWidget( struc )            # create widget
 w                                         # display widget
@@ -240,6 +264,7 @@ Changelog
 Version 0.4dev
 --------------
 
+* ADD: Convenience methods to show widget from various sources
 * ADD: `PyTrajTrajectory` adaptor
 * ADD: `MDAnalysisTrajectory` adaptor
 * ADD: `NGLWidget.add_representation()` method
