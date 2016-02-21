@@ -119,6 +119,8 @@ They can support either the `Structure` (S) or the `Trajectory` (T) interface as
 | `PdbIdStructure( pdbid )`      | Fetches `pdbid` from RCSB PDB                     | S         |
 | `SimpletrajTrajectory( path )` | Uses `simpletraj` to access trajectory at `path`  | T         |
 | `MDTrajTrajectory( t )`        | Wraps `MDTraj` trajectory `t`                     | S and T   |
+| `PyTrajTrajectory( t )`        | Wraps `PyTraj` trajectory `t`                     | S and T   |
+| `MDAnalysisTrajectory( t )`    | Wraps `MDAnalysis` Universe or AtomGroup `t`      | S and T   |
 
 
 Multiple widgets
@@ -225,6 +227,8 @@ Changelog
 Version 0.4dev
 --------------
 
+* ADD: `PyTrajTrajectory` adaptor
+* ADD: `MDAnalysisTrajectory` adaptor
 * ADD: append a "WebGL not supported message" to widget if so
 * ADD: `clip` and `fog` widget properties
 * ADD: `params` property for `Structure`, dict passed to NGL
