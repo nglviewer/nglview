@@ -23,6 +23,11 @@ From PyPI:
     pip install nglview
 
 
+From Conda
+
+    conda install -c https://conda.anaconda.org/omnia nglview
+
+
 Usage
 =====
 
