@@ -170,8 +170,13 @@ ngl_widget.representations = [ { "type": "cartoon" } ]
 ```
 
 ```Python
-# "near/far" are percentages, "dist" is distance too camera in Angstrom
-ngl_widget.clip = { "near": 0, "far": 100, "dist": 10 }
+# parameters for the NGL stage object
+ngl_widget.parameters = {
+    # "percentages, "dist" is distance too camera in Angstrom
+    "clipNear": 0, "clipFar": 100, "clipDist": 10,
+    # percentages, start of fog and where on full effect
+    "fogNear": 0, "fogFar": 100
+}
 ```
 
 ### Methods
@@ -239,7 +244,7 @@ Version 0.4dev
 * ADD: `MDAnalysisTrajectory` adaptor
 * ADD: `NGLWidget.add_representation()` method
 * ADD: append a "WebGL not supported message" to widget if so
-* ADD: `clip` and `fog` widget properties
+* ADD: `parameters` widget property, passed to NGL stage object
 * ADD: `params` property for `Structure`, dict passed to NGL
 * CODE: be less noisy when importing nglview
 * DOC: more usage examples, API description
