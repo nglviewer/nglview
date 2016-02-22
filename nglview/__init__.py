@@ -21,10 +21,10 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
-MODULE_DIR = os.path.split( os.path.abspath( __file__ ) )[0]
-DATA_DIR = os.path.join( MODULE_DIR, "data" )
-GRO_FILE = os.path.join( DATA_DIR, "md_1u19.gro" )
-XTC_FILE = os.path.join( DATA_DIR, "md_1u19.xtc" )
+MODULE_DIR = os.path.split(os.path.abspath(__file__))[0]
+DATA_DIR = os.path.join(MODULE_DIR, "data")
+GRO_FILE = os.path.join(DATA_DIR, "md_1u19.gro")
+XTC_FILE = os.path.join(DATA_DIR, "md_1u19.xtc")
 
 
 ##############
@@ -257,8 +257,9 @@ class PyTrajTrajectory(Trajectory, Structure):
 
     def get_structure_string(self):
         fd, fname = tempfile.mkstemp(suffix=".pdb")
-        self.trajectory[:1].save(fname, format="pdb", overwrite=True, options='conect')
-        # self.trajectory[:1].save(fname, format="pdb", overwrite=True)
+        self.trajectory[:1].save(
+            fname, format="pdb", overwrite=True, options='conect'
+        )
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
@@ -298,9 +299,10 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         u = self.atomgroup.universe
         u.trajectory[0]
         f = mda.lib.util.NamedStream(cStringIO.StringIO(), 'tmp.pdb')
+        atoms = self.atomgroup.atoms
         # add PDB output to the named stream
-        with mda.Writer(f, self.atomgroup.atoms.n_atoms, multiframe=False) as W:
-            W.write(self.atomgroup.atoms)
+        with mda.Writer(f, atoms.n_atoms, multiframe=False) as W:
+            W.write(atoms)
         # extract from the stream
         pdb_string = f.read()
         return pdb_string
