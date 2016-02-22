@@ -39,20 +39,20 @@ and issue
 
 ```Python
 import nglview
-show_pdbid( "3pqr" )  # load "3pqr" from RCSB PDB and display viewer widget
+show_pdbid("3pqr")  # load "3pqr" from RCSB PDB and display viewer widget
 ```
 
 A number of convenience functions are available to quickly display data from
 the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/).
 
-| Function                            | Description                                           |
-|-------------------------------------|-------------------------------------------------------|
-| `show_structure_file( path )`       | Shows structure in `path`                             |
-| `show_pdbid( pdbid )`               | Shows `pdbid` fetched from RCSB PDB                   |
-| `show_simpletraj( s_path, t_path )` | Shows structure & trajectory loaded with `simpletraj` |
-| `show_mdtraj( t )`                  | Shows `MDTraj` trajectory `t`                         |
-| `show_pytraj( t )`                  | Shows `PyTraj` trajectory `t`                         |
-| `show_mdanalysis( t )`              | Shows `MDAnalysis` Universe or AtomGroup `t`          |
+| Function                                 | Description                                           |
+|------------------------------------------|-------------------------------------------------------|
+| `show_structure_file(path)`              | Shows structure in `path`                             |
+| `show_pdbid(pdbid)`                      | Shows `pdbid` fetched from RCSB PDB                   |
+| `show_simpletraj(struc_path, traj_path)` | Shows structure & trajectory loaded with `simpletraj` |
+| `show_mdtraj(traj)`                      | Shows `MDTraj` trajectory `traj`                      |
+| `show_pytraj(traj)`                      | Shows `PyTraj` trajectory `traj`                      |
+| `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
 
 
 
@@ -63,9 +63,9 @@ The above convenience functions first create an `adaptor` that implements an [in
 
 ```Python
 import nglview
-struc = nglview.PdbIdStructure( "3pqr" )  # load file from RCSB PDB
-w = nglview.NGLWidget( struc )            # create widget
-w                                         # display widget
+struc = nglview.PdbIdStructure("3pqr")  # load file from RCSB PDB
+w = nglview.NGLWidget(struc)            # create widget
+w                                       # display widget
 ```
 
 
@@ -82,9 +82,9 @@ package):
 
 ```Python
 import nglview
-struc = nglview.FileStructure( "mystruc.pdb" )
-traj = nglview.SimpletrajStructure( "mytraj.xtc" )
-nglview.NGLWidget( struc, traj )
+struc = nglview.FileStructure("mystruc.pdb")
+traj = nglview.SimpletrajStructure("mytraj.xtc")
+nglview.NGLWidget(struc, traj)
 ```
 
 Combined `Structure`/`Trajectory` object utilizing `MDTrajTrajectory` which
@@ -93,9 +93,9 @@ wraps a trajectory loaded with [MDTraj](http://mdtraj.org/):
 ```Python
 import nglview
 import mdtraj
-t = mdtraj.load( "mytraj.xtc", top="mystruc.gro" )
-strucTraj = nglview.MDTrajTrajectory( t )
-nglview.NGLWidget( strucTraj )
+traj = mdtraj.load("mytraj.xtc", top="mystruc.gro")
+strucTraj = nglview.MDTrajTrajectory(traj)
+nglview.NGLWidget(strucTraj)
 ```
 
 The displayed frame can be changed by setting the `frame` property of the
@@ -115,12 +115,12 @@ in the NGL Viewer [documentation](http://arose.github.io/ngl/doc).
 
 ```Python
 w.representations = [
-    { "type": "cartoon", "params": {
+    {"type": "cartoon", "params": {
         "sele": "protein", "color": "residueindex"
-    } },
-    { "type": "ball+stick", "params": {
+    }},
+    {"type": "ball+stick", "params": {
         "sele": "hetero"
-    } }
+    }}
 ]
 ```
 
@@ -128,11 +128,11 @@ The widget constructor also accepts a `representation` argument:
 
 ```Python
 initial_repr = [
-    { "type": "cartoon", "params": {
+    {"type": "cartoon", "params": {
         "sele": "protein", "color": "sstruc"
-    } }
+    }}
 ]
-nglview.NGLWidget( struc, representation=initial_repr )
+nglview.NGLWidget(struc, representation=initial_repr)
 ```
 
 Additionally representations can be added with the `add_representation` method:
@@ -150,14 +150,14 @@ Adaptors
 A number of adaptor classes are available to make structures and trajectories available to the widget.
 They can support either the `Structure` (S) or the `Trajectory` (T) interface as well as both combined.
 
-| Class                          | Description                                       | Interface |
-|--------------------------------|---------------------------------------------------|-----------|
-| `FileStructure( path )`        | Loads `path` from filesystem                      | S         |
-| `PdbIdStructure( pdbid )`      | Fetches `pdbid` from RCSB PDB                     | S         |
-| `SimpletrajTrajectory( path )` | Uses `simpletraj` to access trajectory at `path`  | T         |
-| `MDTrajTrajectory( t )`        | Wraps `MDTraj` trajectory `t`                     | S and T   |
-| `PyTrajTrajectory( t )`        | Wraps `PyTraj` trajectory `t`                     | S and T   |
-| `MDAnalysisTrajectory( t )`    | Wraps `MDAnalysis` Universe or AtomGroup `t`      | S and T   |
+| Class                        | Description                                       | Interface |
+|------------------------------|---------------------------------------------------|-----------|
+| `FileStructure(path)`        | Loads `path` from filesystem                      | S         |
+| `PdbIdStructure(pdbid)`      | Fetches `pdbid` from RCSB PDB                     | S         |
+| `SimpletrajTrajectory(path)` | Uses `simpletraj` to access trajectory at `path`  | T         |
+| `MDTrajTrajectory(traj)`     | Wraps `MDTraj` trajectory `traj`                  | S and T   |
+| `PyTrajTrajectory(traj)`     | Wraps `PyTraj` trajectory `traj`                  | S and T   |
+| `MDAnalysisTrajectory(univ)` | Wraps `MDAnalysis` Universe or AtomGroup `univ`   | S and T   |
 
 
 Multiple widgets
@@ -182,7 +182,7 @@ NGLWidget
 ### Constructor
 
 ```Python
-ngl_widget = NGLWidget( structure, trajectory=None, representations=None )
+ngl_widget = NGLWidget(structure, trajectory=None, representations=None)
 ```
 
 
@@ -195,7 +195,7 @@ ngl_widget.frame = 100
 
 ```Python
 # list of representations
-ngl_widget.representations = [ { "type": "cartoon" } ]
+ngl_widget.representations = [{"type": "cartoon"}]
 ```
 
 ```Python
@@ -211,7 +211,7 @@ ngl_widget.parameters = {
 ### Methods
 
 ```Python
-ngl_widget.add_representation( "cartoon", **kwds )
+ngl_widget.add_representation("cartoon", **kwds)
 ```
 
 
@@ -228,7 +228,7 @@ Structure
 class MyStructure(nglview.Structure):
     ext = "pdb"  # or gro, cif, mol2, sdf
     params = {}  # loading options passed to NGL
-    def get_structure_string( self ):
+    def get_structure_string(self):
         return "structure in the self.ext format"
 ```
 
@@ -240,8 +240,8 @@ Trajectory
 class MyTrajectory(nglview.Trajectory):
     def get_coordinates_list( self, index ):
         # return list of coordinates in Angstrom for the frame at the given index
-        return [ x1, y1, z1, x2, y2, z2 ]
-    def get_frame_count( self ):
+        return [x1, y1, z1, x2, y2, z2]
+    def get_frame_count(self):
         return 2  # return number of frames
 ```
 
@@ -253,11 +253,11 @@ Combined
 class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
     ext = "pdb"  # or gro, cif, mol2, sdf
     params = {}  # loading options passed to NGL
-    def get_structure_string( self ):
+    def get_structure_string(self):
         return "structure in the self.ext format"
     def get_coordinates_list( self, index ):
         # return list of coordinates in Angstrom for the frame at the given index
-        return [ x1, y1, z1, x2, y2, z2 ]
+        return [x1, y1, z1, x2, y2, z2]
     def get_frame_count( self ):
         return 2  # return number of frames
 ```
