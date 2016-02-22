@@ -42,7 +42,9 @@ def show_pdbid(pdbid, **kwargs):
 
 
 def show_structure_file(path, **kwargs):
-    '''Show structure file.
+    '''Show structure file. Allowed are text-based structure
+    file formats that are by supported by NGL, including pdb,
+    gro, mol2, sdf.
 
     Example
     -------

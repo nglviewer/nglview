@@ -47,7 +47,7 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 
 | Function                                 | Description                                           |
 |------------------------------------------|-------------------------------------------------------|
-| `show_structure_file(path)`              | Shows structure in `path`                             |
+| `show_structure_file(path)`              | Shows structure (pdb, gro, mol2, sdf) in `path`       |
 | `show_pdbid(pdbid)`                      | Shows `pdbid` fetched from RCSB PDB                   |
 | `show_simpletraj(struc_path, traj_path)` | Shows structure & trajectory loaded with `simpletraj` |
 | `show_mdtraj(traj)`                      | Shows `MDTraj` trajectory `traj`                      |
