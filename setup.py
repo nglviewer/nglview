@@ -35,7 +35,10 @@ if __name__ == '__main__':
         license="MIT",
         url="https://github.com/arose/nglview",
         zip_safe=False,
-        package_data={"nglview.html": ["static/*"]},
+        package_data={
+            "nglview": ["data/*"],
+            "nglview.html": ["static/*"]
+        },
         packages=["nglview", "nglview.html"],
         requires=["ipython"],
         install_requires=["ipython"],

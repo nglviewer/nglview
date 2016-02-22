@@ -21,6 +21,11 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
+MODULE_DIR = os.path.split( os.path.abspath( __file__ ) )[0]
+DATA_DIR = os.path.join( MODULE_DIR, "data" )
+GRO_FILE = os.path.join( DATA_DIR, "md_1u19.gro" )
+XTC_FILE = os.path.join( DATA_DIR, "md_1u19.xtc" )
+
 
 ##############
 # Simple API
