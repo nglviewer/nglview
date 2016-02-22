@@ -35,12 +35,17 @@ if __name__ == '__main__':
         license="MIT",
         url="https://github.com/arose/nglview",
         zip_safe=False,
-        package_data={"nglview.html": ["static/*"]},
-        packages=["nglview", "nglview.html"],
-        requires=["ipython"],
-        install_requires=["ipython"],
+        package_data={
+            "nglview.datafiles": ["*"],
+            "nglview.html": ["static/*"]
+        },
+        packages=["nglview", "nglview.datafiles", "nglview.html"],
+        requires=["jupyter"],
+        install_requires=["jupyter"],
         extras_require={
             "simpletraj": ["simpletraj"],
-            "mdtraj": ["mdtraj"]
+            "mdtraj": ["mdtraj"],
+            "pytraj": ["pytraj"],
+            "MDAnalysis": ["MDAnalysis"]
         }
     )

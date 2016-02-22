@@ -1,6 +1,8 @@
 
 from __future__ import print_function
 
+from . import datafiles
+
 import os
 import os.path
 import warnings
@@ -27,17 +29,41 @@ except ImportError:
 
 
 def show_pdbid(pdbid, **kwargs):
+    '''Show PDB entry.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> w = nv.show_pdbid("3pqr")
+    >>> w
+    '''
     structure = PdbIdStructure(pdbid)
     return NGLWidget(structure, **kwargs)
 
 
 def show_structure_file(path, **kwargs):
+    '''Show structure file.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> w = nv.show_structure_file(nv.datafiles.GRO)
+    >>> w
+    '''
     extension = os.path.splitext(path)[1][1:]
     structure = FileStructure(path, ext=extension)
     return NGLWidget(structure, **kwargs)
 
 
 def show_simpletraj(structure_path, trajectory_path, **kwargs):
+    '''Show simpletraj trajectory and structure file.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> w = nv.show_simpletraj(nv.datafiles.GRO, nv.datafiles.XTC)
+    >>> w
+    '''
     extension = os.path.splitext(structure_path)[1][1:]
     structure = FileStructure(structure_path, ext=extension)
     trajectory = SimpletrajTrajectory(trajectory_path)
@@ -45,11 +71,31 @@ def show_simpletraj(structure_path, trajectory_path, **kwargs):
 
 
 def show_mdtraj(mdtraj_trajectory, **kwargs):
+    '''Show mdtraj trajectory.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import mdtraj as md
+    >>> t = md.load(nv.datafiles.XTC, top=nv.datafiles.GRO)
+    >>> w = nv.show_mdtraj(t)
+    >>> w
+    '''
     structure_trajectory = MDTrajTrajectory(mdtraj_trajectory)
     return NGLWidget(structure_trajectory, **kwargs)
 
 
 def show_pytraj(pytraj_trajectory, **kwargs):
+    '''Show pytraj trajectory.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import pytraj as pt
+    >>> t = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
+    >>> w = nv.show_pytraj(t)
+    >>> w
+    '''
     structure_trajectory = PyTrajTrajectory(pytraj_trajectory)
     return NGLWidget(structure_trajectory, **kwargs)
 
@@ -63,8 +109,7 @@ def show_mdanalysis(atomgroup, **kwargs):
     -------
     >>> import nglview as nv
     >>> import MDAnalysis as mda
-    >>> from MDAnalysisTests.datafiles import GRO, XTC
-    >>> u = mda.Universe(GRO, XTC)
+    >>> u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)
     >>> prot = u.select_atoms('protein')
     >>> w = nv.show_mdanalysis(prot)
     >>> w
@@ -88,6 +133,7 @@ class Structure(object):
 
 
 class FileStructure(Structure):
+
     def __init__(self, path, ext="pdb"):
         self.path = path
         self.ext = ext
@@ -126,12 +172,22 @@ class Trajectory(object):
 
 
 class SimpletrajTrajectory(Trajectory):
+    '''simpletraj adaptor.
 
+    Example
+    -------
+    >>> import nglview as nv
+    >>> t = nv.SimpletrajTrajectory(nv.datafiles.XTC)
+    >>> w = nv.NGLWidget(t)
+    >>> w
+    '''
     def __init__(self, path):
         try:
             import simpletraj
         except ImportError as e:
-            raise "'SimpletrajTrajectory' requires the 'simpletraj' package"
+            raise ImportError(
+                "'SimpletrajTrajectory' requires the 'simpletraj' package"
+            )
         self.traj_cache = simpletraj.trajectory.TrajectoryCache()
         self.path = path
         try:
@@ -150,7 +206,17 @@ class SimpletrajTrajectory(Trajectory):
 
 
 class MDTrajTrajectory(Trajectory, Structure):
+    '''mdtraj adaptor.
 
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import mdtraj as md
+    >>> traj = md.load(nv.datafiles.XTC, nv.datafiles.GRO)
+    >>> t = MDTrajTrajectory(traj)
+    >>> w = nv.NGLWidget(t)
+    >>> w
+    '''
     def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
@@ -172,7 +238,17 @@ class MDTrajTrajectory(Trajectory, Structure):
 
 
 class PyTrajTrajectory(Trajectory, Structure):
+    '''PyTraj adaptor.
 
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import pytraj as pt
+    >>> traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
+    >>> t = nv.PyTrajTrajectory(traj)
+    >>> w = nv.NGLWidget(t)
+    >>> w
+    '''
     def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
@@ -191,7 +267,9 @@ class PyTrajTrajectory(Trajectory, Structure):
 
     def get_structure_string(self):
         fd, fname = tempfile.mkstemp(suffix=".pdb")
-        self.trajectory[:1].save(fname, overwrite=True, options='conect')
+        self.trajectory[:1].save(
+            fname, format="pdb", overwrite=True, options='conect'
+        )
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
@@ -206,15 +284,14 @@ class MDAnalysisTrajectory(Trajectory, Structure):
     -------
     >>> import nglview as nv
     >>> import MDAnalysis as mda
-    >>> from MDAnalysisTests.datafiles import GRO, XTC
-    >>> u = mda.Universe(GRO, XTC)
+    >>> u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)
     >>> prot = u.select_atoms('protein')
     >>> t = nv.MDAnalysisTrajectory(prot)
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
     def __init__(self, atomgroup):
-        self.atomgroup = atomgroup 
+        self.atomgroup = atomgroup
         self.ext = "pdb"
         self.params = {}
 
@@ -227,14 +304,20 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         return self.atomgroup.universe.trajectory.n_frames
 
     def get_structure_string(self):
-        import MDAnalysis as mda
+        try:
+            import MDAnalysis as mda
+        except ImportError as e:
+            raise ImportError(
+                "'MDAnalysisTrajectory' requires the 'MDAnalysis' package"
+            )
         import cStringIO
         u = self.atomgroup.universe
         u.trajectory[0]
         f = mda.lib.util.NamedStream(cStringIO.StringIO(), 'tmp.pdb')
+        atoms = self.atomgroup.atoms
         # add PDB output to the named stream
-        with mda.Writer(f, self.atomgroup.atoms.n_atoms, multiframe=False) as W:
-            W.write(self.atomgroup.atoms)
+        with mda.Writer(f, atoms.n_atoms, multiframe=False) as W:
+            W.write(atoms)
         # extract from the stream
         pdb_string = f.read()
         return pdb_string

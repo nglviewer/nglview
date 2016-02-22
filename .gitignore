@@ -4,8 +4,6 @@
 
 *.pyc
 
-*.offsets
-
 dist/*
 build/*
 *.egg-info
