@@ -213,7 +213,8 @@ class MDTrajTrajectory(Trajectory, Structure):
     -------
     >>> import nglview as nv
     >>> import mdtraj as md
-    >>> t = md.load(nv.XTC_FILE, nv.GRO_FILE)
+    >>> traj = md.load(nv.XTC_FILE, nv.GRO_FILE)
+    >>> t = MDTrajTrajectory(traj)
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
