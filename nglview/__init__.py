@@ -97,7 +97,7 @@ def show_pytraj(pytraj_trajectory, **kwargs):
     -------
     >>> import nglview as nv
     >>> import pytraj as pt
-    >>> t = pt.load(nv.XTC_FILE, nv.GRO_FILE)
+    >>> t = pt.load(nv.TRR_FILE, nv.PDB_FILE)
     >>> w = nv.show_pytraj(t)
     >>> w
     '''
@@ -241,7 +241,17 @@ class MDTrajTrajectory(Trajectory, Structure):
 
 
 class PyTrajTrajectory(Trajectory, Structure):
+    '''PyTraj adaptor.
 
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import pytraj as pt
+    >>> traj = pt.load(nv.TRR_FILE, nv.PDB_FILE)
+    >>> t = nv.MDAnalysisTrajectory(traj)
+    >>> w = nv.NGLWidget(t)
+    >>> w
+    '''
     def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
