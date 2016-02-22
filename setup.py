@@ -44,6 +44,8 @@ if __name__ == '__main__':
         install_requires=["ipython"],
         extras_require={
             "simpletraj": ["simpletraj"],
-            "mdtraj": ["mdtraj"]
+            "mdtraj": ["mdtraj"],
+            "pytraj": ["pytraj"],
+            "MDAnalysis": ["MDAnalysis"]
         }
     )
