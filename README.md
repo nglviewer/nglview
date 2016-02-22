@@ -82,8 +82,8 @@ package):
 
 ```Python
 import nglview
-struc = nglview.FileStructure("mystruc.pdb")
-traj = nglview.SimpletrajStructure("mytraj.xtc")
+struc = nglview.FileStructure(nglview.datafiles.GRO)
+traj = nglview.SimpletrajStructure(nglview.datafiles.XTC)
 nglview.NGLWidget(struc, traj)
 ```
 
@@ -93,7 +93,7 @@ wraps a trajectory loaded with [MDTraj](http://mdtraj.org/):
 ```Python
 import nglview
 import mdtraj
-traj = mdtraj.load("mytraj.xtc", top="mystruc.gro")
+traj = mdtraj.load(nglview.datafiles.XTC, top=nglview.datafiles.GRO)
 strucTraj = nglview.MDTrajTrajectory(traj)
 nglview.NGLWidget(strucTraj)
 ```
@@ -279,6 +279,7 @@ Version 0.4dev
 * CODE: be less noisy when importing nglview
 * DOC: more usage examples, API description
 * DOC: added CHANGELOG file
+* BUILD: added example files in the package
 
 
 Version 0.3

@@ -1,4 +1,4 @@
-include nglview/data/*
+include nglview/datafiles/*
 include nglview/html/static/*
 include LICENSE README.md
 include setup.py

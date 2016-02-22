@@ -1,6 +1,8 @@
 
 from __future__ import print_function
 
+from . import datafiles
+
 import os
 import os.path
 import warnings
@@ -20,13 +22,6 @@ try:
     from urllib.request import urlopen
 except ImportError:
     from urllib2 import urlopen
-
-MODULE_DIR = os.path.split(os.path.abspath(__file__))[0]
-DATA_DIR = os.path.join(MODULE_DIR, "data")
-PDB_FILE = os.path.join(DATA_DIR, "md_1u19.pdb")
-GRO_FILE = os.path.join(DATA_DIR, "md_1u19.gro")
-XTC_FILE = os.path.join(DATA_DIR, "md_1u19.xtc")
-TRR_FILE = os.path.join(DATA_DIR, "md_1u19.trr")
 
 
 ##############
@@ -52,7 +47,7 @@ def show_structure_file(path, **kwargs):
     Example
     -------
     >>> import nglview as nv
-    >>> w = nv.show_structure_file(nv.GRO_FILE)
+    >>> w = nv.show_structure_file(nv.datafiles.GRO)
     >>> w
     '''
     extension = os.path.splitext(path)[1][1:]
@@ -66,7 +61,7 @@ def show_simpletraj(structure_path, trajectory_path, **kwargs):
     Example
     -------
     >>> import nglview as nv
-    >>> w = nv.show_simpletraj(nv.GRO_FILE, nv.XTC_FILE)
+    >>> w = nv.show_simpletraj(nv.datafiles.GRO, nv.datafiles.XTC)
     >>> w
     '''
     extension = os.path.splitext(structure_path)[1][1:]
@@ -82,7 +77,7 @@ def show_mdtraj(mdtraj_trajectory, **kwargs):
     -------
     >>> import nglview as nv
     >>> import mdtraj as md
-    >>> t = md.load(nv.XTC_FILE, top=nv.GRO_FILE)
+    >>> t = md.load(nv.datafiles.XTC, top=nv.datafiles.GRO)
     >>> w = nv.show_mdtraj(t)
     >>> w
     '''
@@ -97,7 +92,7 @@ def show_pytraj(pytraj_trajectory, **kwargs):
     -------
     >>> import nglview as nv
     >>> import pytraj as pt
-    >>> t = pt.load(nv.TRR_FILE, nv.PDB_FILE)
+    >>> t = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     >>> w = nv.show_pytraj(t)
     >>> w
     '''
@@ -114,7 +109,7 @@ def show_mdanalysis(atomgroup, **kwargs):
     -------
     >>> import nglview as nv
     >>> import MDAnalysis as mda
-    >>> u = mda.Universe(nv.GRO_FILE, nv.XTC_FILE)
+    >>> u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)
     >>> prot = u.select_atoms('protein')
     >>> w = nv.show_mdanalysis(prot)
     >>> w
@@ -182,7 +177,7 @@ class SimpletrajTrajectory(Trajectory):
     Example
     -------
     >>> import nglview as nv
-    >>> t = nv.SimpletrajTrajectory(nv.XTC_FILE)
+    >>> t = nv.SimpletrajTrajectory(nv.datafiles.XTC)
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
@@ -215,7 +210,7 @@ class MDTrajTrajectory(Trajectory, Structure):
     -------
     >>> import nglview as nv
     >>> import mdtraj as md
-    >>> traj = md.load(nv.XTC_FILE, nv.GRO_FILE)
+    >>> traj = md.load(nv.datafiles.XTC, nv.datafiles.GRO)
     >>> t = MDTrajTrajectory(traj)
     >>> w = nv.NGLWidget(t)
     >>> w
@@ -247,7 +242,7 @@ class PyTrajTrajectory(Trajectory, Structure):
     -------
     >>> import nglview as nv
     >>> import pytraj as pt
-    >>> traj = pt.load(nv.TRR_FILE, nv.PDB_FILE)
+    >>> traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     >>> t = nv.PyTrajTrajectory(traj)
     >>> w = nv.NGLWidget(t)
     >>> w
@@ -287,7 +282,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
     -------
     >>> import nglview as nv
     >>> import MDAnalysis as mda
-    >>> u = mda.Universe(nv.GRO_FILE, nv.XTC_FILE)
+    >>> u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)
     >>> prot = u.select_atoms('protein')
     >>> t = nv.MDAnalysisTrajectory(prot)
     >>> w = nv.NGLWidget(t)

@@ -36,10 +36,10 @@ if __name__ == '__main__':
         url="https://github.com/arose/nglview",
         zip_safe=False,
         package_data={
-            "nglview": ["data/*"],
+            "nglview.datafiles": ["*"],
             "nglview.html": ["static/*"]
         },
-        packages=["nglview", "nglview.html"],
+        packages=["nglview", "nglview.datafiles", "nglview.html"],
         requires=["ipython"],
         install_requires=["ipython"],
         extras_require={
