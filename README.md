@@ -25,7 +25,7 @@ From PyPI:
 
 From Conda
 
-    conda install -c https://conda.anaconda.org/omnia nglview
+    conda install -c omnia nglview
 
 
 Usage
