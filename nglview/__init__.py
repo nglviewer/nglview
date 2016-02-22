@@ -185,7 +185,9 @@ class SimpletrajTrajectory(Trajectory):
         try:
             import simpletraj
         except ImportError as e:
-            raise "'SimpletrajTrajectory' requires the 'simpletraj' package"
+            raise ImportError(
+                "'SimpletrajTrajectory' requires the 'simpletraj' package"
+            )
         self.traj_cache = simpletraj.trajectory.TrajectoryCache()
         self.path = path
         try:
@@ -305,7 +307,9 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         try:
             import MDAnalysis as mda
         except ImportError as e:
-            raise "'MDAnalysisTrajectory' requires the 'MDAnalysis' package"
+            raise ImportError(
+                "'MDAnalysisTrajectory' requires the 'MDAnalysis' package"
+            )
         import cStringIO
         u = self.atomgroup.universe
         u.trajectory[0]
