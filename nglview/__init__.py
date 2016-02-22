@@ -32,17 +32,41 @@ XTC_FILE = os.path.join( DATA_DIR, "md_1u19.xtc" )
 
 
 def show_pdbid(pdbid, **kwargs):
+    '''Show PDB entry.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> w = nv.show_pdbid("3pqr")
+    >>> w
+    '''
     structure = PdbIdStructure(pdbid)
     return NGLWidget(structure, **kwargs)
 
 
 def show_structure_file(path, **kwargs):
+    '''Show structure file.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> w = nv.show_structure_file(nv.GRO_FILE)
+    >>> w
+    '''
     extension = os.path.splitext(path)[1][1:]
     structure = FileStructure(path, ext=extension)
     return NGLWidget(structure, **kwargs)
 
 
 def show_simpletraj(structure_path, trajectory_path, **kwargs):
+    '''Show simpletraj trajectory and structure file.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> w = nv.show_simpletraj(nv.GRO_FILE, nv.XTC_FILE)
+    >>> w
+    '''
     extension = os.path.splitext(structure_path)[1][1:]
     structure = FileStructure(structure_path, ext=extension)
     trajectory = SimpletrajTrajectory(trajectory_path)
@@ -50,11 +74,31 @@ def show_simpletraj(structure_path, trajectory_path, **kwargs):
 
 
 def show_mdtraj(mdtraj_trajectory, **kwargs):
+    '''Show mdtraj trajectory.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import mdtraj as md
+    >>> t = md.load(nv.XTC_FILE, top=nv.GRO_FILE)
+    >>> w = nv.show_mdtraj(t)
+    >>> w
+    '''
     structure_trajectory = MDTrajTrajectory(mdtraj_trajectory)
     return NGLWidget(structure_trajectory, **kwargs)
 
 
 def show_pytraj(pytraj_trajectory, **kwargs):
+    '''Show pytraj trajectory.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import pytraj as pt
+    >>> t = pt.load(nv.XTC_FILE, nv.GRO_FILE)
+    >>> w = nv.show_pytraj(t)
+    >>> w
+    '''
     structure_trajectory = PyTrajTrajectory(pytraj_trajectory)
     return NGLWidget(structure_trajectory, **kwargs)
 
@@ -68,8 +112,7 @@ def show_mdanalysis(atomgroup, **kwargs):
     -------
     >>> import nglview as nv
     >>> import MDAnalysis as mda
-    >>> from MDAnalysisTests.datafiles import GRO, XTC
-    >>> u = mda.Universe(GRO, XTC)
+    >>> u = mda.Universe(nv.GRO_FILE, nv.XTC_FILE)
     >>> prot = u.select_atoms('protein')
     >>> w = nv.show_mdanalysis(prot)
     >>> w
@@ -93,6 +136,7 @@ class Structure(object):
 
 
 class FileStructure(Structure):
+
     def __init__(self, path, ext="pdb"):
         self.path = path
         self.ext = ext
@@ -131,7 +175,15 @@ class Trajectory(object):
 
 
 class SimpletrajTrajectory(Trajectory):
+    '''simpletraj adaptor.
 
+    Example
+    -------
+    >>> import nglview as nv
+    >>> t = nv.SimpletrajTrajectory(nv.XTC_FILE)
+    >>> w = nv.NGLWidget(t)
+    >>> w
+    '''
     def __init__(self, path):
         try:
             import simpletraj
@@ -155,7 +207,16 @@ class SimpletrajTrajectory(Trajectory):
 
 
 class MDTrajTrajectory(Trajectory, Structure):
+    '''mdtraj adaptor.
 
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import mdtraj as md
+    >>> t = md.load(nv.XTC_FILE, nv.GRO_FILE)
+    >>> w = nv.NGLWidget(t)
+    >>> w
+    '''
     def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
@@ -196,7 +257,8 @@ class PyTrajTrajectory(Trajectory, Structure):
 
     def get_structure_string(self):
         fd, fname = tempfile.mkstemp(suffix=".pdb")
-        self.trajectory[:1].save(fname, overwrite=True, options='conect')
+        self.trajectory[:1].save(fname, format="pdb", overwrite=True, options='conect')
+        # self.trajectory[:1].save(fname, format="pdb", overwrite=True)
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
@@ -211,15 +273,14 @@ class MDAnalysisTrajectory(Trajectory, Structure):
     -------
     >>> import nglview as nv
     >>> import MDAnalysis as mda
-    >>> from MDAnalysisTests.datafiles import GRO, XTC
-    >>> u = mda.Universe(GRO, XTC)
+    >>> u = mda.Universe(nv.GRO_FILE, nv.XTC_FILE)
     >>> prot = u.select_atoms('protein')
     >>> t = nv.MDAnalysisTrajectory(prot)
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
     def __init__(self, atomgroup):
-        self.atomgroup = atomgroup 
+        self.atomgroup = atomgroup
         self.ext = "pdb"
         self.params = {}
 
