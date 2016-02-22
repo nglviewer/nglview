@@ -40,8 +40,8 @@ if __name__ == '__main__':
             "nglview.html": ["static/*"]
         },
         packages=["nglview", "nglview.datafiles", "nglview.html"],
-        requires=["ipython"],
-        install_requires=["ipython"],
+        requires=["jupyter"],
+        install_requires=["jupyter"],
         extras_require={
             "simpletraj": ["simpletraj"],
             "mdtraj": ["mdtraj"],
