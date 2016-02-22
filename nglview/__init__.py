@@ -23,8 +23,10 @@ except ImportError:
 
 MODULE_DIR = os.path.split(os.path.abspath(__file__))[0]
 DATA_DIR = os.path.join(MODULE_DIR, "data")
+PDB_FILE = os.path.join(DATA_DIR, "md_1u19.pdb")
 GRO_FILE = os.path.join(DATA_DIR, "md_1u19.gro")
 XTC_FILE = os.path.join(DATA_DIR, "md_1u19.xtc")
+TRR_FILE = os.path.join(DATA_DIR, "md_1u19.trr")
 
 
 ##############
