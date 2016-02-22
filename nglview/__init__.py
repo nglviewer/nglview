@@ -248,7 +248,7 @@ class PyTrajTrajectory(Trajectory, Structure):
     >>> import nglview as nv
     >>> import pytraj as pt
     >>> traj = pt.load(nv.TRR_FILE, nv.PDB_FILE)
-    >>> t = nv.MDAnalysisTrajectory(traj)
+    >>> t = nv.PyTrajTrajectory(traj)
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
