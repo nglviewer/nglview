@@ -302,7 +302,10 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         return self.atomgroup.universe.trajectory.n_frames
 
     def get_structure_string(self):
-        import MDAnalysis as mda
+        try:
+            import MDAnalysis as mda
+        except ImportError as e:
+            raise "'MDAnalysisTrajectory' requires the 'MDAnalysis' package"
         import cStringIO
         u = self.atomgroup.universe
         u.trajectory[0]
