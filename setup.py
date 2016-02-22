@@ -3,7 +3,7 @@
 from setuptools import setup
 
 
-VERSION = "0.4dev"
+VERSION = "0.4"
 CLASSIFIERS = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",

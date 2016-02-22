@@ -267,8 +267,8 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
 Changelog
 =========
 
-Version 0.4dev
---------------
+Version 0.4
+-----------
 
 * ADD: Convenience methods to show widget from various sources
 * ADD: `PyTrajTrajectory` adaptor
