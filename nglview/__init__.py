@@ -412,7 +412,11 @@ class NGLWidget(widgets.DOMWidget):
         selection = selection.strip()
 
         for k, v in kwd.items():
-            kwd[k] = v.strip()
+            try:
+                kwd[k] = v.strip()
+            except AttributeError:
+                # e.g.: opacity=0.4
+                kwd[k] = v
 
         rep = self.representations[:]
         d = {'params': {'sele': selection}}
