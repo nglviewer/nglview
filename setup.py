@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
 from setuptools import setup
+import versioneer
 
-
-VERSION = "0.4"
 CLASSIFIERS = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -30,7 +29,8 @@ if __name__ == '__main__':
         author_email="alexander.rose@weirdbyte.de",
         description="IPython widget to interactively view molecular\
                      structures and trajectories.",
-        version=VERSION,
+        version=versioneer.get_version(),
+        cmdclass=versioneer.get_cmdclass(),
         classifiers=CLASSIFIERS,
         license="MIT",
         url="https://github.com/arose/nglview",
