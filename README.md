@@ -5,6 +5,9 @@ An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular
 Work in progress but usable. Please contact us if you want to take part. Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
 
+[![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
+
+
 Table of contents
 =================
 
@@ -269,6 +272,8 @@ Changelog
 
 Version 0.4
 -----------
+
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.46373.svg)](http://dx.doi.org/10.5281/zenodo.46373)
 
 * ADD: Convenience methods to show widget from various sources
 * ADD: `PyTrajTrajectory` adaptor
