@@ -449,3 +449,7 @@ def install(user=True, symlink=False):
     })
 
 install(symlink=True)
+
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
