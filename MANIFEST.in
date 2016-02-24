@@ -1,6 +1,6 @@
 include nglview/datafiles/*
 include nglview/html/static/*
-include LICENSE README.md
+include LICENSE README.md DEVELOPMENT.md
 include setup.py
 global-exclude *.pycinclude versioneer.py
 include nglview/_version.py
