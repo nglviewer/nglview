@@ -6,6 +6,7 @@ Work in progress but usable. Please contact us if you want to take part. Should 
 
 
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
+[![Build Status](https://travis-ci.org/arose/nglview.svg?branch=master)](https://travis-ci.org/arose/nglview)
 
 
 Table of contents
