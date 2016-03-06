@@ -1,7 +1,8 @@
 
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 
 from . import datafiles
+from .utils import seq_to_string
 
 import os
 import os.path
@@ -394,7 +395,7 @@ class NGLWidget(widgets.DOMWidget):
         repr_type : str
             type of representation. Please see:
             http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations
-        selection : str, default 'all'
+        selection : str or 1D array (atom indices), default 'all'
             atom selection
         **kwd: additional arguments for representation
 
@@ -405,11 +406,13 @@ class NGLWidget(widgets.DOMWidget):
         >>> t = (pt.datafiles.load_dpdp()[:].superpose('@CA'))
         >>> w = nv.show_pytraj(t)
         >>> w.add_representation('cartoon', selection='protein', color='blue')
+        >>> w.add_representation('licorice', selection=[3, 8, 9, 11], color='red')
         >>> w
         '''
         # avoid space sensitivity
         repr_type = repr_type.strip()
-        selection = selection.strip()
+        # overwrite selection
+        selection = seq_to_string(selection).strip()
 
         for k, v in kwd.items():
             try:
