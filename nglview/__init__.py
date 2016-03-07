@@ -426,6 +426,60 @@ class NGLWidget(widgets.DOMWidget):
         # reassign representation to trigger change
         self.representations = rep
 
+    def add_point(self, selection='all', **kwd):
+        self.add_representation('point', selection, **kwd)
+
+    def add_line(self, selection='all', **kwd):
+        self.add_representation('line', selection, **kwd)
+
+    def add_cartoon(self, selection='all', **kwd):
+        self.add_representation('cartoon', selection, **kwd)
+
+    def add_licorice(self, selection='all', **kwd):
+        self.add_representation('licorice', selection, **kwd)
+
+    def add_ribbon(self, selection='all', **kwd):
+        self.add_representation('ribbon', selection, **kwd)
+
+    def add_surface(self, selection='all', **kwd):
+        self.add_representation('surface', selection, **kwd)
+
+    def add_trace(self, selection='all', **kwd):
+        self.add_representation('trace', selection, **kwd)
+
+    def add_tube(self, selection='all', **kwd):
+        self.add_representation('tube', selection, **kwd)
+
+    def add_label(self, selection='all', **kwd):
+        self.add_representation('label', selection, **kwd)
+
+    def add_backbone(self, selection='all', **kwd):
+        self.add_representation('backbone', selection, **kwd)
+
+    def add_ball_and_stick(self, selection='all', **kwd):
+        self.add_representation('ball+stick', selection, **kwd)
+
+    def add_contact(self, selection='all', **kwd):
+        self.add_representation('contact', selection, **kwd)
+
+    def add_crossing(self, selection='all', **kwd):
+        self.add_representation('crossing', selection, **kwd)
+
+    def add_helixorient(self, selection='all', **kwd):
+        self.add_representation('helixorient', selection, **kwd)
+
+    def add_hyperball(self, selection='all', **kwd):
+        self.add_representation('hyperball', selection, **kwd)
+
+    def add_rocket(self, selection='all', **kwd):
+        self.add_representation('rocket', selection, **kwd)
+
+    def add_rope(self, selection='all', **kwd):
+        self.add_representation('rope', selection, **kwd)
+
+    def add_simplified_base(self, selection='all', **kwd):
+        self.add_representation('base', selection, **kwd)
+
 
 def install(user=True, symlink=False):
     """Install the widget nbextension.
