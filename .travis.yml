@@ -5,7 +5,7 @@ matrix:
      - { os: linux, env: PYTHON_VERSION=2.7 }
      - { os: linux, env: PYTHON_VERSION=3.4 }
      - { os: linux, env: PYTHON_VERSION=3.5 }
-     # - { os: osx, env: PYTHON_VERSION=3.5 }
+     - { os: osx, env: PYTHON_VERSION=3.5 }
 
 sudo: false
 
@@ -15,8 +15,8 @@ before_install:
 install:
     - python setup.py install
 
-#script:
-#    - nosetests -v --with-coverage --cover-package=nglview nglview
+script:
+    - nosetests -vs .
 
 after_success:
     - echo "after_success"
