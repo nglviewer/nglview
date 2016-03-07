@@ -395,7 +395,7 @@ class NGLWidget(widgets.DOMWidget):
         repr_type : str
             type of representation. Please see:
             http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations
-        selection : str or 1D array (atom indices), default 'all'
+        selection : str or 1D array (atom indices) or any iterator that returns integer, default 'all'
             atom selection
         **kwd: additional arguments for representation
 
