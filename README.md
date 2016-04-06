@@ -38,13 +38,13 @@ Usage
 
 Open a notebook
 
-    ipython notebook
+    jupyter notebook
 
 and issue
 
 ```Python
 import nglview
-show_pdbid("3pqr")  # load "3pqr" from RCSB PDB and display viewer widget
+nglview.show_pdbid("3pqr")  # load "3pqr" from RCSB PDB and display viewer widget
 ```
 
 A number of convenience functions are available to quickly display data from
