@@ -47,5 +47,6 @@ if __name__ == '__main__':
             "mdtraj": ["mdtraj"],
             "pytraj": ["pytraj"],
             "MDAnalysis": ["MDAnalysis"]
+            "ParmEd": ["parmed"]
         }
     )
