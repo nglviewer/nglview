@@ -426,59 +426,37 @@ class NGLWidget(widgets.DOMWidget):
         # reassign representation to trigger change
         self.representations = rep
 
-    def add_point(self, selection='all', **kwd):
-        self.add_representation('point', selection, **kwd)
+# dynamically add method for NGLWidget
+_repr_names  = [
+        ('point', 'point'),
+        ('line', 'line'),
+        ('cartoon', 'cartoon'),
+        ('licorice', 'licorice'),
+        ('ribbon', 'ribbon'),
+        ('surface', 'surface'),
+        ('trace', 'trace'),
+        ('tube', 'tube'),
+        ('label', 'label'),
+        ('backbone', 'backbone'),
+        ('ball_and_stick', 'ball+stick'),
+        ('contact', 'contact'),
+        ('crossing', 'crossing'),
+        ('helixorient', 'helixorient'),
+        ('hyperball', 'hyperball'),
+        ('rocket', 'rocket'),
+        ('rope', 'rope'),
+        ('simplified_base', 'base'),
+        ]
 
-    def add_line(self, selection='all', **kwd):
-        self.add_representation('line', selection, **kwd)
+def _add_repr_method(cls, _repr_names):
+    for rep in _repr_names:
+        def func(self, selection='all', **kwd):
+            """
+            """
+            self.add_representation(repr_type=rep[1], selection=selection, **kwd)
+        setattr(cls, 'add_' + rep[0], func)
 
-    def add_cartoon(self, selection='all', **kwd):
-        self.add_representation('cartoon', selection, **kwd)
-
-    def add_licorice(self, selection='all', **kwd):
-        self.add_representation('licorice', selection, **kwd)
-
-    def add_ribbon(self, selection='all', **kwd):
-        self.add_representation('ribbon', selection, **kwd)
-
-    def add_surface(self, selection='all', **kwd):
-        self.add_representation('surface', selection, **kwd)
-
-    def add_trace(self, selection='all', **kwd):
-        self.add_representation('trace', selection, **kwd)
-
-    def add_tube(self, selection='all', **kwd):
-        self.add_representation('tube', selection, **kwd)
-
-    def add_label(self, selection='all', **kwd):
-        self.add_representation('label', selection, **kwd)
-
-    def add_backbone(self, selection='all', **kwd):
-        self.add_representation('backbone', selection, **kwd)
-
-    def add_ball_and_stick(self, selection='all', **kwd):
-        self.add_representation('ball+stick', selection, **kwd)
-
-    def add_contact(self, selection='all', **kwd):
-        self.add_representation('contact', selection, **kwd)
-
-    def add_crossing(self, selection='all', **kwd):
-        self.add_representation('crossing', selection, **kwd)
-
-    def add_helixorient(self, selection='all', **kwd):
-        self.add_representation('helixorient', selection, **kwd)
-
-    def add_hyperball(self, selection='all', **kwd):
-        self.add_representation('hyperball', selection, **kwd)
-
-    def add_rocket(self, selection='all', **kwd):
-        self.add_representation('rocket', selection, **kwd)
-
-    def add_rope(self, selection='all', **kwd):
-        self.add_representation('rope', selection, **kwd)
-
-    def add_simplified_base(self, selection='all', **kwd):
-        self.add_representation('base', selection, **kwd)
+_add_repr_method(NGLWidget, _repr_names)
 
 
 def install(user=True, symlink=False):
