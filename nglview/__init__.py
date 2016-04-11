@@ -480,7 +480,8 @@ def install(user=True, symlink=False):
     """
     staticdir = resource_filename('nglview', os.path.join('html', 'static'))
     install_nbextension(staticdir, destination='nglview',
-                        user=user, symlink=symlink)
+                        user=user, symlink=symlink,
+                        verbose=0)
 
     cm = ConfigManager()
     cm.update('notebook', {
