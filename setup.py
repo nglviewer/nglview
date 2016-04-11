@@ -40,8 +40,8 @@ if __name__ == '__main__':
             "nglview.html": ["static/*"]
         },
         packages=["nglview", "nglview.datafiles", "nglview.html"],
-        requires=["jupyter", "six"],
-        tests_require=["nose", "six"],
+        requires=["jupyter"]
+        tests_require=["nose"]
         test_suite="nose.collector",
         install_requires=["jupyter"],
         extras_require={
