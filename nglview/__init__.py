@@ -102,6 +102,21 @@ def show_pytraj(pytraj_trajectory, **kwargs):
     return NGLWidget(structure_trajectory, **kwargs)
 
 
+def show_parmed(parmed_structure, **kwargs):
+    '''Show pytraj trajectory.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import parmed as pmd
+    >>> t = pt.load_file(nv.datafiles.PDB)
+    >>> w = nv.show_parmed(t)
+    >>> w
+    '''
+    structure_trajectory = ParmEdTrajectory(parmed_structure)
+    return NGLWidget(structure_trajectory, **kwargs)
+
+
 def show_mdanalysis(atomgroup, **kwargs):
     '''Show NGL widget with MDAnalysis AtomGroup.
 
@@ -272,6 +287,32 @@ class PyTrajTrajectory(Trajectory, Structure):
         self.trajectory[:1].save(
             fname, format="pdb", overwrite=True, options='conect'
         )
+        pdb_string = os.fdopen(fd).read()
+        # os.close( fd )
+        return pdb_string
+
+
+class ParmEdTrajectory(Trajectory, Structure):
+    '''ParmEd adaptor.
+    '''
+    def __init__(self, trajectory):
+        self.trajectory = trajectory
+        self.ext = "pdb"
+        self.params = {}
+        # only call get_coordinates once
+        self._xyz = trajectory.get_coordinates()
+
+    def get_coordinates_list(self, index):
+        frame = self._xyz[index]
+        return frame.flatten().tolist()
+
+    def get_frame_count(self):
+        return len(self._xyz)
+
+    def get_structure_string(self):
+        fd, fname = tempfile.mkstemp(suffix=".pdb")
+        self.trajectory.save(
+            fname, overwrite=True)
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
