@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from .six import string_types
+from six import string_types
 
 def seq_to_string(seq):
     """e.g. convert [1, 3, 5] to "@1,3,5
