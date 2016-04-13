@@ -73,7 +73,7 @@ define( [
                 // init parameters handling
                 this.model.on( "change:parameters", this.parametersChanged, this );
 
-                // haichit
+                // get message from Python
                 this.model.on( "msg:custom", function (msg) {
                     this.on_msg( msg );
                 }, this);
