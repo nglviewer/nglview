@@ -73,6 +73,11 @@ define( [
                 // init parameters handling
                 this.model.on( "change:parameters", this.parametersChanged, this );
 
+                // haichit
+                this.model.on( "msg:custom", function (msg) {
+                    this.on_msg( msg );
+                }, this);
+
                 // init NGL stage
                 NGL.useWorker = false;
                 this.stage = new NGL.Stage();
@@ -234,6 +239,12 @@ define( [
         parametersChanged: function(){
             var parameters = this.model.get( "parameters" );
             this.stage.setParameters( parameters );
+        },
+
+        on_msg: function(msg){
+            if ( msg.type == 'call_method' ) {
+                this.stage[msg.methodName](msg.args);
+            }
         }
 
     } );

@@ -467,6 +467,13 @@ class NGLWidget(widgets.DOMWidget):
         # reassign representation to trigger change
         self.representations = rep
 
+    def _remote_call(self, method_name, **kwargs):
+        msg = {}
+        msg['type'] = 'call_method'
+        msg['methodName'] = method_name
+        msg['args'] = kwargs
+
+        self.send(msg)
 
 def install(user=True, symlink=False):
     """Install the widget nbextension.
