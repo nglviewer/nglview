@@ -243,7 +243,18 @@ define( [
 
         on_msg: function(msg){
             if ( msg.type == 'call_method' ) {
-                this.stage[msg.methodName](msg.args);
+               if ( msg.who == 'stage' ) {
+                   if ( msg.methodName == 'screenshot' ) {
+                        window.alert( NGL.screenshot );
+                        NGL.screenshot( this.stage.viewer, msg.args );
+                    }
+                    else
+                        this.stage[msg.methodName]( msg.args );
+                }
+               else if ( msg.who == 'viewer' ) {
+                    window.alert( this.stage.viewer[msg.methodName] );
+                    this.stage.viewer[msg.methodName]( msg.args );
+                }
             }
         }
 

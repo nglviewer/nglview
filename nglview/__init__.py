@@ -467,8 +467,9 @@ class NGLWidget(widgets.DOMWidget):
         # reassign representation to trigger change
         self.representations = rep
 
-    def _remote_call(self, method_name, **kwargs):
+    def _remote_call(self, method_name, who='stage', **kwargs):
         msg = {}
+        msg['who'] = who
         msg['type'] = 'call_method'
         msg['methodName'] = method_name
         msg['args'] = kwargs
