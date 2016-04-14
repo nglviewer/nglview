@@ -245,14 +245,14 @@ define( [
             if ( msg.type == 'call_method' ) {
                if ( msg.who == 'stage' ) {
                    if ( msg.methodName == 'screenshot' ) {
-                        window.alert( NGL.screenshot );
+                        // window.alert( NGL.screenshot );
                         NGL.screenshot( this.stage.viewer, msg.args );
                     }
                     else
                         this.stage[msg.methodName]( msg.args );
                 }
                else if ( msg.who == 'viewer' ) {
-                    window.alert( this.stage.viewer[msg.methodName] );
+                    // window.alert( this.stage.viewer[msg.methodName] );
                     this.stage.viewer[msg.methodName]( msg.args );
                 }
             }
