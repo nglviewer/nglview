@@ -252,13 +252,12 @@ define( [
                    }else{
                        console.log( msg.args );
                        console.log( msg.kwargs );
-                       console.log( stage_func );
-                       console.log( "try apply" );
                        stage_func.apply(stage, msg.args, msg.kwargs);
                    }
             }else if( msg.who == 'viewer' ) {
                     var viewer = this.stage.viewer;
                     var viewer_func = this.stage.viewer[msg.methodName];
+                    console.log( "calling viewer method" );
                     viewer_func.apply(viewer, msg.args, msg.kwargs)
                 }
             }
