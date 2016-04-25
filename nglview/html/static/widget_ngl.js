@@ -244,19 +244,22 @@ define( [
         on_msg: function(msg){
             if ( msg.type == 'call_method' ) {
                if( msg.who == 'stage' ){
+                   var stage_func = this.stage[msg.methodName];
+                   var stage = this.stage
                    if ( msg.methodName == 'screenshot' ){
-                        // window.alert( NGL.screenshot );
+                        console.log( 'taking screenshot' );
                         NGL.screenshot( this.stage.viewer, msg.kwargs);
-                   }else if( msg.methodName == 'loadFile'){
-                            console.log( msg.args );
-                            console.log( msg.kwargs );
-                            this.stage[msg.methodName](msg.args[0], msg.kwargs);
                    }else{
-                           this.stage[msg.methodName]( msg.kwargs );
-                        }
+                       console.log( msg.args );
+                       console.log( msg.kwargs );
+                       console.log( stage_func );
+                       console.log( "try apply" );
+                       stage_func.apply(stage, msg.args, msg.kwargs);
+                   }
             }else if( msg.who == 'viewer' ) {
-                    // window.alert( this.stage.viewer[msg.methodName] );
-                    this.stage.viewer[msg.methodName]( msg.kwargs);
+                    var viewer = this.stage.viewer;
+                    var viewer_func = this.stage.viewer[msg.methodName];
+                    viewer_func.apply(viewer, msg.args, msg.kwargs)
                 }
             }
         }

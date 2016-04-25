@@ -472,7 +472,7 @@ class NGLWidget(widgets.DOMWidget):
         if 'who' in kwargs:
             msg['who'] = kwargs.pop('who')
         else:
-            msg['who'] = 'viwer'
+            msg['who'] = 'viewer'
         msg['type'] = 'call_method'
         msg['methodName'] = method_name
         msg['args'] = args
