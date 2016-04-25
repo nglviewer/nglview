@@ -243,17 +243,20 @@ define( [
 
         on_msg: function(msg){
             if ( msg.type == 'call_method' ) {
-               if ( msg.who == 'stage' ) {
-                   if ( msg.methodName == 'screenshot' ) {
+               if( msg.who == 'stage' ){
+                   if ( msg.methodName == 'screenshot' ){
                         // window.alert( NGL.screenshot );
-                        NGL.screenshot( this.stage.viewer, msg.args );
-                    }
-                    else
-                        this.stage[msg.methodName]( msg.args );
-                }
-               else if ( msg.who == 'viewer' ) {
+                        NGL.screenshot( this.stage.viewer, msg.kwargs);
+                   }else if( msg.methodName == 'loadFile'){
+                            console.log( msg.args );
+                            console.log( msg.kwargs );
+                            this.stage[msg.methodName](msg.args[0], msg.kwargs);
+                   }else{
+                           this.stage[msg.methodName]( msg.kwargs );
+                        }
+            }else if( msg.who == 'viewer' ) {
                     // window.alert( this.stage.viewer[msg.methodName] );
-                    this.stage.viewer[msg.methodName]( msg.args );
+                    this.stage.viewer[msg.methodName]( msg.kwargs);
                 }
             }
         }
