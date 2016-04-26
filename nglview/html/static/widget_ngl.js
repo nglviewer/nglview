@@ -70,6 +70,9 @@ define( [
                 // init setting of coordinates
                 this.model.on( "change:coordinates", this.coordinatesChanged, this );
 
+                // init setting of coordinates
+                this.model.on( "change:coordinatesdict", this.coordinatesdictChanged, this );
+
                 // init setting of frame
                 this.model.on( "change:frame", this.frameChanged, this );
 
@@ -77,7 +80,7 @@ define( [
                 this.model.on( "change:parameters", this.parametersChanged, this );
 
                 // get message from Python
-                this.coords = undefined;
+                this.coordinatesdict = undefined;
                 this.model.on( "msg:custom", function (msg) {
                     this.on_msg( msg );
                 }, this);
@@ -234,11 +237,13 @@ define( [
 
         },
 
+        coordinatesdictChanged: function(){
+            this.coordinatesdict = this.model.get( "coordinatesdict" );
+        },
+
         frameChanged: function(){
             var frame = this.model.get( "frame" );
-            var coordinates = this.coords[frame];
-            console.log ( "coordinates" );
-            console.log ( coordinates );
+            var coordinates = this.coordinatesdict[frame];
             var component = this.structureComponent;
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
@@ -277,9 +282,9 @@ define( [
                     var viewer_func = this.stage.viewer[msg.methodName];
                     viewer_func.apply( viewer, new_args );
                 }
-            }else if( msg.type == 'coordinates'){
-                console.log( "receving coordinates" );
-                this.coords = msg.data;
+            }else if( msg.type == 'coordinatesdict'){
+                this.coordinatesdict = msg.data;
+                console.log ( "received coordinatesdict" );
             }
         }
 

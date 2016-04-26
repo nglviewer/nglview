@@ -279,6 +279,10 @@ class PyTrajTrajectory(Trajectory, Structure):
         frame = self.trajectory[index].xyz
         return frame.flatten().tolist()
 
+    def get_coordinate_dict(self):
+        return dict((index, xyz.flatten().tolist())
+                    for index, xyz in enumerate(self.trajectory.xyz))
+
     def get_frame_count(self):
         return self.trajectory.n_frames
 
@@ -377,6 +381,7 @@ class NGLWidget(widgets.DOMWidget):
     structure = Dict(sync=True)
     representations = List(sync=True)
     coordinates = List(sync=False)
+    coordinatesdict = Dict(sync=True)
     picked = Dict(sync=True)
     frame = Int(sync=True)
     count = Int(sync=True)
@@ -388,11 +393,8 @@ class NGLWidget(widgets.DOMWidget):
         if parameters:
             self.parameters = parameters
         self.set_structure(structure)
-        print("hello trajectory")
         if trajectory:
             self.trajectory = trajectory
-            # self.send({'type': 'coordinates', 'data': self.trajectory.trajectory.xyz.flatten().tolist()})
-            self.coordinates.set(self.trajectory.trajectory.xyz.flatten().tolist())
         elif hasattr(structure, "get_coordinates_list"):
             self.trajectory = structure
         if hasattr(self, "trajectory") and \
@@ -429,7 +431,8 @@ class NGLWidget(widgets.DOMWidget):
 
     def _frame_changed(self):
         # self._set_coordinates(self.frame)
-        self.send({'type': 'frameIndex', 'frame': self.frame})
+        # do nothing
+        pass
 
     def add_representation(self, repr_type, selection='all', **kwd):
         '''Add representation.
