@@ -243,22 +243,22 @@ define( [
 
         on_msg: function(msg){
             if ( msg.type == 'call_method' ) {
+               var new_args = msg.args.slice();
+               new_args.push( msg.kwargs );
+
                if( msg.who == 'stage' ){
                    var stage_func = this.stage[msg.methodName];
-                   var stage = this.stage
+                   var stage = this.stage;
                    if ( msg.methodName == 'screenshot' ){
-                        console.log( 'taking screenshot' );
                         NGL.screenshot( this.stage.viewer, msg.kwargs);
-                   }else{
-                       console.log( msg.args );
-                       console.log( msg.kwargs );
-                       stage_func.apply(stage, msg.args, msg.kwargs);
+                   }
+                   else{
+                       stage_func.apply(stage, new_args);
                    }
             }else if( msg.who == 'viewer' ) {
                     var viewer = this.stage.viewer;
                     var viewer_func = this.stage.viewer[msg.methodName];
-                    console.log( "calling viewer method" );
-                    viewer_func.apply(viewer, msg.args, msg.kwargs)
+                    viewer_func.apply(viewer, new_args);
                 }
             }
         }
