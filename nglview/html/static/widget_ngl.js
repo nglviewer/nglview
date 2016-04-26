@@ -79,6 +79,9 @@ define( [
                 // init parameters handling
                 this.model.on( "change:parameters", this.parametersChanged, this );
 
+                // init parameters handling
+                this.model.on( "change:cache", this.cacheChanged, this );
+
                 // get message from Python
                 this.coordinatesdict = undefined;
                 this.model.on( "msg:custom", function (msg) {
@@ -243,12 +246,14 @@ define( [
 
         frameChanged: function(){
             var frame = this.model.get( "frame" );
-            var coordinates = this.coordinatesdict[frame];
-            var component = this.structureComponent;
-            if( coordinates && component ){
-                var coords = new Float32Array( coordinates );
-                component.structure.updatePosition( coords );
-                component.updateRepresentations( { "position": true } );
+            if( this._cache ){
+                var coordinates = this.coordinatesdict[frame];
+                var component = this.structureComponent;
+                if( coordinates && component ){
+                    var coords = new Float32Array( coordinates );
+                    component.structure.updatePosition( coords );
+                    component.updateRepresentations( { "position": true } );
+                }
             }
 
         },
@@ -262,6 +267,10 @@ define( [
         parametersChanged: function(){
             var parameters = this.model.get( "parameters" );
             this.stage.setParameters( parameters );
+        },
+
+        cacheChanged: function(){
+            this._cache = this.model.get( "cache" );
         },
 
         on_msg: function(msg){

@@ -380,8 +380,9 @@ class NGLWidget(widgets.DOMWidget):
     selection = Unicode("*", sync=True)
     structure = Dict(sync=True)
     representations = List(sync=True)
-    coordinates = List(sync=False)
+    coordinates = List(sync=True)
     coordinatesdict = Dict(sync=True)
+    cache = Bool(sync=True)
     picked = Dict(sync=True)
     frame = Int(sync=True)
     count = Int(sync=True)
@@ -389,6 +390,10 @@ class NGLWidget(widgets.DOMWidget):
 
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
+        try:
+            self.cache = kwargs.pop('cache')
+        except KeyError:
+            self.cache = False
         super(NGLWidget, self).__init__(**kwargs)
         if parameters:
             self.parameters = parameters
@@ -412,6 +417,16 @@ class NGLWidget(widgets.DOMWidget):
                 }}
             ]
 
+    def caching(self):
+        self.cache = True
+        if hasattr(self.trajectory, "get_coordinate_dict"):
+            self.send({'type': 'coordinatesdict', 'data':
+                self.trajectory.get_coordinate_dict()})
+        # if not, do nothing, let syncing `coordinates`
+
+    def uncache(self):
+        self.cache = False
+
     def set_representations(self, representations):
         self.representations = representations
 
@@ -430,9 +445,9 @@ class NGLWidget(widgets.DOMWidget):
             print("no trajectory available")
 
     def _frame_changed(self):
-        # self._set_coordinates(self.frame)
-        # do nothing
-        pass
+        if not self.cache:
+            self._set_coordinates(self.frame)
+
 
     def add_representation(self, repr_type, selection='all', **kwd):
         '''Add representation.
