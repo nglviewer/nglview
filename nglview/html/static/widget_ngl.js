@@ -74,7 +74,7 @@ define( [
                 this.model.on( "change:coordinatesdict", this.coordinatesdictChanged, this );
 
                 // init setting of frame
-                this.model.on( "change:frame", this.frameChanged, this );
+                this.model.on( "change:frame", this.coordinatesdictChanged, this );
 
                 // init parameters handling
                 this.model.on( "change:parameters", this.parametersChanged, this );
@@ -230,7 +230,14 @@ define( [
         },
 
         coordinatesChanged: function(){
-            var coordinates = this.model.get( "coordinates" );
+            var coordinates;
+            if( this._cache ){
+                var frame = this.model.get( "frame" );
+                coordinates = this.coordinatesdict[frame];
+            }else{
+                coordinates = this.model.get( "coordinates" );
+            }
+
             var component = this.structureComponent;
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
@@ -242,20 +249,6 @@ define( [
 
         coordinatesdictChanged: function(){
             this.coordinatesdict = this.model.get( "coordinatesdict" );
-        },
-
-        frameChanged: function(){
-            var frame = this.model.get( "frame" );
-            if( this._cache ){
-                var coordinates = this.coordinatesdict[frame];
-                var component = this.structureComponent;
-                if( coordinates && component ){
-                    var coords = new Float32Array( coordinates );
-                    component.structure.updatePosition( coords );
-                    component.updateRepresentations( { "position": true } );
-                }
-            }
-
         },
 
         setSize: function( width, height ){
