@@ -70,10 +70,14 @@ define( [
                 // init setting of coordinates
                 this.model.on( "change:coordinates", this.coordinatesChanged, this );
 
+                // init setting of frame
+                this.model.on( "change:frame", this.frameChanged, this );
+
                 // init parameters handling
                 this.model.on( "change:parameters", this.parametersChanged, this );
 
                 // get message from Python
+                this.coords = undefined;
                 this.model.on( "msg:custom", function (msg) {
                     this.on_msg( msg );
                 }, this);
@@ -230,6 +234,20 @@ define( [
 
         },
 
+        frameChanged: function(){
+            var frame = this.model.get( "frame" );
+            var coordinates = this.coords[frame];
+            console.log ( "coordinates" );
+            console.log ( coordinates );
+            var component = this.structureComponent;
+            if( coordinates && component ){
+                var coords = new Float32Array( coordinates );
+                component.structure.updatePosition( coords );
+                component.updateRepresentations( { "position": true } );
+            }
+
+        },
+
         setSize: function( width, height ){
             this.stage.viewer.container.style.width = width;
             this.stage.viewer.container.style.height = height;
@@ -259,6 +277,9 @@ define( [
                     var viewer_func = this.stage.viewer[msg.methodName];
                     viewer_func.apply( viewer, new_args );
                 }
+            }else if( msg.type == 'coordinates'){
+                console.log( "receving coordinates" );
+                this.coords = msg.data;
             }
         }
 

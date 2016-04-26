@@ -376,7 +376,7 @@ class NGLWidget(widgets.DOMWidget):
     selection = Unicode("*", sync=True)
     structure = Dict(sync=True)
     representations = List(sync=True)
-    coordinates = List(sync=True)
+    coordinates = List(sync=False)
     picked = Dict(sync=True)
     frame = Int(sync=True)
     count = Int(sync=True)
@@ -388,8 +388,11 @@ class NGLWidget(widgets.DOMWidget):
         if parameters:
             self.parameters = parameters
         self.set_structure(structure)
+        print("hello trajectory")
         if trajectory:
             self.trajectory = trajectory
+            # self.send({'type': 'coordinates', 'data': self.trajectory.trajectory.xyz.flatten().tolist()})
+            self.coordinates.set(self.trajectory.trajectory.xyz.flatten().tolist())
         elif hasattr(structure, "get_coordinates_list"):
             self.trajectory = structure
         if hasattr(self, "trajectory") and \
@@ -425,7 +428,8 @@ class NGLWidget(widgets.DOMWidget):
             print("no trajectory available")
 
     def _frame_changed(self):
-        self._set_coordinates(self.frame)
+        # self._set_coordinates(self.frame)
+        self.send({'type': 'frameIndex', 'frame': self.frame})
 
     def add_representation(self, repr_type, selection='all', **kwd):
         '''Add representation.
