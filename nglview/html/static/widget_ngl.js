@@ -242,7 +242,7 @@ define( [
         },
 
         on_msg: function(msg){
-            if ( msg.type == 'call_method' ) {
+            if ( msg.type == 'call_method' ){
                var new_args = msg.args.slice();
                new_args.push( msg.kwargs );
 
@@ -250,15 +250,14 @@ define( [
                    var stage_func = this.stage[msg.methodName];
                    var stage = this.stage;
                    if ( msg.methodName == 'screenshot' ){
-                        NGL.screenshot( this.stage.viewer, msg.kwargs);
+                        NGL.screenshot( this.stage.viewer, msg.kwargs );
+                   }else{
+                       stage_func.apply( stage, new_args );
                    }
-                   else{
-                       stage_func.apply(stage, new_args);
-                   }
-            }else if( msg.who == 'viewer' ) {
+            }else if( msg.who == 'viewer' ){
                     var viewer = this.stage.viewer;
                     var viewer_func = this.stage.viewer[msg.methodName];
-                    viewer_func.apply(viewer, new_args);
+                    viewer_func.apply( viewer, new_args );
                 }
             }
         }
