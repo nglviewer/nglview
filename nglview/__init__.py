@@ -407,6 +407,42 @@ class NGLWidget(widgets.DOMWidget):
                 }}
             ]
 
+    def _add_repr_method_shortcut(self):
+        # dynamically add method for NGLWidget
+        repr_names  = [
+                ('point', 'point'),
+                ('line', 'line'),
+                ('rope', 'rope'),
+                ('tube', 'tube'),
+                ('trace', 'trace'),
+                ('label', 'label'),
+                ('cartoon', 'cartoon'),
+                ('licorice', 'licorice'),
+                ('ribbon', 'ribbon'),
+                ('surface', 'surface'),
+                ('backbone', 'backbone'),
+                ('contact', 'contact'),
+                ('crossing', 'crossing'),
+                ('hyperball', 'hyperball'),
+                ('rocket', 'rocket'),
+                ('helixorient', 'helixorient'),
+                ('simplified_base', 'base'),
+                ('ball_and_stick', 'ball+stick'),
+                ]
+
+        funclist = []
+
+        for rep in repr_names:
+            def func(this, selection='all', **kwd):
+                """
+                """
+                self.add_representation(repr_type=rep[1], selection=selection, **kwd)
+            fn = 'add_' + rep[0]
+            func.__name__ = fn
+            setattr(self, fn, func)
+            funclist.append(func)
+        return funclist
+        
     def set_representations(self, representations):
         self.representations = representations
 
@@ -466,39 +502,6 @@ class NGLWidget(widgets.DOMWidget):
         rep.append(d)
         # reassign representation to trigger change
         self.representations = rep
-
-# dynamically add method for NGLWidget
-_repr_names  = [
-        ('point', 'point'),
-        ('line', 'line'),
-        ('cartoon', 'cartoon'),
-        ('licorice', 'licorice'),
-        ('ribbon', 'ribbon'),
-        ('surface', 'surface'),
-        ('trace', 'trace'),
-        ('tube', 'tube'),
-        ('label', 'label'),
-        ('backbone', 'backbone'),
-        ('ball_and_stick', 'ball+stick'),
-        ('contact', 'contact'),
-        ('crossing', 'crossing'),
-        ('helixorient', 'helixorient'),
-        ('hyperball', 'hyperball'),
-        ('rocket', 'rocket'),
-        ('rope', 'rope'),
-        ('simplified_base', 'base'),
-        ]
-
-def _add_repr_method(cls, _repr_names):
-    for rep in _repr_names:
-        def func(self, selection='all', **kwd):
-            """
-            """
-            self.add_representation(repr_type=rep[1], selection=selection, **kwd)
-        setattr(cls, 'add_' + rep[0], func)
-
-_add_repr_method(NGLWidget, _repr_names)
-
 
 def install(user=True, symlink=False):
     """Install the widget nbextension.
