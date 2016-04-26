@@ -418,11 +418,13 @@ class NGLWidget(widgets.DOMWidget):
             ]
 
     def caching(self):
-        self.cache = True
         if hasattr(self.trajectory, "get_coordinate_dict"):
+            self.cache = True
             self.send({'type': 'coordinatesdict', 'data':
                 self.trajectory.get_coordinate_dict()})
-        # if not, do nothing, let syncing `coordinates`
+        else:
+            print('warning: does not have get_coordinate_dict method, turn off cache') 
+            self.cache = False
 
     def uncache(self):
         self.cache = False
