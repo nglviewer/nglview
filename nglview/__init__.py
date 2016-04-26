@@ -430,8 +430,6 @@ class NGLWidget(widgets.DOMWidget):
                 ('ball_and_stick', 'ball+stick'),
                 ]
 
-        funclist = []
-
         for rep in repr_names:
             def func(this, selection='all', **kwd):
                 """
@@ -439,9 +437,9 @@ class NGLWidget(widgets.DOMWidget):
                 self.add_representation(repr_type=rep[1], selection=selection, **kwd)
             fn = 'add_' + rep[0]
             func.__name__ = fn
-            setattr(self, fn, func)
-            funclist.append(func)
-        return funclist
+            # setattr(self, fn, func)
+            from types import MethodType
+            setattr(self, fn, MethodType(func, NGLWidget))
         
     def set_representations(self, representations):
         self.representations = representations
