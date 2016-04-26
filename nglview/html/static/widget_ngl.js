@@ -238,8 +238,10 @@ define( [
         },
 
         coordinatesChanged: function(){
-            var coordinates = this.model.get( "coordinates" );
-            this._update_coords(coordinates);
+            if (! this._cache ){
+                var coordinates = this.model.get( "coordinates" );
+                this._update_coords(coordinates);
+            }
         },
 
         _update_coords: function(coordinates) {
