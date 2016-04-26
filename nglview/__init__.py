@@ -426,7 +426,7 @@ class NGLWidget(widgets.DOMWidget):
             print('warning: does not have get_coordinate_dict method, turn off cache') 
             self.cache = False
 
-    def uncache(self):
+    def uncaching(self):
         self.cache = False
 
     def set_representations(self, representations):
