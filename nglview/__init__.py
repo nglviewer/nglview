@@ -407,6 +407,8 @@ class NGLWidget(widgets.DOMWidget):
                 }}
             ]
 
+        self._add_repr_method_shortcut()
+
     def _add_repr_method_shortcut(self):
         # dynamically add method for NGLWidget
         repr_names  = [
@@ -430,16 +432,20 @@ class NGLWidget(widgets.DOMWidget):
                 ('ball_and_stick', 'ball+stick'),
                 ]
 
-        for rep in repr_names:
+        def make_func(rep):
+            """return a new function object
+            """
             def func(this, selection='all', **kwd):
                 """
                 """
                 self.add_representation(repr_type=rep[1], selection=selection, **kwd)
+            return func
+
+        for rep in repr_names:
+            func = make_func(rep)
             fn = 'add_' + rep[0]
-            func.__name__ = fn
-            # setattr(self, fn, func)
             from types import MethodType
-            setattr(self, fn, MethodType(func, NGLWidget))
+            setattr(self, fn, MethodType(func, self))
         
     def set_representations(self, representations):
         self.representations = representations
