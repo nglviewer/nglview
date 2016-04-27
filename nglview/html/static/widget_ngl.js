@@ -254,11 +254,11 @@ define( [
                    }else{
                        stage_func.apply( stage, new_args );
                    }
-            }else if( msg.target == 'viewer' ){
-                    var viewer = this.stage.viewer;
-                    var viewer_func = this.stage.viewer[msg.methodName];
-                    viewer_func.apply( viewer, new_args );
-                }
+               }else if( msg.target == 'viewer' ){
+                       var viewer = this.stage.viewer;
+                       var viewer_func = this.stage.viewer[msg.methodName];
+                       viewer_func.apply( viewer, new_args );
+                   }
             }
         }
 
