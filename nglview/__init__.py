@@ -1,7 +1,8 @@
 
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 
 from . import datafiles
+from .utils import seq_to_string
 
 import os
 import os.path
@@ -416,6 +417,45 @@ class NGLWidget(widgets.DOMWidget):
                     "sele": "hetero OR mol"
                 }}
             ]
+        self._add_repr_method_shortcut()
+
+    def _add_repr_method_shortcut(self):
+        # dynamically add method for NGLWidget
+        repr_names  = [
+                ('point', 'point'),
+                ('line', 'line'),
+                ('rope', 'rope'),
+                ('tube', 'tube'),
+                ('trace', 'trace'),
+                ('label', 'label'),
+                ('cartoon', 'cartoon'),
+                ('licorice', 'licorice'),
+                ('ribbon', 'ribbon'),
+                ('surface', 'surface'),
+                ('backbone', 'backbone'),
+                ('contact', 'contact'),
+                ('crossing', 'crossing'),
+                ('hyperball', 'hyperball'),
+                ('rocket', 'rocket'),
+                ('helixorient', 'helixorient'),
+                ('simplified_base', 'base'),
+                ('ball_and_stick', 'ball+stick'),
+                ]
+
+        def make_func(rep):
+            """return a new function object
+            """
+            def func(this, selection='all', **kwd):
+                """
+                """
+                self.add_representation(repr_type=rep[1], selection=selection, **kwd)
+            return func
+
+        for rep in repr_names:
+            func = make_func(rep)
+            fn = 'add_' + rep[0]
+            from types import MethodType
+            setattr(self, fn, MethodType(func, self))
 
     def caching(self):
         if hasattr(self.trajectory, "get_coordinate_dict"):
@@ -459,7 +499,7 @@ class NGLWidget(widgets.DOMWidget):
         repr_type : str
             type of representation. Please see:
             http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations
-        selection : str, default 'all'
+        selection : str or 1D array (atom indices) or any iterator that returns integer, default 'all'
             atom selection
         **kwd: additional arguments for representation
 
@@ -470,11 +510,13 @@ class NGLWidget(widgets.DOMWidget):
         >>> t = (pt.datafiles.load_dpdp()[:].superpose('@CA'))
         >>> w = nv.show_pytraj(t)
         >>> w.add_representation('cartoon', selection='protein', color='blue')
+        >>> w.add_representation('licorice', selection=[3, 8, 9, 11], color='red')
         >>> w
         '''
         # avoid space sensitivity
         repr_type = repr_type.strip()
-        selection = selection.strip()
+        # overwrite selection
+        selection = seq_to_string(selection).strip()
 
         for k, v in kwd.items():
             try:
