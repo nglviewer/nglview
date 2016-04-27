@@ -381,7 +381,7 @@ class NGLWidget(widgets.DOMWidget):
     structure = Dict(sync=True)
     representations = List(sync=True)
     coordinates = List(sync=True)
-    coordinatesdict = Dict(sync=True)
+    coordinates_dict = Dict(sync=True)
     cache = Bool(sync=True)
     picked = Dict(sync=True)
     frame = Int(sync=True)
@@ -420,8 +420,11 @@ class NGLWidget(widgets.DOMWidget):
     def caching(self):
         if hasattr(self.trajectory, "get_coordinate_dict"):
             self.cache = True
-            self.send({'type': 'coordinatesdict', 'data':
-                self.trajectory.get_coordinate_dict()})
+            # self.send({'type': 'coordsDict', 'data':
+            #     self.trajectory.get_coordinate_dict()})
+            
+            # this one seems much faster than `send` method?
+            self.coordsDict = self.trajectory.get_coordinate_dict()
         else:
             print('warning: does not have get_coordinate_dict method, turn off cache') 
             self.cache = False
