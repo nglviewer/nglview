@@ -73,6 +73,11 @@ define( [
                 // init parameters handling
                 this.model.on( "change:parameters", this.parametersChanged, this );
 
+                // get message from Python
+                this.model.on( "msg:custom", function (msg) {
+                    this.on_msg( msg );
+                }, this);
+
                 // init NGL stage
                 NGL.useWorker = false;
                 this.stage = new NGL.Stage();
@@ -234,6 +239,27 @@ define( [
         parametersChanged: function(){
             var parameters = this.model.get( "parameters" );
             this.stage.setParameters( parameters );
+        },
+
+        on_msg: function(msg){
+            if ( msg.type == 'call_method' ){
+               var new_args = msg.args.slice();
+               new_args.push( msg.kwargs );
+
+               if( msg.target == 'stage' ){
+                   var stage_func = this.stage[msg.methodName];
+                   var stage = this.stage;
+                   if ( msg.methodName == 'screenshot' ){
+                        NGL.screenshot( this.stage.viewer, msg.kwargs );
+                   }else{
+                       stage_func.apply( stage, new_args );
+                   }
+            }else if( msg.target == 'viewer' ){
+                    var viewer = this.stage.viewer;
+                    var viewer_func = this.stage.viewer[msg.methodName];
+                    viewer_func.apply( viewer, new_args );
+                }
+            }
         }
 
     } );

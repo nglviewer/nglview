@@ -510,6 +510,32 @@ class NGLWidget(widgets.DOMWidget):
         # reassign representation to trigger change
         self.representations = rep
 
+    def _remote_call(self, method_name, target='stage', args=None, kwargs=None):
+        """call NGL's methods from Python.
+        
+        Parameters
+        ----------
+        method_name : str
+        target : str, {'stage', 'viewer'}
+        args : list
+        kwargs : dict
+
+        Examples
+        --------
+        view._remote_call('loadFile', ['1L2Y.pdb'],
+                          target='stage', {'defaultRepresentation': True})
+        """
+        args = [] if args is None else args
+        kwargs = {} if kwargs is None else kwargs
+        msg = {}
+        msg['target'] = target
+        msg['type'] = 'call_method'
+        msg['methodName'] = method_name
+        msg['args'] = args
+        msg['kwargs'] = kwargs
+
+        self.send(msg)
+
 def install(user=True, symlink=False):
     """Install the widget nbextension.
 
