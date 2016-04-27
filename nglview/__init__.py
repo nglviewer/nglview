@@ -424,7 +424,7 @@ class NGLWidget(widgets.DOMWidget):
             #     self.trajectory.get_coordinate_dict()})
             
             # this one seems much faster than `send` method?
-            self.coordsDict = self.trajectory.get_coordinate_dict()
+            self.coordinates_dict = self.trajectory.get_coordinate_dict()
         else:
             print('warning: does not have get_coordinate_dict method, turn off cache') 
             self.cache = False
