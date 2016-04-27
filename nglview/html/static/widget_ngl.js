@@ -242,7 +242,7 @@ define( [
         },
 
         on_msg: function(msg){
-            if ( msg.type == 'call_method' ){
+            if( msg.type == 'call_method' ){
                var new_args = msg.args.slice();
                new_args.push( msg.kwargs );
 
