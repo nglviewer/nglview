@@ -277,7 +277,7 @@ define( [
                var new_args = msg.args.slice();
                new_args.push( msg.kwargs );
 
-               if( msg.who == 'stage' ){
+               if( msg.target == 'stage' ){
                    var stage_func = this.stage[msg.methodName];
                    var stage = this.stage;
                    if ( msg.methodName == 'screenshot' ){
@@ -285,7 +285,7 @@ define( [
                    }else{
                        stage_func.apply( stage, new_args );
                    }
-            }else if( msg.who == 'viewer' ){
+            }else if( msg.target == 'viewer' ){
                     var viewer = this.stage.viewer;
                     var viewer_func = this.stage.viewer[msg.methodName];
                     viewer_func.apply( viewer, new_args );

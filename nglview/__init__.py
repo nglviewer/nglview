@@ -491,12 +491,25 @@ class NGLWidget(widgets.DOMWidget):
         # reassign representation to trigger change
         self.representations = rep
 
-    def _remote_call(self, method_name, *args, **kwargs):
+    def _remote_call(self, method_name, args, kwargs):
+        """
+        
+        Parameters
+        ----------
+        method_name : str
+        args : list
+        kwargs : dict
+
+        Examples
+        --------
+        view._remote_call('loadFile', ['1L2Y.pdb'],
+                          target='stage', {'defaultRepresentation': True})
+        """
         msg = {}
-        if 'who' in kwargs:
-            msg['who'] = kwargs.pop('who')
+        if 'target' in kwargs:
+            msg['target'] = kwargs.pop('target')
         else:
-            msg['who'] = 'viewer'
+            msg['target'] = 'viewer'
         msg['type'] = 'call_method'
         msg['methodName'] = method_name
         msg['args'] = args
