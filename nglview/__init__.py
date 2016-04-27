@@ -372,16 +372,16 @@ class MDAnalysisTrajectory(Trajectory, Structure):
 
 
 class NGLWidget(widgets.DOMWidget):
-    _view_name = Unicode("NGLView", sync=True)
-    _view_module = Unicode("nbextensions/nglview/widget_ngl", sync=True)
-    selection = Unicode("*", sync=True)
-    structure = Dict(sync=True)
-    representations = List(sync=True)
-    coordinates = List(sync=True)
-    picked = Dict(sync=True)
-    frame = Int(sync=True)
-    count = Int(sync=True)
-    parameters = Dict(sync=True)
+    _view_name = Unicode("NGLView").tag(sync=True)
+    _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
+    selection = Unicode("*").tag(sync=True)
+    structure = Dict().tag(sync=True)
+    representations = List().tag(sync=True)
+    coordinates = List().tag(sync=True)
+    picked = Dict().tag(sync=True)
+    frame = Int().tag(sync=True)
+    count = Int().tag(sync=True)
+    parameters = Dict().tag(sync=True)
 
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
