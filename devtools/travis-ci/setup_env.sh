@@ -15,7 +15,7 @@ pip install conda
 conda install --yes conda-build jinja2 anaconda-client pip
 
 # create myenv
-conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook
+conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose
 
 source activate myenv
 # conda install mdtraj -c omnia --yes

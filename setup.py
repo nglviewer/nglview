@@ -41,6 +41,8 @@ if __name__ == '__main__':
         },
         packages=["nglview", "nglview.datafiles", "nglview.html"],
         requires=["jupyter"],
+        tests_require=["nose"],
+        test_suite="nose.collector",
         install_requires=["jupyter"],
         extras_require={
             "simpletraj": ["simpletraj"],
