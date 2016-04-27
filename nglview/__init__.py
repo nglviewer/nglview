@@ -103,6 +103,21 @@ def show_pytraj(pytraj_trajectory, **kwargs):
     return NGLWidget(structure_trajectory, **kwargs)
 
 
+def show_parmed(parmed_structure, **kwargs):
+    '''Show pytraj trajectory.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> import parmed as pmd
+    >>> t = pt.load_file(nv.datafiles.PDB)
+    >>> w = nv.show_parmed(t)
+    >>> w
+    '''
+    structure_trajectory = ParmEdTrajectory(parmed_structure)
+    return NGLWidget(structure_trajectory, **kwargs)
+
+
 def show_mdanalysis(atomgroup, **kwargs):
     '''Show NGL widget with MDAnalysis AtomGroup.
 
@@ -278,6 +293,32 @@ class PyTrajTrajectory(Trajectory, Structure):
         return pdb_string
 
 
+class ParmEdTrajectory(Trajectory, Structure):
+    '''ParmEd adaptor.
+    '''
+    def __init__(self, trajectory):
+        self.trajectory = trajectory
+        self.ext = "pdb"
+        self.params = {}
+        # only call get_coordinates once
+        self._xyz = trajectory.get_coordinates()
+
+    def get_coordinates_list(self, index):
+        frame = self._xyz[index]
+        return frame.flatten().tolist()
+
+    def get_frame_count(self):
+        return len(self._xyz)
+
+    def get_structure_string(self):
+        fd, fname = tempfile.mkstemp(suffix=".pdb")
+        self.trajectory.save(
+            fname, overwrite=True)
+        pdb_string = os.fdopen(fd).read()
+        # os.close( fd )
+        return pdb_string
+
+
 class MDAnalysisTrajectory(Trajectory, Structure):
     '''MDAnalysis adaptor.
 
@@ -367,6 +408,46 @@ class NGLWidget(widgets.DOMWidget):
                 }}
             ]
 
+        self._add_repr_method_shortcut()
+
+    def _add_repr_method_shortcut(self):
+        # dynamically add method for NGLWidget
+        repr_names  = [
+                ('point', 'point'),
+                ('line', 'line'),
+                ('rope', 'rope'),
+                ('tube', 'tube'),
+                ('trace', 'trace'),
+                ('label', 'label'),
+                ('cartoon', 'cartoon'),
+                ('licorice', 'licorice'),
+                ('ribbon', 'ribbon'),
+                ('surface', 'surface'),
+                ('backbone', 'backbone'),
+                ('contact', 'contact'),
+                ('crossing', 'crossing'),
+                ('hyperball', 'hyperball'),
+                ('rocket', 'rocket'),
+                ('helixorient', 'helixorient'),
+                ('simplified_base', 'base'),
+                ('ball_and_stick', 'ball+stick'),
+                ]
+
+        def make_func(rep):
+            """return a new function object
+            """
+            def func(this, selection='all', **kwd):
+                """
+                """
+                self.add_representation(repr_type=rep[1], selection=selection, **kwd)
+            return func
+
+        for rep in repr_names:
+            func = make_func(rep)
+            fn = 'add_' + rep[0]
+            from types import MethodType
+            setattr(self, fn, MethodType(func, self))
+        
     def set_representations(self, representations):
         self.representations = representations
 
@@ -429,7 +510,6 @@ class NGLWidget(widgets.DOMWidget):
         # reassign representation to trigger change
         self.representations = rep
 
-
 def install(user=True, symlink=False):
     """Install the widget nbextension.
 
@@ -442,7 +522,8 @@ def install(user=True, symlink=False):
     """
     staticdir = resource_filename('nglview', os.path.join('html', 'static'))
     install_nbextension(staticdir, destination='nglview',
-                        user=user, symlink=symlink)
+                        user=user, symlink=symlink,
+                        verbose=0)
 
     cm = ConfigManager()
     cm.update('notebook', {
