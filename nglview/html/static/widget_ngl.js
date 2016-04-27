@@ -242,7 +242,7 @@ define( [
         },
 
         on_msg: function(msg){
-            if ( msg.type == 'call_method' ){
+            if( msg.type == 'call_method' ){
                var new_args = msg.args.slice();
                new_args.push( msg.kwargs );
 
@@ -254,11 +254,11 @@ define( [
                    }else{
                        stage_func.apply( stage, new_args );
                    }
-            }else if( msg.target == 'viewer' ){
-                    var viewer = this.stage.viewer;
-                    var viewer_func = this.stage.viewer[msg.methodName];
-                    viewer_func.apply( viewer, new_args );
-                }
+               }else if( msg.target == 'viewer' ){
+                       var viewer = this.stage.viewer;
+                       var viewer_func = this.stage.viewer[msg.methodName];
+                       viewer_func.apply( viewer, new_args );
+                   }
             }
         }
 
