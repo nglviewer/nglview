@@ -382,7 +382,7 @@ class NGLWidget(widgets.DOMWidget):
     structure = Dict(sync=True)
     representations = List(sync=True)
     coordinates = List(sync=True)
-    coordinatesdict = Dict(sync=True)
+    coordinates_dict = Dict(sync=True)
     cache = Bool(sync=True)
     picked = Dict(sync=True)
     frame = Int(sync=True)
@@ -460,8 +460,11 @@ class NGLWidget(widgets.DOMWidget):
     def caching(self):
         if hasattr(self.trajectory, "get_coordinate_dict"):
             self.cache = True
-            self.send({'type': 'coordinatesdict', 'data':
-                self.trajectory.get_coordinate_dict()})
+            # self.send({'type': 'coordsDict', 'data':
+            #     self.trajectory.get_coordinate_dict()})
+            
+            # this one seems much faster than `send` method?
+            self.coordinates_dict = self.trajectory.get_coordinate_dict()
         else:
             print('warning: does not have get_coordinate_dict method, turn off cache') 
             self.cache = False
@@ -533,12 +536,25 @@ class NGLWidget(widgets.DOMWidget):
         # reassign representation to trigger change
         self.representations = rep
 
-    def _remote_call(self, method_name, *args, **kwargs):
+    def _remote_call(self, method_name, args, kwargs):
+        """
+        
+        Parameters
+        ----------
+        method_name : str
+        args : list
+        kwargs : dict
+
+        Examples
+        --------
+        view._remote_call('loadFile', ['1L2Y.pdb'],
+                          target='stage', {'defaultRepresentation': True})
+        """
         msg = {}
-        if 'who' in kwargs:
-            msg['who'] = kwargs.pop('who')
+        if 'target' in kwargs:
+            msg['target'] = kwargs.pop('target')
         else:
-            msg['who'] = 'viewer'
+            msg['target'] = 'viewer'
         msg['type'] = 'call_method'
         msg['methodName'] = method_name
         msg['args'] = args

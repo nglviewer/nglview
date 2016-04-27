@@ -71,7 +71,7 @@ define( [
                 this.model.on( "change:coordinates", this.coordinatesChanged, this );
 
                 // init setting of coordinates
-                this.model.on( "change:coordinatesdict", this.coordinatesdictChanged, this );
+                this.model.on( "change:coordinates_dict", this.coordsDictChanged, this );
 
                 // init setting of frame
                 this.model.on( "change:frame", this.frameChanged, this );
@@ -83,7 +83,7 @@ define( [
                 this.model.on( "change:cache", this.cacheChanged, this );
 
                 // get message from Python
-                this.coordinatesdict = undefined;
+                this.coordsDict = undefined;
                 this.model.on( "msg:custom", function (msg) {
                     this.on_msg( msg );
                 }, this);
@@ -232,7 +232,7 @@ define( [
         frameChanged: function(){
             if( this._cache ){
                 var frame = this.model.get( "frame" );
-                var coordinates = this.coordinatesdict[frame];
+                var coordinates = this.coordsDict[frame];
                 this._update_coords(coordinates);
             }
         },
@@ -253,8 +253,16 @@ define( [
             }
         },
 
-        coordinatesdictChanged: function(){
-            this.coordinatesdict = this.model.get( "coordinatesdict" );
+        coordsDictChanged: function(){
+            this.coordsDict = this.model.get( "coordinates_dict" );
+            var cdict = this.coordsDict
+            var clen = Object.keys(cdict).length
+            if ( clen != 0 ){
+                this._cache = true;
+            }else{
+                this._cache = false;
+            }
+            this.model.set( "cache", this._cache);
         },
 
         setSize: function( width, height ){
@@ -277,7 +285,7 @@ define( [
                var new_args = msg.args.slice();
                new_args.push( msg.kwargs );
 
-               if( msg.who == 'stage' ){
+               if( msg.target == 'stage' ){
                    var stage_func = this.stage[msg.methodName];
                    var stage = this.stage;
                    if ( msg.methodName == 'screenshot' ){
@@ -285,14 +293,14 @@ define( [
                    }else{
                        stage_func.apply( stage, new_args );
                    }
-            }else if( msg.who == 'viewer' ){
+            }else if( msg.target == 'viewer' ){
                     var viewer = this.stage.viewer;
                     var viewer_func = this.stage.viewer[msg.methodName];
                     viewer_func.apply( viewer, new_args );
                 }
-            }else if( msg.type == 'coordinatesdict'){
-                this.coordinatesdict = msg.data;
-                console.log ( "received coordinatesdict" );
+            }else if( msg.type == 'coordsDict'){
+                this.coordsDict = msg.data;
+                console.log ( "received coordsDict" );
             }
         }
 
