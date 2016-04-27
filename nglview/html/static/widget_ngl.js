@@ -255,6 +255,14 @@ define( [
 
         coordinatesdictChanged: function(){
             this.coordinatesdict = this.model.get( "coordinatesdict" );
+            var cdict = this.coordinatesdict
+            var clen = Object.keys(cdict).length
+            if ( clen != 0 ){
+                this._cache = true;
+            }else{
+                this._cache = false;
+            }
+            this.model.set( "cache", this._cache);
         },
 
         setSize: function( width, height ){
