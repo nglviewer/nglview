@@ -5,12 +5,8 @@
 
 from __future__ import print_function
 
-try:
-    from unittest.mock import patch
-except ImportError:
-    from mock import patch
-
 import nose.tools as nt
+import unittest
 
 from ipykernel.comm import Comm
 import ipywidgets as widgets
@@ -20,6 +16,7 @@ from ipywidgets import Widget
 
 import pytraj as pt
 import nglview as nv
+from nglview.utils import PY2, PY3
 
 
 #-----------------------------------------------------------------------------
@@ -75,3 +72,24 @@ def test_remote_call():
     fn = 'notebooks/tz2.pdb'
     kwargs = {'defaultRepresentation': True}
     view._remote_call('loadFile', target='stage', args=[fn,], kwargs=kwargs)
+
+@unittest.skip("mess up with scipy, skip mdtraj now")
+def test_show_mdtraj():
+    import mdtraj as md
+    from mdtraj.testing import get_fn
+    fn = nv.datafiles.PDB 
+    traj = md.load(fn)
+    view = nv.show_mdtraj(traj)
+
+@unittest.skipUnless(PY2, "only test MDAnalysis with PY2")
+def test_show_MDAnalysis():
+    from MDAnalysis import Universe
+    tn, fn = nv.datafiles.PDB, nv.datafiles.PDB
+    u = Universe(fn, tn)
+    view = nv.show_mdanalysis(u)
+
+def test_show_parmed():
+    import parmed as pmd
+    fn = nv.datafiles.PDB 
+    parm = pmd.load_file(fn)
+    view = nv.show_parmed(parm)
