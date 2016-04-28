@@ -516,18 +516,25 @@ class NGLWidget(widgets.DOMWidget):
         Parameters
         ----------
         method_name : str
-        target : str, {'stage', 'viewer'}
+        target : str, {'stage', 'viewer', 'component'}
         args : list
         kwargs : dict
+            if target is 'component', "component_index" could be passed
+            to specify which component will call the method.
 
         Examples
         --------
-        view._remote_call('loadFile', ['1L2Y.pdb'],
-                          target='stage', {'defaultRepresentation': True})
+        view._remote_call('loadFile', args=['1L2Y.pdb'],
+                          target='stage', kwargs={'defaultRepresentation': True})
         """
         args = [] if args is None else args
         kwargs = {} if kwargs is None else kwargs
+
         msg = {}
+
+        if 'component_index' in kwargs:
+            msg['component_index'] = kwargs.pop('component_index')
+
         msg['target'] = target
         msg['type'] = 'call_method'
         msg['methodName'] = method_name
