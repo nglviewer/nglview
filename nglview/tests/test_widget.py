@@ -118,3 +118,9 @@ def test_coordinates_meta():
     view = nv.show_pytraj(traj)
     view.frame = 3
     aa_eq(view.coordinates, traj.xyz[3])
+    
+    _coordinates_meta = view._coordinates_meta
+    nt.assert_in('data', _coordinates_meta)
+    nt.assert_in('shape', _coordinates_meta)
+    nt.assert_in('dtype', _coordinates_meta)
+    nt.assert_equal(view._coordinates_meta['dtype'], 'f4')
