@@ -526,6 +526,14 @@ class NGLWidget(widgets.DOMWidget):
         --------
         view._remote_call('loadFile', args=['1L2Y.pdb'],
                           target='stage', kwargs={'defaultRepresentation': True})
+
+        # perform centerView for 1-th component
+        # component = stage.compList[1];
+        # component.centerView(true, "1-12");
+        view._remote_call('centerView',
+                          target='component',
+                          args=[True, "1-12"],
+                          kwargs={'component_index': 1})
         """
         args = [] if args is None else args
         kwargs = {} if kwargs is None else kwargs
