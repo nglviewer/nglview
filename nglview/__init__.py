@@ -9,7 +9,7 @@ import os.path
 import warnings
 import tempfile
 import ipywidgets as widgets
-from traitlets import Unicode, Bool, Dict, List, Int, Float
+from traitlets import Unicode, Bool, Dict, List, Int, Float, Any
 
 from IPython.display import display, Javascript
 from notebook.nbextensions import install_nbextension
@@ -27,6 +27,18 @@ except ImportError:
 
 ##############
 # Simple API
+import base64
+
+def encode_numpy(array):
+    '''Encode a numpy array as a base64 encoded string, to be JSON serialized. 
+
+    :return: a dictionary containing the fields:
+                - *data*: the base64 string
+                - *type*: the array type
+                - *shape*: the array shape
+
+    '''
+    return base64.b64encode(array.data).decode('utf8')
 
 
 def show_pdbid(pdbid, **kwargs):
@@ -280,12 +292,17 @@ class PyTrajTrajectory(Trajectory, Structure):
         #   (via pytraj.load method)
         # and out-of-core trajectory
         #   (via pytraj.iterload method)
-        frame = self.trajectory[index].xyz
-        return frame.flatten().tolist()
+        xyz = self.trajectory[index].xyz
+        # return frame.flatten().tolist()
+        return xyz.astype('float32')
 
     def get_coordinate_dict(self):
         return dict((index, xyz.flatten().tolist())
                     for index, xyz in enumerate(self.trajectory.xyz))
+
+    def get_base64(self, index):
+        return encode_numpy(self.trajectory[index].xyz.astype('float32').flatten())['data']
+
 
     @property
     def n_frames(self):
@@ -387,7 +404,7 @@ class NGLWidget(widgets.DOMWidget):
     selection = Unicode("*", sync=True)
     structure = Dict(sync=True)
     representations = List(sync=True)
-    coordinates = List(sync=True)
+    coordinates = Any(sync=True)
     coordinates_dict = Dict(sync=True)
     cache = Bool(sync=True)
     picked = Dict(sync=True)
@@ -490,7 +507,8 @@ class NGLWidget(widgets.DOMWidget):
 
     def _set_coordinates(self, index):
         if self.trajectory:
-            coordinates = self.trajectory.get_coordinates_list(index)
+            # coordinates = self.trajectory.get_coordinates_list(index)
+            coordinates = self.trajectory.get_base64(index)
             self.coordinates = coordinates
         else:
             print("no trajectory available")

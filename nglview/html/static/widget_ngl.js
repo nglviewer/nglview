@@ -14,7 +14,8 @@ require.config( {
         "jsfeat": "../nbextensions/nglview/svd.min",
         "signals": "../nbextensions/nglview/signals.min",
         "NGL": "../nbextensions/nglview/ngl",
-        "mdsrv": "../nbextensions/nglview/mdsrv"
+        "mdsrv": "../nbextensions/nglview/mdsrv",
+        'base64-arraybuffer': '/nbextensions/nglview/base64-arraybuffer'
     },
     shim: {
         THREE: { exports: "THREE" },
@@ -239,7 +240,7 @@ define( [
 
         coordinatesChanged: function(){
             if (! this._cache ){
-                var coordinates = this.model.get( "coordinates" );
+                var coordinates = decode( this.model.get( "coordinates" ) );
                 this._update_coords(coordinates);
             }
         },
