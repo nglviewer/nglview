@@ -124,3 +124,11 @@ def test_coordinates_meta():
     nt.assert_in('shape', _coordinates_meta)
     nt.assert_in('dtype', _coordinates_meta)
     nt.assert_equal(view._coordinates_meta['dtype'], 'f4')
+
+    view.coordinates = traj[2].xyz
+    aa_eq(view.coordinates, traj.xyz[2])
+
+    data = view._coordinates_meta['data']
+    shape = view._coordinates_meta['shape']
+    dtype = view._coordinates_meta['dtype']
+    aa_eq(view.coordinates, nv.decode_base64(data, dtype=dtype, shape=shape))
