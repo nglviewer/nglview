@@ -230,6 +230,15 @@ define( [
         },
 
         mydecode: function(base64) {
+            // adapted from Niklas
+
+            /*
+             * base64-arraybuffer
+             * https://github.com/niklasvh/base64-arraybuffer
+             *
+             * Copyright (c) 2012 Niklas von Hertzen
+             * Licensed under the MIT license.
+             */
             var chars =
                 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
             var bufferLength = base64.length * 0.75,

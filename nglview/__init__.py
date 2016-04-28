@@ -25,15 +25,14 @@ except ImportError:
     from urllib2 import urlopen
 
 
-##############
-# Simple API
 import base64
 
 def encode_numpy(arr):
-    # arr = arr.astype('f4').flatten()
     arr = arr.astype('f4')
     return base64.b64encode(arr.data).decode('utf8')
 
+##############
+# Simple API
 
 def show_pdbid(pdbid, **kwargs):
     '''Show PDB entry.
@@ -477,10 +476,6 @@ class NGLWidget(widgets.DOMWidget):
     def caching(self):
         if hasattr(self.trajectory, "get_coordinate_dict"):
             self.cache = True
-            # self.send({'type': 'coordsDict', 'data':
-            #     self.trajectory.get_coordinate_dict()})
-            
-            # this one seems much faster than `send` method?
             self.coordinates_dict = self.trajectory.get_coordinate_dict()
         else:
             print('warning: does not have get_coordinate_dict method, turn off cache') 
