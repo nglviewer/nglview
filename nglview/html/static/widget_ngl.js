@@ -244,7 +244,7 @@ define( [
             }
         },
 
-        _update_coords: function(coordinates) {
+        _update_coords: function( coordinates ) {
             var component = this.structureComponent;
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
@@ -305,9 +305,6 @@ define( [
                        var func = component[msg.methodName];
                        func.apply( component, new_args );
                }
-           }else if( msg.type == 'coordinates' ){
-                     this.coordsDict = msg.data;
-                     console.log ( "received coordsDict" );
            }
     },
     } );
