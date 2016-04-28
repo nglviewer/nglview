@@ -230,7 +230,7 @@ define( [
         },
 
         mydecode: function(base64) {
-            // adapted from Niklas
+            // lightly adapted from Niklas
 
             /*
              * base64-arraybuffer
@@ -276,6 +276,7 @@ define( [
                 var coordinates = this.coordsDict[frame];
                 this._update_coords(coordinates);
             }
+            // else: listen to coordinatesChanged
         },
 
 
@@ -287,6 +288,7 @@ define( [
         },
 
         _update_coords: function( coordinates ) {
+            // coordinates must be pre-decoded
             var component = this.structureComponent;
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
@@ -350,6 +352,17 @@ define( [
                        var component = this.stage.compList[index];
                        var func = component[msg.methodName];
                        func.apply( component, new_args );
+               }
+           }else if( msg.type == 'base64' ){
+               console.log( "receiving base64 dict" );
+               var base64Dict = msg.data;
+               this.coordsDict = {};
+               if ( "cache" in msg ){
+                   this._cache = msg.cache;
+                   this.model.set( "cache", this._cache );
+               }
+               for (var i = 0; i < Object.keys(base64Dict).length; i++) {
+                    this.coordsDict[i] = this.mydecode( base64Dict[i]);
                }
            }
     },

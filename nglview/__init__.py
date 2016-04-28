@@ -190,6 +190,12 @@ class Trajectory(object):
         # [ 1,1,1, 2,2,2 ]
         raise NotImplementedError()
 
+    def get_coordinates_dict(self):
+        raise NotImplementedError()
+
+    def get_coordinates_base64(self, index):
+        raise NotImplementedError()
+
     @property
     def n_frames(self):
         raise NotImplementedError()
@@ -281,21 +287,15 @@ class PyTrajTrajectory(Trajectory, Structure):
         self.params = {}
 
     def get_coordinates_list(self, index):
-        # use trajectory[index] to use both in-memory
-        #   (via pytraj.load method)
-        # and out-of-core trajectory
-        #   (via pytraj.iterload method)
         xyz = self.trajectory[index].xyz
-        # return frame.flatten().tolist()
-        return xyz.astype('float32')
+        return xyz.flatten().tolist()
 
-    def get_coordinate_dict(self):
+    def get_coordinates_dict(self):
         return dict((index, encode_numpy(xyz))
                     for index, xyz in enumerate(self.trajectory.xyz))
 
-    def get_base64(self, index):
+    def get_coordinates_base64(self, index):
         return encode_numpy(self.trajectory[index].xyz)
-
 
     @property
     def n_frames(self):
@@ -474,11 +474,18 @@ class NGLWidget(widgets.DOMWidget):
             setattr(self, fn, MethodType(func, self))
 
     def caching(self):
-        if hasattr(self.trajectory, "get_coordinate_dict"):
+        if hasattr(self.trajectory, "get_coordinates_dict"):
+            # should use use coordinates_dict to sync?
+            # my molecule disappear.
+            # self.coordinates_dict = self.trajectory.get_coordinates_dict()
+
             self.cache = True
-            self.coordinates_dict = self.trajectory.get_coordinate_dict()
+            msg = dict(type='base64',
+                       cache=self.cache,
+                       data=self.trajectory.get_coordinates_dict())
+            self.send(msg)
         else:
-            print('warning: does not have get_coordinate_dict method, turn off cache') 
+            print('warning: does not have get_coordinates_dict method, turn off cache') 
             self.cache = False
 
     def uncaching(self):
@@ -497,7 +504,7 @@ class NGLWidget(widgets.DOMWidget):
     def _set_coordinates(self, index):
         if self.trajectory:
             # coordinates = self.trajectory.get_coordinates_list(index)
-            coordinates = self.trajectory.get_base64(index)
+            coordinates = self.trajectory.get_coordinates_base64(index)
             self.coordinates = coordinates
         else:
             print("no trajectory available")
