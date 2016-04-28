@@ -264,7 +264,7 @@ define( [
         frameChanged: function(){
             if( this._cache ){
                 var frame = this.model.get( "frame" );
-                var coordinates = this.mydecode(this.coordsDict[frame]);
+                var coordinates = this.coordsDict[frame];
                 this._update_coords(coordinates);
             }
         },
@@ -296,6 +296,10 @@ define( [
                 this._cache = false;
             }
             this.model.set( "cache", this._cache);
+            
+            for (var i = 0; i < Object.keys(coordsDict).length; i++) {
+                this.coordsDict[i] = this.mydecode( coordsDict[i]);
+            }
         },
 
         setSize: function( width, height ){
