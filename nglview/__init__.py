@@ -502,7 +502,7 @@ class NGLWidget(widgets.DOMWidget):
         }
 
     def _set_coordinates(self, index):
-        if self.trajectory:
+        if self.trajectory and not self.cache:
             # coordinates = self.trajectory.get_coordinates_list(index)
             coordinates = self.trajectory.get_coordinates_base64(index)
             self.coordinates = coordinates
