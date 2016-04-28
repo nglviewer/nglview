@@ -9,7 +9,7 @@ import os.path
 import warnings
 import tempfile
 import ipywidgets as widgets
-from traitlets import Unicode, Bool, Dict, List, Int, Float, Any
+from traitlets import Unicode, Bool, Dict, List, Int, Float, Any, Bytes
 
 from IPython.display import display, Javascript
 from notebook.nbextensions import install_nbextension
@@ -29,16 +29,10 @@ except ImportError:
 # Simple API
 import base64
 
-def encode_numpy(array):
-    '''Encode a numpy array as a base64 encoded string, to be JSON serialized. 
-
-    :return: a dictionary containing the fields:
-                - *data*: the base64 string
-                - *type*: the array type
-                - *shape*: the array shape
-
-    '''
-    return base64.b64encode(array.data).decode('utf8')
+def encode_numpy(arr):
+    # arr = arr.astype('f4').flatten()
+    arr = arr.astype('f4')
+    return base64.b64encode(arr.data).decode('utf8')
 
 
 def show_pdbid(pdbid, **kwargs):
@@ -301,7 +295,7 @@ class PyTrajTrajectory(Trajectory, Structure):
                     for index, xyz in enumerate(self.trajectory.xyz))
 
     def get_base64(self, index):
-        return encode_numpy(self.trajectory[index].xyz.astype('float32').flatten())['data']
+        return encode_numpy(self.trajectory[index].xyz)
 
 
     @property
@@ -509,6 +503,7 @@ class NGLWidget(widgets.DOMWidget):
         if self.trajectory:
             # coordinates = self.trajectory.get_coordinates_list(index)
             coordinates = self.trajectory.get_base64(index)
+            print("updating coordinates")
             self.coordinates = coordinates
         else:
             print("no trajectory available")

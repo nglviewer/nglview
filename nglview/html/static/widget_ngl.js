@@ -15,7 +15,6 @@ require.config( {
         "signals": "../nbextensions/nglview/signals.min",
         "NGL": "../nbextensions/nglview/ngl",
         "mdsrv": "../nbextensions/nglview/mdsrv",
-        'base64-arraybuffer': '/nbextensions/nglview/base64-arraybuffer'
     },
     shim: {
         THREE: { exports: "THREE" },
@@ -238,9 +237,41 @@ define( [
             }
         },
 
+        mydecode: function(base64) {
+            var chars =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+            var bufferLength = base64.length * 0.75,
+                len = base64.length,
+                i, p = 0,
+                encoded1, encoded2, encoded3, encoded4;
+
+            if (base64[base64.length - 1] === "=") {
+                bufferLength--;
+                if (base64[base64.length - 2] === "=") {
+                    bufferLength--;
+                }
+            }
+
+            var arraybuffer = new ArrayBuffer(bufferLength),
+                bytes = new Uint8Array(arraybuffer);
+
+            for (i = 0; i < len; i += 4) {
+                encoded1 = chars.indexOf(base64[i]);
+                encoded2 = chars.indexOf(base64[i + 1]);
+                encoded3 = chars.indexOf(base64[i + 2]);
+                encoded4 = chars.indexOf(base64[i + 3]);
+
+                bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+                bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+                bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+            }
+
+            return arraybuffer;
+        },
+
         coordinatesChanged: function(){
             if (! this._cache ){
-                var coordinates = decode( this.model.get( "coordinates" ) );
+                var coordinates = this.mydecode( this.model.get( "coordinates" ) );
                 this._update_coords(coordinates);
             }
         },
