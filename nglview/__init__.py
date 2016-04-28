@@ -291,7 +291,7 @@ class PyTrajTrajectory(Trajectory, Structure):
         return xyz.astype('float32')
 
     def get_coordinate_dict(self):
-        return dict((index, xyz.flatten().tolist())
+        return dict((index, encode_numpy(xyz))
                     for index, xyz in enumerate(self.trajectory.xyz))
 
     def get_base64(self, index):
@@ -503,7 +503,6 @@ class NGLWidget(widgets.DOMWidget):
         if self.trajectory:
             # coordinates = self.trajectory.get_coordinates_list(index)
             coordinates = self.trajectory.get_base64(index)
-            print("updating coordinates")
             self.coordinates = coordinates
         else:
             print("no trajectory available")

@@ -229,14 +229,6 @@ define( [
             }
         },
 
-        frameChanged: function(){
-            if( this._cache ){
-                var frame = this.model.get( "frame" );
-                var coordinates = this.coordsDict[frame];
-                this._update_coords(coordinates);
-            }
-        },
-
         mydecode: function(base64) {
             var chars =
                 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -268,6 +260,15 @@ define( [
 
             return arraybuffer;
         },
+
+        frameChanged: function(){
+            if( this._cache ){
+                var frame = this.model.get( "frame" );
+                var coordinates = this.mydecode(this.coordsDict[frame]);
+                this._update_coords(coordinates);
+            }
+        },
+
 
         coordinatesChanged: function(){
             if (! this._cache ){
