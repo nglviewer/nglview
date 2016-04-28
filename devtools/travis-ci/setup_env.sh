@@ -15,9 +15,12 @@ pip install conda
 conda install --yes conda-build jinja2 anaconda-client pip
 
 # create myenv
-conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose
+conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose numpy mock
 
 source activate myenv
-# conda install mdtraj -c omnia --yes
-# conda install pytraj-dev -c ambermd --yes
-# pip install mdanalysis
+pip install pytraj
+conda install parmed -c ambermd --yes
+if [ "$PYTHON_VERSION" = "2.7" ]; then
+    conda install mdanalysis -c MDAnalysis --yes
+fi
+conda install mdtraj -c omnia --yes
