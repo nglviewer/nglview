@@ -272,6 +272,14 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
 Changelog
 =========
 
+Version 0.5.dev
+---------------
+
+* ADD: atom selection by array
+* ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
+* ADD: `ParmEdTrajectory` adaptor
+* FIX: symlink error
+
 Version 0.4
 -----------
 

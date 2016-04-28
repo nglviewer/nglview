@@ -281,7 +281,9 @@ define( [
         },
 
         on_msg: function(msg){
-            if ( msg.type == 'call_method' ){
+            if( msg.type == 'call_method' ){
+               console.log( "msg.args" );
+               console.log( msg.args );
                var new_args = msg.args.slice();
                new_args.push( msg.kwargs );
 
@@ -293,17 +295,21 @@ define( [
                    }else{
                        stage_func.apply( stage, new_args );
                    }
-            }else if( msg.target == 'viewer' ){
-                    var viewer = this.stage.viewer;
-                    var viewer_func = this.stage.viewer[msg.methodName];
-                    viewer_func.apply( viewer, new_args );
-                }
-            }else if( msg.type == 'coordsDict'){
-                this.coordsDict = msg.data;
-                console.log ( "received coordsDict" );
-            }
-        }
-
+               }else if( msg.target == 'viewer' ){
+                       var viewer = this.stage.viewer;
+                       var func = this.stage.viewer[msg.methodName];
+                       func.apply( viewer, new_args );
+               }else if( msg.target == 'component' ){
+                       var index = msg['component_index'];
+                       var component = this.stage.compList[index];
+                       var func = component[msg.methodName];
+                       func.apply( component, new_args );
+               }
+           }else if( msg.type == 'coordinates' ){
+                     this.coordsDict = msg.data;
+                     console.log ( "received coordsDict" );
+           }
+    },
     } );
 
     manager.WidgetManager.register_widget_view( 'NGLView', NGLView );
