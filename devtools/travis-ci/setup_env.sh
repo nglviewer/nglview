@@ -19,8 +19,8 @@ conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose numpy mock
 
 source activate myenv
 pip install pytraj
-conda install parmed -c ambermd
+conda install parmed -c ambermd --yes
 if [ "$PYTHON_VERSION" = "2.7" ]; then
-    conda install mdanalysis -c MDAnalysis
+    conda install mdanalysis -c MDAnalysis --yes
 fi
 # conda install mdtraj -c omnia --yes
