@@ -110,5 +110,11 @@ def test_encode_and_decode():
     shape = xyz.shape
 
     b64_str = nv.encode_numpy(xyz)
-    new_xyz = nv.decode_base64(b64_str).reshape(shape)
+    new_xyz = nv.decode_base64(b64_str, dtype='f4', shape=shape)
     aa_eq(xyz, new_xyz) 
+
+def test_coordinates_meta():
+    traj = pt.datafiles.load_tz2()
+    view = nv.show_pytraj(traj)
+    view.frame = 3
+    aa_eq(view.coordinates, traj.xyz[3])

@@ -27,14 +27,14 @@ except ImportError:
 
 import base64
 
-def encode_numpy(arr):
-    arr = arr.astype('f4')
+def encode_numpy(arr, dtype='f4'):
+    arr = arr.astype(dtype)
     return base64.b64encode(arr.data).decode('utf8')
 
-def decode_base64(bstr):
+def decode_base64(data, shape, dtype='f4'):
     import numpy as np
-    decoded_str = base64.b64decode(bstr)
-    return np.frombuffer(decoded_str, dtype='f4')
+    decoded_str = base64.b64decode(data)
+    return np.frombuffer(decoded_str, dtype=dtype).reshape(shape)
 
 
 ##############
@@ -199,7 +199,7 @@ class Trajectory(object):
     def get_coordinates_dict(self):
         raise NotImplementedError()
 
-    def get_coordinates_base64(self, index):
+    def get_coordinates_numpy(self, index):
         raise NotImplementedError()
 
     @property
@@ -300,8 +300,8 @@ class PyTrajTrajectory(Trajectory, Structure):
         return dict((index, encode_numpy(xyz))
                     for index, xyz in enumerate(self.trajectory.xyz))
 
-    def get_coordinates_base64(self, index):
-        return encode_numpy(self.trajectory[index].xyz)
+    def get_coordinates_numpy(self, index):
+        return self.trajectory[index].xyz
 
     @property
     def n_frames(self):
@@ -403,7 +403,7 @@ class NGLWidget(widgets.DOMWidget):
     selection = Unicode("*", sync=True)
     structure = Dict(sync=True)
     representations = List(sync=True)
-    coordinates = Any(sync=True)
+    _coordinates_meta = Dict(sync=True)
     coordinates_dict = Dict(sync=True)
     cache = Bool(sync=True)
     picked = Dict(sync=True)
@@ -441,6 +441,31 @@ class NGLWidget(widgets.DOMWidget):
             ]
         self._add_repr_method_shortcut()
 
+
+    @property
+    def coordinates(self):
+        if self.cache:
+            return
+        else:
+            data = self._coordinates_meta['data']
+            dtype = self._coordinates_meta['dtype']
+            shape = self._coordinates_meta['shape']
+            return decode_base64(data, dtype=dtype, shape=shape)
+
+    @coordinates.setter
+    def coordinates(self, arr):
+        """return current coordinate
+
+        Parameters
+        ----------
+        arr : 2D array, shape=(n_atoms, 3)
+        """
+        dtype = 'f4'
+        coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
+                                dtype=dtype,
+                                shape=arr.shape)
+        self._coordinates_meta = coordinates_meta
+                                      
     def _add_repr_method_shortcut(self):
         # dynamically add method for NGLWidget
         repr_names  = [
@@ -510,7 +535,7 @@ class NGLWidget(widgets.DOMWidget):
     def _set_coordinates(self, index):
         if self.trajectory and not self.cache:
             # coordinates = self.trajectory.get_coordinates_list(index)
-            coordinates = self.trajectory.get_coordinates_base64(index)
+            coordinates = self.trajectory.get_coordinates_numpy(index)
             self.coordinates = coordinates
         else:
             print("no trajectory available")

@@ -68,7 +68,7 @@ define( [
                 this.model.on( "change:structure", this.structureChanged, this );
 
                 // init setting of coordinates
-                this.model.on( "change:coordinates", this.coordinatesChanged, this );
+                this.model.on( "change:_coordinates_meta", this.coordinatesChanged, this );
 
                 // init setting of coordinates
                 this.model.on( "change:coordinates_dict", this.coordsDictChanged, this );
@@ -282,13 +282,16 @@ define( [
 
         coordinatesChanged: function(){
             if (! this._cache ){
-                var coordinates = this.mydecode( this.model.get( "coordinates" ) );
+                var coordinates_meta = this.model.get( "_coordinates_meta" );
+
+                // not checking dtype yet
+                var coordinates = this.mydecode( coordinates_meta['data'] );
                 this._update_coords(coordinates);
             }
         },
 
         _update_coords: function( coordinates ) {
-            // coordinates must be pre-decoded
+            // coordinates must be ArrayBuffer (use this.mydecode)
             var component = this.structureComponent;
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
