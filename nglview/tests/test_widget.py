@@ -73,7 +73,7 @@ def test_remote_call():
     kwargs = {'defaultRepresentation': True}
     view._remote_call('loadFile', target='stage', args=[fn,], kwargs=kwargs)
 
-@unittest.skip("mess up with scipy, skip mdtraj now")
+# @unittest.skip("mess up with scipy, skip mdtraj now")
 def test_show_mdtraj():
     import mdtraj as md
     from mdtraj.testing import get_fn

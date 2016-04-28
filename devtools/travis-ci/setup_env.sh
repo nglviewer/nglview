@@ -23,4 +23,4 @@ conda install parmed -c ambermd --yes
 if [ "$PYTHON_VERSION" = "2.7" ]; then
     conda install mdanalysis -c MDAnalysis --yes
 fi
-# conda install mdtraj -c omnia --yes
+conda install mdtraj -c omnia --yes
