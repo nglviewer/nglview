@@ -283,6 +283,10 @@ class PyTrajTrajectory(Trajectory, Structure):
         frame = self.trajectory[index].xyz
         return frame.flatten().tolist()
 
+    def get_coordinate_dict(self):
+        return dict((index, xyz.flatten().tolist())
+                    for index, xyz in enumerate(self.trajectory.xyz))
+
     @property
     def n_frames(self):
         return self.trajectory.n_frames
@@ -384,6 +388,8 @@ class NGLWidget(widgets.DOMWidget):
     structure = Dict(sync=True)
     representations = List(sync=True)
     coordinates = List(sync=True)
+    coordinates_dict = Dict(sync=True)
+    cache = Bool(sync=True)
     picked = Dict(sync=True)
     frame = Int(sync=True)
     count = Int(sync=True)
@@ -391,6 +397,10 @@ class NGLWidget(widgets.DOMWidget):
 
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
+        try:
+            self.cache = kwargs.pop('cache')
+        except KeyError:
+            self.cache = False
         super(NGLWidget, self).__init__(**kwargs)
         if parameters:
             self.parameters = parameters
@@ -413,7 +423,6 @@ class NGLWidget(widgets.DOMWidget):
                     "sele": "hetero OR mol"
                 }}
             ]
-
         self._add_repr_method_shortcut()
 
     def _add_repr_method_shortcut(self):
@@ -453,7 +462,22 @@ class NGLWidget(widgets.DOMWidget):
             fn = 'add_' + rep[0]
             from types import MethodType
             setattr(self, fn, MethodType(func, self))
-        
+
+    def caching(self):
+        if hasattr(self.trajectory, "get_coordinate_dict"):
+            self.cache = True
+            # self.send({'type': 'coordsDict', 'data':
+            #     self.trajectory.get_coordinate_dict()})
+            
+            # this one seems much faster than `send` method?
+            self.coordinates_dict = self.trajectory.get_coordinate_dict()
+        else:
+            print('warning: does not have get_coordinate_dict method, turn off cache') 
+            self.cache = False
+
+    def uncaching(self):
+        self.cache = False
+
     def set_representations(self, representations):
         self.representations = representations
 
@@ -472,7 +496,9 @@ class NGLWidget(widgets.DOMWidget):
             print("no trajectory available")
 
     def _frame_changed(self):
-        self._set_coordinates(self.frame)
+        if not self.cache:
+            self._set_coordinates(self.frame)
+
 
     def add_representation(self, repr_type, selection='all', **kwd):
         '''Add representation.

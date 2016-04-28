@@ -70,10 +70,20 @@ define( [
                 // init setting of coordinates
                 this.model.on( "change:coordinates", this.coordinatesChanged, this );
 
+                // init setting of coordinates
+                this.model.on( "change:coordinates_dict", this.coordsDictChanged, this );
+
+                // init setting of frame
+                this.model.on( "change:frame", this.frameChanged, this );
+
                 // init parameters handling
                 this.model.on( "change:parameters", this.parametersChanged, this );
 
+                // init parameters handling
+                this.model.on( "change:cache", this.cacheChanged, this );
+
                 // get message from Python
+                this.coordsDict = undefined;
                 this.model.on( "msg:custom", function (msg) {
                     this.on_msg( msg );
                 }, this);
@@ -219,15 +229,40 @@ define( [
             }
         },
 
+        frameChanged: function(){
+            if( this._cache ){
+                var frame = this.model.get( "frame" );
+                var coordinates = this.coordsDict[frame];
+                this._update_coords(coordinates);
+            }
+        },
+
         coordinatesChanged: function(){
-            var coordinates = this.model.get( "coordinates" );
+            if (! this._cache ){
+                var coordinates = this.model.get( "coordinates" );
+                this._update_coords(coordinates);
+            }
+        },
+
+        _update_coords: function( coordinates ) {
             var component = this.structureComponent;
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
                 component.structure.updatePosition( coords );
                 component.updateRepresentations( { "position": true } );
             }
+        },
 
+        coordsDictChanged: function(){
+            this.coordsDict = this.model.get( "coordinates_dict" );
+            var cdict = this.coordsDict
+            var clen = Object.keys(cdict).length
+            if ( clen != 0 ){
+                this._cache = true;
+            }else{
+                this._cache = false;
+            }
+            this.model.set( "cache", this._cache);
         },
 
         setSize: function( width, height ){
@@ -239,6 +274,10 @@ define( [
         parametersChanged: function(){
             var parameters = this.model.get( "parameters" );
             this.stage.setParameters( parameters );
+        },
+
+        cacheChanged: function(){
+            this._cache = this.model.get( "cache" );
         },
 
         on_msg: function(msg){
@@ -266,9 +305,8 @@ define( [
                        var func = component[msg.methodName];
                        func.apply( component, new_args );
                }
-            }
-        }
-
+           }
+    },
     } );
 
     manager.WidgetManager.register_widget_view( 'NGLView', NGLView );
