@@ -31,6 +31,12 @@ def encode_numpy(arr):
     arr = arr.astype('f4')
     return base64.b64encode(arr.data).decode('utf8')
 
+def decode_base64(bstr):
+    import numpy as np
+    decoded_str = base64.b64decode(bstr)
+    return np.frombuffer(decoded_str, dtype='f4')
+
+
 ##############
 # Simple API
 

@@ -7,12 +7,15 @@ from __future__ import print_function
 
 import nose.tools as nt
 import unittest
+from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
+import numpy as np
 
 from ipykernel.comm import Comm
 import ipywidgets as widgets
 
 from traitlets import TraitError
 from ipywidgets import Widget
+
 
 import pytraj as pt
 import nglview as nv
@@ -93,3 +96,19 @@ def test_show_parmed():
     fn = nv.datafiles.PDB 
     parm = pmd.load_file(fn)
     view = nv.show_parmed(parm)
+
+def test_caching_bool():
+    view = nv.show_pytraj(pt.datafiles.load_tz2())
+    nt.assert_false(view.cache)
+    view.caching()
+    nt.assert_true(view.cache)
+    view.uncaching()
+    nt.assert_false(view.cache)
+
+def test_encode_and_decode():
+    xyz = np.arange(100).astype('f4')
+    shape = xyz.shape
+
+    b64_str = nv.encode_numpy(xyz)
+    new_xyz = nv.decode_base64(b64_str).reshape(shape)
+    aa_eq(xyz, new_xyz) 
