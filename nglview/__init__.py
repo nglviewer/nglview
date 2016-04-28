@@ -185,7 +185,8 @@ class Trajectory(object):
         # [ 1,1,1, 2,2,2 ]
         raise NotImplementedError()
 
-    def get_frame_count(self):
+    @property
+    def n_frames(self):
         raise NotImplementedError()
 
 
@@ -218,7 +219,8 @@ class SimpletrajTrajectory(Trajectory):
         frame = traj.get_frame(int(index))
         return frame["coords"].flatten().tolist()
 
-    def get_frame_count(self):
+    @property
+    def n_frames(self):
         traj = self.traj_cache.get(os.path.abspath(self.path))
         return traj.numframes
 
@@ -244,8 +246,9 @@ class MDTrajTrajectory(Trajectory, Structure):
         frame = self.trajectory[index].xyz * 10  # convert from nm to A
         return frame.flatten().tolist()
 
-    def get_frame_count(self):
-        return len(self.trajectory.xyz)
+    @property
+    def n_frames(self):
+        return self.trajectory.n_frames
 
     def get_structure_string(self):
         fd, fname = tempfile.mkstemp()
@@ -284,7 +287,8 @@ class PyTrajTrajectory(Trajectory, Structure):
         return dict((index, xyz.flatten().tolist())
                     for index, xyz in enumerate(self.trajectory.xyz))
 
-    def get_frame_count(self):
+    @property
+    def n_frames(self):
         return self.trajectory.n_frames
 
     def get_structure_string(self):
@@ -311,7 +315,8 @@ class ParmEdTrajectory(Trajectory, Structure):
         frame = self._xyz[index]
         return frame.flatten().tolist()
 
-    def get_frame_count(self):
+    @property
+    def n_frames(self):
         return len(self._xyz)
 
     def get_structure_string(self):
@@ -348,7 +353,8 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         frame = self.atomgroup.atoms.positions
         return frame.flatten().tolist()
 
-    def get_frame_count(self):
+    @property
+    def n_frames(self):
         return self.atomgroup.universe.trajectory.n_frames
 
     def get_structure_string(self):
@@ -404,8 +410,8 @@ class NGLWidget(widgets.DOMWidget):
         elif hasattr(structure, "get_coordinates_list"):
             self.trajectory = structure
         if hasattr(self, "trajectory") and \
-                hasattr(self.trajectory, "get_frame_count"):
-            self.count = self.trajectory.get_frame_count()
+                hasattr(self.trajectory, "n_frames"):
+            self.count = self.trajectory.n_frames
         if representations:
             self.representations = representations
         else:
