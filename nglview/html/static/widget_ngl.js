@@ -326,14 +326,6 @@ define( [
 
         cacheChanged: function(){
             this._cache = this.model.get( "cache" );
-
-            // does this really work?
-            // if( this._cache ) {
-            //     if( Object.keys( this.coordsDict ).length > 0) {
-            //         console.log( "free memory for coordsDict" );
-            //         this.coordsDict = {};
-            //     }
-            // }
         },
 
         on_msg: function(msg){
