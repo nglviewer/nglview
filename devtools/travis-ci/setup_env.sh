@@ -18,6 +18,6 @@ conda install --yes conda-build jinja2 anaconda-client pip
 conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose
 
 source activate myenv
+pip install pytraj
 # conda install mdtraj -c omnia --yes
-# conda install pytraj-dev -c ambermd --yes
 # pip install mdanalysis
