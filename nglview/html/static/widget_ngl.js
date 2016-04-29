@@ -83,7 +83,7 @@ define( [
                 this.model.on( "change:cache", this.cacheChanged, this );
 
                 // get message from Python
-                this.coordsDict = undefined;
+                this.coordsDict = {};
                 this.model.on( "msg:custom", function (msg) {
                     this.on_msg( msg );
                 }, this);
