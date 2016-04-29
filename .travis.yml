@@ -16,7 +16,7 @@ install:
     - python setup.py install
 
 script:
-    - nosetests -vs .
+    - nosetests --with-coverage --cover-package nglview -vs .
 
 after_success:
     - echo "after_success"

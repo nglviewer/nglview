@@ -7,6 +7,8 @@ from __future__ import print_function
 
 import nose.tools as nt
 import unittest
+from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
+import numpy as np
 
 from ipykernel.comm import Comm
 import ipywidgets as widgets
@@ -14,8 +16,12 @@ import ipywidgets as widgets
 from traitlets import TraitError
 from ipywidgets import Widget
 
+
 import pytraj as pt
 import nglview as nv
+import mdtraj as md
+import parmed as pmd
+# wait until MDAnalysis supports PY3
 from nglview.utils import PY2, PY3
 
 
@@ -93,3 +99,58 @@ def test_show_parmed():
     fn = nv.datafiles.PDB 
     parm = pmd.load_file(fn)
     view = nv.show_parmed(parm)
+
+def test_caching_bool():
+    view = nv.show_pytraj(pt.datafiles.load_tz2())
+    nt.assert_false(view.cache)
+    view.caching()
+    nt.assert_true(view.cache)
+    view.uncaching()
+    nt.assert_false(view.cache)
+
+def test_encode_and_decode():
+    xyz = np.arange(100).astype('f4')
+    shape = xyz.shape
+
+    b64_str = nv.encode_numpy(xyz)
+    new_xyz = nv.decode_base64(b64_str, dtype='f4', shape=shape)
+    aa_eq(xyz, new_xyz) 
+
+def test_coordinates_meta():
+    from mdtraj.testing import get_fn
+    fn, tn = [get_fn('frame0.pdb'),] * 2
+    trajs = [pt.load(fn, tn), md.load(fn, top=tn), pmd.load_file(tn, fn)]
+
+    N_FRAMES = trajs[0].n_frames
+
+    if PY2:
+        from MDAnalysis import Universe
+        u = Universe(tn, fn)
+        trajs.append(Universe(tn, fn))
+
+    views = [nv.show_pytraj(trajs[0]), nv.show_mdtraj(trajs[1]), nv.show_parmed(trajs[2])]
+
+    if PY2:
+        views.append(nv.show_mdanalysis(trajs[3]))
+
+    for index, (view, traj) in enumerate(zip(views, trajs)):
+        view.frame = 3
+        
+        _coordinates_meta = view._coordinates_meta
+        nt.assert_in('data', _coordinates_meta)
+        nt.assert_in('shape', _coordinates_meta)
+        nt.assert_in('dtype', _coordinates_meta)
+        nt.assert_equal(view._coordinates_meta['dtype'], 'f4')
+        nt.assert_equal(view.trajectory.n_frames, N_FRAMES)
+        nt.assert_equal(len(view.trajectory.get_coordinates_dict().keys()), N_FRAMES)
+
+        if index in [0, 1]:
+            # pytraj, mdtraj
+            aa_eq(view.coordinates, traj.xyz[3], decimal=4)
+            view.coordinates = traj.xyz[2]
+            aa_eq(view.coordinates, traj.xyz[2], decimal=4)
+
+        data = view._coordinates_meta['data']
+        shape = view._coordinates_meta['shape']
+        dtype = view._coordinates_meta['dtype']
+        aa_eq(view.coordinates, nv.decode_base64(data, dtype=dtype, shape=shape))

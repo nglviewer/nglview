@@ -9,7 +9,7 @@ import os.path
 import warnings
 import tempfile
 import ipywidgets as widgets
-from traitlets import Unicode, Bool, Dict, List, Int, Float
+from traitlets import Unicode, Bool, Dict, List, Int, Float, Any, Bytes
 
 from IPython.display import display, Javascript
 from notebook.nbextensions import install_nbextension
@@ -25,9 +25,20 @@ except ImportError:
     from urllib2 import urlopen
 
 
+import base64
+
+def encode_numpy(arr, dtype='f4'):
+    arr = arr.astype(dtype)
+    return base64.b64encode(arr.data).decode('utf8')
+
+def decode_base64(data, shape, dtype='f4'):
+    import numpy as np
+    decoded_str = base64.b64decode(data)
+    return np.frombuffer(decoded_str, dtype=dtype).reshape(shape)
+
+
 ##############
 # Simple API
-
 
 def show_pdbid(pdbid, **kwargs):
     '''Show PDB entry.
@@ -181,8 +192,10 @@ class Trajectory(object):
     def __init__(self):
         pass
 
-    def get_coordinates_list(self, index):
-        # [ 1,1,1, 2,2,2 ]
+    def get_coordinates_dict(self):
+        raise NotImplementedError()
+
+    def get_coordinates(self, index):
         raise NotImplementedError()
 
     @property
@@ -214,10 +227,10 @@ class SimpletrajTrajectory(Trajectory):
         except Exception as e:
             raise e
 
-    def get_coordinates_list(self, index):
+    def get_coordinates(self, index):
         traj = self.traj_cache.get(os.path.abspath(self.path))
         frame = traj.get_frame(int(index))
-        return frame["coords"].flatten().tolist()
+        return frame["coords"]
 
     @property
     def n_frames(self):
@@ -242,9 +255,12 @@ class MDTrajTrajectory(Trajectory, Structure):
         self.ext = "pdb"
         self.params = {}
 
-    def get_coordinates_list(self, index):
-        frame = self.trajectory[index].xyz * 10  # convert from nm to A
-        return frame.flatten().tolist()
+    def get_coordinates_dict(self):
+        return dict((index, encode_numpy(xyz))
+                    for index, xyz in enumerate(self.trajectory.xyz))
+
+    def get_coordinates(self, index):
+        return self.trajectory.xyz[index]
 
     @property
     def n_frames(self):
@@ -275,13 +291,12 @@ class PyTrajTrajectory(Trajectory, Structure):
         self.ext = "pdb"
         self.params = {}
 
-    def get_coordinates_list(self, index):
-        # use trajectory[index] to use both in-memory
-        #   (via pytraj.load method)
-        # and out-of-core trajectory
-        #   (via pytraj.iterload method)
-        frame = self.trajectory[index].xyz
-        return frame.flatten().tolist()
+    def get_coordinates_dict(self):
+        return dict((index, encode_numpy(xyz))
+                    for index, xyz in enumerate(self.trajectory.xyz))
+
+    def get_coordinates(self, index):
+        return self.trajectory[index].xyz
 
     @property
     def n_frames(self):
@@ -307,9 +322,12 @@ class ParmEdTrajectory(Trajectory, Structure):
         # only call get_coordinates once
         self._xyz = trajectory.get_coordinates()
 
-    def get_coordinates_list(self, index):
-        frame = self._xyz[index]
-        return frame.flatten().tolist()
+    def get_coordinates_dict(self):
+        return dict((index, encode_numpy(xyz))
+                    for index, xyz in enumerate(self._xyz))
+
+    def get_coordinates(self, index):
+        return self._xyz[index]
 
     @property
     def n_frames(self):
@@ -344,10 +362,15 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         self.ext = "pdb"
         self.params = {}
 
-    def get_coordinates_list(self, index):
+    def get_coordinates_dict(self):
+
+        return dict((index, encode_numpy(self.atomgroup.atoms.positions))
+                    for index, _ in enumerate(self.atomgroup.universe.trajectory))
+
+    def get_coordinates(self, index):
         self.atomgroup.universe.trajectory[index]
-        frame = self.atomgroup.atoms.positions
-        return frame.flatten().tolist()
+        xyz = self.atomgroup.atoms.positions
+        return xyz
 
     @property
     def n_frames(self):
@@ -378,26 +401,34 @@ class MDAnalysisTrajectory(Trajectory, Structure):
 
 
 class NGLWidget(widgets.DOMWidget):
+<<<<<<< HEAD
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
-    structure = Dict().tag(sync=True)
-    representations = List().tag(sync=True)
-    coordinates = List().tag(sync=True)
-    picked = Dict().tag(sync=True)
+    cache = Bool().tag(sync=True)
     frame = Int().tag(sync=True)
     count = Int().tag(sync=True)
+    representations = List().tag(sync=True)
+    picked = Dict().tag(sync=True)
+    structure = Dict().tag(sync=True)
     parameters = Dict().tag(sync=True)
+    _coordinates_meta = Dict().tag(sync=True)
+    coordinates_dict = Dict().tag(sync=True)
+    picked = Dict().tag(sync=True)
 
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
+        try:
+            self.cache = kwargs.pop('cache')
+        except KeyError:
+            self.cache = False
         super(NGLWidget, self).__init__(**kwargs)
         if parameters:
             self.parameters = parameters
         self.set_structure(structure)
         if trajectory:
             self.trajectory = trajectory
-        elif hasattr(structure, "get_coordinates_list"):
+        elif hasattr(structure, "get_coordinates_dict"):
             self.trajectory = structure
         if hasattr(self, "trajectory") and \
                 hasattr(self.trajectory, "n_frames"):
@@ -413,9 +444,33 @@ class NGLWidget(widgets.DOMWidget):
                     "sele": "hetero OR mol"
                 }}
             ]
-
         self._add_repr_method_shortcut()
 
+
+    @property
+    def coordinates(self):
+        if self.cache:
+            return
+        else:
+            data = self._coordinates_meta['data']
+            dtype = self._coordinates_meta['dtype']
+            shape = self._coordinates_meta['shape']
+            return decode_base64(data, dtype=dtype, shape=shape)
+
+    @coordinates.setter
+    def coordinates(self, arr):
+        """return current coordinate
+
+        Parameters
+        ----------
+        arr : 2D array, shape=(n_atoms, 3)
+        """
+        dtype = 'f4'
+        coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
+                                dtype=dtype,
+                                shape=arr.shape)
+        self._coordinates_meta = coordinates_meta
+                                      
     def _add_repr_method_shortcut(self):
         # dynamically add method for NGLWidget
         repr_names  = [
@@ -453,7 +508,25 @@ class NGLWidget(widgets.DOMWidget):
             fn = 'add_' + rep[0]
             from types import MethodType
             setattr(self, fn, MethodType(func, self))
-        
+
+    def caching(self):
+        if hasattr(self.trajectory, "get_coordinates_dict"):
+            # should use use coordinates_dict to sync?
+            # my molecule disappear.
+            # self.coordinates_dict = self.trajectory.get_coordinates_dict()
+
+            self.cache = True
+            msg = dict(type='base64',
+                       cache=self.cache,
+                       data=self.trajectory.get_coordinates_dict())
+            self.send(msg)
+        else:
+            print('warning: does not have get_coordinates_dict method, turn off cache') 
+            self.cache = False
+
+    def uncaching(self):
+        self.cache = False
+
     def set_representations(self, representations):
         self.representations = representations
 
@@ -465,14 +538,16 @@ class NGLWidget(widgets.DOMWidget):
         }
 
     def _set_coordinates(self, index):
-        if self.trajectory:
-            coordinates = self.trajectory.get_coordinates_list(index)
+        if self.trajectory and not self.cache:
+            coordinates = self.trajectory.get_coordinates(index)
             self.coordinates = coordinates
         else:
             print("no trajectory available")
 
     def _frame_changed(self):
-        self._set_coordinates(self.frame)
+        if not self.cache:
+            self._set_coordinates(self.frame)
+
 
     def add_representation(self, repr_type, selection='all', **kwd):
         '''Add representation.
