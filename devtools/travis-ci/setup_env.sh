@@ -15,7 +15,7 @@ pip install conda
 conda install --yes conda-build jinja2 anaconda-client pip
 
 # create myenv
-conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose numpy mock
+conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose numpy mock coverage
 
 source activate myenv
 pip install pytraj

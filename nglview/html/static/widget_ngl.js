@@ -273,8 +273,10 @@ define( [
         frameChanged: function(){
             if( this._cache ){
                 var frame = this.model.get( "frame" );
-                var coordinates = this.coordsDict[frame];
-                this._update_coords(coordinates);
+                if( frame in this.coordsDict ) {
+                    var coordinates = this.coordsDict[frame];
+                    this._update_coords(coordinates);
+                } // else: just wait
             }
             // else: listen to coordinatesChanged
         },
