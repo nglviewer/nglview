@@ -14,7 +14,7 @@ require.config( {
         "jsfeat": "../nbextensions/nglview/svd.min",
         "signals": "../nbextensions/nglview/signals.min",
         "NGL": "../nbextensions/nglview/ngl",
-        "mdsrv": "../nbextensions/nglview/mdsrv"
+        "mdsrv": "../nbextensions/nglview/mdsrv",
     },
     shim: {
         THREE: { exports: "THREE" },
@@ -68,12 +68,22 @@ define( [
                 this.model.on( "change:structure", this.structureChanged, this );
 
                 // init setting of coordinates
-                this.model.on( "change:coordinates", this.coordinatesChanged, this );
+                this.model.on( "change:_coordinates_meta", this.coordinatesChanged, this );
+
+                // init setting of coordinates
+                this.model.on( "change:coordinates_dict", this.coordsDictChanged, this );
+
+                // init setting of frame
+                this.model.on( "change:frame", this.frameChanged, this );
 
                 // init parameters handling
                 this.model.on( "change:parameters", this.parametersChanged, this );
 
+                // init parameters handling
+                this.model.on( "change:cache", this.cacheChanged, this );
+
                 // get message from Python
+                this.coordsDict = undefined;
                 this.model.on( "msg:custom", function (msg) {
                     this.on_msg( msg );
                 }, this);
@@ -219,15 +229,93 @@ define( [
             }
         },
 
+        mydecode: function(base64) {
+            // lightly adapted from Niklas
+
+            /*
+             * base64-arraybuffer
+             * https://github.com/niklasvh/base64-arraybuffer
+             *
+             * Copyright (c) 2012 Niklas von Hertzen
+             * Licensed under the MIT license.
+             */
+            var chars =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+            var bufferLength = base64.length * 0.75,
+                len = base64.length,
+                i, p = 0,
+                encoded1, encoded2, encoded3, encoded4;
+
+            if (base64[base64.length - 1] === "=") {
+                bufferLength--;
+                if (base64[base64.length - 2] === "=") {
+                    bufferLength--;
+                }
+            }
+
+            var arraybuffer = new ArrayBuffer(bufferLength),
+                bytes = new Uint8Array(arraybuffer);
+
+            for (i = 0; i < len; i += 4) {
+                encoded1 = chars.indexOf(base64[i]);
+                encoded2 = chars.indexOf(base64[i + 1]);
+                encoded3 = chars.indexOf(base64[i + 2]);
+                encoded4 = chars.indexOf(base64[i + 3]);
+
+                bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+                bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+                bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+            }
+
+            return arraybuffer;
+        },
+
+        frameChanged: function(){
+            if( this._cache ){
+                var frame = this.model.get( "frame" );
+                if( frame in this.coordsDict ) {
+                    var coordinates = this.coordsDict[frame];
+                    this._update_coords(coordinates);
+                } // else: just wait
+            }
+            // else: listen to coordinatesChanged
+        },
+
+
         coordinatesChanged: function(){
-            var coordinates = this.model.get( "coordinates" );
+            if (! this._cache ){
+                var coordinates_meta = this.model.get( "_coordinates_meta" );
+
+                // not checking dtype yet
+                var coordinates = this.mydecode( coordinates_meta['data'] );
+                this._update_coords(coordinates);
+            }
+        },
+
+        _update_coords: function( coordinates ) {
+            // coordinates must be ArrayBuffer (use this.mydecode)
             var component = this.structureComponent;
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
                 component.structure.updatePosition( coords );
                 component.updateRepresentations( { "position": true } );
             }
+        },
 
+        coordsDictChanged: function(){
+            this.coordsDict = this.model.get( "coordinates_dict" );
+            var cdict = this.coordsDict
+            var clen = Object.keys(cdict).length
+            if ( clen != 0 ){
+                this._cache = true;
+            }else{
+                this._cache = false;
+            }
+            this.model.set( "cache", this._cache);
+            
+            for (var i = 0; i < Object.keys(coordsDict).length; i++) {
+                this.coordsDict[i] = this.mydecode( coordsDict[i]);
+            }
         },
 
         setSize: function( width, height ){
@@ -239,6 +327,10 @@ define( [
         parametersChanged: function(){
             var parameters = this.model.get( "parameters" );
             this.stage.setParameters( parameters );
+        },
+
+        cacheChanged: function(){
+            this._cache = this.model.get( "cache" );
         },
 
         on_msg: function(msg){
@@ -266,9 +358,19 @@ define( [
                        var func = component[msg.methodName];
                        func.apply( component, new_args );
                }
-            }
-        }
-
+           }else if( msg.type == 'base64' ){
+               console.log( "receiving base64 dict" );
+               var base64Dict = msg.data;
+               this.coordsDict = {};
+               if ( "cache" in msg ){
+                   this._cache = msg.cache;
+                   this.model.set( "cache", this._cache );
+               }
+               for (var i = 0; i < Object.keys(base64Dict).length; i++) {
+                    this.coordsDict[i] = this.mydecode( base64Dict[i]);
+               }
+           }
+    },
     } );
 
     manager.WidgetManager.register_widget_view( 'NGLView', NGLView );
