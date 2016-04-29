@@ -19,6 +19,9 @@ from ipywidgets import Widget
 
 import pytraj as pt
 import nglview as nv
+import mdtraj as md
+import parmed as pmd
+# wait until MDAnalysis supports PY3
 from nglview.utils import PY2, PY3
 
 
@@ -114,21 +117,35 @@ def test_encode_and_decode():
     aa_eq(xyz, new_xyz) 
 
 def test_coordinates_meta():
-    traj = pt.datafiles.load_tz2()
-    view = nv.show_pytraj(traj)
-    view.frame = 3
-    aa_eq(view.coordinates, traj.xyz[3])
-    
-    _coordinates_meta = view._coordinates_meta
-    nt.assert_in('data', _coordinates_meta)
-    nt.assert_in('shape', _coordinates_meta)
-    nt.assert_in('dtype', _coordinates_meta)
-    nt.assert_equal(view._coordinates_meta['dtype'], 'f4')
+    t0 = pt.datafiles.load_tz2()
+    fn, tn = t0.filename, t0.top.filename
+    trajs = [pt.load(fn, tn), md.load(fn, top=tn), pmd.load_file(tn, fn)]
 
-    view.coordinates = traj[2].xyz
-    aa_eq(view.coordinates, traj.xyz[2])
+    if PY2:
+        from MDAnalysis import Universe
+        trajs.append(Universe(tn, fn))
 
-    data = view._coordinates_meta['data']
-    shape = view._coordinates_meta['shape']
-    dtype = view._coordinates_meta['dtype']
-    aa_eq(view.coordinates, nv.decode_base64(data, dtype=dtype, shape=shape))
+    views = [nv.show_pytraj(trajs[0]), nv.show_mdtraj(trajs[1]), nv.show_parmed(trajs[2])]
+
+    if PY2:
+        views.append(nv.show_mdanalysis(trajs[4]))
+
+    for index, (view, traj) in enumerate(zip(views, trajs)):
+        view.frame = 3
+        
+        _coordinates_meta = view._coordinates_meta
+        nt.assert_in('data', _coordinates_meta)
+        nt.assert_in('shape', _coordinates_meta)
+        nt.assert_in('dtype', _coordinates_meta)
+        nt.assert_equal(view._coordinates_meta['dtype'], 'f4')
+
+        if index in [0, 1]:
+            # pytraj, mdtraj
+            aa_eq(view.coordinates, traj.xyz[3], decimal=4)
+            view.coordinates = traj.xyz[2]
+            aa_eq(view.coordinates, traj.xyz[2], decimal=4)
+
+        data = view._coordinates_meta['data']
+        shape = view._coordinates_meta['shape']
+        dtype = view._coordinates_meta['dtype']
+        aa_eq(view.coordinates, nv.decode_base64(data, dtype=dtype, shape=shape))

@@ -192,10 +192,6 @@ class Trajectory(object):
     def __init__(self):
         pass
 
-    def get_coordinates_list(self, index):
-        # [ 1,1,1, 2,2,2 ]
-        raise NotImplementedError()
-
     def get_coordinates_dict(self):
         raise NotImplementedError()
 
@@ -231,10 +227,10 @@ class SimpletrajTrajectory(Trajectory):
         except Exception as e:
             raise e
 
-    def get_coordinates_list(self, index):
+    def get_coordinates_numpy(self, index):
         traj = self.traj_cache.get(os.path.abspath(self.path))
         frame = traj.get_frame(int(index))
-        return frame["coords"].flatten().tolist()
+        return frame["coords"]
 
     @property
     def n_frames(self):
@@ -259,9 +255,12 @@ class MDTrajTrajectory(Trajectory, Structure):
         self.ext = "pdb"
         self.params = {}
 
-    def get_coordinates_list(self, index):
-        frame = self.trajectory[index].xyz * 10  # convert from nm to A
-        return frame.flatten().tolist()
+    def get_coordinates_dict(self):
+        return dict((index, encode_numpy(xyz))
+                    for index, xyz in enumerate(self.trajectory.xyz))
+
+    def get_coordinates_numpy(self, index):
+        return self.trajectory.xyz[index]
 
     @property
     def n_frames(self):
@@ -291,10 +290,6 @@ class PyTrajTrajectory(Trajectory, Structure):
         self.trajectory = trajectory
         self.ext = "pdb"
         self.params = {}
-
-    def get_coordinates_list(self, index):
-        xyz = self.trajectory[index].xyz
-        return xyz.flatten().tolist()
 
     def get_coordinates_dict(self):
         return dict((index, encode_numpy(xyz))
@@ -327,9 +322,12 @@ class ParmEdTrajectory(Trajectory, Structure):
         # only call get_coordinates once
         self._xyz = trajectory.get_coordinates()
 
-    def get_coordinates_list(self, index):
-        frame = self._xyz[index]
-        return frame.flatten().tolist()
+    def get_coordinates_dict(self):
+        return dict((index, encode_numpy(xyz))
+                    for index, xyz in enumerate(self._xyz))
+
+    def get_coordinates_numpy(self, index):
+        return self._xyz[index]
 
     @property
     def n_frames(self):
@@ -363,11 +361,6 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         self.atomgroup = atomgroup
         self.ext = "pdb"
         self.params = {}
-
-    def get_coordinates_list(self, index):
-        self.atomgroup.universe.trajectory[index]
-        frame = self.atomgroup.atoms.positions
-        return frame.flatten().tolist()
 
     @property
     def n_frames(self):
@@ -423,7 +416,7 @@ class NGLWidget(widgets.DOMWidget):
         self.set_structure(structure)
         if trajectory:
             self.trajectory = trajectory
-        elif hasattr(structure, "get_coordinates_list"):
+        elif hasattr(structure, "get_coordinates_dict"):
             self.trajectory = structure
         if hasattr(self, "trajectory") and \
                 hasattr(self.trajectory, "n_frames"):
@@ -534,7 +527,6 @@ class NGLWidget(widgets.DOMWidget):
 
     def _set_coordinates(self, index):
         if self.trajectory and not self.cache:
-            # coordinates = self.trajectory.get_coordinates_list(index)
             coordinates = self.trajectory.get_coordinates_numpy(index)
             self.coordinates = coordinates
         else:
