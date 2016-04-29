@@ -408,7 +408,6 @@ class NGLWidget(widgets.DOMWidget):
     frame = Int().tag(sync=True)
     count = Int().tag(sync=True)
     representations = List().tag(sync=True)
-    picked = Dict().tag(sync=True)
     structure = Dict().tag(sync=True)
     parameters = Dict().tag(sync=True)
     _coordinates_meta = Dict().tag(sync=True)
