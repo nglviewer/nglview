@@ -272,6 +272,15 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
 Changelog
 =========
 
+Version 0.5.dev
+---------------
+
+* MIGRATION: change `get_frame_count` method to `n_frames` property
+* ADD: atom selection by array
+* ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
+* ADD: `ParmEdTrajectory` adaptor
+* FIX: symlink error
+
 Version 0.4
 -----------
 
