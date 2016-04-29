@@ -365,7 +365,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
     def get_coordinates_dict(self):
 
         return dict((index, encode_numpy(self.atomgroup.atoms.positions))
-                    for index, _ in enumerate(self.self.atomgroup.universe.trajectory))
+                    for index, _ in enumerate(self.atomgroup.universe.trajectory))
 
     def get_coordinates(self, index):
         self.atomgroup.universe.trajectory[index]
