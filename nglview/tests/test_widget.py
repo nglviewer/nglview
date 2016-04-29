@@ -121,6 +121,8 @@ def test_coordinates_meta():
     fn, tn = [get_fn('frame0.pdb'),] * 2
     trajs = [pt.load(fn, tn), md.load(fn, top=tn), pmd.load_file(tn, fn)]
 
+    N_FRAMES = trajs[0].n_frames
+
     if PY2:
         from MDAnalysis import Universe
         u = Universe(tn, fn)
@@ -139,6 +141,8 @@ def test_coordinates_meta():
         nt.assert_in('shape', _coordinates_meta)
         nt.assert_in('dtype', _coordinates_meta)
         nt.assert_equal(view._coordinates_meta['dtype'], 'f4')
+        nt.assert_equal(view.trajectory.n_frames, N_FRAMES)
+        nt.assert_equal(len(view.trajectory.get_coordinates_dict().keys()), N_FRAMES)
 
         if index in [0, 1]:
             # pytraj, mdtraj
