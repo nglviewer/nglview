@@ -123,6 +123,7 @@ def test_coordinates_meta():
 
     if PY2:
         from MDAnalysis import Universe
+        u = Universe(nv.datafiles.PDB, nv.datafiles.TRR)
         trajs.append(Universe(tn, fn))
 
     views = [nv.show_pytraj(trajs[0]), nv.show_mdtraj(trajs[1]), nv.show_parmed(trajs[2])]
