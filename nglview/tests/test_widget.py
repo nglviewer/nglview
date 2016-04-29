@@ -117,19 +117,19 @@ def test_encode_and_decode():
     aa_eq(xyz, new_xyz) 
 
 def test_coordinates_meta():
-    t0 = pt.datafiles.load_tz2()
-    fn, tn = t0.filename, t0.top.filename
+    from mdtraj.testing import get_fn
+    fn, tn = [get_fn('frame0.pdb'),] * 2
     trajs = [pt.load(fn, tn), md.load(fn, top=tn), pmd.load_file(tn, fn)]
 
     if PY2:
         from MDAnalysis import Universe
-        u = Universe(nv.datafiles.PDB, nv.datafiles.TRR)
+        u = Universe(tn, fn)
         trajs.append(Universe(tn, fn))
 
     views = [nv.show_pytraj(trajs[0]), nv.show_mdtraj(trajs[1]), nv.show_parmed(trajs[2])]
 
     if PY2:
-        views.append(nv.show_mdanalysis(trajs[4]))
+        views.append(nv.show_mdanalysis(trajs[3]))
 
     for index, (view, traj) in enumerate(zip(views, trajs)):
         view.frame = 3

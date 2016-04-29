@@ -362,6 +362,16 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         self.ext = "pdb"
         self.params = {}
 
+    def get_coordinates_dict(self):
+
+        return dict((index, encode_numpy(self.atomgroup.atoms.positions))
+                    for index, _ in enumerate(self.self.atomgroup.universe.trajectory))
+
+    def get_coordinates(self, index):
+        self.atomgroup.universe.trajectory[index]
+        xyz = self.atomgroup.atoms.positions
+        return xyz
+
     @property
     def n_frames(self):
         return self.atomgroup.universe.trajectory.n_frames
