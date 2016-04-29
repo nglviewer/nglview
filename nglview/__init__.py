@@ -195,7 +195,7 @@ class Trajectory(object):
     def get_coordinates_dict(self):
         raise NotImplementedError()
 
-    def get_coordinates_numpy(self, index):
+    def get_coordinates(self, index):
         raise NotImplementedError()
 
     @property
@@ -227,7 +227,7 @@ class SimpletrajTrajectory(Trajectory):
         except Exception as e:
             raise e
 
-    def get_coordinates_numpy(self, index):
+    def get_coordinates(self, index):
         traj = self.traj_cache.get(os.path.abspath(self.path))
         frame = traj.get_frame(int(index))
         return frame["coords"]
@@ -259,7 +259,7 @@ class MDTrajTrajectory(Trajectory, Structure):
         return dict((index, encode_numpy(xyz))
                     for index, xyz in enumerate(self.trajectory.xyz))
 
-    def get_coordinates_numpy(self, index):
+    def get_coordinates(self, index):
         return self.trajectory.xyz[index]
 
     @property
@@ -295,7 +295,7 @@ class PyTrajTrajectory(Trajectory, Structure):
         return dict((index, encode_numpy(xyz))
                     for index, xyz in enumerate(self.trajectory.xyz))
 
-    def get_coordinates_numpy(self, index):
+    def get_coordinates(self, index):
         return self.trajectory[index].xyz
 
     @property
@@ -326,7 +326,7 @@ class ParmEdTrajectory(Trajectory, Structure):
         return dict((index, encode_numpy(xyz))
                     for index, xyz in enumerate(self._xyz))
 
-    def get_coordinates_numpy(self, index):
+    def get_coordinates(self, index):
         return self._xyz[index]
 
     @property
@@ -527,7 +527,7 @@ class NGLWidget(widgets.DOMWidget):
 
     def _set_coordinates(self, index):
         if self.trajectory and not self.cache:
-            coordinates = self.trajectory.get_coordinates_numpy(index)
+            coordinates = self.trajectory.get_coordinates(index)
             self.coordinates = coordinates
         else:
             print("no trajectory available")
