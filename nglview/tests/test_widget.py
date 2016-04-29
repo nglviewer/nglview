@@ -154,3 +154,41 @@ def test_coordinates_meta():
         shape = view._coordinates_meta['shape']
         dtype = view._coordinates_meta['dtype']
         aa_eq(view.coordinates, nv.decode_base64(data, dtype=dtype, shape=shape))
+
+def test_speed():
+    import pytraj as pt
+
+    from pytraj.testing import get_fn, Timer
+    traj = pt.datafiles.load_tz2_ortho()
+    fname_tuple = ([traj.filename, traj.top.filename, 1000],
+                   [nv.datafiles.TRR, nv.datafiles.PDB, 100])
+
+    for (fn, tn, n_files) in fname_tuple:
+        traj = pt.load([fn,]*n_files, tn)
+        print('trajectory', traj)
+
+        view = nv.show_pytraj(traj)
+        xyz = traj.xyz
+        xyz_bytes = traj.xyz.tobytes()
+        xyz_base64 = nv.encode_numpy(xyz)
+
+
+        with Timer() as t:
+           view.caching()
+        print('caching', t.time_gap())
+
+        with Timer() as t:
+           view.send(xyz_bytes)
+        print('send bytes', t.time_gap())
+
+        with Timer() as t:
+            view.send(xyz_base64)
+        print('send base64', t.time_gap())
+
+        with Timer() as t:
+            nv.encode_numpy(xyz)
+        print('encode_numpy', t.time_gap())
+
+        with Timer() as t:
+            xyz.tobytes()
+        print('tobytes', t.time_gap())
