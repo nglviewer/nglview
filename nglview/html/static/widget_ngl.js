@@ -62,7 +62,7 @@ define( [
             NGL.init( function(){
 
                 // init representations handling
-                this.model.on( "change:representations", this.representationsChanged, this );
+                // this.model.on( "change:representations", this.representationsChanged, this );
 
                 // init structure loading
                 this.model.on( "change:structure", this.structureChanged, this );
@@ -202,16 +202,17 @@ define( [
 
         },
 
-        representationsChanged: function(){
-            var representations = this.model.get( "representations" );
-            var component = this.structureComponent;
-            if( representations && component ){
-                component.clearRepresentations();
-                representations.forEach( function( repr ){
-                    component.addRepresentation( repr.type, repr.params );
-                } );
-            }
-        },
+        // Don't need this anymore, use _remote_call
+        // representationsChanged: function(){
+        //     var representations = this.model.get( "representations" );
+        //     var component = this.structureComponent;
+        //     if( representations && component ){
+        //         component.clearRepresentations();
+        //         representations.forEach( function( repr ){
+        //             component.addRepresentation( repr.type, repr.params );
+        //         } );
+        //     }
+        // },
 
         structureChanged: function(){
             this.structureComponent = undefined;

@@ -407,7 +407,6 @@ class NGLWidget(widgets.DOMWidget):
     cache = Bool().tag(sync=True)
     frame = Int().tag(sync=True)
     count = Int().tag(sync=True)
-    representations = List().tag(sync=True)
     structure = Dict().tag(sync=True)
     parameters = Dict().tag(sync=True)
     _coordinates_meta = Dict().tag(sync=True)
@@ -433,6 +432,10 @@ class NGLWidget(widgets.DOMWidget):
         if hasattr(self, "trajectory") and \
                 hasattr(self.trajectory, "n_frames"):
             self.count = self.trajectory.n_frames
+
+        # representations
+        self._representations = []
+
         if representations:
             self.representations = representations
         else:
@@ -446,6 +449,8 @@ class NGLWidget(widgets.DOMWidget):
             ]
 
         self._add_repr_method_shortcut()
+
+        # register to get data from JS side
         self.on_msg(self._ngl_get_msg)
 
     @property
@@ -471,7 +476,38 @@ class NGLWidget(widgets.DOMWidget):
                                 dtype=dtype,
                                 shape=arr.shape)
         self._coordinates_meta = coordinates_meta
-                                      
+
+    @property
+    def representations(self):
+        '''return list of dict
+        '''
+        return self._representations
+
+    @representations.setter
+    def representations(self, params_list):
+        '''
+
+        Parameters
+        ----------
+        params_list : list of dict
+        '''
+
+        assert isinstance(params_list, list), 'must provide list of dict'
+        if len(params_list) == 0:
+            # clearn
+            self._representations = []
+            self._remote_call('clearRepresentations',
+                              target='structure_component')
+        else:
+            for params in params_list:
+                assert isinstance(params, dict), 'params must be a dict'
+                self._representations.append(params)
+                self._remote_call('addRepresentation',
+                                  target='structure_component',
+                                  args=[params['type'],],
+                                  kwargs=params['params'])
+
+
     def _add_repr_method_shortcut(self):
         # dynamically add method for NGLWidget
         repr_names  = [
