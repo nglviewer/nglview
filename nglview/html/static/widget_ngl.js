@@ -62,7 +62,7 @@ define( [
             NGL.init( function(){
 
                 // init representations handling
-                this.model.on( "change:representations", this.representationsChanged, this );
+                this.model.on( "change:_init_representations", this.representationsChanged, this );
 
                 // init structure loading
                 this.model.on( "change:structure", this.structureChanged, this );
@@ -203,7 +203,7 @@ define( [
         },
 
         representationsChanged: function(){
-            var representations = this.model.get( "representations" );
+            var representations = this.model.get( "_init_representations" );
             var component = this.structureComponent;
             if( representations && component ){
                 component.clearRepresentations();
@@ -357,6 +357,10 @@ define( [
                        var component = this.stage.compList[index];
                        var func = component[msg.methodName];
                        func.apply( component, new_args );
+               }else if( msg.target == 'structure_component' ){
+                       var component = this.structureComponent;
+                       var func = component[msg.methodName];
+                       func.apply( component, new_args );
                }
            }else if( msg.type == 'base64' ){
                console.log( "receiving base64 dict" );
@@ -368,6 +372,12 @@ define( [
                }
                for (var i = 0; i < Object.keys(base64Dict).length; i++) {
                     this.coordsDict[i] = this.mydecode( base64Dict[i]);
+               }
+           }else if( msg.type == 'get') {
+               console.log( msg.data );
+
+               if( msg.data == 'camera' ) {
+                   this.send( JSON.stringify( this.stage.viewer.camera ) );
                }
            }
     },

@@ -407,12 +407,14 @@ class NGLWidget(widgets.DOMWidget):
     cache = Bool().tag(sync=True)
     frame = Int().tag(sync=True)
     count = Int().tag(sync=True)
-    representations = List().tag(sync=True)
+    _init_representations = List().tag(sync=True)
     structure = Dict().tag(sync=True)
     parameters = Dict().tag(sync=True)
     _coordinates_meta = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
+
+    _tmp_msg = None
 
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
@@ -431,10 +433,16 @@ class NGLWidget(widgets.DOMWidget):
         if hasattr(self, "trajectory") and \
                 hasattr(self.trajectory, "n_frames"):
             self.count = self.trajectory.n_frames
+
+        # use _init_representations so we can view representations right after view is made.
+        # self.representations is only have effect if we already call `view`
+        # >>> view = nv.show_pytraj(traj)
+        # >>> view # view.representations = ... does not work at this point, so need to use _init_representations
+
         if representations:
-            self.representations = representations
+            self._ini_representations = representations
         else:
-            self.representations = [
+            self._init_representations = [
                 {"type": "cartoon", "params": {
                     "sele": "polymer"
                 }},
@@ -442,8 +450,13 @@ class NGLWidget(widgets.DOMWidget):
                     "sele": "hetero OR mol"
                 }}
             ]
+
+        # keep track but making copy
+        self._representations = self._init_representations[:]
         self._add_repr_method_shortcut()
 
+        # register to get data from JS side
+        self.on_msg(self._ngl_get_msg)
 
     @property
     def coordinates(self):
@@ -468,7 +481,40 @@ class NGLWidget(widgets.DOMWidget):
                                 dtype=dtype,
                                 shape=arr.shape)
         self._coordinates_meta = coordinates_meta
-                                      
+
+    @property
+    def representations(self):
+        '''return list of dict
+        '''
+        return self._representations
+
+    @representations.setter
+    def representations(self, params_list):
+        '''
+
+        Parameters
+        ----------
+        params_list : list of dict
+        '''
+
+        if self.representations is params_list:
+            raise ValueError("do not add your self to avoid circular update")
+        assert isinstance(params_list, list), 'must provide list of dict'
+        if len(params_list) == 0:
+            # clearn
+            self._representations = []
+            self._remote_call('clearRepresentations',
+                              target='structure_component')
+        else:
+            for params in params_list:
+                assert isinstance(params, dict), 'params must be a dict'
+                self._representations.append(params)
+                self._remote_call('addRepresentation',
+                                  target='structure_component',
+                                  args=[params['type'],],
+                                  kwargs=params['params'])
+
+
     def _add_repr_method_shortcut(self):
         # dynamically add method for NGLWidget
         repr_names  = [
@@ -581,21 +627,31 @@ class NGLWidget(widgets.DOMWidget):
                 # e.g.: opacity=0.4
                 kwd[k] = v
 
-        rep = self.representations[:]
         d = {'params': {'sele': selection}}
         d['type'] = repr_type
         d['params'].update(kwd)
-        rep.append(d)
-        # reassign representation to trigger change
-        self.representations = rep
 
+        self._representations.append(d)
+        self._remote_call('addRepresentation',
+                          target='structure_component',
+                          args=[d['type'],],
+                          kwargs=d['params'])
+
+    def _ngl_get_msg(self, widget, msg, buffers):
+        """store message sent from Javascript.
+
+        How? use view.on_msg(get_msg)
+        """
+        import json
+        self._tmp_msg = json.loads(msg)
+        
     def _remote_call(self, method_name, target='stage', args=None, kwargs=None):
         """call NGL's methods from Python.
         
         Parameters
         ----------
         method_name : str
-        target : str, {'stage', 'viewer', 'component'}
+        target : str, {'stage', 'viewer', 'component', 'structure_component'}
         args : list
         kwargs : dict
             if target is 'component', "component_index" could be passed

@@ -64,6 +64,26 @@ def teardown():
 # NGLView stuff
 #-----------------------------------------------------------------------------
 
+DEFAULT_REPR = [{'params': {'sele': 'polymer'}, 'type': 'cartoon'},
+                {'params': {'sele': 'hetero OR mol'}, 'type': 'ball+stick'}]
+
+def _assert_dict_list_equal(listdict0, listdict1):
+    for (dict0, dict1) in zip(listdict0, listdict1):
+        for (key0, key1) in zip(sorted(dict0.keys()), sorted(dict1.keys())):
+            nt.assert_equal(key0, key1)
+            nt.assert_equal(dict0.get(key0), dict1.get(key1))
+
+def test_representations():
+    view = nv.show_pytraj(pt.datafiles.load_tz2())
+    nt.assert_equal(view.representations, DEFAULT_REPR)
+    view.add_cartoon()
+    representations_2 = DEFAULT_REPR[:]
+    representations_2.append({'type': 'cartoon', 'params': {'sele': 'all'}})
+    print(representations_2)
+    print(view.representations)
+    _assert_dict_list_equal(view.representations, representations_2)
+                    
+
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     assert isinstance(view, nv.NGLWidget), 'must be instance of NGLWidget'
@@ -79,7 +99,10 @@ def test_remote_call():
     kwargs = {'defaultRepresentation': True}
     view._remote_call('loadFile', target='stage', args=[fn,], kwargs=kwargs)
 
-# @unittest.skip("mess up with scipy, skip mdtraj now")
+
+def test_show_structure_file():
+    view = nv.show_structure_file(nv.datafiles.PDB)
+
 def test_show_mdtraj():
     import mdtraj as md
     from mdtraj.testing import get_fn
@@ -154,3 +177,41 @@ def test_coordinates_meta():
         shape = view._coordinates_meta['shape']
         dtype = view._coordinates_meta['dtype']
         aa_eq(view.coordinates, nv.decode_base64(data, dtype=dtype, shape=shape))
+
+def test_speed():
+    import pytraj as pt
+
+    from pytraj.testing import get_fn, Timer
+    traj = pt.datafiles.load_tz2_ortho()
+    fname_tuple = ([traj.filename, traj.top.filename, 100],
+                   [nv.datafiles.TRR, nv.datafiles.PDB, 10])
+
+    for (fn, tn, n_files) in fname_tuple:
+        traj = pt.load([fn,]*n_files, tn)
+        print('trajectory', traj)
+
+        view = nv.show_pytraj(traj)
+        xyz = traj.xyz
+        xyz_bytes = traj.xyz.tobytes()
+        xyz_base64 = nv.encode_numpy(xyz)
+
+
+        with Timer() as t:
+           view.caching()
+        print('caching', t.time_gap())
+
+        with Timer() as t:
+           view.send(xyz_bytes)
+        print('send bytes', t.time_gap())
+
+        with Timer() as t:
+            view.send(xyz_base64)
+        print('send base64', t.time_gap())
+
+        with Timer() as t:
+            nv.encode_numpy(xyz)
+        print('encode_numpy', t.time_gap())
+
+        with Timer() as t:
+            xyz.tobytes()
+        print('tobytes', t.time_gap())
