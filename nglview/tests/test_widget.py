@@ -160,8 +160,8 @@ def test_speed():
 
     from pytraj.testing import get_fn, Timer
     traj = pt.datafiles.load_tz2_ortho()
-    fname_tuple = ([traj.filename, traj.top.filename, 1000],
-                   [nv.datafiles.TRR, nv.datafiles.PDB, 100])
+    fname_tuple = ([traj.filename, traj.top.filename, 100],
+                   [nv.datafiles.TRR, nv.datafiles.PDB, 10])
 
     for (fn, tn, n_files) in fname_tuple:
         traj = pt.load([fn,]*n_files, tn)
