@@ -622,13 +622,15 @@ class NGLWidget(widgets.DOMWidget):
                 # e.g.: opacity=0.4
                 kwd[k] = v
 
-        rep = self.representations[:]
         d = {'params': {'sele': selection}}
         d['type'] = repr_type
         d['params'].update(kwd)
-        rep.append(d)
-        # reassign representation to trigger change
-        self.representations = rep
+
+        self._representations.append(d)
+        self._remote_call('addRepresentation',
+                          target='structure_component',
+                          args=[d['type'],],
+                          kwargs=d['params'])
 
     def _ngl_get_msg(self, widget, msg, buffers):
         """store message sent from Javascript.

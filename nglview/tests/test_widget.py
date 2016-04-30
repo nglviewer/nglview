@@ -64,6 +64,30 @@ def teardown():
 # NGLView stuff
 #-----------------------------------------------------------------------------
 
+def _assert_dict_list_equal(listdict0, listdict1):
+    for (dict0, dict1) in zip(listdict0, listdict1):
+        for (key0, key1) in zip(sorted(dict0.keys()), sorted(dict1.keys())):
+            nt.assert_equal(key0, key1)
+            nt.assert_equal(dict0.get(key0), dict1.get(key1))
+
+def test_representations():
+    view = nv.show_pytraj(pt.datafiles.load_tz2())
+    representations = [
+                {"type": "cartoon", "params": {
+                    "sele": "polymer"
+                }},
+                {"type": "ball+stick", "params": {
+                    "sele": "hetero OR mol"
+                }}]
+    nt.assert_equal(view.representations, representations)
+    view.add_cartoon()
+    representations_2 = representations[:]
+    representations_2.append({'type': 'cartoon', 'params': {'sele': 'all'}})
+    print(representations_2)
+    print(view.representations)
+    _assert_dict_list_equal(view.representations, representations_2)
+                    
+
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     assert isinstance(view, nv.NGLWidget), 'must be instance of NGLWidget'
