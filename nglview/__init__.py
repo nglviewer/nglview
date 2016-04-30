@@ -407,6 +407,7 @@ class NGLWidget(widgets.DOMWidget):
     cache = Bool().tag(sync=True)
     frame = Int().tag(sync=True)
     count = Int().tag(sync=True)
+    _init_representations = List().tag(sync=True)
     structure = Dict().tag(sync=True)
     parameters = Dict().tag(sync=True)
     _coordinates_meta = Dict().tag(sync=True)
@@ -433,13 +434,15 @@ class NGLWidget(widgets.DOMWidget):
                 hasattr(self.trajectory, "n_frames"):
             self.count = self.trajectory.n_frames
 
-        # representations
-        self._representations = []
+        # use _init_representations so we can view representations right after view is made.
+        # self.representations is only have effect if we already call `view`
+        # >>> view = nv.show_pytraj(traj)
+        # >>> view # view.representations = ... does not work at this point, so need to use _init_representations
 
         if representations:
-            self.representations = representations
+            self._ini_representations = representations
         else:
-            self.representations = [
+            self._init_representations = [
                 {"type": "cartoon", "params": {
                     "sele": "polymer"
                 }},
@@ -448,6 +451,8 @@ class NGLWidget(widgets.DOMWidget):
                 }}
             ]
 
+        # keep track but making copy
+        self._representations = self._init_representations[:]
         self._add_repr_method_shortcut()
 
         # register to get data from JS side

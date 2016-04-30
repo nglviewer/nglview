@@ -64,6 +64,9 @@ def teardown():
 # NGLView stuff
 #-----------------------------------------------------------------------------
 
+DEFAULT_REPR = [{'params': {'sele': 'polymer'}, 'type': 'cartoon'},
+                {'params': {'sele': 'hetero OR mol'}, 'type': 'ball+stick'}]
+
 def _assert_dict_list_equal(listdict0, listdict1):
     for (dict0, dict1) in zip(listdict0, listdict1):
         for (key0, key1) in zip(sorted(dict0.keys()), sorted(dict1.keys())):
@@ -72,16 +75,9 @@ def _assert_dict_list_equal(listdict0, listdict1):
 
 def test_representations():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
-    representations = [
-                {"type": "cartoon", "params": {
-                    "sele": "polymer"
-                }},
-                {"type": "ball+stick", "params": {
-                    "sele": "hetero OR mol"
-                }}]
-    nt.assert_equal(view.representations, representations)
+    nt.assert_equal(view.representations, DEFAULT_REPR)
     view.add_cartoon()
-    representations_2 = representations[:]
+    representations_2 = DEFAULT_REPR[:]
     representations_2.append({'type': 'cartoon', 'params': {'sele': 'all'}})
     print(representations_2)
     print(view.representations)
@@ -103,7 +99,10 @@ def test_remote_call():
     kwargs = {'defaultRepresentation': True}
     view._remote_call('loadFile', target='stage', args=[fn,], kwargs=kwargs)
 
-# @unittest.skip("mess up with scipy, skip mdtraj now")
+
+def test_show_structure_file():
+    view = nv.show_structure_file(nv.datafiles.PDB)
+
 def test_show_mdtraj():
     import mdtraj as md
     from mdtraj.testing import get_fn
