@@ -369,6 +369,12 @@ define( [
                for (var i = 0; i < Object.keys(base64Dict).length; i++) {
                     this.coordsDict[i] = this.mydecode( base64Dict[i]);
                }
+           }else if( msg.type == 'get') {
+               console.log( msg.data );
+
+               if( msg.data == 'camera' ) {
+                   this.send( JSON.stringify( this.stage.viewer.camera ) );
+               }
            }
     },
     } );

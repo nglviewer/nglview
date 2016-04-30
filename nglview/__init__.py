@@ -414,6 +414,8 @@ class NGLWidget(widgets.DOMWidget):
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
 
+    _tmp_msg = None
+
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
         try:
@@ -442,8 +444,9 @@ class NGLWidget(widgets.DOMWidget):
                     "sele": "hetero OR mol"
                 }}
             ]
-        self._add_repr_method_shortcut()
 
+        self._add_repr_method_shortcut()
+        self.on_msg(self._ngl_get_msg)
 
     @property
     def coordinates(self):
@@ -589,6 +592,14 @@ class NGLWidget(widgets.DOMWidget):
         # reassign representation to trigger change
         self.representations = rep
 
+    def _ngl_get_msg(self, widget, msg, buffers):
+        """store message sent from Javascript.
+
+        How? use view.on_msg(get_msg)
+        """
+        import json
+        self._tmp_msg = json.loads(msg)
+        
     def _remote_call(self, method_name, target='stage', args=None, kwargs=None):
         """call NGL's methods from Python.
         
