@@ -637,6 +637,17 @@ class NGLWidget(widgets.DOMWidget):
                           args=[d['type'],],
                           kwargs=d['params'])
 
+    def center_view(self, zoom=True, selection='*', index=0):
+        """center view
+
+        Examples
+        --------
+        view.center_view(selection='1-4')
+        """
+        self._remote_call('centerView', target='component',
+                          args=[zoom, selection],
+                          kwargs={'component_index': index})
+
     def _ngl_get_msg(self, widget, msg, buffers):
         """store message sent from Javascript.
 
