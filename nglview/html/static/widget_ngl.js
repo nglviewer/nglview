@@ -357,6 +357,10 @@ define( [
                        var component = this.stage.compList[index];
                        var func = component[msg.methodName];
                        func.apply( component, new_args );
+               }else if( msg.target == 'structure_component' ){
+                       var component = this.structureComponent;
+                       var func = component[msg.methodName];
+                       func.apply( component, new_args );
                }
            }else if( msg.type == 'base64' ){
                console.log( "receiving base64 dict" );

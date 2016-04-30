@@ -606,7 +606,7 @@ class NGLWidget(widgets.DOMWidget):
         Parameters
         ----------
         method_name : str
-        target : str, {'stage', 'viewer', 'component'}
+        target : str, {'stage', 'viewer', 'component', 'structure_component'}
         args : list
         kwargs : dict
             if target is 'component', "component_index" could be passed
