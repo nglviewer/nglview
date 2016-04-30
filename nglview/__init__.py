@@ -492,6 +492,8 @@ class NGLWidget(widgets.DOMWidget):
         params_list : list of dict
         '''
 
+        if self.representations is params_list:
+            raise ValueError("do not add your self to avoid circular update")
         assert isinstance(params_list, list), 'must provide list of dict'
         if len(params_list) == 0:
             # clearn
