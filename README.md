@@ -147,6 +147,10 @@ Additionally representations can be added with the `add_representation` method:
 w.add_representation(
     "cartoon", selection="protein", color="residueindex"
 )
+
+# or shorter
+w.add_cartoon("protein", color="residueindex")
+w.add_surface("protein", opacity=0.3)
 ```
 
 
