@@ -53,6 +53,7 @@ def setup():
         raise NotImplementedError()
     Widget._ipython_display_ = raise_not_implemented
 
+
 def teardown():
     for attr, value in _widget_attrs.items():
         if value is undefined:
@@ -99,6 +100,11 @@ def test_remote_call():
     kwargs = {'defaultRepresentation': True}
     view._remote_call('loadFile', target='stage', args=[fn,], kwargs=kwargs)
 
+def test_export_image():
+    """just make sure it can be called
+    """
+    view = nv.show_pytraj(pt.datafiles.load_tz2())
+    view.export_image(2, False, False, True)
 
 def test_show_structure_file():
     view = nv.show_structure_file(nv.datafiles.PDB)
