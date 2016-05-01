@@ -244,10 +244,11 @@ Trajectory
 
 ```Python
 class MyTrajectory(nglview.Trajectory):
-    def get_coordinates_list( self, index ):
-        # return list of coordinates in Angstrom for the frame at the given index
-        return [x1, y1, z1, x2, y2, z2]
-    def get_frame_count(self):
+    def get_coordinates(self, index):
+        # return 2D numpy array, shape=(n_atoms, 3)
+
+    @property
+    def n_frames(self):
         return 2  # return number of frames
 ```
 
@@ -259,12 +260,15 @@ Combined
 class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
     ext = "pdb"  # or gro, cif, mol2, sdf
     params = {}  # loading options passed to NGL
+
     def get_structure_string(self):
         return "structure in the self.ext format"
-    def get_coordinates_list( self, index ):
-        # return list of coordinates in Angstrom for the frame at the given index
-        return [x1, y1, z1, x2, y2, z2]
-    def get_frame_count( self ):
+
+    def get_coordinates(self, index):
+        # return 2D numpy array, shape=(n_atoms, 3)
+
+    @property
+    def n_frames(self):
         return 2  # return number of frames
 ```
 
@@ -275,6 +279,9 @@ Changelog
 Version 0.5.dev
 ---------------
 
+* ENH: smoother rendering if adding new representation
+* ADD: `center_view`
+* ADD: `caching` for smoother trajectory playing. 
 * MIGRATION: change `get_frame_count` method to `n_frames` property
 * ADD: atom selection by array
 * ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
