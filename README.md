@@ -247,6 +247,9 @@ class MyTrajectory(nglview.Trajectory):
     def get_coordinates(self, index):
         # return 2D numpy array, shape=(n_atoms, 3)
 
+    def get_coordinates_dict(self):
+        # return a dict of encoded 2D numpy array
+
     @property
     def n_frames(self):
         return 2  # return number of frames
@@ -267,6 +270,9 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
     def get_coordinates(self, index):
         # return 2D numpy array, shape=(n_atoms, 3)
 
+    def get_coordinates_dict(self):
+        # return a dict of encoded 2D numpy array
+
     @property
     def n_frames(self):
         return 2  # return number of frames
@@ -281,7 +287,7 @@ Version 0.5.dev
 
 * ENH: smoother rendering if adding new representation
 * ADD: `center_view`
-* ADD: `caching` for smoother trajectory playing. 
+* ADD: `caching` for smoother trajectory playing
 * MIGRATION: change `get_frame_count` method to `n_frames` property
 * ADD: atom selection by array
 * ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
