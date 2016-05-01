@@ -394,6 +394,8 @@ define( [
 
                 if( msg.data == 'camera' ) {
                     this.send( JSON.stringify( this.stage.viewer.camera ) );
+                }else if( msg.data == 'parameters' ){
+                    this.send( JSON.stringify( this.stage.parameters ));
                 }
             }
     },

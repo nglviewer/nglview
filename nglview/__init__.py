@@ -414,7 +414,7 @@ class NGLWidget(widgets.DOMWidget):
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
 
-    _tmp_msg = None
+    _ngl_msg = None
 
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
@@ -668,9 +668,9 @@ class NGLWidget(widgets.DOMWidget):
         """
         import json
         if isinstance(msg, string_types):
-            self._tmp_msg = json.loads(msg)
+            self._ngl_msg = json.loads(msg)
         else:
-            self._tmp_msg = msg
+            self._ngl_msg = msg
         
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
