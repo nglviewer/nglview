@@ -340,7 +340,7 @@ define( [
                var new_args = msg.args.slice();
                new_args.push( msg.kwargs );
 
-               if( msg.target == 'stage' ){
+               if( msg.target == 'Stage' ){
                    var stage_func = this.stage[msg.methodName];
                    var stage = this.stage;
                    if ( msg.methodName == 'screenshot' ){
@@ -348,16 +348,16 @@ define( [
                    }else{
                        stage_func.apply( stage, new_args );
                    }
-               }else if( msg.target == 'viewer' ){
+               }else if( msg.target == 'Viewer' ){
                        var viewer = this.stage.viewer;
                        var func = this.stage.viewer[msg.methodName];
                        func.apply( viewer, new_args );
-               }else if( msg.target == 'component' ){
+               }else if( msg.target == 'compList' ){
                        var index = msg['component_index'];
                        var component = this.stage.compList[index];
                        var func = component[msg.methodName];
                        func.apply( component, new_args );
-               }else if( msg.target == 'structure_component' ){
+               }else if( msg.target == 'StructureComponent' ){
                        var component = this.structureComponent;
                        var func = component[msg.methodName];
                        func.apply( component, new_args );
