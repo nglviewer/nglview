@@ -646,7 +646,7 @@ class NGLWidget(widgets.DOMWidget):
         --------
         view.center_view(selection='1-4')
         """
-        self._remote_call('centerView', target='component',
+        self._remote_call('centerView', target='compList',
                           args=[zoom, selection],
                           kwargs={'component_index': index})
 
