@@ -147,6 +147,10 @@ Additionally representations can be added with the `add_representation` method:
 w.add_representation(
     "cartoon", selection="protein", color="residueindex"
 )
+
+# or shorter
+w.add_cartoon("protein", color="residueindex")
+w.add_surface("protein", opacity=0.3)
 ```
 
 
@@ -285,13 +289,15 @@ Changelog
 Version 0.5.dev
 ---------------
 
-* ENH: smoother rendering if adding new representation
+
+* ADD: `export_image`
 * ADD: `center_view`
 * ADD: `caching` for smoother trajectory playing
-* MIGRATION: change `get_frame_count` method to `n_frames` property
 * ADD: atom selection by array
 * ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
 * ADD: `ParmEdTrajectory` adaptor
+* ENH: smoother rendering if adding new representation
+* MIGRATION: change `get_frame_count` method to `n_frames` property
 * FIX: symlink error
 
 Version 0.4
