@@ -499,18 +499,20 @@ class NGLWidget(widgets.DOMWidget):
 
         if self.representations is params_list:
             raise ValueError("do not add your self to avoid circular update")
+
         assert isinstance(params_list, list), 'must provide list of dict'
+
         if len(params_list) == 0:
             # clearn
             self._representations = []
             self._remote_call('clearRepresentations',
-                              target='structure_component')
+                              target='StructureComponent')
         else:
             for params in params_list:
                 assert isinstance(params, dict), 'params must be a dict'
                 self._representations.append(params)
                 self._remote_call('addRepresentation',
-                                  target='structure_component',
+                                  target='StructureComponent',
                                   args=[params['type'],],
                                   kwargs=params['params'])
 
@@ -633,7 +635,7 @@ class NGLWidget(widgets.DOMWidget):
 
         self._representations.append(d)
         self._remote_call('addRepresentation',
-                          target='structure_component',
+                          target='StructureComponent',
                           args=[d['type'],],
                           kwargs=d['params'])
 
@@ -656,13 +658,13 @@ class NGLWidget(widgets.DOMWidget):
         import json
         self._tmp_msg = json.loads(msg)
         
-    def _remote_call(self, method_name, target='stage', args=None, kwargs=None):
+    def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
         
         Parameters
         ----------
         method_name : str
-        target : str, {'stage', 'viewer', 'component', 'structure_component'}
+        target : str, {'Stage', 'Viewer', 'component', 'StructureComponent'}
         args : list
         kwargs : dict
             if target is 'component', "component_index" could be passed
@@ -671,10 +673,10 @@ class NGLWidget(widgets.DOMWidget):
         Examples
         --------
         view._remote_call('loadFile', args=['1L2Y.pdb'],
-                          target='stage', kwargs={'defaultRepresentation': True})
+                          target='Stage', kwargs={'defaultRepresentation': True})
 
         # perform centerView for 1-th component
-        # component = stage.compList[1];
+        # component = Stage.compList[1];
         # component.centerView(true, "1-12");
         view._remote_call('centerView',
                           target='component',
