@@ -335,51 +335,59 @@ define( [
 
         on_msg: function(msg){
             if( msg.type == 'call_method' ){
-               console.log( "msg.args" );
-               console.log( msg.args );
-               var new_args = msg.args.slice();
-               new_args.push( msg.kwargs );
+                console.log( "msg.args" );
+                console.log( msg.args );
+                var new_args = msg.args.slice();
+                new_args.push( msg.kwargs );
 
-               if( msg.target == 'Stage' ){
-                   var stage_func = this.stage[msg.methodName];
-                   var stage = this.stage;
-                   if ( msg.methodName == 'screenshot' ){
-                        NGL.screenshot( this.stage.viewer, msg.kwargs );
-                   }else{
-                       stage_func.apply( stage, new_args );
-                   }
-               }else if( msg.target == 'Viewer' ){
-                       var viewer = this.stage.viewer;
-                       var func = this.stage.viewer[msg.methodName];
-                       func.apply( viewer, new_args );
-               }else if( msg.target == 'compList' ){
-                       var index = msg['component_index'];
-                       var component = this.stage.compList[index];
-                       var func = component[msg.methodName];
-                       func.apply( component, new_args );
-               }else if( msg.target == 'StructureComponent' ){
-                       var component = this.structureComponent;
-                       var func = component[msg.methodName];
-                       func.apply( component, new_args );
-               }
-           }else if( msg.type == 'base64' ){
-               console.log( "receiving base64 dict" );
-               var base64Dict = msg.data;
-               this.coordsDict = {};
-               if ( "cache" in msg ){
-                   this._cache = msg.cache;
-                   this.model.set( "cache", this._cache );
-               }
-               for (var i = 0; i < Object.keys(base64Dict).length; i++) {
-                    this.coordsDict[i] = this.mydecode( base64Dict[i]);
-               }
-           }else if( msg.type == 'get') {
-               console.log( msg.data );
+                switch( msg.target ) {
+                    case 'Stage':
+                        var stage_func = this.stage[msg.methodName];
+                        var stage = this.stage;
+                        if ( msg.methodName == 'screenshot' ){
+                             NGL.screenshot( this.stage.viewer, msg.kwargs );
+                        }else{
+                            if( msg.methodName == 'loadFile' ) {
+                                var blob = new Blob( [ msg.args[0] ], { type: "text/plain" } );
+                                this.stage.loadFile( blob, msg.kwargs );
+                            }else{
+                                stage_func.apply( stage, new_args );
+                            }
+                        }
+                    case 'Viewer': 
+                        var viewer = this.stage.viewer;
+                        var func = this.stage.viewer[msg.methodName];
+                        func.apply( viewer, new_args );
+                    case 'compList':
+                        var index = msg['component_index'];
+                        var component = this.stage.compList[index];
+                        var func = component[msg.methodName];
+                        func.apply( component, new_args );
+                    case 'StructureComponent':
+                        var component = this.structureComponent;
+                        var func = component[msg.methodName];
+                        func.apply( component, new_args );
+                    default: 
+                        console.log( "nothing done with " + msg.target );
+                }
+            }else if( msg.type == 'base64' ){
+                console.log( "received base64 dict" );
+                var base64Dict = msg.data;
+                this.coordsDict = {};
+                if ( "cache" in msg ){
+                    this._cache = msg.cache;
+                    this.model.set( "cache", this._cache );
+                }
+                for (var i = 0; i < Object.keys(base64Dict).length; i++) {
+                     this.coordsDict[i] = this.mydecode( base64Dict[i]);
+                }
+            }else if( msg.type == 'get') {
+                console.log( msg.data );
 
-               if( msg.data == 'camera' ) {
-                   this.send( JSON.stringify( this.stage.viewer.camera ) );
-               }
-           }
+                if( msg.data == 'camera' ) {
+                    this.send( JSON.stringify( this.stage.viewer.camera ) );
+                }
+            }
     },
     } );
 

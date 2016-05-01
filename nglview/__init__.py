@@ -2,7 +2,7 @@
 from __future__ import print_function, absolute_import
 
 from . import datafiles
-from .utils import seq_to_string
+from .utils import seq_to_string, string_types
 
 import os
 import os.path
@@ -656,7 +656,10 @@ class NGLWidget(widgets.DOMWidget):
         How? use view.on_msg(get_msg)
         """
         import json
-        self._tmp_msg = json.loads(msg)
+        if isinstance(msg, string_types):
+            self._tmp_msg = json.loads(msg)
+        else:
+            self._tmp_msg = msg
         
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
