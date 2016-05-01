@@ -346,8 +346,13 @@ define( [
                              NGL.screenshot( this.stage.viewer, msg.kwargs );
                         }else{
                             if( msg.methodName == 'loadFile' ) {
-                                var blob = new Blob( [ msg.args[0] ], { type: "text/plain" } );
-                                this.stage.loadFile( blob, msg.kwargs );
+                                // args = [{'type': ..., 'data': ...}]
+                                if( msg.args[0].type == 'blob' ) {
+                                    var blob = new Blob( [ msg.args[0].data ], { type: "text/plain" } );
+                                    this.stage.loadFile( blob, msg.kwargs );
+                                }else if( msg.args[0].type == 'path' ) {
+                                    this.stage.loadFile( msg.args[0].data, msg.kwargs );
+                                }
                             }else{
                                 stage_func.apply( stage, new_args );
                             }
