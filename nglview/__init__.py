@@ -664,10 +664,10 @@ class NGLWidget(widgets.DOMWidget):
         Parameters
         ----------
         method_name : str
-        target : str, {'Stage', 'Viewer', 'component', 'StructureComponent'}
+        target : str, {'Stage', 'Viewer', 'compList', 'StructureComponent'}
         args : list
         kwargs : dict
-            if target is 'component', "component_index" could be passed
+            if target is 'compList', "component_index" could be passed
             to specify which component will call the method.
 
         Examples

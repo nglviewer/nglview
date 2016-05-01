@@ -352,7 +352,7 @@ define( [
                        var viewer = this.stage.viewer;
                        var func = this.stage.viewer[msg.methodName];
                        func.apply( viewer, new_args );
-               }else if( msg.target == 'component' ){
+               }else if( msg.target == 'compList' ){
                        var index = msg['component_index'];
                        var component = this.stage.compList[index];
                        var func = component[msg.methodName];
