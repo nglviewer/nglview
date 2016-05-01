@@ -335,8 +335,6 @@ define( [
 
         on_msg: function(msg){
             if( msg.type == 'call_method' ){
-                console.log( "msg.args" );
-                console.log( msg.args );
                 var new_args = msg.args.slice();
                 new_args.push( msg.kwargs );
 
@@ -348,27 +346,37 @@ define( [
                              NGL.screenshot( this.stage.viewer, msg.kwargs );
                         }else{
                             if( msg.methodName == 'loadFile' ) {
-                                var blob = new Blob( [ msg.args[0] ], { type: "text/plain" } );
-                                this.stage.loadFile( blob, msg.kwargs );
+                                // args = [{'type': ..., 'data': ...}]
+                                if( msg.args[0].type == 'blob' ) {
+                                    var blob = new Blob( [ msg.args[0].data ], { type: "text/plain" } );
+                                    this.stage.loadFile( blob, msg.kwargs );
+                                }else if( msg.args[0].type == 'path' ) {
+                                    this.stage.loadFile( msg.args[0].data, msg.kwargs );
+                                }
                             }else{
                                 stage_func.apply( stage, new_args );
                             }
                         }
+                        break;
                     case 'Viewer': 
                         var viewer = this.stage.viewer;
                         var func = this.stage.viewer[msg.methodName];
                         func.apply( viewer, new_args );
+                        break;
                     case 'compList':
                         var index = msg['component_index'];
                         var component = this.stage.compList[index];
                         var func = component[msg.methodName];
                         func.apply( component, new_args );
+                        break;
                     case 'StructureComponent':
                         var component = this.structureComponent;
                         var func = component[msg.methodName];
                         func.apply( component, new_args );
+                        break;
                     default: 
-                        console.log( "nothing done with " + msg.target );
+                        console.log( "nothing done for " + msg.target );
+                        break;
                 }
             }else if( msg.type == 'base64' ){
                 console.log( "received base64 dict" );
