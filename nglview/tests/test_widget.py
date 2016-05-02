@@ -116,7 +116,6 @@ def test_show_mdtraj():
     traj = md.load(fn)
     view = nv.show_mdtraj(traj)
 
-@unittest.skipUnless(PY2, "only test MDAnalysis with PY2")
 def test_show_MDAnalysis():
     from MDAnalysis import Universe
     tn, fn = nv.datafiles.PDB, nv.datafiles.PDB
@@ -152,15 +151,12 @@ def test_coordinates_meta():
 
     N_FRAMES = trajs[0].n_frames
 
-    if PY2:
-        from MDAnalysis import Universe
-        u = Universe(tn, fn)
-        trajs.append(Universe(tn, fn))
+    from MDAnalysis import Universe
+    u = Universe(tn, fn)
+    trajs.append(Universe(tn, fn))
 
     views = [nv.show_pytraj(trajs[0]), nv.show_mdtraj(trajs[1]), nv.show_parmed(trajs[2])]
-
-    if PY2:
-        views.append(nv.show_mdanalysis(trajs[3]))
+    views.append(nv.show_mdanalysis(trajs[3]))
 
     for index, (view, traj) in enumerate(zip(views, trajs)):
         view.frame = 3
