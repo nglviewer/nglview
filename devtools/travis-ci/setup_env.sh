@@ -24,8 +24,8 @@ if [ "$PYTHON_VERSION" = "2.7" ]; then
     conda install mdanalysis -c MDAnalysis --yes
 else
    git clone https://github.com/MDAnalysis/mdanalysis
-   cd package
+   cd mdanalysis/package
    python setup.py install
-   cd ..
+   cd ../../
 fi
 conda install mdtraj -c omnia --yes
