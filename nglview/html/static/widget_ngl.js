@@ -334,6 +334,7 @@ define( [
         },
 
         on_msg: function(msg){
+            // TODO: re-organize
             if( msg.type == 'call_method' ){
                 var new_args = msg.args.slice();
                 new_args.push( msg.kwargs );
@@ -344,6 +345,11 @@ define( [
                         var stage = this.stage;
                         if ( msg.methodName == 'screenshot' ){
                              NGL.screenshot( this.stage.viewer, msg.kwargs );
+                        }else if( msg.methodName == 'remove_component' ) {
+                            console.log( "removing component" );
+                            var index = msg.args[0];
+                            var component = this.stage.compList[ index ];
+                            this.stage.removeComponent( component );
                         }else{
                             if( msg.methodName == 'loadFile' ) {
                                 // args = [{'type': ..., 'data': ...}]
@@ -396,6 +402,8 @@ define( [
                     this.send( JSON.stringify( this.stage.viewer.camera ) );
                 }else if( msg.data == 'parameters' ){
                     this.send( JSON.stringify( this.stage.parameters ));
+                }else{
+                    console.log( "nothing done");
                 }
             }
     },
