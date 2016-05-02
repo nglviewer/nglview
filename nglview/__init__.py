@@ -383,10 +383,13 @@ class MDAnalysisTrajectory(Trajectory, Structure):
             raise ImportError(
                 "'MDAnalysisTrajectory' requires the 'MDAnalysis' package"
             )
-        import cStringIO
+        try:
+            from cStringIO import StringIO
+        except ImportError:
+            from io import StringIO
         u = self.atomgroup.universe
         u.trajectory[0]
-        f = mda.lib.util.NamedStream(cStringIO.StringIO(), 'tmp.pdb')
+        f = mda.lib.util.NamedStream(StringIO(), 'tmp.pdb')
         atoms = self.atomgroup.atoms
         # add PDB output to the named stream
         with mda.Writer(f, atoms.n_atoms, multiframe=False) as W:
