@@ -543,10 +543,10 @@ class NGLWidget(widgets.DOMWidget):
         def make_func(rep):
             """return a new function object
             """
-            def func(this, selection='all', **kwd):
+            def func(this, selection='all', **kwargs):
                 """
                 """
-                self.add_representation(repr_type=rep[1], selection=selection, **kwd)
+                self.add_representation(repr_type=rep[1], selection=selection, **kwargs)
             return func
 
         for rep in repr_names:
@@ -594,8 +594,15 @@ class NGLWidget(widgets.DOMWidget):
         if not self.cache:
             self._set_coordinates(self.frame)
 
+    def _clear_repr(self, index=0):
+        if index == 0:
+            self.representations = []
+        else:
+            self._remote_call("clearRepresentations",
+                    target='compList',
+                    kwargs={'component_index': index})
 
-    def add_representation(self, repr_type, selection='all', **kwd):
+    def add_representation(self, repr_type, selection='all', **kwargs):
         '''Add representation.
 
         Parameters
@@ -605,7 +612,7 @@ class NGLWidget(widgets.DOMWidget):
             http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations
         selection : str or 1D array (atom indices) or any iterator that returns integer, default 'all'
             atom selection
-        **kwd: additional arguments for representation
+        **kwargs: additional arguments for representation
 
         Example
         -------
@@ -622,22 +629,37 @@ class NGLWidget(widgets.DOMWidget):
         # overwrite selection
         selection = seq_to_string(selection).strip()
 
-        for k, v in kwd.items():
+        if 'index' in kwargs:
+            index = kwargs.pop('index')
+        else:
+            index = 0
+
+        for k, v in kwargs.items():
             try:
-                kwd[k] = v.strip()
+                kwargs[k] = v.strip()
             except AttributeError:
                 # e.g.: opacity=0.4
-                kwd[k] = v
+                kwargs[k] = v
 
         d = {'params': {'sele': selection}}
         d['type'] = repr_type
-        d['params'].update(kwd)
+        d['params'].update(kwargs)
 
-        self._representations.append(d)
-        self._remote_call('addRepresentation',
-                          target='StructureComponent',
-                          args=[d['type'],],
-                          kwargs=d['params'])
+        if index == 0:
+            self._representations.append(d)
+            self._remote_call('addRepresentation',
+                              target='StructureComponent',
+                              args=[d['type'],],
+                              kwargs=d['params'])
+        else:
+            # do not keep track representations of >= 2nd
+            params = d['params']
+            params.update({'component_index': index})
+            self._remote_call('addRepresentation',
+                              target='compList',
+                              args=[d['type'],],
+                              kwargs=params)
+
 
     def center_view(self, zoom=True, selection='*', index=0):
         """center view
@@ -671,6 +693,24 @@ class NGLWidget(widgets.DOMWidget):
             self._ngl_msg = json.loads(msg)
         else:
             self._ngl_msg = msg
+
+    def _add_reference(self, obj, ext='pdb'):
+        '''
+
+        Parameters
+        ----------
+        obj : nglview.Structure or any object having 'get_structure_string' method or
+              string buffer (open(fn).read())
+        '''
+        if hasattr(obj, 'get_structure_string'):
+            blob = obj.get_structure_string()
+        else:
+            # assume passing string
+            blob = obj
+        self._remote_call("loadFile",
+                target='Stage',
+                args=[{'type': 'blob', 'data': obj.get_structure_string()}],
+                kwargs={'defaultRepresentation': True, 'ext': ext})
         
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
