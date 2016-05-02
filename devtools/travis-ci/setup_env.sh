@@ -22,5 +22,10 @@ pip install pytraj
 conda install parmed -c ambermd --yes
 if [ "$PYTHON_VERSION" = "2.7" ]; then
     conda install mdanalysis -c MDAnalysis --yes
+else
+   git clone https://github.com/MDAnalysis/mdanalysis
+   cd package
+   python setup.py install
+   cd ..
 fi
 conda install mdtraj -c omnia --yes
