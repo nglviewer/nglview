@@ -345,8 +345,8 @@ define( [
                         var stage = this.stage;
                         if ( msg.methodName == 'screenshot' ){
                              NGL.screenshot( this.stage.viewer, msg.kwargs );
-                        }else if( msg.methodName == 'remove_component' ) {
-                            console.log( "removing component" );
+                        }else if( msg.methodName == 'removeComponent' ) {
+                            console.log( "removeComponent" );
                             var index = msg.args[0];
                             var component = this.stage.compList[ index ];
                             this.stage.removeComponent( component );
