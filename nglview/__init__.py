@@ -483,7 +483,8 @@ class NGLWidget(widgets.DOMWidget):
         coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
                                 dtype=dtype,
                                 shape=arr.shape)
-        self._coordinates_meta = coordinates_meta
+        # seems faster than using traitlets
+        self.send({'type': 'base64_single', 'data': coordinates_meta})
 
     @property
     def representations(self):
