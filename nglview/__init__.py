@@ -413,11 +413,11 @@ class NGLWidget(widgets.DOMWidget):
     _init_representations = List().tag(sync=True)
     structure = Dict().tag(sync=True)
     parameters = Dict().tag(sync=True)
-    _coordinates_meta = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
 
     _ngl_msg = None
+    _coordinates_meta = Dict().tag(sync=False)
 
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
@@ -484,6 +484,7 @@ class NGLWidget(widgets.DOMWidget):
                                 dtype=dtype,
                                 shape=arr.shape)
         # seems faster than using traitlets
+        self._coordinates_meta = coordinates_meta
         self.send({'type': 'base64_single', 'data': coordinates_meta})
 
     @property
