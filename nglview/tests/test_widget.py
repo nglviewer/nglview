@@ -161,11 +161,6 @@ def test_coordinates_meta():
     for index, (view, traj) in enumerate(zip(views, trajs)):
         view.frame = 3
         
-        _coordinates_meta = view._coordinates_meta
-        nt.assert_in('data', _coordinates_meta)
-        nt.assert_in('shape', _coordinates_meta)
-        nt.assert_in('dtype', _coordinates_meta)
-        nt.assert_equal(view._coordinates_meta['dtype'], 'f4')
         nt.assert_equal(view.trajectory.n_frames, N_FRAMES)
         nt.assert_equal(len(view.trajectory.get_coordinates_dict().keys()), N_FRAMES)
 
@@ -174,11 +169,6 @@ def test_coordinates_meta():
             aa_eq(view.coordinates, traj.xyz[3], decimal=4)
             view.coordinates = traj.xyz[2]
             aa_eq(view.coordinates, traj.xyz[2], decimal=4)
-
-        data = view._coordinates_meta['data']
-        shape = view._coordinates_meta['shape']
-        dtype = view._coordinates_meta['dtype']
-        aa_eq(view.coordinates, nv.decode_base64(data, dtype=dtype, shape=shape))
 
 def test_speed():
     import pytraj as pt

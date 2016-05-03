@@ -413,11 +413,11 @@ class NGLWidget(widgets.DOMWidget):
     _init_representations = List().tag(sync=True)
     structure = Dict().tag(sync=True)
     parameters = Dict().tag(sync=True)
-    _coordinates_meta = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
 
     _ngl_msg = None
+    _coordinates_meta = Dict().tag(sync=False)
 
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
@@ -483,7 +483,9 @@ class NGLWidget(widgets.DOMWidget):
         coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
                                 dtype=dtype,
                                 shape=arr.shape)
+        # seems faster than using traitlets
         self._coordinates_meta = coordinates_meta
+        self.send({'type': 'base64_single', 'data': coordinates_meta})
 
     @property
     def representations(self):
@@ -559,11 +561,14 @@ class NGLWidget(widgets.DOMWidget):
             setattr(self, fn, MethodType(func, self))
 
     def caching(self):
-        if hasattr(self.trajectory, "get_coordinates_dict"):
-            # should use use coordinates_dict to sync?
-            # my molecule disappear.
-            # self.coordinates_dict = self.trajectory.get_coordinates_dict()
+        """sending all coordinates to Javascript's side. Caching makes trajectory play smoother
+        but doubling your memory. If you using cache, you can not update coordinates.
+        Use `view.uncaching()` then update your coordinates, then `view.caching()` again.
 
+        This method is experimental and its name can be changed.
+        """
+        if hasattr(self.trajectory, "get_coordinates_dict"):
+            # do not use traitlets to sync. slow.
             self.cache = True
             msg = dict(type='base64',
                        cache=self.cache,

@@ -68,7 +68,8 @@ define( [
                 this.model.on( "change:structure", this.structureChanged, this );
 
                 // init setting of coordinates
-                this.model.on( "change:_coordinates_meta", this.coordinatesChanged, this );
+                // turn off for now
+                // this.model.on( "change:_coordinates_meta", this.coordinatesChanged, this );
 
                 // init setting of coordinates
                 this.model.on( "change:coordinates_dict", this.coordsDictChanged, this );
@@ -385,7 +386,7 @@ define( [
                         break;
                 }
             }else if( msg.type == 'base64' ){
-                console.log( "received base64 dict" );
+                console.log( "received base64 dict for all frames" );
                 var base64Dict = msg.data;
                 this.coordsDict = {};
                 if ( "cache" in msg ){
@@ -395,6 +396,9 @@ define( [
                 for (var i = 0; i < Object.keys(base64Dict).length; i++) {
                      this.coordsDict[i] = this.mydecode( base64Dict[i]);
                 }
+            }else if( msg.type == 'base64_single' ){
+                var coordinates = this.mydecode( msg.data['data'] );
+                this._update_coords( coordinates );
             }else if( msg.type == 'get') {
                 console.log( msg.data );
 
