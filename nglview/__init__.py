@@ -560,11 +560,14 @@ class NGLWidget(widgets.DOMWidget):
             setattr(self, fn, MethodType(func, self))
 
     def caching(self):
-        if hasattr(self.trajectory, "get_coordinates_dict"):
-            # should use use coordinates_dict to sync?
-            # my molecule disappear.
-            # self.coordinates_dict = self.trajectory.get_coordinates_dict()
+        """sending all coordinates to Javascript's side. Caching makes trajectory play smoother
+        but doubling your memory. If you using cache, you can not update coordinates.
+        Use `view.uncaching()` then update your coordinates, then `view.caching()` again.
 
+        This method is experimental and its name can be changed.
+        """
+        if hasattr(self.trajectory, "get_coordinates_dict"):
+            # do not use traitlets to sync. slow.
             self.cache = True
             msg = dict(type='base64',
                        cache=self.cache,
