@@ -712,8 +712,13 @@ class NGLWidget(widgets.DOMWidget):
             blob = obj
         self._remote_call("loadFile",
                 target='Stage',
-                args=[{'type': 'blob', 'data': obj.get_structure_string()}],
+                args=[{'type': 'blob', 'data': blob}],
                 kwargs={'defaultRepresentation': True, 'ext': ext})
+
+    def _remove_component(self, index):
+        self._remote_call('removeComponent',
+                target='Stage',
+                args=[index,])
         
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
