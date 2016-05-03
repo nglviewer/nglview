@@ -68,7 +68,8 @@ define( [
                 this.model.on( "change:structure", this.structureChanged, this );
 
                 // init setting of coordinates
-                this.model.on( "change:_coordinates_meta", this.coordinatesChanged, this );
+                // turn off for now
+                // this.model.on( "change:_coordinates_meta", this.coordinatesChanged, this );
 
                 // init setting of coordinates
                 this.model.on( "change:coordinates_dict", this.coordsDictChanged, this );
