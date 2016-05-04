@@ -108,6 +108,8 @@ define( [
                     this.$container.resizable(
                         "option", "maxWidth", this.$el.parent().width()
                     );
+                    this.model.set('loaded', true);
+                    this.touch();
                 }.bind( this ) );
 
                 // init toggle fullscreen
