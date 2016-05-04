@@ -71,8 +71,8 @@ The above convenience functions first create an `adaptor` that implements an [in
 ```Python
 import nglview
 struc = nglview.PdbIdStructure("3pqr")  # load file from RCSB PDB
-w = nglview.NGLWidget(struc)            # create widget
-w                                       # display widget
+view = nglview.NGLWidget(struc)            # create widget
+view                                       # display widget
 ```
 
 
@@ -109,19 +109,24 @@ The displayed frame can be changed by setting the `frame` property of the
 widget instance `w`:
 
 ```Python
-w.frame = 100  # set to frame no 100
+view.frame = 100  # set to frame no 100
 ```
 
 
 Representations
 ---------------
 
+```python
+view.add_cartoon("protein", color="residueindex")
+view.add_surface("protein", opacity=0.3)
+```
+
 Representations can be changed by overwriting the `representations` property
-of the widget instance `w`. The available `type` and `params` are described
+of the widget instance `view`. The available `type` and `params` are described
 in the NGL Viewer [documentation](http://arose.github.io/ngl/doc).
 
 ```Python
-w.representations = [
+view.representations = [
     {"type": "cartoon", "params": {
         "sele": "protein", "color": "residueindex"
     }},
@@ -141,19 +146,6 @@ initial_repr = [
 ]
 nglview.NGLWidget(struc, representation=initial_repr)
 ```
-
-Additionally representations can be added with the `add_representation` method:
-
-```Python
-w.add_representation(
-    "cartoon", selection="protein", color="residueindex"
-)
-
-# or shorter
-w.add_cartoon("protein", color="residueindex")
-w.add_surface("protein", opacity=0.3)
-```
-
 
 Adaptors
 --------
@@ -193,7 +185,7 @@ NGLWidget
 ### Constructor
 
 ```Python
-ngl_widget = NGLWidget(structure, trajectory=None, representations=None)
+view = NGLWidget(structure, trajectory=None, representations=None)
 ```
 
 
@@ -201,30 +193,23 @@ ngl_widget = NGLWidget(structure, trajectory=None, representations=None)
 
 ```Python
 # set the frame number
-ngl_widget.frame = 100
+view.frame = 100
 ```
 
 ```Python
 # list of representations
-ngl_widget.representations = [{"type": "cartoon"}]
+view.representations = [{"type": "cartoon"}]
 ```
 
 ```Python
 # parameters for the NGL stage object
-ngl_widget.parameters = {
+view.parameters = {
     # "percentages, "dist" is distance too camera in Angstrom
     "clipNear": 0, "clipFar": 100, "clipDist": 10,
     # percentages, start of fog and where on full effect
     "fogNear": 0, "fogFar": 100
 }
 ```
-
-### Methods
-
-```Python
-ngl_widget.add_representation("cartoon", **kwds)
-```
-
 
 Interface classes
 =================
