@@ -715,7 +715,7 @@ class NGLWidget(widgets.DOMWidget):
         else:
             self._ngl_msg = msg
 
-    def _add_reference(self, obj, ext='pdb'):
+    def _load_data(self, obj, ext=None):
         '''
 
         Parameters
@@ -728,10 +728,31 @@ class NGLWidget(widgets.DOMWidget):
         else:
             # assume passing string
             blob = obj
+
+        kwargs={'defaultRepresentation': True}
+
+        if ext is None:
+            if os.path.isfile(obj):
+                if obj.endswith('.gz'):
+                    ext = obj.replace('.gz', '').split('.')[-1]
+                else:
+                    ext = obj.split('.')[-1]
+            else:
+                ext = ''
+
+        print('ext', ext)
+        kwargs['ext'] = ext
+
+        if os.path.isfile(obj):
+            # tell NGL to load a file
+            args = [obj,]
+        else:
+            args=[{'type': 'blob', 'data': blob}],
+
         self._remote_call("loadFile",
                 target='Stage',
-                args=[{'type': 'blob', 'data': blob}],
-                kwargs={'defaultRepresentation': True, 'ext': ext})
+                args=args,
+                kwargs=kwargs)
 
     def _remove_component(self, index):
         self._remote_call('removeComponent',
