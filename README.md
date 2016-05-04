@@ -94,7 +94,9 @@ initial_repr = [
         "sele": "protein", "color": "sstruc"
     }}
 ]
-nglview.NGLWidget(struc, representation=initial_repr)
+
+view = nglview.NGLWidget(struc, representation=initial_repr)
+view
 ```
 
 ### Properties
