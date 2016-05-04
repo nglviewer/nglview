@@ -74,6 +74,24 @@ def _assert_dict_list_equal(listdict0, listdict1):
             nt.assert_equal(key0, key1)
             nt.assert_equal(dict0.get(key0), dict1.get(key1))
 
+def test_load_data():
+    view = nv.show_pytraj(pt.datafiles.load_tz2())
+
+    # load blob with ext
+    blob = open(nv.datafiles.PDB).read()
+    view._load_data(blob, ext='pdb')
+
+    # raise if blob does have ext
+    nt.assert_raises(AssertionError, view._load_data, blob)
+
+    # load PyTrajectory
+    t0 = nv.PyTrajTrajectory(pt.datafiles.load_ala3())
+    view._load_data(t0)
+
+    # load current folder
+    view._load_data('data/tz2.pdb')
+
+
 def test_representations():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     nt.assert_equal(view.representations, DEFAULT_REPR)

@@ -715,7 +715,7 @@ class NGLWidget(widgets.DOMWidget):
         else:
             self._ngl_msg = msg
 
-    def _load_data(self, obj, ext=None):
+    def _load_data(self, obj, **kwargs):
         '''
 
         Parameters
@@ -725,29 +725,17 @@ class NGLWidget(widgets.DOMWidget):
         '''
         if hasattr(obj, 'get_structure_string'):
             blob = obj.get_structure_string()
+            kwargs['ext'] = obj.ext
+            obj_is_file = False
         else:
+            obj_is_file = os.path.isfile(obj)
             # assume passing string
             blob = obj
+            if 'ext' not in kwargs:
+                assert obj_is_file, 'must be a filename if ext is None'
 
-        kwargs={'defaultRepresentation': True}
-
-        if ext is None:
-            if os.path.isfile(obj):
-                if obj.endswith('.gz'):
-                    ext = obj.replace('.gz', '').split('.')[-1]
-                else:
-                    ext = obj.split('.')[-1]
-            else:
-                ext = ''
-
-        print('ext', ext)
-        kwargs['ext'] = ext
-
-        if os.path.isfile(obj):
-            # tell NGL to load a file
-            args = [obj,]
-        else:
-            args=[{'type': 'blob', 'data': blob}],
+        blob_type = 'path' if obj_is_file else 'blob'
+        args=[{'type': blob_type, 'data': blob}]
 
         self._remote_call("loadFile",
                 target='Stage',
