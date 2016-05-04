@@ -14,8 +14,8 @@ Table of contents
 =================
 
 * [Installation](#installation)
-* [Usage](#Usage)
-* [Interface classes](#Interface classes)
+* [Usage](#usage)
+* [Interface classes](#interface classes)
 * [Changelog](CHANGELOG.md)
 * [License](#license)
 
@@ -60,6 +60,40 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_parmed(structure)`                 | Shows `ParmEd` structure
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
 
+
+Representations
+---------------
+
+```python
+view.add_cartoon("protein", color="residueindex")
+view.add_surface("protein", opacity=0.3)
+```
+
+Representations can also be changed by overwriting the `representations` property
+of the widget instance `view`. The available `type` and `params` are described
+in the NGL Viewer [documentation](http://arose.github.io/ngl/doc).
+
+```Python
+view.representations = [
+    {"type": "cartoon", "params": {
+        "sele": "protein", "color": "residueindex"
+    }},
+    {"type": "ball+stick", "params": {
+        "sele": "hetero"
+    }}
+]
+```
+
+The widget constructor also accepts a `representation` argument:
+
+```Python
+initial_repr = [
+    {"type": "cartoon", "params": {
+        "sele": "protein", "color": "sstruc"
+    }}
+]
+nglview.NGLWidget(struc, representation=initial_repr)
+```
 
 
 Structures
@@ -111,40 +145,6 @@ widget instance `w`:
 view.frame = 100  # set to frame no 100
 ```
 
-
-Representations
----------------
-
-```python
-view.add_cartoon("protein", color="residueindex")
-view.add_surface("protein", opacity=0.3)
-```
-
-Representations can be changed by overwriting the `representations` property
-of the widget instance `view`. The available `type` and `params` are described
-in the NGL Viewer [documentation](http://arose.github.io/ngl/doc).
-
-```Python
-view.representations = [
-    {"type": "cartoon", "params": {
-        "sele": "protein", "color": "residueindex"
-    }},
-    {"type": "ball+stick", "params": {
-        "sele": "hetero"
-    }}
-]
-```
-
-The widget constructor also accepts a `representation` argument:
-
-```Python
-initial_repr = [
-    {"type": "cartoon", "params": {
-        "sele": "protein", "color": "sstruc"
-    }}
-]
-nglview.NGLWidget(struc, representation=initial_repr)
-```
 
 Adaptors
 --------
