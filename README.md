@@ -15,7 +15,7 @@ Table of contents
 
 * [Installation](#installation)
 * [Usage](#usage)
-* [Interface classes](doct/interface_classes.md)
+* [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
 * [License](#license)
 
@@ -64,7 +64,7 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 API
 ===
 
-### Properties
+### Representations
 
 ```python
 view.add_cartoon("protein", color="residueindex")
@@ -86,16 +86,6 @@ view.representations = [
 ]
 ```
 
-
-```Python
-# set the frame number
-view.frame = 100
-```
-
-```Python
-# list of representations
-view.representations = [{"type": "cartoon"}]
-
 The widget constructor also accepts a `representation` argument:
 
 ```Python
@@ -105,6 +95,13 @@ initial_repr = [
     }}
 ]
 nglview.NGLWidget(struc, representation=initial_repr)
+```
+
+### Properties
+
+```Python
+# set the frame number
+view.frame = 100
 ```
 
 ```Python
@@ -117,8 +114,7 @@ view.parameters = {
 }
 ```
 
-Multiple widgets
-----------------
+### Multiple widgets
 
 You can have multiple widgets per notebook cell:
 
