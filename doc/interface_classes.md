@@ -1,7 +1,7 @@
 Structures
 ----------
 
-The above convenience functions first create an `adaptor` that implements an [interface](interface_classes) for communication with the IPython/Jupyter widget.
+The above convenience functions first create an `adaptor` that implements an [interface](#interface classes) for communication with the IPython/Jupyter widget.
 
 ```Python
 import nglview
