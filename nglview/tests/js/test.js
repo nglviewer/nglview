@@ -1,22 +1,16 @@
-module.exports = {
-    "Test repr_alias": function (browser) {
-        browser.openNotebook("repr_alias.ipynb");
-        
-        browser.restartKernel(2000);
-        for ( var i = 0; i < 23 ; i++) {
-           browser.executeCell(i)
-                  .pause(1000)
-                  .cellHasError(i);
-        }
-        
-        browser.end();
-    },
+var testsuits = {};
 
-    "Test initialize representation": function (browser) {
-        browser.openNotebook("init_representations.ipynb");
+// TODO: auto-discovery
+var nbfiles = ["repr_alias.ipynb", "init_representations.ipynb"]; 
+
+for (var i = 0; i < nbfiles.length; i++) {
+    var fn = nbfiles[i];
+
+    testsuits[fn] = function (browser) {
+        browser.openNotebook(fn);
         
         browser.restartKernel(2000);
-        for ( var i = 0; i < 23 ; i++) {
+        for (var i = 0; i < 23 ; i++) {
            browser.executeCell(i)
                   .pause(1000)
                   .cellHasError(i);
@@ -25,3 +19,5 @@ module.exports = {
         browser.end();
     }
 }
+
+module.exports = testsuits;
