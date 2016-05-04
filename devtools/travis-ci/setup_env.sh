@@ -20,12 +20,12 @@ conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose numpy mock
 source activate myenv
 pip install pytraj
 conda install parmed -c ambermd --yes
-# if [ "$PYTHON_VERSION" = "2.7" ]; then
-#     conda install mdanalysis -c MDAnalysis --yes
-# else
-#    git clone https://github.com/MDAnalysis/mdanalysis
-#    cd mdanalysis/package
-#    python setup.py install
-#    cd ../../
-# fi
+if [ "$PYTHON_VERSION" = "2.7" ]; then
+    conda install mdanalysis -c MDAnalysis --yes
+else
+   git clone https://github.com/MDAnalysis/mdanalysis
+   cd mdanalysis/package
+   python setup.py install
+   cd ../../
+fi
 conda install mdtraj -c omnia --yes
