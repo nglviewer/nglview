@@ -26,8 +26,7 @@ Installation
 From PyPI:
 
     pip install nglview
-
-Note: The above will try to install `jupyter` as a dependency. If that fails install it manually `pip install jupyter`.
+Note: The above will try to install `jupyter`, `traitlets` and `ipywidgets`  as a dependency. If that fails install it manually `pip install jupyter`.
 
 From Conda
 
