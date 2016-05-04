@@ -89,7 +89,7 @@ def test_load_data():
     view._load_data(t0)
 
     # load current folder
-    aiew._load_data('data/tz2.pdb')
+    view._load_data('data/tz2.pdb')
 
 
 def test_representations():
