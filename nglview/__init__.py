@@ -64,7 +64,10 @@ def show_structure_file(path, **kwargs):
     >>> w = nv.show_structure_file(nv.datafiles.GRO)
     >>> w
     '''
-    extension = os.path.splitext(path)[1][1:]
+    if 'ext' in kwargs:
+        extension = kwargs.pop('ext')
+    else:
+        extension = os.path.splitext(path)[1][1:]
     structure = FileStructure(path, ext=extension)
     return NGLWidget(structure, **kwargs)
 
