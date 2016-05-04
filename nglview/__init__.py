@@ -9,7 +9,7 @@ import os.path
 import warnings
 import tempfile
 import ipywidgets as widgets
-from traitlets import Unicode, Bool, Dict, List, Int, Float, Any, Bytes
+from traitlets import Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe
 
 from IPython.display import display, Javascript
 from notebook.nbextensions import install_nbextension
@@ -408,6 +408,7 @@ class NGLWidget(widgets.DOMWidget):
     _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
     cache = Bool().tag(sync=True)
+    loaded = Bool().tag(sync=True)
     frame = Int().tag(sync=True)
     count = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
@@ -458,8 +459,13 @@ class NGLWidget(widgets.DOMWidget):
         self._representations = self._init_representations[:]
         self._add_repr_method_shortcut()
 
+        def on_loaded(name, old, new):
+            [cb(self) in self._displayed_callbacks]
+
+        observe(on_loaded, "loaded")
+
         # register to get data from JS side
-        self.on_msg(self._ngl_get_msg)
+        self.on_msg(self._ngl_handle_msg)
 
     @property
     def coordinates(self):
@@ -691,7 +697,7 @@ class NGLWidget(widgets.DOMWidget):
                           target='Stage',
                           args=[factor, antialias, trim, transparent, onProgress])
 
-    def _ngl_get_msg(self, widget, msg, buffers):
+    def _ngl_handle_msg(self, widget, msg, buffers):
         """store message sent from Javascript.
 
         How? use view.on_msg(get_msg)
