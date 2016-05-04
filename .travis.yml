@@ -10,6 +10,7 @@ matrix:
 sudo: false
 
 before_install:
+  - 
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew tap homebrew/science;
       brew update;
@@ -17,10 +18,21 @@ before_install:
     fi
 
 install:
+    - npm install -g nightwatch
     - source devtools/travis-ci/setup_env.sh
+    - source devtools/travis-ci/clone_nbtest.sh
+    - ls
     - python setup.py install
 
+before_script:
+    - export DISPLAY=:99.0
+    - sh -e /etc/init.d/xvfb start
+    - sleep 3
+    - jupyter notebook --port=8889 &
+    - sleep 3
+
 script:
+    - nightwatch
     - nosetests --with-coverage --cover-package nglview -vs .
 
 after_success:
