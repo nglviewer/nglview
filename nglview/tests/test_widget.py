@@ -81,7 +81,7 @@ def test_load_data():
     blob = open(nv.datafiles.PDB).read()
     view._load_data(blob, ext='pdb')
 
-    # raise if blob does have ext
+    # raise if passing blob but does not provide ext
     nt.assert_raises(AssertionError, view._load_data, blob)
 
     # load PyTrajectory
@@ -89,7 +89,7 @@ def test_load_data():
     view._load_data(t0)
 
     # load current folder
-    view._load_data('data/tz2.pdb')
+    aiew._load_data('data/tz2.pdb')
 
 
 def test_representations():
