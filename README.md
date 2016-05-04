@@ -112,7 +112,9 @@ view.parameters = {
     # "percentages, "dist" is distance too camera in Angstrom
     "clipNear": 0, "clipFar": 100, "clipDist": 10,
     # percentages, start of fog and where on full effect
-    "fogNear": 0, "fogFar": 100
+    "fogNear": 0, "fogFar": 100,
+    # background color
+    "theme": "dark",
 }
 ```
 
