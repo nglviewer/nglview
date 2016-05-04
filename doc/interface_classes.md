@@ -1,5 +1,5 @@
 Structures
-----------
+==========
 
 The above convenience functions first create an `adaptor` that implements an [interface](#interface classes) for communication with the IPython/Jupyter widget.
 
@@ -12,7 +12,7 @@ view                                       # display widget
 
 
 Trajectories
-------------
+============
 
 To enable trajectory access pass a second `Trajectory` argument to the widget
 constructor or supply a combined `Structure`/`Trajectory` object as the first
