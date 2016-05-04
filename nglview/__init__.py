@@ -408,7 +408,7 @@ class NGLWidget(widgets.DOMWidget):
     _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
     cache = Bool().tag(sync=True)
-    loaded = Bool().tag(sync=True)
+    loaded = Bool(False).tag(sync=True)
     frame = Int().tag(sync=True)
     count = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
@@ -416,6 +416,9 @@ class NGLWidget(widgets.DOMWidget):
     parameters = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
+
+    # 
+    displayed = False
 
     _ngl_msg = None
     _coordinates_meta = Dict().tag(sync=False)
@@ -440,8 +443,6 @@ class NGLWidget(widgets.DOMWidget):
 
         # use _init_representations so we can view representations right after view is made.
         # self.representations is only have effect if we already call `view`
-        # >>> view = nv.show_pytraj(traj)
-        # >>> view # view.representations = ... does not work at this point, so need to use _init_representations
 
         if representations:
             self._ini_representations = representations
@@ -459,13 +460,19 @@ class NGLWidget(widgets.DOMWidget):
         self._representations = self._init_representations[:]
         self._add_repr_method_shortcut()
 
-        def on_loaded(name, old, new):
-            [cb(self) in self._displayed_callbacks]
-
-        observe(on_loaded, "loaded")
+        # do not use _displayed_callbacks since there is another Widget._display_callbacks
+        self._ngl_displayed_callbacks = []
 
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
+
+    @observe('loaded')
+    def on_loaded(self, change):
+        [callback(self) for callback in self._ngl_displayed_callbacks]
+
+    def _ipython_display_(self, **kwargs):
+        super(NGLWidget, self)._ipython_display_(**kwargs)
+        self.displayed = True
 
     @property
     def coordinates(self):
@@ -770,7 +777,15 @@ class NGLWidget(widgets.DOMWidget):
         msg['args'] = args
         msg['kwargs'] = kwargs
 
-        self.send(msg)
+        if self.displayed is True:
+            self.send(msg)
+        else:
+            # send later
+            def callback(widget, msg=msg):
+                widget.send(msg)
+
+            # all callbacks will be called right after widget is loaded
+            self._ngl_displayed_callbacks.append(callback)
 
 def install(user=True, symlink=False):
     """Install the widget nbextension.
