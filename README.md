@@ -125,6 +125,7 @@ from ipywidgets.widgets import Box
 w1 = NGLWidget(...)
 w2 = NGLWidget(...)
 Box(children=(w1,w2))
+```
 
 
 License
