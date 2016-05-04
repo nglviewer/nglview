@@ -212,8 +212,9 @@ class SimpletrajTrajectory(Trajectory):
     Example
     -------
     >>> import nglview as nv
+    >>> s = nv.FileStructure(nv.datafiles.GRO, ext="gro")
     >>> t = nv.SimpletrajTrajectory(nv.datafiles.XTC)
-    >>> w = nv.NGLWidget(t)
+    >>> w = nv.NGLWidget(s, t)
     >>> w
     '''
     def __init__(self, path):
