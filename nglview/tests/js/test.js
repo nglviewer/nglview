@@ -1,7 +1,8 @@
 var testsuits = {};
 
 // TODO: auto-discovery
-var nbfiles = ["repr_alias.ipynb", "init_representations.ipynb"]; 
+// var nbfiles = ["repr_alias.ipynb", "init_representations.ipynb"]; 
+var nbfiles = ["caching.ipynb"];
 
 for (var i = 0; i < nbfiles.length; i++) {
     var fn = nbfiles[i];
