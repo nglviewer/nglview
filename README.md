@@ -107,8 +107,6 @@ initial_repr = [
 nglview.NGLWidget(struc, representation=initial_repr)
 ```
 
-```
-
 ```Python
 # parameters for the NGL stage object
 view.parameters = {
