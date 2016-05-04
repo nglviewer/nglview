@@ -8,7 +8,7 @@
 
 An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/).
 
-Work in progress but usable. Please contact us if you want to take part. Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
+Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
 Table of contents
 =================
@@ -44,7 +44,8 @@ and issue
 
 ```Python
 import nglview
-nglview.show_pdbid("3pqr")  # load "3pqr" from RCSB PDB and display viewer widget
+view = nglview.show_pdbid("3pqr")  # load "3pqr" from RCSB PDB and display viewer widget
+view
 ```
 
 A number of convenience functions are available to quickly display data from
