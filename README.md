@@ -1,15 +1,14 @@
 ![nglview](nglview.png)
 
-An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/).
-
-Work in progress but usable. Please contact us if you want to take part. Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
-
 Try nglview online with different trajectory-reader backends [![Binder](http://mybinder.org/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
-
 
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
 [![Build Status](https://travis-ci.org/arose/nglview.svg?branch=master)](https://travis-ci.org/arose/nglview)
 
+
+An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/).
+
+Work in progress but usable. Please contact us if you want to take part. Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
 Table of contents
 =================
@@ -17,7 +16,7 @@ Table of contents
 * [Installation](#installation)
 * [Usage](#Usage)
 * [Interface classes](#Interface classes)
-* [Changelog](#changelog)
+* [Changelog](CHANGELOG.md)
 * [License](#license)
 
 
@@ -283,76 +282,3 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
     def n_frames(self):
         return 2  # return number of frames
 ```
-
-
-Changelog
-=========
-
-Version 0.5.dev
----------------
-
-
-* ADD: `export_image`
-* ADD: `center_view`
-* ADD: `caching` for smoother trajectory playing
-* ADD: atom selection by array
-* ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
-* ADD: `ParmEdTrajectory` adaptor
-* ENH: smoother rendering if adding new representation
-* MIGRATION: change `get_frame_count` method to `n_frames` property
-* FIX: symlink error
-
-Version 0.4
------------
-
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.46373.svg)](http://dx.doi.org/10.5281/zenodo.46373)
-
-* ADD: Convenience methods to show widget from various sources
-* ADD: `PyTrajTrajectory` adaptor
-* ADD: `MDAnalysisTrajectory` adaptor
-* ADD: `NGLWidget.add_representation()` method
-* ADD: append a "WebGL not supported message" to widget if so
-* ADD: `parameters` widget property, passed to NGL stage object
-* ADD: `params` property for `Structure`, dict passed to NGL
-* CODE: be less noisy when importing nglview
-* DOC: more usage examples, API description
-* DOC: added CHANGELOG file
-* BUILD: added example files in the package
-
-
-Version 0.3
------------
-
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.44700.svg)](http://dx.doi.org/10.5281/zenodo.44700)
-
-* MIGRATION: `Trajectory` classes need `get_frame_count` method
-* MIGRATION: removed `set_frame` method use new `frame` property
-* ADD: simple trajectory player
-* ADD: widget resizing support
-* ADD: picking support (gui info; `picked` property)
-* CODE: check for file existence in `FileStructure` and `SimpletrajTrajectory`
-
-
-Version 0.2
------------
-
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.44698.svg)](http://dx.doi.org/10.5281/zenodo.44698)
-
-* MIGRATION: changed `get_string` to `get_structure_string`
-* MIGRATION: changed `get_coordinates` to `get_coordinates_list`
-* DOC: usage, interface classes
-* ADD: MDTrajTrajectory adaptor
-* CODE: added interface classes
-* CODE: suggested packages; mdtraj, simpletraj
-
-
-Older versions
---------------
-
-For changes in older versions please see the [CHANGELOG](CHANGELOG.md) file.
-
-
-License
-=======
-
-Generally MIT, see the LICENSE file for details.
