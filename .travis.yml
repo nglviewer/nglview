@@ -20,7 +20,7 @@ before_install:
 install:
     - npm install -g nightwatch
     - source devtools/travis-ci/setup_env.sh
-    - source devtools/travis/clone_nbtest.sh
+    - source devtools/travis-ci/clone_nbtest.sh
     - ls
     - python setup.py install
 
