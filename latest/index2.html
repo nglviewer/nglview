@@ -1,0 +1,1188 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.5 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="NGLView 0.5 documentation" href="#"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> NGLView
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="simple">
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">NGLView</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>Welcome to NGLView&#8217;s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="welcome-to-nglview-s-documentation">
+<h1>Welcome to NGLView&#8217;s documentation!<a class="headerlink" href="#welcome-to-nglview-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-nglview"></span><dl class="class">
+<dt id="nglview.FileStructure">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">FileStructure</code><span class="sig-paren">(</span><em>path</em>, <em>ext='pdb'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#FileStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.FileStructure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dl class="method">
+<dt id="nglview.FileStructure.get_structure_string">
+<code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#FileStructure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.FileStructure.get_structure_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nglview.MDAnalysisTrajectory">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">MDAnalysisTrajectory</code><span class="sig-paren">(</span><em>atomgroup</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDAnalysisTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDAnalysisTrajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<p>MDAnalysis adaptor.</p>
+<p>Can take either a Universe or AtomGroup.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="kn">as</span> <span class="nn">mda</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prot</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s1">&#39;protein&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">MDAnalysisTrajectory</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="nglview.MDAnalysisTrajectory.get_coordinates">
+<code class="descname">get_coordinates</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDAnalysisTrajectory.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDAnalysisTrajectory.get_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.MDAnalysisTrajectory.get_coordinates_dict">
+<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDAnalysisTrajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDAnalysisTrajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.MDAnalysisTrajectory.get_structure_string">
+<code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDAnalysisTrajectory.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDAnalysisTrajectory.get_structure_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.MDAnalysisTrajectory.n_frames">
+<code class="descname">n_frames</code><a class="headerlink" href="#nglview.MDAnalysisTrajectory.n_frames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nglview.MDTrajTrajectory">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">MDTrajTrajectory</code><span class="sig-paren">(</span><em>trajectory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDTrajTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDTrajTrajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<p>mdtraj adaptor.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mdtraj</span> <span class="kn">as</span> <span class="nn">md</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">traj</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">MDTrajTrajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="nglview.MDTrajTrajectory.get_coordinates">
+<code class="descname">get_coordinates</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDTrajTrajectory.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDTrajTrajectory.get_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.MDTrajTrajectory.get_coordinates_dict">
+<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDTrajTrajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDTrajTrajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.MDTrajTrajectory.get_structure_string">
+<code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDTrajTrajectory.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDTrajTrajectory.get_structure_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.MDTrajTrajectory.n_frames">
+<code class="descname">n_frames</code><a class="headerlink" href="#nglview.MDTrajTrajectory.n_frames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nglview.NGLWidget">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">NGLWidget</code><span class="sig-paren">(</span><em>structure</em>, <em>trajectory=None</em>, <em>representations=None</em>, <em>parameters=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">ipywidgets.widgets.widget.DOMWidget</span></code></p>
+<dl class="method">
+<dt id="nglview.NGLWidget.add_representation">
+<code class="descname">add_representation</code><span class="sig-paren">(</span><em>repr_type</em>, <em>selection='all'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.add_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.add_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add representation.</p>
+<dl class="docutils">
+<dt>repr_type <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>type of representation. Please see:
+<a class="reference external" href="http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations">http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations</a></dd>
+<dt>selection <span class="classifier-delimiter">:</span> <span class="classifier">str or 1D array (atom indices) or any iterator that returns integer, default &#8216;all&#8217;</span></dt>
+<dd>atom selection</dd>
+</dl>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: additional arguments for representation</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="kn">as</span> <span class="nn">pt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">load_dpdp</span><span class="p">()[:]</span><span class="o">.</span><span class="n">superpose</span><span class="p">(</span><span class="s1">&#39;@CA&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pytraj</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="s1">&#39;licorice&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.add_traits">
+<code class="descname">add_traits</code><span class="sig-paren">(</span><em>**traits</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.add_traits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynamically add trait attributes to the Widget.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.background_color">
+<code class="descname">background_color</code><a class="headerlink" href="#nglview.NGLWidget.background_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string holding a valid HTML color such as &#8216;blue&#8217;, &#8216;#060482&#8217;, &#8216;#A80&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.border_color">
+<code class="descname">border_color</code><a class="headerlink" href="#nglview.NGLWidget.border_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string holding a valid HTML color such as &#8216;blue&#8217;, &#8216;#060482&#8217;, &#8216;#A80&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.border_radius">
+<code class="descname">border_radius</code><a class="headerlink" href="#nglview.NGLWidget.border_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>A casting version of the unicode trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.border_style">
+<code class="descname">border_style</code><a class="headerlink" href="#nglview.NGLWidget.border_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enum of strings where the case should be ignored.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.border_width">
+<code class="descname">border_width</code><a class="headerlink" href="#nglview.NGLWidget.border_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>A casting version of the unicode trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.cache">
+<code class="descname">cache</code><a class="headerlink" href="#nglview.NGLWidget.cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean (True, False) trait.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.caching">
+<code class="descname">caching</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.caching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.caching" title="Permalink to this definition">¶</a></dt>
+<dd><p>sending all coordinates to Javascript&#8217;s side. Caching makes trajectory play smoother
+but doubling your memory. If you using cache, you can not update coordinates.
+Use <cite>view.uncaching()</cite> then update your coordinates, then <cite>view.caching()</cite> again.</p>
+<p>This method is experimental and its name can be changed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.camera_str">
+<code class="descname">camera_str</code><a class="headerlink" href="#nglview.NGLWidget.camera_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait for unicode strings.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.center_view">
+<code class="descname">center_view</code><span class="sig-paren">(</span><em>zoom=True</em>, <em>selection='*'</em>, <em>index=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.center_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.center_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>center view</p>
+<p>view.center_view(selection=&#8216;1-4&#8217;)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.class_config_rst_doc">
+<code class="descname">class_config_rst_doc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.class_config_rst_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate rST documentation for this class&#8217; config options.</p>
+<p>Excludes traits defined on parent classes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.class_config_section">
+<code class="descname">class_config_section</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.class_config_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the config class config section</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.class_get_help">
+<code class="descname">class_get_help</code><span class="sig-paren">(</span><em>inst=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.class_get_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the help string for this class in ReST format.</p>
+<p>If <cite>inst</cite> is given, it&#8217;s current trait values will be used in place of
+class defaults.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.class_get_trait_help">
+<code class="descname">class_get_trait_help</code><span class="sig-paren">(</span><em>trait</em>, <em>inst=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.class_get_trait_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the help string for a single trait.</p>
+<p>If <cite>inst</cite> is given, it&#8217;s current trait values will be used in place of
+the class default.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.class_own_traits">
+<code class="descname">class_own_traits</code><span class="sig-paren">(</span><em>**metadata</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.class_own_traits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dict of all the traitlets defined on this class, not a parent.</p>
+<p>Works like <cite>class_traits</cite>, except for excluding traits from parents.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.class_print_help">
+<code class="descname">class_print_help</code><span class="sig-paren">(</span><em>inst=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.class_print_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the help string for a single trait and print it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.class_trait_names">
+<code class="descname">class_trait_names</code><span class="sig-paren">(</span><em>**metadata</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.class_trait_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of all the names of this class&#8217; traits.</p>
+<p>This method is just like the <a class="reference internal" href="#nglview.NGLWidget.trait_names" title="nglview.NGLWidget.trait_names"><code class="xref py py-meth docutils literal"><span class="pre">trait_names()</span></code></a> method,
+but is unbound.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.class_traits">
+<code class="descname">class_traits</code><span class="sig-paren">(</span><em>**metadata</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.class_traits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <code class="docutils literal"><span class="pre">dict</span></code> of all the traits of this class.  The dictionary
+is keyed on the name and the values are the TraitType objects.</p>
+<p>This method is just like the <a class="reference internal" href="#nglview.NGLWidget.traits" title="nglview.NGLWidget.traits"><code class="xref py py-meth docutils literal"><span class="pre">traits()</span></code></a> method, but is unbound.</p>
+<p>The TraitTypes returned don&#8217;t know anything about the values
+that the various HasTrait&#8217;s instances are holding.</p>
+<p>The metadata kwargs allow functions to be passed in which
+filter traits based on metadata values.  The functions should
+take a single value as an argument and return a boolean.  If
+any function returns False, then the trait is not included in
+the output.  If a metadata key doesn&#8217;t exist, None will be passed
+to the function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close method.</p>
+<p>Closes the underlying comm.
+When the comm is closed, all of the widget views are automatically
+removed from the front-end.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.color">
+<code class="descname">color</code><a class="headerlink" href="#nglview.NGLWidget.color" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string holding a valid HTML color such as &#8216;blue&#8217;, &#8216;#060482&#8217;, &#8216;#A80&#8217;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.comm">
+<code class="descname">comm</code><a class="headerlink" href="#nglview.NGLWidget.comm" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait whose value must be an instance of a specified class.</p>
+<p>The value can also be an instance of a subclass of the specified class.</p>
+<p>Subclasses can declare default classes by overriding the klass attribute</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.config">
+<code class="descname">config</code><a class="headerlink" href="#nglview.NGLWidget.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait whose value must be an instance of a specified class.</p>
+<p>The value can also be an instance of a subclass of the specified class.</p>
+<p>Subclasses can declare default classes by overriding the klass attribute</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.coordinates">
+<code class="descname">coordinates</code><a class="headerlink" href="#nglview.NGLWidget.coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.coordinates_dict">
+<code class="descname">coordinates_dict</code><a class="headerlink" href="#nglview.NGLWidget.coordinates_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of a Python dict.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.count">
+<code class="descname">count</code><a class="headerlink" href="#nglview.NGLWidget.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>An int trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.cross_validation_lock">
+<code class="descname">cross_validation_lock</code><a class="headerlink" href="#nglview.NGLWidget.cross_validation_lock" title="Permalink to this definition">¶</a></dt>
+<dd><p>A contextmanager for running a block with our cross validation lock set
+to True.</p>
+<p>At the end of the block, the lock&#8217;s value is restored to its value
+prior to entering the block.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.displayed">
+<code class="descname">displayed</code><em class="property"> = False</em><a class="headerlink" href="#nglview.NGLWidget.displayed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.export_image">
+<code class="descname">export_image</code><span class="sig-paren">(</span><em>factor=2</em>, <em>antialias=True</em>, <em>trim=False</em>, <em>transparent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.export_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.export_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>render and download scence at current frame</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.font_family">
+<code class="descname">font_family</code><a class="headerlink" href="#nglview.NGLWidget.font_family" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait for unicode strings.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.font_size">
+<code class="descname">font_size</code><a class="headerlink" href="#nglview.NGLWidget.font_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>A casting version of the unicode trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.font_style">
+<code class="descname">font_style</code><a class="headerlink" href="#nglview.NGLWidget.font_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enum of strings where the case should be ignored.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.font_weight">
+<code class="descname">font_weight</code><a class="headerlink" href="#nglview.NGLWidget.font_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enum of strings where the case should be ignored.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.frame">
+<code class="descname">frame</code><a class="headerlink" href="#nglview.NGLWidget.frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>An int trait.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.get_state">
+<code class="descname">get_state</code><span class="sig-paren">(</span><em>key=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.get_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the widget state, or a piece of it.</p>
+<dl class="docutils">
+<dt>key <span class="classifier-delimiter">:</span> <span class="classifier">unicode or iterable (optional)</span></dt>
+<dd>A single property&#8217;s name or iterable of property names to get.</dd>
+</dl>
+<p>state : dict of states
+metadata : dict</p>
+<blockquote>
+<div>metadata for each field: {key: metadata}</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.handle_comm_opened">
+<code class="descname">handle_comm_opened</code><span class="sig-paren">(</span><em>comm</em>, <em>msg</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.handle_comm_opened" title="Permalink to this definition">¶</a></dt>
+<dd><p>Static method, called when a widget is constructed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.has_trait">
+<code class="descname">has_trait</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.has_trait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the object has a trait with the specified name.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.height">
+<code class="descname">height</code><a class="headerlink" href="#nglview.NGLWidget.height" title="Permalink to this definition">¶</a></dt>
+<dd><p>A casting version of the unicode trait.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.hold_sync">
+<code class="descname">hold_sync</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.hold_sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hold syncing any state until the outermost context manager exits</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.hold_trait_notifications">
+<code class="descname">hold_trait_notifications</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.hold_trait_notifications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager for bundling trait change notifications and cross
+validation.</p>
+<p>Use this when doing multiple trait assignments (init, config), to avoid
+race conditions in trait notifiers requesting other trait values.
+All trait notifications will fire after all values have been assigned.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.keys">
+<code class="descname">keys</code><a class="headerlink" href="#nglview.NGLWidget.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of a Python list.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.loaded">
+<code class="descname">loaded</code><a class="headerlink" href="#nglview.NGLWidget.loaded" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean (True, False) trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.log">
+<code class="descname">log</code><a class="headerlink" href="#nglview.NGLWidget.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait whose value must be an instance of a specified class.</p>
+<p>The value can also be an instance of a subclass of the specified class.</p>
+<p>Subclasses can declare default classes by overriding the klass attribute</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.margin">
+<code class="descname">margin</code><a class="headerlink" href="#nglview.NGLWidget.margin" title="Permalink to this definition">¶</a></dt>
+<dd><p>A casting version of the unicode trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.model_id">
+<code class="descname">model_id</code><a class="headerlink" href="#nglview.NGLWidget.model_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the model id of this widget.</p>
+<p>If a Comm doesn&#8217;t exist yet, a Comm will be created automagically.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.msg_throttle">
+<code class="descname">msg_throttle</code><a class="headerlink" href="#nglview.NGLWidget.msg_throttle" title="Permalink to this definition">¶</a></dt>
+<dd><p>An int trait.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.notify_change">
+<code class="descname">notify_change</code><span class="sig-paren">(</span><em>change</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.notify_change" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.observe">
+<code class="descname">observe</code><span class="sig-paren">(</span><em>handler</em>, <em>names=traitlets.All</em>, <em>type='change'</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.observe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup a handler to be called when a trait changes.</p>
+<p>This is used to setup dynamic notifications of trait changes.</p>
+<dl class="docutils">
+<dt>handler <span class="classifier-delimiter">:</span> <span class="classifier">callable</span></dt>
+<dd>A callable that is called when a trait changes. Its
+signature should be <code class="docutils literal"><span class="pre">handler(change)</span></code>, where <code class="docutils literal"><span class="pre">change```is</span> <span class="pre">a</span>
+<span class="pre">dictionary.</span> <span class="pre">The</span> <span class="pre">change</span> <span class="pre">dictionary</span> <span class="pre">at</span> <span class="pre">least</span> <span class="pre">holds</span> <span class="pre">a</span> <span class="pre">'type'</span> <span class="pre">key.</span>
+<span class="pre">*</span> <span class="pre">``type</span></code>: the type of notification.
+Other keys may be passed depending on the value of &#8216;type&#8217;. In the
+case where type is &#8216;change&#8217;, we also have the following keys:
+* <code class="docutils literal"><span class="pre">owner</span></code> : the HasTraits instance
+* <code class="docutils literal"><span class="pre">old</span></code> : the old value of the modified trait attribute
+* <code class="docutils literal"><span class="pre">new</span></code> : the new value of the modified trait attribute
+* <code class="docutils literal"><span class="pre">name</span></code> : the name of the modified trait attribute.</dd>
+<dt>names <span class="classifier-delimiter">:</span> <span class="classifier">list, str, All</span></dt>
+<dd>If names is All, the handler will apply to all traits.  If a list
+of str, handler will apply to all names in the list.  If a
+str, the handler will apply just to that name.</dd>
+<dt>type <span class="classifier-delimiter">:</span> <span class="classifier">str, All (default: &#8216;change&#8217;)</span></dt>
+<dd>The type of notification to filter by. If equal to All, then all
+notifications are passed to the observe handler.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.on_displayed">
+<code class="descname">on_displayed</code><span class="sig-paren">(</span><em>callback</em>, <em>remove=False</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.on_displayed" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Un)Register a widget displayed callback.</p>
+<dl class="docutils">
+<dt>callback: method handler</dt>
+<dd><p class="first">Must have a signature of:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">callback</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="last">kwargs from display are passed through without modification.</p>
+</dd>
+<dt>remove: bool</dt>
+<dd>True if the callback should be unregistered.</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.on_frame">
+<code class="descname">on_frame</code><a class="headerlink" href="#nglview.NGLWidget.on_frame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.on_loaded">
+<code class="descname">on_loaded</code><a class="headerlink" href="#nglview.NGLWidget.on_loaded" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.on_msg">
+<code class="descname">on_msg</code><span class="sig-paren">(</span><em>callback</em>, <em>remove=False</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.on_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Un)Register a custom msg receive callback.</p>
+<dl class="docutils">
+<dt>callback: callable</dt>
+<dd><p class="first">callback will be passed three arguments when a message arrives:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span></span><span class="n">callback</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">buffers</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>remove: bool</dt>
+<dd>True if the callback should be unregistered.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.on_trait_change">
+<code class="descname">on_trait_change</code><span class="sig-paren">(</span><em>handler=None</em>, <em>name=None</em>, <em>remove=False</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.on_trait_change" title="Permalink to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Setup a handler to be called when a trait changes.</p>
+<p>This is used to setup dynamic notifications of trait changes.</p>
+<p>Static handlers can be created by creating methods on a HasTraits
+subclass with the naming convention &#8216;_[traitname]_changed&#8217;.  Thus,
+to create static handler for the trait &#8216;a&#8217;, create the method
+_a_changed(self, name, old, new) (fewer arguments can be used, see
+below).</p>
+<p>If <cite>remove</cite> is True and <cite>handler</cite> is not specified, all change
+handlers for the specified name are uninstalled.</p>
+<dl class="docutils">
+<dt>handler <span class="classifier-delimiter">:</span> <span class="classifier">callable, None</span></dt>
+<dd>A callable that is called when a trait changes.  Its
+signature can be handler(), handler(name), handler(name, new),
+handler(name, old, new), or handler(name, old, new, self).</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">list, str, None</span></dt>
+<dd>If None, the handler will apply to all traits.  If a list
+of str, handler will apply to all names in the list.  If a
+str, the handler will apply just to that name.</dd>
+<dt>remove <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If False (the default), then install the handler.  If True
+then unintall it.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.on_widget_constructed">
+<code class="descname">on_widget_constructed</code><span class="sig-paren">(</span><em>callback</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.on_widget_constructed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers a callback to be called when a widget is constructed.</p>
+<p>The callback must have the following signature:
+callback(widget)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.open">
+<code class="descname">open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open a comm to the frontend if one isn&#8217;t already open.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.orientation">
+<code class="descname">orientation</code><a class="headerlink" href="#nglview.NGLWidget.orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of a Python list.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.padding">
+<code class="descname">padding</code><a class="headerlink" href="#nglview.NGLWidget.padding" title="Permalink to this definition">¶</a></dt>
+<dd><p>A casting version of the unicode trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.parameters">
+<code class="descname">parameters</code><a class="headerlink" href="#nglview.NGLWidget.parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of a Python dict.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.parent">
+<code class="descname">parent</code><a class="headerlink" href="#nglview.NGLWidget.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait whose value must be an instance of a specified class.</p>
+<p>The value can also be an instance of a subclass of the specified class.</p>
+<p>Subclasses can declare default classes by overriding the klass attribute</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.picked">
+<code class="descname">picked</code><a class="headerlink" href="#nglview.NGLWidget.picked" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of a Python dict.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.representations">
+<code class="descname">representations</code><a class="headerlink" href="#nglview.NGLWidget.representations" title="Permalink to this definition">¶</a></dt>
+<dd><p>return list of dict</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.section_names">
+<code class="descname">section_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.section_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>return section names as a list</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.selection">
+<code class="descname">selection</code><a class="headerlink" href="#nglview.NGLWidget.selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait for unicode strings.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.send">
+<code class="descname">send</code><span class="sig-paren">(</span><em>content</em>, <em>buffers=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a custom msg to the widget model in the front-end.</p>
+<dl class="docutils">
+<dt>content <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>Content of the message to send.</dd>
+<dt>buffers <span class="classifier-delimiter">:</span> <span class="classifier">list of binary buffers</span></dt>
+<dd>Binary buffers to send with message</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.send_state">
+<code class="descname">send_state</code><span class="sig-paren">(</span><em>key=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.send_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends the widget state, or a piece of it, to the front-end.</p>
+<dl class="docutils">
+<dt>key <span class="classifier-delimiter">:</span> <span class="classifier">unicode, or iterable (optional)</span></dt>
+<dd>A single property&#8217;s name or iterable of property names to sync with the front-end.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.set_representations">
+<code class="descname">set_representations</code><span class="sig-paren">(</span><em>representations</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.set_representations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.set_representations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.set_state">
+<code class="descname">set_state</code><span class="sig-paren">(</span><em>sync_data</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.set_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when a state is received from the front-end.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.set_structure">
+<code class="descname">set_structure</code><span class="sig-paren">(</span><em>structure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.set_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.set_structure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.set_trait">
+<code class="descname">set_trait</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.set_trait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forcibly sets trait attribute, including read-only attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.setup_instance">
+<code class="descname">setup_instance</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.setup_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.structure">
+<code class="descname">structure</code><a class="headerlink" href="#nglview.NGLWidget.structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of a Python dict.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.trait_metadata">
+<code class="descname">trait_metadata</code><span class="sig-paren">(</span><em>traitname</em>, <em>key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.trait_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get metadata values for trait by key.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.trait_names">
+<code class="descname">trait_names</code><span class="sig-paren">(</span><em>**metadata</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.trait_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of all the names of this class&#8217; traits.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.traits">
+<code class="descname">traits</code><span class="sig-paren">(</span><em>**metadata</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.traits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <code class="docutils literal"><span class="pre">dict</span></code> of all the traits of this class.  The dictionary
+is keyed on the name and the values are the TraitType objects.</p>
+<p>The TraitTypes returned don&#8217;t know anything about the values
+that the various HasTrait&#8217;s instances are holding.</p>
+<p>The metadata kwargs allow functions to be passed in which
+filter traits based on metadata values.  The functions should
+take a single value as an argument and return a boolean.  If
+any function returns False, then the trait is not included in
+the output.  If a metadata key doesn&#8217;t exist, None will be passed
+to the function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.uncaching">
+<code class="descname">uncaching</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.uncaching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.uncaching" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.unobserve">
+<code class="descname">unobserve</code><span class="sig-paren">(</span><em>handler</em>, <em>names=traitlets.All</em>, <em>type='change'</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.unobserve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a trait change handler.</p>
+<p>This is used to unregister handlers to trait change notificiations.</p>
+<dl class="docutils">
+<dt>handler <span class="classifier-delimiter">:</span> <span class="classifier">callable</span></dt>
+<dd>The callable called when a trait attribute changes.</dd>
+<dt>names <span class="classifier-delimiter">:</span> <span class="classifier">list, str, All (default: All)</span></dt>
+<dd>The names of the traits for which the specified handler should be
+uninstalled. If names is All, the specified handler is uninstalled
+from the list of notifiers corresponding to all changes.</dd>
+<dt>type <span class="classifier-delimiter">:</span> <span class="classifier">str or All (default: &#8216;change&#8217;)</span></dt>
+<dd>The type of notification to filter by. If All, the specified handler
+is uninstalled from the list of notifiers corresponding to all types.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.unobserve_all">
+<code class="descname">unobserve_all</code><span class="sig-paren">(</span><em>name=traitlets.All</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.unobserve_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove trait change handlers of any type for the specified name.
+If name is not specified, removes all trait notifiers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.update_config">
+<code class="descname">update_config</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="headerlink" href="#nglview.NGLWidget.update_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update config and load the new values</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.version">
+<code class="descname">version</code><a class="headerlink" href="#nglview.NGLWidget.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>An int trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.visible">
+<code class="descname">visible</code><a class="headerlink" href="#nglview.NGLWidget.visible" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean (True, False) trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.widget_types">
+<code class="descname">widget_types</code><em class="property"> = {'IPython.BoundedIntText': &lt;class 'ipywidgets.widgets.widget_int.BoundedIntText'&gt;, 'IPython.IntRangeSlider': &lt;class 'ipywidgets.widgets.widget_int.IntRangeSlider'&gt;, 'IPython.Latex': &lt;class 'ipywidgets.widgets.widget_string.Latex'&gt;, 'IPython.Button': &lt;class 'ipywidgets.widgets.widget_button.Button'&gt;, 'IPython.Controller': &lt;class 'ipywidgets.widgets.widget_controller.Controller'&gt;, 'IPython.FloatText': &lt;class 'ipywidgets.widgets.widget_float.FloatText'&gt;, 'IPython.Proxy': &lt;class 'ipywidgets.widgets.widget_box.Proxy'&gt;, 'IPython.Accordion': &lt;class 'ipywidgets.widgets.widget_selectioncontainer.Accordion'&gt;, 'IPython.Text': &lt;class 'ipywidgets.widgets.widget_string.Text'&gt;, 'IPython.Box': &lt;class 'ipywidgets.widgets.widget_box.Box'&gt;, 'IPython.Image': &lt;class 'ipywidgets.widgets.widget_image.Image'&gt;, 'IPython.ColorPicker': &lt;class 'ipywidgets.widgets.widget_color.ColorPicker'&gt;, 'IPython.HTML': &lt;class 'ipywidgets.widgets.widget_string.HTML'&gt;, 'IPython.SelectMultiple': &lt;class 'ipywidgets.widgets.widget_selection.SelectMultiple'&gt;, 'IPython.PlaceProxy': &lt;class 'ipywidgets.widgets.widget_box.PlaceProxy'&gt;, 'IPython.IntSlider': &lt;class 'ipywidgets.widgets.widget_int.IntSlider'&gt;, 'IPython.ControllerAxis': &lt;class 'ipywidgets.widgets.widget_controller.Axis'&gt;, 'IPython.Tab': &lt;class 'ipywidgets.widgets.widget_selectioncontainer.Tab'&gt;, 'IPython.Textarea': &lt;class 'ipywidgets.widgets.widget_string.Textarea'&gt;, 'IPython.FloatRangeSlider': &lt;class 'ipywidgets.widgets.widget_float.FloatRangeSlider'&gt;, 'IPython.ToggleButtons': &lt;class 'ipywidgets.widgets.widget_selection.ToggleButtons'&gt;, 'IPython.FloatProgress': &lt;class 'ipywidgets.widgets.widget_float.FloatProgress'&gt;, 'IPython.Select': &lt;class 'ipywidgets.widgets.widget_selection.Select'&gt;, 'IPython.ToggleButton': &lt;class 'ipywidgets.widgets.widget_bool.ToggleButton'&gt;, 'IPython.IntProgress': &lt;class 'ipywidgets.widgets.widget_int.IntProgress'&gt;, 'IPython.BoundedFloatText': &lt;class 'ipywidgets.widgets.widget_float.BoundedFloatText'&gt;, 'IPython.FloatSlider': &lt;class 'ipywidgets.widgets.widget_float.FloatSlider'&gt;, 'IPython.Valid': &lt;class 'ipywidgets.widgets.widget_bool.Valid'&gt;, 'IPython.FlexBox': &lt;class 'ipywidgets.widgets.widget_box.FlexBox'&gt;, 'IPython.ControllerButton': &lt;class 'ipywidgets.widgets.widget_controller.Button'&gt;, 'IPython.RadioButtons': &lt;class 'ipywidgets.widgets.widget_selection.RadioButtons'&gt;, 'IPython.Checkbox': &lt;class 'ipywidgets.widgets.widget_bool.Checkbox'&gt;, 'IPython.Dropdown': &lt;class 'ipywidgets.widgets.widget_selection.Dropdown'&gt;, 'IPython.IntText': &lt;class 'ipywidgets.widgets.widget_int.IntText'&gt;}</em><a class="headerlink" href="#nglview.NGLWidget.widget_types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.widgets">
+<code class="descname">widgets</code><em class="property"> = {}</em><a class="headerlink" href="#nglview.NGLWidget.widgets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.width">
+<code class="descname">width</code><a class="headerlink" href="#nglview.NGLWidget.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>A casting version of the unicode trait.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nglview.ParmEdTrajectory">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">ParmEdTrajectory</code><span class="sig-paren">(</span><em>trajectory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#ParmEdTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ParmEdTrajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<p>ParmEd adaptor.</p>
+<dl class="method">
+<dt id="nglview.ParmEdTrajectory.get_coordinates">
+<code class="descname">get_coordinates</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#ParmEdTrajectory.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ParmEdTrajectory.get_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.ParmEdTrajectory.get_coordinates_dict">
+<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#ParmEdTrajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ParmEdTrajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.ParmEdTrajectory.get_structure_string">
+<code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#ParmEdTrajectory.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ParmEdTrajectory.get_structure_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.ParmEdTrajectory.n_frames">
+<code class="descname">n_frames</code><a class="headerlink" href="#nglview.ParmEdTrajectory.n_frames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nglview.PdbIdStructure">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">PdbIdStructure</code><span class="sig-paren">(</span><em>pdbid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#PdbIdStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PdbIdStructure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dl class="method">
+<dt id="nglview.PdbIdStructure.get_structure_string">
+<code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#PdbIdStructure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PdbIdStructure.get_structure_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nglview.PyTrajTrajectory">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">PyTrajTrajectory</code><span class="sig-paren">(</span><em>trajectory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#PyTrajTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PyTrajTrajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<p>PyTraj adaptor.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="kn">as</span> <span class="nn">pt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">traj</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">TRR</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">PyTrajTrajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="nglview.PyTrajTrajectory.get_coordinates">
+<code class="descname">get_coordinates</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#PyTrajTrajectory.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PyTrajTrajectory.get_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.PyTrajTrajectory.get_coordinates_dict">
+<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#PyTrajTrajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PyTrajTrajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.PyTrajTrajectory.get_structure_string">
+<code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#PyTrajTrajectory.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PyTrajTrajectory.get_structure_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.PyTrajTrajectory.n_frames">
+<code class="descname">n_frames</code><a class="headerlink" href="#nglview.PyTrajTrajectory.n_frames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nglview.SimpletrajTrajectory">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">SimpletrajTrajectory</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#SimpletrajTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.SimpletrajTrajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a></p>
+<p>simpletraj adaptor.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">FileStructure</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;gro&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">SimpletrajTrajectory</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="nglview.SimpletrajTrajectory.get_coordinates">
+<code class="descname">get_coordinates</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#SimpletrajTrajectory.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.SimpletrajTrajectory.get_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.SimpletrajTrajectory.get_coordinates_dict">
+<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nglview.SimpletrajTrajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.SimpletrajTrajectory.n_frames">
+<code class="descname">n_frames</code><a class="headerlink" href="#nglview.SimpletrajTrajectory.n_frames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nglview.Structure">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">Structure</code><a class="reference internal" href="_modules/nglview.html#Structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="nglview.Structure.get_structure_string">
+<code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Structure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Structure.get_structure_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nglview.Trajectory">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">Trajectory</code><a class="reference internal" href="_modules/nglview.html#Trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="nglview.Trajectory.get_coordinates">
+<code class="descname">get_coordinates</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Trajectory.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Trajectory.get_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nglview.Trajectory.get_coordinates_dict">
+<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Trajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Trajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.Trajectory.n_frames">
+<code class="descname">n_frames</code><a class="headerlink" href="#nglview.Trajectory.n_frames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="nglview.decode_base64">
+<code class="descclassname">nglview.</code><code class="descname">decode_base64</code><span class="sig-paren">(</span><em>data</em>, <em>shape</em>, <em>dtype='f4'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#decode_base64"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.decode_base64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nglview.encode_numpy">
+<code class="descclassname">nglview.</code><code class="descname">encode_numpy</code><span class="sig-paren">(</span><em>arr</em>, <em>dtype='f4'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#encode_numpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.encode_numpy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nglview.install">
+<code class="descclassname">nglview.</code><code class="descname">install</code><span class="sig-paren">(</span><em>user=True</em>, <em>symlink=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.install" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install the widget nbextension.</p>
+<dl class="docutils">
+<dt>user: bool</dt>
+<dd>Install for current user instead of system-wide.</dd>
+<dt>symlink: bool</dt>
+<dd>Symlink instead of copy (for development).</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="nglview.show_mdanalysis">
+<code class="descclassname">nglview.</code><code class="descname">show_mdanalysis</code><span class="sig-paren">(</span><em>atomgroup</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#show_mdanalysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_mdanalysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show NGL widget with MDAnalysis AtomGroup.</p>
+<p>Can take either a Universe or AtomGroup as its data input.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="kn">as</span> <span class="nn">mda</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prot</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s1">&#39;protein&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_mdanalysis</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nglview.show_mdtraj">
+<code class="descclassname">nglview.</code><code class="descname">show_mdtraj</code><span class="sig-paren">(</span><em>mdtraj_trajectory</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#show_mdtraj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_mdtraj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show mdtraj trajectory.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mdtraj</span> <span class="kn">as</span> <span class="nn">md</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_mdtraj</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nglview.show_parmed">
+<code class="descclassname">nglview.</code><code class="descname">show_parmed</code><span class="sig-paren">(</span><em>parmed_structure</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#show_parmed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_parmed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show pytraj trajectory.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">parmed</span> <span class="kn">as</span> <span class="nn">pmd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_parmed</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nglview.show_pdbid">
+<code class="descclassname">nglview.</code><code class="descname">show_pdbid</code><span class="sig-paren">(</span><em>pdbid</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#show_pdbid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_pdbid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show PDB entry.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pdbid</span><span class="p">(</span><span class="s2">&quot;3pqr&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nglview.show_pytraj">
+<code class="descclassname">nglview.</code><code class="descname">show_pytraj</code><span class="sig-paren">(</span><em>pytraj_trajectory</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#show_pytraj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_pytraj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show pytraj trajectory.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="kn">as</span> <span class="nn">pt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">TRR</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pytraj</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nglview.show_simpletraj">
+<code class="descclassname">nglview.</code><code class="descname">show_simpletraj</code><span class="sig-paren">(</span><em>structure_path</em>, <em>trajectory_path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#show_simpletraj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_simpletraj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show simpletraj trajectory and structure file.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_simpletraj</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="nglview.show_structure_file">
+<code class="descclassname">nglview.</code><code class="descname">show_structure_file</code><span class="sig-paren">(</span><em>path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#show_structure_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_structure_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show structure file. Allowed are text-based structure
+file formats that are by supported by NGL, including pdb,
+gro, mol2, sdf.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_structure_file</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+</ul>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
