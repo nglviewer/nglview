@@ -68,10 +68,6 @@ define( [
                 this.model.on( "change:structure_list", this.structureChanged, this );
 
                 // init setting of coordinates
-                // turn off, use "base64_single" msg
-                // this.model.on( "change:_coordinate_dict_list", this.coordinatesChanged, this );
-
-                // init setting of coordinates
                 this.model.on( "change:coordinates_dict", this.coordsDictListChanged, this );
 
                 // init setting of frame
@@ -304,21 +300,9 @@ define( [
                     } // else: just wait
                 }
             }
-            // else: listen to coordinatesChanged
+            // else: listen to base64_single message
         },
 
-
-        coordinatesChanged: function(){
-            console.log(" change coords ");
-            if (! this._cache ){
-                var coordinates_meta = this.model.get( "_coordinate_dict_list" );
-                console.log( coordinates_meta );
-
-                // not checking dtype yet
-                var coordinates = this.mydecode( coordinates_meta['data'] );
-                this._update_coords(coordinates);
-            }
-        },
 
         _update_coords: function( coordinates, model ) {
             // coordinates must be ArrayBuffer (use this.mydecode)
