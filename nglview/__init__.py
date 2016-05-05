@@ -15,6 +15,8 @@ from IPython.display import display, Javascript
 from notebook.nbextensions import install_nbextension
 from notebook.services.config import ConfigManager
 
+import numpy as np
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     from pkg_resources import resource_filename
@@ -113,8 +115,10 @@ def show_pytraj(pytraj_trajectory, **kwargs):
     >>> w = nv.show_pytraj(t)
     >>> w
     '''
-    structure_trajectory = PyTrajTrajectory(pytraj_trajectory)
-    return NGLWidget(structure_trajectory, **kwargs)
+    trajlist = pytraj_trajectory if isinstance(pytraj_trajectory, (list, tuple)) else [pytraj_trajectory,]
+
+    trajlist = [PyTrajTrajectory(traj) for traj in trajlist]
+    return NGLWidget(trajlist, **kwargs)
 
 
 def show_parmed(parmed_structure, **kwargs):
@@ -260,11 +264,11 @@ class MDTrajTrajectory(Trajectory, Structure):
         self.params = {}
 
     def get_coordinates_dict(self):
-        return dict((index, encode_numpy(xyz))
+        return dict((index, encode_numpy(xyz*10))
                     for index, xyz in enumerate(self.trajectory.xyz))
 
     def get_coordinates(self, index):
-        return self.trajectory.xyz[index]
+        return 10*self.trajectory.xyz[index]
 
     @property
     def n_frames(self):
@@ -416,16 +420,16 @@ class NGLWidget(widgets.DOMWidget):
     frame = Int().tag(sync=True)
     count = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
-    structure = Dict().tag(sync=True)
+    structure_list = List().tag(sync=True)
     parameters = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
+    _coordinate_dict2 = Dict().tag(sync=False)
+    camera_str = Unicode().tag(sync=True)
+    orientation = List().tag(sync=True)
 
-    # 
     displayed = False
-
     _ngl_msg = None
-    _coordinates_meta = Dict().tag(sync=False)
 
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
@@ -434,16 +438,20 @@ class NGLWidget(widgets.DOMWidget):
         except KeyError:
             self.cache = False
         super(NGLWidget, self).__init__(**kwargs)
+        self.trajlist = []
+
         if parameters:
             self.parameters = parameters
         self.set_structure(structure)
         if trajectory:
             self.trajectory = trajectory
         elif hasattr(structure, "get_coordinates_dict"):
-            self.trajectory = structure
-        if hasattr(self, "trajectory") and \
-                hasattr(self.trajectory, "n_frames"):
-            self.count = self.trajectory.n_frames
+            self.trajlist = [structure,]
+        elif isinstance(structure, (list, tuple)):
+            self.trajlist = structure
+        if self.trajlist:
+            self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
+            'n_frames'))
 
         # use _init_representations so we can view representations right after view is made.
         # self.representations is only have effect if we already call `view`
@@ -483,26 +491,30 @@ class NGLWidget(widgets.DOMWidget):
         if self.cache:
             return
         else:
-            data = self._coordinates_meta['data']
-            dtype = self._coordinates_meta['dtype']
-            shape = self._coordinates_meta['shape']
-            return decode_base64(data, dtype=dtype, shape=shape)
+            clist = []
+            for index, traj in enumerate(self.trajlist):
+                data = self._coordinate_dict2[index]['data']
+                dtype = self._coordinate_dict2[index]['dtype']
+                shape = self._coordinate_dict2[index]['shape']
+                clist.append(decode_base64(data, dtype=dtype, shape=shape))
+            return clist
 
     @coordinates.setter
-    def coordinates(self, arr):
+    def coordinates(self, arrlist):
         """return current coordinate
 
         Parameters
         ----------
-        arr : 2D array, shape=(n_atoms, 3)
+        arr : list of 2D array (shape=(n_atoms, 3))
         """
         dtype = 'f4'
-        coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
-                                dtype=dtype,
-                                shape=arr.shape)
-        # seems faster than using traitlets
-        self._coordinates_meta = coordinates_meta
-        self.send({'type': 'base64_single', 'data': coordinates_meta})
+
+        for index, arr in enumerate(arrlist): 
+            coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
+                                    dtype=dtype,
+                                    shape=arr.shape)
+            self._coordinate_dict2[index] = coordinates_meta
+        self.send({'type': 'base64_single', 'data': self._coordinate_dict2})
 
     @property
     def representations(self):
@@ -519,24 +531,22 @@ class NGLWidget(widgets.DOMWidget):
         params_list : list of dict
         '''
 
-        if self.representations is params_list:
-            raise ValueError("do not add your self to avoid circular update")
+        if params_list is not self.representations:
+            assert isinstance(params_list, list), 'must provide list of dict'
 
-        assert isinstance(params_list, list), 'must provide list of dict'
-
-        if len(params_list) == 0:
-            # clearn
-            self._representations = []
-            self._remote_call('clearRepresentations',
-                              target='StructureComponent')
-        else:
-            for params in params_list:
-                assert isinstance(params, dict), 'params must be a dict'
-                self._representations.append(params)
-                self._remote_call('addRepresentation',
-                                  target='StructureComponent',
-                                  args=[params['type'],],
-                                  kwargs=params['params'])
+            if not params_list:
+                for index in range(10):
+                    self._clear_repr(model=index)
+            else:
+                for index, params in enumerate(params_list):
+                    assert isinstance(params, dict), 'params must be a dict'
+                    kwargs = params['params']
+                    kwargs.update({'component_index': index})
+                    self._representations.append(params)
+                    self._remote_call('addRepresentation',
+                                      target='compList',
+                                      args=[params['type'],],
+                                      kwargs=kwargs)
 
 
     def _add_repr_method_shortcut(self):
@@ -584,15 +594,18 @@ class NGLWidget(widgets.DOMWidget):
 
         This method is experimental and its name can be changed.
         """
-        if hasattr(self.trajectory, "get_coordinates_dict"):
+        if self.trajlist:
             # do not use traitlets to sync. slow.
             self.cache = True
+            import json
+            data = json.dumps([trajectory.get_coordinates_dict() for trajectory in
+                self.trajlist])
             msg = dict(type='base64',
                        cache=self.cache,
-                       data=self.trajectory.get_coordinates_dict())
+                       data=data)
             self.send(msg)
         else:
-            print('warning: does not have get_coordinates_dict method, turn off cache') 
+            print('does not have trajlist. skip caching') 
             self.cache = False
 
     def uncaching(self):
@@ -601,31 +614,34 @@ class NGLWidget(widgets.DOMWidget):
     def set_representations(self, representations):
         self.representations = representations
 
-    def set_structure(self, structure):
-        self.structure = {
-            "data": structure.get_structure_string(),
-            "ext": structure.ext,
-            "params": structure.params
-        }
+    def set_structure(self, structures):
+        structure_list = structures if isinstance(structures, (list, tuple)) else [structures,]
+        self.structure_list = [{"data": _structure.get_structure_string(),
+                           "ext": _structure.ext,
+                           "params": _structure.params
+                           } for _structure in structure_list]
 
     def _set_coordinates(self, index):
-        if self.trajectory and not self.cache:
-            coordinates = self.trajectory.get_coordinates(index)
-            self.coordinates = coordinates
+        if self.trajlist and not self.cache:
+            coordinate_list = []
+            for trajectory in self.trajlist:
+                try:
+                    coordinate_list.append(trajectory.get_coordinates(index))
+                except IndexError:
+                    coordinate_list.append(np.empty((0), dtype='f4'))
+            self.coordinates = coordinate_list
         else:
             print("no trajectory available")
 
-    def _frame_changed(self):
+    @observe('frame')
+    def on_frame(self, change):
         if not self.cache:
             self._set_coordinates(self.frame)
 
-    def _clear_repr(self, index=0):
-        if index == 0:
-            self.representations = []
-        else:
-            self._remote_call("clearRepresentations",
-                    target='compList',
-                    kwargs={'component_index': index})
+    def _clear_repr(self, model=0):
+        self._remote_call("clearRepresentations",
+                target='compList',
+                kwargs={'component_index': model})
 
     def add_representation(self, repr_type, selection='all', **kwargs):
         '''Add representation.
@@ -654,10 +670,10 @@ class NGLWidget(widgets.DOMWidget):
         # overwrite selection
         selection = seq_to_string(selection).strip()
 
-        if 'index' in kwargs:
-            index = kwargs.pop('index')
+        if 'model' in kwargs:
+            model = kwargs.pop('model')
         else:
-            index = 0
+            model = 0
 
         for k, v in kwargs.items():
             try:
@@ -670,23 +686,15 @@ class NGLWidget(widgets.DOMWidget):
         d['type'] = repr_type
         d['params'].update(kwargs)
 
-        if index == 0:
-            self._representations.append(d)
-            self._remote_call('addRepresentation',
-                              target='StructureComponent',
-                              args=[d['type'],],
-                              kwargs=d['params'])
-        else:
-            # do not keep track representations of >= 2nd
-            params = d['params']
-            params.update({'component_index': index})
-            self._remote_call('addRepresentation',
-                              target='compList',
-                              args=[d['type'],],
-                              kwargs=params)
+        params = d['params']
+        params.update({'component_index': model})
+        self._remote_call('addRepresentation',
+                          target='compList',
+                          args=[d['type'],],
+                          kwargs=params)
 
 
-    def center_view(self, zoom=True, selection='*', index=0):
+    def center_view(self, zoom=True, selection='*', model=0):
         """center view
 
         Examples
@@ -695,7 +703,7 @@ class NGLWidget(widgets.DOMWidget):
         """
         self._remote_call('centerView', target='compList',
                           args=[zoom, selection],
-                          kwargs={'component_index': index})
+                          kwargs={'component_index': model})
 
     def export_image(self, factor=2,
                      antialias=True,
@@ -746,10 +754,10 @@ class NGLWidget(widgets.DOMWidget):
                 args=args,
                 kwargs=kwargs)
 
-    def _remove_component(self, index):
+    def _remove_component(self, model):
         self._remote_call('removeComponent',
                 target='Stage',
-                args=[index,])
+                args=[model,])
         
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
