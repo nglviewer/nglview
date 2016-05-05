@@ -65,14 +65,13 @@ define( [
                 this.model.on( "change:_init_representations", this.representationsChanged, this );
 
                 // init structure loading
-                this.model.on( "change:structure", this.structureChanged, this );
+                this.model.on( "change:structure_list", this.structureChanged, this );
 
                 // init setting of coordinates
-                // turn off for now
-                // this.model.on( "change:_coordinates_meta", this.coordinatesChanged, this );
+                this.model.on( "change:_coordinates_meta", this.coordinatesChanged, this );
 
                 // init setting of coordinates
-                this.model.on( "change:coordinates_dict", this.coordsDictChanged, this );
+                this.model.on( "change:coordinates_dict", this.coordsDictListChanged, this );
 
                 // init setting of frame
                 this.model.on( "change:frame", this.frameChanged, this );
@@ -87,7 +86,7 @@ define( [
                 this.model.on( "change:orientation", this.orientationChanged, this );
 
                 // get message from Python
-                this.coordsDict = {};
+                this.coordsDictList = {};
                 this.model.on( "msg:custom", function (msg) {
                     this.on_msg( msg );
                 }, this);
@@ -218,28 +217,35 @@ define( [
 
         representationsChanged: function(){
             var representations = this.model.get( "_init_representations" );
-            var component = this.structureComponent;
-            if( representations && component ){
-                component.clearRepresentations();
-                representations.forEach( function( repr ){
-                    component.addRepresentation( repr.type, repr.params );
-                } );
+
+            for (var i = 0; i < this.stage.compList.length; i++ ){
+                component = this.stage.compList[ i ];
+                if( representations && component ){
+                    component.clearRepresentations();
+                    representations.forEach( function( repr ){
+                        component.addRepresentation( repr.type, repr.params );
+                    } );
+                }
             }
         },
 
         structureChanged: function(){
             this.structureComponent = undefined;
-            var structure = this.model.get( "structure" );
-            if( structure.data && structure.ext ){
-                var blob = new Blob( [ structure.data ], { type: "text/plain" } );
-                var params = structure.params || {};
-                params.ext = structure.ext;
-                params.defaultRepresentation = false;
-                this.stage.loadFile( blob, params ).then( function( component ){
-                    component.centerView();
-                    this.structureComponent = component;
-                    this.representationsChanged();
-                }.bind( this ) );
+            var structureList = this.model.get( "structure_list" );
+
+            for ( var i = 0; i < Object.keys(structureList).length; i++ ){
+                var structure = structureList[ i ];
+                if( structure.data && structure.ext ){
+                    var blob = new Blob( [ structure.data ], { type: "text/plain" } );
+                    var params = structure.params || {};
+                    params.ext = structure.ext;
+                    params.defaultRepresentation = false;
+                    this.stage.loadFile( blob, params ).then( function( component ){
+                        component.centerView();
+                        // this.structureComponent = component;
+                        this.representationsChanged();
+                    }.bind( this ) );
+                }
             }
         },
 
@@ -287,18 +293,25 @@ define( [
         frameChanged: function(){
             if( this._cache ){
                 var frame = this.model.get( "frame" );
-                if( frame in this.coordsDict ) {
-                    var coordinates = this.coordsDict[frame];
-                    this._update_coords(coordinates);
-                } // else: just wait
+
+                for ( var i = 0; i < Object.keys(this.coordsDictList).length; i++){
+                    var coordsDict = this.coordsDictList[ i ]; 
+                    if( frame in coordsDict ) {
+                        var coordinates = coordsDict[frame];
+                        console.log( coordinates );
+                        this._update_coords(coordinates, i);
+                    } // else: just wait
+                }
             }
             // else: listen to coordinatesChanged
         },
 
 
         coordinatesChanged: function(){
+            console.log(" change coords ");
             if (! this._cache ){
                 var coordinates_meta = this.model.get( "_coordinates_meta" );
+                console.log( coordinates_meta );
 
                 // not checking dtype yet
                 var coordinates = this.mydecode( coordinates_meta['data'] );
@@ -306,9 +319,9 @@ define( [
             }
         },
 
-        _update_coords: function( coordinates ) {
+        _update_coords: function( coordinates, model ) {
             // coordinates must be ArrayBuffer (use this.mydecode)
-            var component = this.structureComponent;
+            var component = this.stage.compList[ model ];
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
                 component.structure.updatePosition( coords );
@@ -316,9 +329,9 @@ define( [
             }
         },
 
-        coordsDictChanged: function(){
-            this.coordsDict = this.model.get( "coordinates_dict" );
-            var cdict = this.coordsDict
+        coordsDictListChanged: function(){
+            this.coordsDictList = this.model.get( "coordinates_dict" );
+            var cdict = this.coordsDictList
             var clen = Object.keys(cdict).length
             if ( clen != 0 ){
                 this._cache = true;
@@ -327,8 +340,8 @@ define( [
             }
             this.model.set( "cache", this._cache);
             
-            for (var i = 0; i < Object.keys(coordsDict).length; i++) {
-                this.coordsDict[i] = this.mydecode( coordsDict[i]);
+            for (var i = 0; i < Object.keys(coordsDictList).length; i++) {
+                this.coordsDictList[i] = this.mydecode( coordsDictList[i]);
             }
         },
 
@@ -405,14 +418,18 @@ define( [
                 }
             }else if( msg.type == 'base64' ){
                 console.log( "received base64 dict for all frames" );
-                var base64Dict = msg.data;
-                this.coordsDict = {};
+                var base64DictList = JSON.parse( msg.data );
+                this.coordsDictList = {};
                 if ( "cache" in msg ){
                     this._cache = msg.cache;
                     this.model.set( "cache", this._cache );
                 }
-                for (var i = 0; i < Object.keys(base64Dict).length; i++) {
-                     this.coordsDict[i] = this.mydecode( base64Dict[i]);
+                for (var index = 0; index < Object.keys(base64DictList).length; index++) {
+                    this.coordsDictList[index] = {};
+                    var base64Dict = base64DictList[ index ];
+                    for (var i = 0; i < Object.keys(base64Dict).length; i++) {
+                         this.coordsDictList[index][i] = this.mydecode( base64Dict[i]);
+                    }
                 }
             }else if( msg.type == 'base64_single' ){
                 var coordinates = this.mydecode( msg.data['data'] );

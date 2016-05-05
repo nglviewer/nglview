@@ -15,6 +15,8 @@ from IPython.display import display, Javascript
 from notebook.nbextensions import install_nbextension
 from notebook.services.config import ConfigManager
 
+import numpy as np
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     from pkg_resources import resource_filename
@@ -416,11 +418,11 @@ class NGLWidget(widgets.DOMWidget):
     frame = Int().tag(sync=True)
     count = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
-    structure = Dict().tag(sync=True)
+    structure_list = List().tag(sync=True)
     parameters = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
-    _coordinates_meta = Dict().tag(sync=False)
+    _coordinates_meta = Dict().tag(sync=True)
     camera_str = Unicode().tag(sync=True)
     orientation = List().tag(sync=True)
 
@@ -440,10 +442,12 @@ class NGLWidget(widgets.DOMWidget):
         if trajectory:
             self.trajectory = trajectory
         elif hasattr(structure, "get_coordinates_dict"):
-            self.trajectory = structure
-        if hasattr(self, "trajectory") and \
-                hasattr(self.trajectory, "n_frames"):
-            self.count = self.trajectory.n_frames
+            self.trajlist = [structure,]
+        elif isinstance(structure, (list, tuple)):
+            self.trajlist = structure
+        if self.trajlist:
+            self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
+            'n_frames'))
 
         # use _init_representations so we can view representations right after view is made.
         # self.representations is only have effect if we already call `view`
@@ -483,25 +487,30 @@ class NGLWidget(widgets.DOMWidget):
         if self.cache:
             return
         else:
-            data = self._coordinates_meta['data']
-            dtype = self._coordinates_meta['dtype']
-            shape = self._coordinates_meta['shape']
-            return decode_base64(data, dtype=dtype, shape=shape)
+            clist = []
+            for index, traj in enumerate(self.trajlist):
+                data = self._coordinates_meta[index]['data']
+                dtype = self._coordinates_meta[index]['dtype']
+                shape = self._coordinates_meta[index]['shape']
+                clist.append(decode_base64(data, dtype=dtype, shape=shape))
+            return clist
 
     @coordinates.setter
-    def coordinates(self, arr):
+    def coordinates(self, arrlist):
         """return current coordinate
 
         Parameters
         ----------
-        arr : 2D array, shape=(n_atoms, 3)
+        arr : list of 2D array (shape=(n_atoms, 3))
         """
         dtype = 'f4'
-        coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
-                                dtype=dtype,
-                                shape=arr.shape)
-        # seems faster than using traitlets
-        self._coordinates_meta = coordinates_meta
+
+        clist = []
+        for index, arr in enumerate(arrlist): 
+            coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
+                                    dtype=dtype,
+                                    shape=arr.shape)
+            self._coordinates_meta[index] = coordinates_meta
         self.send({'type': 'base64_single', 'data': coordinates_meta})
 
     @property
@@ -584,15 +593,18 @@ class NGLWidget(widgets.DOMWidget):
 
         This method is experimental and its name can be changed.
         """
-        if hasattr(self.trajectory, "get_coordinates_dict"):
+        if self.trajlist:
             # do not use traitlets to sync. slow.
             self.cache = True
+            import json
+            data = json.dumps([trajectory.get_coordinates_dict() for trajectory in
+                self.trajlist])
             msg = dict(type='base64',
                        cache=self.cache,
-                       data=self.trajectory.get_coordinates_dict())
+                       data=data)
             self.send(msg)
         else:
-            print('warning: does not have get_coordinates_dict method, turn off cache') 
+            print('does not have trajlist. skip caching') 
             self.cache = False
 
     def uncaching(self):
@@ -601,17 +613,22 @@ class NGLWidget(widgets.DOMWidget):
     def set_representations(self, representations):
         self.representations = representations
 
-    def set_structure(self, structure):
-        self.structure = {
-            "data": structure.get_structure_string(),
-            "ext": structure.ext,
-            "params": structure.params
-        }
+    def set_structure(self, structures):
+        structure_list = structures if isinstance(structures, (list, tuple)) else [structures,]
+        self.structure_list = [{"data": _structure.get_structure_string(),
+                           "ext": _structure.ext,
+                           "params": _structure.params
+                           } for _structure in structure_list]
 
     def _set_coordinates(self, index):
-        if self.trajectory and not self.cache:
-            coordinates = self.trajectory.get_coordinates(index)
-            self.coordinates = coordinates
+        if self.trajlist and not self.cache:
+            coordinate_list = []
+            for trajectory in self.trajlist:
+                try:
+                    coordinate_list.append(trajectory.get_coordinates(index))
+                except IndexError:
+                    coordinate_list.append(np.empty((0), dtype='f4'))
+            self.coordinates = coordinate_list
         else:
             print("no trajectory available")
 
