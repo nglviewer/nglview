@@ -11,6 +11,11 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+.. automodule:: nglview
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
 
 
 Indices and tables

@@ -1,0 +1,600 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ipywidgets.widgets.widget &mdash; NGLView 0.5 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="NGLView 0.5 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ipywidgets.widgets.widget</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Base Widget class.  Allows user to create widgets in the back-end that render</span>
+<span class="sd">in the IPython notebook front-end.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Copyright (c) Jupyter Development Team.</span>
+<span class="c1"># Distributed under the terms of the Modified BSD License.</span>
+
+
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">from</span> <span class="nn">IPython.core.getipython</span> <span class="kn">import</span> <span class="n">get_ipython</span>
+<span class="kn">from</span> <span class="nn">ipykernel.comm</span> <span class="kn">import</span> <span class="n">Comm</span>
+<span class="kn">from</span> <span class="nn">traitlets.config</span> <span class="kn">import</span> <span class="n">LoggingConfigurable</span>
+<span class="kn">from</span> <span class="nn">ipython_genutils.importstring</span> <span class="kn">import</span> <span class="n">import_item</span>
+<span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="n">Unicode</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> \
+    <span class="n">CaselessStrEnum</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">CUnicode</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span> <span class="nn">ipython_genutils.py3compat</span> <span class="kn">import</span> <span class="n">string_types</span>
+<span class="kn">from</span> <span class="nn">.trait_types</span> <span class="kn">import</span> <span class="n">Color</span>
+
+
+<span class="k">def</span> <span class="nf">_widget_to_json</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_widget_to_json</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_widget_to_json</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Widget</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;IPY_MODEL_&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">model_id</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+<span class="k">def</span> <span class="nf">_json_to_widget</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_json_to_widget</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_json_to_widget</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">string_types</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;IPY_MODEL_&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">:]</span> <span class="ow">in</span> <span class="n">Widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">:]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+<span class="n">widget_serialization</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;from_json&#39;</span><span class="p">:</span> <span class="n">_json_to_widget</span><span class="p">,</span>
+    <span class="s1">&#39;to_json&#39;</span><span class="p">:</span> <span class="n">_widget_to_json</span>
+<span class="p">}</span>
+
+
+<span class="k">class</span> <span class="nc">CallbackDispatcher</span><span class="p">(</span><span class="n">LoggingConfigurable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A structure for registering and running callbacks&quot;&quot;&quot;</span>
+    <span class="n">callbacks</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call all of the registered callbacks.&quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">local_value</span> <span class="o">=</span> <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">ip</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">ip</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Exception in callback </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ip</span><span class="o">.</span><span class="n">showtraceback</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">local_value</span> <span class="k">if</span> <span class="n">local_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">register_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;(Un)Register a callback</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        callback: method handle</span>
+<span class="sd">            Method to be registered or unregistered.</span>
+<span class="sd">        remove=False: bool</span>
+<span class="sd">            Whether to unregister the callback.&quot;&quot;&quot;</span>
+
+        <span class="c1"># (Un)Register the callback.</span>
+        <span class="k">if</span> <span class="n">remove</span> <span class="ow">and</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">remove</span> <span class="ow">and</span> <span class="n">callback</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_show_traceback</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;decorator for showing tracebacks in IPython&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">m</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span><span class="p">(</span><span class="n">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ip</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Exception in widget method </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ip</span><span class="o">.</span><span class="n">showtraceback</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">m</span>
+
+
+<span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a decorator registering a widget class in the widget registry.</span>
+<span class="sd">    If no key is provided, the class name is used as a key. A key is</span>
+<span class="sd">    provided for each core IPython widget so that the frontend can use</span>
+<span class="sd">    this key regardless of the language of the kernel&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">widget</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">key</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">widget</span><span class="o">.</span><span class="n">__module__</span> <span class="o">+</span> <span class="n">widget</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="n">Widget</span><span class="o">.</span><span class="n">widget_types</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">widget</span>
+        <span class="k">return</span> <span class="n">widget</span>
+    <span class="k">return</span> <span class="n">wrap</span>
+
+
+<span class="k">class</span> <span class="nc">Widget</span><span class="p">(</span><span class="n">LoggingConfigurable</span><span class="p">):</span>
+    <span class="c1">#-------------------------------------------------------------------------</span>
+    <span class="c1"># Class attributes</span>
+    <span class="c1">#-------------------------------------------------------------------------</span>
+    <span class="n">_widget_construction_callback</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">widgets</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">widget_types</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">on_widget_constructed</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Registers a callback to be called when a widget is constructed.</span>
+
+<span class="sd">        The callback must have the following signature:</span>
+<span class="sd">        callback(widget)&quot;&quot;&quot;</span>
+        <span class="n">Widget</span><span class="o">.</span><span class="n">_widget_construction_callback</span> <span class="o">=</span> <span class="n">callback</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_call_widget_constructed</span><span class="p">(</span><span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Static method, called when a widget is constructed.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">Widget</span><span class="o">.</span><span class="n">_widget_construction_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">Widget</span><span class="o">.</span><span class="n">_widget_construction_callback</span><span class="p">):</span>
+            <span class="n">Widget</span><span class="o">.</span><span class="n">_widget_construction_callback</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">handle_comm_opened</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Static method, called when a widget is constructed.&quot;&quot;&quot;</span>
+        <span class="n">widget_class</span> <span class="o">=</span> <span class="n">import_item</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;widget_class&#39;</span><span class="p">]))</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">widget_class</span><span class="p">(</span><span class="n">comm</span><span class="o">=</span><span class="n">comm</span><span class="p">)</span>
+
+
+    <span class="c1">#-------------------------------------------------------------------------</span>
+    <span class="c1"># Traits</span>
+    <span class="c1">#-------------------------------------------------------------------------</span>
+    <span class="n">_model_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;A requirejs module name</span>
+<span class="s2">        in which to find _model_name. If empty, look in the global registry.&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">_model_name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s1">&#39;WidgetModel&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Name of the backbone model</span>
+<span class="s2">        registered in the front-end to create and sync this widget with.&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">_view_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;A requirejs module in which to find _view_name.</span>
+<span class="s2">        If empty, look in the global registry.&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">_view_name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Default view registered in the front-end</span>
+<span class="s2">        to use to represent the widget.&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">comm</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="s1">&#39;ipykernel.comm.Comm&#39;</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">msg_throttle</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Maximum number of msgs the</span>
+<span class="s2">        front-end can send before receiving an idle msg from the back-end.&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">version</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Widget&#39;s version&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">_keys_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)]</span>
+
+    <span class="n">_property_lock</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span>
+    <span class="n">_holding_sync</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">_states_to_send</span> <span class="o">=</span> <span class="n">Set</span><span class="p">()</span>
+    <span class="n">_display_callbacks</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">CallbackDispatcher</span><span class="p">,</span> <span class="p">())</span>
+    <span class="n">_msg_callbacks</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">CallbackDispatcher</span><span class="p">,</span> <span class="p">())</span>
+
+    <span class="c1">#-------------------------------------------------------------------------</span>
+    <span class="c1"># (Con/de)structor</span>
+    <span class="c1">#-------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Public constructor&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;model_id&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Widget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">Widget</span><span class="o">.</span><span class="n">_call_widget_constructed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Object disposal&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1">#-------------------------------------------------------------------------</span>
+    <span class="c1"># Properties</span>
+    <span class="c1">#-------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open a comm to the frontend if one isn&#39;t already open.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">target_name</span><span class="o">=</span><span class="s1">&#39;ipython.widget&#39;</span><span class="p">,</span>
+                        <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">())</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">args</span><span class="p">[</span><span class="s1">&#39;comm_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">Comm</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_comm_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when the comm is changed.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">new</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">on_msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg</span><span class="p">)</span>
+        <span class="n">Widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the model id of this widget.</span>
+
+<span class="sd">        If a Comm doesn&#39;t exist yet, a Comm will be created automagically.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">comm_id</span>
+
+    <span class="c1">#-------------------------------------------------------------------------</span>
+    <span class="c1"># Methods</span>
+    <span class="c1">#-------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Close method.</span>
+
+<span class="sd">        Closes the underlying comm.</span>
+<span class="sd">        When the comm is closed, all of the widget views are automatically</span>
+<span class="sd">        removed from the front-end.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">Widget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">send_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends the widget state, or a piece of it, to the front-end.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : unicode, or iterable (optional)</span>
+<span class="sd">            A single property&#39;s name or iterable of property names to sync with the front-end.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">buffer_keys</span><span class="p">,</span> <span class="n">buffers</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">memoryview</span><span class="p">):</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">buffers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="n">buffer_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span> <span class="s1">&#39;buffers&#39;</span><span class="p">:</span> <span class="n">buffer_keys</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">buffers</span><span class="o">=</span><span class="n">buffers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the widget state, or a piece of it.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : unicode or iterable (optional)</span>
+<span class="sd">            A single property&#39;s name or iterable of property names to get.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        state : dict of states</span>
+<span class="sd">        metadata : dict</span>
+<span class="sd">            metadata for each field: {key: metadata}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">):</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;key must be a string, an iterable of keys, or None&quot;</span><span class="p">)</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">to_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_metadata</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;to_json&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trait_to_json</span><span class="p">)</span>
+            <span class="n">state</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_json</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">state</span>
+
+    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sync_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when a state is received from the front-end.&quot;&quot;&quot;</span>
+        <span class="c1"># The order of these context managers is important. Properties must</span>
+        <span class="c1"># be locked when the hold_trait_notification context manager is</span>
+        <span class="c1"># released and notifications are fired.</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock_property</span><span class="p">(</span><span class="o">**</span><span class="n">sync_data</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">hold_trait_notifications</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sync_data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+                    <span class="n">from_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_metadata</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;from_json&#39;</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">_trait_from_json</span><span class="p">)</span>
+                    <span class="c1"># traitlets &lt; 4.1 don&#39;t support read-only attributes</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;set_trait&#39;</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">set_trait</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_json</span><span class="p">(</span><span class="n">sync_data</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">self</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">from_json</span><span class="p">(</span><span class="n">sync_data</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">buffers</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends a custom msg to the widget model in the front-end.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        content : dict</span>
+<span class="sd">            Content of the message to send.</span>
+<span class="sd">        buffers : list of binary buffers</span>
+<span class="sd">            Binary buffers to send with message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">({</span><span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">content</span><span class="p">},</span> <span class="n">buffers</span><span class="o">=</span><span class="n">buffers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;(Un)Register a custom msg receive callback.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        callback: callable</span>
+<span class="sd">            callback will be passed three arguments when a message arrives::</span>
+
+<span class="sd">                callback(widget, content, buffers)</span>
+
+<span class="sd">        remove: bool</span>
+<span class="sd">            True if the callback should be unregistered.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg_callbacks</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="n">remove</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_displayed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;(Un)Register a widget displayed callback.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        callback: method handler</span>
+<span class="sd">            Must have a signature of::</span>
+
+<span class="sd">                callback(widget, **kwargs)</span>
+
+<span class="sd">            kwargs from display are passed through without modification.</span>
+<span class="sd">        remove: bool</span>
+<span class="sd">            True if the callback should be unregistered.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_callbacks</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="n">remove</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_traits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">traits</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Dynamically add trait attributes to the Widget.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Widget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">add_traits</span><span class="p">(</span><span class="o">**</span><span class="n">traits</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">trait</span> <span class="ow">in</span> <span class="n">traits</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">trait</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="s1">&#39;sync&#39;</span><span class="p">):</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">send_state</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1">#-------------------------------------------------------------------------</span>
+    <span class="c1"># Support methods</span>
+    <span class="c1">#-------------------------------------------------------------------------</span>
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">_lock_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Lock a property-value pair.</span>
+
+<span class="sd">        The value should be the JSON state of the property.</span>
+
+<span class="sd">        NOTE: This, in addition to the single lock for all state changes, is</span>
+<span class="sd">        flawed.  In the future we may want to look into buffering state changes</span>
+<span class="sd">        back to the front-end.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_property_lock</span> <span class="o">=</span> <span class="n">properties</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_property_lock</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">hold_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Hold syncing any state until the outermost context manager exits&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holding_sync</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_holding_sync</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">yield</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_holding_sync</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_states_to_send</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_states_to_send</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_should_send_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check the property lock (property_lock)&quot;&quot;&quot;</span>
+        <span class="n">to_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_metadata</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;to_json&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trait_to_json</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_property_lock</span>
+            <span class="ow">and</span> <span class="n">to_json</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_property_lock</span><span class="p">[</span><span class="n">key</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holding_sync</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_states_to_send</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="c1"># Event handlers</span>
+    <span class="nd">@_show_traceback</span>
+    <span class="k">def</span> <span class="nf">_handle_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when a msg is received from the front-end&quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Handle backbone sync methods CREATE, PATCH, and UPDATE all in one.</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;backbone&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;sync_data&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="c1"># get binary buffers too</span>
+                <span class="n">sync_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;sync_data&#39;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;buffer_keys&#39;</span><span class="p">,</span> <span class="p">[])):</span>
+                    <span class="n">sync_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;buffers&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">sync_data</span><span class="p">)</span> <span class="c1"># handles all methods</span>
+
+        <span class="c1"># Handle a state request.</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;request_state&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_state</span><span class="p">()</span>
+
+        <span class="c1"># Handle a custom msg from the front-end.</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;custom&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;content&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_handle_custom_msg</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;buffers&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Catch remainder.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Unknown front-end to back-end widget msg with method &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">method</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_handle_custom_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">buffers</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when a custom msg is received.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">buffers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_notify_trait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">old_value</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when a property has been changed.&quot;&quot;&quot;</span>
+        <span class="c1"># Trigger default traitlet callback machinery.  This allows any user</span>
+        <span class="c1"># registered validation to be processed prior to allowing the widget</span>
+        <span class="c1"># machinery to handle the state.</span>
+        <span class="n">LoggingConfigurable</span><span class="o">.</span><span class="n">_notify_trait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">old_value</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+
+        <span class="c1"># Send the state after the user registered callbacks for trait changes</span>
+        <span class="c1"># have all fired (allows for user to validate values).</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+            <span class="c1"># Make sure this isn&#39;t information that the front-end just sent us.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_send_property</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+                <span class="c1"># Send new state to front-end</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send_state</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_handle_displayed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when a view has been displayed for this widget instance&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_trait_to_json</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert a trait value to json.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_trait_from_json</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert json values to objects.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="k">def</span> <span class="nf">_ipython_display_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when `IPython.display.display` is called on the widget.&quot;&quot;&quot;</span>
+        <span class="c1"># Show view.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">({</span><span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;display&quot;</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_displayed</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">buffers</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends a message to the model in the front-end.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span> <span class="n">buffers</span><span class="o">=</span><span class="n">buffers</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">DOMWidget</span><span class="p">(</span><span class="n">Widget</span><span class="p">):</span>
+    <span class="n">visible</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Whether the widget is visible.  False collapses the empty space, while None preserves the empty space.&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">_css</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;CSS property list: (selector, key, value)&quot;</span><span class="p">)</span>
+    <span class="n">_dom_classes</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;DOM classes applied to widget.$el.&quot;</span><span class="p">)</span>
+
+    <span class="n">width</span> <span class="o">=</span> <span class="n">CUnicode</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="n">CUnicode</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="c1"># A default padding of 2.5 px makes the widgets look nice when displayed inline.</span>
+    <span class="n">padding</span> <span class="o">=</span> <span class="n">CUnicode</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">margin</span> <span class="o">=</span> <span class="n">CUnicode</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">background_color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">border_color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">border_width</span> <span class="o">=</span> <span class="n">CUnicode</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">border_radius</span> <span class="o">=</span> <span class="n">CUnicode</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">border_style</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">[</span> <span class="c1"># http://www.w3schools.com/cssref/pr_border-style.asp</span>
+        <span class="s1">&#39;none&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;hidden&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;dotted&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;dashed&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;solid&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;double&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;groove&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ridge&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;inset&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;outset&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;initial&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;inherit&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+        <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">font_style</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">[</span> <span class="c1"># http://www.w3schools.com/cssref/pr_font_font-style.asp</span>
+        <span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;italic&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;oblique&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;initial&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;inherit&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+        <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">font_weight</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">[</span> <span class="c1"># http://www.w3schools.com/cssref/pr_font_weight.asp</span>
+        <span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;bold&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;bolder&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;lighter&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;initial&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;inherit&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">100</span><span class="p">))),</span>
+        <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">font_size</span> <span class="o">=</span> <span class="n">CUnicode</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">font_family</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">pargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DOMWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">pargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_validate_border</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">new</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">new</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;border_width&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">border_width</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">border_width</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;border_style&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">border_style</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">border_style</span> <span class="o">=</span> <span class="s1">&#39;solid&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_trait_change</span><span class="p">(</span><span class="n">_validate_border</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;border_width&#39;</span><span class="p">,</span> <span class="s1">&#39;border_style&#39;</span><span class="p">,</span> <span class="s1">&#39;border_color&#39;</span><span class="p">])</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Alexander Rose, Hai Nguyen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
