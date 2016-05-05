@@ -109,8 +109,14 @@ define( [
                         "option", "maxWidth", this.$el.parent().width()
                     );
                     this.model.set('loaded', true);
+                    this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
                     this.touch();
                 }.bind( this ) );
+
+                this.stage.viewer.controls.addEventListener( "change", function() {
+                    this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
+                    this.touch();
+                }.bind( this) );
 
                 // init toggle fullscreen
                 $( this.stage.viewer.container ).dblclick( function(){
