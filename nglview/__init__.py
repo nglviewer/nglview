@@ -264,11 +264,11 @@ class MDTrajTrajectory(Trajectory, Structure):
         self.params = {}
 
     def get_coordinates_dict(self):
-        return dict((index, encode_numpy(xyz))
+        return dict((index, encode_numpy(xyz*10))
                     for index, xyz in enumerate(self.trajectory.xyz))
 
     def get_coordinates(self, index):
-        return self.trajectory.xyz[index]
+        return 10*self.trajectory.xyz[index]
 
     @property
     def n_frames(self):
