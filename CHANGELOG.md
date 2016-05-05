@@ -4,6 +4,8 @@ Changelog
 Version 0.5.dev
 ---------------
 
+* ADD: `orientation` for syncing two widget cameras
+* ADD: viewing more than one trajectory in the same widget
 * ADD: `export_image`
 * ADD: `center_view`
 * ADD: `caching` for smoother trajectory playing
@@ -11,6 +13,7 @@ Version 0.5.dev
 * ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
 * ADD: `ParmEdTrajectory` adaptor
 * ENH: smoother rendering if adding new representation
+* MIGRATION: change `view.trajectory` to `view.trajlist` 
 * MIGRATION: change `get_frame_count` method to `n_frames` property
 * FIX: symlink error
 
