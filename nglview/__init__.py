@@ -115,8 +115,10 @@ def show_pytraj(pytraj_trajectory, **kwargs):
     >>> w = nv.show_pytraj(t)
     >>> w
     '''
-    structure_trajectory = PyTrajTrajectory(pytraj_trajectory)
-    return NGLWidget(structure_trajectory, **kwargs)
+    trajlist = pytraj_trajectory if isinstance(pytraj_trajectory, (list, tuple)) else [pytraj_trajectory,]
+
+    trajlist = [PyTrajTrajectory(traj) for traj in trajlist]
+    return NGLWidget(trajlist, **kwargs)
 
 
 def show_parmed(parmed_structure, **kwargs):
@@ -669,9 +671,9 @@ class NGLWidget(widgets.DOMWidget):
         selection = seq_to_string(selection).strip()
 
         if 'model' in kwargs:
-            index = kwargs.pop('model')
+            model = kwargs.pop('model')
         else:
-            index = 0
+            model = 0
 
         for k, v in kwargs.items():
             try:
@@ -684,12 +686,8 @@ class NGLWidget(widgets.DOMWidget):
         d['type'] = repr_type
         d['params'].update(kwargs)
 
-        if index == 0:
-            self._representations.append(d)
-            # do not keep track representations of >= 2nd
-
         params = d['params']
-        params.update({'component_index': index})
+        params.update({'component_index': model})
         self._remote_call('addRepresentation',
                           target='compList',
                           args=[d['type'],],
