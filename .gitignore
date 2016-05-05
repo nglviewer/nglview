@@ -1,9 +1,0 @@
-
-*.sublime-project
-*.sublime-workspace
-
-*.pyc
-
-dist/*
-build/*
-*.egg-info
