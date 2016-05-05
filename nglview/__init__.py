@@ -420,14 +420,12 @@ class NGLWidget(widgets.DOMWidget):
     parameters = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
-    camera_str = Unicode().tag(sync=True)
-    orientation_str = Unicode().tag(sync=True)
-
-    # 
-    displayed = False
-
-    _ngl_msg = None
     _coordinates_meta = Dict().tag(sync=False)
+    camera_str = Unicode().tag(sync=True)
+    orientation = List().tag(sync=True)
+
+    displayed = False
+    _ngl_msg = None
 
     def __init__(self, structure, trajectory=None,
                  representations=None, parameters=None, **kwargs):
