@@ -420,6 +420,7 @@ class NGLWidget(widgets.DOMWidget):
     parameters = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
+    camera_str = Unicode().tag(sync=True)
 
     # 
     displayed = False
@@ -615,7 +616,8 @@ class NGLWidget(widgets.DOMWidget):
         else:
             print("no trajectory available")
 
-    def _frame_changed(self):
+    @observe('frame')
+    def on_frame(self, change):
         if not self.cache:
             self._set_coordinates(self.frame)
 
