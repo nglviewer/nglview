@@ -83,6 +83,9 @@ define( [
                 // init parameters handling
                 this.model.on( "change:cache", this.cacheChanged, this );
 
+                // init orientation handling
+                this.model.on( "change:orientation", this.orientationChanged, this );
+
                 // get message from Python
                 this.coordsDict = {};
                 this.model.on( "msg:custom", function (msg) {
@@ -110,13 +113,13 @@ define( [
                     );
                     this.model.set('loaded', true);
                     this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
-                    this.model.set('orientation_str', JSON.stringify( this.stage.viewer.getOrientation()) );
+                    this.model.set('orientation', this.stage.viewer.getOrientation() );
                     this.touch();
                 }.bind( this ) );
 
                 this.stage.viewer.controls.addEventListener( "change", function() {
                     this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
-                    this.model.set('orientation_str', JSON.stringify( this.stage.viewer.getOrientation()) );
+                    this.model.set('orientation', this.stage.viewer.getOrientation() );
                     this.touch();
                 }.bind( this) );
 
@@ -342,6 +345,11 @@ define( [
 
         cacheChanged: function(){
             this._cache = this.model.get( "cache" );
+        },
+
+        orientationChanged: function(){
+            var orientation = this.model.get( "orientation" );
+            this.stage.viewer.setOrientation( orientation );
         },
 
         on_msg: function(msg){
