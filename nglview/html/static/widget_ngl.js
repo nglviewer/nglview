@@ -110,11 +110,13 @@ define( [
                     );
                     this.model.set('loaded', true);
                     this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
+                    this.model.set('orientation_str', JSON.stringify( this.stage.viewer.getOrientation()) );
                     this.touch();
                 }.bind( this ) );
 
                 this.stage.viewer.controls.addEventListener( "change", function() {
                     this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
+                    this.model.set('orientation_str', JSON.stringify( this.stage.viewer.getOrientation()) );
                     this.touch();
                 }.bind( this) );
 

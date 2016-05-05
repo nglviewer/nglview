@@ -421,6 +421,7 @@ class NGLWidget(widgets.DOMWidget):
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
     camera_str = Unicode().tag(sync=True)
+    orientation_str = Unicode().tag(sync=True)
 
     # 
     displayed = False
