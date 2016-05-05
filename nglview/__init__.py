@@ -422,7 +422,7 @@ class NGLWidget(widgets.DOMWidget):
     parameters = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
-    _coordinates_meta = Dict().tag(sync=True)
+    _coordinate_dict2 = Dict().tag(sync=False)
     camera_str = Unicode().tag(sync=True)
     orientation = List().tag(sync=True)
 
@@ -489,9 +489,9 @@ class NGLWidget(widgets.DOMWidget):
         else:
             clist = []
             for index, traj in enumerate(self.trajlist):
-                data = self._coordinates_meta[index]['data']
-                dtype = self._coordinates_meta[index]['dtype']
-                shape = self._coordinates_meta[index]['shape']
+                data = self._coordinate_dict2[index]['data']
+                dtype = self._coordinate_dict2[index]['dtype']
+                shape = self._coordinate_dict2[index]['shape']
                 clist.append(decode_base64(data, dtype=dtype, shape=shape))
             return clist
 
@@ -505,13 +505,12 @@ class NGLWidget(widgets.DOMWidget):
         """
         dtype = 'f4'
 
-        clist = []
         for index, arr in enumerate(arrlist): 
             coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
                                     dtype=dtype,
                                     shape=arr.shape)
-            self._coordinates_meta[index] = coordinates_meta
-        self.send({'type': 'base64_single', 'data': coordinates_meta})
+            self._coordinate_dict2[index] = coordinates_meta
+        self.send({'type': 'base64_single', 'data': self._coordinate_dict2})
 
     @property
     def representations(self):

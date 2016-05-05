@@ -68,7 +68,8 @@ define( [
                 this.model.on( "change:structure_list", this.structureChanged, this );
 
                 // init setting of coordinates
-                this.model.on( "change:_coordinates_meta", this.coordinatesChanged, this );
+                // turn off, use "base64_single" msg
+                // this.model.on( "change:_coordinate_dict_list", this.coordinatesChanged, this );
 
                 // init setting of coordinates
                 this.model.on( "change:coordinates_dict", this.coordsDictListChanged, this );
@@ -310,7 +311,7 @@ define( [
         coordinatesChanged: function(){
             console.log(" change coords ");
             if (! this._cache ){
-                var coordinates_meta = this.model.get( "_coordinates_meta" );
+                var coordinates_meta = this.model.get( "_coordinate_dict_list" );
                 console.log( coordinates_meta );
 
                 // not checking dtype yet
@@ -432,8 +433,14 @@ define( [
                     }
                 }
             }else if( msg.type == 'base64_single' ){
-                var coordinates = this.mydecode( msg.data['data'] );
-                this._update_coords( coordinates );
+                var coordinateDictList = msg.data;
+
+                for ( var i = 0; i < this.stage.compList.length; i++ ){
+                    var coordinates = this.mydecode( coordinateDictList[ i ]['data']);
+                    if( coordinates.byteLength > 0 ){
+                        this._update_coords( coordinates, i );
+                    }
+                }
             }else if( msg.type == 'get') {
                 console.log( msg.data );
 
