@@ -1,23 +1,22 @@
-![nglview](nglview.png)
 
-An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/).
-
-Work in progress but usable. Please contact us if you want to take part. Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
-
-Try nglview online with different trajectory-reader backends [![Binder](http://mybinder.org/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
-
-
+[![Binder](http://mybinder.org/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
 [![Build Status](https://travis-ci.org/arose/nglview.svg?branch=master)](https://travis-ci.org/arose/nglview)
 
+![nglview](nglview.png)
+
+
+An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/).
+
+Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
 Table of contents
 =================
 
 * [Installation](#installation)
-* [Usage](#Usage)
-* [Interface classes](#Interface classes)
-* [Changelog](#changelog)
+* [Usage](#usage)
+* [Interface classes](doc/interface_classes.md)
+* [Changelog](CHANGELOG.md)
 * [License](#license)
 
 
@@ -27,8 +26,7 @@ Installation
 From PyPI:
 
     pip install nglview
-
-Note: The above will try to install `jupyter` as a dependency. If that fails install it manually `pip install jupyter`.
+Note: The above will try to install `jupyter`, `traitlets` and `ipywidgets`  as dependencies. If that fails install it manually `pip install jupyter`.
 
 From Conda
 
@@ -46,7 +44,8 @@ and issue
 
 ```Python
 import nglview
-nglview.show_pdbid("3pqr")  # load "3pqr" from RCSB PDB and display viewer widget
+view = nglview.show_pdbid("3pqr")  # load "3pqr" from RCSB PDB and display viewer widget
+view
 ```
 
 A number of convenience functions are available to quickly display data from
@@ -62,67 +61,22 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_parmed(structure)`                 | Shows `ParmEd` structure
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
 
+API
+===
 
+### Representations
 
-Structures
-----------
-
-The above convenience functions first create an `adaptor` that implements an [interface](#Interface classes) for communication with the IPython/Jupyter widget.
-
-```Python
-import nglview
-struc = nglview.PdbIdStructure("3pqr")  # load file from RCSB PDB
-w = nglview.NGLWidget(struc)            # create widget
-w                                       # display widget
+```python
+view.add_cartoon("protein", color="residueindex")
+view.add_surface("protein", opacity=0.3)
 ```
 
-
-Trajectories
-------------
-
-To enable trajectory access pass a second `Trajectory` argument to the widget
-constructor or supply a combined `Structure`/`Trajectory` object as the first
-argument.
-
-Seperate `Structure` and `Trajectory` objects using `FileStructure` and
-`SimpletrajStructure` (requires the [`simpletraj`](https://github.com/arose/simpletraj)
-package):
-
-```Python
-import nglview
-struc = nglview.FileStructure(nglview.datafiles.GRO)
-traj = nglview.SimpletrajStructure(nglview.datafiles.XTC)
-nglview.NGLWidget(struc, traj)
-```
-
-Combined `Structure`/`Trajectory` object utilizing `MDTrajTrajectory` which
-wraps a trajectory loaded with [MDTraj](http://mdtraj.org/):
-
-```Python
-import nglview
-import mdtraj
-traj = mdtraj.load(nglview.datafiles.XTC, top=nglview.datafiles.GRO)
-strucTraj = nglview.MDTrajTrajectory(traj)
-nglview.NGLWidget(strucTraj)
-```
-
-The displayed frame can be changed by setting the `frame` property of the
-widget instance `w`:
-
-```Python
-w.frame = 100  # set to frame no 100
-```
-
-
-Representations
----------------
-
-Representations can be changed by overwriting the `representations` property
-of the widget instance `w`. The available `type` and `params` are described
+Representations can also be changed by overwriting the `representations` property
+of the widget instance `view`. The available `type` and `params` are described
 in the NGL Viewer [documentation](http://arose.github.io/ngl/doc).
 
 ```Python
-w.representations = [
+view.representations = [
     {"type": "cartoon", "params": {
         "sele": "protein", "color": "residueindex"
     }},
@@ -140,40 +94,31 @@ initial_repr = [
         "sele": "protein", "color": "sstruc"
     }}
 ]
-nglview.NGLWidget(struc, representation=initial_repr)
+
+view = nglview.NGLWidget(struc, representation=initial_repr)
+view
 ```
 
-Additionally representations can be added with the `add_representation` method:
+### Properties
 
 ```Python
-w.add_representation(
-    "cartoon", selection="protein", color="residueindex"
-)
-
-# or shorter
-w.add_cartoon("protein", color="residueindex")
-w.add_surface("protein", opacity=0.3)
+# set the frame number
+view.frame = 100
 ```
 
+```Python
+# parameters for the NGL stage object
+view.parameters = {
+    # "percentages, "dist" is distance too camera in Angstrom
+    "clipNear": 0, "clipFar": 100, "clipDist": 10,
+    # percentages, start of fog and where on full effect
+    "fogNear": 0, "fogFar": 100,
+    # background color
+    "theme": "dark",
+}
+```
 
-Adaptors
---------
-
-A number of adaptor classes are available to make structures and trajectories available to the widget.
-They can support either the `Structure` (S) or the `Trajectory` (T) interface as well as both combined.
-
-| Class                        | Description                                       | Interface |
-|------------------------------|---------------------------------------------------|-----------|
-| `FileStructure(path)`        | Loads `path` from filesystem                      | S         |
-| `PdbIdStructure(pdbid)`      | Fetches `pdbid` from RCSB PDB                     | S         |
-| `SimpletrajTrajectory(path)` | Uses `simpletraj` to access trajectory at `path`  | T         |
-| `MDTrajTrajectory(traj)`     | Wraps `MDTraj` trajectory `traj`                  | S and T   |
-| `PyTrajTrajectory(traj)`     | Wraps `PyTraj` trajectory `traj`                  | S and T   |
-| `MDAnalysisTrajectory(univ)` | Wraps `MDAnalysis` Universe or AtomGroup `univ`   | S and T   |
-
-
-Multiple widgets
-----------------
+### Multiple widgets
 
 You can have multiple widgets per notebook cell:
 
@@ -183,173 +128,6 @@ w1 = NGLWidget(...)
 w2 = NGLWidget(...)
 Box(children=(w1,w2))
 ```
-
-
-API
-===
-
-NGLWidget
----------
-
-### Constructor
-
-```Python
-ngl_widget = NGLWidget(structure, trajectory=None, representations=None)
-```
-
-
-### Properties
-
-```Python
-# set the frame number
-ngl_widget.frame = 100
-```
-
-```Python
-# list of representations
-ngl_widget.representations = [{"type": "cartoon"}]
-```
-
-```Python
-# parameters for the NGL stage object
-ngl_widget.parameters = {
-    # "percentages, "dist" is distance too camera in Angstrom
-    "clipNear": 0, "clipFar": 100, "clipDist": 10,
-    # percentages, start of fog and where on full effect
-    "fogNear": 0, "fogFar": 100
-}
-```
-
-### Methods
-
-```Python
-ngl_widget.add_representation("cartoon", **kwds)
-```
-
-
-Interface classes
-=================
-
-You can create your own adaptors simply by following the interfaces for `Structure` and `Trajectory`, which can also be combined into a single class.
-
-
-Structure
----------
-
-```Python
-class MyStructure(nglview.Structure):
-    ext = "pdb"  # or gro, cif, mol2, sdf
-    params = {}  # loading options passed to NGL
-    def get_structure_string(self):
-        return "structure in the self.ext format"
-```
-
-
-Trajectory
-----------
-
-```Python
-class MyTrajectory(nglview.Trajectory):
-    def get_coordinates(self, index):
-        # return 2D numpy array, shape=(n_atoms, 3)
-
-    def get_coordinates_dict(self):
-        # return a dict of encoded 2D numpy array
-
-    @property
-    def n_frames(self):
-        return 2  # return number of frames
-```
-
-
-Combined
---------
-
-```Python
-class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
-    ext = "pdb"  # or gro, cif, mol2, sdf
-    params = {}  # loading options passed to NGL
-
-    def get_structure_string(self):
-        return "structure in the self.ext format"
-
-    def get_coordinates(self, index):
-        # return 2D numpy array, shape=(n_atoms, 3)
-
-    def get_coordinates_dict(self):
-        # return a dict of encoded 2D numpy array
-
-    @property
-    def n_frames(self):
-        return 2  # return number of frames
-```
-
-
-Changelog
-=========
-
-Version 0.5.dev
----------------
-
-
-* ADD: `export_image`
-* ADD: `center_view`
-* ADD: `caching` for smoother trajectory playing
-* ADD: atom selection by array
-* ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
-* ADD: `ParmEdTrajectory` adaptor
-* ENH: smoother rendering if adding new representation
-* MIGRATION: change `get_frame_count` method to `n_frames` property
-* FIX: symlink error
-
-Version 0.4
------------
-
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.46373.svg)](http://dx.doi.org/10.5281/zenodo.46373)
-
-* ADD: Convenience methods to show widget from various sources
-* ADD: `PyTrajTrajectory` adaptor
-* ADD: `MDAnalysisTrajectory` adaptor
-* ADD: `NGLWidget.add_representation()` method
-* ADD: append a "WebGL not supported message" to widget if so
-* ADD: `parameters` widget property, passed to NGL stage object
-* ADD: `params` property for `Structure`, dict passed to NGL
-* CODE: be less noisy when importing nglview
-* DOC: more usage examples, API description
-* DOC: added CHANGELOG file
-* BUILD: added example files in the package
-
-
-Version 0.3
------------
-
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.44700.svg)](http://dx.doi.org/10.5281/zenodo.44700)
-
-* MIGRATION: `Trajectory` classes need `get_frame_count` method
-* MIGRATION: removed `set_frame` method use new `frame` property
-* ADD: simple trajectory player
-* ADD: widget resizing support
-* ADD: picking support (gui info; `picked` property)
-* CODE: check for file existence in `FileStructure` and `SimpletrajTrajectory`
-
-
-Version 0.2
------------
-
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.44698.svg)](http://dx.doi.org/10.5281/zenodo.44698)
-
-* MIGRATION: changed `get_string` to `get_structure_string`
-* MIGRATION: changed `get_coordinates` to `get_coordinates_list`
-* DOC: usage, interface classes
-* ADD: MDTrajTrajectory adaptor
-* CODE: added interface classes
-* CODE: suggested packages; mdtraj, simpletraj
-
-
-Older versions
---------------
-
-For changes in older versions please see the [CHANGELOG](CHANGELOG.md) file.
 
 
 License
