@@ -436,6 +436,8 @@ class NGLWidget(widgets.DOMWidget):
         except KeyError:
             self.cache = False
         super(NGLWidget, self).__init__(**kwargs)
+        self.trajlist = []
+
         if parameters:
             self.parameters = parameters
         self.set_structure(structure)
@@ -527,24 +529,22 @@ class NGLWidget(widgets.DOMWidget):
         params_list : list of dict
         '''
 
-        if self.representations is params_list:
-            raise ValueError("do not add your self to avoid circular update")
+        if params_list is not self.representations:
+            assert isinstance(params_list, list), 'must provide list of dict'
 
-        assert isinstance(params_list, list), 'must provide list of dict'
-
-        if len(params_list) == 0:
-            # clearn
-            self._representations = []
-            self._remote_call('clearRepresentations',
-                              target='StructureComponent')
-        else:
-            for params in params_list:
-                assert isinstance(params, dict), 'params must be a dict'
-                self._representations.append(params)
-                self._remote_call('addRepresentation',
-                                  target='StructureComponent',
-                                  args=[params['type'],],
-                                  kwargs=params['params'])
+            if not params_list:
+                for index in range(10):
+                    self._clear_repr(model=index)
+            else:
+                for index, params in enumerate(params_list):
+                    assert isinstance(params, dict), 'params must be a dict'
+                    kwargs = params['params']
+                    kwargs.update({'component_index': index})
+                    self._representations.append(params)
+                    self._remote_call('addRepresentation',
+                                      target='compList',
+                                      args=[params['type'],],
+                                      kwargs=kwargs)
 
 
     def _add_repr_method_shortcut(self):
@@ -636,13 +636,10 @@ class NGLWidget(widgets.DOMWidget):
         if not self.cache:
             self._set_coordinates(self.frame)
 
-    def _clear_repr(self, index=0):
-        if index == 0:
-            self.representations = []
-        else:
-            self._remote_call("clearRepresentations",
-                    target='compList',
-                    kwargs={'component_index': index})
+    def _clear_repr(self, model=0):
+        self._remote_call("clearRepresentations",
+                target='compList',
+                kwargs={'component_index': model})
 
     def add_representation(self, repr_type, selection='all', **kwargs):
         '''Add representation.
@@ -671,8 +668,8 @@ class NGLWidget(widgets.DOMWidget):
         # overwrite selection
         selection = seq_to_string(selection).strip()
 
-        if 'index' in kwargs:
-            index = kwargs.pop('index')
+        if 'model' in kwargs:
+            index = kwargs.pop('model')
         else:
             index = 0
 
@@ -689,21 +686,17 @@ class NGLWidget(widgets.DOMWidget):
 
         if index == 0:
             self._representations.append(d)
-            self._remote_call('addRepresentation',
-                              target='StructureComponent',
-                              args=[d['type'],],
-                              kwargs=d['params'])
-        else:
             # do not keep track representations of >= 2nd
-            params = d['params']
-            params.update({'component_index': index})
-            self._remote_call('addRepresentation',
-                              target='compList',
-                              args=[d['type'],],
-                              kwargs=params)
+
+        params = d['params']
+        params.update({'component_index': index})
+        self._remote_call('addRepresentation',
+                          target='compList',
+                          args=[d['type'],],
+                          kwargs=params)
 
 
-    def center_view(self, zoom=True, selection='*', index=0):
+    def center_view(self, zoom=True, selection='*', model=0):
         """center view
 
         Examples
@@ -712,7 +705,7 @@ class NGLWidget(widgets.DOMWidget):
         """
         self._remote_call('centerView', target='compList',
                           args=[zoom, selection],
-                          kwargs={'component_index': index})
+                          kwargs={'component_index': model})
 
     def export_image(self, factor=2,
                      antialias=True,
@@ -763,10 +756,10 @@ class NGLWidget(widgets.DOMWidget):
                 args=args,
                 kwargs=kwargs)
 
-    def _remove_component(self, index):
+    def _remove_component(self, model):
         self._remote_call('removeComponent',
                 target='Stage',
-                args=[index,])
+                args=[model,])
         
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
