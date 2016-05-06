@@ -210,8 +210,8 @@ class Trajectory(object):
 class SimpletrajTrajectory(Trajectory, Structure):
     '''simpletraj adaptor.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import nglview as nv
     >>> t = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
     >>> w = nv.NGLWidget(t)
