@@ -3,3 +3,6 @@ html:
 
 clean:
 	git clean -fxd
+
+push:
+	git push upstream gh-pages
