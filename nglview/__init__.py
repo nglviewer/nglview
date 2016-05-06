@@ -45,8 +45,8 @@ def decode_base64(data, shape, dtype='f4'):
 def show_pdbid(pdbid, **kwargs):
     '''Show PDB entry.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import nglview as nv
     >>> w = nv.show_pdbid("3pqr")
     >>> w
@@ -60,8 +60,8 @@ def show_structure_file(path, **kwargs):
     file formats that are by supported by NGL, including pdb,
     gro, mol2, sdf.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import nglview as nv
     >>> w = nv.show_structure_file(nv.datafiles.GRO)
     >>> w
@@ -77,8 +77,8 @@ def show_structure_file(path, **kwargs):
 def show_simpletraj(traj, **kwargs):
     '''Show simpletraj trajectory and structure file.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import nglview as nv
     >>> w = nv.show_simpletraj(nv.datafiles.GRO, nv.datafiles.XTC)
     >>> w
@@ -89,8 +89,8 @@ def show_simpletraj(traj, **kwargs):
 def show_mdtraj(mdtraj_trajectory, **kwargs):
     '''Show mdtraj trajectory.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import nglview as nv
     >>> import mdtraj as md
     >>> t = md.load(nv.datafiles.XTC, top=nv.datafiles.GRO)
@@ -104,8 +104,8 @@ def show_mdtraj(mdtraj_trajectory, **kwargs):
 def show_pytraj(pytraj_trajectory, **kwargs):
     '''Show pytraj trajectory.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import nglview as nv
     >>> import pytraj as pt
     >>> t = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -121,8 +121,8 @@ def show_pytraj(pytraj_trajectory, **kwargs):
 def show_parmed(parmed_structure, **kwargs):
     '''Show pytraj trajectory.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import nglview as nv
     >>> import parmed as pmd
     >>> t = pt.load_file(nv.datafiles.PDB)
@@ -138,8 +138,8 @@ def show_mdanalysis(atomgroup, **kwargs):
 
     Can take either a Universe or AtomGroup as its data input.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import nglview as nv
     >>> import MDAnalysis as mda
     >>> u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)
