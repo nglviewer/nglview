@@ -74,7 +74,7 @@ def show_structure_file(path, **kwargs):
     return NGLWidget(structure, **kwargs)
 
 
-def show_simpletraj(structure_path, trajectory_path, **kwargs):
+def show_simpletraj(traj, **kwargs):
     '''Show simpletraj trajectory and structure file.
 
     Example
@@ -83,10 +83,7 @@ def show_simpletraj(structure_path, trajectory_path, **kwargs):
     >>> w = nv.show_simpletraj(nv.datafiles.GRO, nv.datafiles.XTC)
     >>> w
     '''
-    extension = os.path.splitext(structure_path)[1][1:]
-    structure = FileStructure(structure_path, ext=extension)
-    trajectory = SimpletrajTrajectory(trajectory_path)
-    return NGLWidget(structure, trajectory, **kwargs)
+    return NGLWidget(traj, **kwargs)
 
 
 def show_mdtraj(mdtraj_trajectory, **kwargs):
@@ -220,7 +217,7 @@ class SimpletrajTrajectory(Trajectory, Structure):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
-    def __init__(self, path, topology_path):
+    def __init__(self, path, structure_path):
         try:
             import simpletraj
         except ImportError as e:
@@ -229,7 +226,10 @@ class SimpletrajTrajectory(Trajectory, Structure):
             )
         self.traj_cache = simpletraj.trajectory.TrajectoryCache()
         self.path = path
-        self._topology_path = topology_path
+        self._structure_path = structure_path
+        self.ext = os.path.splitext(structure_path)[1][1:]
+        self.params = {}
+        self.trajectory = None
         try:
             self.traj_cache.get(os.path.abspath(self.path))
         except Exception as e:
@@ -250,7 +250,7 @@ class SimpletrajTrajectory(Trajectory, Structure):
         return coordinates_dict
 
     def get_structure_string(self):
-        return open(self._topology_path).read()
+        return open(self._structure_path).read()
 
     @property
     def n_frames(self):
