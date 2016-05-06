@@ -210,18 +210,17 @@ class Trajectory(object):
         raise NotImplementedError()
 
 
-class SimpletrajTrajectory(Trajectory):
+class SimpletrajTrajectory(Trajectory, Structure):
     '''simpletraj adaptor.
 
     Example
     -------
     >>> import nglview as nv
-    >>> s = nv.FileStructure(nv.datafiles.GRO, ext="gro")
-    >>> t = nv.SimpletrajTrajectory(nv.datafiles.XTC)
-    >>> w = nv.NGLWidget(s, t)
+    >>> t = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
+    >>> w = nv.NGLWidget(t)
     >>> w
     '''
-    def __init__(self, path):
+    def __init__(self, path, topology_path):
         try:
             import simpletraj
         except ImportError as e:
@@ -230,6 +229,7 @@ class SimpletrajTrajectory(Trajectory):
             )
         self.traj_cache = simpletraj.trajectory.TrajectoryCache()
         self.path = path
+        self._topology_path = topology_path
         try:
             self.traj_cache.get(os.path.abspath(self.path))
         except Exception as e:
@@ -237,8 +237,20 @@ class SimpletrajTrajectory(Trajectory):
 
     def get_coordinates(self, index):
         traj = self.traj_cache.get(os.path.abspath(self.path))
-        frame = traj.get_frame(int(index))
+        frame = traj.get_frame(index)
         return frame["coords"]
+
+    def get_coordinates_dict(self):
+        traj = self.traj_cache.get(os.path.abspath(self.path))
+
+        coordinates_dict = {}
+        for i in range(self.n_frames):
+            frame = traj.get_frame(i)
+            coordinates_dict[i] = encode_numpy(frame['coords'])
+        return coordinates_dict
+
+    def get_structure_string(self):
+        return open(self._topology_path).read()
 
     @property
     def n_frames(self):
