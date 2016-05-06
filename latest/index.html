@@ -126,6 +126,44 @@
             
   <div class="section" id="welcome-to-nglview-s-documentation">
 <h1>Welcome to NGLView&#8217;s documentation!<a class="headerlink" href="#welcome-to-nglview-s-documentation" title="Permalink to this headline">¶</a></h1>
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <title>NGL - embedded</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    </head>
+
+    <body>
+
+        <script src="ngl.embedded.min.js"></script>
+
+        <script>
+            NGL.mainScriptFilePath = "ngl.embedded.min.js";
+            document.addEventListener( "DOMContentLoaded", function(){
+                var stage = new NGL.Stage( "viewport" );
+                stage.viewer.container.addEventListener( "dblclick", function(){
+                    stage.toggleFullscreen();
+                } );
+                stage.loadFile( '_static/1tsu.pdb' ).then( function( o ) {
+                    o.addRepresentation( "cartoon" );
+                    o.addRepresentation( "licorice", {'sele': 'water and not hydrogen'} );
+                    o.centerView();
+                });
+                // stage.addRepresentation( "licorice", {'sele': 'not water'} );
+                stage.setTheme( "light" );
+            } );
+        </script>
+
+        <div id="viewport" style="width:800px; height:800px;"></div>
+
+    </body>
+
+</html>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul class="simple">

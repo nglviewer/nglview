@@ -6,6 +6,9 @@
 Welcome to NGLView's documentation!
 ===================================
 
+.. raw:: html
+    :file: view_demo.html
+
 Contents:
 
 .. toctree::
