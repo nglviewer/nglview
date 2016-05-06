@@ -9,6 +9,12 @@ Welcome to NGLView's documentation!
 .. raw:: html
     :file: view_demo.html
 
+.. container:: custom-index
+    
+    .. raw:: html
+    
+        <script type="text/javascript" src='_static/cindex.js'></script>
+
 Contents:
 
 .. toctree::
