@@ -482,6 +482,9 @@ class NGLWidget(widgets.DOMWidget):
     def on_loaded(self, change):
         [callback(self) for callback in self._ngl_displayed_callbacks]
 
+        if self.trajlist:
+            self._set_coordinates(0)
+
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         self.displayed = True
