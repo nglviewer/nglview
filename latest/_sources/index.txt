@@ -15,7 +15,6 @@ Contents:
     :members:
     :undoc-members:
     :show-inheritance:
-    :inherited-members:
 
 
 Indices and tables
