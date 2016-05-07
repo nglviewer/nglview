@@ -41,9 +41,6 @@ define( [
     signals, _msgpackDecode, _mmtfDecode, _TypedFastBitSet, _NGL
 ){
 
-    console.log(widget, manager, $, _THREE, _Promise, _sprintf, pako, chroma, _jsfeat,
-    signals, _msgpackDecode, _mmtfDecode, _TypedFastBitSet, _NGL)
-
     window.pako = pako;
     window.signals = signals;
     window.chroma = chroma;
@@ -53,11 +50,6 @@ define( [
         render: function(){
 
             // console.log( "NGLView", this )
-
-            if( !Detector.webgl ){
-                Detector.addGetWebGLMessage( { "parent": this.el } );
-                return;
-            }
 
             NGL.init( function(){
 
