@@ -11,8 +11,7 @@ require.config( {
         "msgpackDecode": "../nbextensions/nglview/msgpack-decode",
         "mmtfDecode": "../nbextensions/nglview/mmtf-decode",
         "TypedFastBitSet": "../nbextensions/nglview/TypedFastBitSet",
-        "NGL": "../nbextensions/nglview/ngl",
-        "mdsrv": "../nbextensions/nglview/mdsrv"
+        "NGL": "../nbextensions/nglview/ngl"
     },
     shim: {
         THREE: { exports: "THREE" },
@@ -36,14 +35,14 @@ define( [
     "nbextensions/widgets/widgets/js/manager",
     "jqueryui",
     "THREE", "Promise", "sprintf", "pako", "chroma", "jsfeat", "signals",
-    "msgpackDecode", "mmtfDecode", "TypedFastBitSet", "NGL", "mdsrv"
+    "msgpackDecode", "mmtfDecode", "TypedFastBitSet", "NGL"
 ], function(
     widget, manager, $, _THREE, _Promise, _sprintf, pako, chroma, _jsfeat,
-    signals, _msgpackDecode, _mmtfDecode, _TypedFastBitSet, _NGL, _NGL_mdsrv
+    signals, _msgpackDecode, _mmtfDecode, _TypedFastBitSet, _NGL
 ){
 
     console.log(widget, manager, $, _THREE, _Promise, _sprintf, pako, chroma, _jsfeat,
-    signals, _msgpackDecode, _mmtfDecode, _TypedFastBitSet, _NGL, _NGL_mdsrv)
+    signals, _msgpackDecode, _mmtfDecode, _TypedFastBitSet, _NGL)
 
     window.pako = pako;
     window.signals = signals;

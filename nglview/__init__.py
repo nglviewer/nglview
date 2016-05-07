@@ -550,7 +550,6 @@ class NGLWidget(widgets.DOMWidget):
                 ('surface', 'surface'),
                 ('backbone', 'backbone'),
                 ('contact', 'contact'),
-                ('crossing', 'crossing'),
                 ('hyperball', 'hyperball'),
                 ('rocket', 'rocket'),
                 ('helixorient', 'helixorient'),
