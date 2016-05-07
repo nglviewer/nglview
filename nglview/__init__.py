@@ -429,6 +429,7 @@ class NGLWidget(widgets.DOMWidget):
     selection = Unicode("*").tag(sync=True)
     cache = Bool().tag(sync=True)
     loaded = Bool(False).tag(sync=True)
+    _finish_caching = Bool(False).tag(sync=True)
     frame = Int().tag(sync=True)
     count = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
@@ -489,6 +490,11 @@ class NGLWidget(widgets.DOMWidget):
 
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
+
+    @observe('_finish_caching')
+    def on_finish_caching(self, change):
+        if self._finish_caching:
+            print('finish caching. Enjoy')
 
     @observe('loaded')
     def on_loaded(self, change):
@@ -622,9 +628,11 @@ class NGLWidget(widgets.DOMWidget):
         else:
             print('does not have trajlist. skip caching') 
             self.cache = False
+            self._finish_caching = False
 
     def uncaching(self):
         self.cache = False
+        self._finish_caching = False
 
     def set_representations(self, representations):
         self.representations = representations
@@ -637,20 +645,21 @@ class NGLWidget(widgets.DOMWidget):
                            } for _structure in structure_list]
 
     def _set_coordinates(self, index):
-        if self.trajlist and not self.cache:
-            coordinate_list = []
-            for trajectory in self.trajlist:
-                try:
-                    coordinate_list.append(trajectory.get_coordinates(index))
-                except IndexError:
-                    coordinate_list.append(np.empty((0), dtype='f4'))
-            self.coordinates = coordinate_list
+        if self.trajlist:
+            if not self.cache or (self.cache and not self._finish_caching):
+                coordinate_list = []
+                for trajectory in self.trajlist:
+                    try:
+                        coordinate_list.append(trajectory.get_coordinates(index))
+                    except IndexError:
+                        coordinate_list.append(np.empty((0), dtype='f4'))
+                self.coordinates = coordinate_list
         else:
             print("no trajectory available")
 
     @observe('frame')
     def on_frame(self, change):
-        if not self.cache:
+        if not self.cache or (self.cache and not self._finish_caching):
             self._set_coordinates(self.frame)
 
     def _clear_repr(self, model=0):

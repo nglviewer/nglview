@@ -295,7 +295,6 @@ define( [
                     var coordsDict = this.coordsDictList[ i ]; 
                     if( frame in coordsDict ) {
                         var coordinates = coordsDict[frame];
-                        console.log( coordinates );
                         this._update_coords(coordinates, i);
                     } // else: just wait
                 }
@@ -402,6 +401,9 @@ define( [
                         break;
                 }
             }else if( msg.type == 'base64' ){
+                // if got message
+                this.model.set( "_finish_caching", true );
+                this.touch();
                 console.log( "received base64 dict for all frames" );
                 var base64DictList = JSON.parse( msg.data );
                 this.coordsDictList = {};
