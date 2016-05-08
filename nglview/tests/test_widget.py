@@ -120,11 +120,11 @@ def test_remote_call():
     kwargs = {'defaultRepresentation': True}
     view._remote_call('loadFile', target='stage', args=[fn,], kwargs=kwargs)
 
-def test_export_image():
+def test_download_image():
     """just make sure it can be called
     """
     view = nv.show_pytraj(pt.datafiles.load_tz2())
-    view.export_image(2, False, False, True)
+    view.download_image('myname.png', 2, False, False, True)
 
 def test_show_structure_file():
     view = nv.show_structure_file(nv.datafiles.PDB)
