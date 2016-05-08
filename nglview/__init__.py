@@ -688,6 +688,11 @@ class NGLWidget(widgets.DOMWidget):
         >>> w.add_representation('licorice', selection=[3, 8, 9, 11], color='red')
         >>> w
         '''
+
+        if repr_type == 'surface':
+            if 'useWorker' not in kwargs:
+                kwargs['useWorker'] = False
+
         # avoid space sensitivity
         repr_type = repr_type.strip()
         # overwrite selection
@@ -735,7 +740,7 @@ class NGLWidget(widgets.DOMWidget):
         """render and download scence at current frame
         """
         onProgress = False
-        self._remote_call('exportImage',
+        self._remote_call('makeImage',
                           target='Stage',
                           args=[factor, antialias, trim, transparent, onProgress])
 
