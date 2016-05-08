@@ -427,6 +427,7 @@ class NGLWidget(widgets.DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
+    _image_data = Unicode().tag(sync=True)
     cache = Bool().tag(sync=True)
     loaded = Bool(False).tag(sync=True)
     _finish_caching = Bool(False).tag(sync=True)
@@ -732,6 +733,28 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('centerView', target='compList',
                           args=[zoom, selection],
                           kwargs={'component_index': model})
+
+    def _export_image(self, factor=4,
+                      antialias=True,
+                      trim=False,
+                      transparent=False):
+        """render and get image' data as base64
+
+        Parameters
+        ----------
+        factor : int, default 4
+            quality of the image, higher is better
+        antialias : bool, default True
+        trim : bool, default False
+        transparent : bool, default False
+        """
+        params = dict(factor=factor,
+                      antialias=antialias,
+                      trim=trim,
+                      transparent=transparent)
+        self._remote_call('_exportImage',
+                          target='Widget',
+                          kwargs=params)
 
     def download_image(self, filename='screenshot.png',
                        factor=4,

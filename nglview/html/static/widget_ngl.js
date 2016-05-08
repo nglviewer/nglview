@@ -341,6 +341,13 @@ define( [
             })
         },
 
+        _exportImage: function( params ) {
+            this.stage.makeImage( params ).then( function( blob ) {
+                 this.model.set( "_image_data", blob );
+                 this.touch():
+            })
+        },
+
         on_msg: function(msg){
             // TODO: re-organize
             if( msg.type == 'call_method' ){
