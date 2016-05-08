@@ -739,7 +739,6 @@ class NGLWidget(widgets.DOMWidget):
                      transparent=False):
         """render and download scence at current frame
         """
-        onProgress = False
         params = dict(factor=factor,
                       antialias=antialias,
                       trim=trim,
