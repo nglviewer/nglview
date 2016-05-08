@@ -733,16 +733,20 @@ class NGLWidget(widgets.DOMWidget):
                           args=[zoom, selection],
                           kwargs={'component_index': model})
 
-    def export_image(self, factor=2,
+    def export_image(self, factor=1,
                      antialias=True,
                      trim=False,
                      transparent=False):
         """render and download scence at current frame
         """
         onProgress = False
+        params = dict(factor=factor,
+                      antialias=antialias,
+                      trim=trim,
+                      transparent=transparent)
         self._remote_call('makeImage',
                           target='Stage',
-                          args=[factor, antialias, trim, transparent, onProgress])
+                          kwargs=params)
 
     def _ngl_handle_msg(self, widget, msg, buffers):
         """store message sent from Javascript.
