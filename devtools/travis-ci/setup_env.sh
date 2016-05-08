@@ -15,7 +15,7 @@ pip install conda
 conda install --yes conda-build jinja2 anaconda-client pip
 
 # create myenv
-conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose numpy mock coverage cython
+conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose numpy mock coverage cython netcdf4
 
 source activate myenv
 pip install pytraj
@@ -29,3 +29,6 @@ else
    cd ../../
 fi
 conda install mdtraj -c omnia --yes
+
+# simpletraj
+pip install git+https://github.com/arose/simpletraj

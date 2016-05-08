@@ -129,6 +129,11 @@ def test_download_image():
 def test_show_structure_file():
     view = nv.show_structure_file(nv.datafiles.PDB)
 
+def test_show_simpletraj():
+    traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
+    view = nv.show_simpletraj(traj)
+    view
+
 def test_show_mdtraj():
     import mdtraj as md
     from mdtraj.testing import get_fn
