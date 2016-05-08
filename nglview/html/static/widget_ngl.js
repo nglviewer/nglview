@@ -341,6 +341,19 @@ define( [
             })
         },
 
+        _exportImage: function( params ) {
+            this.stage.makeImage( params ).then( function( blob ) {
+                 var reader = new FileReader();
+                 var arr_str;
+                 reader.onload = function() {
+                     arr_str = reader.result.replace("data:image/png;base64,", "");
+                     this.model.set( "_image_data", arr_str );
+                     this.touch();
+                 }.bind( this );
+                 reader.readAsDataURL( blob );
+            }.bind( this ));
+        },
+
         on_msg: function(msg){
             // TODO: re-organize
             if( msg.type == 'call_method' ){
