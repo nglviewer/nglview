@@ -733,18 +733,28 @@ class NGLWidget(widgets.DOMWidget):
                           args=[zoom, selection],
                           kwargs={'component_index': model})
 
-    def export_image(self, factor=1,
+    def download_image(self, filename='screenshot.png',
+                     factor=1,
                      antialias=True,
                      trim=False,
                      transparent=False):
         """render and download scence at current frame
+
+        Parameters
+        ----------
+        filename : str, default 'screenshot.png'
+        factor : int, default 1
+        antialias : bool, default True
+        trim : bool, default False
+        transparent : bool, default False
         """
         params = dict(factor=factor,
                       antialias=antialias,
                       trim=trim,
                       transparent=transparent)
-        self._remote_call('makeImage',
-                          target='Stage',
+        self._remote_call('_downloadImage',
+                          target='Widget',
+                          args=[filename,],
                           kwargs=params)
 
     def _ngl_handle_msg(self, widget, msg, buffers):
