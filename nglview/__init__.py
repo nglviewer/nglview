@@ -10,6 +10,7 @@ import warnings
 import tempfile
 import ipywidgets as widgets
 from traitlets import Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe
+from ipywidgets import widget_image
 
 from IPython.display import display, Javascript
 from notebook.nbextensions import install_nbextension
@@ -734,20 +735,50 @@ class NGLWidget(widgets.DOMWidget):
                           args=[zoom, selection],
                           kwargs={'component_index': model})
 
-    def _export_image(self, factor=4,
-                      antialias=True,
-                      trim=False,
-                      transparent=False):
-        """render and get image' data as base64
+    @observe('_image_data')
+    def get_image(self, change=""):
+        '''get rendered image. Make sure to call `export_image` first
+
+        Notes
+        -----
+        method name might be changed
+        '''
+        image = widget_image.Image()
+        image._b64value = self._image_data
+        return image
+
+    def export_image(self, frame=None,
+                     factor=4,
+                     antialias=True,
+                     trim=False,
+                     transparent=False):
+        """render and get image as ipywidgets.widget_image.Image
 
         Parameters
         ----------
+        frame : int or None, default None
+            if None, use current frame
+            if specified, use this number.
         factor : int, default 4
             quality of the image, higher is better
         antialias : bool, default True
         trim : bool, default False
         transparent : bool, default False
+
+        Examples
+        --------
+            # tell NGL to render send image data to notebook.
+            view.export_image()
+            
+            # make sure to call `get_image` method
+            view.get_image()
+
+        Notes
+        -----
+        You need to call `export_image` and `get_image` in different notebook's Cells
         """
+        if frame is not None:
+            self.frame = frame
         params = dict(factor=factor,
                       antialias=antialias,
                       trim=trim,
