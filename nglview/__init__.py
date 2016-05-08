@@ -734,16 +734,17 @@ class NGLWidget(widgets.DOMWidget):
                           kwargs={'component_index': model})
 
     def download_image(self, filename='screenshot.png',
-                     factor=1,
-                     antialias=True,
-                     trim=False,
-                     transparent=False):
+                       factor=4,
+                       antialias=True,
+                       trim=False,
+                       transparent=False):
         """render and download scence at current frame
 
         Parameters
         ----------
         filename : str, default 'screenshot.png'
-        factor : int, default 1
+        factor : int, default 4
+            quality of the image, higher is better
         antialias : bool, default True
         trim : bool, default False
         transparent : bool, default False
