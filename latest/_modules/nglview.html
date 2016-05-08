@@ -557,6 +557,7 @@
     <span class="n">selection</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">cache</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">loaded</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">_finish_caching</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">frame</span> <span class="o">=</span> <span class="n">Int</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">count</span> <span class="o">=</span> <span class="n">Int</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_init_representations</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -617,6 +618,11 @@
 
         <span class="c1"># register to get data from JS side</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_handle_msg</span><span class="p">)</span>
+
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_finish_caching&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">on_finish_caching</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;finish caching. Enjoy&#39;</span><span class="p">)</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;loaded&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">on_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
@@ -707,7 +713,6 @@
                 <span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">,</span> <span class="s1">&#39;surface&#39;</span><span class="p">),</span>
                 <span class="p">(</span><span class="s1">&#39;backbone&#39;</span><span class="p">,</span> <span class="s1">&#39;backbone&#39;</span><span class="p">),</span>
                 <span class="p">(</span><span class="s1">&#39;contact&#39;</span><span class="p">,</span> <span class="s1">&#39;contact&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;crossing&#39;</span><span class="p">,</span> <span class="s1">&#39;crossing&#39;</span><span class="p">),</span>
                 <span class="p">(</span><span class="s1">&#39;hyperball&#39;</span><span class="p">,</span> <span class="s1">&#39;hyperball&#39;</span><span class="p">),</span>
                 <span class="p">(</span><span class="s1">&#39;rocket&#39;</span><span class="p">,</span> <span class="s1">&#39;rocket&#39;</span><span class="p">),</span>
                 <span class="p">(</span><span class="s1">&#39;helixorient&#39;</span><span class="p">,</span> <span class="s1">&#39;helixorient&#39;</span><span class="p">),</span>
@@ -749,10 +754,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s1">&#39;does not have trajlist. skip caching&#39;</span><span class="p">)</span> 
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="bp">False</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span> <span class="o">=</span> <span class="bp">False</span></div>
 
 <div class="viewcode-block" id="NGLWidget.uncaching"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.uncaching">[docs]</a>    <span class="k">def</span> <span class="nf">uncaching</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="bp">False</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span> <span class="o">=</span> <span class="bp">False</span></div>
 
 <div class="viewcode-block" id="NGLWidget.set_representations"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.set_representations">[docs]</a>    <span class="k">def</span> <span class="nf">set_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representations</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="n">representations</span></div>
@@ -765,20 +772,21 @@
                            <span class="p">}</span> <span class="k">for</span> <span class="n">_structure</span> <span class="ow">in</span> <span class="n">structure_list</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
-            <span class="n">coordinate_list</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">trajectory</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">coordinate_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
-                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                    <span class="n">coordinate_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">coordinate_list</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span><span class="p">):</span>
+                <span class="n">coordinate_list</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">trajectory</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">coordinate_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="n">coordinate_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">coordinate_list</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s2">&quot;no trajectory available&quot;</span><span class="p">)</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;frame&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">on_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_clear_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -808,6 +816,11 @@
 <span class="sd">        &gt;&gt;&gt; w.add_representation(&#39;licorice&#39;, selection=[3, 8, 9, 11], color=&#39;red&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; w</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">repr_type</span> <span class="o">==</span> <span class="s1">&#39;surface&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;useWorker&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;useWorker&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
         <span class="c1"># avoid space sensitivity</span>
         <span class="n">repr_type</span> <span class="o">=</span> <span class="n">repr_type</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="c1"># overwrite selection</span>
@@ -848,16 +861,30 @@
                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">zoom</span><span class="p">,</span> <span class="n">selection</span><span class="p">],</span>
                           <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="NGLWidget.export_image"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.export_image">[docs]</a>    <span class="k">def</span> <span class="nf">export_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                     <span class="n">antialias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                     <span class="n">trim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                     <span class="n">transparent</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.download_image"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.download_image">[docs]</a>    <span class="k">def</span> <span class="nf">download_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;screenshot.png&#39;</span><span class="p">,</span>
+                       <span class="n">factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                       <span class="n">antialias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                       <span class="n">trim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                       <span class="n">transparent</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;render and download scence at current frame</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str, default &#39;screenshot.png&#39;</span>
+<span class="sd">        factor : int, default 4</span>
+<span class="sd">            quality of the image, higher is better</span>
+<span class="sd">        antialias : bool, default True</span>
+<span class="sd">        trim : bool, default False</span>
+<span class="sd">        transparent : bool, default False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">onProgress</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;exportImage&#39;</span><span class="p">,</span>
-                          <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
-                          <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">factor</span><span class="p">,</span> <span class="n">antialias</span><span class="p">,</span> <span class="n">trim</span><span class="p">,</span> <span class="n">transparent</span><span class="p">,</span> <span class="n">onProgress</span><span class="p">])</span></div>
+        <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span>
+                      <span class="n">antialias</span><span class="o">=</span><span class="n">antialias</span><span class="p">,</span>
+                      <span class="n">trim</span><span class="o">=</span><span class="n">trim</span><span class="p">,</span>
+                      <span class="n">transparent</span><span class="o">=</span><span class="n">transparent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;_downloadImage&#39;</span><span class="p">,</span>
+                          <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
+                          <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">filename</span><span class="p">,],</span>
+                          <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_ngl_handle_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">buffers</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;store message sent from Javascript.</span>

@@ -332,9 +332,16 @@ Use <cite>view.uncaching()</cite> then update your coordinates, then <cite>view.
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="nglview.NGLWidget.export_image">
-<code class="descname">export_image</code><span class="sig-paren">(</span><em>factor=2</em>, <em>antialias=True</em>, <em>trim=False</em>, <em>transparent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.export_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.export_image" title="Permalink to this definition">¶</a></dt>
+<dt id="nglview.NGLWidget.download_image">
+<code class="descname">download_image</code><span class="sig-paren">(</span><em>filename='screenshot.png'</em>, <em>factor=4</em>, <em>antialias=True</em>, <em>trim=False</em>, <em>transparent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.download_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.download_image" title="Permalink to this definition">¶</a></dt>
 <dd><p>render and download scence at current frame</p>
+<p>filename : str, default &#8216;screenshot.png&#8217;
+factor : int, default 4</p>
+<blockquote>
+<div>quality of the image, higher is better</div></blockquote>
+<p>antialias : bool, default True
+trim : bool, default False
+transparent : bool, default False</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -348,6 +355,11 @@ Use <cite>view.uncaching()</cite> then update your coordinates, then <cite>view.
 <code class="descname">loaded</code><a class="headerlink" href="#nglview.NGLWidget.loaded" title="Permalink to this definition">¶</a></dt>
 <dd><p>A boolean (True, False) trait.</p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.on_finish_caching">
+<code class="descname">on_finish_caching</code><a class="headerlink" href="#nglview.NGLWidget.on_finish_caching" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="nglview.NGLWidget.on_frame">
