@@ -2,31 +2,29 @@
 require.config( {
     paths: {
         "THREE": "../nbextensions/nglview/three.custom.min",
-        "Detector": "../nbextensions/nglview/Detector",
-        "async": "../nbextensions/nglview/async.min",
         "Promise": "../nbextensions/nglview/promise.min",
         "sprintf": "../nbextensions/nglview/sprintf.min",
-        "JSZip": "../nbextensions/nglview/jszip.min",
-        "pako": "../nbextensions/nglview/pako.min",
-        "LZMA": "../nbextensions/nglview/lzma.min",
-        "bzip2": "../nbextensions/nglview/bzip2.min",
+        "pako": "../nbextensions/nglview/pako_inflate.min",
         "chroma": "../nbextensions/nglview/chroma.min",
         "jsfeat": "../nbextensions/nglview/svd.min",
         "signals": "../nbextensions/nglview/signals.min",
-        "NGL": "../nbextensions/nglview/ngl",
-        "mdsrv": "../nbextensions/nglview/mdsrv",
+        "msgpackDecode": "../nbextensions/nglview/msgpack-decode",
+        "mmtfDecode": "../nbextensions/nglview/mmtf-decode",
+        "TypedFastBitSet": "../nbextensions/nglview/TypedFastBitSet",
+        "NGL": "../nbextensions/nglview/ngl"
     },
     shim: {
         THREE: { exports: "THREE" },
-        Detector: { exports: "Detector" },
         Promise: { exports: "Promise" },
         sprintf: { exports: "sprintf" },
-        JSZip: { exports: "JSZip" },
-        LZMA: { exports: "LZMA" },
-        bzip2: { exports: "bzip2" },
         jsfeat: { exports: "jsfeat" },
+        msgpackDecode: { exports: "msgpackDecode" },
+        mmtfDecode: { exports: "mmtfDecode" },
         NGL: {
-            deps: [ "THREE", "Detector", "async", "Promise", "sprintf", "JSZip", "pako", "LZMA", "bzip2", "chroma", "jsfeat", "signals" ],
+            deps: [
+                "THREE", "Promise", "sprintf", "pako", "chroma", "jsfeat",
+                "signals", "msgpackDecode", "mmtfDecode", "TypedFastBitSet"
+            ],
             exports: "NGL"
         }
     },
@@ -36,14 +34,13 @@ define( [
     "nbextensions/widgets/widgets/js/widget",
     "nbextensions/widgets/widgets/js/manager",
     "jqueryui",
-    "THREE", "Detector", "async", "Promise", "sprintf", "JSZip", "pako",
-    "LZMA", "bzip2", "chroma", "jsfeat", "signals", "NGL", "mdsrv"
+    "THREE", "Promise", "sprintf", "pako", "chroma", "jsfeat", "signals",
+    "msgpackDecode", "mmtfDecode", "TypedFastBitSet", "NGL"
 ], function(
-    widget, manager, $, _THREE, _Detector, async, _Promise, _sprintf, _JSZip, pako,
-    _LZMA, _bzip2, chroma, _jsfeat, signals, _NGL, _NGL_mdsrv
+    widget, manager, $, _THREE, _Promise, _sprintf, pako, chroma, _jsfeat,
+    signals, _msgpackDecode, _mmtfDecode, _TypedFastBitSet, _NGL
 ){
 
-    window.async = async;
     window.pako = pako;
     window.signals = signals;
     window.chroma = chroma;
@@ -52,163 +49,152 @@ define( [
 
         render: function(){
 
-            // console.log( "NGLView", this )
+            // init representations handling
+            this.model.on( "change:_init_representations", this.representationsChanged, this );
 
-            if( !Detector.webgl ){
-                Detector.addGetWebGLMessage( { "parent": this.el } );
-                return;
-            }
+            // init structure loading
+            this.model.on( "change:structure_list", this.structureChanged, this );
 
-            NGL.init( function(){
+            // init setting of coordinates
+            this.model.on( "change:coordinates_dict", this.coordsDictListChanged, this );
 
-                // init representations handling
-                this.model.on( "change:_init_representations", this.representationsChanged, this );
+            // init setting of frame
+            this.model.on( "change:frame", this.frameChanged, this );
 
-                // init structure loading
-                this.model.on( "change:structure_list", this.structureChanged, this );
+            // init parameters handling
+            this.model.on( "change:parameters", this.parametersChanged, this );
 
-                // init setting of coordinates
-                this.model.on( "change:coordinates_dict", this.coordsDictListChanged, this );
+            // init parameters handling
+            this.model.on( "change:cache", this.cacheChanged, this );
 
-                // init setting of frame
-                this.model.on( "change:frame", this.frameChanged, this );
+            // init orientation handling
+            this.model.on( "change:orientation", this.orientationChanged, this );
 
-                // init parameters handling
-                this.model.on( "change:parameters", this.parametersChanged, this );
+            // get message from Python
+            this.coordsDictList = {};
+            this.model.on( "msg:custom", function (msg) {
+                this.on_msg( msg );
+            }, this);
 
-                // init parameters handling
-                this.model.on( "change:cache", this.cacheChanged, this );
-
-                // init orientation handling
-                this.model.on( "change:orientation", this.orientationChanged, this );
-
-                // get message from Python
-                this.coordsDictList = {};
-                this.model.on( "msg:custom", function (msg) {
-                    this.on_msg( msg );
-                }, this);
-
-                // init NGL stage
-                NGL.useWorker = false;
-                this.stage = new NGL.Stage();
-                this.stage.setTheme( "light" );
-                this.structureComponent = undefined;
-                this.$container = $( this.stage.viewer.container );
-                this.$el.append( this.$container );
-                this.$container.resizable( {
-                    resize: function( event, ui ){
-                        this.setSize( ui.size.width + "px", ui.size.height + "px" );
-                    }.bind( this )
-                } );
-                this.displayed.then( function(){
-                    var width = this.$el.parent().width() + "px";
-                    var height = "300px";
-                    this.setSize( width, height );
-                    this.$container.resizable(
-                        "option", "maxWidth", this.$el.parent().width()
-                    );
-                    this.model.set('loaded', true);
-                    this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
-                    this.model.set('orientation', this.stage.viewer.getOrientation() );
-                    this.touch();
-                }.bind( this ) );
-
-                this.stage.viewer.controls.addEventListener( "change", function() {
-                    this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
-                    this.model.set('orientation', this.stage.viewer.getOrientation() );
-                    this.touch();
-                }.bind( this) );
-
-                // init toggle fullscreen
-                $( this.stage.viewer.container ).dblclick( function(){
-                    this.stage.toggleFullscreen();
-                }.bind( this ) );
-
-                // init model data
-                this.structureChanged();
-
-                // init picking handling
-                this.$pickingInfo = $( "<div></div>" )
-                    .css( "position", "absolute" )
-                    .css( "top", "5%" )
-                    .css( "left", "3%" )
-                    .css( "background-color", "white" )
-                    .css( "padding", "2px 5px 2px 5px" )
-                    .css( "opacity", "0.7" )
-                    .appendTo( this.$container );
-                this.stage.signals.onPicking.add( function( pd ){
-                    var pd2 = {};
-                    if( pd.atom ) pd2.atom = pd.atom.toJSON();
-                    if( pd.bond ) pd2.bond = pd.bond.toJSON();
-                    if( pd.instance ) pd2.instance = pd.instance;
-                    this.model.set( "picked", pd2 );
-                    this.model.save();
-                    var pickingText = "";
-                    if( pd.atom ){
-                        pickingText = "Atom: " + pd.atom.qualifiedName();
-                    }else if( pd.bond ){
-                        pickingText = "Bond: " + pd.bond.atom1.qualifiedName() + " - " + pd.bond.atom2.qualifiedName();
-                    }
-                    this.$pickingInfo.text( pickingText );
-                }, this );
-
-                // init player
-                if( this.model.get( "count" ) ){
-                    var play = function(){
-                        this.$playerButton.text( "pause" );
-                        this.playerInterval = setInterval( function(){
-                            var frame = this.model.get( "frame" ) + 1;
-                            var count = this.model.get( "count" );
-                            if( frame >= count ) frame = 0;
-                            this.model.set( "frame", frame );
-                            this.model.save();
-                        }.bind( this ), 100 );
-                    }.bind( this );
-                    var pause = function(){
-                        this.$playerButton.text( "play" );
-                        if( this.playerInterval !== undefined ){
-                            clearInterval( this.playerInterval );
-                        }
-                    }.bind( this );
-                    this.$playerButton = $( "<button>play</button>" )
-                        .css( "float", "left" )
-                        .css( "width", "55px" )
-                        .css( "opacity", "0.7" )
-                        .click( function( event ){
-                            if( this.$playerButton.text() === "play" ){
-                                play();
-                            }else if( this.$playerButton.text() === "pause" ){
-                                pause();
-                            }
-                        }.bind( this ) );
-                    this.$playerSlider = $( "<div></div>" )
-                        .css( "margin-left", "70px" )
-                        .css( "position", "relative" )
-                        .css( "bottom", "-7px" )
-                        .slider( {
-                            min: 0,
-                            max: this.model.get( "count" ) - 1,
-                            slide: function( event, ui ){
-                                pause();
-                                this.model.set( "frame", ui.value );
-                                this.model.save();
-                            }.bind( this )
-                        } );
-                    this.$player = $( "<div></div>" )
-                        .css( "position", "absolute" )
-                        .css( "bottom", "5%" )
-                        .css( "width", "94%" )
-                        .css( "margin-left", "3%" )
-                        .css( "opacity", "0.7" )
-                        .append( this.$playerButton )
-                        .append( this.$playerSlider )
-                        .appendTo( this.$container );
-                    this.model.on( "change:frame", function(){
-                        this.$playerSlider.slider( "value", this.model.get( "frame" ) );
-                    }, this );
-                }
-
+            // init NGL stage
+            NGL.useWorker = false;
+            this.stage = new NGL.Stage();
+            this.stage.setTheme( "light" );
+            this.structureComponent = undefined;
+            this.$container = $( this.stage.viewer.container );
+            this.$el.append( this.$container );
+            this.$container.resizable( {
+                resize: function( event, ui ){
+                    this.setSize( ui.size.width + "px", ui.size.height + "px" );
+                }.bind( this )
+            } );
+            this.displayed.then( function(){
+                var width = this.$el.parent().width() + "px";
+                var height = "300px";
+                this.setSize( width, height );
+                this.$container.resizable(
+                    "option", "maxWidth", this.$el.parent().width()
+                );
+                this.model.set('loaded', true);
+                this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
+                this.model.set('orientation', this.stage.viewer.getOrientation() );
+                this.touch();
             }.bind( this ) );
+
+            this.stage.viewer.controls.addEventListener( "change", function() {
+                this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
+                this.model.set('orientation', this.stage.viewer.getOrientation() );
+                this.touch();
+            }.bind( this) );
+
+            // init toggle fullscreen
+            $( this.stage.viewer.container ).dblclick( function(){
+                this.stage.toggleFullscreen();
+            }.bind( this ) );
+
+            // init model data
+            this.structureChanged();
+
+            // init picking handling
+            this.$pickingInfo = $( "<div></div>" )
+                .css( "position", "absolute" )
+                .css( "top", "5%" )
+                .css( "left", "3%" )
+                .css( "background-color", "white" )
+                .css( "padding", "2px 5px 2px 5px" )
+                .css( "opacity", "0.7" )
+                .appendTo( this.$container );
+            this.stage.signals.onPicking.add( function( pd ){
+                var pd2 = {};
+                if( pd.atom ) pd2.atom = pd.atom.toJSON();
+                if( pd.bond ) pd2.bond = pd.bond.toJSON();
+                if( pd.instance ) pd2.instance = pd.instance;
+                this.model.set( "picked", pd2 );
+                this.model.save();
+                var pickingText = "";
+                if( pd.atom ){
+                    pickingText = "Atom: " + pd.atom.qualifiedName();
+                }else if( pd.bond ){
+                    pickingText = "Bond: " + pd.bond.atom1.qualifiedName() + " - " + pd.bond.atom2.qualifiedName();
+                }
+                this.$pickingInfo.text( pickingText );
+            }, this );
+
+            // init player
+            if( this.model.get( "count" ) ){
+                var play = function(){
+                    this.$playerButton.text( "pause" );
+                    this.playerInterval = setInterval( function(){
+                        var frame = this.model.get( "frame" ) + 1;
+                        var count = this.model.get( "count" );
+                        if( frame >= count ) frame = 0;
+                        this.model.set( "frame", frame );
+                        this.model.save();
+                    }.bind( this ), 100 );
+                }.bind( this );
+                var pause = function(){
+                    this.$playerButton.text( "play" );
+                    if( this.playerInterval !== undefined ){
+                        clearInterval( this.playerInterval );
+                    }
+                }.bind( this );
+                this.$playerButton = $( "<button>play</button>" )
+                    .css( "float", "left" )
+                    .css( "width", "55px" )
+                    .css( "opacity", "0.7" )
+                    .click( function( event ){
+                        if( this.$playerButton.text() === "play" ){
+                            play();
+                        }else if( this.$playerButton.text() === "pause" ){
+                            pause();
+                        }
+                    }.bind( this ) );
+                this.$playerSlider = $( "<div></div>" )
+                    .css( "margin-left", "70px" )
+                    .css( "position", "relative" )
+                    .css( "bottom", "-7px" )
+                    .slider( {
+                        min: 0,
+                        max: this.model.get( "count" ) - 1,
+                        slide: function( event, ui ){
+                            pause();
+                            this.model.set( "frame", ui.value );
+                            this.model.save();
+                        }.bind( this )
+                    } );
+                this.$player = $( "<div></div>" )
+                    .css( "position", "absolute" )
+                    .css( "bottom", "5%" )
+                    .css( "width", "94%" )
+                    .css( "margin-left", "3%" )
+                    .css( "opacity", "0.7" )
+                    .append( this.$playerButton )
+                    .append( this.$playerSlider )
+                    .appendTo( this.$container );
+                this.model.on( "change:frame", function(){
+                    this.$playerSlider.slider( "value", this.model.get( "frame" ) );
+                }, this );
+            }
 
         },
 
@@ -292,7 +278,7 @@ define( [
                 var frame = this.model.get( "frame" );
 
                 for ( var i = 0; i < Object.keys(this.coordsDictList).length; i++){
-                    var coordsDict = this.coordsDictList[ i ]; 
+                    var coordsDict = this.coordsDictList[ i ];
                     if( frame in coordsDict ) {
                         var coordinates = coordsDict[frame];
                         this._update_coords(coordinates, i);
@@ -323,7 +309,7 @@ define( [
                 this._cache = false;
             }
             this.model.set( "cache", this._cache);
-            
+
             for (var i = 0; i < Object.keys(coordsDictList).length; i++) {
                 this.coordsDictList[i] = this.mydecode( coordsDictList[i]);
             }
@@ -347,6 +333,12 @@ define( [
         orientationChanged: function(){
             var orientation = this.model.get( "orientation" );
             this.stage.viewer.setOrientation( orientation );
+        },
+
+        _downloadImage: function( filename, params ) {
+            this.stage.makeImage( params ).then( function( blob ) {
+                 NGL.download( blob, filename );
+            })
         },
 
         on_msg: function(msg){
@@ -380,7 +372,7 @@ define( [
                             }
                         }
                         break;
-                    case 'Viewer': 
+                    case 'Viewer':
                         var viewer = this.stage.viewer;
                         var func = this.stage.viewer[msg.methodName];
                         func.apply( viewer, new_args );
@@ -396,7 +388,11 @@ define( [
                         var func = component[msg.methodName];
                         func.apply( component, new_args );
                         break;
-                    default: 
+                    case 'Widget':
+                        var func = this[ msg.methodName ];
+                        func.apply( this, new_args );
+                        break;
+                    default:
                         console.log( "nothing done for " + msg.target );
                         break;
                 }
