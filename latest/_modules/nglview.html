@@ -174,8 +174,8 @@
 <div class="viewcode-block" id="show_pdbid"><a class="viewcode-back" href="../index.html#nglview.show_pdbid">[docs]</a><span class="k">def</span> <span class="nf">show_pdbid</span><span class="p">(</span><span class="n">pdbid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show PDB entry.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; w = nv.show_pdbid(&quot;3pqr&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; w</span>
@@ -189,8 +189,8 @@
 <span class="sd">    file formats that are by supported by NGL, including pdb,</span>
 <span class="sd">    gro, mol2, sdf.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; w = nv.show_structure_file(nv.datafiles.GRO)</span>
 <span class="sd">    &gt;&gt;&gt; w</span>
@@ -206,8 +206,8 @@
 <div class="viewcode-block" id="show_simpletraj"><a class="viewcode-back" href="../index.html#nglview.show_simpletraj">[docs]</a><span class="k">def</span> <span class="nf">show_simpletraj</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show simpletraj trajectory and structure file.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; w = nv.show_simpletraj(nv.datafiles.GRO, nv.datafiles.XTC)</span>
 <span class="sd">    &gt;&gt;&gt; w</span>
@@ -218,8 +218,8 @@
 <div class="viewcode-block" id="show_mdtraj"><a class="viewcode-back" href="../index.html#nglview.show_mdtraj">[docs]</a><span class="k">def</span> <span class="nf">show_mdtraj</span><span class="p">(</span><span class="n">mdtraj_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show mdtraj trajectory.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; import mdtraj as md</span>
 <span class="sd">    &gt;&gt;&gt; t = md.load(nv.datafiles.XTC, top=nv.datafiles.GRO)</span>
@@ -233,8 +233,8 @@
 <div class="viewcode-block" id="show_pytraj"><a class="viewcode-back" href="../index.html#nglview.show_pytraj">[docs]</a><span class="k">def</span> <span class="nf">show_pytraj</span><span class="p">(</span><span class="n">pytraj_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show pytraj trajectory.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; import pytraj as pt</span>
 <span class="sd">    &gt;&gt;&gt; t = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)</span>
@@ -250,8 +250,8 @@
 <div class="viewcode-block" id="show_parmed"><a class="viewcode-back" href="../index.html#nglview.show_parmed">[docs]</a><span class="k">def</span> <span class="nf">show_parmed</span><span class="p">(</span><span class="n">parmed_structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show pytraj trajectory.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; import parmed as pmd</span>
 <span class="sd">    &gt;&gt;&gt; t = pt.load_file(nv.datafiles.PDB)</span>
@@ -267,8 +267,8 @@
 
 <span class="sd">    Can take either a Universe or AtomGroup as its data input.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; import MDAnalysis as mda</span>
 <span class="sd">    &gt;&gt;&gt; u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)</span>
@@ -339,8 +339,8 @@
 <div class="viewcode-block" id="SimpletrajTrajectory"><a class="viewcode-back" href="../index.html#nglview.SimpletrajTrajectory">[docs]</a><span class="k">class</span> <span class="nc">SimpletrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;simpletraj adaptor.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; t = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)</span>
 <span class="sd">    &gt;&gt;&gt; w = nv.NGLWidget(t)</span>
@@ -855,7 +855,7 @@
 <div class="viewcode-block" id="NGLWidget.center_view"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.center_view">[docs]</a>    <span class="k">def</span> <span class="nf">center_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s">&#39;*&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;center view</span>
 
-<span class="sd">        Examples</span>
+<span class="sd">        Example</span>
 <span class="sd">        --------</span>
 <span class="sd">        view.center_view(selection=&#39;1-4&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -893,13 +893,13 @@
 <span class="sd">        trim : bool, default False</span>
 <span class="sd">        transparent : bool, default False</span>
 
-<span class="sd">        Examples</span>
+<span class="sd">        Example</span>
 <span class="sd">        --------</span>
-<span class="sd">            # tell NGL to render send image data to notebook.</span>
-<span class="sd">            view.export_image()</span>
-<span class="sd">            </span>
-<span class="sd">            # make sure to call `get_image` method</span>
-<span class="sd">            view.get_image()</span>
+<span class="sd">        &gt;&gt;&gt; # tell NGL to render send image data to notebook.</span>
+<span class="sd">        &gt;&gt;&gt; view.export_image()</span>
+
+<span class="sd">        &gt;&gt;&gt; # make sure to call `get_image` method</span>
+<span class="sd">        &gt;&gt;&gt; view.get_image()</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -995,8 +995,8 @@
 <span class="sd">            if target is &#39;compList&#39;, &quot;component_index&quot; could be passed</span>
 <span class="sd">            to specify which component will call the method.</span>
 
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
 <span class="sd">        view._remote_call(&#39;loadFile&#39;, args=[&#39;1L2Y.pdb&#39;],</span>
 <span class="sd">                          target=&#39;Stage&#39;, kwargs={&#39;defaultRepresentation&#39;: True})</span>
 
