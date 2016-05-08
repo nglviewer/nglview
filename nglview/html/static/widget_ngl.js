@@ -335,6 +335,12 @@ define( [
             this.stage.viewer.setOrientation( orientation );
         },
 
+        _downloadImage: function( filename, params ) {
+            this.stage.makeImage( params ).then( function( blob ) {
+                 NGL.download( blob, filename );
+            })
+        },
+
         on_msg: function(msg){
             // TODO: re-organize
             if( msg.type == 'call_method' ){
@@ -381,6 +387,10 @@ define( [
                         var component = this.structureComponent;
                         var func = component[msg.methodName];
                         func.apply( component, new_args );
+                        break;
+                    case 'Widget':
+                        var func = this[ msg.methodName ];
+                        func.apply( this, new_args );
                         break;
                     default:
                         console.log( "nothing done for " + msg.target );
