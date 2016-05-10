@@ -19,7 +19,8 @@ conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose numpy mock
 
 source activate myenv
 pip install pytraj
-conda install parmed -c ambermd --yes
+# conda install parmed -c ambermd --yes
+pip install https://github.com/ParmEd/ParmEd/archive/2.5.1.tar.gz
 if [ "$PYTHON_VERSION" = "2.7" ]; then
     conda install mdanalysis -c MDAnalysis --yes
 else
