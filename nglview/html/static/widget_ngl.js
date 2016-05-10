@@ -61,6 +61,9 @@ define( [
             // init setting of frame
             this.model.on( "change:frame", this.frameChanged, this );
 
+            // init setting of count
+            this.model.on( "change:count", this.update_player, this );
+
             // init parameters handling
             this.model.on( "change:parameters", this.parametersChanged, this );
 
@@ -80,7 +83,6 @@ define( [
             NGL.useWorker = false;
             this.stage = new NGL.Stage();
             this.stage.setTheme( "light" );
-            this.structureComponent = undefined;
             this.$container = $( this.stage.viewer.container );
             this.$el.append( this.$container );
             this.$container.resizable( {
@@ -141,6 +143,10 @@ define( [
             }, this );
 
             // init player
+            this.update_player();
+        },
+
+        update_player: function() {
             if( this.model.get( "count" ) ){
                 var play = function(){
                     this.$playerButton.text( "pause" );
@@ -194,8 +200,7 @@ define( [
                 this.model.on( "change:frame", function(){
                     this.$playerSlider.slider( "value", this.model.get( "frame" ) );
                 }, this );
-            }
-
+            };
         },
 
         representationsChanged: function(){
@@ -213,7 +218,6 @@ define( [
         },
 
         structureChanged: function(){
-            this.structureComponent = undefined;
             var structureList = this.model.get( "structure_list" );
 
             for ( var i = 0; i < Object.keys(structureList).length; i++ ){
@@ -223,9 +227,9 @@ define( [
                     var params = structure.params || {};
                     params.ext = structure.ext;
                     params.defaultRepresentation = false;
+                    // params.defaultRepresentation = true;
                     this.stage.loadFile( blob, params ).then( function( component ){
                         component.centerView();
-                        // this.structureComponent = component;
                         this.representationsChanged();
                     }.bind( this ) );
                 }

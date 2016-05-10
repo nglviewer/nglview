@@ -639,12 +639,35 @@ class NGLWidget(widgets.DOMWidget):
     def set_representations(self, representations):
         self.representations = representations
 
-    def set_structure(self, structures):
+    def set_structure(self, structures, params=None):
+        '''set structure_list with given params (optional)
+
+        Parameters
+        ----------
+        structures : list of structures
+        params : None or dict, default None
+            if given, use it
+        '''
         structure_list = structures if isinstance(structures, (list, tuple)) else [structures,]
         self.structure_list = [{"data": _structure.get_structure_string(),
                            "ext": _structure.ext,
                            "params": _structure.params
                            } for _structure in structure_list]
+
+    def _add_trajectory(self, trajectory):
+        '''add NGLView' compatible trajectory
+        '''
+        new_structure_list = self.structure_list[:]
+        new_structure_list.append({"data": trajectory.get_structure_string(),
+                                   "ext": trajectory.ext,
+                                   "params": trajectory.params})
+        self.structure_list = new_structure_list
+        self.trajlist.append(trajectory)
+
+        # reset count
+        self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
+                        'n_frames'))
+
 
     def _set_coordinates(self, index):
         if self.trajlist:
@@ -858,6 +881,7 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('removeComponent',
                 target='Stage',
                 args=[model,])
+        self.structure_list.pop(model)
         
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
