@@ -18,3 +18,16 @@ def seq_to_string(seq):
     else:
         # assume 1D array
         return "@" + ",".join(str(s) for s in seq)
+
+def _camelize(snake):
+    """
+    
+    Examples
+    --------
+    >>> _camelize('remote_call')
+    remoteCall
+    >>> _camelize('remoteCall')
+    remoteCall
+    """
+    words = snake.split('_')
+    return words[0] + "".join(x.title() for x in words[1:])
