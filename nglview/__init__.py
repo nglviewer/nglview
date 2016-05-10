@@ -2,7 +2,7 @@
 from __future__ import print_function, absolute_import
 
 from . import datafiles
-from .utils import seq_to_string, string_types
+from .utils import seq_to_string, string_types, _camelize
 
 import os
 import os.path
@@ -701,21 +701,24 @@ class NGLWidget(widgets.DOMWidget):
         # overwrite selection
         selection = seq_to_string(selection).strip()
 
-        if 'model' in kwargs:
-            model = kwargs.pop('model')
+        # make copy
+        kwargs2 = dict((_camelize(k), v) for k, v in kwargs.items())
+
+        if 'model' in kwargs2:
+            model = kwargs2.pop('model')
         else:
             model = 0
 
-        for k, v in kwargs.items():
+        for k, v in kwargs2.items():
             try:
-                kwargs[k] = v.strip()
+                kwargs2[k] = v.strip()
             except AttributeError:
                 # e.g.: opacity=0.4
-                kwargs[k] = v
+                kwargs2[k] = v
 
         d = {'params': {'sele': selection}}
         d['type'] = repr_type
-        d['params'].update(kwargs)
+        d['params'].update(kwargs2)
 
         params = d['params']
         params.update({'component_index': model})
