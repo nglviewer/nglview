@@ -581,6 +581,7 @@ class NGLWidget(widgets.DOMWidget):
                 ('tube', 'tube'),
                 ('trace', 'trace'),
                 ('label', 'label'),
+                ('unitcell', 'unitcell'),
                 ('cartoon', 'cartoon'),
                 ('licorice', 'licorice'),
                 ('ribbon', 'ribbon'),

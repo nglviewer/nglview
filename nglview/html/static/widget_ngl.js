@@ -126,8 +126,8 @@ define( [
                 .appendTo( this.$container );
             this.stage.signals.onPicking.add( function( pd ){
                 var pd2 = {};
-                if( pd.atom ) pd2.atom = pd.atom.toJSON();
-                if( pd.bond ) pd2.bond = pd.bond.toJSON();
+                if( pd.atom ) pd2.atom = pd.atom.toObject();
+                if( pd.bond ) pd2.bond = pd.bond.toObject();
                 if( pd.instance ) pd2.instance = pd.instance;
                 this.model.set( "picked", pd2 );
                 this.model.save();
