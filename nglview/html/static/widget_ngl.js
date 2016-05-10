@@ -61,14 +61,14 @@ define( [
             // init setting of frame
             this.model.on( "change:frame", this.frameChanged, this );
 
-            // init setting of count
-            this.model.on( "change:count", this.update_player, this );
-
             // init parameters handling
             this.model.on( "change:parameters", this.parametersChanged, this );
 
             // init parameters handling
             this.model.on( "change:cache", this.cacheChanged, this );
+
+            // init parameters handling
+            this.model.on( "change:count", this.countChanged, this );
 
             // init orientation handling
             this.model.on( "change:orientation", this.orientationChanged, this );
@@ -143,64 +143,68 @@ define( [
             }, this );
 
             // init player
-            this.update_player();
+            this.initPlayer();
+        },
+        
+        countChanged: function() {
+            this.$playerSlider.slider( { max: this.model.get( "count" ) } );
         },
 
-        update_player: function() {
-            if( this.model.get( "count" ) ){
-                var play = function(){
-                    this.$playerButton.text( "pause" );
-                    this.playerInterval = setInterval( function(){
-                        var frame = this.model.get( "frame" ) + 1;
-                        var count = this.model.get( "count" );
-                        if( frame >= count ) frame = 0;
-                        this.model.set( "frame", frame );
-                        this.model.save();
-                    }.bind( this ), 100 );
-                }.bind( this );
-                var pause = function(){
-                    this.$playerButton.text( "play" );
-                    if( this.playerInterval !== undefined ){
-                        clearInterval( this.playerInterval );
+        initPlayer: function() {
+            var count = this.model.get( "count" ) || 1;
+
+            var play = function(){
+                this.$playerButton.text( "pause" );
+                this.playerInterval = setInterval( function(){
+                    var frame = this.model.get( "frame" ) + 1;
+                    var count = this.model.get( "count" );
+                    if( frame >= count ) frame = 0;
+                    this.model.set( "frame", frame );
+                    this.model.save();
+                }.bind( this ), 100 );
+            }.bind( this );
+            var pause = function(){
+                this.$playerButton.text( "play" );
+                if( this.playerInterval !== undefined ){
+                    clearInterval( this.playerInterval );
+                }
+            }.bind( this );
+            this.$playerButton = $( "<button>play</button>" )
+                .css( "float", "left" )
+                .css( "width", "55px" )
+                .css( "opacity", "0.7" )
+                .click( function( event ){
+                    if( this.$playerButton.text() === "play" ){
+                        play();
+                    }else if( this.$playerButton.text() === "pause" ){
+                        pause();
                     }
-                }.bind( this );
-                this.$playerButton = $( "<button>play</button>" )
-                    .css( "float", "left" )
-                    .css( "width", "55px" )
-                    .css( "opacity", "0.7" )
-                    .click( function( event ){
-                        if( this.$playerButton.text() === "play" ){
-                            play();
-                        }else if( this.$playerButton.text() === "pause" ){
-                            pause();
-                        }
-                    }.bind( this ) );
-                this.$playerSlider = $( "<div></div>" )
-                    .css( "margin-left", "70px" )
-                    .css( "position", "relative" )
-                    .css( "bottom", "-7px" )
-                    .slider( {
-                        min: 0,
-                        max: this.model.get( "count" ) - 1,
-                        slide: function( event, ui ){
-                            pause();
-                            this.model.set( "frame", ui.value );
-                            this.model.save();
-                        }.bind( this )
-                    } );
-                this.$player = $( "<div></div>" )
-                    .css( "position", "absolute" )
-                    .css( "bottom", "5%" )
-                    .css( "width", "94%" )
-                    .css( "margin-left", "3%" )
-                    .css( "opacity", "0.7" )
-                    .append( this.$playerButton )
-                    .append( this.$playerSlider )
-                    .appendTo( this.$container );
-                this.model.on( "change:frame", function(){
-                    this.$playerSlider.slider( "value", this.model.get( "frame" ) );
-                }, this );
-            };
+                }.bind( this ) );
+            this.$playerSlider = $( "<div></div>" )
+                .css( "margin-left", "70px" )
+                .css( "position", "relative" )
+                .css( "bottom", "-7px" )
+                .slider( {
+                    min: 0,
+                    max: this.model.get( "count" ) - 1,
+                    slide: function( event, ui ){
+                        pause();
+                        this.model.set( "frame", ui.value );
+                        this.model.save();
+                    }.bind( this )
+                } );
+            this.$player = $( "<div></div>" )
+                .css( "position", "absolute" )
+                .css( "bottom", "5%" )
+                .css( "width", "94%" )
+                .css( "margin-left", "3%" )
+                .css( "opacity", "0.7" )
+                .append( this.$playerButton )
+                .append( this.$playerSlider )
+                .appendTo( this.$container );
+            this.model.on( "change:frame", function(){
+                this.$playerSlider.slider( "value", this.model.get( "frame" ) );
+            }, this );
         },
 
         representationsChanged: function(){

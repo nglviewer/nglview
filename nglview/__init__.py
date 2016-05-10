@@ -503,7 +503,7 @@ class NGLWidget(widgets.DOMWidget):
         [callback(self) for callback in self._ngl_displayed_callbacks]
 
         if self.trajlist:
-            self._set_coordinates(0)
+            self._set_coordinates(frame=0)
 
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
@@ -663,20 +663,22 @@ class NGLWidget(widgets.DOMWidget):
                                    "params": trajectory.params})
         self.structure_list = new_structure_list
         self.trajlist.append(trajectory)
+        self._set_coordinates(self.frame)
 
-        # reset count
+        # update count
         self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
                         'n_frames'))
 
-
-    def _set_coordinates(self, index):
+    def _set_coordinates(self, frame):
+        '''set coordinates for current frame
+        '''
         if self.trajlist:
             if not self.cache or (self.cache and not self._finish_caching):
                 coordinate_list = []
                 for trajectory in self.trajlist:
                     try:
-                        coordinate_list.append(trajectory.get_coordinates(index))
-                    except IndexError:
+                        coordinate_list.append(trajectory.get_coordinates(frame))
+                    except (IndexError, ValueError):
                         coordinate_list.append(np.empty((0), dtype='f4'))
                 self.coordinates = coordinate_list
         else:
