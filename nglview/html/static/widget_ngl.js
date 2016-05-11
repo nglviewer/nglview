@@ -56,7 +56,7 @@ define( [
             this.model.on( "change:structure_list", this.structureChanged, this );
 
             // init setting of coordinates
-            this.model.on( "change:coordinates_dict", this.coordsDictListChanged, this );
+            this.model.on( "change:coordinates_dict", this.coordsDict2Changed, this );
 
             // init setting of frame
             this.model.on( "change:frame", this.frameChanged, this );
@@ -74,7 +74,7 @@ define( [
             this.model.on( "change:orientation", this.orientationChanged, this );
 
             // get message from Python
-            this.coordsDictList = {};
+            this.coordsDict2 = {};
             this.model.on( "msg:custom", function (msg) {
                 this.on_msg( msg );
             }, this);
@@ -285,8 +285,8 @@ define( [
             if( this._cache ){
                 var frame = this.model.get( "frame" );
 
-                for ( var i = 0; i < Object.keys(this.coordsDictList).length; i++){
-                    var coordsDict = this.coordsDictList[ i ];
+                for ( var i = 0; i < Object.keys(this.coordsDict2).length; i++){
+                    var coordsDict = this.coordsDict2[ i ];
                     if( frame in coordsDict ) {
                         var coordinates = coordsDict[frame];
                         this.updateCoordinates(coordinates, i);
@@ -307,9 +307,9 @@ define( [
             }
         },
 
-        coordsDictListChanged: function(){
-            this.coordsDictList = this.model.get( "coordinates_dict" );
-            var cdict = this.coordsDictList
+        coordsDict2Changed: function(){
+            this.coordsDict2 = this.model.get( "coordinates_dict" );
+            var cdict = this.coordsDict2
             var clen = Object.keys(cdict).length
             if ( clen != 0 ){
                 this._cache = true;
@@ -318,8 +318,8 @@ define( [
             }
             this.model.set( "cache", this._cache);
 
-            for (var i = 0; i < Object.keys(coordsDictList).length; i++) {
-                this.coordsDictList[i] = this.mydecode( coordsDictList[i]);
+            for (var i = 0; i < Object.keys(coordsDict2).length; i++) {
+                this.coordsDict2[i] = this.mydecode( coordsDict2[i]);
             }
         },
 
@@ -423,23 +423,25 @@ define( [
                 this.touch();
                 console.log( "received base64 dict for all frames" );
                 var base64DictList = JSON.parse( msg.data );
-                this.coordsDictList = {};
+                this.coordsDict2 = {};
                 if ( "cache" in msg ){
                     this._cache = msg.cache;
                     this.model.set( "cache", this._cache );
                 }
                 for (var index = 0; index < Object.keys(base64DictList).length; index++) {
-                    this.coordsDictList[index] = {};
+                    this.coordsDict2[index] = {};
                     var base64Dict = base64DictList[ index ];
                     for (var i = 0; i < Object.keys(base64Dict).length; i++) {
-                         this.coordsDictList[index][i] = this.mydecode( base64Dict[i]);
+                         this.coordsDict2[index][i] = this.mydecode( base64Dict[i]);
                     }
                 }
             }else if( msg.type == 'base64_single' ){
-                var coordinateDictList = msg.data;
+                var coordinateDict2 = msg.data;
+                var keys = Object.keys( coordinateDict2 );
 
-                for ( var i = 0; i < this.stage.compList.length; i++ ){
-                    var coordinates = this.mydecode( coordinateDictList[ i ]['data']);
+                for ( var i = 0; i < keys.length ; i++ ){
+                    var traj_index = keys[ i ];
+                    var coordinates = this.mydecode( coordinateDict2[ traj_index ]['data']);
                     if( coordinates.byteLength > 0 ){
                         this.updateCoordinates( coordinates, i );
                     }
