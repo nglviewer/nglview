@@ -85,9 +85,6 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 | ``show_mdanalysis(univ)``                    | Shows ``MDAnalysis`` Universe or AtomGroup ``univ``       |
 +----------------------------------------------+-----------------------------------------------------------+
 
-API
-===
-
 Representations
 ~~~~~~~~~~~~~~~
 
