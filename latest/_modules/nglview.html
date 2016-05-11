@@ -80,9 +80,8 @@
           
             
             
-                <ul class="simple">
-</ul>
-
+                <!-- Local TOC -->
+                <div class="local-toc"></div>
             
           
         </div>
@@ -126,11 +125,11 @@
            <div itemprop="articleBody">
             
   <h1>Source code for nglview</h1><div class="highlight"><pre>
-
+<span></span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">datafiles</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">seq_to_string</span><span class="p">,</span> <span class="n">string_types</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">seq_to_string</span><span class="p">,</span> <span class="n">string_types</span><span class="p">,</span> <span class="n">_camelize</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
@@ -147,7 +146,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s">&quot;ignore&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
     <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -158,24 +157,24 @@
 
 <span class="kn">import</span> <span class="nn">base64</span>
 
-<div class="viewcode-block" id="encode_numpy"><a class="viewcode-back" href="../index.html#nglview.encode_numpy">[docs]</a><span class="k">def</span> <span class="nf">encode_numpy</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;f4&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="encode_numpy"><a class="viewcode-back" href="../api.html#nglview.encode_numpy">[docs]</a><span class="k">def</span> <span class="nf">encode_numpy</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">):</span>
     <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf8&#39;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="decode_base64"><a class="viewcode-back" href="../index.html#nglview.decode_base64">[docs]</a><span class="k">def</span> <span class="nf">decode_base64</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;f4&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="decode_base64"><a class="viewcode-back" href="../api.html#nglview.decode_base64">[docs]</a><span class="k">def</span> <span class="nf">decode_base64</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
     <span class="n">decoded_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">decoded_str</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></div>
 
 
-<span class="c">##############</span>
-<span class="c"># Simple API</span>
+<span class="c1">##############</span>
+<span class="c1"># Simple API</span>
 
-<div class="viewcode-block" id="show_pdbid"><a class="viewcode-back" href="../index.html#nglview.show_pdbid">[docs]</a><span class="k">def</span> <span class="nf">show_pdbid</span><span class="p">(</span><span class="n">pdbid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="show_pdbid"><a class="viewcode-back" href="../api.html#nglview.show_pdbid">[docs]</a><span class="k">def</span> <span class="nf">show_pdbid</span><span class="p">(</span><span class="n">pdbid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show PDB entry.</span>
 
-<span class="sd">    Example</span>
-<span class="sd">    -------</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; w = nv.show_pdbid(&quot;3pqr&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; w</span>
@@ -184,30 +183,30 @@
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="show_structure_file"><a class="viewcode-back" href="../index.html#nglview.show_structure_file">[docs]</a><span class="k">def</span> <span class="nf">show_structure_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="show_structure_file"><a class="viewcode-back" href="../api.html#nglview.show_structure_file">[docs]</a><span class="k">def</span> <span class="nf">show_structure_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show structure file. Allowed are text-based structure</span>
 <span class="sd">    file formats that are by supported by NGL, including pdb,</span>
 <span class="sd">    gro, mol2, sdf.</span>
 
-<span class="sd">    Example</span>
-<span class="sd">    -------</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; w = nv.show_structure_file(nv.datafiles.GRO)</span>
 <span class="sd">    &gt;&gt;&gt; w</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="s">&#39;ext&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="n">extension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;ext&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;ext&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;ext&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
     <span class="n">structure</span> <span class="o">=</span> <span class="n">FileStructure</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="show_simpletraj"><a class="viewcode-back" href="../index.html#nglview.show_simpletraj">[docs]</a><span class="k">def</span> <span class="nf">show_simpletraj</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="show_simpletraj"><a class="viewcode-back" href="../api.html#nglview.show_simpletraj">[docs]</a><span class="k">def</span> <span class="nf">show_simpletraj</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show simpletraj trajectory and structure file.</span>
 
-<span class="sd">    Example</span>
-<span class="sd">    -------</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; w = nv.show_simpletraj(nv.datafiles.GRO, nv.datafiles.XTC)</span>
 <span class="sd">    &gt;&gt;&gt; w</span>
@@ -215,11 +214,11 @@
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="show_mdtraj"><a class="viewcode-back" href="../index.html#nglview.show_mdtraj">[docs]</a><span class="k">def</span> <span class="nf">show_mdtraj</span><span class="p">(</span><span class="n">mdtraj_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="show_mdtraj"><a class="viewcode-back" href="../api.html#nglview.show_mdtraj">[docs]</a><span class="k">def</span> <span class="nf">show_mdtraj</span><span class="p">(</span><span class="n">mdtraj_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show mdtraj trajectory.</span>
 
-<span class="sd">    Example</span>
-<span class="sd">    -------</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; import mdtraj as md</span>
 <span class="sd">    &gt;&gt;&gt; t = md.load(nv.datafiles.XTC, top=nv.datafiles.GRO)</span>
@@ -230,11 +229,11 @@
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="show_pytraj"><a class="viewcode-back" href="../index.html#nglview.show_pytraj">[docs]</a><span class="k">def</span> <span class="nf">show_pytraj</span><span class="p">(</span><span class="n">pytraj_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="show_pytraj"><a class="viewcode-back" href="../api.html#nglview.show_pytraj">[docs]</a><span class="k">def</span> <span class="nf">show_pytraj</span><span class="p">(</span><span class="n">pytraj_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show pytraj trajectory.</span>
 
-<span class="sd">    Example</span>
-<span class="sd">    -------</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; import pytraj as pt</span>
 <span class="sd">    &gt;&gt;&gt; t = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)</span>
@@ -247,11 +246,11 @@
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">trajlist</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="show_parmed"><a class="viewcode-back" href="../index.html#nglview.show_parmed">[docs]</a><span class="k">def</span> <span class="nf">show_parmed</span><span class="p">(</span><span class="n">parmed_structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="show_parmed"><a class="viewcode-back" href="../api.html#nglview.show_parmed">[docs]</a><span class="k">def</span> <span class="nf">show_parmed</span><span class="p">(</span><span class="n">parmed_structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show pytraj trajectory.</span>
 
-<span class="sd">    Example</span>
-<span class="sd">    -------</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; import parmed as pmd</span>
 <span class="sd">    &gt;&gt;&gt; t = pt.load_file(nv.datafiles.PDB)</span>
@@ -262,13 +261,13 @@
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="show_mdanalysis"><a class="viewcode-back" href="../index.html#nglview.show_mdanalysis">[docs]</a><span class="k">def</span> <span class="nf">show_mdanalysis</span><span class="p">(</span><span class="n">atomgroup</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="show_mdanalysis"><a class="viewcode-back" href="../api.html#nglview.show_mdanalysis">[docs]</a><span class="k">def</span> <span class="nf">show_mdanalysis</span><span class="p">(</span><span class="n">atomgroup</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show NGL widget with MDAnalysis AtomGroup.</span>
 
 <span class="sd">    Can take either a Universe or AtomGroup as its data input.</span>
 
-<span class="sd">    Example</span>
-<span class="sd">    -------</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; import MDAnalysis as mda</span>
 <span class="sd">    &gt;&gt;&gt; u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)</span>
@@ -280,55 +279,55 @@
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="c">###################</span>
-<span class="c"># Adaptor classes</span>
+<span class="c1">###################</span>
+<span class="c1"># Adaptor classes</span>
 
 
-<div class="viewcode-block" id="Structure"><a class="viewcode-back" href="../index.html#nglview.Structure">[docs]</a><span class="k">class</span> <span class="nc">Structure</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Structure"><a class="viewcode-back" href="../api.html#nglview.Structure">[docs]</a><span class="k">class</span> <span class="nc">Structure</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s">&quot;pdb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="Structure.get_structure_string"><a class="viewcode-back" href="../index.html#nglview.Structure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Structure.get_structure_string"><a class="viewcode-back" href="../api.html#nglview.Structure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="FileStructure"><a class="viewcode-back" href="../index.html#nglview.FileStructure">[docs]</a><span class="k">class</span> <span class="nc">FileStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="FileStructure"><a class="viewcode-back" href="../api.html#nglview.FileStructure">[docs]</a><span class="k">class</span> <span class="nc">FileStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s">&quot;pdb&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;pdb&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s">&quot;Not a file: &quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Not a file: &quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
 
-<div class="viewcode-block" id="FileStructure.get_structure_string"><a class="viewcode-back" href="../index.html#nglview.FileStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<div class="viewcode-block" id="FileStructure.get_structure_string"><a class="viewcode-back" href="../api.html#nglview.FileStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="PdbIdStructure"><a class="viewcode-back" href="../index.html#nglview.PdbIdStructure">[docs]</a><span class="k">class</span> <span class="nc">PdbIdStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="PdbIdStructure"><a class="viewcode-back" href="../api.html#nglview.PdbIdStructure">[docs]</a><span class="k">class</span> <span class="nc">PdbIdStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdbid</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pdbid</span> <span class="o">=</span> <span class="n">pdbid</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s">&quot;cif&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;cif&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="PdbIdStructure.get_structure_string"><a class="viewcode-back" href="../index.html#nglview.PdbIdStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;http://www.rcsb.org/pdb/files/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdbid</span> <span class="o">+</span> <span class="s">&quot;.cif&quot;</span>
+<div class="viewcode-block" id="PdbIdStructure.get_structure_string"><a class="viewcode-back" href="../api.html#nglview.PdbIdStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://www.rcsb.org/pdb/files/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdbid</span> <span class="o">+</span> <span class="s2">&quot;.cif&quot;</span>
         <span class="k">return</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="Trajectory"><a class="viewcode-back" href="../index.html#nglview.Trajectory">[docs]</a><span class="k">class</span> <span class="nc">Trajectory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Trajectory"><a class="viewcode-back" href="../api.html#nglview.Trajectory">[docs]</a><span class="k">class</span> <span class="nc">Trajectory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="Trajectory.get_coordinates_dict"><a class="viewcode-back" href="../index.html#nglview.Trajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Trajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.Trajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Trajectory.get_coordinates"><a class="viewcode-back" href="../index.html#nglview.Trajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="Trajectory.get_coordinates"><a class="viewcode-back" href="../api.html#nglview.Trajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
@@ -336,11 +335,11 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="SimpletrajTrajectory"><a class="viewcode-back" href="../index.html#nglview.SimpletrajTrajectory">[docs]</a><span class="k">class</span> <span class="nc">SimpletrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpletrajTrajectory"><a class="viewcode-back" href="../api.html#nglview.SimpletrajTrajectory">[docs]</a><span class="k">class</span> <span class="nc">SimpletrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;simpletraj adaptor.</span>
 
-<span class="sd">    Example</span>
-<span class="sd">    -------</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
 <span class="sd">    &gt;&gt;&gt; t = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)</span>
 <span class="sd">    &gt;&gt;&gt; w = nv.NGLWidget(t)</span>
@@ -351,7 +350,7 @@
             <span class="kn">import</span> <span class="nn">simpletraj</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-                <span class="s">&quot;&#39;SimpletrajTrajectory&#39; requires the &#39;simpletraj&#39; package&quot;</span>
+                <span class="s2">&quot;&#39;SimpletrajTrajectory&#39; requires the &#39;simpletraj&#39; package&quot;</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traj_cache</span> <span class="o">=</span> <span class="n">simpletraj</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">TrajectoryCache</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
@@ -364,21 +363,21 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">e</span>
 
-<div class="viewcode-block" id="SimpletrajTrajectory.get_coordinates"><a class="viewcode-back" href="../index.html#nglview.SimpletrajTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpletrajTrajectory.get_coordinates"><a class="viewcode-back" href="../api.html#nglview.SimpletrajTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
         <span class="n">frame</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">frame</span><span class="p">[</span><span class="s">&quot;coords&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">frame</span><span class="p">[</span><span class="s2">&quot;coords&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="SimpletrajTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../index.html#nglview.SimpletrajTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpletrajTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.SimpletrajTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
 
         <span class="n">coordinates_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">):</span>
             <span class="n">frame</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">encode_numpy</span><span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="s">&#39;coords&#39;</span><span class="p">])</span>
+            <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">encode_numpy</span><span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">coordinates_dict</span></div>
 
-<div class="viewcode-block" id="SimpletrajTrajectory.get_structure_string"><a class="viewcode-back" href="../index.html#nglview.SimpletrajTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpletrajTrajectory.get_structure_string"><a class="viewcode-back" href="../api.html#nglview.SimpletrajTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_structure_path</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
@@ -387,7 +386,7 @@
         <span class="k">return</span> <span class="n">traj</span><span class="o">.</span><span class="n">numframes</span></div>
 
 
-<div class="viewcode-block" id="MDTrajTrajectory"><a class="viewcode-back" href="../index.html#nglview.MDTrajTrajectory">[docs]</a><span class="k">class</span> <span class="nc">MDTrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="MDTrajTrajectory"><a class="viewcode-back" href="../api.html#nglview.MDTrajTrajectory">[docs]</a><span class="k">class</span> <span class="nc">MDTrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;mdtraj adaptor.</span>
 
 <span class="sd">    Example</span>
@@ -401,29 +400,29 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s">&quot;pdb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="MDTrajTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../index.html#nglview.MDTrajTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MDTrajTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.MDTrajTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">index</span><span class="p">,</span> <span class="n">encode_numpy</span><span class="p">(</span><span class="n">xyz</span><span class="o">*</span><span class="mi">10</span><span class="p">))</span>
                     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">xyz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">xyz</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="MDTrajTrajectory.get_coordinates"><a class="viewcode-back" href="../index.html#nglview.MDTrajTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="MDTrajTrajectory.get_coordinates"><a class="viewcode-back" href="../api.html#nglview.MDTrajTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">10</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">n_frames</span>
 
-<div class="viewcode-block" id="MDTrajTrajectory.get_structure_string"><a class="viewcode-back" href="../index.html#nglview.MDTrajTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MDTrajTrajectory.get_structure_string"><a class="viewcode-back" href="../api.html#nglview.MDTrajTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">fd</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">save_pdb</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
         <span class="n">pdb_string</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="c"># os.close( fd )</span>
+        <span class="c1"># os.close( fd )</span>
         <span class="k">return</span> <span class="n">pdb_string</span></div></div>
 
 
-<div class="viewcode-block" id="PyTrajTrajectory"><a class="viewcode-back" href="../index.html#nglview.PyTrajTrajectory">[docs]</a><span class="k">class</span> <span class="nc">PyTrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="PyTrajTrajectory"><a class="viewcode-back" href="../api.html#nglview.PyTrajTrajectory">[docs]</a><span class="k">class</span> <span class="nc">PyTrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;PyTraj adaptor.</span>
 
 <span class="sd">    Example</span>
@@ -437,61 +436,61 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s">&quot;pdb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="PyTrajTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../index.html#nglview.PyTrajTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PyTrajTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.PyTrajTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">index</span><span class="p">,</span> <span class="n">encode_numpy</span><span class="p">(</span><span class="n">xyz</span><span class="p">))</span>
                     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">xyz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">xyz</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="PyTrajTrajectory.get_coordinates"><a class="viewcode-back" href="../index.html#nglview.PyTrajTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="PyTrajTrajectory.get_coordinates"><a class="viewcode-back" href="../api.html#nglview.PyTrajTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">xyz</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">n_frames</span>
 
-<div class="viewcode-block" id="PyTrajTrajectory.get_structure_string"><a class="viewcode-back" href="../index.html#nglview.PyTrajTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">fd</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s">&quot;.pdb&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="PyTrajTrajectory.get_structure_string"><a class="viewcode-back" href="../api.html#nglview.PyTrajTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fd</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-            <span class="n">fname</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&quot;pdb&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="s">&#39;conect&#39;</span>
+            <span class="n">fname</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s2">&quot;pdb&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="s1">&#39;conect&#39;</span>
         <span class="p">)</span>
         <span class="n">pdb_string</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="c"># os.close( fd )</span>
+        <span class="c1"># os.close( fd )</span>
         <span class="k">return</span> <span class="n">pdb_string</span></div></div>
 
 
-<div class="viewcode-block" id="ParmEdTrajectory"><a class="viewcode-back" href="../index.html#nglview.ParmEdTrajectory">[docs]</a><span class="k">class</span> <span class="nc">ParmEdTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="ParmEdTrajectory"><a class="viewcode-back" href="../api.html#nglview.ParmEdTrajectory">[docs]</a><span class="k">class</span> <span class="nc">ParmEdTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;ParmEd adaptor.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s">&quot;pdb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c"># only call get_coordinates once</span>
+        <span class="c1"># only call get_coordinates once</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ParmEdTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../index.html#nglview.ParmEdTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ParmEdTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.ParmEdTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">index</span><span class="p">,</span> <span class="n">encode_numpy</span><span class="p">(</span><span class="n">xyz</span><span class="p">))</span>
                     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">xyz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="ParmEdTrajectory.get_coordinates"><a class="viewcode-back" href="../index.html#nglview.ParmEdTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="ParmEdTrajectory.get_coordinates"><a class="viewcode-back" href="../api.html#nglview.ParmEdTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ParmEdTrajectory.get_structure_string"><a class="viewcode-back" href="../index.html#nglview.ParmEdTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">fd</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s">&quot;.pdb&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="ParmEdTrajectory.get_structure_string"><a class="viewcode-back" href="../api.html#nglview.ParmEdTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fd</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
             <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">pdb_string</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="c"># os.close( fd )</span>
+        <span class="c1"># os.close( fd )</span>
         <span class="k">return</span> <span class="n">pdb_string</span></div></div>
 
 
-<div class="viewcode-block" id="MDAnalysisTrajectory"><a class="viewcode-back" href="../index.html#nglview.MDAnalysisTrajectory">[docs]</a><span class="k">class</span> <span class="nc">MDAnalysisTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="MDAnalysisTrajectory"><a class="viewcode-back" href="../api.html#nglview.MDAnalysisTrajectory">[docs]</a><span class="k">class</span> <span class="nc">MDAnalysisTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;MDAnalysis adaptor.</span>
 
 <span class="sd">    Can take either a Universe or AtomGroup.</span>
@@ -508,15 +507,15 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atomgroup</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span> <span class="o">=</span> <span class="n">atomgroup</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s">&quot;pdb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="MDAnalysisTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../index.html#nglview.MDAnalysisTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MDAnalysisTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.MDAnalysisTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">index</span><span class="p">,</span> <span class="n">encode_numpy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">positions</span><span class="p">))</span>
                     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="MDAnalysisTrajectory.get_coordinates"><a class="viewcode-back" href="../index.html#nglview.MDAnalysisTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="MDAnalysisTrajectory.get_coordinates"><a class="viewcode-back" href="../api.html#nglview.MDAnalysisTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
         <span class="n">xyz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">positions</span>
         <span class="k">return</span> <span class="n">xyz</span></div>
@@ -525,12 +524,12 @@
     <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">n_frames</span>
 
-<div class="viewcode-block" id="MDAnalysisTrajectory.get_structure_string"><a class="viewcode-back" href="../index.html#nglview.MDAnalysisTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MDAnalysisTrajectory.get_structure_string"><a class="viewcode-back" href="../api.html#nglview.MDAnalysisTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="kn">as</span> <span class="nn">mda</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-                <span class="s">&quot;&#39;MDAnalysisTrajectory&#39; requires the &#39;MDAnalysis&#39; package&quot;</span>
+                <span class="s2">&quot;&#39;MDAnalysisTrajectory&#39; requires the &#39;MDAnalysis&#39; package&quot;</span>
             <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">cStringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
@@ -538,24 +537,24 @@
             <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
         <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">universe</span>
         <span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">NamedStream</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(),</span> <span class="s">&#39;tmp.pdb&#39;</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">NamedStream</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(),</span> <span class="s1">&#39;tmp.pdb&#39;</span><span class="p">)</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">atoms</span>
-        <span class="c"># add PDB output to the named stream</span>
+        <span class="c1"># add PDB output to the named stream</span>
         <span class="k">with</span> <span class="n">mda</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">atoms</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">multiframe</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">W</span><span class="p">:</span>
             <span class="n">W</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
-        <span class="c"># extract from the stream</span>
+        <span class="c1"># extract from the stream</span>
         <span class="n">pdb_string</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">pdb_string</span></div></div>
 
 
-<span class="c">###########################</span>
-<span class="c"># Jupyter notebook widget</span>
+<span class="c1">###########################</span>
+<span class="c1"># Jupyter notebook widget</span>
 
 
-<div class="viewcode-block" id="NGLWidget"><a class="viewcode-back" href="../index.html#nglview.NGLWidget">[docs]</a><span class="k">class</span> <span class="nc">NGLWidget</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">DOMWidget</span><span class="p">):</span>
-    <span class="n">_view_name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s">&quot;NGLView&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">_view_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s">&quot;nbextensions/nglview/widget_ngl&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">selection</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="viewcode-block" id="NGLWidget"><a class="viewcode-back" href="../api.html#nglview.NGLWidget">[docs]</a><span class="k">class</span> <span class="nc">NGLWidget</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">DOMWidget</span><span class="p">):</span>
+    <span class="n">_view_name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;NGLView&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">_view_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;nbextensions/nglview/widget_ngl&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">selection</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_image_data</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">cache</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">loaded</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -577,7 +576,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">trajectory</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">representations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;cache&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NGLWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -588,45 +587,45 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">trajectory</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="s">&quot;get_coordinates_dict&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="s2">&quot;get_coordinates_dict&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">structure</span><span class="p">,]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span> <span class="o">=</span> <span class="n">structure</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span>
-            <span class="s">&#39;n_frames&#39;</span><span class="p">))</span>
+            <span class="s1">&#39;n_frames&#39;</span><span class="p">))</span>
 
-        <span class="c"># use _init_representations so we can view representations right after view is made.</span>
-        <span class="c"># self.representations is only have effect if we already call `view`</span>
+        <span class="c1"># use _init_representations so we can view representations right after view is made.</span>
+        <span class="c1"># self.representations is only have effect if we already call `view`</span>
 
         <span class="k">if</span> <span class="n">representations</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ini_representations</span> <span class="o">=</span> <span class="n">representations</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_representations</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s">&quot;sele&quot;</span><span class="p">:</span> <span class="s">&quot;polymer&quot;</span>
+                <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;polymer&quot;</span>
                 <span class="p">}},</span>
-                <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;ball+stick&quot;</span><span class="p">,</span> <span class="s">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s">&quot;sele&quot;</span><span class="p">:</span> <span class="s">&quot;hetero OR mol&quot;</span>
+                <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ball+stick&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;hetero OR mol&quot;</span>
                 <span class="p">}}</span>
             <span class="p">]</span>
 
-        <span class="c"># keep track but making copy</span>
+        <span class="c1"># keep track but making copy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_representations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_representations</span><span class="p">[:]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_repr_method_shortcut</span><span class="p">()</span>
 
-        <span class="c"># do not use _displayed_callbacks since there is another Widget._display_callbacks</span>
+        <span class="c1"># do not use _displayed_callbacks since there is another Widget._display_callbacks</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c"># register to get data from JS side</span>
+        <span class="c1"># register to get data from JS side</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_handle_msg</span><span class="p">)</span>
 
-    <span class="nd">@observe</span><span class="p">(</span><span class="s">&#39;_finish_caching&#39;</span><span class="p">)</span>
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_finish_caching&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">on_finish_caching</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s">&#39;finish caching. Enjoy&#39;</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;finish caching. Enjoy&#39;</span><span class="p">)</span>
 
-    <span class="nd">@observe</span><span class="p">(</span><span class="s">&#39;loaded&#39;</span><span class="p">)</span>
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;loaded&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">on_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="p">[</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="p">]</span>
 
@@ -644,9 +643,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">clist</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">traj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">):</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s">&#39;data&#39;</span><span class="p">]</span>
-                <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s">&#39;dtype&#39;</span><span class="p">]</span>
-                <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s">&#39;shape&#39;</span><span class="p">]</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s1">&#39;shape&#39;</span><span class="p">]</span>
                 <span class="n">clist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">decode_base64</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">clist</span>
 
@@ -658,14 +657,14 @@
 <span class="sd">        ----------</span>
 <span class="sd">        arr : list of 2D array (shape=(n_atoms, 3))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dtype</span> <span class="o">=</span> <span class="s">&#39;f4&#39;</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;f4&#39;</span>
 
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">arr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">arrlist</span><span class="p">):</span> 
             <span class="n">coordinates_meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">encode_numpy</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span>
                                     <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
                                     <span class="n">shape</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">coordinates_meta</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;base64_single&#39;</span><span class="p">,</span> <span class="s">&#39;data&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;base64_single&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">})</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">representations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -683,49 +682,50 @@
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="k">if</span> <span class="n">params_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">representations</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="s">&#39;must provide list of dict&#39;</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="s1">&#39;must provide list of dict&#39;</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">params_list</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_clear_repr</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params_list</span><span class="p">):</span>
-                    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="s">&#39;params must be a dict&#39;</span>
-                    <span class="n">kwargs</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s">&#39;params&#39;</span><span class="p">]</span>
-                    <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">})</span>
+                    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="s1">&#39;params must be a dict&#39;</span>
+                    <span class="n">kwargs</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span>
+                    <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">})</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_representations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s">&#39;addRepresentation&#39;</span><span class="p">,</span>
-                                      <span class="n">target</span><span class="o">=</span><span class="s">&#39;compList&#39;</span><span class="p">,</span>
-                                      <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">],],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;addRepresentation&#39;</span><span class="p">,</span>
+                                      <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
+                                      <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],],</span>
                                       <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">_add_repr_method_shortcut</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># dynamically add method for NGLWidget</span>
+        <span class="c1"># dynamically add method for NGLWidget</span>
         <span class="n">repr_names</span>  <span class="o">=</span> <span class="p">[</span>
-                <span class="p">(</span><span class="s">&#39;point&#39;</span><span class="p">,</span> <span class="s">&#39;point&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;line&#39;</span><span class="p">,</span> <span class="s">&#39;line&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;rope&#39;</span><span class="p">,</span> <span class="s">&#39;rope&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;tube&#39;</span><span class="p">,</span> <span class="s">&#39;tube&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;trace&#39;</span><span class="p">,</span> <span class="s">&#39;trace&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;label&#39;</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;cartoon&#39;</span><span class="p">,</span> <span class="s">&#39;cartoon&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;licorice&#39;</span><span class="p">,</span> <span class="s">&#39;licorice&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;ribbon&#39;</span><span class="p">,</span> <span class="s">&#39;ribbon&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;surface&#39;</span><span class="p">,</span> <span class="s">&#39;surface&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;backbone&#39;</span><span class="p">,</span> <span class="s">&#39;backbone&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;contact&#39;</span><span class="p">,</span> <span class="s">&#39;contact&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;hyperball&#39;</span><span class="p">,</span> <span class="s">&#39;hyperball&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;rocket&#39;</span><span class="p">,</span> <span class="s">&#39;rocket&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;helixorient&#39;</span><span class="p">,</span> <span class="s">&#39;helixorient&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;simplified_base&#39;</span><span class="p">,</span> <span class="s">&#39;base&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s">&#39;ball_and_stick&#39;</span><span class="p">,</span> <span class="s">&#39;ball+stick&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;point&#39;</span><span class="p">,</span> <span class="s1">&#39;point&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;line&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;rope&#39;</span><span class="p">,</span> <span class="s1">&#39;rope&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;tube&#39;</span><span class="p">,</span> <span class="s1">&#39;tube&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;trace&#39;</span><span class="p">,</span> <span class="s1">&#39;trace&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;unitcell&#39;</span><span class="p">,</span> <span class="s1">&#39;unitcell&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="s1">&#39;cartoon&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;licorice&#39;</span><span class="p">,</span> <span class="s1">&#39;licorice&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;ribbon&#39;</span><span class="p">,</span> <span class="s1">&#39;ribbon&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">,</span> <span class="s1">&#39;surface&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;backbone&#39;</span><span class="p">,</span> <span class="s1">&#39;backbone&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;contact&#39;</span><span class="p">,</span> <span class="s1">&#39;contact&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;hyperball&#39;</span><span class="p">,</span> <span class="s1">&#39;hyperball&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;rocket&#39;</span><span class="p">,</span> <span class="s1">&#39;rocket&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;helixorient&#39;</span><span class="p">,</span> <span class="s1">&#39;helixorient&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;simplified_base&#39;</span><span class="p">,</span> <span class="s1">&#39;base&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;ball_and_stick&#39;</span><span class="p">,</span> <span class="s1">&#39;ball+stick&#39;</span><span class="p">),</span>
                 <span class="p">]</span>
 
         <span class="k">def</span> <span class="nf">make_func</span><span class="p">(</span><span class="n">rep</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;return a new function object</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">repr_type</span><span class="o">=</span><span class="n">rep</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -733,11 +733,11 @@
 
         <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">repr_names</span><span class="p">:</span>
             <span class="n">func</span> <span class="o">=</span> <span class="n">make_func</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span>
-            <span class="n">fn</span> <span class="o">=</span> <span class="s">&#39;add_&#39;</span> <span class="o">+</span> <span class="n">rep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">fn</span> <span class="o">=</span> <span class="s1">&#39;add_&#39;</span> <span class="o">+</span> <span class="n">rep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
 
-<div class="viewcode-block" id="NGLWidget.caching"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.caching">[docs]</a>    <span class="k">def</span> <span class="nf">caching</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.caching"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.caching">[docs]</a>    <span class="k">def</span> <span class="nf">caching</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;sending all coordinates to Javascript&#39;s side. Caching makes trajectory play smoother</span>
 <span class="sd">        but doubling your memory. If you using cache, you can not update coordinates.</span>
 <span class="sd">        Use `view.uncaching()` then update your coordinates, then `view.caching()` again.</span>
@@ -745,32 +745,32 @@
 <span class="sd">        This method is experimental and its name can be changed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">:</span>
-            <span class="c"># do not use traitlets to sync. slow.</span>
+            <span class="c1"># do not use traitlets to sync. slow.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="bp">True</span>
             <span class="kn">import</span> <span class="nn">json</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">trajectory</span> <span class="ow">in</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">])</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;base64&#39;</span><span class="p">,</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;base64&#39;</span><span class="p">,</span>
                        <span class="n">cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span>
                        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s">&#39;does not have trajlist. skip caching&#39;</span><span class="p">)</span> 
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;does not have trajlist. skip caching&#39;</span><span class="p">)</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="bp">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span> <span class="o">=</span> <span class="bp">False</span></div>
 
-<div class="viewcode-block" id="NGLWidget.uncaching"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.uncaching">[docs]</a>    <span class="k">def</span> <span class="nf">uncaching</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.uncaching"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.uncaching">[docs]</a>    <span class="k">def</span> <span class="nf">uncaching</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span> <span class="o">=</span> <span class="bp">False</span></div>
 
-<div class="viewcode-block" id="NGLWidget.set_representations"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.set_representations">[docs]</a>    <span class="k">def</span> <span class="nf">set_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representations</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.set_representations"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.set_representations">[docs]</a>    <span class="k">def</span> <span class="nf">set_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representations</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="n">representations</span></div>
 
-<div class="viewcode-block" id="NGLWidget.set_structure"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.set_structure">[docs]</a>    <span class="k">def</span> <span class="nf">set_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structures</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.set_structure"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.set_structure">[docs]</a>    <span class="k">def</span> <span class="nf">set_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structures</span><span class="p">):</span>
         <span class="n">structure_list</span> <span class="o">=</span> <span class="n">structures</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="k">else</span> <span class="p">[</span><span class="n">structures</span><span class="p">,]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">structure_list</span> <span class="o">=</span> <span class="p">[{</span><span class="s">&quot;data&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">get_structure_string</span><span class="p">(),</span>
-                           <span class="s">&quot;ext&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">ext</span><span class="p">,</span>
-                           <span class="s">&quot;params&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">structure_list</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">get_structure_string</span><span class="p">(),</span>
+                           <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">ext</span><span class="p">,</span>
+                           <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">params</span>
                            <span class="p">}</span> <span class="k">for</span> <span class="n">_structure</span> <span class="ow">in</span> <span class="n">structure_list</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
@@ -781,22 +781,22 @@
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">coordinate_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
                     <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                        <span class="n">coordinate_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;f4&#39;</span><span class="p">))</span>
+                        <span class="n">coordinate_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">coordinate_list</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s">&quot;no trajectory available&quot;</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;no trajectory available&quot;</span><span class="p">)</span>
 
-    <span class="nd">@observe</span><span class="p">(</span><span class="s">&#39;frame&#39;</span><span class="p">)</span>
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;frame&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">on_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_clear_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s">&quot;clearRepresentations&quot;</span><span class="p">,</span>
-                <span class="n">target</span><span class="o">=</span><span class="s">&#39;compList&#39;</span><span class="p">,</span>
-                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;clearRepresentations&quot;</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span>
 
-<div class="viewcode-block" id="NGLWidget.add_representation"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.add_representation">[docs]</a>    <span class="k">def</span> <span class="nf">add_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repr_type</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.add_representation"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.add_representation">[docs]</a>    <span class="k">def</span> <span class="nf">add_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repr_type</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Add representation.</span>
 
 <span class="sd">        Parameters</span>
@@ -819,52 +819,55 @@
 <span class="sd">        &gt;&gt;&gt; w</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
-        <span class="k">if</span> <span class="n">repr_type</span> <span class="o">==</span> <span class="s">&#39;surface&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s">&#39;useWorker&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;useWorker&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">repr_type</span> <span class="o">==</span> <span class="s1">&#39;surface&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;useWorker&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;useWorker&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
 
-        <span class="c"># avoid space sensitivity</span>
+        <span class="c1"># avoid space sensitivity</span>
         <span class="n">repr_type</span> <span class="o">=</span> <span class="n">repr_type</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="c"># overwrite selection</span>
+        <span class="c1"># overwrite selection</span>
         <span class="n">selection</span> <span class="o">=</span> <span class="n">seq_to_string</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="s">&#39;model&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">model</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;model&#39;</span><span class="p">)</span>
+        <span class="c1"># make copy</span>
+        <span class="n">kwargs2</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">_camelize</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="s1">&#39;model&#39;</span> <span class="ow">in</span> <span class="n">kwargs2</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">kwargs2</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">model</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs2</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">kwargs2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="c"># e.g.: opacity=0.4</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="c1"># e.g.: opacity=0.4</span>
+                <span class="n">kwargs2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
-        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;sele&#39;</span><span class="p">:</span> <span class="n">selection</span><span class="p">}}</span>
-        <span class="n">d</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repr_type</span>
-        <span class="n">d</span><span class="p">[</span><span class="s">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;sele&#39;</span><span class="p">:</span> <span class="n">selection</span><span class="p">}}</span>
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repr_type</span>
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs2</span><span class="p">)</span>
 
-        <span class="n">params</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&#39;params&#39;</span><span class="p">]</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s">&#39;addRepresentation&#39;</span><span class="p">,</span>
-                          <span class="n">target</span><span class="o">=</span><span class="s">&#39;compList&#39;</span><span class="p">,</span>
-                          <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">],],</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;addRepresentation&#39;</span><span class="p">,</span>
+                          <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
+                          <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],],</span>
                           <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="NGLWidget.center_view"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.center_view">[docs]</a>    <span class="k">def</span> <span class="nf">center_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s">&#39;*&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.center_view"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.center_view">[docs]</a>    <span class="k">def</span> <span class="nf">center_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;center view</span>
 
-<span class="sd">        Example</span>
+<span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        view.center_view(selection=&#39;1-4&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s">&#39;centerView&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s">&#39;compList&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;centerView&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">zoom</span><span class="p">,</span> <span class="n">selection</span><span class="p">],</span>
-                          <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span></div>
+                          <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span></div>
 
-    <span class="nd">@observe</span><span class="p">(</span><span class="s">&#39;_image_data&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_image_data&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;get rendered image. Make sure to call `export_image` first</span>
 
 <span class="sd">        Notes</span>
@@ -875,7 +878,7 @@
         <span class="n">image</span><span class="o">.</span><span class="n">_b64value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span>
         <span class="k">return</span> <span class="n">image</span>
 
-<div class="viewcode-block" id="NGLWidget.export_image"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.export_image">[docs]</a>    <span class="k">def</span> <span class="nf">export_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+<div class="viewcode-block" id="NGLWidget.export_image"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.export_image">[docs]</a>    <span class="k">def</span> <span class="nf">export_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                      <span class="n">factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                      <span class="n">antialias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                      <span class="n">trim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
@@ -893,13 +896,13 @@
 <span class="sd">        trim : bool, default False</span>
 <span class="sd">        transparent : bool, default False</span>
 
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; # tell NGL to render send image data to notebook.</span>
-<span class="sd">        &gt;&gt;&gt; view.export_image()</span>
-
-<span class="sd">        &gt;&gt;&gt; # make sure to call `get_image` method</span>
-<span class="sd">        &gt;&gt;&gt; view.get_image()</span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">            # tell NGL to render send image data to notebook.</span>
+<span class="sd">            view.export_image()</span>
+<span class="sd">            </span>
+<span class="sd">            # make sure to call `get_image` method</span>
+<span class="sd">            view.get_image()</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -911,11 +914,11 @@
                       <span class="n">antialias</span><span class="o">=</span><span class="n">antialias</span><span class="p">,</span>
                       <span class="n">trim</span><span class="o">=</span><span class="n">trim</span><span class="p">,</span>
                       <span class="n">transparent</span><span class="o">=</span><span class="n">transparent</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s">&#39;_exportImage&#39;</span><span class="p">,</span>
-                          <span class="n">target</span><span class="o">=</span><span class="s">&#39;Widget&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;_exportImage&#39;</span><span class="p">,</span>
+                          <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
                           <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NGLWidget.download_image"><a class="viewcode-back" href="../index.html#nglview.NGLWidget.download_image">[docs]</a>    <span class="k">def</span> <span class="nf">download_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">&#39;screenshot.png&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="NGLWidget.download_image"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.download_image">[docs]</a>    <span class="k">def</span> <span class="nf">download_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;screenshot.png&#39;</span><span class="p">,</span>
                        <span class="n">factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                        <span class="n">antialias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                        <span class="n">trim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
@@ -925,22 +928,18 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str, default &#39;screenshot.png&#39;</span>
-
 <span class="sd">        factor : int, default 4</span>
 <span class="sd">            quality of the image, higher is better</span>
-
 <span class="sd">        antialias : bool, default True</span>
-
 <span class="sd">        trim : bool, default False</span>
-
 <span class="sd">        transparent : bool, default False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span>
                       <span class="n">antialias</span><span class="o">=</span><span class="n">antialias</span><span class="p">,</span>
                       <span class="n">trim</span><span class="o">=</span><span class="n">trim</span><span class="p">,</span>
                       <span class="n">transparent</span><span class="o">=</span><span class="n">transparent</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s">&#39;_downloadImage&#39;</span><span class="p">,</span>
-                          <span class="n">target</span><span class="o">=</span><span class="s">&#39;Widget&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;_downloadImage&#39;</span><span class="p">,</span>
+                          <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">filename</span><span class="p">,],</span>
                           <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
@@ -963,31 +962,31 @@
 <span class="sd">        obj : nglview.Structure or any object having &#39;get_structure_string&#39; method or</span>
 <span class="sd">              string buffer (open(fn).read())</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;get_structure_string&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;get_structure_string&#39;</span><span class="p">):</span>
             <span class="n">blob</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_structure_string</span><span class="p">()</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ext&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">ext</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ext&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">ext</span>
             <span class="n">obj_is_file</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">obj_is_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="c"># assume passing string</span>
+            <span class="c1"># assume passing string</span>
             <span class="n">blob</span> <span class="o">=</span> <span class="n">obj</span>
-            <span class="k">if</span> <span class="s">&#39;ext&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="k">assert</span> <span class="n">obj_is_file</span><span class="p">,</span> <span class="s">&#39;must be a filename if ext is None&#39;</span>
+            <span class="k">if</span> <span class="s1">&#39;ext&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">obj_is_file</span><span class="p">,</span> <span class="s1">&#39;must be a filename if ext is None&#39;</span>
 
-        <span class="n">blob_type</span> <span class="o">=</span> <span class="s">&#39;path&#39;</span> <span class="k">if</span> <span class="n">obj_is_file</span> <span class="k">else</span> <span class="s">&#39;blob&#39;</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">[{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">blob_type</span><span class="p">,</span> <span class="s">&#39;data&#39;</span><span class="p">:</span> <span class="n">blob</span><span class="p">}]</span>
+        <span class="n">blob_type</span> <span class="o">=</span> <span class="s1">&#39;path&#39;</span> <span class="k">if</span> <span class="n">obj_is_file</span> <span class="k">else</span> <span class="s1">&#39;blob&#39;</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">blob_type</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">blob</span><span class="p">}]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s">&quot;loadFile&quot;</span><span class="p">,</span>
-                <span class="n">target</span><span class="o">=</span><span class="s">&#39;Stage&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;loadFile&quot;</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_remove_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s">&#39;removeComponent&#39;</span><span class="p">,</span>
-                <span class="n">target</span><span class="o">=</span><span class="s">&#39;Stage&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;removeComponent&#39;</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">model</span><span class="p">,])</span>
         
-    <span class="k">def</span> <span class="nf">_remote_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s">&#39;Stage&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_remote_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;call NGL&#39;s methods from Python.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -999,8 +998,8 @@
 <span class="sd">            if target is &#39;compList&#39;, &quot;component_index&quot; could be passed</span>
 <span class="sd">            to specify which component will call the method.</span>
 
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
 <span class="sd">        view._remote_call(&#39;loadFile&#39;, args=[&#39;1L2Y.pdb&#39;],</span>
 <span class="sd">                          target=&#39;Stage&#39;, kwargs={&#39;defaultRepresentation&#39;: True})</span>
 
@@ -1017,26 +1016,26 @@
 
         <span class="n">msg</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">if</span> <span class="s">&#39;component_index&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">msg</span><span class="p">[</span><span class="s">&#39;component_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;component_index&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;component_index&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;component_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;component_index&#39;</span><span class="p">)</span>
 
-        <span class="n">msg</span><span class="p">[</span><span class="s">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span>
-        <span class="n">msg</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;call_method&#39;</span>
-        <span class="n">msg</span><span class="p">[</span><span class="s">&#39;methodName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">method_name</span>
-        <span class="n">msg</span><span class="p">[</span><span class="s">&#39;args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
-        <span class="n">msg</span><span class="p">[</span><span class="s">&#39;kwargs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;call_method&#39;</span>
+        <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;methodName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">method_name</span>
+        <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;kwargs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">displayed</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c"># send later</span>
+            <span class="c1"># send later</span>
             <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">):</span>
                 <span class="n">widget</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-            <span class="c"># all callbacks will be called right after widget is loaded</span>
+            <span class="c1"># all callbacks will be called right after widget is loaded</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="install"><a class="viewcode-back" href="../index.html#nglview.install">[docs]</a><span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="install"><a class="viewcode-back" href="../api.html#nglview.install">[docs]</a><span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Install the widget nbextension.</span>
 
 <span class="sd">    Parameters</span>
@@ -1046,22 +1045,22 @@
 <span class="sd">    symlink: bool</span>
 <span class="sd">        Symlink instead of copy (for development).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">staticdir</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s">&#39;nglview&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;html&#39;</span><span class="p">,</span> <span class="s">&#39;static&#39;</span><span class="p">))</span>
-    <span class="n">install_nbextension</span><span class="p">(</span><span class="n">staticdir</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s">&#39;nglview&#39;</span><span class="p">,</span>
+    <span class="n">staticdir</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;nglview&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;html&#39;</span><span class="p">,</span> <span class="s1">&#39;static&#39;</span><span class="p">))</span>
+    <span class="n">install_nbextension</span><span class="p">(</span><span class="n">staticdir</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;nglview&#39;</span><span class="p">,</span>
                         <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="n">symlink</span><span class="p">,</span>
                         <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="n">cm</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">()</span>
-    <span class="n">cm</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s">&#39;notebook&#39;</span><span class="p">,</span> <span class="p">{</span>
-        <span class="s">&quot;load_extensions&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s">&quot;widgets/notebook/js/extension&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="n">cm</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;notebook&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s2">&quot;load_extensions&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;widgets/notebook/js/extension&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
         <span class="p">}</span>
     <span class="p">})</span></div>
 
 <span class="n">install</span><span class="p">(</span><span class="n">symlink</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">get_versions</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="n">get_versions</span><span class="p">()[</span><span class="s">&#39;version&#39;</span><span class="p">]</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="n">get_versions</span><span class="p">()[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
 <span class="k">del</span> <span class="n">get_versions</span>
 </pre></div>
 
