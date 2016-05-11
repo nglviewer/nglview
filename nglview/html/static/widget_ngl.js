@@ -301,10 +301,15 @@ define( [
         _update_coords: function( coordinates, model ) {
             // coordinates must be ArrayBuffer (use this.mydecode)
             var component = this.stage.compList[ model ];
+            var structure = component.structure || undefined;
+            
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
-                component.structure.updatePosition( coords );
-                component.updateRepresentations( { "position": true } );
+
+                if( structure ) {
+                    structure.updatePosition( coords );
+                    component.updateRepresentations( { "position": true } );
+                }
             }
         },
 
@@ -453,7 +458,7 @@ define( [
                 }else if( msg.data == 'parameters' ){
                     this.send( JSON.stringify( this.stage.parameters ));
                 }else{
-                    console.log( "nothing done");
+                    console.log( this.stage.compList.length );
                 }
             }
     },
