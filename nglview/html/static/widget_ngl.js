@@ -439,6 +439,7 @@ define( [
                     }
                 }
             }else if( msg.type == 'base64_single' ){
+
                 var coordinateDict2 = msg.data;
                 var keys = Object.keys( coordinateDict2 );
 
@@ -446,7 +447,7 @@ define( [
                     var traj_index = keys[ i ];
                     var coordinates = this.mydecode( coordinateDict2[ traj_index ]['data']);
                     if( coordinates.byteLength > 0 ){
-                        this.updateCoordinates( coordinates, i );
+                        this.updateCoordinates( coordinates, traj_index );
                     }
                 }
             }else if( msg.type == 'get') {
