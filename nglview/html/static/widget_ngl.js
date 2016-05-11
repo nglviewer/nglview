@@ -143,6 +143,10 @@ define( [
                 this.$pickingInfo.text( pickingText );
             }, this );
 
+            this.initPlayer();
+        },
+
+        initPlayer: function() {
             // init player
             if( this.model.get( "count" ) ){
                 var play = function(){
@@ -198,7 +202,6 @@ define( [
                     this.$playerSlider.slider( "value", this.model.get( "frame" ) );
                 }, this );
             }
-
         },
 
         countChanged: function() {
