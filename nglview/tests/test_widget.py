@@ -189,14 +189,6 @@ def test_coordinates_meta():
         nt.assert_equal(view.trajlist[0].n_frames, N_FRAMES)
         nt.assert_equal(len(view.trajlist[0].get_coordinates_dict().keys()), N_FRAMES)
 
-        if index in [0, 1]:
-            # pytraj, mdtraj
-            if index == 0:
-                aa_eq(view.coordinates[0], traj.xyz[3], decimal=4)
-            else:
-                aa_eq(view.coordinates[0],10*traj.xyz[3], decimal=4)
-            view.coordinates = traj.xyz[2]
-
 def test_speed():
     import pytraj as pt
 
