@@ -20,7 +20,7 @@ Table of contents
 
 -  `Installation <#installation>`__
 -  `Usage <#usage>`__
--  `API <api.rst>`_
+-  `API <api.html>`_
 -  `License <#license>`__
 
 Installation
