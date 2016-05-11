@@ -675,16 +675,16 @@ class NGLWidget(widgets.DOMWidget):
         new_structure_list.append({"data": trajectory.get_structure_string(),
                                    "ext": trajectory.ext,
                                    "params": trajectory.params})
+
         self.trajlist.append(trajectory)
-        self._complist.append(trajectory)
-
-        self.structure_list = new_structure_list
-        self._set_coordinates(self.frame)
-
         # update count
         self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
                         'n_frames'))
 
+        self._complist.append(trajectory)
+
+        self.structure_list = new_structure_list
+        self._set_coordinates(self.frame)
 
     def _set_coordinates(self, frame):
         '''set coordinates for current frame
