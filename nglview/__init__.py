@@ -465,9 +465,7 @@ class NGLWidget(widgets.DOMWidget):
         elif isinstance(structure, (list, tuple)):
             self.trajlist = structure
         if self.trajlist:
-            self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
-            'n_frames'))
-
+            self._update_count()
         # use _init_representations so we can view representations right after view is made.
         # self.representations is only have effect if we already call `view`
 
@@ -492,6 +490,10 @@ class NGLWidget(widgets.DOMWidget):
 
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
+
+    def _update_count(self):
+         self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
+                         'n_frames'))
 
     @observe('_finish_caching')
     def on_finish_caching(self, change):
@@ -653,7 +655,7 @@ class NGLWidget(widgets.DOMWidget):
                 for trajectory in self.trajlist:
                     try:
                         coordinate_list.append(trajectory.get_coordinates(index))
-                    except IndexError:
+                    except (IndexError, ValueError):
                         coordinate_list.append(np.empty((0), dtype='f4'))
                 self.coordinates = coordinate_list
         else:
@@ -837,6 +839,43 @@ class NGLWidget(widgets.DOMWidget):
         else:
             self._ngl_msg = msg
 
+    def add_structure(self, structure, **kwargs):
+        '''
+
+        Parameters
+        ----------
+        structure : nglview.Structure object
+
+        Notes
+        -----
+        If you combine both Structure and Trajectory, make sure
+        to load all trajectories first.
+
+        >>> view.add_trajectory(traj0)
+        >>> view.add_trajectory(traj1)
+        >>> # then add Structure
+        >>> view.add_structure(...)
+        '''
+        kwargs2 = dict((_camelize(k), v) for k, v in kwargs.items())
+        self._load_data(structure, **kwargs2)
+
+    def add_trajectory(self, trajectory, **kwargs):
+        '''
+
+        Parameters
+        ----------
+        trajectory: nglview.Trajectory or derived class
+
+        Notes
+        -----
+        If you combine both Structure and Trajectory, make sure
+        to load all trajectories first.
+        '''
+        kwargs2 = dict((_camelize(k), v) for k, v in kwargs.items())
+        self._load_data(trajectory, **kwargs2)
+        self.trajlist.append(trajectory)
+        self._update_count()
+
     def _load_data(self, obj, **kwargs):
         '''
 
@@ -917,6 +956,10 @@ class NGLWidget(widgets.DOMWidget):
 
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
+
+    def _js_console(self):
+        self.send(dict(type='get', data='any'))
+        
 
 def install(user=True, symlink=False):
     """Install the widget nbextension.

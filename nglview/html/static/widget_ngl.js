@@ -61,6 +61,9 @@ define( [
             // init setting of frame
             this.model.on( "change:frame", this.frameChanged, this );
 
+            // init setting of frame
+            this.model.on( "change:count", this.countChanged, this );
+
             // init parameters handling
             this.model.on( "change:parameters", this.parametersChanged, this );
 
@@ -198,6 +201,11 @@ define( [
 
         },
 
+        countChanged: function() {
+            var count = this.model.get( "count" );
+            this.$playerSlider.slider( { max: count - 1} );
+        },
+
         representationsChanged: function(){
             var representations = this.model.get( "_init_representations" );
 
@@ -281,7 +289,7 @@ define( [
                     var coordsDict = this.coordsDictList[ i ];
                     if( frame in coordsDict ) {
                         var coordinates = coordsDict[frame];
-                        this._update_coords(coordinates, i);
+                        this.updateCoordinates(coordinates, i);
                     } // else: just wait
                 }
             }
@@ -289,7 +297,7 @@ define( [
         },
 
 
-        _update_coords: function( coordinates, model ) {
+        updateCoordinates: function( coordinates, model ) {
             // coordinates must be ArrayBuffer (use this.mydecode)
             var component = this.stage.compList[ model ];
             if( coordinates && component ){
@@ -433,7 +441,7 @@ define( [
                 for ( var i = 0; i < this.stage.compList.length; i++ ){
                     var coordinates = this.mydecode( coordinateDictList[ i ]['data']);
                     if( coordinates.byteLength > 0 ){
-                        this._update_coords( coordinates, i );
+                        this.updateCoordinates( coordinates, i );
                     }
                 }
             }else if( msg.type == 'get') {
@@ -445,6 +453,10 @@ define( [
                     this.send( JSON.stringify( this.stage.parameters ));
                 }else{
                     console.log( "nothing done");
+                    console.log( this.stage.compList.length );
+                    for ( var i = 0; i < this.stage.compList.length; i++ ) {
+                        console.log( this.stage.compList[ i ] );
+                    }
                 }
             }
     },
