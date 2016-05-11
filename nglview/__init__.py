@@ -664,7 +664,7 @@ class NGLWidget(widgets.DOMWidget):
         if not self.cache or (self.cache and not self._finish_caching):
             self._set_coordinates(self.frame)
 
-    def clear_representations(model=0):
+    def clear_representations(self, model=0):
         '''clear all representations for given model
 
         Parameters
