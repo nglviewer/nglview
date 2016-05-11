@@ -173,7 +173,7 @@ class FileStructure(Structure):
         self.path = path
         self.ext = ext
         self.params = {}
-        self.id = uuid.uuid4()
+        self.id = str(uuid.uuid4())
         if not os.path.isfile(path):
             raise IOError("Not a file: " + path)
 
@@ -197,7 +197,7 @@ class PdbIdStructure(Structure):
 class Trajectory(object):
 
     def __init__(self):
-        self.id = uuid.uuid4()
+        self.id = str(uuid.uuid4())
         pass
 
     def get_coordinates_dict(self):
@@ -436,7 +436,8 @@ class NGLWidget(widgets.DOMWidget):
     loaded = Bool(False).tag(sync=True)
     _finish_caching = Bool(False).tag(sync=True)
     frame = Int().tag(sync=True)
-    count = Int().tag(sync=True)
+    # hack to always display movie
+    count = Int(1).tag(sync=True)
     _init_representations = List().tag(sync=True)
     structure_list = List().tag(sync=True)
     parameters = Dict().tag(sync=True)
@@ -497,12 +498,10 @@ class NGLWidget(widgets.DOMWidget):
 
         # keep track but making copy
         self._representations = self._init_representations[:]
-        # self.center_view()
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
                          'n_frames'))
-
     @observe('_finish_caching')
     def on_finish_caching(self, change):
         if self._finish_caching:
@@ -516,37 +515,6 @@ class NGLWidget(widgets.DOMWidget):
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         self.displayed = True
-
-    @property
-    def coordinates(self):
-        if self.cache:
-            return
-        else:
-            clist = []
-            for index, traj in enumerate(self.trajlist):
-                data = self._coordinate_dict2[index]['data']
-                dtype = self._coordinate_dict2[index]['dtype']
-                shape = self._coordinate_dict2[index]['shape']
-                clist.append(decode_base64(data, dtype=dtype, shape=shape))
-            return clist
-
-    @coordinates.setter
-    def coordinates(self, arrdict):
-        """return current coordinate
-
-        Parameters
-        ----------
-        arr : dict of 2D array (shape=(n_atoms, 3))
-            key is trajectory index in self._comp_id
-        """
-        dtype = 'f4'
-
-        for index, arr in arrdict.items():
-            coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
-                                    dtype=dtype,
-                                    shape=arr.shape)
-            self._coordinate_dict2[index] = coordinates_meta
-        self.send({'type': 'base64_single', 'data': self._coordinate_dict2})
 
     @property
     def representations(self):
@@ -670,11 +638,22 @@ class NGLWidget(widgets.DOMWidget):
                 coordinate_dict = {}
                 for trajectory in self.trajlist:
                     traj_index = self._comp_id.index(trajectory.id)
+
                     try:
                         coordinate_dict[traj_index] = trajectory.get_coordinates(index)
                     except (IndexError, ValueError):
                         coordinate_dict[traj_index] = np.empty((0), dtype='f4')
-                self.coordinates = coordinate_dict
+
+                dtype = 'f4'
+
+                # reset
+                self._coordinate_dict2 = dict()
+                for index, arr in coordinate_dict.items():
+                    coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
+                                            dtype=dtype,
+                                            shape=arr.shape)
+                    self._coordinate_dict2[index] = coordinates_meta
+                self.send({'type': 'base64_single', 'data': self._coordinate_dict2})
         else:
             print("no trajectory available")
 
@@ -883,7 +862,7 @@ class NGLWidget(widgets.DOMWidget):
             # update via structure_list
             self._init_structures.append(structure)
         self._comp_id.append(structure.id)
-        # self.center_view(model=len(self._comp_id)-1)
+        self.center_view(model=len(self._comp_id)-1)
 
     def add_trajectory(self, trajectory, **kwargs):
         '''
@@ -910,7 +889,6 @@ class NGLWidget(widgets.DOMWidget):
         self.trajlist.append(trajectory)
         self._update_count()
         self._comp_id.append(trajectory.id)
-        # self.center_view(model=len(self._comp_id)-1)
 
     def _load_data(self, obj, **kwargs):
         '''
