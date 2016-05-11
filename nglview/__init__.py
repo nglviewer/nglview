@@ -465,6 +465,7 @@ class NGLWidget(widgets.DOMWidget):
 
         self.trajlist = []
         self._comp_id = []
+        self._init_structures = []
 
         if parameters:
             self.parameters = parameters
@@ -478,7 +479,9 @@ class NGLWidget(widgets.DOMWidget):
         else:
             self.add_structure(structure)
 
-        self.frame = 0
+        # initialize structure_list
+        # hack to trigger update on JS side
+        self._set_initial_structure(self._init_structures)
 
         if representations:
             self._ini_representations = representations
@@ -494,6 +497,7 @@ class NGLWidget(widgets.DOMWidget):
 
         # keep track but making copy
         self._representations = self._init_representations[:]
+        # self.center_view()
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
@@ -506,10 +510,8 @@ class NGLWidget(widgets.DOMWidget):
 
     @observe('loaded')
     def on_loaded(self, change):
-        [callback(self) for callback in self._ngl_displayed_callbacks]
-
-        if self.trajlist:
-            self._set_coordinates(0)
+        if change['new']:
+            [callback(self) for callback in self._ngl_displayed_callbacks]
 
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
@@ -646,12 +648,19 @@ class NGLWidget(widgets.DOMWidget):
     def set_representations(self, representations):
         self.representations = representations
 
-    def set_structure(self, structures):
+    def _set_initial_structure(self, structures):
+        """initialize structures for Widget
+
+        Parameters
+        ----------
+        structures : list
+            list of Structure or Trajectory
+        """
         structure_list = structures if isinstance(structures, (list, tuple)) else [structures,]
         self.structure_list = [{"data": _structure.get_structure_string(),
-                           "ext": _structure.ext,
-                           "params": _structure.params
-                           } for _structure in structure_list]
+                                "ext": _structure.ext,
+                                "params": _structure.params
+                                } for _structure in structure_list]
 
     def _set_coordinates(self, index):
         '''update coordinates for all trajectories at index-th frame
@@ -868,9 +877,13 @@ class NGLWidget(widgets.DOMWidget):
         if 'defaultRepresentation' not in kwargs2:
             kwargs2['defaultRepresentation'] = True
 
-        self._load_data(structure, **kwargs2)
+        if self.loaded:
+            self._load_data(structure, **kwargs2)
+        else:
+            # update via structure_list
+            self._init_structures.append(structure)
         self._comp_id.append(structure.id)
-        self.center_view()
+        # self.center_view(model=len(self._comp_id)-1)
 
     def add_trajectory(self, trajectory, **kwargs):
         '''
@@ -889,10 +902,15 @@ class NGLWidget(widgets.DOMWidget):
         if 'defaultRepresentation' not in kwargs2:
             kwargs2['defaultRepresentation'] = True
 
-        self._load_data(trajectory, **kwargs2)
+        if self.loaded:
+            self._load_data(trajectory, **kwargs2)
+        else:
+            # update via structure_list
+            self._init_structures.append(trajectory)
         self.trajlist.append(trajectory)
         self._update_count()
         self._comp_id.append(trajectory.id)
+        # self.center_view(model=len(self._comp_id)-1)
 
     def _load_data(self, obj, **kwargs):
         '''
@@ -971,6 +989,8 @@ class NGLWidget(widgets.DOMWidget):
             # send later
             def callback(widget, msg=msg):
                 widget.send(msg)
+
+            callback._method_name = method_name
 
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
