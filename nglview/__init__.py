@@ -234,6 +234,7 @@ class SimpletrajTrajectory(Trajectory, Structure):
         self.ext = os.path.splitext(structure_path)[1][1:]
         self.params = {}
         self.trajectory = None
+        self.id = str(uuid.uuid4())
         try:
             self.traj_cache.get(os.path.abspath(self.path))
         except Exception as e:
@@ -278,6 +279,7 @@ class MDTrajTrajectory(Trajectory, Structure):
         self.trajectory = trajectory
         self.ext = "pdb"
         self.params = {}
+        self.id = str(uuid.uuid4())
 
     def get_coordinates_dict(self):
         return dict((index, encode_numpy(xyz*10))
@@ -345,6 +347,7 @@ class ParmEdTrajectory(Trajectory, Structure):
         self.params = {}
         # only call get_coordinates once
         self._xyz = trajectory.get_coordinates()
+        self.id = str(uuid.uuid4())
 
     def get_coordinates_dict(self):
         return dict((index, encode_numpy(xyz))
@@ -385,6 +388,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         self.atomgroup = atomgroup
         self.ext = "pdb"
         self.params = {}
+        self.id = str(uuid.uuid4())
 
     def get_coordinates_dict(self):
 
