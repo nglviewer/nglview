@@ -664,7 +664,7 @@ class NGLWidget(widgets.DOMWidget):
         if not self.cache or (self.cache and not self._finish_caching):
             self._set_coordinates(self.frame)
 
-    def clear_representations(model=0):
+    def clear_representations(self, model=0):
         '''clear all representations for given model
 
         Parameters
@@ -847,6 +847,17 @@ class NGLWidget(widgets.DOMWidget):
         kwargs2 = dict((_camelize(k), v) for k, v in kwargs.items())
         self._load_data(structure, **kwargs2)
 
+    def add_trajectory(self, trajectory, **kwargs):
+        '''
+
+        Parameters
+        ----------
+        structure : nglview.Structure object
+        '''
+        kwargs2 = dict((_camelize(k), v) for k, v in kwargs.items())
+        self._load_data(trajectory, **kwargs2)
+        self.trajlist.append(trajectory)
+
     def _load_data(self, obj, **kwargs):
         '''
 
@@ -927,6 +938,10 @@ class NGLWidget(widgets.DOMWidget):
 
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
+
+    def _js_console(self):
+        self.send(dict(type='get', data='any'))
+        
 
 def install(user=True, symlink=False):
     """Install the widget nbextension.
