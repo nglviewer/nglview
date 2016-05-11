@@ -61,6 +61,9 @@ define( [
             // init setting of frame
             this.model.on( "change:frame", this.frameChanged, this );
 
+            // init setting of frame
+            this.model.on( "change:count", this.countChanged, this );
+
             // init parameters handling
             this.model.on( "change:parameters", this.parametersChanged, this );
 
@@ -196,6 +199,11 @@ define( [
                 }, this );
             }
 
+        },
+
+        countChanged: function() {
+            var count = this.model.get( "count" );
+            this.$playerSlider.slider( { max: count - 1} );
         },
 
         representationsChanged: function(){
@@ -445,8 +453,10 @@ define( [
                     this.send( JSON.stringify( this.stage.parameters ));
                 }else{
                     console.log( "nothing done");
-                    console.log( this.compList.length );
-                    console.log( this.compList );
+                    console.log( this.stage.compList.length );
+                    for ( var i = 0; i < this.stage.compList.length; i++ ) {
+                        console.log( this.stage.compList[ i ] );
+                    }
                 }
             }
     },
