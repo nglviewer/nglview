@@ -20,7 +20,7 @@ Table of contents
 
 -  `Installation <#installation>`__
 -  `Usage <#usage>`__
--  `API <#api>`__
+-  `API <api.html>`__
 -  `License <#license>`__
 
 Installation
@@ -153,11 +153,6 @@ You can have multiple widgets per notebook cell:
     w1 = NGLWidget(...)
     w2 = NGLWidget(...)
     Box(children=(w1,w2))
-
-API
-===
-
-`Follow me <api.html>`_
 
 License
 =======
