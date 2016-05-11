@@ -67,6 +67,9 @@ define( [
             // init parameters handling
             this.model.on( "change:cache", this.cacheChanged, this );
 
+            // init parameters handling
+            this.model.on( "change:count", this.countChanged, this );
+
             // init orientation handling
             this.model.on( "change:orientation", this.orientationChanged, this );
 
@@ -80,7 +83,6 @@ define( [
             NGL.useWorker = false;
             this.stage = new NGL.Stage();
             this.stage.setTheme( "light" );
-            this.structureComponent = undefined;
             this.$container = $( this.stage.viewer.container );
             this.$el.append( this.$container );
             this.$container.resizable( {
@@ -141,61 +143,68 @@ define( [
             }, this );
 
             // init player
-            if( this.model.get( "count" ) ){
-                var play = function(){
-                    this.$playerButton.text( "pause" );
-                    this.playerInterval = setInterval( function(){
-                        var frame = this.model.get( "frame" ) + 1;
-                        var count = this.model.get( "count" );
-                        if( frame >= count ) frame = 0;
-                        this.model.set( "frame", frame );
-                        this.model.save();
-                    }.bind( this ), 100 );
-                }.bind( this );
-                var pause = function(){
-                    this.$playerButton.text( "play" );
-                    if( this.playerInterval !== undefined ){
-                        clearInterval( this.playerInterval );
-                    }
-                }.bind( this );
-                this.$playerButton = $( "<button>play</button>" )
-                    .css( "float", "left" )
-                    .css( "width", "55px" )
-                    .css( "opacity", "0.7" )
-                    .click( function( event ){
-                        if( this.$playerButton.text() === "play" ){
-                            play();
-                        }else if( this.$playerButton.text() === "pause" ){
-                            pause();
-                        }
-                    }.bind( this ) );
-                this.$playerSlider = $( "<div></div>" )
-                    .css( "margin-left", "70px" )
-                    .css( "position", "relative" )
-                    .css( "bottom", "-7px" )
-                    .slider( {
-                        min: 0,
-                        max: this.model.get( "count" ) - 1,
-                        slide: function( event, ui ){
-                            pause();
-                            this.model.set( "frame", ui.value );
-                            this.model.save();
-                        }.bind( this )
-                    } );
-                this.$player = $( "<div></div>" )
-                    .css( "position", "absolute" )
-                    .css( "bottom", "5%" )
-                    .css( "width", "94%" )
-                    .css( "margin-left", "3%" )
-                    .css( "opacity", "0.7" )
-                    .append( this.$playerButton )
-                    .append( this.$playerSlider )
-                    .appendTo( this.$container );
-                this.model.on( "change:frame", function(){
-                    this.$playerSlider.slider( "value", this.model.get( "frame" ) );
-                }, this );
-            }
+            this.initPlayer();
+        },
+        
+        countChanged: function() {
+            this.$playerSlider.slider( { max: this.model.get( "count" ) } );
+        },
 
+        initPlayer: function() {
+            var count = this.model.get( "count" ) || 1;
+
+            var play = function(){
+                this.$playerButton.text( "pause" );
+                this.playerInterval = setInterval( function(){
+                    var frame = this.model.get( "frame" ) + 1;
+                    var count = this.model.get( "count" );
+                    if( frame >= count ) frame = 0;
+                    this.model.set( "frame", frame );
+                    this.model.save();
+                }.bind( this ), 100 );
+            }.bind( this );
+            var pause = function(){
+                this.$playerButton.text( "play" );
+                if( this.playerInterval !== undefined ){
+                    clearInterval( this.playerInterval );
+                }
+            }.bind( this );
+            this.$playerButton = $( "<button>play</button>" )
+                .css( "float", "left" )
+                .css( "width", "55px" )
+                .css( "opacity", "0.7" )
+                .click( function( event ){
+                    if( this.$playerButton.text() === "play" ){
+                        play();
+                    }else if( this.$playerButton.text() === "pause" ){
+                        pause();
+                    }
+                }.bind( this ) );
+            this.$playerSlider = $( "<div></div>" )
+                .css( "margin-left", "70px" )
+                .css( "position", "relative" )
+                .css( "bottom", "-7px" )
+                .slider( {
+                    min: 0,
+                    max: this.model.get( "count" ) - 1,
+                    slide: function( event, ui ){
+                        pause();
+                        this.model.set( "frame", ui.value );
+                        this.model.save();
+                    }.bind( this )
+                } );
+            this.$player = $( "<div></div>" )
+                .css( "position", "absolute" )
+                .css( "bottom", "5%" )
+                .css( "width", "94%" )
+                .css( "margin-left", "3%" )
+                .css( "opacity", "0.7" )
+                .append( this.$playerButton )
+                .append( this.$playerSlider )
+                .appendTo( this.$container );
+            this.model.on( "change:frame", function(){
+                this.$playerSlider.slider( "value", this.model.get( "frame" ) );
+            }, this );
         },
 
         representationsChanged: function(){
@@ -213,9 +222,9 @@ define( [
         },
 
         structureChanged: function(){
-            this.structureComponent = undefined;
             var structureList = this.model.get( "structure_list" );
 
+            this.stage.compList = [];
             for ( var i = 0; i < Object.keys(structureList).length; i++ ){
                 var structure = structureList[ i ];
                 if( structure.data && structure.ext ){
@@ -223,9 +232,9 @@ define( [
                     var params = structure.params || {};
                     params.ext = structure.ext;
                     params.defaultRepresentation = false;
+                    // params.defaultRepresentation = true;
                     this.stage.loadFile( blob, params ).then( function( component ){
                         component.centerView();
-                        // this.structureComponent = component;
                         this.representationsChanged();
                     }.bind( this ) );
                 }
@@ -292,10 +301,15 @@ define( [
         _update_coords: function( coordinates, model ) {
             // coordinates must be ArrayBuffer (use this.mydecode)
             var component = this.stage.compList[ model ];
+            var structure = component.structure || undefined;
+            
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
-                component.structure.updatePosition( coords );
-                component.updateRepresentations( { "position": true } );
+
+                if( structure ) {
+                    structure.updatePosition( coords );
+                    component.updateRepresentations( { "position": true } );
+                }
             }
         },
 
@@ -444,7 +458,7 @@ define( [
                 }else if( msg.data == 'parameters' ){
                     this.send( JSON.stringify( this.stage.parameters ));
                 }else{
-                    console.log( "nothing done");
+                    console.log( this.stage.compList.length );
                 }
             }
     },

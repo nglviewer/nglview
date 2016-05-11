@@ -446,7 +446,7 @@ class NGLWidget(widgets.DOMWidget):
     displayed = False
     _ngl_msg = None
 
-    def __init__(self, structure, trajectory=None,
+    def __init__(self, structure=None,
                  representations=None, parameters=None, **kwargs):
         try:
             self.cache = kwargs.pop('cache')
@@ -454,13 +454,15 @@ class NGLWidget(widgets.DOMWidget):
             self.cache = False
         super(NGLWidget, self).__init__(**kwargs)
         self.trajlist = []
+        self._complist = []
 
-        if parameters:
+        if parameters is not None:
             self.parameters = parameters
-        self.set_structure(structure)
-        if trajectory:
-            self.trajectory = trajectory
-        elif hasattr(structure, "get_coordinates_dict"):
+
+        if structure is not None:
+            self.set_structure(structure)
+
+        if isinstance(structure, Trajectory):
             self.trajlist = [structure,]
         elif isinstance(structure, (list, tuple)):
             self.trajlist = structure
@@ -471,7 +473,7 @@ class NGLWidget(widgets.DOMWidget):
         # use _init_representations so we can view representations right after view is made.
         # self.representations is only have effect if we already call `view`
 
-        if representations:
+        if representations is not None:
             self._ini_representations = representations
         else:
             self._init_representations = [
@@ -484,7 +486,8 @@ class NGLWidget(widgets.DOMWidget):
             ]
 
         # keep track but making copy
-        self._representations = self._init_representations[:]
+        if structure is not None:
+            self._representations = self._init_representations[:]
         self._add_repr_method_shortcut()
 
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
@@ -503,7 +506,7 @@ class NGLWidget(widgets.DOMWidget):
         [callback(self) for callback in self._ngl_displayed_callbacks]
 
         if self.trajlist:
-            self._set_coordinates(0)
+            self._set_coordinates(frame=0)
 
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
@@ -515,7 +518,8 @@ class NGLWidget(widgets.DOMWidget):
             return
         else:
             clist = []
-            for index, traj in enumerate(self.trajlist):
+            for traj in self.trajlist:
+                index = self._complist.index(traj)
                 data = self._coordinate_dict2[index]['data']
                 dtype = self._coordinate_dict2[index]['dtype']
                 shape = self._coordinate_dict2[index]['shape']
@@ -523,16 +527,16 @@ class NGLWidget(widgets.DOMWidget):
             return clist
 
     @coordinates.setter
-    def coordinates(self, arrlist):
+    def coordinates(self, arrdict):
         """return current coordinate
 
         Parameters
         ----------
-        arr : list of 2D array (shape=(n_atoms, 3))
+        arr : dict of 2D array (shape=(n_atoms, 3))
         """
         dtype = 'f4'
 
-        for index, arr in enumerate(arrlist): 
+        for index, arr in arrdict.items():
             coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
                                     dtype=dtype,
                                     shape=arr.shape)
@@ -639,23 +643,62 @@ class NGLWidget(widgets.DOMWidget):
     def set_representations(self, representations):
         self.representations = representations
 
-    def set_structure(self, structures):
+    def add_structure(self, structure):
+        tmp_list = self.structure_list[:]
+        tmp_list.append({"data": structure.get_structure_string(),
+                        "ext": structure.ext,
+                        "params": structure.params
+                        })
+
+        self.structure_list = tmp_list
+        self._complist.append(structure)
+
+    def set_structure(self, structures, params=None):
+        '''set structure_list with given params (optional)
+
+        Parameters
+        ----------
+        structures : list of structures
+        params : None or dict, default None
+            if given, use it
+        '''
         structure_list = structures if isinstance(structures, (list, tuple)) else [structures,]
         self.structure_list = [{"data": _structure.get_structure_string(),
                            "ext": _structure.ext,
                            "params": _structure.params
                            } for _structure in structure_list]
 
-    def _set_coordinates(self, index):
+    def add_trajectory(self, trajectory):
+        '''add NGLView' compatible trajectory
+        '''
+        new_structure_list = self.structure_list[:]
+        new_structure_list.append({"data": trajectory.get_structure_string(),
+                                   "ext": trajectory.ext,
+                                   "params": trajectory.params})
+
+        self.trajlist.append(trajectory)
+        # update count
+        self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
+                        'n_frames'))
+
+        self._complist.append(trajectory)
+
+        self.structure_list = new_structure_list
+        self._set_coordinates(self.frame)
+
+    def _set_coordinates(self, frame):
+        '''set coordinates for current frame
+        '''
         if self.trajlist:
             if not self.cache or (self.cache and not self._finish_caching):
-                coordinate_list = []
+                coordinate_dict = {}
                 for trajectory in self.trajlist:
+                    index = self._complist.index(trajectory)
                     try:
-                        coordinate_list.append(trajectory.get_coordinates(index))
-                    except IndexError:
-                        coordinate_list.append(np.empty((0), dtype='f4'))
-                self.coordinates = coordinate_list
+                        coordinate_dict[index] = trajectory.get_coordinates(frame)
+                    except (IndexError, ValueError):
+                        coordinate_dict[index] = np.empty((0), dtype='f4')
+                self.coordinates = coordinate_dict
         else:
             print("no trajectory available")
 
@@ -855,9 +898,14 @@ class NGLWidget(widgets.DOMWidget):
                 kwargs=kwargs)
 
     def _remove_component(self, model):
+
+        obj = self._complist.pop(model)
+        if isinstance(obj, Trajectory) and isinstance(obj, Structure):
+            self.trajlist.remove(obj)
         self._remote_call('removeComponent',
                 target='Stage',
                 args=[model,])
+        self.structure_list.pop(model)
         
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
