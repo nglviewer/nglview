@@ -224,6 +224,7 @@ define( [
         structureChanged: function(){
             var structureList = this.model.get( "structure_list" );
 
+            this.stage.compList = [];
             for ( var i = 0; i < Object.keys(structureList).length; i++ ){
                 var structure = structureList[ i ];
                 if( structure.data && structure.ext ){
