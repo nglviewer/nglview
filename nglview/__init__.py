@@ -664,6 +664,16 @@ class NGLWidget(widgets.DOMWidget):
         if not self.cache or (self.cache and not self._finish_caching):
             self._set_coordinates(self.frame)
 
+    def clear_representations(model=0):
+        '''clear all representations for given model
+
+        Parameters
+        ----------
+        model : int, default 0 (first model)
+            You need to keep track how many models you added.
+        '''
+        self._clear_repr(model=model)
+
     def _clear_repr(self, model=0):
         self._remote_call("clearRepresentations",
                 target='compList',
