@@ -158,7 +158,7 @@ You can have multiple widgets per notebook cell:
     Box(children=(w1,w2))
 
 API
-~~~
+===
 
 `Follow me <api.html>`_
 
