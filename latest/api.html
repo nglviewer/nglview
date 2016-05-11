@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.4+143.gb7c70d5 documentation</title>
+  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.4+149.g419194b documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.4+143.gb7c70d5 documentation" href="index.html"/> 
+    <link rel="top" title="NGLView 0.4+149.g419194b documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -259,7 +259,7 @@
 
 <dl class="class">
 <dt id="nglview.NGLWidget">
-<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">NGLWidget</code><span class="sig-paren">(</span><em>structure</em>, <em>trajectory=None</em>, <em>representations=None</em>, <em>parameters=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">NGLWidget</code><span class="sig-paren">(</span><em>structure</em>, <em>representations=None</em>, <em>parameters=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">ipywidgets.widgets.widget.DOMWidget</span></code></p>
 <dl class="method">
 <dt id="nglview.NGLWidget.add_representation">
@@ -282,6 +282,28 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.add_structure">
+<code class="descname">add_structure</code><span class="sig-paren">(</span><em>structure</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.add_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.add_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>structure : nglview.Structure object</p>
+<p>If you combine both Structure and Trajectory, make sure
+to load all trajectories first.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># then add Structure</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_structure</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.add_trajectory">
+<code class="descname">add_trajectory</code><span class="sig-paren">(</span><em>trajectory</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.add_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.add_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>trajectory: nglview.Trajectory or derived class</p>
+<p>If you combine both Structure and Trajectory, make sure
+to load all trajectories first.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -312,10 +334,15 @@ Use <cite>view.uncaching()</cite> then update your coordinates, then <cite>view.
 <p>view.center_view(selection=&#8216;1-4&#8217;)</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="nglview.NGLWidget.coordinates">
-<code class="descname">coordinates</code><a class="headerlink" href="#nglview.NGLWidget.coordinates" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="method">
+<dt id="nglview.NGLWidget.clear_representations">
+<code class="descname">clear_representations</code><span class="sig-paren">(</span><em>model=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.clear_representations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.clear_representations" title="Permalink to this definition">¶</a></dt>
+<dd><p>clear all representations for given model</p>
+<dl class="docutils">
+<dt>model</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0 (first model)</span><dd>You need to keep track how many models you added.</dd>
+</dl>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="nglview.NGLWidget.coordinates_dict">
@@ -435,11 +462,6 @@ view.get_image()</p>
 <dl class="method">
 <dt id="nglview.NGLWidget.set_representations">
 <code class="descname">set_representations</code><span class="sig-paren">(</span><em>representations</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.set_representations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.set_representations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="nglview.NGLWidget.set_structure">
-<code class="descname">set_structure</code><span class="sig-paren">(</span><em>structures</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.set_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.set_structure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -746,7 +768,7 @@ gro, mol2, sdf.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.4+143.gb7c70d5',
+            VERSION:'0.4+149.g419194b',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

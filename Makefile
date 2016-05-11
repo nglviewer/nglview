@@ -6,3 +6,6 @@ clean:
 
 push:
 	git push upstream gh-pages
+
+pull:
+	git pull upstream gh-pages

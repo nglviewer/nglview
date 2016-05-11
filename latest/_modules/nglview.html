@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview &mdash; NGLView 0.4+143.gb7c70d5 documentation</title>
+  <title>nglview &mdash; NGLView 0.4+149.g419194b documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.4+143.gb7c70d5 documentation" href="../index.html"/>
+    <link rel="top" title="NGLView 0.4+149.g419194b documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -129,10 +129,11 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">datafiles</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">seq_to_string</span><span class="p">,</span> <span class="n">string_types</span><span class="p">,</span> <span class="n">_camelize</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">seq_to_string</span><span class="p">,</span> <span class="n">string_types</span><span class="p">,</span> <span class="n">_camelize</span><span class="p">,</span> <span class="n">_camelize_dict</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="kn">as</span> <span class="nn">widgets</span>
@@ -299,6 +300,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Not a file: &quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
 
@@ -322,6 +324,7 @@
 <div class="viewcode-block" id="Trajectory"><a class="viewcode-back" href="../api.html#nglview.Trajectory">[docs]</a><span class="k">class</span> <span class="nc">Trajectory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="Trajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.Trajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -358,6 +361,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">structure_path</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">traj_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -402,6 +406,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
 
 <div class="viewcode-block" id="MDTrajTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.MDTrajTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">index</span><span class="p">,</span> <span class="n">encode_numpy</span><span class="p">(</span><span class="n">xyz</span><span class="o">*</span><span class="mi">10</span><span class="p">))</span>
@@ -438,6 +443,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
 
 <div class="viewcode-block" id="PyTrajTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.PyTrajTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">index</span><span class="p">,</span> <span class="n">encode_numpy</span><span class="p">(</span><span class="n">xyz</span><span class="p">))</span>
@@ -459,7 +465,6 @@
         <span class="c1"># os.close( fd )</span>
         <span class="k">return</span> <span class="n">pdb_string</span></div></div>
 
-
 <div class="viewcode-block" id="ParmEdTrajectory"><a class="viewcode-back" href="../api.html#nglview.ParmEdTrajectory">[docs]</a><span class="k">class</span> <span class="nc">ParmEdTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;ParmEd adaptor.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -469,6 +474,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># only call get_coordinates once</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
 
 <div class="viewcode-block" id="ParmEdTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.ParmEdTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">index</span><span class="p">,</span> <span class="n">encode_numpy</span><span class="p">(</span><span class="n">xyz</span><span class="p">))</span>
@@ -509,6 +515,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span> <span class="o">=</span> <span class="n">atomgroup</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
 
 <div class="viewcode-block" id="MDAnalysisTrajectory.get_coordinates_dict"><a class="viewcode-back" href="../api.html#nglview.MDAnalysisTrajectory.get_coordinates_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -560,7 +567,8 @@
     <span class="n">loaded</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_finish_caching</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">frame</span> <span class="o">=</span> <span class="n">Int</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="n">Int</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="c1"># hack to always display movie</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_init_representations</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">structure_list</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -573,30 +581,39 @@
     <span class="n">displayed</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="n">_ngl_msg</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">trajectory</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">representations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">representations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NGLWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># do not use _displayed_callbacks since there is another Widget._display_callbacks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_repr_method_shortcut</span><span class="p">()</span>
+
+        <span class="c1"># register to get data from JS side</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_handle_msg</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comp_id</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">trajectory</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="s2">&quot;get_coordinates_dict&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">structure</span><span class="p">,]</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span> <span class="o">=</span> <span class="n">structure</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span>
-            <span class="s1">&#39;n_frames&#39;</span><span class="p">))</span>
 
-        <span class="c1"># use _init_representations so we can view representations right after view is made.</span>
-        <span class="c1"># self.representations is only have effect if we already call `view`</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">Trajectory</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">trajectories</span> <span class="o">=</span> <span class="n">structure</span>
+            <span class="k">for</span> <span class="n">trajectory</span> <span class="ow">in</span> <span class="n">trajectories</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+
+        <span class="c1"># initialize structure_list</span>
+        <span class="c1"># hack to trigger update on JS side</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_initial_structure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">representations</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ini_representations</span> <span class="o">=</span> <span class="n">representations</span>
@@ -612,14 +629,10 @@
 
         <span class="c1"># keep track but making copy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_representations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_representations</span><span class="p">[:]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_repr_method_shortcut</span><span class="p">()</span>
 
-        <span class="c1"># do not use _displayed_callbacks since there is another Widget._display_callbacks</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="c1"># register to get data from JS side</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">on_msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_handle_msg</span><span class="p">)</span>
-
+    <span class="k">def</span> <span class="nf">_update_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span>
+                         <span class="s1">&#39;n_frames&#39;</span><span class="p">))</span>
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_finish_caching&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">on_finish_caching</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span><span class="p">:</span>
@@ -627,44 +640,12 @@
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;loaded&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">on_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
-        <span class="p">[</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="p">]</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_coordinates</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]:</span>
+            <span class="p">[</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_ipython_display_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NGLWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_ipython_display_</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">displayed</span> <span class="o">=</span> <span class="bp">True</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">clist</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">traj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">):</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
-                <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span>
-                <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s1">&#39;shape&#39;</span><span class="p">]</span>
-                <span class="n">clist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">decode_base64</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">clist</span>
-
-    <span class="nd">@coordinates.setter</span>
-    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arrlist</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;return current coordinate</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        arr : list of 2D array (shape=(n_atoms, 3))</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;f4&#39;</span>
-
-        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">arr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">arrlist</span><span class="p">):</span> 
-            <span class="n">coordinates_meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">encode_numpy</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span>
-                                    <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-                                    <span class="n">shape</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">coordinates_meta</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;base64_single&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">})</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">representations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -766,23 +747,44 @@
 <div class="viewcode-block" id="NGLWidget.set_representations"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.set_representations">[docs]</a>    <span class="k">def</span> <span class="nf">set_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representations</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="n">representations</span></div>
 
-<div class="viewcode-block" id="NGLWidget.set_structure"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.set_structure">[docs]</a>    <span class="k">def</span> <span class="nf">set_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structures</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_initial_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structures</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;initialize structures for Widget</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        structures : list</span>
+<span class="sd">            list of Structure or Trajectory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">structure_list</span> <span class="o">=</span> <span class="n">structures</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="k">else</span> <span class="p">[</span><span class="n">structures</span><span class="p">,]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">structure_list</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">get_structure_string</span><span class="p">(),</span>
-                           <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">ext</span><span class="p">,</span>
-                           <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">params</span>
-                           <span class="p">}</span> <span class="k">for</span> <span class="n">_structure</span> <span class="ow">in</span> <span class="n">structure_list</span><span class="p">]</span></div>
+                                <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">ext</span><span class="p">,</span>
+                                <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">params</span>
+                                <span class="p">}</span> <span class="k">for</span> <span class="n">_structure</span> <span class="ow">in</span> <span class="n">structure_list</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;update coordinates for all trajectories at index-th frame</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span><span class="p">):</span>
-                <span class="n">coordinate_list</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">coordinate_dict</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="k">for</span> <span class="n">trajectory</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="p">:</span>
+                    <span class="n">traj_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_id</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="n">coordinate_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
-                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                        <span class="n">coordinate_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">coordinate_list</span>
+                        <span class="n">coordinate_dict</span><span class="p">[</span><span class="n">traj_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                        <span class="n">coordinate_dict</span><span class="p">[</span><span class="n">traj_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">)</span>
+
+                <span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;f4&#39;</span>
+
+                <span class="c1"># reset</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">coordinate_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">coordinates_meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">encode_numpy</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span>
+                                            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                                            <span class="n">shape</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">coordinates_meta</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;base64_single&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict2</span><span class="p">})</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s2">&quot;no trajectory available&quot;</span><span class="p">)</span>
 
@@ -790,6 +792,16 @@
     <span class="k">def</span> <span class="nf">on_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_caching</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NGLWidget.clear_representations"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.clear_representations">[docs]</a>    <span class="k">def</span> <span class="nf">clear_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;clear all representations for given model</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        model : int, default 0 (first model)</span>
+<span class="sd">            You need to keep track how many models you added.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear_repr</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_clear_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;clearRepresentations&quot;</span><span class="p">,</span>
@@ -829,7 +841,7 @@
         <span class="n">selection</span> <span class="o">=</span> <span class="n">seq_to_string</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
         <span class="c1"># make copy</span>
-        <span class="n">kwargs2</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">_camelize</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">kwargs2</span> <span class="o">=</span> <span class="n">_camelize_dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s1">&#39;model&#39;</span> <span class="ow">in</span> <span class="n">kwargs2</span><span class="p">:</span>
             <span class="n">model</span> <span class="o">=</span> <span class="n">kwargs2</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)</span>
@@ -954,6 +966,61 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_msg</span> <span class="o">=</span> <span class="n">msg</span>
 
+<div class="viewcode-block" id="NGLWidget.add_structure"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.add_structure">[docs]</a>    <span class="k">def</span> <span class="nf">add_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        structure : nglview.Structure object</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If you combine both Structure and Trajectory, make sure</span>
+<span class="sd">        to load all trajectories first.</span>
+
+<span class="sd">        &gt;&gt;&gt; view.add_trajectory(traj0)</span>
+<span class="sd">        &gt;&gt;&gt; view.add_trajectory(traj1)</span>
+<span class="sd">        &gt;&gt;&gt; # then add Structure</span>
+<span class="sd">        &gt;&gt;&gt; view.add_structure(...)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">kwargs2</span> <span class="o">=</span> <span class="n">_camelize_dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;defaultRepresentation&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs2</span><span class="p">:</span>
+            <span class="n">kwargs2</span><span class="p">[</span><span class="s1">&#39;defaultRepresentation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># update via structure_list</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comp_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_id</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NGLWidget.add_trajectory"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.add_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">add_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        trajectory: nglview.Trajectory or derived class</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If you combine both Structure and Trajectory, make sure</span>
+<span class="sd">        to load all trajectories first.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">kwargs2</span> <span class="o">=</span> <span class="n">_camelize_dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;defaultRepresentation&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs2</span><span class="p">:</span>
+            <span class="n">kwargs2</span><span class="p">[</span><span class="s1">&#39;defaultRepresentation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># update via structure_list</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trajlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_count</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comp_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">_load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 
@@ -1032,8 +1099,14 @@
             <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">):</span>
                 <span class="n">widget</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
+            <span class="n">callback</span><span class="o">.</span><span class="n">_method_name</span> <span class="o">=</span> <span class="n">method_name</span>
+
             <span class="c1"># all callbacks will be called right after widget is loaded</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_js_console</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;any&#39;</span><span class="p">))</span></div>
+        
 
 <div class="viewcode-block" id="install"><a class="viewcode-back" href="../api.html#nglview.install">[docs]</a><span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Install the widget nbextension.</span>
@@ -1095,7 +1168,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.4+143.gb7c70d5',
+            VERSION:'0.4+149.g419194b',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
