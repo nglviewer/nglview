@@ -827,6 +827,16 @@ class NGLWidget(widgets.DOMWidget):
         else:
             self._ngl_msg = msg
 
+    def add_structure(self, structure, **kwargs):
+        '''
+
+        Parameters
+        ----------
+        structure : nglview.Structure object
+        '''
+        kwargs2 = dict((_camelize(k), v) for k, v in kwargs.items())
+        self._load_data(structure, **kwargs2)
+
     def _load_data(self, obj, **kwargs):
         '''
 
