@@ -919,16 +919,16 @@ class NGLWidget(widgets.DOMWidget):
         if hasattr(obj, 'get_structure_string'):
             blob = obj.get_structure_string()
             kwargs2['ext'] = obj.ext
-            obj_is_file = False
+            is_file = False
         else:
-            obj_is_file = os.path.isfile(obj)
+            is_file = os.path.isfile(obj)
             # assume passing string
             blob = obj
             if 'ext' not in kwargs2:
-                assert obj_is_file, 'must be a filename if ext is None'
+                assert is_file, 'must be a filename if ext is None'
 
-        blob_type = 'path' if obj_is_file else 'blob'
-        args=[{'type': blob_type, 'data': blob}]
+        data_type = 'path' if is_file else 'blob'
+        args=[{'type': data_type, 'data': blob}]
 
         self._remote_call("loadFile",
                 target='Stage',
