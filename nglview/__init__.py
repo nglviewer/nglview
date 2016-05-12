@@ -991,7 +991,7 @@ def install(user=True, symlink=False):
     symlink: bool
         Symlink instead of copy (for development).
     """
-    staticdir = resource_filename('nglview', os.path.join('html', 'static'))
+    staticdir = resource_filename('nglview', 'js')
     install_nbextension(staticdir, destination='nglview',
                         user=user, symlink=symlink,
                         verbose=0)

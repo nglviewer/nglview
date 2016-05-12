@@ -37,9 +37,9 @@ if __name__ == '__main__':
         zip_safe=False,
         package_data={
             "nglview.datafiles": ["*"],
-            "nglview.html": ["static/*"]
+            "nglview.js": ["js/*"]
         },
-        packages=["nglview", "nglview.datafiles", "nglview.html"],
+        packages=["nglview", "nglview.datafiles", "nglview.js"],
         install_requires=["jupyter", "traitlets>=4.2.1", "ipywidgets<5.0"],
         tests_require=["nose"],
         test_suite="nose.collector",
