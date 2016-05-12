@@ -13,6 +13,11 @@ import ipywidgets as widgets
 from traitlets import Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe
 from ipywidgets import widget_image
 
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 from IPython.display import display, Javascript
 from notebook.nbextensions import install_nbextension
 from notebook.services.config import ConfigManager
@@ -56,6 +61,17 @@ def show_pdbid(pdbid, **kwargs):
     structure = PdbIdStructure(pdbid)
     return NGLWidget(structure, **kwargs)
 
+def show_rdkit(rdkit_mol, **kwargs):
+    '''Show rdkit
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> w = nv.show_rdkit(rdkit_mol)
+    >>> w
+    '''
+    structure = RdkitStructure(rdkit_mol)
+    return NGLWidget(structure, **kwargs)
 
 def show_structure_file(path, **kwargs):
     '''Show structure file. Allowed are text-based structure
@@ -182,6 +198,17 @@ class FileStructure(Structure):
         with open(self.path, "r") as f:
             return f.read()
 
+class RdkitStructure(Structure):
+
+    def __init__(self, rdkit_mol2, ext="mol2"):
+        super(RdkitStructure, self).__init__()
+        self.path = ''
+        self.ext = ext
+        self.params = {}
+        self._data = rdkit_mol2
+
+    def get_structure_string(self):
+        return StringIO(self._data).read()
 
 class PdbIdStructure(Structure):
 
@@ -413,10 +440,6 @@ class MDAnalysisTrajectory(Trajectory, Structure):
             raise ImportError(
                 "'MDAnalysisTrajectory' requires the 'MDAnalysis' package"
             )
-        try:
-            from cStringIO import StringIO
-        except ImportError:
-            from io import StringIO
         u = self.atomgroup.universe
         u.trajectory[0]
         f = mda.lib.util.NamedStream(StringIO(), 'tmp.pdb')
@@ -456,7 +479,7 @@ class NGLWidget(widgets.DOMWidget):
     displayed = False
     _ngl_msg = None
 
-    def __init__(self, structure, representations=None, parameters=None, **kwargs):
+    def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         try:
             self.cache = kwargs.pop('cache')
         except KeyError:
@@ -484,11 +507,13 @@ class NGLWidget(widgets.DOMWidget):
             for trajectory in trajectories:
                 self.add_trajectory(trajectory)
         else:
-            self.add_structure(structure)
+            if structure is not None:
+                self.add_structure(structure)
 
         # initialize _init_structure_list
         # hack to trigger update on JS side
-        self._set_initial_structure(self._init_structures)
+        if structure is not None:
+            self._set_initial_structure(self._init_structures)
 
         if representations:
             self._ini_representations = representations
