@@ -456,7 +456,7 @@ class NGLWidget(widgets.DOMWidget):
     displayed = False
     _ngl_msg = None
 
-    def __init__(self, structure, representations=None, parameters=None, **kwargs):
+    def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         try:
             self.cache = kwargs.pop('cache')
         except KeyError:
@@ -471,7 +471,7 @@ class NGLWidget(widgets.DOMWidget):
         self.on_msg(self._ngl_handle_msg)
 
         self._trajlist = []
-        self._comp_id = []
+        self._model_ids = []
         self._init_structures = []
 
         if parameters:
@@ -484,11 +484,13 @@ class NGLWidget(widgets.DOMWidget):
             for trajectory in trajectories:
                 self.add_trajectory(trajectory)
         else:
-            self.add_structure(structure)
+            if structure is not None:
+                self.add_structure(structure)
 
         # initialize _init_structure_list
         # hack to trigger update on JS side
-        self._set_initial_structure(self._init_structures)
+        if structure is not None:
+            self._set_initial_structure(self._init_structures)
 
         if representations:
             self._ini_representations = representations
@@ -503,7 +505,8 @@ class NGLWidget(widgets.DOMWidget):
             ]
 
         # keep track but making copy
-        self._representations = self._init_representations[:]
+        if structure is not None:
+            self._representations = self._init_representations[:]
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
@@ -644,7 +647,7 @@ class NGLWidget(widgets.DOMWidget):
             if not self.cache or (self.cache and not self._finish_caching):
                 coordinate_dict = {}
                 for trajectory in self._trajlist:
-                    traj_index = self._comp_id.index(trajectory.id)
+                    traj_index = self._model_ids.index(trajectory.id)
 
                     try:
                         coordinate_dict[traj_index] = trajectory.get_coordinates(index)
@@ -859,17 +862,13 @@ class NGLWidget(widgets.DOMWidget):
         >>> # then add Structure
         >>> view.add_structure(...)
         '''
-        kwargs2 = _camelize_dict(kwargs)
-        if 'defaultRepresentation' not in kwargs2:
-            kwargs2['defaultRepresentation'] = True
-
         if self.loaded:
-            self._load_data(structure, **kwargs2)
+            self._load_data(structure, **kwargs)
         else:
             # update via structure_list
             self._init_structures.append(structure)
-        self._comp_id.append(structure.id)
-        self.center_view(model=len(self._comp_id)-1)
+        self._model_ids.append(structure.id)
+        self.center_view(model=len(self._model_ids)-1)
 
     def add_trajectory(self, trajectory, **kwargs):
         '''
@@ -883,19 +882,26 @@ class NGLWidget(widgets.DOMWidget):
         If you combine both Structure and Trajectory, make sure
         to load all trajectories first.
         '''
-        kwargs2 = _camelize_dict(kwargs)
-
-        if 'defaultRepresentation' not in kwargs2:
-            kwargs2['defaultRepresentation'] = True
-
         if self.loaded:
-            self._load_data(trajectory, **kwargs2)
+            self._load_data(trajectory, **kwargs)
         else:
             # update via structure_list
             self._init_structures.append(trajectory)
         self._trajlist.append(trajectory)
         self._update_count()
-        self._comp_id.append(trajectory.id)
+        self._model_ids.append(trajectory.id)
+
+    def load_model(self, filename, **kwargs):
+        '''load model from file. file must be in the current folder or subfolder.
+
+        Parameters
+        ----------
+        filename : str
+        **kwargs : additional arguments, optional
+        '''
+        self._load_data(filename, **kwargs)
+        # assign an ID
+        self._model_ids.append(str(uuid.uuid4()))
 
     def _load_data(self, obj, **kwargs):
         '''
@@ -905,15 +911,20 @@ class NGLWidget(widgets.DOMWidget):
         obj : nglview.Structure or any object having 'get_structure_string' method or
               string buffer (open(fn).read())
         '''
+        kwargs2 = _camelize_dict(kwargs)
+
+        if 'defaultRepresentation' not in kwargs2:
+            kwargs2['defaultRepresentation'] = True
+
         if hasattr(obj, 'get_structure_string'):
             blob = obj.get_structure_string()
-            kwargs['ext'] = obj.ext
+            kwargs2['ext'] = obj.ext
             obj_is_file = False
         else:
             obj_is_file = os.path.isfile(obj)
             # assume passing string
             blob = obj
-            if 'ext' not in kwargs:
+            if 'ext' not in kwargs2:
                 assert obj_is_file, 'must be a filename if ext is None'
 
         blob_type = 'path' if obj_is_file else 'blob'
@@ -922,7 +933,7 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call("loadFile",
                 target='Stage',
                 args=args,
-                kwargs=kwargs)
+                kwargs=kwargs2)
 
     def _remove_model(self, model_id):
         """remove model by its uuid
@@ -933,14 +944,14 @@ class NGLWidget(widgets.DOMWidget):
         >>> view.add_trajectory(traj1)
         >>> view.add_struture(structure)
         >>> # remove last component
-        >>> view._remove_model(view._comp_id[-1])
+        >>> view._remove_model(view._model_ids[-1])
         """
         if self._trajlist:
             for traj in self._trajlist:
                 if traj.id == model_id:
                     self._trajlist.remove(traj)
-        index = self._comp_id.index(model_id)
-        self._comp_id.remove(model_id)
+        index = self._model_ids.index(model_id)
+        self._model_ids.remove(model_id)
 
         self._remove_component(model=index)
 
