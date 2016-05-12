@@ -31,3 +31,6 @@ def _camelize(snake):
     """
     words = snake.split('_')
     return words[0] + "".join(x.title() for x in words[1:])
+
+def _camelize_dict(kwargs):
+    return dict((_camelize(k), v) for k, v in kwargs.items())
