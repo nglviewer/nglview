@@ -74,6 +74,19 @@ def _assert_dict_list_equal(listdict0, listdict1):
             nt.assert_equal(key0, key1)
             nt.assert_equal(dict0.get(key0), dict1.get(key1))
 
+def test_API_promise_to_have():
+
+    # Structure
+    structure = nv.Structure()
+    structure.get_structure_string
+    nt.assert_true(hasattr(structure, 'id'))
+    nt.assert_true(hasattr(structure, 'ext'))
+    nt.assert_true(hasattr(structure, 'params'))
+
+    # Widget
+    nv.NGLWidget._set_coordinates
+    nv.NGLWidget._set_initial_structure
+
 def test_load_data():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
 
@@ -104,7 +117,6 @@ def test_representations():
     print(view.representations)
     _assert_dict_list_equal(view.representations, representations_2)
                     
-
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     assert isinstance(view, nv.NGLWidget), 'must be instance of NGLWidget'
@@ -186,8 +198,8 @@ def test_coordinates_meta():
     for index, (view, traj) in enumerate(zip(views, trajs)):
         view.frame = 3
         
-        nt.assert_equal(view.trajlist[0].n_frames, N_FRAMES)
-        nt.assert_equal(len(view.trajlist[0].get_coordinates_dict().keys()), N_FRAMES)
+        nt.assert_equal(view._trajlist[0].n_frames, N_FRAMES)
+        nt.assert_equal(len(view._trajlist[0].get_coordinates_dict().keys()), N_FRAMES)
 
 def test_speed():
     import pytraj as pt
