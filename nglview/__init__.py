@@ -162,6 +162,7 @@ class Structure(object):
     def __init__(self):
         self.ext = "pdb"
         self.params = {}
+        self.id = str(uuid.uuid4())
 
     def get_structure_string(self):
         raise NotImplementedError()
@@ -170,10 +171,10 @@ class Structure(object):
 class FileStructure(Structure):
 
     def __init__(self, path, ext="pdb"):
+        super(FileStructure, self).__init__()
         self.path = path
         self.ext = ext
         self.params = {}
-        self.id = str(uuid.uuid4())
         if not os.path.isfile(path):
             raise IOError("Not a file: " + path)
 
@@ -185,10 +186,10 @@ class FileStructure(Structure):
 class PdbIdStructure(Structure):
 
     def __init__(self, pdbid):
+        super(FileStructure, self).__init__()
         self.pdbid = pdbid
         self.ext = "cif"
         self.params = {}
-        self.id = str(uuid.uuid4())
 
     def get_structure_string(self):
         url = "http://www.rcsb.org/pdb/files/" + self.pdbid + ".cif"
