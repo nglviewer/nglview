@@ -53,7 +53,7 @@ define( [
             this.model.on( "change:_init_representations", this.representationsChanged, this );
 
             // init structure loading
-            this.model.on( "change:structure_list", this.structureChanged, this );
+            this.model.on( "change:_init_structure_list", this.structureChanged, this );
 
             // init setting of coordinates
             this.model.on( "change:coordinates_dict", this.coordsDict2Changed, this );
@@ -225,21 +225,24 @@ define( [
 
         structureChanged: function(){
             this.structureComponent = undefined;
-            var structureList = this.model.get( "structure_list" );
+            var structureList = this.model.get( "_init_structure_list" );
 
-            for ( var i = 0; i < Object.keys(structureList).length; i++ ){
-                var structure = structureList[ i ];
-                if( structure.data && structure.ext ){
-                    var blob = new Blob( [ structure.data ], { type: "text/plain" } );
-                    var params = structure.params || {};
-                    params.ext = structure.ext;
-                    params.defaultRepresentation = false;
-                    this.stage.loadFile( blob, params ).then( function( component ){
-                        component.centerView();
-                        // this.structureComponent = component;
-                        this.representationsChanged();
-                    }.bind( this ) );
+            if ( ! this.model.get( "loaded" ) ) {
+                for ( var i = 0; i < Object.keys(structureList).length; i++ ){
+                    var structure = structureList[ i ];
+                    if( structure.data && structure.ext ){
+                        var blob = new Blob( [ structure.data ], { type: "text/plain" } );
+                        var params = structure.params || {};
+                        params.ext = structure.ext;
+                        params.defaultRepresentation = false;
+                        this.stage.loadFile( blob, params ).then( function( component ){
+                            component.centerView();
+                            // this.structureComponent = component;
+                            this.representationsChanged();
+                        }.bind( this ) );
+                    }
                 }
+            // only use _init_structure_list before Widget is loaded.
             }
         },
 

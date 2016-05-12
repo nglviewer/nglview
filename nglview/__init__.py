@@ -162,6 +162,7 @@ class Structure(object):
     def __init__(self):
         self.ext = "pdb"
         self.params = {}
+        self.id = str(uuid.uuid4())
 
     def get_structure_string(self):
         raise NotImplementedError()
@@ -170,10 +171,10 @@ class Structure(object):
 class FileStructure(Structure):
 
     def __init__(self, path, ext="pdb"):
+        super(FileStructure, self).__init__()
         self.path = path
         self.ext = ext
         self.params = {}
-        self.id = str(uuid.uuid4())
         if not os.path.isfile(path):
             raise IOError("Not a file: " + path)
 
@@ -185,6 +186,7 @@ class FileStructure(Structure):
 class PdbIdStructure(Structure):
 
     def __init__(self, pdbid):
+        super(FileStructure, self).__init__()
         self.pdbid = pdbid
         self.ext = "cif"
         self.params = {}
@@ -443,7 +445,7 @@ class NGLWidget(widgets.DOMWidget):
     # hack to always display movie
     count = Int(1).tag(sync=True)
     _init_representations = List().tag(sync=True)
-    structure_list = List().tag(sync=True)
+    _init_structure_list = List().tag(sync=True)
     parameters = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
@@ -468,7 +470,7 @@ class NGLWidget(widgets.DOMWidget):
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
 
-        self.trajlist = []
+        self._trajlist = []
         self._comp_id = []
         self._init_structures = []
 
@@ -484,7 +486,7 @@ class NGLWidget(widgets.DOMWidget):
         else:
             self.add_structure(structure)
 
-        # initialize structure_list
+        # initialize _init_structure_list
         # hack to trigger update on JS side
         self._set_initial_structure(self._init_structures)
 
@@ -504,7 +506,7 @@ class NGLWidget(widgets.DOMWidget):
         self._representations = self._init_representations[:]
 
     def _update_count(self):
-         self.count = max(traj.n_frames for traj in self.trajlist if hasattr(traj,
+         self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
                          'n_frames'))
     @observe('_finish_caching')
     def on_finish_caching(self, change):
@@ -598,12 +600,12 @@ class NGLWidget(widgets.DOMWidget):
 
         This method is experimental and its name can be changed.
         """
-        if self.trajlist:
+        if self._trajlist:
             # do not use traitlets to sync. slow.
             self.cache = True
             import json
             data = json.dumps([trajectory.get_coordinates_dict() for trajectory in
-                self.trajlist])
+                self._trajlist])
             msg = dict(type='base64',
                        cache=self.cache,
                        data=data)
@@ -628,19 +630,20 @@ class NGLWidget(widgets.DOMWidget):
         structures : list
             list of Structure or Trajectory
         """
-        structure_list = structures if isinstance(structures, (list, tuple)) else [structures,]
-        self.structure_list = [{"data": _structure.get_structure_string(),
+        _init_structure_list = structures if isinstance(structures, (list, tuple)) else [structures,]
+        self._init_structure_list = [{"data": _structure.get_structure_string(),
                                 "ext": _structure.ext,
-                                "params": _structure.params
-                                } for _structure in structure_list]
+                                "params": _structure.params,
+                                "id": _structure.id
+                                } for _structure in _init_structure_list]
 
     def _set_coordinates(self, index):
         '''update coordinates for all trajectories at index-th frame
         '''
-        if self.trajlist:
+        if self._trajlist:
             if not self.cache or (self.cache and not self._finish_caching):
                 coordinate_dict = {}
-                for trajectory in self.trajlist:
+                for trajectory in self._trajlist:
                     traj_index = self._comp_id.index(trajectory.id)
 
                     try:
@@ -890,7 +893,7 @@ class NGLWidget(widgets.DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(trajectory)
-        self.trajlist.append(trajectory)
+        self._trajlist.append(trajectory)
         self._update_count()
         self._comp_id.append(trajectory.id)
 
@@ -921,7 +924,29 @@ class NGLWidget(widgets.DOMWidget):
                 args=args,
                 kwargs=kwargs)
 
+    def _remove_model(self, model_id):
+        """remove model by its uuid
+
+        Examples
+        --------
+        >>> view.add_trajectory(traj0)
+        >>> view.add_trajectory(traj1)
+        >>> view.add_struture(structure)
+        >>> # remove last component
+        >>> view._remove_model(view._comp_id[-1])
+        """
+        if self._trajlist:
+            for traj in self._trajlist:
+                if traj.id == model_id:
+                    self._trajlist.remove(traj)
+        index = self._comp_id.index(model_id)
+        self._comp_id.remove(model_id)
+
+        self._remove_component(model=index)
+
     def _remove_component(self, model):
+        """tell NGL.Stage to remove component from Stage.compList
+        """
         self._remote_call('removeComponent',
                 target='Stage',
                 args=[model,])
