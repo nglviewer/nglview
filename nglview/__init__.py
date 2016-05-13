@@ -69,11 +69,7 @@ def show_structure_file(path, **kwargs):
     >>> w = nv.show_structure_file(nv.datafiles.GRO)
     >>> w
     '''
-    if 'ext' in kwargs:
-        extension = kwargs.pop('ext')
-    else:
-        extension = os.path.splitext(path)[1][1:]
-    structure = FileStructure(path, ext=extension)
+    structure = FileStructure(path)
     return NGLWidget(structure, **kwargs)
 
 
@@ -171,23 +167,22 @@ class Structure(object):
 
 class FileStructure(Structure):
 
-    def __init__(self, path, ext="pdb"):
+    def __init__(self, path):
         super(FileStructure, self).__init__()
-        self.path = path
-        self.ext = ext
+        self.fm = FileManager(path)
+        self.ext = self.fm.ext
         self.params = {}
-        if not os.path.isfile(path):
+        if not self.fm.is_filename:
             raise IOError("Not a file: " + path)
 
     def get_structure_string(self):
-        with open(self.path, "r") as f:
-            return f.read()
+        return self.fm.read()
 
 
 class PdbIdStructure(Structure):
 
     def __init__(self, pdbid):
-        super(FileStructure, self).__init__()
+        super(PdbIdStructure, self).__init__()
         self.pdbid = pdbid
         self.ext = "cif"
         self.params = {}
@@ -919,19 +914,22 @@ class NGLWidget(widgets.DOMWidget):
 
         if hasattr(obj, 'get_structure_string'):
             blob = obj.get_structure_string()
-            kwargs['ext'] = obj.ext
-            is_filename = False
+            kwargs2['ext'] = obj.ext
+            passing_buffer = True
         else:
             fh = FileManager(obj,
                              ext=kwargs.get('ext'),
                              compressed=kwargs.get('compressed'))
             # assume passing string
             blob = fh.read()
-            if fh.ext is None:
-                assert fh.is_filename, 'must be a filename if ext is None'
-            is_filename = fh.is_filename
+            passing_buffer = not fh.use_filename
 
-        blob_type = 'path' if is_filename else 'blob'
+            if fh.ext is None and passing_buffer:
+                raise ValueError('must provide extension')
+
+            kwargs2['ext'] = fh.ext
+
+        blob_type = 'blob' if passing_buffer else 'path'
         args=[{'type': blob_type, 'data': blob}]
 
         self._remote_call("loadFile",

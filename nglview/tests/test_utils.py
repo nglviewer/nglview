@@ -34,10 +34,10 @@ def test_dict():
     kwargs2 = _camelize_dict(kwargs)
     nt.assert_true('defaultRepresentation' in kwargs2)
 
-def test_file_not_current_or_subfolder():
+def test_file_not_use_filename():
     src = '../__init__.py'
     fh = FileManager(src)
-    nt.assert_false(fh.current_or_subfolder)
+    nt.assert_false(fh.use_filename)
     nt.assert_false(fh.compressed)
 
     nt.assert_true(fh.ext, 'py')
@@ -52,7 +52,7 @@ def test_file_not_current_or_subfolder():
 def test_file_current_folder():
     src = 'data/tz2.pdb'
     fh = FileManager(src)
-    nt.assert_true(fh.current_or_subfolder)
+    nt.assert_true(fh.use_filename)
     nt.assert_false(fh.compressed)
 
     nt.assert_true(fh.ext, 'pdb')
@@ -70,7 +70,7 @@ def test_file_current_folder():
 def test_file_gz():
     src = 'data/tz2_2.pdb.gz'
     fh = FileManager(src)
-    nt.assert_true(fh.current_or_subfolder)
+    nt.assert_true(fh.use_filename)
     nt.assert_true(fh.compressed)
 
     nt.assert_true(fh.ext, 'pdb')

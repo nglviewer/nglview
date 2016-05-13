@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import os, sys
+import gzip
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -55,14 +56,17 @@ class FileManager(object):
         self.cwd = os.getcwd()
         self._compressed = compressed
         self._ext = ext
+        self.unzip_backend = dict(gz=gzip)
 
     def read(self):
         """prepare content to send to NGL
         """
-        if self.current_or_subfolder:
+        if self.use_filename:
             return self.src
         else:
-            if hasattr(self.src, 'read'):
+            if self.compressed_ext:
+                return self.unzip_backend[self.compressed_ext].open(self.src).read()
+            elif hasattr(self.src, 'read'):
                 return self.src.read()
             else:
                 return open(self.src, 'rb').read()
@@ -72,14 +76,24 @@ class FileManager(object):
         '''naive detection
         '''
         if self._compressed is None:
-            return (self.src.endswith('gz') or
-                    self.src.endswith('zip') or
-                    self.src.endswith('bz2'))
+            if self.is_filename:
+                return (self.src.endswith('gz') or
+                        self.src.endswith('zip') or
+                        self.src.endswith('bz2'))
+            else:
+                return False
         else:
             return self._compressed
 
     @property
-    def current_or_subfolder(self):
+    def compressed_ext(self):
+        if self.compressed and self.is_filename:
+            return self.src.split('.')[-1]
+        else:
+            return ''
+
+    @property
+    def use_filename(self):
         if hasattr(self.src, 'read'):
             return False
         else:
