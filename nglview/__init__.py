@@ -3,6 +3,7 @@ from __future__ import print_function, absolute_import
 
 from . import datafiles
 from .utils import seq_to_string, string_types, _camelize, _camelize_dict
+from .utils import FileManager
 
 import os
 import os.path
@@ -908,15 +909,18 @@ class NGLWidget(widgets.DOMWidget):
         if hasattr(obj, 'get_structure_string'):
             blob = obj.get_structure_string()
             kwargs['ext'] = obj.ext
-            obj_is_file = False
+            is_filename = False
         else:
-            obj_is_file = os.path.isfile(obj)
+            fh = FileManager(obj,
+                             ext=kwargs.get('ext'),
+                             compressed=kwargs.get('compressed'))
             # assume passing string
-            blob = obj
-            if 'ext' not in kwargs:
-                assert obj_is_file, 'must be a filename if ext is None'
+            blob = fh.read()
+            if fh.ext is None:
+                assert fh.is_filename, 'must be a filename if ext is None'
+            is_filename = fh.is_filename
 
-        blob_type = 'path' if obj_is_file else 'blob'
+        blob_type = 'path' if is_filename else 'blob'
         args=[{'type': blob_type, 'data': blob}]
 
         self._remote_call("loadFile",
