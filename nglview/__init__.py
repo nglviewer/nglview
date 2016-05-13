@@ -467,7 +467,7 @@ class NGLWidget(widgets.DOMWidget):
         self.on_msg(self._ngl_handle_msg)
 
         self._trajlist = []
-        self._model_ids = []
+        self._ngl_model_ids = []
         self._init_structures = []
 
         if parameters:
@@ -643,7 +643,7 @@ class NGLWidget(widgets.DOMWidget):
             if not self.cache or (self.cache and not self._finish_caching):
                 coordinate_dict = {}
                 for trajectory in self._trajlist:
-                    traj_index = self._model_ids.index(trajectory.id)
+                    traj_index = self._ngl_model_ids.index(trajectory.id)
 
                     try:
                         coordinate_dict[traj_index] = trajectory.get_coordinates(index)
@@ -863,8 +863,8 @@ class NGLWidget(widgets.DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(structure)
-        self._model_ids.append(structure.id)
-        self.center_view(model=len(self._model_ids)-1)
+        self._ngl_model_ids.append(structure.id)
+        self.center_view(model=len(self._ngl_model_ids)-1)
 
     def add_trajectory(self, trajectory, **kwargs):
         '''
@@ -885,7 +885,7 @@ class NGLWidget(widgets.DOMWidget):
             self._init_structures.append(trajectory)
         self._trajlist.append(trajectory)
         self._update_count()
-        self._model_ids.append(trajectory.id)
+        self._ngl_model_ids.append(trajectory.id)
 
     def add_model(self, filename, **kwargs):
         '''add model from file/trajectory/struture
@@ -897,7 +897,7 @@ class NGLWidget(widgets.DOMWidget):
         '''
         self._load_data(filename, **kwargs)
         # assign an ID
-        self._model_ids.append(str(uuid.uuid4()))
+        self._ngl_model_ids.append(str(uuid.uuid4()))
 
     def _load_data(self, obj, **kwargs):
         '''
@@ -946,14 +946,14 @@ class NGLWidget(widgets.DOMWidget):
         >>> view.add_trajectory(traj1)
         >>> view.add_struture(structure)
         >>> # remove last component
-        >>> view._remove_model(view._model_ids[-1])
+        >>> view._remove_model(view._ngl_model_ids[-1])
         """
         if self._trajlist:
             for traj in self._trajlist:
                 if traj.id == model_id:
                     self._trajlist.remove(traj)
-        index = self._model_ids.index(model_id)
-        self._model_ids.remove(model_id)
+        index = self._ngl_model_ids.index(model_id)
+        self._ngl_model_ids.remove(model_id)
 
         self._remove_component(model=index)
 
