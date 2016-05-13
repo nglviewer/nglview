@@ -887,12 +887,12 @@ class NGLWidget(widgets.DOMWidget):
         self._update_count()
         self._model_ids.append(trajectory.id)
 
-    def load_model(self, filename, **kwargs):
-        '''load model from file. file must be in the current folder or subfolder.
+    def add_model(self, filename, **kwargs):
+        '''add model from file/trajectory/struture
 
         Parameters
         ----------
-        filename : str
+        filename : str or Trajectory or Structure or their derived class
         **kwargs : additional arguments, optional
         '''
         self._load_data(filename, **kwargs)
