@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 import nose.tools as nt
+import gzip
 import unittest
 from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
 import numpy as np
@@ -238,3 +239,15 @@ def test_speed():
         with Timer() as t:
             xyz.tobytes()
         print('tobytes', t.time_gap())
+
+def test_structure_file():
+    for fn in ['data/tz2.pdb', nv.datafiles.GRO]:
+        content = open(fn, 'rb').read()
+        fs1 = nv.FileStructure(fn)
+        nt.assert_equal(content, fs1.get_structure_string()) 
+    
+    # gz
+    fn = 'data/tz2_2.pdb.gz'
+    fs2 = nv.FileStructure(fn)
+    content = gzip.open(fn).read()
+    nt.assert_equal(content, fs2.get_structure_string()) 
