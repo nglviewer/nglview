@@ -176,7 +176,7 @@ class FileStructure(Structure):
             raise IOError("Not a file: " + path)
 
     def get_structure_string(self):
-        return self.fm.read()
+        return self.fm.read(content=True)
 
 
 class PdbIdStructure(Structure):

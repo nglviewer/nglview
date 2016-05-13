@@ -95,7 +95,7 @@ def test_load_data():
     view._load_data(blob, ext='pdb')
 
     # raise if passing blob but does not provide ext
-    nt.assert_raises(AssertionError, view._load_data, blob)
+    nt.assert_raises(ValueError, view._load_data, blob)
 
     # load PyTrajectory
     t0 = nv.PyTrajTrajectory(pt.datafiles.load_ala3())

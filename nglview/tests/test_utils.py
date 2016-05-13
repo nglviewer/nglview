@@ -2,6 +2,7 @@ from __future__ import print_function
 import unittest
 from nglview.utils import seq_to_string, _camelize, _camelize_dict, FileManager
 import nose.tools as nt
+import gzip
 
 def test_seq_to_string():
     nt.assert_equal(seq_to_string([1, 2, 3]), '@1,2,3')
@@ -67,11 +68,20 @@ def test_file_current_folder():
     with open(src) as src2:
         nt.assert_true(fh.read(), src2.read())
 
+    fh3 = FileManager(src)
+    content = open(src, 'rb').read() 
+    nt.assert_equal(fh3.read(force_buffer=True), content)
+
+    # blob
+    fh4 = FileManager(content)
+    nt.assert_equal(fh4.read(force_buffer=True), content)
+
 def test_file_gz():
     src = 'data/tz2_2.pdb.gz'
     fh = FileManager(src)
     nt.assert_true(fh.use_filename)
     nt.assert_true(fh.compressed)
+    nt.assert_equal(fh.compressed_ext, 'gz')
 
     nt.assert_true(fh.ext, 'pdb')
     nt.assert_true(fh.is_filename)
@@ -88,3 +98,28 @@ def test_file_gz():
     with open(src, 'rb') as src3:
         fh3 = FileManager(src3, compressed=True, ext='pdb')
         nt.assert_true(fh3.ext, 'pdb')
+
+    # specify compression
+    fh4 = FileManager(src, compressed=True)
+    nt.assert_true(fh4.compressed)
+
+    content = gzip.open(src).read() 
+    nt.assert_equal(fh4.read(force_buffer=True), content)
+
+def test_file_passing_blob():
+    src = 'data/tz2.pdb'
+    blob = open(src).read()
+
+    fm = FileManager(blob)
+    nt.assert_false(fm.is_filename)
+    nt.assert_raises(ValueError, lambda: fm.ext)
+
+def test_file_passing_blob_from_gzip():
+    import gzip
+    src = 'data/tz2_2.pdb.gz'
+    blob = gzip.open(src).read()
+
+    fm = FileManager(blob)
+    nt.assert_false(fm.is_filename)
+
+    nt.assert_raises(ValueError, lambda: fm.ext)

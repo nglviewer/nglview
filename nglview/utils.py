@@ -58,10 +58,10 @@ class FileManager(object):
         self._ext = ext
         self.unzip_backend = dict(gz=gzip)
 
-    def read(self):
+    def read(self, force_buffer=False):
         """prepare content to send to NGL
         """
-        if self.use_filename:
+        if self.use_filename and not force_buffer:
             return self.src
         else:
             if self.compressed_ext:
@@ -69,7 +69,10 @@ class FileManager(object):
             elif hasattr(self.src, 'read'):
                 return self.src.read()
             else:
-                return open(self.src, 'rb').read()
+                if self.is_filename:
+                    return open(self.src, 'rb').read()
+                else:
+                    return self.src
 
     @property
     def compressed(self):
@@ -97,16 +100,18 @@ class FileManager(object):
         if hasattr(self.src, 'read'):
             return False
         else:
-            cwd = os.getcwd()
-            root_path = os.path.dirname(os.path.abspath(self.src))
-            return (cwd in root_path)
+            if self.is_filename:
+                cwd = os.getcwd()
+                root_path = os.path.dirname(os.path.abspath(self.src))
+                return (cwd in root_path)
+            return False
 
     @property
     def ext(self):
         if self._ext is not None:
             return self._ext
         else:
-            if hasattr(self.src, 'read'):
+            if hasattr(self.src, 'read') or not self.is_filename:
                 raise ValueError("you must provide file extension if using file-like object")
             if self.compressed:
                 return self.src.split('.')[-2]
