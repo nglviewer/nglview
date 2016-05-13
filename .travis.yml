@@ -33,7 +33,7 @@ before_script:
 
 script:
     - nightwatch
-    - nosetests --with-coverage --cover-package nglview -vs .
+    - (cd nglview/tests && nosetests --with-coverage --cover-package nglview -vs .)
 
 after_success:
     - echo "after_success"
