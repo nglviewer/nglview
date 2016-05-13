@@ -112,8 +112,7 @@ class FileManager(object):
             return self._ext
         else:
             if hasattr(self.src, 'read') or not self.is_filename:
-                raise ValueError("you must provide file extension if using file-like
-                        object or text content")
+                raise ValueError("you must provide file extension if using file-like object or text content")
             if self.compressed:
                 return self.src.split('.')[-2]
             else:
