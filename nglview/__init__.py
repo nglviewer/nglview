@@ -894,6 +894,16 @@ class NGLWidget(widgets.DOMWidget):
         ----------
         filename : str or Trajectory or Structure or their derived class
         **kwargs : additional arguments, optional
+
+        Notes
+        -----
+        `add_model` should be always called after Widget is loaded
+
+        Examples
+        --------
+        >>> view = nglview.Widget()
+        >>> view
+        >>> view.add_model(filename)
         '''
         self._load_data(filename, **kwargs)
         # assign an ID
@@ -937,7 +947,7 @@ class NGLWidget(widgets.DOMWidget):
                 args=args,
                 kwargs=kwargs2)
 
-    def _remove_model(self, model_id):
+    def remove_model(self, model_id):
         """remove model by its uuid
 
         Examples
@@ -946,16 +956,16 @@ class NGLWidget(widgets.DOMWidget):
         >>> view.add_trajectory(traj1)
         >>> view.add_struture(structure)
         >>> # remove last component
-        >>> view._remove_model(view._ngl_model_ids[-1])
+        >>> view.remove_model(view._ngl_model_ids[-1])
         """
         if self._trajlist:
             for traj in self._trajlist:
                 if traj.id == model_id:
                     self._trajlist.remove(traj)
-        index = self._ngl_model_ids.index(model_id)
+        model_index = self._ngl_model_ids.index(model_id)
         self._ngl_model_ids.remove(model_id)
 
-        self._remove_component(model=index)
+        self._remove_component(model=model_index)
 
     def _remove_component(self, model):
         """tell NGL.Stage to remove component from Stage.compList
