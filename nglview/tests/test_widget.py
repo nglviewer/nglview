@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 import nose.tools as nt
+import gzip
 import unittest
 from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
 import numpy as np
@@ -66,7 +67,9 @@ def teardown():
 #-----------------------------------------------------------------------------
 
 DEFAULT_REPR = [{'params': {'sele': 'polymer'}, 'type': 'cartoon'},
-                {'params': {'sele': 'hetero OR mol'}, 'type': 'ball+stick'}]
+                {'params': {'sele': 'hetero OR mol'}, 'type': 'ball+stick'},
+                {"type": "ball+stick", "params": {"sele": "not protein and not nucleic"}}
+                ]
 
 def _assert_dict_list_equal(listdict0, listdict1):
     for (dict0, dict1) in zip(listdict0, listdict1):
@@ -95,7 +98,7 @@ def test_load_data():
     view._load_data(blob, ext='pdb')
 
     # raise if passing blob but does not provide ext
-    nt.assert_raises(AssertionError, view._load_data, blob)
+    nt.assert_raises(ValueError, view._load_data, blob)
 
     # load PyTrajectory
     t0 = nv.PyTrajTrajectory(pt.datafiles.load_ala3())
@@ -238,3 +241,15 @@ def test_speed():
         with Timer() as t:
             xyz.tobytes()
         print('tobytes', t.time_gap())
+
+def test_structure_file():
+    for fn in ['data/tz2.pdb', nv.datafiles.GRO]:
+        content = open(fn, 'rb').read()
+        fs1 = nv.FileStructure(fn)
+        nt.assert_equal(content, fs1.get_structure_string()) 
+    
+    # gz
+    fn = 'data/tz2_2.pdb.gz'
+    fs2 = nv.FileStructure(fn)
+    content = gzip.open(fn).read()
+    nt.assert_equal(content, fs2.get_structure_string()) 
