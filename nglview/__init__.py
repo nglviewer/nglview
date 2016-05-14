@@ -497,6 +497,9 @@ class NGLWidget(widgets.DOMWidget):
                 }},
                 {"type": "ball+stick", "params": {
                     "sele": "hetero OR mol"
+                }},
+                {"type": "ball+stick", "params": {
+                    "sele": "not protein and not nucleic"
                 }}
             ]
 
