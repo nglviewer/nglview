@@ -235,15 +235,17 @@ class FileStructure(Structure):
 
 class RdkitStructure(Structure):
 
-    def __init__(self, rdkit_mol2, ext="mol2"):
+    def __init__(self, rdkit_mol, ext="mol2"):
         super(RdkitStructure, self).__init__()
         self.path = ''
         self.ext = ext
         self.params = {}
-        self._data = rdkit_mol2
+        self._rdkit_mol = rdkit_mol
 
     def get_structure_string(self):
-        return StringIO(self._data).read()
+        from rdkit import Chem
+        fh = StringIO(Chem.MolToPDBBlock(self._rdkit_mol))
+        return fh.read()
 
 class PdbIdStructure(Structure):
 
