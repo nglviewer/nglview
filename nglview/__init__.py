@@ -670,7 +670,12 @@ class NGLWidget(widgets.DOMWidget):
         but doubling your memory. If you using cache, you can not update coordinates.
         Use `view.uncaching()` then update your coordinates, then `view.caching()` again.
 
-        This method is experimental and its name can be changed.
+        Notes
+        -----
+        - This method is experimental and its name can be changed.
+
+        - Do no use this method if you are uing remote notebook. This method will try to
+        download data from your remote cluster to your local computer.
         """
         if self._trajlist:
             # do not use traitlets to sync. slow.
