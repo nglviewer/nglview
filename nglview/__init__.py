@@ -235,7 +235,7 @@ class FileStructure(Structure):
 
 class RdkitStructure(Structure):
 
-    def __init__(self, rdkit_mol, ext="mol2"):
+    def __init__(self, rdkit_mol, ext="pdb"):
         super(RdkitStructure, self).__init__()
         self.path = ''
         self.ext = ext
