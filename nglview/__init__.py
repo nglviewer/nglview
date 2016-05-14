@@ -147,6 +147,57 @@ def show_parmed(parmed_structure, **kwargs):
     structure_trajectory = ParmEdTrajectory(parmed_structure)
     return NGLWidget(structure_trajectory, **kwargs)
 
+def show_rdkit(rdkit_mol, **kwargs):
+    '''Show rdkit's Mol.
+
+    Parameters
+    ----------
+    rdkit_mol : rdkit.Chem.rdchem.Mol
+    kwargs : additional keyword argument
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> from rdkit import Chem
+    >>> from rdkit.Chem import AllChem
+    >>> m = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4'))
+    >>> AllChem.EmbedMultipleConfs(m, useExpTorsionAnglePrefs=True, useBasicKnowledge=True)
+    >>> view = nv.show_rdkit(m)
+    >>> view
+
+    >>> # add model m2
+    >>> # create file-like object
+    >>> fh = StringIO(Chem.MolToPDBBlock(m2))
+    >>> view.add_model(fh, ext='pdb')
+
+    >>> # load as trajectory, need to have ParmEd
+    >>> view = nv.show_rdkit(m, parmed=True)
+    '''
+    from rdkit import Chem
+    fh = StringIO(Chem.MolToPDBBlock(rdkit_mol))
+
+    try:
+        use_parmed = kwargs.pop("parmed")
+    except KeyError:
+        use_parmed = False
+
+    if not use_parmed:
+        view = NGLWidget()
+        view.add_model(fh, ext='pdb', **kwargs)
+        return view
+    else:
+        import parmed as pmd
+        parm = pmd.load_rdkit(rdkit_mol)
+        parm_nv = ParmEdTrajectory(parm)
+
+        # set option for ParmEd
+        parm_nv.only_save_1st_model = False
+
+        # set option for NGL
+        # wait for: https://github.com/arose/ngl/issues/126
+        # to be fixed in NGLView
+        # parm_nv.params = dict(firstModelOnly=True)
+        return NGLWidget(parm_nv, **kwargs)
 
 def show_mdanalysis(atomgroup, **kwargs):
     '''Show NGL widget with MDAnalysis AtomGroup.
@@ -373,6 +424,7 @@ class ParmEdTrajectory(Trajectory, Structure):
         # only call get_coordinates once
         self._xyz = trajectory.get_coordinates()
         self.id = str(uuid.uuid4())
+        self.only_save_1st_model = True
 
     def get_coordinates_dict(self):
         return dict((index, encode_numpy(xyz))
@@ -388,9 +440,12 @@ class ParmEdTrajectory(Trajectory, Structure):
     def get_structure_string(self):
         fd, fname = tempfile.mkstemp(suffix=".pdb")
         # only write 1st model
-        self.trajectory.save(
-            fname, overwrite=True,
-            coordinates=self.trajectory.coordinates)
+        if self.only_save_1st_model:
+            self.trajectory.save(
+                fname, overwrite=True,
+                coordinates=self.trajectory.coordinates)
+        else:
+            self.trajectory.save(fname, overwrite=True)
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
