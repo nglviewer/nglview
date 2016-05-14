@@ -67,7 +67,9 @@ def teardown():
 #-----------------------------------------------------------------------------
 
 DEFAULT_REPR = [{'params': {'sele': 'polymer'}, 'type': 'cartoon'},
-                {'params': {'sele': 'hetero OR mol'}, 'type': 'ball+stick'}]
+                {'params': {'sele': 'hetero OR mol'}, 'type': 'ball+stick'},
+                {"type": "ball+stick", "params": {"sele": "not protein and not nucleic"}}
+                ]
 
 def _assert_dict_list_equal(listdict0, listdict1):
     for (dict0, dict1) in zip(listdict0, listdict1):
