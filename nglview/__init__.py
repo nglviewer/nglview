@@ -360,8 +360,10 @@ class ParmEdTrajectory(Trajectory, Structure):
 
     def get_structure_string(self):
         fd, fname = tempfile.mkstemp(suffix=".pdb")
+        # only write 1st model
         self.trajectory.save(
-            fname, overwrite=True)
+            fname, overwrite=True,
+            coordinates=self.trajectory.coordinates)
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
