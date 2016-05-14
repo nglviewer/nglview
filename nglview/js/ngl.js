@@ -463,7 +463,7 @@ if( typeof importScripts !== 'function' && WebGLRenderingContext ){
 
 var NGL = {
 
-    REVISION: '0.7dev',
+    REVISION: '0.7',
     EPS: 0.0000001,
     useWorker: true,
     indexUint16: false,
@@ -1138,6 +1138,8 @@ NGL.getFileInfo = function( file ){
     }else{
         path = file
     }
+    var queryIndex = path.lastIndexOf( '?' );
+    path = path.substring( 0, queryIndex === -1 ? path.length : queryIndex );
 
     var name = path.replace( /^.*[\\\/]/, '' );
     var base = name.substring( 0, name.lastIndexOf( '.' ) );
@@ -1275,22 +1277,27 @@ NGL.uniqueArray = function( array ){
 
 NGL.Uint8ToString = function( u8a ){
 
-    // from http://stackoverflow.com/a/12713326/1435042
+    var chunkSize = 0x7000;
 
-    var CHUNK_SZ = 0x1000;
-    var c = [];
+    if( u8a.length > chunkSize ){
 
-    for( var i = 0; i < u8a.length; i += CHUNK_SZ ){
+      var c = [];
+
+      for(var i = 0; i < u8a.length; i += chunkSize) {
 
         c.push( String.fromCharCode.apply(
-
-            null, u8a.subarray( i, i + CHUNK_SZ )
-
+          null, u8a.subarray( i, i + chunkSize )
         ) );
 
-    }
+      }
 
-    return c.join("");
+      return c.join("");
+
+    }else{
+
+      return String.fromCharCode.apply( null, u8a );
+
+    }
 
 };
 
@@ -2426,7 +2433,7 @@ NGL.Residue = {
         atomnames[ NGL.ProteinBackboneType ] = {
             trace: "CA",
             direction1: "C",
-            direction2: [ "O", "OC1", "O1" ],
+            direction2: [ "O", "OC1", "O1", "OX1" ],
             backboneStart: "N",
             backboneEnd: "C",
         };
@@ -14419,7 +14426,7 @@ NGL.Structure = function( name, path ){
     this.biomolDict = {};
     this.helices = [];
     this.sheets = [];
-    this.unitcell = new NGL.Unitcell();
+    this.unitcell = undefined;
     this.selection = undefined;
 
     this.frames = [];
@@ -15268,7 +15275,7 @@ NGL.Structure.prototype = {
             biomolDict: {},
             helices: this.helices,
             sheets: this.sheets,
-            unitcell: this.unitcell.toJSON(),
+            unitcell: this.unitcell ? this.unitcell.toJSON() : undefined,
 
             frames: this.frames,
             boxes: this.boxes,
@@ -15326,7 +15333,7 @@ NGL.Structure.prototype = {
         this.biomolDict = input.biomolDict;
         this.helices = input.helices;
         this.sheets = input.sheets;
-        this.unitcell = new NGL.Unitcell().fromJSON( input.unitcell );
+        if( input.unitcell ) this.unitcell = new NGL.Unitcell().fromJSON( input.unitcell );
 
         this.frames = input.frames;
         this.boxes = input.boxes;
@@ -17058,28 +17065,17 @@ NGL.Surface.prototype = {
         var geo;
 
         if( geometry instanceof THREE.Geometry ){
-
-            geo = geometry;
-
-            // TODO check if needed
-            geo.computeFaceNormals( true );
-            geo.computeVertexNormals( true );
-
+            geometry.computeVertexNormals( true );
+            geo = new THREE.BufferGeometry().fromGeometry( geometry );
         }else if( geometry instanceof THREE.BufferGeometry ){
-
             geo = geometry;
-
         }else{
-
             geo = geometry.children[0].geometry;
-
         }
 
-        // TODO check if needed
-        geo.computeBoundingSphere();
-        geo.computeBoundingBox();
+        if( !geo.boundingBox ) geo.computeBoundingBox();
 
-        this.center.copy( geo.boundingSphere.center );
+        this.center.copy( geo.boundingBox.center() );
         this.boundingBox.copy( geo.boundingBox );
 
         var position, color, index, normal;
@@ -17097,15 +17093,6 @@ NGL.Surface.prototype = {
             position = attr.position.array;
             index = attr.index ? attr.index.array : null;
             normal = attr.normal.array;
-
-        }else{
-
-            // FIXME
-            NGL.log( "TODO non BufferGeometry surface" );
-
-            position = NGL.Utils.positionFromGeometry( geo );
-            index = NGL.Utils.indexFromGeometry( geo );
-            normal = NGL.Utils.normalFromGeometry( geo );
 
         }
 
@@ -20753,8 +20740,6 @@ NGL.ScriptQueue.prototype = {
 
         p.onLoad = function( component ){
 
-            component.requestGuiVisibility( false );
-
             if( typeof _onLoad === "function" ){
                 _onLoad( component );
             }
@@ -21180,6 +21165,7 @@ NGL.Streamer = function( src, params ){
 
     this.compressed = p.compressed !== undefined ? p.compressed : false;
     this.binary = p.binary !== undefined ? p.binary : false;
+    this.json = p.json !== undefined ? p.json : false;
 
     this.src = src;
     this.chunkSize = 1024 * 1024 * 10;
@@ -21591,6 +21577,8 @@ NGL.NetworkStreamer.prototype = NGL.createObject(
 
         if( this.compressed || this.binary ){
             xhr.responseType = "arraybuffer";
+        }else if( this.json ){
+            xhr.responseType = "json";
         }
         // xhr.crossOrigin = true;
 
@@ -22303,69 +22291,82 @@ NGL.calculateChainnames = function( structure ){
         var rEnd = 0;
         var chainData = [];
 
-        structure.eachResidueN( 2, function( rp1, rp2 ){
+        if( structure.residueStore.count === 1 ){
 
-            var newChain = false;
+            chainData.push( {
+                mIndex: 0,
+                chainname: "A",
+                rStart: 0,
+                rCount: 1
+            } );
 
-            var bbType1 = rp1.backboneType;
-            var bbType2 = rp2.backboneType;
-            var bbTypeUnk = NGL.UnknownBackboneType;
+        }else{
 
-            rEnd = rp1.index;
+            structure.eachResidueN( 2, function( rp1, rp2 ){
 
-            if( rp1.modelIndex !== rp2.modelIndex ){
-                newChain = true;
-            }else if( rp1.moleculeType !== rp2.moleculeType ){
-                newChain = true;
-            }else if( bbType1 !== bbTypeUnk && bbType1 === bbType2 ){
-                ap1.index = rp1.backboneEndAtomIndex;
-                ap2.index = rp2.backboneStartAtomIndex;
-                if( !ap1.connectedTo( ap2 ) ){
-                    newChain = true;
-                }
-            }
+                var newChain = false;
 
-            if( rp2.index === residueStore.count - 1 ){
-                newChain = true;
-                rEnd = rp2.index;
-            }
+                var bbType1 = rp1.backboneType;
+                var bbType2 = rp2.backboneType;
+                var bbTypeUnk = NGL.UnknownBackboneType;
 
-            if( newChain ){
-                var j = i;
-                var k = 0;
-                var chainname = names[ j % n ];
-
-                while( j >= n ){
-                    j = Math.floor( j / n );
-                    chainname += names[ j % n ];
-                    k += 1;
-                }
-
-                chainData.push( {
-                    mIndex: mi,
-                    chainname: chainname,
-                    rStart: rStart,
-                    rCount: rEnd - rStart + 1
-                } );
-
-                i += 1;
+                rEnd = rp1.index;
 
                 if( rp1.modelIndex !== rp2.modelIndex ){
-                    i = 0;
-                    mi += 1;
+                    newChain = true;
+                }else if( rp1.moleculeType !== rp2.moleculeType ){
+                    newChain = true;
+                }else if( bbType1 !== bbTypeUnk && bbType1 === bbType2 ){
+                    ap1.index = rp1.backboneEndAtomIndex;
+                    ap2.index = rp2.backboneStartAtomIndex;
+                    if( !ap1.connectedTo( ap2 ) ){
+                        newChain = true;
+                    }
                 }
 
-                if( k >= 5 ){
-                    NGL.warn( "out of chain names" );
-                    i = 0;
+                if( rp2.index === residueStore.count - 1 ){
+                    newChain = true;
+                    rEnd = rp2.index;
                 }
 
-                rStart = rp2.index;
-                rEnd = rp2.index;
+                if( newChain ){
+                    var j = i;
+                    var k = 0;
+                    var chainname = names[ j % n ];
 
-            }
+                    while( j >= n ){
+                        j = Math.floor( j / n );
+                        chainname += names[ j % n ];
+                        k += 1;
+                    }
 
-        } );
+                    chainData.push( {
+                        mIndex: mi,
+                        chainname: chainname,
+                        rStart: rStart,
+                        rCount: rEnd - rStart + 1
+                    } );
+
+                    i += 1;
+
+                    if( rp1.modelIndex !== rp2.modelIndex ){
+                        i = 0;
+                        mi += 1;
+                    }
+
+                    if( k >= 5 ){
+                        NGL.warn( "out of chain names" );
+                        i = 0;
+                    }
+
+                    rStart = rp2.index;
+                    rEnd = rp2.index;
+
+                }
+
+            } );
+
+        }
 
         //
 
@@ -22493,11 +22494,7 @@ NGL.calculateBondsWithin = function( structure, onlyAddRung ){
                 return;
             }
 
-            var resname = r.resname;
-            var equalAtomnames = false;
-
             var bonds = r.getBonds();
-
             var atomIndices1 = bonds.atomIndices1;
             var atomIndices2 = bonds.atomIndices2;
             var nn = atomIndices1.length;
@@ -22746,6 +22743,27 @@ NGL.Assembly.prototype = {
         } );
 
         return instanceCount;
+
+    },
+
+    isIdentity: function( structure ){
+
+        if( this.partList.length !== 1 ) return false;
+
+        var part = this.partList[ 0 ];
+        if( part.matrixList.length !== 1 ) return false;
+
+        var identityMatrix = new THREE.Matrix4();
+        if( !identityMatrix.equals( part.matrixList[ 0 ] ) ) return false;
+
+        var structureChainList = [];
+        structure.eachChain( function( cp ){
+            structureChainList.push( cp.chainname );
+        } );
+        structureChainList = NGL.uniqueArray( structureChainList );
+        if( part.chainList.length !== structureChainList.length ) return false;
+
+        return true;
 
     },
 
@@ -23120,15 +23138,9 @@ NGL.StructureParser.prototype = NGL.createObject(
 
         this._postProcess();
 
-        if( s.unitcell === undefined ){
-            var bbSize = s.boundingBox.size();
-            s.unitcell = new NGL.Unitcell(
-                bbSize.x, bbSize.y, bbSize.z,
-                90, 90, 90, "P 1"
-            );
+        if( s.unitcell ){
+            NGL.buildUnitcellAssembly( s );
         }
-
-        NGL.buildUnitcellAssembly( s );
 
         if( NGL.debug ) NGL.timeEnd( "NGL.StructureParser._afterParse" );
         if( NGL.debug ) NGL.log( this[ this.__objName ] );
@@ -23607,7 +23619,7 @@ NGL.PdbParser.prototype = NGL.createObject(
                 unitcellDict.spacegroup, unitcellDict.scale
             );
         }else{
-            s.unitcell = undefined;  // triggers use of bounding box
+            s.unitcell = undefined;
         }
 
         if( NGL.debug ) NGL.timeEnd( "NGL.PdbParser._parse " + this.name );
@@ -24615,7 +24627,7 @@ NGL.CifParser.prototype = NGL.createObject(
                 unitcellDict.spacegroup, unitcellDict.scale
             );
         }else{
-            s.unitcell = undefined;  // triggers use of bounding box
+            s.unitcell = undefined;
         }
 
         // add connections
@@ -24898,7 +24910,7 @@ NGL.SdfParser.prototype = NGL.createObject(
         sb.finalize();
 
         s._dontAutoBond = true;
-        s.unitcell = undefined;  // triggers use of bounding box
+        s.unitcell = undefined;
 
         if( NGL.debug ) NGL.timeEnd( "NGL.SdfParser._parse " + this.name );
         callback();
@@ -25120,7 +25132,7 @@ NGL.Mol2Parser.prototype = NGL.createObject(
         sb.finalize();
 
         s._dontAutoBond = true;
-        s.unitcell = undefined;  // triggers use of bounding box
+        s.unitcell = undefined;
 
         if( NGL.debug ) NGL.timeEnd( "NGL.Mol2Parser._parse " + this.name );
         callback();
@@ -25148,6 +25160,8 @@ NGL.MmtfParser.prototype = NGL.createObject(
     type: "mmtf",
 
     _parse: function( callback ){
+
+        // https://github.com/rcsb/mmtf
 
         if( NGL.debug ) NGL.time( "NGL.MmtfParser._parse " + this.name );
 
@@ -25443,7 +25457,7 @@ NGL.MmtfParser.prototype = NGL.createObject(
                 sd.spaceGroup
             );
         }else{
-            s.unitcell = undefined;  // triggers use of bounding box
+            s.unitcell = undefined;
         }
 
         if( NGL.debug ) NGL.timeEnd( "NGL.MmtfParser._parse " + this.name );
@@ -26295,8 +26309,7 @@ NGL.SurfaceParser.prototype = NGL.createObject(
 
     _parse: function( callback ){
 
-        var text = NGL.Uint8ToString( this.streamer.data );
-        var geometry = this.loader.parse( text );
+        var geometry = this.loader.parse( this.streamer.asText() );
 
         this.surface.fromGeometry( geometry );
 
@@ -26480,8 +26493,11 @@ NGL.JsonParser.prototype = NGL.createObject(
 
     _parse: function( callback ){
 
-        // FIXME set xhr.responseType in streamer to "json"
-        this.json.data = JSON.parse( this.streamer.asText() );
+        if( this.streamer.compressed || this.streamer.binary ){
+            this.json.data = JSON.parse( this.streamer.asText() );
+        }else{
+            this.json.data = this.streamer.data;
+        }
 
         callback();
 
@@ -26862,14 +26878,13 @@ NGL.StaticDatasource = function( baseUrl ){
 NGL.RcsbDatasource = function(){
 
     var baseUrl = "http://files.rcsb.org/download/";
-    // var baseUrl = "http://www.rcsb.org/pdb/files/";
     var mmtfBaseUrl = "http://mmtf.rcsb.org/v0/full/";
     var bbMmtfBaseUrl = "http://mmtf.rcsb.org/reduced/";
 
     this.getUrl = function( src ){
         // valid path are
         // XXXX.pdb, XXXX.pdb.gz, XXXX.cif, XXXX.cif.gz, XXXX.mmtf, XXXX.bb.mmtf
-        // XXXX defaults to XXXX.mmtf
+        // XXXX defaults to XXXX.cif
         var info = NGL.getFileInfo( src );
         var file;
         if( [ "pdb", "cif" ].indexOf( info.ext ) !== -1 &&
@@ -26929,7 +26944,8 @@ NGL.Loader = function( src, params ){
 
     var streamerParams = {
         compressed: this.compressed,
-        binary: this.binary
+        binary: this.binary,
+        json: this.ext === "json"
     };
 
     if( ( self.File && src instanceof File ) ||
@@ -27899,6 +27915,50 @@ NGL.JitterVectors.forEach( function( offsetList ){
 } );
 
 
+THREE.OrthographicCamera.prototype.setViewOffset = function( fullWidth, fullHeight, x, y, width, height ) {
+
+    this.view = {
+        fullWidth: fullWidth,
+        fullHeight: fullHeight,
+        offsetX: x,
+        offsetY: y,
+        width: width,
+        height: height
+    };
+
+    this.updateProjectionMatrix();
+
+};
+
+THREE.OrthographicCamera.prototype.updateProjectionMatrix = function () {
+
+    var dx = ( this.right - this.left ) / ( 2 * this.zoom );
+    var dy = ( this.top - this.bottom ) / ( 2 * this.zoom );
+    var cx = ( this.right + this.left ) / 2;
+    var cy = ( this.top + this.bottom ) / 2;
+
+    var left = cx - dx;
+    var right = cx + dx;
+    var top = cy + dy;
+    var bottom = cy - dy;
+
+    if( this.view ){
+
+        var scaleW = this.zoom / ( this.view.width / this.view.fullWidth );
+        var scaleH = this.zoom / ( this.view.height / this.view.fullHeight );
+
+        left += this.view.offsetX / scaleW;
+        right = left + this.view.width / scaleW;
+        top -= this.view.offsetY / scaleH;
+        bottom = top - this.view.height / scaleH;
+
+    }
+
+    this.projectionMatrix.makeOrthographic( left, right, top, bottom, this.near, this.far );
+
+};
+
+
 //////////
 // Stats
 
@@ -28002,8 +28062,6 @@ NGL.Viewer = function( eid, params ){
         this.height = box.height;
     }
 
-    this.aspect = this.width / this.height;
-
     this.initParams();
     this.initStats();
     // this.holdRendering = true;
@@ -28057,7 +28115,7 @@ NGL.Viewer.prototype = {
 
             backgroundColor: new THREE.Color( 0x000000 ),
 
-            cameraType: 1,
+            cameraType: "perspective",
             cameraFov: 40,
             cameraZ: -80, // FIXME initial value should be automatically determined
 
@@ -28086,13 +28144,24 @@ NGL.Viewer.prototype = {
         var lookAt = new THREE.Vector3( 0, 0, 0 );
 
         this.perspectiveCamera = new THREE.PerspectiveCamera(
-            p.cameraFov, this.aspect, 0.1, 10000
+            p.cameraFov, this.width / this.height, 0.1, 10000
         );
         this.perspectiveCamera.position.z = p.cameraZ;
         this.perspectiveCamera.lookAt( lookAt );
 
-        this.camera = this.perspectiveCamera;
+        this.orthographicCamera = new THREE.OrthographicCamera(
+            this.width / -2, this.width / 2,
+            this.height / 2, this.height / -2,
+            0.1, 10000
+        );
+        this.orthographicCamera.position.z = p.cameraZ;
+        this.orthographicCamera.lookAt( lookAt );
 
+        if( p.cameraType === "orthographic" ){
+            this.camera = this.orthographicCamera;
+        }else{  // p.cameraType === "perspective"
+            this.camera = this.perspectiveCamera;
+        }
         this.camera.updateProjectionMatrix();
 
     },
@@ -28150,8 +28219,6 @@ NGL.Viewer.prototype = {
         this.pickingTarget.texture.generateMipmaps = false;
 
         // msaa textures
-
-        this.sampleLevel = 0;
 
         this.sampleTarget = new THREE.WebGLRenderTarget(
             this.width * window.devicePixelRatio,
@@ -28304,10 +28371,7 @@ NGL.Viewer.prototype = {
             'touchmove', preventDefault, false
         );
 
-        this.controls = new THREE.TrackballControls(
-            this.camera, this.renderer.domElement
-        );
-
+        this.controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
         this.controls.rotateSpeed = 2.0;
         this.controls.zoomSpeed = 1.2;
         this.controls.panSpeed = 0.8;
@@ -28585,14 +28649,27 @@ NGL.Viewer.prototype = {
 
         var p = this.params;
 
-        if( type!==null ) p.cameraType = type;
+        if( type ) p.cameraType = type;
         if( fov ) p.cameraFov = fov;
 
-        this.camera = this.perspectiveCamera;
+        if( p.cameraType === "orthographic" ){
+            if( this.camera !== this.orthographicCamera ){
+                this.camera = this.orthographicCamera;
+                this.camera.position.copy( this.perspectiveCamera.position );
+                this.camera.up.copy( this.perspectiveCamera.up );
+                this.__updateZoom();
+            }
+        }else{  // p.cameraType === "perspective"
+            if( this.camera !== this.perspectiveCamera ){
+                this.camera = this.perspectiveCamera;
+                this.camera.position.copy( this.orthographicCamera.position );
+                this.camera.up.copy( this.orthographicCamera.up );
+            }
+        }
 
         this.perspectiveCamera.fov = p.cameraFov;
-
         this.controls.object = this.camera;
+        this.camera.lookAt( this.controls.target );
         this.camera.updateProjectionMatrix();
 
         this.requestRender();
@@ -28625,8 +28702,11 @@ NGL.Viewer.prototype = {
         this.width = width;
         this.height = height;
 
-        this.aspect = this.width / this.height;
-        this.perspectiveCamera.aspect = this.aspect;
+        this.perspectiveCamera.aspect = this.width / this.height;
+        this.orthographicCamera.left = -this.width / 2;
+        this.orthographicCamera.right = this.width / 2;
+        this.orthographicCamera.top = this.height / 2;
+        this.orthographicCamera.bottom = -this.height / 2;
         this.camera.updateProjectionMatrix();
 
         this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -28646,10 +28726,6 @@ NGL.Viewer.prototype = {
         );
 
         this.controls.handleResize();
-
-        if( this.params.sampleLevel === -1 ){
-            this.sampleLevel = 0;
-        }
 
         this.requestRender();
 
@@ -28754,6 +28830,8 @@ NGL.Viewer.prototype = {
             this.camera.position.addVectors( this.controls.target, eye );
             this.camera.lookAt( this.controls.target );
 
+            this.__updateZoom();
+
         }
 
     }(),
@@ -28762,7 +28840,9 @@ NGL.Viewer.prototype = {
 
         this.controls.update();
 
-        if( performance.now() - this.stats.startTime > 500 && !this.still && this.sampleLevel < 3 ){
+        var delta = performance.now() - this.stats.startTime;
+
+        if( delta > 500 && !this.still && this.sampleLevel < 3 && this.sampleLevel !== -1 ){
 
             var currentSampleLevel = this.sampleLevel;
             this.sampleLevel = 3;
@@ -28771,18 +28851,6 @@ NGL.Viewer.prototype = {
             this.still = true;
             this.sampleLevel = currentSampleLevel;
             if( NGL.debug ) NGL.log( "rendered still frame" );
-
-        }else if( this.params.sampleLevel === -1 ){
-
-            if( this.stats.avgDuration > 30 ){
-                this.sampleLevel = Math.max( 0, this.sampleLevel - 1 );
-                if( NGL.debug ) NGL.log( "sample level down", this.sampleLevel );
-                this.stats.count = 0;
-            }else if( this.stats.avgDuration < 17 && this.stats.count > 60 ){
-                this.sampleLevel = Math.min( 5, this.sampleLevel + 1 );
-                if( NGL.debug ) NGL.log( "sample level up", this.sampleLevel );
-                this.stats.count = 0;
-            }
 
         }
 
@@ -28812,7 +28880,7 @@ NGL.Viewer.prototype = {
             var gid, object, instance, bondId;
             var pixelBuffer = NGL.supportsReadPixelsFloat ? pixelBufferFloat : pixelBufferUint;
 
-            this.render( null, true );
+            this.render( true );
             this.renderer.readRenderTargetPixels(
                 this.pickingTarget, x, y, 1, 1, pixelBuffer
             );
@@ -28904,13 +28972,13 @@ NGL.Viewer.prototype = {
         this.cDist = cDist;
 
         var bRadius = Math.max( 10, this.boundingBox.size( this.distVector ).length() * 0.5 );
+        bRadius += this.boundingBox.center( this.distVector )
+            .add( this.rotationGroup.position )
+            .length();
         if( bRadius === Infinity || bRadius === -Infinity || isNaN( bRadius ) ){
             // console.warn( "something wrong with bRadius" );
             bRadius = 50;
         }
-        bRadius += this.boundingBox.center( this.distVector )
-            .add( this.rotationGroup.position )
-            .length();
         this.bRadius = bRadius;
 
         var nearFactor = ( 50 - p.clipNear ) / 50;
@@ -28929,14 +28997,26 @@ NGL.Viewer.prototype = {
 
     },
 
-    __updateCamera: function( tileing ){
+    __updateZoom: function(){
+
+        this.__updateClipping();
+        var fov = THREE.Math.degToRad( this.perspectiveCamera.fov );
+        var near = this.camera.near;
+        var far = this.camera.far;
+        var hyperfocus = ( near + far ) / 2;
+        var height = 2 * Math.tan( fov / 2 ) * hyperfocus;
+        this.orthographicCamera.zoom = this.height / height;
+
+    },
+
+    __updateCamera: function(){
 
         var camera = this.camera;
 
         camera.updateMatrix();
         camera.updateMatrixWorld( true );
         camera.matrixWorldInverse.getInverse( camera.matrixWorld );
-        if( !tileing ) this.camera.updateProjectionMatrix();
+        camera.updateProjectionMatrix();
 
         this.updateMaterialUniforms( this.scene, camera );
         this.sortProjectedPosition( this.scene, camera );
@@ -29027,14 +29107,10 @@ NGL.Viewer.prototype = {
         // from the last and accumulate the results.
         for ( var i = 0; i < offsetList.length; ++i ){
 
-            // only jitters perspective cameras.
-            // TODO: add support for jittering orthogonal cameras
             var offset = offsetList[ i ];
-            if( camera.setViewOffset ){
-                camera.setViewOffset(
-                    width, height, offset[ 0 ], offset[ 1 ], width, height
-                );
-            }
+            camera.setViewOffset(
+                width, height, offset[ 0 ], offset[ 1 ], width, height
+            );
             this.__updateCamera();
 
             this.__renderModelGroup( this.sampleTarget );
@@ -29054,15 +29130,11 @@ NGL.Viewer.prototype = {
         this.renderer.clear();
         this.renderer.render( this.compositeScene, this.compositeCamera );
 
-        // reset jitter to nothing.
-        // TODO: add support for orthogonal cameras
-        if ( camera.setViewOffset ){
-            camera.view = null;
-        }
+        camera.view = null;
 
     },
 
-    render: function( e, picking, tileing ){
+    render: function( picking ){
 
         if( this._rendering ){
             NGL.warn( "tried to call 'render' from within 'render'" );
@@ -29073,11 +29145,8 @@ NGL.Viewer.prototype = {
 
         this._rendering = true;
 
-        // var p = this.params;
-        var camera = this.camera;
-
         this.__updateClipping();
-        this.__updateCamera( tileing );
+        this.__updateCamera();
         this.__updateLights();
 
         // render
@@ -29088,7 +29157,7 @@ NGL.Viewer.prototype = {
 
             this.__renderPickingGroup();
 
-        }else if( this.sampleLevel > 0 && !tileing ){
+        }else if( this.sampleLevel > 0 ){
 
             this.__renderMultiSample();
 
@@ -29117,6 +29186,7 @@ NGL.Viewer.prototype = {
             var bRadius = this.bRadius;
             var canvasHeight = this.height;
             var pixelRatio = this.renderer.getPixelRatio();
+            var ortho = camera.type === "OrthographicCamera" ? 1.0 : 0.0;
 
             projectionMatrixInverse.getInverse(
                 camera.projectionMatrix
@@ -29158,6 +29228,10 @@ NGL.Viewer.prototype = {
                     u.projectionMatrixTranspose.value.copy(
                         projectionMatrixTranspose
                     );
+                }
+
+                if( u.ortho ){
+                    u.ortho.value = ortho;
                 }
 
             } );
@@ -29301,19 +29375,21 @@ NGL.Viewer.prototype = {
 
                     // automatic zoom that shows
                     // everything inside the bounding box
-                    // TODO take extent of the towards the camera into account
+                    // TODO take extent towards the camera into account
 
                     this.boundingBox.size( bbSize );
                     var maxSize = Math.max( bbSize.x, bbSize.y, bbSize.z );
                     var minSize = Math.min( bbSize.x, bbSize.y, bbSize.z );
-                    var avgSize = ( bbSize.x + bbSize.y + bbSize.z ) / 3;
+                    // var avgSize = ( bbSize.x + bbSize.y + bbSize.z ) / 3;
                     var objSize = maxSize + ( minSize / 2 );
-                    var fov = THREE.Math.degToRad( this.camera.fov );
-
-                    zoom = ( objSize ) / 2 / this.camera.aspect / Math.tan( fov / 2 );
+                    zoom = objSize;
 
                 }
 
+                var fov = THREE.Math.degToRad( this.perspectiveCamera.fov );
+                var aspect = this.width / this.height;
+
+                zoom = zoom / 2 / aspect / Math.tan( fov / 2 );
                 zoom = Math.max( zoom, 1.2 * this.params.clipDist );
 
                 eye.copy( this.camera.position ).sub( this.controls.target );
@@ -29324,6 +29400,7 @@ NGL.Viewer.prototype = {
 
                 this.camera.position.addVectors( this.controls.target, eye );
 
+                this.__updateZoom();
             }
 
             this.requestRender();
@@ -29413,85 +29490,65 @@ NGL.TiledRenderer.prototype = {
         this.ctx = canvas.getContext( '2d' );
         this.canvas = canvas;
 
-        //
-
-        this.shearMatrix = new THREE.Matrix4();
-        this.scaleMatrix = new THREE.Matrix4();
-
-        var halfFov = THREE.Math.degToRad( this.camera.fov * 0.5 );
-
-        this.near = this.camera.near;
-        this.top = Math.tan( halfFov ) * this.near;
-        this.bottom = -this.top;
-        this.left = this.camera.aspect * this.bottom;
-        this.right = this.camera.aspect * this.top;
-        this.width = Math.abs( this.right - this.left );
-        this.height = Math.abs( this.top - this.bottom );
-
-    },
-
-    makeAsymmetricFrustum: function( projectionMatrix, i ){
-
-        var factor = this.factor;
-        var near = this.near;
-        var width = this.width;
-        var height = this.height;
-
-        var x = i % factor;
-        var y = Math.floor( i / factor );
-
-        this.shearMatrix.set(
-            1, 0, ( x - ( factor - 1 ) * 0.5 ) * width / near, 0,
-            0, 1, -( y - ( factor - 1 ) * 0.5 ) * height / near, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-        );
-
-        this.scaleMatrix.set(
-            factor, 0, 0, 0,
-            0, factor, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-        );
-
-        projectionMatrix
-            .multiply( this.shearMatrix )
-            .multiply( this.scaleMatrix );
-
-        return projectionMatrix;
+        this.viewerSampleLevel = this.viewer.sampleLevel;
+        this.viewer.sampleLevel = -1;
 
     },
 
     renderTile: function( i ){
 
-        this.makeAsymmetricFrustum( this.camera.projectionMatrix, i );
-        this.viewer.render( null, null, true );
+        var factor = this.factor;
 
-        var x = ( i % this.factor ) * this.viewer.width;
-        var y = Math.floor( i / this.factor ) * this.viewer.height;
+        var x = i % factor;
+        var y = Math.floor( i / factor );
+
+        var width = this.viewer.width;
+        var height = this.viewer.height;
+        var offsetX = x * width;
+        var offsetY = y * height;
+
+        this.viewer.camera.setViewOffset(
+            width * factor,
+            height * factor,
+            offsetX,
+            offsetY,
+            width,
+            height
+        );
+
+        this.viewer.render();
 
         if( this.antialias ){
             this.ctx.drawImage(
                 this.renderer.domElement,
-                Math.floor( x / 2 ),
-                Math.floor( y / 2 ),
-                Math.ceil( this.viewer.width / 2 ),
-                Math.ceil( this.viewer.height / 2 )
+                Math.floor( offsetX / 2 ),
+                Math.floor( offsetY / 2 ),
+                Math.ceil( width / 2 ),
+                Math.ceil( height / 2 )
             );
         }else{
             this.ctx.drawImage(
                 this.renderer.domElement,
-                Math.floor( x ),
-                Math.floor( y ),
-                Math.ceil( this.viewer.width ),
-                Math.ceil( this.viewer.height )
+                Math.floor( offsetX ),
+                Math.floor( offsetY ),
+                Math.ceil( width ),
+                Math.ceil( height )
             );
         }
 
-        this.camera.updateProjectionMatrix();
-
         if( typeof this.onProgress === "function" ){
             this.onProgress( i + 1, this.n, false );
+        }
+
+    },
+
+    finalize: function(){
+
+        this.viewer.sampleLevel = this.viewerSampleLevel;
+        this.viewer.camera.view = null;
+
+        if( typeof this.onFinish === "function" ){
+            this.onFinish( this.n + 1, this.n, false );
         }
 
     },
@@ -29502,9 +29559,7 @@ NGL.TiledRenderer.prototype = {
 
         for( var i = 0; i <= n; ++i ){
             if( i === n ){
-                if( typeof this.onFinish === "function" ){
-                    this.onFinish( i + 1, n, false );
-                }
+                this.finalize();
             }else{
                 this.renderTile( i );
             }
@@ -29516,14 +29571,12 @@ NGL.TiledRenderer.prototype = {
 
         var n = this.n;
         var renderTile = this.renderTile.bind( this );
-        var onFinish = this.onFinish;
+        var finalize = this.finalize.bind( this );
 
         for( var i = 0; i <= n; ++i ){
             setTimeout( function( i ){
                 if( i === n ){
-                    if( typeof onFinish === "function" ){
-                        onFinish( i + 1, n, false );
-                    }
+                    finalize();
                 }else{
                     renderTile( i );
                 }
@@ -29546,7 +29599,7 @@ NGL.makeImage = function( viewer, params ){
     var p = params || {};
 
     var trim = p.trim!==undefined ? p.trim : false;
-    var factor = p.factor!==undefined ? p.factor : false;
+    var factor = p.factor!==undefined ? p.factor : 1;
     var antialias = p.antialias!==undefined ? p.antialias : false;
     var transparent = p.transparent!==undefined ? p.transparent : false;
 
@@ -30816,7 +30869,8 @@ NGL.SphereImpostorBuffer = function( position, color, radius, pickingColor, para
     NGL.QuadBuffer.call( this, params );
 
     this.addUniforms( {
-        "projectionMatrixInverse": { value: new THREE.Matrix4() }
+        "projectionMatrixInverse": { value: new THREE.Matrix4() },
+        "ortho": { value: 0.0 },
     } );
 
     this.addAttributes( {
@@ -30877,6 +30931,7 @@ NGL.CylinderImpostorBuffer = function( from, to, color, color2, radius, pickingC
     this.addUniforms( {
         "modelViewMatrixInverse": modelViewMatrixInverse,
         "shift": { value: this.shift },
+        "ortho": { value: 0.0 },
     } );
 
     this.addAttributes( {
@@ -32787,6 +32842,9 @@ NGL.TextBuffer = function( position, size, color, text, params ){
     this.fontWeight = p.fontWeight !== undefined ? p.fontWeight : "bold";
     this.fontSize = p.fontSize !== undefined ? p.fontSize : 48;
     this.sdf = p.sdf !== undefined ? p.sdf : true;
+    this.xOffset = p.xOffset !== undefined ? p.xOffset : 0.0;
+    this.yOffset = p.yOffset !== undefined ? p.yOffset : 0.0;
+    this.zOffset = p.zOffset !== undefined ? p.zOffset : 0.5;
 
     var n = position.length / 3;
 
@@ -32805,7 +32863,10 @@ NGL.TextBuffer = function( position, size, color, text, params ){
     NGL.QuadBuffer.call( this, p );
 
     this.addUniforms( {
-        "fontTexture"  : { value: null }
+        "fontTexture"  : { value: null },
+        "xOffset": { value: this.xOffset },
+        "yOffset": { value: this.yOffset },
+        "zOffset": { value: this.zOffset }
     } );
 
     this.addAttributes( {
@@ -32835,6 +32896,9 @@ NGL.TextBuffer.prototype.parameters = Object.assign( {
     fontWeight: { uniform: true },
     fontSize: { uniform: true },
     sdf: { updateShader: true, uniform: true },
+    xOffset: { uniform: true },
+    yOffset: { uniform: true },
+    zOffset: { uniform: true }
 
 }, NGL.Buffer.prototype.parameters );
 
@@ -33668,7 +33732,10 @@ NGL.StructureRepresentation = function( structure, viewer, params ){
     NGL.Representation.call( this, structure, viewer, p );
 
     if( structure.biomolDict ){
-        var biomolOptions = { "default": "default", "": "AU" };
+        var biomolOptions = {
+            "default": "default",
+            "": ( structure.unitcell ? "AU" : "FULL" )
+        };
         Object.keys( structure.biomolDict ).forEach( function( k ){
             biomolOptions[ k ] = k;
         } );
@@ -34159,6 +34226,15 @@ NGL.LabelRepresentation.prototype = NGL.createObject(
         sdf: {
             type: "boolean", buffer: true
         },
+        xOffset: {
+            type: "number", precision: 1, max: 20, min: -20, buffer: true
+        },
+        yOffset: {
+            type: "number", precision: 1, max: 20, min: -20, buffer: true
+        },
+        zOffset: {
+            type: "number", precision: 1, max: 20, min: -20, buffer: true
+        },
 
     }, NGL.StructureRepresentation.prototype.parameters, {
 
@@ -34183,6 +34259,9 @@ NGL.LabelRepresentation.prototype = NGL.createObject(
         this.fontStyle = p.fontStyle || "normal";
         this.fontWeight = p.fontWeight || "bold";
         this.sdf = p.sdf !== undefined ? p.sdf : NGL.browser !== "Firefox";  // FIXME
+        this.xOffset = p.xOffset !== undefined ? p.xOffset : 0.0;
+        this.yOffset = p.yOffset !== undefined ? p.yOffset : 0.0;
+        this.zOffset = p.zOffset !== undefined ? p.zOffset : 0.5;
 
         NGL.StructureRepresentation.prototype.init.call( this, p );
 
@@ -34210,7 +34289,10 @@ NGL.LabelRepresentation.prototype = NGL.createObject(
                 fontFamily: this.fontFamily,
                 fontStyle: this.fontStyle,
                 fontWeight: this.fontWeight,
-                sdf: this.sdf
+                sdf: this.sdf,
+                xOffset: this.xOffset,
+                yOffset: this.yOffset,
+                zOffset: this.zOffset
             } )
         );
 
@@ -36629,6 +36711,7 @@ NGL.UnitcellRepresentation.prototype = NGL.createObject(
     create: function(){
 
         var structure = this.structureView.getStructure();
+        if( !structure.unitcell ) return;
         var unitcellData = this.getUnitcellData( structure );
 
         this.sphereBuffer = new NGL.SphereBuffer(
@@ -37590,32 +37673,10 @@ NGL.DotRepresentation.prototype = NGL.createObject(
 
 NGL.Stage = function( eid, params ){
 
-    var p = Object.assign( {}, params );
-    var preferencesId = p.preferencesId || "ngl-stage";
-
-    this.parameters = NGL.deepCopy( NGL.Stage.prototype.parameters );
-    this.preferences = new NGL.Preferences( preferencesId, p );
-
-    for( var name in this.parameters ){
-        p[ name ] = this.preferences.getKey( name );
-        if( p.overwritePreferences && params[ name ] !== undefined ){
-            p[ name ] = params[ name ];
-        }
-    }
-
-    this.preferences.signals.keyChanged.add( function( key, value ){
-        var sp = {};
-        sp[ key ] = value;
-        this.setParameters( sp );
-    }, this );
-
-    //
-
     var SIGNALS = signals;
 
     this.signals = {
 
-        themeChanged: new SIGNALS.Signal(),
         parametersChanged: new SIGNALS.Signal(),
         fullscreenChanged: new SIGNALS.Signal(),
 
@@ -37640,9 +37701,32 @@ NGL.Stage = function( eid, params ){
 
     this.viewer = new NGL.Viewer( eid );
     if( !this.viewer.renderer ) return;
-    this.setParameters( p );
-    this.viewer.animate();
+
+    var p = Object.assign( {
+        impostor: true,
+        quality: "medium",
+        sampleLevel: 0,
+        backgroundColor: "black",
+        rotateSpeed: 2.0,
+        zoomSpeed: 1.2,
+        panSpeed: 0.8,
+        clipNear: 0,
+        clipFar: 100,
+        clipDist: 10,
+        fogNear: 50,
+        fogFar: 100,
+        cameraFov: 40,
+        cameraType: "perspective",
+        lightColor: 0xdddddd,
+        lightIntensity: 1.0,
+        ambientColor: 0xdddddd,
+        ambientIntensity: 0.2
+    }, params );
+    this.parameters = NGL.deepCopy( NGL.Stage.prototype.parameters );
+    this.setParameters( p );  // must come after the viewer has been instantiated
+
     this.pickingControls = new NGL.PickingControls( this.viewer, this );
+    this.viewer.animate();
 
 };
 
@@ -37652,8 +37736,8 @@ NGL.Stage.prototype = {
 
     parameters: {
 
-        theme: {
-            type: "select", options: { "light": "light", "dark": "dark" }
+        backgroundColor: {
+            type: "color"
         },
         quality: {
             type: "select", options: { "low": "low", "medium": "medium", "high": "high" }
@@ -37662,9 +37746,6 @@ NGL.Stage.prototype = {
             type: "range", step: 1, max: 5, min: -1
         },
         impostor: {
-            type: "boolean"
-        },
-        overview: {
             type: "boolean"
         },
         rotateSpeed: {
@@ -37690,6 +37771,9 @@ NGL.Stage.prototype = {
         },
         fogFar: {
             type: "range", step: 1, max: 100, min: 0
+        },
+        cameraType: {
+            type: "select", options: { "perspective": "perspective", "orthographic": "orthographic" }
         },
         cameraFov: {
             type: "range", step: 1, max: 120, min: 15
@@ -37729,7 +37813,6 @@ NGL.Stage.prototype = {
         }
 
         // apply parameters
-        if( p.theme !== undefined ) this.setTheme( p.theme );
         if( p.quality !== undefined ) this.setQuality( p.quality );
         if( p.impostor !== undefined ) this.setImpostor( p.impostor );
         if( p.rotateSpeed !== undefined ) controls.rotateSpeed = p.rotateSpeed;
@@ -37737,8 +37820,9 @@ NGL.Stage.prototype = {
         if( p.panSpeed !== undefined ) controls.panSpeed = p.panSpeed;
         viewer.setClip( p.clipNear, p.clipFar, p.clipDist );
         viewer.setFog( undefined, p.fogNear, p.fogFar );
-        viewer.setCamera( undefined, p.cameraFov );
+        viewer.setCamera( p.cameraType, p.cameraFov );
         viewer.setSampling( p.sampleLevel );
+        viewer.setBackground( p.backgroundColor );
         viewer.setLight(
             p.lightColor, p.lightIntensity, p.ambientColor, p.ambientIntensity
         );
@@ -38120,9 +38204,12 @@ NGL.Stage.prototype = {
         return new Promise( function( resolve, reject ){
 
             function makeImage(){
+                tasks.increment();
                 viewer.makeImage( params ).then( function( blob ){
-                    resolve( blob )
+                    tasks.decrement();
+                    resolve( blob );
                 } ).catch( function( e ){
+                    tasks.decrement();
                     reject( e );
                 } );
             }
@@ -38133,29 +38220,13 @@ NGL.Stage.prototype = {
 
     },
 
-    setTheme: function( value ){
-
-        this.parameters.theme.value = value;
-
-        var viewerBackground;
-        if( value === "light" ){
-            viewerBackground = "white";
-        }else{
-            viewerBackground = "black";
-        }
-
-        this.signals.themeChanged.dispatch( value );
-        this.viewer.setBackground( viewerBackground );
-
-    },
-
     setImpostor: function( value ) {
 
         this.parameters.impostor.value = value;
 
         var types = [
             "spacefill", "ball+stick", "licorice", "hyperball",
-            "backbone", "rocket", "crossing", "contact",
+            "backbone", "rocket", "helixorient", "contact", "distance",
             "dot"
         ];
 
@@ -38185,7 +38256,7 @@ NGL.Stage.prototype = {
 
         var impostorTypes = [
             "spacefill", "ball+stick", "licorice", "hyperball",
-            "backbone", "rocket", "crossing", "contact",
+            "backbone", "rocket", "helixorient", "contact", "distance",
             "dot"
         ];
 
@@ -38462,104 +38533,6 @@ NGL.PickingControls = function( viewer, stage ){
 };
 
 
-////////////////
-// Preferences
-
-NGL.Preferences = function( id, defaultParams ){
-
-    var SIGNALS = signals;
-
-    this.signals = {
-        keyChanged: new SIGNALS.Signal(),
-    };
-
-    this.id = id || "ngl-stage";
-    var dp = Object.assign( {}, defaultParams );
-
-    this.storage = {
-        impostor: true,
-        quality: "medium",
-        sampleLevel: 0,
-        theme: "dark",
-        overview: true,
-        rotateSpeed: 2.0,
-        zoomSpeed: 1.2,
-        panSpeed: 0.8,
-        clipNear: 0,
-        clipFar: 100,
-        clipDist: 10,
-        fogNear: 50,
-        fogFar: 100,
-        cameraFov: 40,
-        lightColor: 0xdddddd,
-        lightIntensity: 1.0,
-        ambientColor: 0xdddddd,
-        ambientIntensity: 0.2
-    };
-
-    // overwrite default values with params
-    for( var key in this.storage ){
-        if( dp[ key ] !== undefined ){
-            this.storage[ key ] = dp[ key ];
-        }
-    }
-
-    try{
-        if ( window.localStorage[ this.id ] === undefined ) {
-            window.localStorage[ this.id ] = JSON.stringify( this.storage );
-        } else {
-            var data = JSON.parse( window.localStorage[ this.id ] );
-            for ( var key in data ) {
-                this.storage[ key ] = data[ key ];
-            }
-        }
-    }catch( e ){
-        NGL.error( "localStorage not accessible/available" );
-    }
-
-};
-
-NGL.Preferences.prototype = {
-
-    constructor: NGL.Preferences,
-
-    getKey: function( key ){
-
-        return this.storage[ key ];
-
-    },
-
-    setKey: function( key, value ){
-
-        this.storage[ key ] = value;
-
-        try{
-            window.localStorage[ this.id ] = JSON.stringify( this.storage );
-            this.signals.keyChanged.dispatch( key, value );
-        }catch( e ){
-            // Webkit === 22 / Firefox === 1014
-            if( e.code === 22 || e.code === 1014 ){
-                NGL.error( "localStorage full" );
-            }else{
-                NGL.error( "localStorage not accessible/available", e );
-            }
-        }
-
-    },
-
-    clear: function(){
-
-        try{
-            delete window.localStorage[ this.id ];
-        }catch( e ){
-            NGL.error( "localStorage not accessible/available" );
-        }
-
-    }
-
-};
-
-
 //////////////
 // Component
 
@@ -38628,7 +38601,6 @@ NGL.Component.prototype = {
         representationAdded: null,
         representationRemoved: null,
         visibilityChanged: null,
-        requestGuiVisibility: null,
 
         statusChanged: null,
         nameChanged: null,
@@ -38754,14 +38726,6 @@ NGL.Component.prototype = {
     getCenter: function(){
 
         // NGL.warn( "not implemented" )
-
-    },
-
-    requestGuiVisibility: function( value ){
-
-        this.signals.requestGuiVisibility.dispatch( value );
-
-        return this;
 
     },
 
@@ -38936,6 +38900,8 @@ NGL.StructureComponent.prototype = NGL.createObject(
     },
 
     centerView: function( zoom, sele ){
+
+        zoom = zoom !== undefined ? zoom : true;
 
         var center;
 
@@ -39426,12 +39392,6 @@ NGL.Collection.prototype = {
 
     },
 
-    requestGuiVisibility: function( value ){
-
-        return this._invoke( "requestGuiVisibility", [ value ] );
-
-    },
-
     dispose: function(){
 
         return this._invoke( "dispose" );
@@ -39496,11 +39456,11 @@ NGL.RepresentationCollection.prototype = NGL.createObject(
 
 // File:shader/CylinderImpostor.vert
 
-NGL.Resources[ 'shader/CylinderImpostor.vert' ] = "// Open-Source PyMOL is Copyright (C) Schrodinger, LLC.\n//\n//  All Rights Reserved\n//\n//  Permission to use, copy, modify, distribute, and distribute modified\n//  versions of this software and its built-in documentation for any\n//  purpose and without fee is hereby granted, provided that the above\n//  copyright notice appears in all copies and that both the copyright\n//  notice and this permission notice appear in supporting documentation,\n//  and that the name of Schrodinger, LLC not be used in advertising or\n//  publicity pertaining to distribution of the software without specific,\n//  written prior permission.\n//\n//  SCHRODINGER, LLC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,\n//  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN\n//  NO EVENT SHALL SCHRODINGER, LLC BE LIABLE FOR ANY SPECIAL, INDIRECT OR\n//  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS\n//  OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\n//  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE\n//  USE OR PERFORMANCE OF THIS SOFTWARE.\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n// - shift\n\nattribute vec3 mapping;\nattribute vec3 position1;\nattribute vec3 position2;\nattribute float radius;\n\nvarying vec3 axis;\nvarying vec4 base_radius;\nvarying vec4 end_b;\nvarying vec3 U;\nvarying vec3 V;\nvarying vec4 w;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    attribute vec3 pickingColor2;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    // attribute vec3 color;\n    attribute vec3 color2;\n    varying vec3 vColor1;\n    varying vec3 vColor2;\n#endif\n\nuniform mat4 modelViewMatrixInverse;\nuniform float shift;\n\nvoid main(){\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n        vPickingColor2 = pickingColor2;\n    #else\n        vColor1 = color;\n        vColor2 = color2;\n    #endif\n\n    // vRadius = radius;\n    base_radius.w = radius;\n\n    vec3 center = position;\n    vec3 dir = normalize( position2 - position1 );\n    float ext = length( position2 - position1 ) / 2.0;\n\n    vec3 cam_dir = normalize(\n        ( modelViewMatrixInverse * vec4( 0, 0, 0, 1 ) ).xyz - center\n    );\n\n    vec3 ldir;\n\n    float b = dot( cam_dir, dir );\n    end_b.w = b;\n    if( b < 0.0 ) // direction vector looks away, so flip\n        ldir = -ext * dir;\n    else // direction vector already looks in my direction\n        ldir = ext * dir;\n\n    vec3 left = normalize( cross( cam_dir, ldir ) );\n    vec3 leftShift = shift * left * radius;\n    if( b < 0.0 )\n        leftShift *= -1.0;\n    left = radius * left;\n    vec3 up = radius * normalize( cross( left, ldir ) );\n\n    // transform to modelview coordinates\n    axis = normalize( normalMatrix * ldir );\n    U = normalize( normalMatrix * up );\n    V = normalize( normalMatrix * left );\n\n    vec4 base4 = modelViewMatrix * vec4( center - ldir + leftShift, 1.0 );\n    base_radius.xyz = base4.xyz / base4.w;\n\n    vec4 top_position = modelViewMatrix * vec4( center + ldir + leftShift, 1.0 );\n    vec4 end4 = top_position;\n    end_b.xyz = end4.xyz / end4.w;\n\n    w = modelViewMatrix * vec4(\n        center + leftShift + mapping.x*ldir + mapping.y*left + mapping.z*up, 1.0\n    );\n\n    gl_Position = projectionMatrix * w;\n\n    // avoid clipping\n    gl_Position.z = 1.0;\n\n}";
+NGL.Resources[ 'shader/CylinderImpostor.vert' ] = "// Open-Source PyMOL is Copyright (C) Schrodinger, LLC.\n//\n//  All Rights Reserved\n//\n//  Permission to use, copy, modify, distribute, and distribute modified\n//  versions of this software and its built-in documentation for any\n//  purpose and without fee is hereby granted, provided that the above\n//  copyright notice appears in all copies and that both the copyright\n//  notice and this permission notice appear in supporting documentation,\n//  and that the name of Schrodinger, LLC not be used in advertising or\n//  publicity pertaining to distribution of the software without specific,\n//  written prior permission.\n//\n//  SCHRODINGER, LLC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,\n//  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN\n//  NO EVENT SHALL SCHRODINGER, LLC BE LIABLE FOR ANY SPECIAL, INDIRECT OR\n//  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS\n//  OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\n//  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE\n//  USE OR PERFORMANCE OF THIS SOFTWARE.\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n// - shift\n\nattribute vec3 mapping;\nattribute vec3 position1;\nattribute vec3 position2;\nattribute float radius;\n\nvarying vec3 axis;\nvarying vec4 base_radius;\nvarying vec4 end_b;\nvarying vec3 U;\nvarying vec3 V;\nvarying vec4 w;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    attribute vec3 pickingColor2;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    // attribute vec3 color;\n    attribute vec3 color2;\n    varying vec3 vColor1;\n    varying vec3 vColor2;\n#endif\n\nuniform mat4 modelViewMatrixInverse;\nuniform float shift;\nuniform float ortho;\n\nvoid main(){\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n        vPickingColor2 = pickingColor2;\n    #else\n        vColor1 = color;\n        vColor2 = color2;\n    #endif\n\n    // vRadius = radius;\n    base_radius.w = radius;\n\n    vec3 center = position;\n    vec3 dir = normalize( position2 - position1 );\n    float ext = length( position2 - position1 ) / 2.0;\n\n    // using cameraPosition fails on some machines, not sure why\n    // vec3 cam_dir = normalize( cameraPosition - mix( center, vec3( 0.0 ), ortho ) );\n    vec3 cam_dir;\n    if( ortho == 0.0 ){\n        cam_dir = ( modelViewMatrixInverse * vec4( 0, 0, 0, 1 ) ).xyz - center;\n    }else{\n        cam_dir = ( modelViewMatrixInverse * vec4( 0, 0, 1, 0 ) ).xyz;\n    }\n    cam_dir = normalize( cam_dir );\n\n    vec3 ldir;\n\n    float b = dot( cam_dir, dir );\n    end_b.w = b;\n    if( b < 0.0 ) // direction vector looks away, so flip\n        ldir = -ext * dir;\n    else // direction vector already looks in my direction\n        ldir = ext * dir;\n\n    vec3 left = normalize( cross( cam_dir, ldir ) );\n    vec3 leftShift = shift * left * radius;\n    if( b < 0.0 )\n        leftShift *= -1.0;\n    left = radius * left;\n    vec3 up = radius * normalize( cross( left, ldir ) );\n\n    // transform to modelview coordinates\n    axis = normalize( normalMatrix * ldir );\n    U = normalize( normalMatrix * up );\n    V = normalize( normalMatrix * left );\n\n    vec4 base4 = modelViewMatrix * vec4( center - ldir + leftShift, 1.0 );\n    base_radius.xyz = base4.xyz / base4.w;\n\n    vec4 top_position = modelViewMatrix * vec4( center + ldir + leftShift, 1.0 );\n    vec4 end4 = top_position;\n    end_b.xyz = end4.xyz / end4.w;\n\n    w = modelViewMatrix * vec4(\n        center + leftShift + mapping.x*ldir + mapping.y*left + mapping.z*up, 1.0\n    );\n\n    gl_Position = projectionMatrix * w;\n\n    // avoid clipping (1.0 seems to induce flickering with some drivers)\n    gl_Position.z = 0.99;\n\n}";
 
 // File:shader/CylinderImpostor.frag
 
-NGL.Resources[ 'shader/CylinderImpostor.frag' ] = "#define STANDARD\n#define IMPOSTOR\n\n// Open-Source PyMOL is Copyright (C) Schrodinger, LLC.\n//\n//  All Rights Reserved\n//\n//  Permission to use, copy, modify, distribute, and distribute modified\n//  versions of this software and its built-in documentation for any\n//  purpose and without fee is hereby granted, provided that the above\n//  copyright notice appears in all copies and that both the copyright\n//  notice and this permission notice appear in supporting documentation,\n//  and that the name of Schrodinger, LLC not be used in advertising or\n//  publicity pertaining to distribution of the software without specific,\n//  written prior permission.\n//\n//  SCHRODINGER, LLC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,\n//  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN\n//  NO EVENT SHALL SCHRODINGER, LLC BE LIABLE FOR ANY SPECIAL, INDIRECT OR\n//  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS\n//  OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\n//  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE\n//  USE OR PERFORMANCE OF THIS SOFTWARE.\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n// - custom clipping\n// - three.js lighting\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform float nearClip;\nuniform mat4 projectionMatrix;\n\nvarying vec3 axis;\nvarying vec4 base_radius;\nvarying vec4 end_b;\nvarying vec3 U;\nvarying vec3 V;\nvarying vec4 w;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    varying vec3 vColor1;\n    varying vec3 vColor2;\n    #include common\n    #include fog_pars_fragment\n    #include bsdfs\n    #include ambient_pars\n    #include lights_pars\n    #include lights_physical_pars_fragment\n#endif\n\nbool interior = false;\n\nfloat distSq3( vec3 v3a, vec3 v3b ){\n\n    return (\n        ( v3a.x - v3b.x ) * ( v3a.x - v3b.x ) +\n        ( v3a.y - v3b.y ) * ( v3a.y - v3b.y ) +\n        ( v3a.z - v3b.z ) * ( v3a.z - v3b.z )\n    );\n\n}\n\n// round caps\n// http://sourceforge.net/p/pymol/code/HEAD/tree/trunk/pymol/data/shaders/cylinder.fs\n\n// void main2(void)\n// {\n//     #ifdef PICKING\n//         gl_FragColor = vec4( vPickingColor, 1.0 );\n//     #else\n//         gl_FragColor = vec4( vColor, 1.0 );\n//     #endif\n// }\n\n// Calculate depth based on the given camera position.\nfloat calcDepth( in vec3 cameraPos ){\n    vec2 clipZW = cameraPos.z * projectionMatrix[2].zw + projectionMatrix[3].zw;\n    return 0.5 + 0.5 * clipZW.x / clipZW.y;\n}\n\nfloat calcClip( vec3 cameraPos ){\n    return dot( vec4( cameraPos, 1.0 ), vec4( 0.0, 0.0, 1.0, nearClip - 0.5 ) );\n}\n\nvoid main(){\n\n    vec3 point = w.xyz / w.w;\n\n    // unpacking\n    vec3 base = base_radius.xyz;\n    float vRadius = base_radius.w;\n    vec3 end = end_b.xyz;\n    float b = end_b.w;\n\n    vec3 end_cyl = end;\n    vec3 surface_point = point;\n\n    const float ortho=0.0;\n\n    vec3 ray_target = surface_point;\n    vec3 ray_origin = vec3(0.0);\n    vec3 ray_direction = mix(normalize(ray_origin - ray_target), vec3(0.0, 0.0, 1.0), ortho);\n    mat3 basis = mat3( U, V, axis );\n\n    vec3 diff = ray_target - 0.5 * (base + end_cyl);\n    vec3 P = diff * basis;\n\n    // angle (cos) between cylinder cylinder_axis and ray direction\n    float dz = dot( axis, ray_direction );\n\n    float radius2 = vRadius*vRadius;\n\n    // calculate distance to the cylinder from ray origin\n    vec3 D = vec3(dot(U, ray_direction),\n                dot(V, ray_direction),\n                dz);\n    float a0 = P.x*P.x + P.y*P.y - radius2;\n    float a1 = P.x*D.x + P.y*D.y;\n    float a2 = D.x*D.x + D.y*D.y;\n\n    // calculate a dicriminant of the above quadratic equation\n    float d = a1*a1 - a0*a2;\n    if (d < 0.0)\n        // outside of the cylinder\n        discard;\n\n    float dist = (-a1 + sqrt(d)) / a2;\n\n    // point of intersection on cylinder surface\n    vec3 new_point = ray_target + dist * ray_direction;\n\n    vec3 tmp_point = new_point - base;\n    vec3 _normal = normalize( tmp_point - axis * dot(tmp_point, axis) );\n\n    ray_origin = mix( ray_origin, surface_point, ortho );\n\n    // test front cap\n    float cap_test = dot( new_point - base, axis );\n\n    // to calculate caps, simply check the angle between\n    // the point of intersection - cylinder end vector\n    // and a cap plane normal (which is the cylinder cylinder_axis)\n    // if the angle < 0, the point is outside of cylinder\n    // test front cap\n\n    #ifndef CAP\n        vec3 new_point2 = ray_target + ( (-a1 - sqrt(d)) / a2 ) * ray_direction;\n        vec3 tmp_point2 = new_point2 - base;\n    #endif\n\n    // flat\n    if (cap_test < 0.0)\n    {\n        // ray-plane intersection\n        float dNV = dot(-axis, ray_direction);\n        if (dNV < 0.0)\n            discard;\n        float near = dot(-axis, (base)) / dNV;\n        new_point = ray_direction * near + ray_origin;\n        // within the cap radius?\n        if (dot(new_point - base, new_point-base) > radius2)\n            discard;\n\n        #ifdef CAP\n            _normal = axis;\n        #else\n            _normal = -normalize( tmp_point2 - axis * dot(tmp_point2, axis) );\n        #endif\n    }\n\n    // test end cap\n    cap_test = dot((new_point - end_cyl), axis);\n\n    // flat\n    if( cap_test > 0.0 )\n    {\n        // ray-plane intersection\n        float dNV = dot(axis, ray_direction);\n        if (dNV < 0.0)\n            discard;\n        float near = dot(axis, end_cyl) / dNV;\n        new_point = ray_direction * near + ray_origin;\n        // within the cap radius?\n        if( dot(new_point - end_cyl, new_point-base) > radius2 )\n            discard;\n\n        #ifdef CAP\n            _normal = axis;\n        #else\n            _normal = -normalize( tmp_point2 - axis * dot(tmp_point2, axis) );\n        #endif\n    }\n\n    gl_FragDepthEXT = calcDepth( new_point );\n\n    #ifdef NEAR_CLIP\n        if( calcClip( new_point ) > 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            if( calcClip( new_point ) > 0.0 )\n                discard;\n            interior = true;\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = max( 0.0, calcDepth( vec3( - ( nearClip - 0.5 ) ) ) + ( 0.0000001 / vRadius ) );\n            }\n        }else if( gl_FragDepthEXT <= 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            interior = true;\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        }\n    #else\n        if( gl_FragDepthEXT <= 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            interior = true;\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        }\n    #endif\n\n    // this is a workaround necessary for Mac\n    // otherwise the modified fragment won't clip properly\n    if (gl_FragDepthEXT < 0.0)\n        discard;\n    if (gl_FragDepthEXT > 1.0)\n        discard;\n\n    #ifdef PICKING\n\n        if( distSq3( new_point, end_cyl ) < distSq3( new_point, base ) ){\n            if( b < 0.0 ){\n                gl_FragColor = vec4( vPickingColor, objectId );\n            }else{\n                gl_FragColor = vec4( vPickingColor2, objectId );\n            }\n        }else{\n            if( b > 0.0 ){\n                gl_FragColor = vec4( vPickingColor, objectId );\n            }else{\n                gl_FragColor = vec4( vPickingColor2, objectId );\n            }\n        }\n\n    #else\n\n        vec3 vViewPosition = -new_point;\n        vec3 vNormal = _normal;\n        vec3 vColor;\n\n        if( distSq3( new_point, end_cyl ) < distSq3( new_point, base ) ){\n            if( b < 0.0 ){\n                vColor = vColor1;\n            }else{\n                vColor = vColor2;\n            }\n        }else{\n            if( b > 0.0 ){\n                vColor = vColor1;\n            }else{\n                vColor = vColor2;\n            }\n        }\n\n        vec4 diffuseColor = vec4( diffuse, opacity );\n        ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n        vec3 totalEmissiveLight = emissive;\n\n        #include color_fragment\n        #include roughnessmap_fragment\n        #include metalnessmap_fragment\n\n        vec3 normal = normalize( vNormal );  // don't use #include normal_fragment\n        if( interior ){\n            normal = vec3( 0.0, 0.0, 0.4 );\n        }\n\n        #include lights_physical_fragment\n        #include lights_template\n\n        vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveLight;\n\n        gl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n        #include premultiplied_alpha_fragment\n        #include tonemapping_fragment\n        #include encodings_fragment\n        #include fog_fragment\n\n    #endif\n\n}";
+NGL.Resources[ 'shader/CylinderImpostor.frag' ] = "#define STANDARD\n#define IMPOSTOR\n\n// Open-Source PyMOL is Copyright (C) Schrodinger, LLC.\n//\n//  All Rights Reserved\n//\n//  Permission to use, copy, modify, distribute, and distribute modified\n//  versions of this software and its built-in documentation for any\n//  purpose and without fee is hereby granted, provided that the above\n//  copyright notice appears in all copies and that both the copyright\n//  notice and this permission notice appear in supporting documentation,\n//  and that the name of Schrodinger, LLC not be used in advertising or\n//  publicity pertaining to distribution of the software without specific,\n//  written prior permission.\n//\n//  SCHRODINGER, LLC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,\n//  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN\n//  NO EVENT SHALL SCHRODINGER, LLC BE LIABLE FOR ANY SPECIAL, INDIRECT OR\n//  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS\n//  OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\n//  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE\n//  USE OR PERFORMANCE OF THIS SOFTWARE.\n\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - dual color\n// - picking color\n// - custom clipping\n// - three.js lighting\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform float nearClip;\nuniform mat4 projectionMatrix;\nuniform float ortho;\n\nvarying vec3 axis;\nvarying vec4 base_radius;\nvarying vec4 end_b;\nvarying vec3 U;\nvarying vec3 V;\nvarying vec4 w;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n    varying vec3 vPickingColor2;\n#else\n    varying vec3 vColor1;\n    varying vec3 vColor2;\n    #include common\n    #include fog_pars_fragment\n    #include bsdfs\n    #include ambient_pars\n    #include lights_pars\n    #include lights_physical_pars_fragment\n#endif\n\nbool interior = false;\n\nfloat distSq3( vec3 v3a, vec3 v3b ){\n\n    return (\n        ( v3a.x - v3b.x ) * ( v3a.x - v3b.x ) +\n        ( v3a.y - v3b.y ) * ( v3a.y - v3b.y ) +\n        ( v3a.z - v3b.z ) * ( v3a.z - v3b.z )\n    );\n\n}\n\n// round caps\n// http://sourceforge.net/p/pymol/code/HEAD/tree/trunk/pymol/data/shaders/cylinder.fs\n\n// void main2(void)\n// {\n//     #ifdef PICKING\n//         gl_FragColor = vec4( vPickingColor, 1.0 );\n//     #else\n//         gl_FragColor = vec4( vColor, 1.0 );\n//     #endif\n// }\n\n// Calculate depth based on the given camera position.\nfloat calcDepth( in vec3 cameraPos ){\n    vec2 clipZW = cameraPos.z * projectionMatrix[2].zw + projectionMatrix[3].zw;\n    return 0.5 + 0.5 * clipZW.x / clipZW.y;\n}\n\nfloat calcClip( vec3 cameraPos ){\n    return dot( vec4( cameraPos, 1.0 ), vec4( 0.0, 0.0, 1.0, nearClip - 0.5 ) );\n}\n\nvoid main(){\n\n    vec3 point = w.xyz / w.w;\n\n    // unpacking\n    vec3 base = base_radius.xyz;\n    float vRadius = base_radius.w;\n    vec3 end = end_b.xyz;\n    float b = end_b.w;\n\n    vec3 end_cyl = end;\n    vec3 surface_point = point;\n\n    vec3 ray_target = surface_point;\n    vec3 ray_origin = vec3(0.0);\n    vec3 ray_direction = mix(normalize(ray_origin - ray_target), vec3(0.0, 0.0, 1.0), ortho);\n    mat3 basis = mat3( U, V, axis );\n\n    vec3 diff = ray_target - 0.5 * (base + end_cyl);\n    vec3 P = diff * basis;\n\n    // angle (cos) between cylinder cylinder_axis and ray direction\n    float dz = dot( axis, ray_direction );\n\n    float radius2 = vRadius*vRadius;\n\n    // calculate distance to the cylinder from ray origin\n    vec3 D = vec3(dot(U, ray_direction),\n                dot(V, ray_direction),\n                dz);\n    float a0 = P.x*P.x + P.y*P.y - radius2;\n    float a1 = P.x*D.x + P.y*D.y;\n    float a2 = D.x*D.x + D.y*D.y;\n\n    // calculate a dicriminant of the above quadratic equation\n    float d = a1*a1 - a0*a2;\n    if (d < 0.0)\n        // outside of the cylinder\n        discard;\n\n    float dist = (-a1 + sqrt(d)) / a2;\n\n    // point of intersection on cylinder surface\n    vec3 new_point = ray_target + dist * ray_direction;\n\n    vec3 tmp_point = new_point - base;\n    vec3 _normal = normalize( tmp_point - axis * dot(tmp_point, axis) );\n\n    ray_origin = mix( ray_origin, surface_point, ortho );\n\n    // test front cap\n    float cap_test = dot( new_point - base, axis );\n\n    // to calculate caps, simply check the angle between\n    // the point of intersection - cylinder end vector\n    // and a cap plane normal (which is the cylinder cylinder_axis)\n    // if the angle < 0, the point is outside of cylinder\n    // test front cap\n\n    #ifndef CAP\n        vec3 new_point2 = ray_target + ( (-a1 - sqrt(d)) / a2 ) * ray_direction;\n        vec3 tmp_point2 = new_point2 - base;\n    #endif\n\n    // flat\n    if (cap_test < 0.0)\n    {\n        // ray-plane intersection\n        float dNV = dot(-axis, ray_direction);\n        if (dNV < 0.0)\n            discard;\n        float near = dot(-axis, (base)) / dNV;\n        new_point = ray_direction * near + ray_origin;\n        // within the cap radius?\n        if (dot(new_point - base, new_point-base) > radius2)\n            discard;\n\n        #ifdef CAP\n            _normal = axis;\n        #else\n            _normal = -normalize( tmp_point2 - axis * dot(tmp_point2, axis) );\n        #endif\n    }\n\n    // test end cap\n    cap_test = dot((new_point - end_cyl), axis);\n\n    // flat\n    if( cap_test > 0.0 )\n    {\n        // ray-plane intersection\n        float dNV = dot(axis, ray_direction);\n        if (dNV < 0.0)\n            discard;\n        float near = dot(axis, end_cyl) / dNV;\n        new_point = ray_direction * near + ray_origin;\n        // within the cap radius?\n        if( dot(new_point - end_cyl, new_point-base) > radius2 )\n            discard;\n\n        #ifdef CAP\n            _normal = axis;\n        #else\n            _normal = -normalize( tmp_point2 - axis * dot(tmp_point2, axis) );\n        #endif\n    }\n\n    gl_FragDepthEXT = calcDepth( new_point );\n\n    #ifdef NEAR_CLIP\n        if( calcClip( new_point ) > 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            if( calcClip( new_point ) > 0.0 )\n                discard;\n            interior = true;\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = max( 0.0, calcDepth( vec3( - ( nearClip - 0.5 ) ) ) + ( 0.0000001 / vRadius ) );\n            }\n        }else if( gl_FragDepthEXT <= 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            interior = true;\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        }\n    #else\n        if( gl_FragDepthEXT <= 0.0 ){\n            dist = (-a1 - sqrt(d)) / a2;\n            new_point = ray_target + dist * ray_direction;\n            interior = true;\n            gl_FragDepthEXT = calcDepth( new_point );\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        }\n    #endif\n\n    // this is a workaround necessary for Mac\n    // otherwise the modified fragment won't clip properly\n    if (gl_FragDepthEXT < 0.0)\n        discard;\n    if (gl_FragDepthEXT > 1.0)\n        discard;\n\n    #ifdef PICKING\n\n        if( distSq3( new_point, end_cyl ) < distSq3( new_point, base ) ){\n            if( b < 0.0 ){\n                gl_FragColor = vec4( vPickingColor, objectId );\n            }else{\n                gl_FragColor = vec4( vPickingColor2, objectId );\n            }\n        }else{\n            if( b > 0.0 ){\n                gl_FragColor = vec4( vPickingColor, objectId );\n            }else{\n                gl_FragColor = vec4( vPickingColor2, objectId );\n            }\n        }\n\n    #else\n\n        vec3 vViewPosition = -new_point;\n        vec3 vNormal = _normal;\n        vec3 vColor;\n\n        if( distSq3( new_point, end_cyl ) < distSq3( new_point, base ) ){\n            if( b < 0.0 ){\n                vColor = vColor1;\n            }else{\n                vColor = vColor2;\n            }\n        }else{\n            if( b > 0.0 ){\n                vColor = vColor1;\n            }else{\n                vColor = vColor2;\n            }\n        }\n\n        vec4 diffuseColor = vec4( diffuse, opacity );\n        ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n        vec3 totalEmissiveLight = emissive;\n\n        #include color_fragment\n        #include roughnessmap_fragment\n        #include metalnessmap_fragment\n\n        vec3 normal = normalize( vNormal );  // don't use #include normal_fragment\n        if( interior ){\n            normal = vec3( 0.0, 0.0, 0.4 );\n        }\n\n        #include lights_physical_fragment\n        #include lights_template\n\n        vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveLight;\n\n        gl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n        #include premultiplied_alpha_fragment\n        #include tonemapping_fragment\n        #include encodings_fragment\n        #include fog_fragment\n\n    #endif\n\n}";
 
 // File:shader/HyperballStickImpostor.vert
 
@@ -39548,7 +39508,7 @@ NGL.Resources[ 'shader/Ribbon.vert' ] = "#define STANDARD\n\nuniform float nearC
 
 // File:shader/SDFFont.vert
 
-NGL.Resources[ 'shader/SDFFont.vert' ] = "uniform float nearClip;\n\nvarying vec3 vViewPosition;\nvarying vec2 texCoord;\n\nattribute vec2 mapping;\nattribute vec2 inputTexCoord;\nattribute float inputSize;\n\n#include color_pars_vertex\n#include common\n\nvoid main(void){\n\n    #include color_vertex\n    texCoord = inputTexCoord;\n\n    vec4 cameraPos = ( modelViewMatrix * vec4( position, 1.0 ) );\n    vec4 cameraCornerPos = vec4( cameraPos.xyz, 1.0 );\n    cameraCornerPos.xy += mapping * inputSize * 0.01;\n    cameraCornerPos.z += 0.5;\n\n    gl_Position = projectionMatrix * cameraCornerPos;\n\n    vViewPosition = -cameraCornerPos.xyz;\n\n    #include nearclip_vertex\n\n}";
+NGL.Resources[ 'shader/SDFFont.vert' ] = "uniform float nearClip;\nuniform float xOffset;\nuniform float yOffset;\nuniform float zOffset;\n\nvarying vec3 vViewPosition;\nvarying vec2 texCoord;\n\nattribute vec2 mapping;\nattribute vec2 inputTexCoord;\nattribute float inputSize;\n\n#include color_pars_vertex\n#include common\n\nvoid main(void){\n\n    #include color_vertex\n    texCoord = inputTexCoord;\n\n    vec4 cameraPos = ( modelViewMatrix * vec4( position, 1.0 ) );\n    vec4 cameraCornerPos = vec4( cameraPos.xyz, 1.0 );\n    cameraCornerPos.xy += mapping * inputSize * 0.01;\n    cameraCornerPos.x += xOffset;\n    cameraCornerPos.y += yOffset;\n    cameraCornerPos.xyz += normalize( -cameraCornerPos.xyz ) * zOffset;\n\n    gl_Position = projectionMatrix * cameraCornerPos;\n\n    vViewPosition = -cameraCornerPos.xyz;\n\n    #include nearclip_vertex\n\n}";
 
 // File:shader/SDFFont.frag
 
@@ -39556,11 +39516,11 @@ NGL.Resources[ 'shader/SDFFont.frag' ] = "uniform sampler2D fontTexture;\nunifor
 
 // File:shader/SphereImpostor.vert
 
-NGL.Resources[ 'shader/SphereImpostor.vert' ] = "uniform mat4 projectionMatrixInverse;\nuniform float nearClip;\n\nvarying float vRadius;\nvarying vec3 vPoint;\nvarying vec3 vPointViewPosition;\n\nattribute vec2 mapping;\nattribute float radius;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    varying vec3 vPickingColor;\n#else\n    #include color_pars_vertex\n#endif\n\nconst mat4 D = mat4(\n    1.0, 0.0, 0.0, 0.0,\n    0.0, 1.0, 0.0, 0.0,\n    0.0, 0.0, 1.0, 0.0,\n    0.0, 0.0, 0.0, -1.0\n);\n\nmat4 transpose( in mat4 inMatrix ) {\n    vec4 i0 = inMatrix[0];\n    vec4 i1 = inMatrix[1];\n    vec4 i2 = inMatrix[2];\n    vec4 i3 = inMatrix[3];\n\n    mat4 outMatrix = mat4(\n        vec4(i0.x, i1.x, i2.x, i3.x),\n        vec4(i0.y, i1.y, i2.y, i3.y),\n        vec4(i0.z, i1.z, i2.z, i3.z),\n        vec4(i0.w, i1.w, i2.w, i3.w)\n    );\n    return outMatrix;\n}\n\n//------------------------------------------------------------------------------\n// Compute point size and center using the technique described in:\n// \"GPU-Based Ray-Casting of Quadratic Surfaces\"\n// by Christian Sigg, Tim Weyrich, Mario Botsch, Markus Gross.\n//\n// Code based on\n/*=========================================================================\n\n Program:   Visualization Toolkit\n Module:    Quadrics_fs.glsl and Quadrics_vs.glsl\n\n Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen\n All rights reserved.\n See Copyright.txt or http://www.kitware.com/Copyright.htm for details.\n\n This software is distributed WITHOUT ANY WARRANTY; without even\n the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n PURPOSE.  See the above copyright notice for more information.\n\n =========================================================================*/\n\n// .NAME Quadrics_fs.glsl and Quadrics_vs.glsl\n// .SECTION Thanks\n// <verbatim>\n//\n//  This file is part of the PointSprites plugin developed and contributed by\n//\n//  Copyright (c) CSCS - Swiss National Supercomputing Centre\n//                EDF - Electricite de France\n//\n//  John Biddiscombe, Ugo Varetto (CSCS)\n//  Stephane Ploix (EDF)\n//\n// </verbatim>\n//\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - adapted to work with quads\nvoid ComputePointSizeAndPositionInClipCoordSphere(){\n\n    vec2 xbc;\n    vec2 ybc;\n\n    mat4 T = mat4(\n        radius, 0.0, 0.0, 0.0,\n        0.0, radius, 0.0, 0.0,\n        0.0, 0.0, radius, 0.0,\n        position.x, position.y, position.z, 1.0\n    );\n\n    mat4 R = transpose( projectionMatrix * modelViewMatrix * T );\n    float A = dot( R[ 3 ], D * R[ 3 ] );\n    float B = -2.0 * dot( R[ 0 ], D * R[ 3 ] );\n    float C = dot( R[ 0 ], D * R[ 0 ] );\n    xbc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    xbc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sx = abs( xbc[ 0 ] - xbc[ 1 ] ) * 0.5;\n\n    A = dot( R[ 3 ], D * R[ 3 ] );\n    B = -2.0 * dot( R[ 1 ], D * R[ 3 ] );\n    C = dot( R[ 1 ], D * R[ 1 ] );\n    ybc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    ybc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sy = abs( ybc[ 0 ] - ybc[ 1 ]  ) * 0.5;\n\n    gl_Position.xy = vec2( 0.5 * ( xbc.x + xbc.y ), 0.5 * ( ybc.x + ybc.y ) );\n    gl_Position.xy -= mapping * vec2( sx, sy );\n    gl_Position.xy *= gl_Position.w;\n\n}\n\nvoid main(void){\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n    #else\n        #include color_vertex\n    #endif\n\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n    mvPosition.z -= radius;  // avoid clipping, added again in fragment shader\n\n    gl_Position = projectionMatrix * vec4( mvPosition.xyz, 1.0 );\n    ComputePointSizeAndPositionInClipCoordSphere();\n\n    vRadius = radius;\n    vPoint = ( projectionMatrixInverse * gl_Position ).xyz;\n    vPointViewPosition = -mvPosition.xyz;\n\n}";
+NGL.Resources[ 'shader/SphereImpostor.vert' ] = "uniform mat4 projectionMatrixInverse;\nuniform float nearClip;\n\nvarying float vRadius;\nvarying float vRadiusSq;\nvarying vec3 vPoint;\nvarying vec3 vPointViewPosition;\n\nattribute vec2 mapping;\nattribute float radius;\n\n#ifdef PICKING\n    attribute vec3 pickingColor;\n    varying vec3 vPickingColor;\n#else\n    #include color_pars_vertex\n#endif\n\nconst mat4 D = mat4(\n    1.0, 0.0, 0.0, 0.0,\n    0.0, 1.0, 0.0, 0.0,\n    0.0, 0.0, 1.0, 0.0,\n    0.0, 0.0, 0.0, -1.0\n);\n\nmat4 transpose( in mat4 inMatrix ) {\n    vec4 i0 = inMatrix[0];\n    vec4 i1 = inMatrix[1];\n    vec4 i2 = inMatrix[2];\n    vec4 i3 = inMatrix[3];\n\n    mat4 outMatrix = mat4(\n        vec4(i0.x, i1.x, i2.x, i3.x),\n        vec4(i0.y, i1.y, i2.y, i3.y),\n        vec4(i0.z, i1.z, i2.z, i3.z),\n        vec4(i0.w, i1.w, i2.w, i3.w)\n    );\n    return outMatrix;\n}\n\n//------------------------------------------------------------------------------\n// Compute point size and center using the technique described in:\n// \"GPU-Based Ray-Casting of Quadratic Surfaces\"\n// by Christian Sigg, Tim Weyrich, Mario Botsch, Markus Gross.\n//\n// Code based on\n/*=========================================================================\n\n Program:   Visualization Toolkit\n Module:    Quadrics_fs.glsl and Quadrics_vs.glsl\n\n Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen\n All rights reserved.\n See Copyright.txt or http://www.kitware.com/Copyright.htm for details.\n\n This software is distributed WITHOUT ANY WARRANTY; without even\n the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n PURPOSE.  See the above copyright notice for more information.\n\n =========================================================================*/\n\n// .NAME Quadrics_fs.glsl and Quadrics_vs.glsl\n// .SECTION Thanks\n// <verbatim>\n//\n//  This file is part of the PointSprites plugin developed and contributed by\n//\n//  Copyright (c) CSCS - Swiss National Supercomputing Centre\n//                EDF - Electricite de France\n//\n//  John Biddiscombe, Ugo Varetto (CSCS)\n//  Stephane Ploix (EDF)\n//\n// </verbatim>\n//\n// Contributions by Alexander Rose\n// - ported to WebGL\n// - adapted to work with quads\nvoid ComputePointSizeAndPositionInClipCoordSphere(){\n\n    vec2 xbc;\n    vec2 ybc;\n\n    mat4 T = mat4(\n        radius, 0.0, 0.0, 0.0,\n        0.0, radius, 0.0, 0.0,\n        0.0, 0.0, radius, 0.0,\n        position.x, position.y, position.z, 1.0\n    );\n\n    mat4 R = transpose( projectionMatrix * modelViewMatrix * T );\n    float A = dot( R[ 3 ], D * R[ 3 ] );\n    float B = -2.0 * dot( R[ 0 ], D * R[ 3 ] );\n    float C = dot( R[ 0 ], D * R[ 0 ] );\n    xbc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    xbc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sx = abs( xbc[ 0 ] - xbc[ 1 ] ) * 0.5;\n\n    A = dot( R[ 3 ], D * R[ 3 ] );\n    B = -2.0 * dot( R[ 1 ], D * R[ 3 ] );\n    C = dot( R[ 1 ], D * R[ 1 ] );\n    ybc[ 0 ] = ( -B - sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    ybc[ 1 ] = ( -B + sqrt( B * B - 4.0 * A * C ) ) / ( 2.0 * A );\n    float sy = abs( ybc[ 0 ] - ybc[ 1 ]  ) * 0.5;\n\n    gl_Position.xy = vec2( 0.5 * ( xbc.x + xbc.y ), 0.5 * ( ybc.x + ybc.y ) );\n    gl_Position.xy -= mapping * vec2( sx, sy );\n    gl_Position.xy *= gl_Position.w;\n\n}\n\nvoid main(void){\n\n    #ifdef PICKING\n        vPickingColor = pickingColor;\n    #else\n        #include color_vertex\n    #endif\n\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n    mvPosition.z -= radius;  // avoid clipping, added again in fragment shader\n\n    gl_Position = projectionMatrix * vec4( mvPosition.xyz, 1.0 );\n    ComputePointSizeAndPositionInClipCoordSphere();\n\n    vRadius = radius;\n    vRadiusSq = radius * radius;\n    vec4 vPoint4 = projectionMatrixInverse * gl_Position;\n    vPoint = vPoint4.xyz / vPoint4.w;\n    vPointViewPosition = -mvPosition.xyz / mvPosition.w;\n\n}";
 
 // File:shader/SphereImpostor.frag
 
-NGL.Resources[ 'shader/SphereImpostor.frag' ] = "#define STANDARD\n#define IMPOSTOR\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform float nearClip;\nuniform mat4 projectionMatrix;\n\n// uniform vec3 specular;\n// uniform float shininess;\n\n\nvarying float vRadius;\nvarying vec3 vPoint;\nvarying vec3 vPointViewPosition;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n#else\n    #include common\n    #include color_pars_fragment\n    #include fog_pars_fragment\n    #include bsdfs\n    #include ambient_pars\n    #include lights_pars\n    // #include lights_phong_pars_fragment\n    #include lights_physical_pars_fragment\n#endif\n\nbool flag2 = false;\nbool interior = false;\nvec3 cameraPos;\nvec3 cameraNormal;\n\n// vec4 poly_color = gl_Color;\n//   if(uf_use_border_hinting == 1.0)\n//   {\n//     vec3 wc_eye_dir = normalize(wc_sp_pt);\n//     float n_dot_e   = abs(dot(wc_sp_nrml,wc_eye_dir));\n//     float alpha     = max(uf_border_color_start_cosine - n_dot_e,0.0)/uf_border_color_start_cosine;\n//     poly_color      = mix(gl_Color,uf_border_color,0.75*alpha);\n//   }\n//   color += (diff + amb)*poly_color + spec*gl_FrontMaterial.specular;\n\n// Calculate depth based on the given camera position.\nfloat calcDepth( in vec3 cameraPos ){\n    vec2 clipZW = cameraPos.z * projectionMatrix[2].zw + projectionMatrix[3].zw;\n    return 0.5 + 0.5 * clipZW.x / clipZW.y;\n}\n\nfloat calcClip( vec3 cameraPos ){\n    return dot( vec4( cameraPos, 1.0 ), vec4( 0.0, 0.0, 1.0, nearClip - 0.5 ) );\n}\n\nbool Impostor( out vec3 cameraPos, out vec3 cameraNormal ){\n\n    vec3 cameraSpherePos2 = -vPointViewPosition;\n    cameraSpherePos2.z += vRadius;\n\n    vec3 rayDirection = normalize( vPoint );\n\n    float B = -2.0 * dot( rayDirection, cameraSpherePos2 );\n    float C = dot( cameraSpherePos2, cameraSpherePos2 ) - ( vRadius * vRadius );\n\n    float det = ( B * B ) - ( 4.0 * C );\n    if( det < 0.0 ){\n        discard;\n        return false;\n    }else{\n        float sqrtDet = sqrt( det );\n        float posT = ( -B + sqrtDet ) / 2.0;\n        float negT = ( -B - sqrtDet ) / 2.0;\n\n        float intersectT = min(posT, negT);\n        cameraPos = rayDirection * intersectT;\n\n        #ifdef NEAR_CLIP\n            if( calcDepth( cameraPos ) <= 0.0 ){\n                cameraPos = rayDirection * max( posT, negT );\n                interior = true;\n                return false;\n            }else if( calcClip( cameraPos ) > 0.0 ){\n                cameraPos = rayDirection * max( posT, negT );\n                interior = true;\n                flag2 = true;\n                return false;\n            }else{\n                cameraNormal = normalize( cameraPos - cameraSpherePos2 );\n            }\n        #else\n            if( calcDepth( cameraPos ) <= 0.0 ){\n                cameraPos = rayDirection * max( posT, negT );\n                interior = true;\n                return false;\n            }else{\n                cameraNormal = normalize( cameraPos - cameraSpherePos2 );\n            }\n        #endif\n\n        return true;\n    }\n\n    return false; // ensure that each control flow has a return\n\n}\n\nvoid main(void){\n\n    // vec3 specular = vec3( 1.0, 1.0, 1.0 );\n    // float specularStrength = 1.0;\n    // float shininess = 1.0;\n\n    bool flag = Impostor( cameraPos, cameraNormal );\n\n    #ifdef NEAR_CLIP\n        if( calcClip( cameraPos ) > 0.0 )\n            discard;\n    #endif\n\n    // FIXME not compatible with custom clipping plane\n    //Set the depth based on the new cameraPos.\n    gl_FragDepthEXT = calcDepth( cameraPos );\n    if( !flag ){\n\n        // clamp to near clipping plane and add a tiny value to\n        // make spheres with a greater radius occlude smaller ones\n        #ifdef NEAR_CLIP\n            if( flag2 ){\n                gl_FragDepthEXT = max( 0.0, calcDepth( vec3( - ( nearClip - 0.5 ) ) ) + ( 0.0000001 / vRadius ) );\n            }else if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        #else\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        #endif\n\n    }\n\n    // bugfix (mac only?)\n    if (gl_FragDepthEXT < 0.0)\n        discard;\n    if (gl_FragDepthEXT > 1.0)\n        discard;\n\n    #ifdef PICKING\n\n        gl_FragColor = vec4( vPickingColor, objectId );\n\n    #else\n\n        // vec3 specColor = vColor;  // vec3( 1.0, 1.0, 1.0 );\n        // vec3 lightDir = vec3( 0.0, 0.0, 1.0 );\n        // vec3 vNormal = cameraNormal;\n\n        // float lambertian = max(dot(lightDir,vNormal), 0.0);\n        // float specular = 0.0;\n\n        // if(lambertian > 0.0) {\n\n        //     vec3 reflectDir = reflect(-lightDir, vNormal);\n        //     vec3 viewDir = normalize(-cameraPos);\n\n        //     float specAngle = max(dot(reflectDir, viewDir), 0.0);\n        //     specular = pow(specAngle, 4.0);\n\n        //     // the exponent controls the shininess (try mode 2)\n        //     specular = pow(specAngle, 16.0);\n\n        //     // according to the rendering equation we would need to multiply\n        //     // with the the \"lambertian\", but this has little visual effect\n        //     specular *= lambertian;\n\n\n        // }\n\n        // gl_FragColor = vec4( lambertian*vColor + specular*specColor, opacity );\n\n        //\n\n        vec3 vNormal = cameraNormal;\n        vec3 vViewPosition = -cameraPos;\n\n        vec4 diffuseColor = vec4( diffuse, opacity );\n        ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n        vec3 totalEmissiveLight = emissive;\n\n        #include color_fragment\n        #include roughnessmap_fragment\n        #include metalnessmap_fragment\n        #include normal_fragment\n        if( interior ){\n            normal = vec3( 0.0, 0.0, 0.4 );\n        }\n\n        // #include lights_phong_fragment\n        #include lights_physical_fragment\n        #include lights_template\n\n        vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveLight;\n\n        gl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n        #include premultiplied_alpha_fragment\n        #include tonemapping_fragment\n        #include encodings_fragment\n        #include fog_fragment\n\n    #endif\n\n}";
+NGL.Resources[ 'shader/SphereImpostor.frag' ] = "#define STANDARD\n#define IMPOSTOR\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform float nearClip;\nuniform mat4 projectionMatrix;\nuniform float ortho;\n\n// uniform vec3 specular;\n// uniform float shininess;\n\nvarying float vRadius;\nvarying float vRadiusSq;\nvarying vec3 vPoint;\nvarying vec3 vPointViewPosition;\n\n#ifdef PICKING\n    uniform float objectId;\n    varying vec3 vPickingColor;\n#else\n    #include common\n    #include color_pars_fragment\n    #include fog_pars_fragment\n    #include bsdfs\n    #include ambient_pars\n    #include lights_pars\n    // #include lights_phong_pars_fragment\n    #include lights_physical_pars_fragment\n#endif\n\nbool flag2 = false;\nbool interior = false;\nvec3 cameraPos;\nvec3 cameraNormal;\n\n// vec4 poly_color = gl_Color;\n//   if(uf_use_border_hinting == 1.0)\n//   {\n//     vec3 wc_eye_dir = normalize(wc_sp_pt);\n//     float n_dot_e   = abs(dot(wc_sp_nrml,wc_eye_dir));\n//     float alpha     = max(uf_border_color_start_cosine - n_dot_e,0.0)/uf_border_color_start_cosine;\n//     poly_color      = mix(gl_Color,uf_border_color,0.75*alpha);\n//   }\n//   color += (diff + amb)*poly_color + spec*gl_FrontMaterial.specular;\n\n// Calculate depth based on the given camera position.\nfloat calcDepth( in vec3 cameraPos ){\n    vec2 clipZW = cameraPos.z * projectionMatrix[2].zw + projectionMatrix[3].zw;\n    return 0.5 + 0.5 * clipZW.x / clipZW.y;\n}\n\nfloat calcClip( vec3 cameraPos ){\n    return dot( vec4( cameraPos, 1.0 ), vec4( 0.0, 0.0, 1.0, nearClip - 0.5 ) );\n}\n\nbool Impostor( out vec3 cameraPos, out vec3 cameraNormal ){\n\n    vec3 cameraSpherePos = -vPointViewPosition;\n    cameraSpherePos.z += vRadius;\n\n    vec3 rayOrigin = mix( vec3( 0.0, 0.0, 0.0 ), vPoint, ortho );\n    vec3 rayDirection = mix( normalize( vPoint ), vec3( 0.0, 0.0, 1.0 ), ortho );\n    vec3 cameraSphereDir = mix( cameraSpherePos, rayOrigin - cameraSpherePos, ortho );\n\n    float B = dot( rayDirection, cameraSphereDir );\n    float det = B * B + vRadiusSq - dot( cameraSphereDir, cameraSphereDir );\n\n    if( det < 0.0 ){\n        discard;\n        return false;\n    }else{\n        float sqrtDet = sqrt( det );\n        float posT = mix( B + sqrtDet, B + sqrtDet, ortho );\n        float negT = mix( B - sqrtDet, sqrtDet - B, ortho );\n\n        cameraPos = rayDirection * negT + rayOrigin;\n\n        #ifdef NEAR_CLIP\n            if( calcDepth( cameraPos ) <= 0.0 ){\n                cameraPos = rayDirection * posT + rayOrigin;\n                interior = true;\n                return false;\n            }else if( calcClip( cameraPos ) > 0.0 ){\n                cameraPos = rayDirection * posT + rayOrigin;\n                interior = true;\n                flag2 = true;\n                return false;\n            }else{\n                cameraNormal = normalize( -cameraPos - cameraSpherePos );\n            }\n        #else\n            if( calcDepth( cameraPos ) <= 0.0 ){\n                cameraPos = rayDirection * posT + rayOrigin;\n                interior = true;\n                return false;\n            }else{\n                cameraNormal = normalize( cameraPos - cameraSpherePos );\n            }\n        #endif\n\n        return true;\n    }\n\n    return false; // ensure that each control flow has a return\n\n}\n\nvoid main(void){\n\n    // vec3 specular = vec3( 1.0, 1.0, 1.0 );\n    // float specularStrength = 1.0;\n    // float shininess = 1.0;\n\n    bool flag = Impostor( cameraPos, cameraNormal );\n\n    #ifdef NEAR_CLIP\n        if( calcClip( cameraPos ) > 0.0 )\n            discard;\n    #endif\n\n    // FIXME not compatible with custom clipping plane\n    //Set the depth based on the new cameraPos.\n    gl_FragDepthEXT = calcDepth( cameraPos );\n    if( !flag ){\n\n        // clamp to near clipping plane and add a tiny value to\n        // make spheres with a greater radius occlude smaller ones\n        #ifdef NEAR_CLIP\n            if( flag2 ){\n                gl_FragDepthEXT = max( 0.0, calcDepth( vec3( - ( nearClip - 0.5 ) ) ) + ( 0.0000001 / vRadius ) );\n            }else if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        #else\n            if( gl_FragDepthEXT >= 0.0 ){\n                gl_FragDepthEXT = 0.0 + ( 0.0000001 / vRadius );\n            }\n        #endif\n\n    }\n\n    // bugfix (mac only?)\n    if (gl_FragDepthEXT < 0.0)\n        discard;\n    if (gl_FragDepthEXT > 1.0)\n        discard;\n\n    #ifdef PICKING\n\n        gl_FragColor = vec4( vPickingColor, objectId );\n\n    #else\n\n        // vec3 specColor = vColor;  // vec3( 1.0, 1.0, 1.0 );\n        // vec3 lightDir = vec3( 0.0, 0.0, 1.0 );\n        // vec3 vNormal = cameraNormal;\n\n        // float lambertian = max(dot(lightDir,vNormal), 0.0);\n        // float specular = 0.0;\n\n        // if(lambertian > 0.0) {\n\n        //     vec3 reflectDir = reflect(-lightDir, vNormal);\n        //     vec3 viewDir = normalize(-cameraPos);\n\n        //     float specAngle = max(dot(reflectDir, viewDir), 0.0);\n        //     specular = pow(specAngle, 4.0);\n\n        //     // the exponent controls the shininess (try mode 2)\n        //     specular = pow(specAngle, 16.0);\n\n        //     // according to the rendering equation we would need to multiply\n        //     // with the the \"lambertian\", but this has little visual effect\n        //     specular *= lambertian;\n\n\n        // }\n\n        // gl_FragColor = vec4( lambertian*vColor + specular*specColor, opacity );\n\n        //\n\n        vec3 vNormal = cameraNormal;\n        vec3 vViewPosition = -cameraPos;\n\n        vec4 diffuseColor = vec4( diffuse, opacity );\n        ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n        vec3 totalEmissiveLight = emissive;\n\n        #include color_fragment\n        #include roughnessmap_fragment\n        #include metalnessmap_fragment\n        #include normal_fragment\n        if( interior ){\n            normal = vec3( 0.0, 0.0, 0.4 );\n        }\n\n        // #include lights_phong_fragment\n        #include lights_physical_fragment\n        #include lights_template\n\n        vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveLight;\n\n        gl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n        #include premultiplied_alpha_fragment\n        #include tonemapping_fragment\n        #include encodings_fragment\n        #include fog_fragment\n\n    #endif\n\n}";
 
 // File:shader/chunk/dull_interior_fragment.glsl
 

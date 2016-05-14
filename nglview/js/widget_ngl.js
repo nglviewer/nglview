@@ -81,8 +81,9 @@ define( [
 
             // init NGL stage
             NGL.useWorker = false;
-            this.stage = new NGL.Stage();
-            this.stage.setTheme( "light" );
+            this.stage = new NGL.Stage( undefined, {
+                backgroundColor: "white"
+            } );
             this.structureComponent = undefined;
             this.$container = $( this.stage.viewer.container );
             this.$el.append( this.$container );
