@@ -62,18 +62,6 @@ def show_pdbid(pdbid, **kwargs):
     structure = PdbIdStructure(pdbid)
     return NGLWidget(structure, **kwargs)
 
-def show_rdkit(rdkit_mol, **kwargs):
-    '''Show rdkit
-
-    Examples
-    --------
-    >>> import nglview as nv
-    >>> w = nv.show_rdkit(rdkit_mol)
-    >>> w
-    '''
-    structure = RdkitStructure(rdkit_mol)
-    return NGLWidget(structure, **kwargs)
-
 def show_structure_file(path, **kwargs):
     '''Show structure file. Allowed are text-based structure
     file formats that are by supported by NGL, including pdb,
