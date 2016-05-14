@@ -1004,6 +1004,7 @@ class NGLWidget(widgets.DOMWidget):
             blob = obj.get_structure_string()
             kwargs2['ext'] = obj.ext
             passing_buffer = True
+            binary = False
         else:
             fh = FileManager(obj,
                              ext=kwargs.get('ext'),
@@ -1016,9 +1017,10 @@ class NGLWidget(widgets.DOMWidget):
                 raise ValueError('must provide extension')
 
             kwargs2['ext'] = fh.ext
+            binary = fh.is_binary
 
         blob_type = 'blob' if passing_buffer else 'path'
-        args=[{'type': blob_type, 'data': blob}]
+        args=[{'type': blob_type, 'data': blob, 'binary': binary}]
 
         self._remote_call("loadFile",
                 target='Stage',

@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 import os, sys
-import gzip
+import gzip, bz2
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -56,7 +56,7 @@ class FileManager(object):
         self.cwd = os.getcwd()
         self._compressed = compressed
         self._ext = ext
-        self.unzip_backend = dict(gz=gzip)
+        self.unzip_backend = dict(gz=gzip, bz2=bz2)
 
     def read(self, force_buffer=False):
         """prepare content to send to NGL
@@ -124,3 +124,8 @@ class FileManager(object):
             return False
         else:
             return os.path.isfile(self.src)
+
+    @property
+    def is_binary(self):
+        binary_exts = ["mmtf", "dcd", "mrc", "ccp4", "map", "dxbin"]
+        return self.ext.lower() in binary_exts

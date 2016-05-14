@@ -392,8 +392,14 @@ define( [
                         }else{
                             if( msg.methodName == 'loadFile' ) {
                                 // args = [{'type': ..., 'data': ...}]
-                                if( msg.args[0].type == 'blob' ) {
-                                    var blob = new Blob( [ msg.args[0].data ], { type: "text/plain" } );
+                                var args0 = msg.args[ 0 ];
+                                if( args0.type == 'blob' ) {
+                                    var blob; 
+                                    if( args0.binary ){
+                                        blob = new Blob( [ args0.data ], { type: "application/octet-binary" });
+                                    }else{
+                                        blob = new Blob( [ args0.data ], { type: "text/plain" } );
+                                    }
                                     this.stage.loadFile( blob, msg.kwargs );
                                 }else if( msg.args[0].type == 'path' ) {
                                     this.stage.loadFile( msg.args[0].data, msg.kwargs );
