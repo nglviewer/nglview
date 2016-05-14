@@ -202,12 +202,15 @@ define( [
                 this.model.on( "change:frame", function(){
                     this.$playerSlider.slider( "value", this.model.get( "frame" ) );
                 }, this );
+                
+                if( this.model.get("count") < 2 ) { this.$player.hide() };
             }
         },
 
         countChanged: function() {
             var count = this.model.get( "count" );
             this.$playerSlider.slider( { max: count - 1} );
+            if( this.model.get("count") > 1 ) { this.$player.show() };
         },
 
         representationsChanged: function(){
