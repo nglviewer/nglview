@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Table of contents &mdash; NGLView 0.4+149.g419194b documentation</title>
+  <title>Table of contents &mdash; NGLView 0.4+174.g69310b0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.4+149.g419194b documentation" href="#"/> 
+    <link rel="top" title="NGLView 0.4+174.g69310b0 documentation" href="#"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -112,7 +112,7 @@
         <div class="rst-content">
           
 
- 
+
 
 
 
@@ -160,25 +160,25 @@ an <a class="reference external" href="https://github.com/arose/nglview/issues">
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>From PyPI:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">nglview</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span>pip install nglview
 </pre></div>
 </div>
 <p>Note: The above will try to install <code class="docutils literal"><span class="pre">jupyter</span></code>, <code class="docutils literal"><span class="pre">traitlets</span></code> and
 <code class="docutils literal"><span class="pre">ipywidgets</span></code> as dependencies. If that fails install it manually
 <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jupyter</span></code>.</p>
 <p>From Conda</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">omnia</span> <span class="n">nglview</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span>conda install -c omnia nglview
 </pre></div>
 </div>
 </div>
 <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
 <p>Open a notebook</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">jupyter</span> <span class="n">notebook</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span>jupyter notebook
 </pre></div>
 </div>
 <p>and issue</p>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
+<div class="code Python highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
 <span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">show_pdbid</span><span class="p">(</span><span class="s2">&quot;3pqr&quot;</span><span class="p">)</span>  <span class="c1"># load &quot;3pqr&quot; from RCSB PDB and display viewer widget</span>
 <span class="n">view</span>
 </pre></div>
@@ -226,7 +226,7 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 </table>
 <div class="section" id="representations">
 <h2>Representations<a class="headerlink" href="#representations" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;residueindex&quot;</span><span class="p">)</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;residueindex&quot;</span><span class="p">)</span>
 <span class="n">view</span><span class="o">.</span><span class="n">add_surface</span><span class="p">(</span><span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -234,7 +234,7 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <code class="docutils literal"><span class="pre">representations</span></code> property of the widget instance <code class="docutils literal"><span class="pre">view</span></code>. The
 available <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">params</span></code> are described in the NGL Viewer
 <a class="reference external" href="http://arose.github.io/ngl/doc">documentation</a>.</p>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code Python highlight-python"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;residueindex&quot;</span>
     <span class="p">}},</span>
@@ -245,7 +245,7 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </pre></div>
 </div>
 <p>The widget constructor also accepts a <code class="docutils literal"><span class="pre">representation</span></code> argument:</p>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code Python highlight-python"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;sstruc&quot;</span>
     <span class="p">}}</span>
@@ -258,11 +258,11 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 <div class="section" id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
+<div class="code Python highlight-python"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
 <span class="n">view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="mi">100</span>
 </pre></div>
 </div>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
+<div class="code Python highlight-python"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
 <span class="n">view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># &quot;percentages, &quot;dist&quot; is distance too camera in Angstrom</span>
     <span class="s2">&quot;clipNear&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;clipFar&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;clipDist&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -277,7 +277,7 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 <div class="section" id="multiple-widgets">
 <h2>Multiple widgets<a class="headerlink" href="#multiple-widgets" title="Permalink to this headline">¶</a></h2>
 <p>You can have multiple widgets per notebook cell:</p>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipywidgets.widgets</span> <span class="k">import</span> <span class="n">Box</span>
+<div class="code Python highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipywidgets.widgets</span> <span class="kn">import</span> <span class="n">Box</span>
 <span class="n">w1</span> <span class="o">=</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="n">w2</span> <span class="o">=</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="n">Box</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">(</span><span class="n">w1</span><span class="p">,</span><span class="n">w2</span><span class="p">))</span>
@@ -322,7 +322,7 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.4+149.g419194b',
+            VERSION:'0.4+174.g69310b0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
