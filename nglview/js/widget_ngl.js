@@ -396,7 +396,8 @@ define( [
                                 if( args0.type == 'blob' ) {
                                     var blob; 
                                     if( args0.binary ){
-                                        blob = new Blob( [ args0.data ], { type: "application/octet-binary" });
+                                        var decoded_data = this.mydecode( args0.data );
+                                        blob = new Blob( [ decoded_data ], { type: "application/octet-binary" });
                                     }else{
                                         blob = new Blob( [ args0.data ], { type: "text/plain" } );
                                     }

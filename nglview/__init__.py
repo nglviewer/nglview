@@ -1018,7 +1018,11 @@ class NGLWidget(widgets.DOMWidget):
 
             kwargs2['ext'] = fh.ext
             binary = fh.is_binary
+            use_filename = fh.use_filename
 
+        if binary and not use_filename:
+            # send base64
+            blob = base64.b64encode(blob).decode('utf8')
         blob_type = 'blob' if passing_buffer else 'path'
         args=[{'type': blob_type, 'data': blob, 'binary': binary}]
 
