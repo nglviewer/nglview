@@ -90,6 +90,9 @@ def test_API_promise_to_have():
     nv.NGLWidget._set_coordinates
     nv.NGLWidget._set_initial_structure
 
+    nv.NGLWidget.add_component
+    nv.NGLWidget.add_trajectory
+
 def test_load_data():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
 
