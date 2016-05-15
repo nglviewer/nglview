@@ -510,6 +510,7 @@ class NGLWidget(widgets.DOMWidget):
     frame = Int().tag(sync=True)
     # hack to always display movie
     count = Int(1).tag(sync=True)
+    _n_dragged_files = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
     _init_structure_list = List().tag(sync=True)
     parameters = Dict().tag(sync=True)
@@ -577,9 +578,15 @@ class NGLWidget(widgets.DOMWidget):
         if structure is not None:
             self._representations = self._init_representations[:]
 
+    @observe('_n_dragged_files')
+    def on_update_dragged_file(self, change):
+        if change['new'] - change['old'] == 1:
+            self._ngl_component_ids.append(uuid.uuid4())
+
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
                          'n_frames'))
+
     @observe('_finish_caching')
     def on_finish_caching(self, change):
         if self._finish_caching:
