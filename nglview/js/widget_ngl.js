@@ -145,6 +145,20 @@ define( [
             }, this );
 
             this.initPlayer();
+ 
+            var container = this.stage.viewer.container;
+            container.dom.addEventListener( 'dragover', function( e ){
+                e.stopPropagation();
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+            }, false );
+            
+            container.dom.addEventListener( 'drop', function( e ){
+                e.stopPropagation();
+                e.preventDefault();
+                var file = e.dataTransfer.files[0]
+                this.stage.loadFile( file, { defaultRepresentation: true } );
+            }, false );
         },
 
         initPlayer: function() {
