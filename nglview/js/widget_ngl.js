@@ -158,7 +158,12 @@ define( [
                 e.stopPropagation();
                 e.preventDefault();
                 var file = e.dataTransfer.files[0];
-                that.stage.loadFile( file, { defaultRepresentation: true } );
+                that.stage.loadFile( file ).then( function( o ){
+                    var reprDefList = that.model.get( "_init_representations" );
+                    reprDefList.forEach( function( reprDef ){
+                        o.addRepresentation( reprDef.type, reprDef.params );
+                    });
+                } );
 
                 var numDroppedFiles = that.model.get( "_n_dragged_files" );
                 that.model.set("_n_dragged_files", numDroppedFiles + 1 );

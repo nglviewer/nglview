@@ -1118,6 +1118,12 @@ class NGLWidget(widgets.DOMWidget):
 
     def _js_console(self):
         self.send(dict(type='get', data='any'))
+
+    def _display_image(self):
+        '''for testing
+        '''
+        from IPython import display
+        return display.Image(self._image_data)
         
 
 def install(user=True, symlink=False):
