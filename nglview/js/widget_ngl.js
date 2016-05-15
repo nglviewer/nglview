@@ -202,12 +202,15 @@ define( [
                 this.model.on( "change:frame", function(){
                     this.$playerSlider.slider( "value", this.model.get( "frame" ) );
                 }, this );
+                
+                if( this.model.get("count") < 2 ) { this.$player.hide() };
             }
         },
 
         countChanged: function() {
             var count = this.model.get( "count" );
             this.$playerSlider.slider( { max: count - 1} );
+            if( this.model.get("count") > 1 ) { this.$player.show() };
         },
 
         representationsChanged: function(){
@@ -389,8 +392,15 @@ define( [
                         }else{
                             if( msg.methodName == 'loadFile' ) {
                                 // args = [{'type': ..., 'data': ...}]
-                                if( msg.args[0].type == 'blob' ) {
-                                    var blob = new Blob( [ msg.args[0].data ], { type: "text/plain" } );
+                                var args0 = msg.args[ 0 ];
+                                if( args0.type == 'blob' ) {
+                                    var blob; 
+                                    if( args0.binary ){
+                                        var decoded_data = this.mydecode( args0.data );
+                                        blob = new Blob( [ decoded_data ], { type: "application/octet-binary" });
+                                    }else{
+                                        blob = new Blob( [ args0.data ], { type: "text/plain" } );
+                                    }
                                     this.stage.loadFile( blob, msg.kwargs );
                                 }else if( msg.args[0].type == 'path' ) {
                                     this.stage.loadFile( msg.args[0].data, msg.kwargs );

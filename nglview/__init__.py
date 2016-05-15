@@ -153,10 +153,10 @@ def show_rdkit(rdkit_mol, **kwargs):
     >>> view = nv.show_rdkit(m)
     >>> view
 
-    >>> # add model m2
+    >>> # add component m2
     >>> # create file-like object
     >>> fh = StringIO(Chem.MolToPDBBlock(m2))
-    >>> view.add_model(fh, ext='pdb')
+    >>> view.add_component(fh, ext='pdb')
 
     >>> # load as trajectory, need to have ParmEd
     >>> view = nv.show_rdkit(m, parmed=True)
@@ -171,7 +171,7 @@ def show_rdkit(rdkit_mol, **kwargs):
 
     if not use_parmed:
         view = NGLWidget()
-        view.add_model(fh, ext='pdb', **kwargs)
+        view.add_component(fh, ext='pdb', **kwargs)
         return view
     else:
         import parmed as pmd
@@ -537,7 +537,7 @@ class NGLWidget(widgets.DOMWidget):
         self.on_msg(self._ngl_handle_msg)
 
         self._trajlist = []
-        self._ngl_model_ids = []
+        self._ngl_component_ids = []
         self._init_structures = []
 
         if parameters:
@@ -614,7 +614,7 @@ class NGLWidget(widgets.DOMWidget):
 
             if not params_list:
                 for index in range(10):
-                    self._clear_repr(model=index)
+                    self._clear_repr(component=index)
             else:
                 for index, params in enumerate(params_list):
                     assert isinstance(params, dict), 'params must be a dict'
@@ -670,7 +670,12 @@ class NGLWidget(widgets.DOMWidget):
         but doubling your memory. If you using cache, you can not update coordinates.
         Use `view.uncaching()` then update your coordinates, then `view.caching()` again.
 
-        This method is experimental and its name can be changed.
+        Notes
+        -----
+        - This method is experimental and its name can be changed.
+
+        - Do no use this method if you are uing remote notebook. This method will try to
+        download data from your remote cluster to your local computer.
         """
         if self._trajlist:
             # do not use traitlets to sync. slow.
@@ -716,7 +721,7 @@ class NGLWidget(widgets.DOMWidget):
             if not self.cache or (self.cache and not self._finish_caching):
                 coordinate_dict = {}
                 for trajectory in self._trajlist:
-                    traj_index = self._ngl_model_ids.index(trajectory.id)
+                    traj_index = self._ngl_component_ids.index(trajectory.id)
 
                     try:
                         coordinate_dict[traj_index] = trajectory.get_coordinates(index)
@@ -741,20 +746,20 @@ class NGLWidget(widgets.DOMWidget):
         if not self.cache or (self.cache and not self._finish_caching):
             self._set_coordinates(self.frame)
 
-    def clear_representations(self, model=0):
-        '''clear all representations for given model
+    def clear_representations(self, component=0):
+        '''clear all representations for given component
 
         Parameters
         ----------
-        model : int, default 0 (first model)
-            You need to keep track how many models you added.
+        component : int, default 0 (first model)
+            You need to keep track how many components you added.
         '''
-        self._clear_repr(model=model)
+        self._clear_repr(component=component)
 
-    def _clear_repr(self, model=0):
+    def _clear_repr(self, component=0):
         self._remote_call("clearRepresentations",
                 target='compList',
-                kwargs={'component_index': model})
+                kwargs={'component_index': component})
 
     def add_representation(self, repr_type, selection='all', **kwargs):
         '''Add representation.
@@ -791,10 +796,10 @@ class NGLWidget(widgets.DOMWidget):
         # make copy
         kwargs2 = _camelize_dict(kwargs)
 
-        if 'model' in kwargs2:
-            model = kwargs2.pop('model')
+        if 'component' in kwargs2:
+            component = kwargs2.pop('component')
         else:
-            model = 0
+            component = 0
 
         for k, v in kwargs2.items():
             try:
@@ -808,14 +813,14 @@ class NGLWidget(widgets.DOMWidget):
         d['params'].update(kwargs2)
 
         params = d['params']
-        params.update({'component_index': model})
+        params.update({'component_index': component})
         self._remote_call('addRepresentation',
                           target='compList',
                           args=[d['type'],],
                           kwargs=params)
 
 
-    def center_view(self, zoom=True, selection='*', model=0):
+    def center_view(self, zoom=True, selection='*', component=0):
         """center view
 
         Examples
@@ -824,7 +829,7 @@ class NGLWidget(widgets.DOMWidget):
         """
         self._remote_call('centerView', target='compList',
                           args=[zoom, selection],
-                          kwargs={'component_index': model})
+                          kwargs={'component_index': component})
 
     @observe('_image_data')
     def get_image(self, change=""):
@@ -936,8 +941,8 @@ class NGLWidget(widgets.DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(structure)
-        self._ngl_model_ids.append(structure.id)
-        self.center_view(model=len(self._ngl_model_ids)-1)
+        self._ngl_component_ids.append(structure.id)
+        self.center_view(component=len(self._ngl_component_ids)-1)
 
     def add_trajectory(self, trajectory, **kwargs):
         '''
@@ -958,10 +963,10 @@ class NGLWidget(widgets.DOMWidget):
             self._init_structures.append(trajectory)
         self._trajlist.append(trajectory)
         self._update_count()
-        self._ngl_model_ids.append(trajectory.id)
+        self._ngl_component_ids.append(trajectory.id)
 
-    def add_model(self, filename, **kwargs):
-        '''add model from file/trajectory/struture
+    def add_component(self, filename, **kwargs):
+        '''add component from file/trajectory/struture
 
         Parameters
         ----------
@@ -970,17 +975,17 @@ class NGLWidget(widgets.DOMWidget):
 
         Notes
         -----
-        `add_model` should be always called after Widget is loaded
+        `add_component` should be always called after Widget is loaded
 
         Examples
         --------
         >>> view = nglview.Widget()
         >>> view
-        >>> view.add_model(filename)
+        >>> view.add_component(filename)
         '''
         self._load_data(filename, **kwargs)
         # assign an ID
-        self._ngl_model_ids.append(str(uuid.uuid4()))
+        self._ngl_component_ids.append(str(uuid.uuid4()))
 
     def _load_data(self, obj, **kwargs):
         '''
@@ -999,6 +1004,7 @@ class NGLWidget(widgets.DOMWidget):
             blob = obj.get_structure_string()
             kwargs2['ext'] = obj.ext
             passing_buffer = True
+            binary = False
         else:
             fh = FileManager(obj,
                              ext=kwargs.get('ext'),
@@ -1011,17 +1017,22 @@ class NGLWidget(widgets.DOMWidget):
                 raise ValueError('must provide extension')
 
             kwargs2['ext'] = fh.ext
+            binary = fh.is_binary
+            use_filename = fh.use_filename
 
+        if binary and not use_filename:
+            # send base64
+            blob = base64.b64encode(blob).decode('utf8')
         blob_type = 'blob' if passing_buffer else 'path'
-        args=[{'type': blob_type, 'data': blob}]
+        args=[{'type': blob_type, 'data': blob, 'binary': binary}]
 
         self._remote_call("loadFile",
                 target='Stage',
                 args=args,
                 kwargs=kwargs2)
 
-    def remove_model(self, model_id):
-        """remove model by its uuid
+    def remove_component(self, component_id):
+        """remove component by its uuid
 
         Examples
         --------
@@ -1029,23 +1040,23 @@ class NGLWidget(widgets.DOMWidget):
         >>> view.add_trajectory(traj1)
         >>> view.add_struture(structure)
         >>> # remove last component
-        >>> view.remove_model(view._ngl_model_ids[-1])
+        >>> view.remove_component(view._ngl_component_ids[-1])
         """
         if self._trajlist:
             for traj in self._trajlist:
-                if traj.id == model_id:
+                if traj.id == component_id:
                     self._trajlist.remove(traj)
-        model_index = self._ngl_model_ids.index(model_id)
-        self._ngl_model_ids.remove(model_id)
+        component_index = self._ngl_component_ids.index(component_id)
+        self._ngl_component_ids.remove(component_id)
 
-        self._remove_component(model=model_index)
+        self._remove_component(component=component_index)
 
-    def _remove_component(self, model):
+    def _remove_component(self, component):
         """tell NGL.Stage to remove component from Stage.compList
         """
         self._remote_call('removeComponent',
                 target='Stage',
-                args=[model,])
+                args=[component,])
         
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
