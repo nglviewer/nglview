@@ -163,6 +163,10 @@ define( [
                     reprDefList.forEach( function( reprDef ){
                         o.addRepresentation( reprDef.type, reprDef.params );
                     });
+                     
+                    if( that.stage.compList.length < 2 ){
+                        o.centerView();
+                    }
                 } );
 
                 var numDroppedFiles = that.model.get( "_n_dragged_files" );
