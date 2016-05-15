@@ -79,6 +79,17 @@ define( [
                 this.on_msg( msg );
             }, this);
 
+            this.model.comm.on_msg( function( msg ){
+                var buffers = msg.buffers;
+                var content = msg.content.data.content;
+                // console.log("buffers", buffers);
+                // console.log("content", content);
+                if( buffers.length && content ){
+                    content.buffers = buffers;
+                }
+                this.model._handle_comm_msg.call( this.model, msg );
+            }.bind( this ) );
+
             // init NGL stage
             NGL.useWorker = false;
             this.stage = new NGL.Stage( undefined, {
@@ -370,6 +381,7 @@ define( [
         },
 
         on_msg: function(msg){
+            // console.log(msg)
             // TODO: re-organize
             if( msg.type == 'call_method' ){
                 var new_args = msg.args.slice();
@@ -450,6 +462,21 @@ define( [
                 for ( var i = 0; i < keys.length ; i++ ){
                     var traj_index = keys[ i ];
                     var coordinates = this.mydecode( coordinateDict2[ traj_index ]['data']);
+                    if( coordinates.byteLength > 0 ){
+                        this.updateCoordinates( coordinates, traj_index );
+                    }
+                }
+            }else if( msg.type == 'binary_single' ){
+
+                // console.log("buffers",msg.buffers);
+
+                var coordinateDict2 = msg.data;
+                var keys = Object.keys( coordinateDict2 );
+
+                for ( var i = 0; i < keys.length ; i++ ){
+                    var traj_index = keys[ i ];
+                    var buffer_index = coordinateDict2[ traj_index ]['data'];
+                    var coordinates = new Float32Array( msg.buffers[ buffer_index ].buffer );
                     if( coordinates.byteLength > 0 ){
                         this.updateCoordinates( coordinates, traj_index );
                     }
