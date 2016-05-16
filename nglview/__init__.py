@@ -736,13 +736,24 @@ class NGLWidget(widgets.DOMWidget):
                 dtype = 'f4'
 
                 # reset
+                # self._coordinate_dict2 = dict()
+                # for index, arr in coordinate_dict.items():
+                #     coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
+                #                             dtype=dtype,
+                #                             shape=arr.shape)
+                #     self._coordinate_dict2[index] = coordinates_meta
+                # self.send({'type': 'base64_single', 'data': self._coordinate_dict2})
+
+                # binary message passing
                 self._coordinate_dict2 = dict()
+                buffers = []
                 for index, arr in coordinate_dict.items():
-                    coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
+                    buffers.append(arr.astype('f4').tobytes())
+                    coordinates_meta = dict(data=index,
                                             dtype=dtype,
                                             shape=arr.shape)
                     self._coordinate_dict2[index] = coordinates_meta
-                self.send({'type': 'base64_single', 'data': self._coordinate_dict2})
+                self.send({'type': 'binary_single', 'data': self._coordinate_dict2}, buffers=buffers)
         else:
             print("no trajectory available")
 
