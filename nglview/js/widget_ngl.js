@@ -493,6 +493,10 @@ define( [
                     }
                 }
             }else if( msg.type == 'base64_single' ){
+                console.log( "received base64_single " );
+
+                var time0 = Date.now();
+                console.log( time0 - msg.mytime2 ); // use timing_send_data.ipynb
 
                 var coordinateDict2 = msg.data;
                 var keys = Object.keys( coordinateDict2 );
@@ -504,9 +508,15 @@ define( [
                         this.updateCoordinates( coordinates, traj_index );
                     }
                 }
+                var time1 = Date.now();
+                console.log( "processing time", time1 - time0 );
             }else if( msg.type == 'binary_single' ){
 
                 // console.log("buffers",msg.buffers);
+                console.log( "received binary_single" );
+
+                var time0 = Date.now();
+                console.log( time0 - msg.mytime ); // use timing_send_data.ipynb
 
                 var coordinateDict2 = msg.data;
                 var keys = Object.keys( coordinateDict2 );
@@ -519,6 +529,8 @@ define( [
                         this.updateCoordinates( coordinates, traj_index );
                     }
                 }
+                var time1 = Date.now();
+                console.log( "processing time", time1 - time0 );
             }else if( msg.type == 'get') {
                 console.log( msg.data );
 
