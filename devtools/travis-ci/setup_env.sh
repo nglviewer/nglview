@@ -18,18 +18,19 @@ conda install --yes conda-build jinja2 anaconda-client pip
 conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose numpy mock coverage cython netcdf4
 
 source activate myenv
+
+# pytraj
 pip install pytraj
-# conda install parmed -c ambermd --yes
-pip install https://github.com/ParmEd/ParmEd/archive/2.5.1.tar.gz
-if [ "$PYTHON_VERSION" = "2.7" ]; then
-    conda install mdanalysis -c MDAnalysis --yes
-else
-   git clone https://github.com/MDAnalysis/mdanalysis
-   cd mdanalysis/package
-   python setup.py install
-   cd ../../
-fi
+
+# mdanalysis
+conda config --add channels MDAnalysis
+conda install mdanalysis -c kain88-de --yes
+
+# mdtraj
 conda install mdtraj -c omnia --yes
+
+# ParmEd
+pip install https://github.com/ParmEd/ParmEd/archive/2.5.1.tar.gz
 
 # simpletraj
 pip install git+https://github.com/arose/simpletraj
