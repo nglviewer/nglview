@@ -397,9 +397,7 @@ class PyTrajTrajectory(Trajectory, Structure):
 
     def get_structure_string(self):
         fd, fname = tempfile.mkstemp(suffix=".pdb")
-        self.trajectory[:1].save(
-            fname, format="pdb", overwrite=True, options='conect'
-        )
+        self.trajectory[:1].save(fname, format="pdb", overwrite=True)
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
@@ -1129,6 +1127,12 @@ class NGLWidget(widgets.DOMWidget):
 
     def _js_console(self):
         self.send(dict(type='get', data='any'))
+
+    def _display_image(self):
+        '''for testing
+        '''
+        from IPython import display
+        return display.Image(self._image_data)
         
 
 def install(user=True, symlink=False):
