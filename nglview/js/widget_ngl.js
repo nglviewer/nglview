@@ -493,6 +493,7 @@ define( [
                     }
                 }
             }else if( msg.type == 'base64_single' ){
+                // TODO: remove time
                 var time0 = Date.now();
 
                 var coordinateDict2 = msg.data;
@@ -506,11 +507,12 @@ define( [
                     }
                 }
                 var time1 = Date.now();
-                console.log( time0 - msg.mytime2, time1 - time0 );
+                console.log( time0 - msg.mytime, time1 - time0, 'base64_single' );
             }else if( msg.type == 'binary_single' ){
-
+                // TODO: remove time
                 // console.log("buffers",msg.buffers);
                 var time0 = Date.now();
+
                 var coordinateDict2 = msg.data;
                 var keys = Object.keys( coordinateDict2 );
 
@@ -523,7 +525,7 @@ define( [
                     }
                 }
                 var time1 = Date.now();
-                console.log( time0 - msg.mytime, time1 - time0 );
+                console.log( time0 - msg.mytime, time1 - time0, 'binary_single' );
             }else if( msg.type == 'get') {
                 console.log( msg.data );
 
