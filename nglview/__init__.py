@@ -397,9 +397,7 @@ class PyTrajTrajectory(Trajectory, Structure):
 
     def get_structure_string(self):
         fd, fname = tempfile.mkstemp(suffix=".pdb")
-        self.trajectory[:1].save(
-            fname, format="pdb", overwrite=True, options='conect'
-        )
+        self.trajectory[:1].save(fname, format="pdb", overwrite=True)
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
@@ -840,7 +838,7 @@ class NGLWidget(widgets.DOMWidget):
 
     @observe('_image_data')
     def get_image(self, change=""):
-        '''get rendered image. Make sure to call `export_image` first
+        '''get rendered image. Make sure to call `render_image` first
 
         Notes
         -----
@@ -850,7 +848,7 @@ class NGLWidget(widgets.DOMWidget):
         image._b64value = self._image_data
         return image
 
-    def export_image(self, frame=None,
+    def render_image(self, frame=None,
                      factor=4,
                      antialias=True,
                      trim=False,
@@ -871,14 +869,14 @@ class NGLWidget(widgets.DOMWidget):
         Examples
         --------
             # tell NGL to render send image data to notebook.
-            view.export_image()
+            view.render_image()
             
             # make sure to call `get_image` method
             view.get_image()
 
         Notes
         -----
-        You need to call `export_image` and `get_image` in different notebook's Cells
+        You need to call `render_image` and `get_image` in different notebook's Cells
         """
         if frame is not None:
             self.frame = frame
