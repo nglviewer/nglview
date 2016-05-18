@@ -168,7 +168,7 @@ define( [
         },
 
         makeDefaultRepr: function( o ){
-            var reprDefList = that.model.get( "_init_representations" );
+            var reprDefList = this.model.get( "_init_representations" );
             reprDefList.forEach( function( reprDef ){
                 o.addRepresentation( reprDef.type, reprDef.params );
             });
