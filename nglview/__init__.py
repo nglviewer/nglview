@@ -983,7 +983,7 @@ class NGLWidget(widgets.DOMWidget):
         Parameters
         ----------
         filename : str or Trajectory or Structure or their derived class or url
-            if you specify url, you must indice `url=True` in kwargs
+            if you specify url, you must specify `url=True` in kwargs
         **kwargs : additional arguments, optional
 
         Notes
