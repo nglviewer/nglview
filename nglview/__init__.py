@@ -63,8 +63,10 @@ def show_pdbid(pdbid, **kwargs):
     return NGLWidget(structure, **kwargs)
 
 def show_url(url, **kwargs):
+    kwargs2 = dict((k, v) for k, v in kwargs.items())
+    kwargs2['url'] = True
     view = NGLWidget()
-    view.add_component(url, url=True)
+    view.add_component(url, **kwargs2)
     return view
 
 def show_structure_file(path, **kwargs):
