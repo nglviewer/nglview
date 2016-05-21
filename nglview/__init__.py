@@ -4,6 +4,7 @@ from __future__ import print_function, absolute_import
 from . import datafiles
 from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
+import time
 
 import os
 import os.path
@@ -520,6 +521,7 @@ class NGLWidget(widgets.DOMWidget):
 
     displayed = False
     _ngl_msg = None
+    _send_binary = Bool(True).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         try:
@@ -735,25 +737,33 @@ class NGLWidget(widgets.DOMWidget):
 
                 dtype = 'f4'
 
-                # reset
-                # self._coordinate_dict2 = dict()
-                # for index, arr in coordinate_dict.items():
-                #     coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
-                #                             dtype=dtype,
-                #                             shape=arr.shape)
-                #     self._coordinate_dict2[index] = coordinates_meta
-                # self.send({'type': 'base64_single', 'data': self._coordinate_dict2})
+                if self._send_binary:
+                    # send binary
+                    # use ms
+                    mytime = time.time() * 1000
+                    self._coordinate_dict2 = dict()
+                    buffers = []
+                    for index, arr in coordinate_dict.items():
+                        buffers.append(arr.astype('f4').tobytes())
+                        coordinates_meta = dict(data=index,
+                                                dtype=dtype,
+                                                shape=arr.shape)
+                        self._coordinate_dict2[index] = coordinates_meta
 
-                # binary message passing
-                self._coordinate_dict2 = dict()
-                buffers = []
-                for index, arr in coordinate_dict.items():
-                    buffers.append(arr.astype('f4').tobytes())
-                    coordinates_meta = dict(data=index,
-                                            dtype=dtype,
-                                            shape=arr.shape)
-                    self._coordinate_dict2[index] = coordinates_meta
-                self.send({'type': 'binary_single', 'data': self._coordinate_dict2}, buffers=buffers)
+                    self.send({'type': 'binary_single', 'data': self._coordinate_dict2,
+                        'mytime': mytime}, buffers=buffers)
+                else:
+                    # send base64
+                    mytime = time.time() * 1000
+                    self._coordinate_dict2 = dict()
+                    for index, arr in coordinate_dict.items():
+                        coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
+                                                dtype=dtype,
+                                                shape=arr.shape)
+                        self._coordinate_dict2[index] = coordinates_meta
+
+                    self.send({'type': 'base64_single', 'data': self._coordinate_dict2,
+                            'mytime': mytime})
         else:
             print("no trajectory available")
 
