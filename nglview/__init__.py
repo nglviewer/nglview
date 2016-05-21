@@ -63,6 +63,13 @@ def show_pdbid(pdbid, **kwargs):
     structure = PdbIdStructure(pdbid)
     return NGLWidget(structure, **kwargs)
 
+def show_url(url, **kwargs):
+    kwargs2 = dict((k, v) for k, v in kwargs.items())
+    kwargs2['url'] = True
+    view = NGLWidget()
+    view.add_component(url, **kwargs2)
+    return view
+
 def show_structure_file(path, **kwargs):
     '''Show structure file. Allowed are text-based structure
     file formats that are by supported by NGL, including pdb,
@@ -859,7 +866,7 @@ class NGLWidget(widgets.DOMWidget):
 
     @observe('_image_data')
     def get_image(self, change=""):
-        '''get rendered image. Make sure to call `export_image` first
+        '''get rendered image. Make sure to call `render_image` first
 
         Notes
         -----
@@ -869,7 +876,7 @@ class NGLWidget(widgets.DOMWidget):
         image._b64value = self._image_data
         return image
 
-    def export_image(self, frame=None,
+    def render_image(self, frame=None,
                      factor=4,
                      antialias=True,
                      trim=False,
@@ -890,14 +897,14 @@ class NGLWidget(widgets.DOMWidget):
         Examples
         --------
             # tell NGL to render send image data to notebook.
-            view.export_image()
+            view.render_image()
             
             # make sure to call `get_image` method
             view.get_image()
 
         Notes
         -----
-        You need to call `export_image` and `get_image` in different notebook's Cells
+        You need to call `render_image` and `get_image` in different notebook's Cells
         """
         if frame is not None:
             self.frame = frame
@@ -996,7 +1003,8 @@ class NGLWidget(widgets.DOMWidget):
 
         Parameters
         ----------
-        filename : str or Trajectory or Structure or their derived class
+        filename : str or Trajectory or Structure or their derived class or url
+            if you specify url, you must specify `url=True` in kwargs
         **kwargs : additional arguments, optional
 
         Notes
@@ -1022,35 +1030,45 @@ class NGLWidget(widgets.DOMWidget):
               string buffer (open(fn).read())
         '''
         kwargs2 = _camelize_dict(kwargs)
+        try:
+            is_url = kwargs2.pop('url')
+        except KeyError:
+            is_url = False
 
         if 'defaultRepresentation' not in kwargs2:
             kwargs2['defaultRepresentation'] = True
 
-        if hasattr(obj, 'get_structure_string'):
-            blob = obj.get_structure_string()
-            kwargs2['ext'] = obj.ext
-            passing_buffer = True
-            binary = False
+        if not is_url:
+            if hasattr(obj, 'get_structure_string'):
+                blob = obj.get_structure_string()
+                kwargs2['ext'] = obj.ext
+                passing_buffer = True
+                binary = False
+            else:
+                fh = FileManager(obj,
+                                 ext=kwargs.get('ext'),
+                                 compressed=kwargs.get('compressed'))
+                # assume passing string
+                blob = fh.read()
+                passing_buffer = not fh.use_filename
+
+                if fh.ext is None and passing_buffer:
+                    raise ValueError('must provide extension')
+
+                kwargs2['ext'] = fh.ext
+                binary = fh.is_binary
+                use_filename = fh.use_filename
+
+            if binary and not use_filename:
+                # send base64
+                blob = base64.b64encode(blob).decode('utf8')
+            blob_type = 'blob' if passing_buffer else 'path'
+            args=[{'type': blob_type, 'data': blob, 'binary': binary}]
         else:
-            fh = FileManager(obj,
-                             ext=kwargs.get('ext'),
-                             compressed=kwargs.get('compressed'))
-            # assume passing string
-            blob = fh.read()
-            passing_buffer = not fh.use_filename
-
-            if fh.ext is None and passing_buffer:
-                raise ValueError('must provide extension')
-
-            kwargs2['ext'] = fh.ext
-            binary = fh.is_binary
-            use_filename = fh.use_filename
-
-        if binary and not use_filename:
-            # send base64
-            blob = base64.b64encode(blob).decode('utf8')
-        blob_type = 'blob' if passing_buffer else 'path'
-        args=[{'type': blob_type, 'data': blob, 'binary': binary}]
+            # is_url
+            blob_type = 'url'
+            url = obj
+            args=[{'type': blob_type, 'data': url, 'binary': False}]
 
         self._remote_call("loadFile",
                 target='Stage',

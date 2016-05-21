@@ -169,22 +169,26 @@ define( [
                 e.stopPropagation();
                 e.preventDefault();
                 var file = e.dataTransfer.files[0];
-                that.stage.loadFile( file ).then( function( o ){
-                    var reprDefList = that.model.get( "_init_representations" );
-                    reprDefList.forEach( function( reprDef ){
-                        o.addRepresentation( reprDef.type, reprDef.params );
-                    });
-                     
-                    if( that.stage.compList.length < 2 ){
-                        o.centerView();
-                    }
-                } );
+
+                that.stage.loadFile( file ).then( that.makeDefaultRepr );
 
                 var numDroppedFiles = that.model.get( "_n_dragged_files" );
                 that.model.set("_n_dragged_files", numDroppedFiles + 1 );
                 that.touch();
             }, false );
         },
+
+        makeDefaultRepr: function( o ){
+            var reprDefList = this.model.get( "_init_representations" );
+            reprDefList.forEach( function( reprDef ){
+                o.addRepresentation( reprDef.type, reprDef.params );
+            });
+             
+            if( this.stage.compList.length < 2 ){
+                o.centerView();
+            }
+        },
+
 
         initPlayer: function() {
             // init player
@@ -442,7 +446,7 @@ define( [
                                         blob = new Blob( [ args0.data ], { type: "text/plain" } );
                                     }
                                     this.stage.loadFile( blob, msg.kwargs );
-                                }else if( msg.args[0].type == 'path' ) {
+                                }else{
                                     this.stage.loadFile( msg.args[0].data, msg.kwargs );
                                 }
                             }else{
