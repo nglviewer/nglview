@@ -205,7 +205,6 @@ def test_coordinates_meta():
         view.frame = 3
         
         nt.assert_equal(view._trajlist[0].n_frames, N_FRAMES)
-        nt.assert_equal(len(view._trajlist[0].get_coordinates_dict().keys()), N_FRAMES)
 
 def test_structure_file():
     for fn in ['data/tz2.pdb', nv.datafiles.GRO]:

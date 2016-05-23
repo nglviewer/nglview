@@ -273,9 +273,6 @@ class Trajectory(object):
         self.id = str(uuid.uuid4())
         pass
 
-    def get_coordinates_dict(self):
-        raise NotImplementedError()
-
     def get_coordinates(self, index):
         raise NotImplementedError()
 
@@ -318,15 +315,6 @@ class SimpletrajTrajectory(Trajectory, Structure):
         frame = traj.get_frame(index)
         return frame["coords"]
 
-    def get_coordinates_dict(self):
-        traj = self.traj_cache.get(os.path.abspath(self.path))
-
-        coordinates_dict = {}
-        for i in range(self.n_frames):
-            frame = traj.get_frame(i)
-            coordinates_dict[i] = encode_base64(frame['coords'])
-        return coordinates_dict
-
     def get_structure_string(self):
         return open(self._structure_path).read()
 
@@ -353,10 +341,6 @@ class MDTrajTrajectory(Trajectory, Structure):
         self.ext = "pdb"
         self.params = {}
         self.id = str(uuid.uuid4())
-
-    def get_coordinates_dict(self):
-        return dict((index, encode_base64(xyz*10))
-                    for index, xyz in enumerate(self.trajectory.xyz))
 
     def get_coordinates(self, index):
         return 10*self.trajectory.xyz[index]
@@ -391,10 +375,6 @@ class PyTrajTrajectory(Trajectory, Structure):
         self.params = {}
         self.id = str(uuid.uuid4())
 
-    def get_coordinates_dict(self):
-        return dict((index, encode_base64(xyz))
-                    for index, xyz in enumerate(self.trajectory.xyz))
-
     def get_coordinates(self, index):
         return self.trajectory[index].xyz
 
@@ -420,10 +400,6 @@ class ParmEdTrajectory(Trajectory, Structure):
         self._xyz = trajectory.get_coordinates()
         self.id = str(uuid.uuid4())
         self.only_save_1st_model = True
-
-    def get_coordinates_dict(self):
-        return dict((index, encode_base64(xyz))
-                    for index, xyz in enumerate(self._xyz))
 
     def get_coordinates(self, index):
         return self._xyz[index]
@@ -466,11 +442,6 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         self.ext = "pdb"
         self.params = {}
         self.id = str(uuid.uuid4())
-
-    def get_coordinates_dict(self):
-
-        return dict((index, encode_base64(self.atomgroup.atoms.positions))
-                    for index, _ in enumerate(self.atomgroup.universe.trajectory))
 
     def get_coordinates(self, index):
         self.atomgroup.universe.trajectory[index]
