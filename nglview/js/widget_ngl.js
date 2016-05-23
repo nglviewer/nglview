@@ -462,7 +462,7 @@ define( [
 
                 for ( var i = 0; i < keys.length ; i++ ){
                     var traj_index = keys[ i ];
-                    var buffer_index = coordinateDict2[ traj_index ]['data'];
+                    var buffer_index = coordinateDict2[ traj_index ];
                     var coordinates = new Float32Array( msg.buffers[ buffer_index ].buffer );
                     if( coordinates.byteLength > 0 ){
                         this.updateCoordinates( coordinates, traj_index );
