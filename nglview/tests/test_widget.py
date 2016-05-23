@@ -92,6 +92,14 @@ def test_API_promise_to_have():
 
     nv.NGLWidget.add_component
     nv.NGLWidget.add_trajectory
+    nv.NGLWidget.coordinates_dict
+
+def test_coordinates_dict():
+    traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
+    view = nv.show_pytraj(traj)
+    view.frame = 1
+    coords = view.coordinates_dict[0]
+    aa_eq(coords, traj[1].xyz)
 
 def test_load_data():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -171,19 +179,11 @@ def test_show_parmed():
     parm = pmd.load_file(fn)
     view = nv.show_parmed(parm)
 
-def test_caching_bool():
-    view = nv.show_pytraj(pt.datafiles.load_tz2())
-    nt.assert_false(view.cache)
-    view.caching()
-    nt.assert_true(view.cache)
-    view.uncaching()
-    nt.assert_false(view.cache)
-
 def test_encode_and_decode():
     xyz = np.arange(100).astype('f4')
     shape = xyz.shape
 
-    b64_str = nv.encode_numpy(xyz)
+    b64_str = nv.encode_base64(xyz)
     new_xyz = nv.decode_base64(b64_str, dtype='f4', shape=shape)
     aa_eq(xyz, new_xyz) 
 
@@ -205,45 +205,6 @@ def test_coordinates_meta():
         view.frame = 3
         
         nt.assert_equal(view._trajlist[0].n_frames, N_FRAMES)
-        nt.assert_equal(len(view._trajlist[0].get_coordinates_dict().keys()), N_FRAMES)
-
-def test_speed():
-    import pytraj as pt
-
-    from pytraj.testing import get_fn, Timer
-    traj = pt.datafiles.load_tz2_ortho()
-    fname_tuple = ([traj.filename, traj.top.filename, 100],
-                   [nv.datafiles.TRR, nv.datafiles.PDB, 10])
-
-    for (fn, tn, n_files) in fname_tuple:
-        traj = pt.load([fn,]*n_files, tn)
-        print('trajectory', traj)
-
-        view = nv.show_pytraj(traj)
-        xyz = traj.xyz
-        xyz_bytes = traj.xyz.tobytes()
-        xyz_base64 = nv.encode_numpy(xyz)
-
-
-        with Timer() as t:
-           view.caching()
-        print('caching', t.time_gap())
-
-        with Timer() as t:
-           view.send(xyz_bytes)
-        print('send bytes', t.time_gap())
-
-        with Timer() as t:
-            view.send(xyz_base64)
-        print('send base64', t.time_gap())
-
-        with Timer() as t:
-            nv.encode_numpy(xyz)
-        print('encode_numpy', t.time_gap())
-
-        with Timer() as t:
-            xyz.tobytes()
-        print('tobytes', t.time_gap())
 
 def test_structure_file():
     for fn in ['data/tz2.pdb', nv.datafiles.GRO]:
