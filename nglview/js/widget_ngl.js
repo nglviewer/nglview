@@ -55,9 +55,6 @@ define( [
             // init structure loading
             this.model.on( "change:_init_structure_list", this.structureChanged, this );
 
-            // init setting of coordinates
-            this.model.on( "change:coordinates_dict", this.coordsDict2Changed, this );
-
             // init setting of frame
             this.model.on( "change:frame", this.frameChanged, this );
 
@@ -66,9 +63,6 @@ define( [
 
             // init _parameters handling
             this.model.on( "change:_parameters", this.parametersChanged, this );
-
-            // init cache handling
-            this.model.on( "change:cache", this.cacheChanged, this );
 
             // init orientation handling
             this.model.on( "change:orientation", this.orientationChanged, this );
@@ -293,7 +287,7 @@ define( [
             }
         },
 
-        mydecode: function(base64) {
+        decode_base64: function(base64) {
             // lightly adapted from Niklas
 
             /*
@@ -334,45 +328,13 @@ define( [
             return arraybuffer;
         },
 
-        frameChanged: function(){
-            if( this._cache ){
-                var frame = this.model.get( "frame" );
-
-                for ( var i = 0; i < Object.keys(this.coordsDict2).length; i++){
-                    var coordsDict = this.coordsDict2[ i ];
-                    if( frame in coordsDict ) {
-                        var coordinates = coordsDict[frame];
-                        this.updateCoordinates(coordinates, i);
-                    } // else: just wait
-                }
-            }
-            // else: listen to base64_single message
-        },
-
-
         updateCoordinates: function( coordinates, model ) {
-            // coordinates must be ArrayBuffer (use this.mydecode)
+            // coordinates must be ArrayBuffer (use this.decode_base64)
             var component = this.stage.compList[ model ];
             if( coordinates && component ){
                 var coords = new Float32Array( coordinates );
                 component.structure.updatePosition( coords );
                 component.updateRepresentations( { "position": true } );
-            }
-        },
-
-        coordsDict2Changed: function(){
-            this.coordsDict2 = this.model.get( "coordinates_dict" );
-            var cdict = this.coordsDict2
-            var clen = Object.keys(cdict).length
-            if ( clen != 0 ){
-                this._cache = true;
-            }else{
-                this._cache = false;
-            }
-            this.model.set( "cache", this._cache);
-
-            for (var i = 0; i < Object.keys(coordsDict2).length; i++) {
-                this.coordsDict2[i] = this.mydecode( coordsDict2[i]);
             }
         },
 
@@ -385,10 +347,6 @@ define( [
         parametersChanged: function(){
             var _parameters = this.model.get( "_parameters" );
             this.stage.setParameters( _parameters );
-        },
-
-        cacheChanged: function(){
-            this._cache = this.model.get( "cache" );
         },
 
         orientationChanged: function(){
@@ -440,7 +398,7 @@ define( [
                                 if( args0.type == 'blob' ) {
                                     var blob; 
                                     if( args0.binary ){
-                                        var decoded_data = this.mydecode( args0.data );
+                                        var decoded_data = this.decode_base64( args0.data );
                                         blob = new Blob( [ decoded_data ], { type: "application/octet-binary" });
                                     }else{
                                         blob = new Blob( [ args0.data ], { type: "text/plain" } );
@@ -478,34 +436,16 @@ define( [
                         console.log( "nothing done for " + msg.target );
                         break;
                 }
-            }else if( msg.type == 'base64' ){
-                // if got message
-                this.model.set( "_finish_caching", true );
-                this.touch();
-                console.log( "received base64 dict for all frames" );
-                var base64DictList = JSON.parse( msg.data );
-                this.coordsDict2 = {};
-                if ( "cache" in msg ){
-                    this._cache = msg.cache;
-                    this.model.set( "cache", this._cache );
-                }
-                for (var index = 0; index < Object.keys(base64DictList).length; index++) {
-                    this.coordsDict2[index] = {};
-                    var base64Dict = base64DictList[ index ];
-                    for (var i = 0; i < Object.keys(base64Dict).length; i++) {
-                         this.coordsDict2[index][i] = this.mydecode( base64Dict[i]);
-                    }
-                }
             }else if( msg.type == 'base64_single' ){
                 // TODO: remove time
                 var time0 = Date.now();
 
-                var coordinateDict2 = msg.data;
-                var keys = Object.keys( coordinateDict2 );
+                var coordinatesDict = msg.data;
+                var keys = Object.keys( coordinatesDict );
 
                 for ( var i = 0; i < keys.length ; i++ ){
                     var traj_index = keys[ i ];
-                    var coordinates = this.mydecode( coordinateDict2[ traj_index ]['data']);
+                    var coordinates = this.decode_base64( coordinatesDict[ traj_index ] );
                     if( coordinates.byteLength > 0 ){
                         this.updateCoordinates( coordinates, traj_index );
                     }
