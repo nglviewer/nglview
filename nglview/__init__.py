@@ -518,7 +518,7 @@ class NGLWidget(widgets.DOMWidget):
     _n_dragged_files = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
     _init_structure_list = List().tag(sync=True)
-    parameters = Dict().tag(sync=True)
+    _parameters = Dict().tag(sync=True)
     coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
     _coordinate_dict2 = Dict().tag(sync=False)
@@ -582,6 +582,15 @@ class NGLWidget(widgets.DOMWidget):
         # keep track but making copy
         if structure is not None:
             self._representations = self._init_representations[:]
+
+    @property
+    def parameters(self):
+        return self._parameters
+
+    @parameters.setter
+    def parameters(self, params):
+        params = _camelize_dict(params)
+        self._parameters = params
 
     @observe('_n_dragged_files')
     def on_update_dragged_file(self, change):
