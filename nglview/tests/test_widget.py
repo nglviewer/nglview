@@ -256,3 +256,8 @@ def test_structure_file():
     fs2 = nv.FileStructure(fn)
     content = gzip.open(fn).read()
     nt.assert_equal(content, fs2.get_structure_string()) 
+
+def test_camelize_parameters():
+    view = nv.NGLWidget()
+    view.parameters = dict(background_color='black')
+    nt.assert_true('backgroundColor' in view._parameters) 
