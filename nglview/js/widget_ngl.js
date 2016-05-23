@@ -64,10 +64,10 @@ define( [
             // init setting of frame
             this.model.on( "change:count", this.countChanged, this );
 
-            // init parameters handling
-            this.model.on( "change:parameters", this.parametersChanged, this );
+            // init _parameters handling
+            this.model.on( "change:_parameters", this.parametersChanged, this );
 
-            // init parameters handling
+            // init cache handling
             this.model.on( "change:cache", this.cacheChanged, this );
 
             // init orientation handling
@@ -372,8 +372,8 @@ define( [
         },
 
         parametersChanged: function(){
-            var parameters = this.model.get( "parameters" );
-            this.stage.setParameters( parameters );
+            var _parameters = this.model.get( "_parameters" );
+            this.stage.setParameters( _parameters );
         },
 
         cacheChanged: function(){
