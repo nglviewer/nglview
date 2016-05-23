@@ -709,7 +709,7 @@ class NGLWidget(widgets.DOMWidget):
             # send binary
             buffers = []
             self._coordinates_meta = dict()
-            for index, arr in self._coordinate_dict.items():
+            for index, arr in self._coordinates_dict.items():
                 buffers.append(arr.astype('f4').tobytes())
                 self._coordinates_meta[index] = index
             mytime = time.time() * 1000
