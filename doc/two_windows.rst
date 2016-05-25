@@ -2,4 +2,4 @@
 
 A picture is worth a thousand words 
 
-..image:: images/nglview_2windows.png
+.. image:: images/nglview_2windows.png
