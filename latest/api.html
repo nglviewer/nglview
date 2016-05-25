@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.4+174.g69310b0 documentation</title>
+  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.4+176.ge8dce0d.dirty documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.4+174.g69310b0 documentation" href="index.html"/> 
+    <link rel="top" title="NGLView 0.4+176.ge8dce0d.dirty documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -206,11 +206,6 @@
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="nglview.MDAnalysisTrajectory.get_coordinates_dict">
-<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDAnalysisTrajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDAnalysisTrajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="nglview.MDAnalysisTrajectory.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDAnalysisTrajectory.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDAnalysisTrajectory.get_structure_string" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -241,11 +236,6 @@
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="nglview.MDTrajTrajectory.get_coordinates_dict">
-<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDTrajTrajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDTrajTrajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="nglview.MDTrajTrajectory.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#MDTrajTrajectory.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDTrajTrajectory.get_structure_string" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -262,15 +252,18 @@
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">NGLWidget</code><span class="sig-paren">(</span><em>structure=None</em>, <em>representations=None</em>, <em>parameters=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">ipywidgets.widgets.widget.DOMWidget</span></code></p>
 <dl class="method">
-<dt id="nglview.NGLWidget.add_model">
-<code class="descname">add_model</code><span class="sig-paren">(</span><em>filename</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.add_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.add_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>add model from file/trajectory/struture</p>
-<p>filename : str or Trajectory or Structure or their derived class
-<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs : additional arguments, optional</p>
-<p><cite>add_model</cite> should be always called after Widget is loaded</p>
+<dt id="nglview.NGLWidget.add_component">
+<code class="descname">add_component</code><span class="sig-paren">(</span><em>filename</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.add_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.add_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>add component from file/trajectory/struture</p>
+<dl class="docutils">
+<dt>filename <span class="classifier-delimiter">:</span> <span class="classifier">str or Trajectory or Structure or their derived class or url</span></dt>
+<dd>if you specify url, you must specify <cite>url=True</cite> in kwargs</dd>
+</dl>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs : additional arguments, optional</p>
+<p><cite>add_component</cite> should be always called after Widget is loaded</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">Widget</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -321,21 +314,6 @@ to load all trajectories first.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="nglview.NGLWidget.cache">
-<code class="descname">cache</code><a class="headerlink" href="#nglview.NGLWidget.cache" title="Permalink to this definition">¶</a></dt>
-<dd><p>A boolean (True, False) trait.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="nglview.NGLWidget.caching">
-<code class="descname">caching</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.caching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.caching" title="Permalink to this definition">¶</a></dt>
-<dd><p>sending all coordinates to Javascript&#8217;s side. Caching makes trajectory play smoother
-but doubling your memory. If you using cache, you can not update coordinates.
-Use <cite>view.uncaching()</cite> then update your coordinates, then <cite>view.caching()</cite> again.</p>
-<p>This method is experimental and its name can be changed.</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="nglview.NGLWidget.camera_str">
 <code class="descname">camera_str</code><a class="headerlink" href="#nglview.NGLWidget.camera_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait for unicode strings.</p>
@@ -343,25 +321,28 @@ Use <cite>view.uncaching()</cite> then update your coordinates, then <cite>view.
 
 <dl class="method">
 <dt id="nglview.NGLWidget.center_view">
-<code class="descname">center_view</code><span class="sig-paren">(</span><em>zoom=True</em>, <em>selection='*'</em>, <em>model=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.center_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.center_view" title="Permalink to this definition">¶</a></dt>
+<code class="descname">center_view</code><span class="sig-paren">(</span><em>zoom=True</em>, <em>selection='*'</em>, <em>component=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.center_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.center_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>center view</p>
 <p>view.center_view(selection=&#8216;1-4&#8217;)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="nglview.NGLWidget.clear_representations">
-<code class="descname">clear_representations</code><span class="sig-paren">(</span><em>model=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.clear_representations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.clear_representations" title="Permalink to this definition">¶</a></dt>
-<dd><p>clear all representations for given model</p>
+<code class="descname">clear_representations</code><span class="sig-paren">(</span><em>component=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.clear_representations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.clear_representations" title="Permalink to this definition">¶</a></dt>
+<dd><p>clear all representations for given component</p>
 <dl class="docutils">
-<dt>model <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0 (first model)</span></dt>
-<dd>You need to keep track how many models you added.</dd>
+<dt>component <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0 (first model)</span></dt>
+<dd>You need to keep track how many components you added.</dd>
 </dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="nglview.NGLWidget.coordinates_dict">
 <code class="descname">coordinates_dict</code><a class="headerlink" href="#nglview.NGLWidget.coordinates_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>An instance of a Python dict.</p>
+<dd><dl class="docutils">
+<dt>out <span class="classifier-delimiter">:</span> <span class="classifier">dict of numpy 3D-array, dtype=&#8217;f4&#8217;</span></dt>
+<dd>coordinates of trajectories at current frame</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
@@ -388,29 +369,6 @@ trim : bool, default False
 transparent : bool, default False</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="nglview.NGLWidget.export_image">
-<code class="descname">export_image</code><span class="sig-paren">(</span><em>frame=None</em>, <em>factor=4</em>, <em>antialias=True</em>, <em>trim=False</em>, <em>transparent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.export_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.export_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>render and get image as ipywidgets.widget_image.Image</p>
-<dl class="docutils">
-<dt>frame <span class="classifier-delimiter">:</span> <span class="classifier">int or None, default None</span></dt>
-<dd>if None, use current frame
-if specified, use this number.</dd>
-<dt>factor <span class="classifier-delimiter">:</span> <span class="classifier">int, default 4</span></dt>
-<dd>quality of the image, higher is better</dd>
-</dl>
-<p>antialias : bool, default True
-trim : bool, default False
-transparent : bool, default False</p>
-<blockquote>
-<div><p># tell NGL to render send image data to notebook.
-view.export_image()</p>
-<p># make sure to call <cite>get_image</cite> method
-view.get_image()</p>
-</div></blockquote>
-<p>You need to call <cite>export_image</cite> and <cite>get_image</cite> in different notebook&#8217;s Cells</p>
-</dd></dl>
-
 <dl class="attribute">
 <dt id="nglview.NGLWidget.frame">
 <code class="descname">frame</code><a class="headerlink" href="#nglview.NGLWidget.frame" title="Permalink to this definition">¶</a></dt>
@@ -429,11 +387,6 @@ view.get_image()</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="nglview.NGLWidget.on_finish_caching">
-<code class="descname">on_finish_caching</code><a class="headerlink" href="#nglview.NGLWidget.on_finish_caching" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="nglview.NGLWidget.on_frame">
 <code class="descname">on_frame</code><a class="headerlink" href="#nglview.NGLWidget.on_frame" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -441,6 +394,11 @@ view.get_image()</p>
 <dl class="attribute">
 <dt id="nglview.NGLWidget.on_loaded">
 <code class="descname">on_loaded</code><a class="headerlink" href="#nglview.NGLWidget.on_loaded" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.on_update_dragged_file">
+<code class="descname">on_update_dragged_file</code><a class="headerlink" href="#nglview.NGLWidget.on_update_dragged_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -452,8 +410,7 @@ view.get_image()</p>
 <dl class="attribute">
 <dt id="nglview.NGLWidget.parameters">
 <code class="descname">parameters</code><a class="headerlink" href="#nglview.NGLWidget.parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>An instance of a Python dict.</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="nglview.NGLWidget.picked">
@@ -462,16 +419,39 @@ view.get_image()</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="nglview.NGLWidget.remove_model">
-<code class="descname">remove_model</code><span class="sig-paren">(</span><em>model_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.remove_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.remove_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>remove model by its uuid</p>
+<dt id="nglview.NGLWidget.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>component_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.remove_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove component by its uuid</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_struture</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove last component</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">remove_model</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">_ngl_model_ids</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">remove_component</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.render_image">
+<code class="descname">render_image</code><span class="sig-paren">(</span><em>frame=None</em>, <em>factor=4</em>, <em>antialias=True</em>, <em>trim=False</em>, <em>transparent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.render_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.render_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>render and get image as ipywidgets.widget_image.Image</p>
+<dl class="docutils">
+<dt>frame <span class="classifier-delimiter">:</span> <span class="classifier">int or None, default None</span></dt>
+<dd>if None, use current frame
+if specified, use this number.</dd>
+<dt>factor <span class="classifier-delimiter">:</span> <span class="classifier">int, default 4</span></dt>
+<dd>quality of the image, higher is better</dd>
+</dl>
+<p>antialias : bool, default True
+trim : bool, default False
+transparent : bool, default False</p>
+<blockquote>
+<div><p># tell NGL to render send image data to notebook.
+view.render_image()</p>
+<p># make sure to call <cite>get_image</cite> method
+view.get_image()</p>
+</div></blockquote>
+<p>You need to call <cite>render_image</cite> and <cite>get_image</cite> in different notebook&#8217;s Cells</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -491,11 +471,6 @@ view.get_image()</p>
 <code class="descname">set_representations</code><span class="sig-paren">(</span><em>representations</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.set_representations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.set_representations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="nglview.NGLWidget.uncaching">
-<code class="descname">uncaching</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.uncaching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.uncaching" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="class">
@@ -506,11 +481,6 @@ view.get_image()</p>
 <dl class="method">
 <dt id="nglview.ParmEdTrajectory.get_coordinates">
 <code class="descname">get_coordinates</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#ParmEdTrajectory.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ParmEdTrajectory.get_coordinates" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="nglview.ParmEdTrajectory.get_coordinates_dict">
-<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#ParmEdTrajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ParmEdTrajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -555,11 +525,6 @@ view.get_image()</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="nglview.PyTrajTrajectory.get_coordinates_dict">
-<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#PyTrajTrajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PyTrajTrajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="nglview.PyTrajTrajectory.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#PyTrajTrajectory.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PyTrajTrajectory.get_structure_string" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -599,11 +564,6 @@ view.get_image()</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="nglview.SimpletrajTrajectory.get_coordinates_dict">
-<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#SimpletrajTrajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.SimpletrajTrajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="nglview.SimpletrajTrajectory.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#SimpletrajTrajectory.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.SimpletrajTrajectory.get_structure_string" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -635,11 +595,6 @@ view.get_image()</p>
 <code class="descname">get_coordinates</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Trajectory.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Trajectory.get_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="nglview.Trajectory.get_coordinates_dict">
-<code class="descname">get_coordinates_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Trajectory.get_coordinates_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Trajectory.get_coordinates_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="attribute">
 <dt id="nglview.Trajectory.n_frames">
 <code class="descname">n_frames</code><a class="headerlink" href="#nglview.Trajectory.n_frames" title="Permalink to this definition">¶</a></dt>
@@ -653,8 +608,8 @@ view.get_image()</p>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="nglview.encode_numpy">
-<code class="descclassname">nglview.</code><code class="descname">encode_numpy</code><span class="sig-paren">(</span><em>arr</em>, <em>dtype='f4'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#encode_numpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.encode_numpy" title="Permalink to this definition">¶</a></dt>
+<dt id="nglview.encode_base64">
+<code class="descclassname">nglview.</code><code class="descname">encode_base64</code><span class="sig-paren">(</span><em>arr</em>, <em>dtype='f4'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#encode_base64"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.encode_base64" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -749,10 +704,10 @@ kwargs : additional keyword argument</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># add model m2</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># add component m2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># create file-like object</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fh</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolToPDBBlock</span><span class="p">(</span><span class="n">m2</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># load as trajectory, need to have ParmEd</span>
@@ -784,6 +739,11 @@ gro, mol2, sdf.</p>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="function">
+<dt id="nglview.show_url">
+<code class="descclassname">nglview.</code><code class="descname">show_url</code><span class="sig-paren">(</span><em>url</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#show_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="indices-and-tables">
@@ -827,7 +787,7 @@ gro, mol2, sdf.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.4+174.g69310b0',
+            VERSION:'0.4+176.ge8dce0d.dirty',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
