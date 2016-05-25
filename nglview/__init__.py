@@ -37,7 +37,7 @@ except ImportError:
 
 import base64
 
-def encode_numpy(arr, dtype='f4'):
+def encode_base64(arr, dtype='f4'):
     arr = arr.astype(dtype)
     return base64.b64encode(arr.data).decode('utf8')
 
@@ -273,9 +273,6 @@ class Trajectory(object):
         self.id = str(uuid.uuid4())
         pass
 
-    def get_coordinates_dict(self):
-        raise NotImplementedError()
-
     def get_coordinates(self, index):
         raise NotImplementedError()
 
@@ -318,15 +315,6 @@ class SimpletrajTrajectory(Trajectory, Structure):
         frame = traj.get_frame(index)
         return frame["coords"]
 
-    def get_coordinates_dict(self):
-        traj = self.traj_cache.get(os.path.abspath(self.path))
-
-        coordinates_dict = {}
-        for i in range(self.n_frames):
-            frame = traj.get_frame(i)
-            coordinates_dict[i] = encode_numpy(frame['coords'])
-        return coordinates_dict
-
     def get_structure_string(self):
         return open(self._structure_path).read()
 
@@ -353,10 +341,6 @@ class MDTrajTrajectory(Trajectory, Structure):
         self.ext = "pdb"
         self.params = {}
         self.id = str(uuid.uuid4())
-
-    def get_coordinates_dict(self):
-        return dict((index, encode_numpy(xyz*10))
-                    for index, xyz in enumerate(self.trajectory.xyz))
 
     def get_coordinates(self, index):
         return 10*self.trajectory.xyz[index]
@@ -391,10 +375,6 @@ class PyTrajTrajectory(Trajectory, Structure):
         self.params = {}
         self.id = str(uuid.uuid4())
 
-    def get_coordinates_dict(self):
-        return dict((index, encode_numpy(xyz))
-                    for index, xyz in enumerate(self.trajectory.xyz))
-
     def get_coordinates(self, index):
         return self.trajectory[index].xyz
 
@@ -420,10 +400,6 @@ class ParmEdTrajectory(Trajectory, Structure):
         self._xyz = trajectory.get_coordinates()
         self.id = str(uuid.uuid4())
         self.only_save_1st_model = True
-
-    def get_coordinates_dict(self):
-        return dict((index, encode_numpy(xyz))
-                    for index, xyz in enumerate(self._xyz))
 
     def get_coordinates(self, index):
         return self._xyz[index]
@@ -467,11 +443,6 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         self.params = {}
         self.id = str(uuid.uuid4())
 
-    def get_coordinates_dict(self):
-
-        return dict((index, encode_numpy(self.atomgroup.atoms.positions))
-                    for index, _ in enumerate(self.atomgroup.universe.trajectory))
-
     def get_coordinates(self, index):
         self.atomgroup.universe.trajectory[index]
         xyz = self.atomgroup.atoms.positions
@@ -509,9 +480,7 @@ class NGLWidget(widgets.DOMWidget):
     _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
-    cache = Bool().tag(sync=True)
     loaded = Bool(False).tag(sync=True)
-    _finish_caching = Bool(False).tag(sync=True)
     frame = Int().tag(sync=True)
     # hack to always display movie
     count = Int(1).tag(sync=True)
@@ -519,9 +488,8 @@ class NGLWidget(widgets.DOMWidget):
     _init_representations = List().tag(sync=True)
     _init_structure_list = List().tag(sync=True)
     _parameters = Dict().tag(sync=True)
-    coordinates_dict = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
-    _coordinate_dict2 = Dict().tag(sync=False)
+    _coordinates_dict = Dict().tag(sync=False)
     camera_str = Unicode().tag(sync=True)
     orientation = List().tag(sync=True)
 
@@ -529,10 +497,6 @@ class NGLWidget(widgets.DOMWidget):
     _ngl_msg = None
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
-        try:
-            self.cache = kwargs.pop('cache')
-        except KeyError:
-            self.cache = False
         super(NGLWidget, self).__init__(**kwargs)
 
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
@@ -600,11 +564,6 @@ class NGLWidget(widgets.DOMWidget):
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
                          'n_frames'))
-
-    @observe('_finish_caching')
-    def on_finish_caching(self, change):
-        if self._finish_caching:
-            print('finish caching. Enjoy')
 
     @observe('loaded')
     def on_loaded(self, change):
@@ -686,37 +645,6 @@ class NGLWidget(widgets.DOMWidget):
             from types import MethodType
             setattr(self, fn, MethodType(func, self))
 
-    def caching(self):
-        """sending all coordinates to Javascript's side. Caching makes trajectory play smoother
-        but doubling your memory. If you using cache, you can not update coordinates.
-        Use `view.uncaching()` then update your coordinates, then `view.caching()` again.
-
-        Notes
-        -----
-        - This method is experimental and its name can be changed.
-
-        - Do no use this method if you are uing remote notebook. This method will try to
-        download data from your remote cluster to your local computer.
-        """
-        if self._trajlist:
-            # do not use traitlets to sync. slow.
-            self.cache = True
-            import json
-            data = json.dumps([trajectory.get_coordinates_dict() for trajectory in
-                self._trajlist])
-            msg = dict(type='base64',
-                       cache=self.cache,
-                       data=data)
-            self.send(msg)
-        else:
-            print('does not have trajlist. skip caching') 
-            self.cache = False
-            self._finish_caching = False
-
-    def uncaching(self):
-        self.cache = False
-        self._finish_caching = False
-
     def set_representations(self, representations):
         self.representations = representations
 
@@ -739,33 +667,42 @@ class NGLWidget(widgets.DOMWidget):
         '''update coordinates for all trajectories at index-th frame
         '''
         if self._trajlist:
-            if not self.cache or (self.cache and not self._finish_caching):
-                coordinate_dict = {}
-                for trajectory in self._trajlist:
-                    traj_index = self._ngl_component_ids.index(trajectory.id)
+            coordinates_dict = {}
+            for trajectory in self._trajlist:
+                traj_index = self._ngl_component_ids.index(trajectory.id)
 
-                    try:
-                        coordinate_dict[traj_index] = trajectory.get_coordinates(index)
-                    except (IndexError, ValueError):
-                        coordinate_dict[traj_index] = np.empty((0), dtype='f4')
+                try:
+                    coordinates_dict[traj_index] = trajectory.get_coordinates(index)
+                except (IndexError, ValueError):
+                    coordinates_dict[traj_index] = np.empty((0), dtype='f4')
 
-                dtype = 'f4'
-
-                # reset
-                self._coordinate_dict2 = dict()
-                for index, arr in coordinate_dict.items():
-                    coordinates_meta = dict(data=encode_numpy(arr, dtype=dtype),
-                                            dtype=dtype,
-                                            shape=arr.shape)
-                    self._coordinate_dict2[index] = coordinates_meta
-                self.send({'type': 'base64_single', 'data': self._coordinate_dict2})
+            self.coordinates_dict = coordinates_dict
         else:
             print("no trajectory available")
 
+    @property
+    def coordinates_dict(self):
+        """
+
+        Returns
+        -------
+        out : dict of numpy 3D-array, dtype='f4'
+            coordinates of trajectories at current frame
+        """
+        return self._coordinates_dict
+
+    @coordinates_dict.setter
+    def coordinates_dict(self, arr_dict):
+        self._coordinates_dict = arr_dict
+        encoded_coordinates_dict = dict((k, encode_base64(v))
+                             for (k, v) in self._coordinates_dict.items())
+        self.send({'type': 'base64_single', 'data': encoded_coordinates_dict})
+
     @observe('frame')
     def on_frame(self, change):
-        if not self.cache or (self.cache and not self._finish_caching):
-            self._set_coordinates(self.frame)
+        """set and send coordinates at current frame
+        """
+        self._set_coordinates(self.frame)
 
     def clear_representations(self, component=0):
         '''clear all representations for given component
