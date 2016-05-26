@@ -46,6 +46,45 @@ def decode_base64(data, shape, dtype='f4'):
     decoded_str = base64.b64decode(data)
     return np.frombuffer(decoded_str, dtype=dtype).reshape(shape)
 
+def _add_repr_method_shortcut(self, other):
+    # dynamically add method for NGLWidget
+    repr_names  = [
+            ('point', 'point'),
+            ('line', 'line'),
+            ('rope', 'rope'),
+            ('tube', 'tube'),
+            ('trace', 'trace'),
+            ('label', 'label'),
+            ('unitcell', 'unitcell'),
+            ('cartoon', 'cartoon'),
+            ('licorice', 'licorice'),
+            ('ribbon', 'ribbon'),
+            ('surface', 'surface'),
+            ('backbone', 'backbone'),
+            ('contact', 'contact'),
+            ('hyperball', 'hyperball'),
+            ('rocket', 'rocket'),
+            ('helixorient', 'helixorient'),
+            ('simplified_base', 'base'),
+            ('ball_and_stick', 'ball+stick'),
+            ]
+
+    def make_func(rep):
+        """return a new function object
+        """
+        def func(this, selection='all', **kwargs):
+            """
+            """
+            self.add_representation(repr_type=rep[1], selection=selection, **kwargs)
+        return func
+
+    for rep in repr_names:
+        func = make_func(rep)
+        fn = 'add_' + rep[0]
+        from types import MethodType
+        setattr(self, fn, MethodType(func, other))
+
+
 
 ##############
 # Simple API
@@ -537,7 +576,7 @@ class NGLWidget(widgets.DOMWidget):
 
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
-        self._add_repr_method_shortcut()
+        _add_repr_method_shortcut(self, self)
 
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
@@ -647,44 +686,6 @@ class NGLWidget(widgets.DOMWidget):
                                       args=[params['type'],],
                                       kwargs=kwargs)
 
-
-    def _add_repr_method_shortcut(self):
-        # dynamically add method for NGLWidget
-        repr_names  = [
-                ('point', 'point'),
-                ('line', 'line'),
-                ('rope', 'rope'),
-                ('tube', 'tube'),
-                ('trace', 'trace'),
-                ('label', 'label'),
-                ('unitcell', 'unitcell'),
-                ('cartoon', 'cartoon'),
-                ('licorice', 'licorice'),
-                ('ribbon', 'ribbon'),
-                ('surface', 'surface'),
-                ('backbone', 'backbone'),
-                ('contact', 'contact'),
-                ('hyperball', 'hyperball'),
-                ('rocket', 'rocket'),
-                ('helixorient', 'helixorient'),
-                ('simplified_base', 'base'),
-                ('ball_and_stick', 'ball+stick'),
-                ]
-
-        def make_func(rep):
-            """return a new function object
-            """
-            def func(this, selection='all', **kwargs):
-                """
-                """
-                self.add_representation(repr_type=rep[1], selection=selection, **kwargs)
-            return func
-
-        for rep in repr_names:
-            func = make_func(rep)
-            fn = 'add_' + rep[0]
-            from types import MethodType
-            setattr(self, fn, MethodType(func, self))
 
     def caching(self):
         """sending all coordinates to Javascript's side. Caching makes trajectory play smoother
@@ -964,6 +965,7 @@ class NGLWidget(widgets.DOMWidget):
             self._init_structures.append(structure)
         self._ngl_component_ids.append(structure.id)
         self.center_view(component=len(self._ngl_component_ids)-1)
+        self._update_component_auto_completion()
 
     def add_trajectory(self, trajectory, **kwargs):
         '''
@@ -985,6 +987,7 @@ class NGLWidget(widgets.DOMWidget):
         self._trajlist.append(trajectory)
         self._update_count()
         self._ngl_component_ids.append(trajectory.id)
+        self._update_component_auto_completion()
 
     def add_component(self, filename, **kwargs):
         '''add component from file/trajectory/struture
@@ -1008,6 +1011,7 @@ class NGLWidget(widgets.DOMWidget):
         self._load_data(filename, **kwargs)
         # assign an ID
         self._ngl_component_ids.append(str(uuid.uuid4()))
+        self._update_component_auto_completion()
 
     def _load_data(self, obj, **kwargs):
         '''
@@ -1082,6 +1086,7 @@ class NGLWidget(widgets.DOMWidget):
         self._ngl_component_ids.remove(component_id)
 
         self._remove_component(component=component_index)
+        self._update_component_auto_completion()
 
     def _remove_component(self, component):
         """tell NGL.Stage to remove component from Stage.compList
@@ -1149,8 +1154,57 @@ class NGLWidget(widgets.DOMWidget):
         '''
         from IPython import display
         return display.Image(self._image_data)
-        
 
+    def _update_component_auto_completion(self):
+        for index in range(len(self._ngl_component_ids)):
+            comp = Component(self, index) 
+            name = 'component_' + str(index)
+            setattr(self, name, comp)
+
+    def __dir__(self):
+        n_comps = len(self._ngl_component_ids)
+        super_keys = list(super(NGLWidget, self).__dict__().keys())
+        return set(list(self.__dict__.keys()) + ['component_' + str(i) for i in
+            range(n_comps)] + super_keys)
+
+class Component(object):
+    """
+
+    Examples
+    --------
+    >>> view = nv.NGLWidget()
+    >>> view.add_trajectory(traj)
+    >>> view.add_component(filename)
+    >>> view.comp0.clear_representations()
+    >>> view.comp0.add_cartoon()
+    >>> view.comp1.add_licorice()
+    >>> view.remove_component(view.comp1.id)
+    """
+
+    def __init__(self, view, index):
+        self._view = view
+        self._index = index
+        _add_repr_method_shortcut(self, self._view)
+        self._borrow_attribute(self._view, ['clear_representations'])
+
+    @property
+    def id(self):
+        return self._view._ngl_component_ids[self._index]
+
+    def add_representation(self, repr_type, selection='all', **kwargs):
+        kwargs['component'] = self._index
+        self._view.add_representation(repr_type=repr_type, selection=selection, **kwargs)
+
+    def _borrow_attribute(self, view, attlist):
+        from functools import partial
+        from types import MethodType
+
+        for attname in attlist:
+            view_att = getattr(view, attname)
+            setattr(self, '_' + attname, MethodType(view_att, view))
+            self_att = partial(getattr(view, attname), component=self._index)
+            setattr(self, attname, self_att) 
+        
 def install(user=True, symlink=False):
     """Install the widget nbextension.
 
