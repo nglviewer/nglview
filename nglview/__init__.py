@@ -645,37 +645,6 @@ class NGLWidget(widgets.DOMWidget):
                                       args=[params['type'],],
                                       kwargs=kwargs)
 
-    def caching(self):
-        """sending all coordinates to Javascript's side. Caching makes trajectory play smoother
-        but doubling your memory. If you using cache, you can not update coordinates.
-        Use `view.uncaching()` then update your coordinates, then `view.caching()` again.
-
-        Notes
-        -----
-        - This method is experimental and its name can be changed.
-
-        - Do no use this method if you are uing remote notebook. This method will try to
-        download data from your remote cluster to your local computer.
-        """
-        if self._trajlist:
-            # do not use traitlets to sync. slow.
-            self.cache = True
-            import json
-            data = json.dumps([trajectory.get_coordinates_dict() for trajectory in
-                self._trajlist])
-            msg = dict(type='base64',
-                       cache=self.cache,
-                       data=data)
-            self.send(msg)
-        else:
-            print('does not have trajlist. skip caching') 
-            self.cache = False
-            self._finish_caching = False
-
-    def uncaching(self):
-        self.cache = False
-        self._finish_caching = False
-
     def set_representations(self, representations):
         self.representations = representations
 
