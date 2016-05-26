@@ -1161,11 +1161,6 @@ class NGLWidget(widgets.DOMWidget):
             name = 'component_' + str(index)
             setattr(self, name, comp)
 
-    def __dir__(self):
-        n_comps = len(self._ngl_component_ids)
-        super_keys = list(super(NGLWidget, self).__dict__().keys())
-        return set(list(self.__dict__.keys()) + ['component_' + str(i) for i in
-            range(n_comps)] + super_keys)
 
 class Component(object):
     """
@@ -1175,9 +1170,9 @@ class Component(object):
     >>> view = nv.NGLWidget()
     >>> view.add_trajectory(traj)
     >>> view.add_component(filename)
-    >>> view.comp0.clear_representations()
-    >>> view.comp0.add_cartoon()
-    >>> view.comp1.add_licorice()
+    >>> view.component_0.clear_representations()
+    >>> view.component_0.add_cartoon()
+    >>> view.component_1.add_licorice()
     >>> view.remove_component(view.comp1.id)
     """
 
