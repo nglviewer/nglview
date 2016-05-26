@@ -1097,6 +1097,9 @@ class NGLWidget(widgets.DOMWidget):
             name = 'component_' + str(index)
             setattr(self, name, comp)
 
+    def __getitem__(self, index):
+        assert index < len(self._ngl_component_ids)
+        return Component(self, index) 
 
 class Component(object):
     """
