@@ -613,6 +613,16 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         self.displayed = True
 
+    @property
+    def representations(self):
+        return self._representations
+
+    @representations.setter
+    def representations(self, reps):
+        self._representations = reps[:]
+        for index in range(len(self._ngl_component_ids)):
+            self.set_representations(reps)
+
     def set_representations(self, representations, component=0):
         """
         

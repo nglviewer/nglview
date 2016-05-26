@@ -122,7 +122,6 @@ def test_load_data():
     # view._load_data('data/tz2.pdb')
 
 
-@unittest.skip("does not introduce representations yet")
 def test_representations():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     nt.assert_equal(view.representations, DEFAULT_REPR)
