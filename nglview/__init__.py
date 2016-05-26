@@ -615,38 +615,31 @@ class NGLWidget(widgets.DOMWidget):
 
     @property
     def representations(self):
-        '''return list of dict
-        '''
         return self._representations
 
     @representations.setter
-    def representations(self, params_list):
-        '''
+    def representations(self, reps):
+        self._representations = reps[:]
+        for index in range(len(self._ngl_component_ids)):
+            self.set_representations(reps)
 
+    def set_representations(self, representations, component=0):
+        """
+        
         Parameters
         ----------
-        params_list : list of dict
-        '''
+        representations : list of dict
+        """
+        self.clear_representations(component=component)
 
-        if params_list is not self.representations:
-            assert isinstance(params_list, list), 'must provide list of dict'
-
-            if not params_list:
-                for index in range(10):
-                    self._clear_repr(component=index)
-            else:
-                for index, params in enumerate(params_list):
-                    assert isinstance(params, dict), 'params must be a dict'
-                    kwargs = params['params']
-                    kwargs.update({'component_index': index})
-                    self._representations.append(params)
-                    self._remote_call('addRepresentation',
-                                      target='compList',
-                                      args=[params['type'],],
-                                      kwargs=kwargs)
-
-    def set_representations(self, representations):
-        self.representations = representations
+        for params in representations:
+            assert isinstance(params, dict), 'params must be a dict'
+            kwargs = params['params']
+            kwargs.update({'component_index': component})
+            self._remote_call('addRepresentation',
+                              target='compList',
+                              args=[params['type'],],
+                              kwargs=kwargs)
 
     def _set_initial_structure(self, structures):
         """initialize structures for Widget
@@ -1119,7 +1112,8 @@ class Component(object):
         self._view = view
         self._index = index
         _add_repr_method_shortcut(self, self._view)
-        self._borrow_attribute(self._view, ['clear_representations'])
+        self._borrow_attribute(self._view, ['clear_representations', 'center_view',
+                                            'set_representations'])
 
     @property
     def id(self):

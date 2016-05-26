@@ -20,6 +20,7 @@ from ipywidgets import Widget
 
 import pytraj as pt
 import nglview as nv
+from nglview import NGLWidget
 import mdtraj as md
 import parmed as pmd
 # wait until MDAnalysis supports PY3
@@ -93,6 +94,7 @@ def test_API_promise_to_have():
     nv.NGLWidget.add_component
     nv.NGLWidget.add_trajectory
     nv.NGLWidget.coordinates_dict
+    nv.NGLWidget.set_representations
 
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -222,3 +224,13 @@ def test_camelize_parameters():
     view = nv.NGLWidget()
     view.parameters = dict(background_color='black')
     nt.assert_true('backgroundColor' in view._parameters) 
+
+def test_component_for_duck_typing():
+    view = NGLWidget()
+    view.add_component('data/tz2.pdb')
+    view.add_component('data/tz2_2.pdb.gz')
+    
+    c0 = view[0]
+    c1 = view[1]
+    nt.assert_true(hasattr(view, 'component_0'))
+    nt.assert_true(hasattr(view, 'component_1'))
