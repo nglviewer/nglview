@@ -1083,7 +1083,7 @@ class NGLWidget(widgets.DOMWidget):
         return len(self._ngl_component_ids)
 
     def hide(self, indices):
-        """set invisibility for given coponents (by their indices)
+        """set invisibility for given components (by their indices)
         """
         for index in indices:
             assert index < self.n_components
@@ -1096,7 +1096,7 @@ class NGLWidget(widgets.DOMWidget):
         self.show_only(*args)
 
     def show_only(self, indices='all'):
-        """set visibility for given coponents (by their indices)
+        """set visibility for given components (by their indices)
 
         Parameters
         ----------
