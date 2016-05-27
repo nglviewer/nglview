@@ -23,9 +23,18 @@ Table of contents
 Installation
 ============
 
+Development version
+-------------------
+We highly recommend to install development version::
+
+    python -m pip install git+https://github.com/arose/nglview
+
+Release
+-------
+Notes: release version API is outdated. Please try development version.
 From PyPI:
 
-    pip install nglview
+    python -m pip install nglview
 Note: The above will try to install `jupyter`, `traitlets` and `ipywidgets`  as dependencies. If that fails install it manually `pip install jupyter`.
 
 From Conda
@@ -114,7 +123,7 @@ view.parameters = {
     # percentages, start of fog and where on full effect
     "fogNear": 0, "fogFar": 100,
     # background color
-    "theme": "dark",
+    "backgroundColor": "black",
 }
 ```
 
