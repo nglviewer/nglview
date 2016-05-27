@@ -31,9 +31,10 @@ We highly recommend to install development version::
 
 Release
 -------
+Notes: release version API are outdated. Please try development version.
 From PyPI:
 
-    pip install nglview
+    python -m pip install nglview
 Note: The above will try to install `jupyter`, `traitlets` and `ipywidgets`  as dependencies. If that fails install it manually `pip install jupyter`.
 
 From Conda
