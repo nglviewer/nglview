@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview &mdash; NGLView 0.4+176.ge8dce0d.dirty documentation</title>
+  <title>nglview &mdash; NGLView 0+unknown documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.4+176.ge8dce0d.dirty documentation" href="../index.html"/>
+    <link rel="top" title="NGLView 0+unknown documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -172,6 +172,45 @@
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
     <span class="n">decoded_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">decoded_str</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></div>
+
+<span class="k">def</span> <span class="nf">_add_repr_method_shortcut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="c1"># dynamically add method for NGLWidget</span>
+    <span class="n">repr_names</span>  <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;point&#39;</span><span class="p">,</span> <span class="s1">&#39;point&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;line&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;rope&#39;</span><span class="p">,</span> <span class="s1">&#39;rope&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;tube&#39;</span><span class="p">,</span> <span class="s1">&#39;tube&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;trace&#39;</span><span class="p">,</span> <span class="s1">&#39;trace&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;unitcell&#39;</span><span class="p">,</span> <span class="s1">&#39;unitcell&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="s1">&#39;cartoon&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;licorice&#39;</span><span class="p">,</span> <span class="s1">&#39;licorice&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;ribbon&#39;</span><span class="p">,</span> <span class="s1">&#39;ribbon&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">,</span> <span class="s1">&#39;surface&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;backbone&#39;</span><span class="p">,</span> <span class="s1">&#39;backbone&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;contact&#39;</span><span class="p">,</span> <span class="s1">&#39;contact&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;hyperball&#39;</span><span class="p">,</span> <span class="s1">&#39;hyperball&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;rocket&#39;</span><span class="p">,</span> <span class="s1">&#39;rocket&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;helixorient&#39;</span><span class="p">,</span> <span class="s1">&#39;helixorient&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;simplified_base&#39;</span><span class="p">,</span> <span class="s1">&#39;base&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;ball_and_stick&#39;</span><span class="p">,</span> <span class="s1">&#39;ball+stick&#39;</span><span class="p">),</span>
+            <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">make_func</span><span class="p">(</span><span class="n">rep</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return a new function object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">repr_type</span><span class="o">=</span><span class="n">rep</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span>
+
+    <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">repr_names</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">make_func</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="s1">&#39;add_&#39;</span> <span class="o">+</span> <span class="n">rep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">other</span><span class="p">))</span>
+
 
 
 <span class="c1">##############</span>
@@ -628,7 +667,7 @@
 
         <span class="c1"># do not use _displayed_callbacks since there is another Widget._display_callbacks</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_repr_method_shortcut</span><span class="p">()</span>
+        <span class="n">_add_repr_method_shortcut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
         <span class="c1"># register to get data from JS side</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_handle_msg</span><span class="p">)</span>
@@ -703,77 +742,31 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">representations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;return list of dict</span>
-<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representations</span>
 
     <span class="nd">@representations.setter</span>
-    <span class="k">def</span> <span class="nf">representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params_list</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reps</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_representations</span> <span class="o">=</span> <span class="n">reps</span><span class="p">[:]</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_representations</span><span class="p">(</span><span class="n">reps</span><span class="p">)</span>
 
+<div class="viewcode-block" id="NGLWidget.set_representations"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.set_representations">[docs]</a>    <span class="k">def</span> <span class="nf">set_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representations</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        params_list : list of dict</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        representations : list of dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_representations</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">params_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">representations</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="s1">&#39;must provide list of dict&#39;</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">params_list</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_clear_repr</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params_list</span><span class="p">):</span>
-                    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="s1">&#39;params must be a dict&#39;</span>
-                    <span class="n">kwargs</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span>
-                    <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">})</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_representations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;addRepresentation&#39;</span><span class="p">,</span>
-                                      <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
-                                      <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],],</span>
-                                      <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
-
-
-    <span class="k">def</span> <span class="nf">_add_repr_method_shortcut</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># dynamically add method for NGLWidget</span>
-        <span class="n">repr_names</span>  <span class="o">=</span> <span class="p">[</span>
-                <span class="p">(</span><span class="s1">&#39;point&#39;</span><span class="p">,</span> <span class="s1">&#39;point&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;line&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;rope&#39;</span><span class="p">,</span> <span class="s1">&#39;rope&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;tube&#39;</span><span class="p">,</span> <span class="s1">&#39;tube&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;trace&#39;</span><span class="p">,</span> <span class="s1">&#39;trace&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;unitcell&#39;</span><span class="p">,</span> <span class="s1">&#39;unitcell&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="s1">&#39;cartoon&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;licorice&#39;</span><span class="p">,</span> <span class="s1">&#39;licorice&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;ribbon&#39;</span><span class="p">,</span> <span class="s1">&#39;ribbon&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">,</span> <span class="s1">&#39;surface&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;backbone&#39;</span><span class="p">,</span> <span class="s1">&#39;backbone&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;contact&#39;</span><span class="p">,</span> <span class="s1">&#39;contact&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;hyperball&#39;</span><span class="p">,</span> <span class="s1">&#39;hyperball&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;rocket&#39;</span><span class="p">,</span> <span class="s1">&#39;rocket&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;helixorient&#39;</span><span class="p">,</span> <span class="s1">&#39;helixorient&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;simplified_base&#39;</span><span class="p">,</span> <span class="s1">&#39;base&#39;</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;ball_and_stick&#39;</span><span class="p">,</span> <span class="s1">&#39;ball+stick&#39;</span><span class="p">),</span>
-                <span class="p">]</span>
-
-        <span class="k">def</span> <span class="nf">make_func</span><span class="p">(</span><span class="n">rep</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;return a new function object</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">repr_type</span><span class="o">=</span><span class="n">rep</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span>
-
-        <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">repr_names</span><span class="p">:</span>
-            <span class="n">func</span> <span class="o">=</span> <span class="n">make_func</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span>
-            <span class="n">fn</span> <span class="o">=</span> <span class="s1">&#39;add_&#39;</span> <span class="o">+</span> <span class="n">rep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
-
-<div class="viewcode-block" id="NGLWidget.set_representations"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.set_representations">[docs]</a>    <span class="k">def</span> <span class="nf">set_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representations</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="n">representations</span></div>
+        <span class="k">for</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">representations</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="s1">&#39;params must be a dict&#39;</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">component</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;addRepresentation&#39;</span><span class="p">,</span>
+                              <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
+                              <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],],</span>
+                              <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_set_initial_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structures</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;initialize structures for Widget</span>
@@ -1027,7 +1020,8 @@
             <span class="c1"># update via structure_list</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_auto_completion</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="NGLWidget.add_trajectory"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.add_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">add_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -1048,7 +1042,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_count</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_auto_completion</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="NGLWidget.add_component"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.add_component">[docs]</a>    <span class="k">def</span> <span class="nf">add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;add component from file/trajectory/struture</span>
@@ -1071,7 +1066,8 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># assign an ID</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_auto_completion</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -1145,7 +1141,8 @@
         <span class="n">component_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">component_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">component_id</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_component</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component_index</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_component</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component_index</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_auto_completion</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_remove_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;tell NGL.Stage to remove component from Stage.compList</span>
@@ -1212,9 +1209,57 @@
         <span class="sd">&#39;&#39;&#39;for testing</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
-        <span class="k">return</span> <span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span><span class="p">)</span></div>
-        
+        <span class="k">return</span> <span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_update_component_auto_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)):</span>
+            <span class="n">comp</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> 
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;component_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> </div>
+
+<div class="viewcode-block" id="Component"><a class="viewcode-back" href="../api.html#nglview.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; view = nv.NGLWidget()</span>
+<span class="sd">    &gt;&gt;&gt; view.add_trajectory(traj)</span>
+<span class="sd">    &gt;&gt;&gt; view.add_component(filename)</span>
+<span class="sd">    &gt;&gt;&gt; view.component_0.clear_representations()</span>
+<span class="sd">    &gt;&gt;&gt; view.component_0.add_cartoon()</span>
+<span class="sd">    &gt;&gt;&gt; view.component_1.add_licorice()</span>
+<span class="sd">    &gt;&gt;&gt; view.remove_component(view.comp1.id)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="n">view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="n">_add_repr_method_shortcut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_borrow_attribute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;clear_representations&#39;</span><span class="p">,</span> <span class="s1">&#39;center_view&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;set_representations&#39;</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Component.add_representation"><a class="viewcode-back" href="../api.html#nglview.Component.add_representation">[docs]</a>    <span class="k">def</span> <span class="nf">add_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repr_type</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;component&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">repr_type</span><span class="o">=</span><span class="n">repr_type</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_borrow_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">attlist</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+        <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
+
+        <span class="k">for</span> <span class="n">attname</span> <span class="ow">in</span> <span class="n">attlist</span><span class="p">:</span>
+            <span class="n">view_att</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">attname</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">attname</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">view_att</span><span class="p">,</span> <span class="n">view</span><span class="p">))</span>
+            <span class="n">self_att</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">attname</span><span class="p">),</span> <span class="n">component</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attname</span><span class="p">,</span> <span class="n">self_att</span><span class="p">)</span> </div>
+        
 <div class="viewcode-block" id="install"><a class="viewcode-back" href="../api.html#nglview.install">[docs]</a><span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Install the widget nbextension.</span>
 
@@ -1275,7 +1320,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.4+176.ge8dce0d.dirty',
+            VERSION:'0+unknown',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

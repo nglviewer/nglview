@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.4+176.ge8dce0d.dirty documentation</title>
+  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0+unknown documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.4+176.ge8dce0d.dirty documentation" href="index.html"/> 
+    <link rel="top" title="NGLView 0+unknown documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -175,6 +175,31 @@
 </ul>
 </div>
 <span class="target" id="module-nglview"></span><dl class="class">
+<dt id="nglview.Component">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">Component</code><span class="sig-paren">(</span><em>view</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">component_0</span><span class="o">.</span><span class="n">clear_representations</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">component_0</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">component_1</span><span class="o">.</span><span class="n">add_licorice</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">remove_component</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">comp1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="nglview.Component.add_representation">
+<code class="descname">add_representation</code><span class="sig-paren">(</span><em>repr_type</em>, <em>selection='all'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Component.add_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Component.add_representation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.Component.id">
+<code class="descname">id</code><a class="headerlink" href="#nglview.Component.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="nglview.FileStructure">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">FileStructure</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#FileStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.FileStructure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
@@ -457,8 +482,7 @@ view.get_image()</p>
 <dl class="attribute">
 <dt id="nglview.NGLWidget.representations">
 <code class="descname">representations</code><a class="headerlink" href="#nglview.NGLWidget.representations" title="Permalink to this definition">¶</a></dt>
-<dd><p>return list of dict</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="nglview.NGLWidget.selection">
@@ -468,8 +492,9 @@ view.get_image()</p>
 
 <dl class="method">
 <dt id="nglview.NGLWidget.set_representations">
-<code class="descname">set_representations</code><span class="sig-paren">(</span><em>representations</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.set_representations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.set_representations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">set_representations</code><span class="sig-paren">(</span><em>representations</em>, <em>component=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.set_representations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.set_representations" title="Permalink to this definition">¶</a></dt>
+<dd><p>representations : list of dict</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -787,7 +812,7 @@ gro, mol2, sdf.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.4+176.ge8dce0d.dirty',
+            VERSION:'0+unknown',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
