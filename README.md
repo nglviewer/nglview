@@ -31,7 +31,7 @@ We highly recommend to install development version::
 
 Release
 -------
-Notes: release version API are outdated. Please try development version.
+Notes: release version API is outdated. Please try development version.
 From PyPI:
 
     python -m pip install nglview
