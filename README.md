@@ -23,6 +23,14 @@ Table of contents
 Installation
 ============
 
+Development version
+-------------------
+We highly recommend to install development version::
+
+    python -m pip install git+https://github.com/arose/nglview
+
+Release
+-------
 From PyPI:
 
     pip install nglview
