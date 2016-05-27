@@ -95,6 +95,8 @@ def test_API_promise_to_have():
     nv.NGLWidget.add_trajectory
     nv.NGLWidget.coordinates_dict
     nv.NGLWidget.set_representations
+    nv.NGLWidget.clear
+    nv.NGLWidget.center
 
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
