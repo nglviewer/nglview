@@ -236,3 +236,48 @@ def test_component_for_duck_typing():
     c1 = view[1]
     nt.assert_true(hasattr(view, 'component_0'))
     nt.assert_true(hasattr(view, 'component_1'))
+
+    c0.show()
+    c0.hide()
+
+def test_trajectory_show_hide_sending_cooridnates():
+    view = NGLWidget()
+
+    traj0 = pt.datafiles.load_tz2()
+    traj1 = pt.datafiles.load_trpcage()
+
+    view.add_trajectory(nv.PyTrajTrajectory(traj0))
+    view.add_trajectory(nv.PyTrajTrajectory(traj1))
+
+    for traj in view._trajlist:
+        nt.assert_true(traj.shown)
+
+    view.frame = 1
+
+    def copy_coordinate_dict(view):
+        # make copy to avoid memory free
+        return dict((k, v.copy()) for k, v in view.coordinates_dict.items())
+
+    coordinates_dict = copy_coordinate_dict(view)
+    aa_eq(coordinates_dict[0], traj0[1].xyz) 
+    aa_eq(coordinates_dict[1], traj1[1].xyz) 
+
+    # hide 0
+    view.hide([0,])
+    nt.assert_false(view._trajlist[0].shown)
+    nt.assert_true(view._trajlist[1].shown)
+
+    # update frame so view can update its coordinates
+    view.frame = 2
+    coordinates_dict = copy_coordinate_dict(view)
+    nt.assert_equal(coordinates_dict[0].shape[0], 0)
+    aa_eq(coordinates_dict[1], traj1[2].xyz)
+
+    # hide 0, 1
+    view.hide([0, 1])
+    nt.assert_false(view._trajlist[0].shown)
+    nt.assert_false(view._trajlist[1].shown)
+    view.frame = 3
+    coordinates_dict = copy_coordinate_dict(view)
+    nt.assert_equal(coordinates_dict[0].shape[0], 0)
+    nt.assert_equal(coordinates_dict[1].shape[0], 0)
