@@ -123,7 +123,7 @@ view.parameters = {
     # percentages, start of fog and where on full effect
     "fogNear": 0, "fogFar": 100,
     # background color
-    "theme": "dark",
+    "backgroundColor": "black",
 }
 ```
 
