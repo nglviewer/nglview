@@ -95,6 +95,8 @@ def test_API_promise_to_have():
     nv.NGLWidget.add_trajectory
     nv.NGLWidget.coordinates_dict
     nv.NGLWidget.set_representations
+    nv.NGLWidget.clear
+    nv.NGLWidget.center
 
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -237,6 +239,9 @@ def test_component_for_duck_typing():
 
     c0.show()
     c0.hide()
+
+    view.remove_component(c0.id)
+    nt.assert_false(hasattr(view, 'component_1'))
 
 def test_trajectory_show_hide_sending_cooridnates():
     view = NGLWidget()
