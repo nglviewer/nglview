@@ -310,7 +310,7 @@ class Trajectory(object):
 
     def __init__(self):
         self.id = str(uuid.uuid4())
-        pass
+        self.shown = True
 
     def get_coordinates(self, index):
         raise NotImplementedError()
@@ -665,7 +665,10 @@ class NGLWidget(widgets.DOMWidget):
                 traj_index = self._ngl_component_ids.index(trajectory.id)
 
                 try:
-                    coordinates_dict[traj_index] = trajectory.get_coordinates(index)
+                    if trajectory.shown:
+                        coordinates_dict[traj_index] = trajectory.get_coordinates(index)
+                    else:
+                        coordinates_dict[traj_index] = np.empty((0), dtype='f4')
                 except (IndexError, ValueError):
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
 
@@ -913,6 +916,7 @@ class NGLWidget(widgets.DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(trajectory)
+        setattr(trajectory, 'shown', True)
         self._trajlist.append(trajectory)
         self._update_count()
         self._ngl_component_ids.append(trajectory.id)
@@ -1079,11 +1083,22 @@ class NGLWidget(widgets.DOMWidget):
     def n_components(self):
         return len(self._ngl_component_ids)
 
+    def _get_traj_by_id(self, itsid):
+        for traj in self._trajlist:
+            if traj.id == itsid:
+                return traj
+
     def hide(self, indices):
         """set invisibility for given components (by their indices)
         """
+        traj_ids = set(traj.id for traj in self._trajlist)
+
         for index in indices:
             assert index < self.n_components
+            comp_id = self._ngl_component_ids[index]
+            if comp_id in traj_ids:
+                traj = self._get_traj_by_id(comp_id)
+                traj.shown = False
             self._remote_call("setVisibility",
                     target='compList',
                     args=[False,],
@@ -1099,16 +1114,24 @@ class NGLWidget(widgets.DOMWidget):
         ----------
         indices : {'all', array-like}, component index, default 'all'
         """
+        traj_ids = set(traj.id for traj in self._trajlist)
+
         if indices == 'all':
             indices_ = set(range(self.n_components))
         else:
             indices_ = set(indices)
 
-        for index in range(self.n_components):
+        for index, comp_id in enumerate(self._ngl_component_ids):
+            if comp_id in traj_ids:
+                traj = self._get_traj_by_id(comp_id)
             if index in indices_:
                 args = [True,]
+                if traj is not None:
+                    traj.shown = True
             else:
                 args = [False,]
+                if traj is not None:
+                    traj.shown = False
 
             self._remote_call("setVisibility",
                     target='compList',
@@ -1158,6 +1181,22 @@ class Component(object):
     @property
     def id(self):
         return self._view._ngl_component_ids[self._index]
+
+    def hide(self):
+        """set invisibility for given components (by their indices)
+        """
+        self._view._remote_call("setVisibility",
+                target='compList',
+                args=[False,],
+                kwargs={'component_index': self._index})
+
+    def show(self):
+        """set invisibility for given components (by their indices)
+        """
+        self._view._remote_call("setVisibility",
+                target='compList',
+                args=[True,],
+                kwargs={'component_index': self._index})
 
     def add_representation(self, repr_type, selection='all', **kwargs):
         kwargs['component'] = self._index
