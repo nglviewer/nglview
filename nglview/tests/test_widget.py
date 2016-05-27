@@ -240,6 +240,9 @@ def test_component_for_duck_typing():
     c0.show()
     c0.hide()
 
+    view.remove_component(c0.id)
+    nt.assert_false(hasattr(view, 'component_1'))
+
 def test_trajectory_show_hide_sending_cooridnates():
     view = NGLWidget()
 

@@ -1019,6 +1019,7 @@ class NGLWidget(widgets.DOMWidget):
         >>> # remove last component
         >>> view.remove_component(view._ngl_component_ids[-1])
         """
+        self._clear_component_auto_completion()
         if self._trajlist:
             for traj in self._trajlist:
                 if traj.id == component_id:
@@ -1154,6 +1155,11 @@ class NGLWidget(widgets.DOMWidget):
         '''
         from IPython import display
         return display.Image(self._image_data)
+
+    def _clear_component_auto_completion(self):
+        for index, _ in enumerate(self._ngl_component_ids):
+            name = 'component_' + str(index)
+            delattr(self, name)
 
     def _update_component_auto_completion(self):
         for index in range(len(self._ngl_component_ids)):
