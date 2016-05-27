@@ -1075,6 +1075,46 @@ class NGLWidget(widgets.DOMWidget):
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
 
+    @property
+    def n_components(self):
+        return len(self._ngl_component_ids)
+
+    def hide(self, indices):
+        """set invisibility for given components (by their indices)
+        """
+        for index in indices:
+            assert index < self.n_components
+            self._remote_call("setVisibility",
+                    target='compList',
+                    args=[False,],
+                    kwargs={'component_index': index})
+
+    def show(self, *args):
+        self.show_only(*args)
+
+    def show_only(self, indices='all'):
+        """set visibility for given components (by their indices)
+
+        Parameters
+        ----------
+        indices : {'all', array-like}, component index, default 'all'
+        """
+        if indices == 'all':
+            indices_ = set(range(self.n_components))
+        else:
+            indices_ = set(indices)
+
+        for index in range(self.n_components):
+            if index in indices_:
+                args = [True,]
+            else:
+                args = [False,]
+
+            self._remote_call("setVisibility",
+                    target='compList',
+                    args=args,
+                    kwargs={'component_index': index})
+
     def _js_console(self):
         self.send(dict(type='get', data='any'))
 
