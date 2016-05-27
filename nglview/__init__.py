@@ -1159,6 +1159,22 @@ class Component(object):
     def id(self):
         return self._view._ngl_component_ids[self._index]
 
+    def hide(self):
+        """set invisibility for given components (by their indices)
+        """
+        self._view._remote_call("setVisibility",
+                target='compList',
+                args=[False,],
+                kwargs={'component_index': self._index})
+
+    def show(self):
+        """set invisibility for given components (by their indices)
+        """
+        self._view._remote_call("setVisibility",
+                target='compList',
+                args=[True,],
+                kwargs={'component_index': self._index})
+
     def add_representation(self, repr_type, selection='all', **kwargs):
         kwargs['component'] = self._index
         self._view.add_representation(repr_type=repr_type, selection=selection, **kwargs)
