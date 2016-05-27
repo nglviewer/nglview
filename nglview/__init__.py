@@ -1185,6 +1185,7 @@ class Component(object):
         _add_repr_method_shortcut(self, self._view)
         self._borrow_attribute(self._view, ['clear_representations',
                                             'center_view',
+                                            'center',
                                             'clear',
                                             'set_representations'])
 
