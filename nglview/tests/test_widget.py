@@ -234,3 +234,6 @@ def test_component_for_duck_typing():
     c1 = view[1]
     nt.assert_true(hasattr(view, 'component_0'))
     nt.assert_true(hasattr(view, 'component_1'))
+
+    c0.show()
+    c0.hide()
