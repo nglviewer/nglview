@@ -1162,7 +1162,7 @@ class NGLWidget(widgets.DOMWidget):
             delattr(self, name)
 
     def _update_component_auto_completion(self):
-        for index in range(len(self._ngl_component_ids)):
+        for index, _ in enumerate(self._ngl_component_ids):
             comp = Component(self, index) 
             name = 'component_' + str(index)
             setattr(self, name, comp)
