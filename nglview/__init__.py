@@ -700,6 +700,9 @@ class NGLWidget(widgets.DOMWidget):
         """
         self._set_coordinates(self.frame)
 
+    def clear(self, *args, **kwargs):
+        self.clear_representations(*args, **kwargs)
+
     def clear_representations(self, component=0):
         '''clear all representations for given component
 
@@ -773,6 +776,11 @@ class NGLWidget(widgets.DOMWidget):
                           args=[d['type'],],
                           kwargs=params)
 
+
+    def center(self, *args, **kwargs):
+        """alias of `center_view`
+        """
+        self.center_view(*args, **kwargs)
 
     def center_view(self, zoom=True, selection='*', component=0):
         """center view
@@ -1011,6 +1019,7 @@ class NGLWidget(widgets.DOMWidget):
         >>> # remove last component
         >>> view.remove_component(view._ngl_component_ids[-1])
         """
+        self._clear_component_auto_completion()
         if self._trajlist:
             for traj in self._trajlist:
                 if traj.id == component_id:
@@ -1147,8 +1156,13 @@ class NGLWidget(widgets.DOMWidget):
         from IPython import display
         return display.Image(self._image_data)
 
+    def _clear_component_auto_completion(self):
+        for index, _ in enumerate(self._ngl_component_ids):
+            name = 'component_' + str(index)
+            delattr(self, name)
+
     def _update_component_auto_completion(self):
-        for index in range(len(self._ngl_component_ids)):
+        for index, _ in enumerate(self._ngl_component_ids):
             comp = Component(self, index) 
             name = 'component_' + str(index)
             setattr(self, name, comp)
@@ -1175,7 +1189,10 @@ class Component(object):
         self._view = view
         self._index = index
         _add_repr_method_shortcut(self, self._view)
-        self._borrow_attribute(self._view, ['clear_representations', 'center_view',
+        self._borrow_attribute(self._view, ['clear_representations',
+                                            'center_view',
+                                            'center',
+                                            'clear',
                                             'set_representations'])
 
     @property
