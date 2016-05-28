@@ -1206,6 +1206,9 @@ class Component(object):
                 target='compList',
                 args=[False,],
                 kwargs={'component_index': self._index})
+        traj = self._view._get_traj_by_id(self.id)
+        if traj is not None:
+            traj.shown = False
 
     def show(self):
         """set invisibility for given components (by their indices)
@@ -1214,6 +1217,10 @@ class Component(object):
                 target='compList',
                 args=[True,],
                 kwargs={'component_index': self._index})
+
+        traj = self._view._get_traj_by_id(self.id)
+        if traj is not None:
+            traj.shown = True
 
     def add_representation(self, repr_type, selection='all', **kwargs):
         kwargs['component'] = self._index

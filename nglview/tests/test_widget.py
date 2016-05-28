@@ -284,3 +284,32 @@ def test_trajectory_show_hide_sending_cooridnates():
     coordinates_dict = copy_coordinate_dict(view)
     nt.assert_equal(coordinates_dict[0].shape[0], 0)
     nt.assert_equal(coordinates_dict[1].shape[0], 0)
+
+    # slicing, show only component 1
+    view[1].show()
+    view.frame = 0
+    nt.assert_false(view._trajlist[0].shown)
+    nt.assert_true(view._trajlist[1].shown)
+    coordinates_dict = copy_coordinate_dict(view)
+    nt.assert_equal(coordinates_dict[0].shape[0], 0)
+    aa_eq(coordinates_dict[1], traj1[0].xyz)
+
+    # show all
+    view[1].show()
+    view[0].show()
+    view.frame = 1
+    nt.assert_true(view._trajlist[0].shown)
+    nt.assert_true(view._trajlist[1].shown)
+    coordinates_dict = copy_coordinate_dict(view)
+    aa_eq(coordinates_dict[0], traj0[1].xyz)
+    aa_eq(coordinates_dict[1], traj1[1].xyz)
+
+    # hide all
+    view[1].hide()
+    view[0].hide()
+    view.frame = 2
+    nt.assert_false(view._trajlist[0].shown)
+    nt.assert_false(view._trajlist[1].shown)
+    coordinates_dict = copy_coordinate_dict(view)
+    nt.assert_equal(coordinates_dict[0].shape[0], 0)
+    nt.assert_equal(coordinates_dict[1].shape[0], 0)
