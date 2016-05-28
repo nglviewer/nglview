@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview &mdash; NGLView 0+unknown documentation</title>
+  <title>nglview &mdash; NGLView 0.4+222.gcc1018c documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0+unknown documentation" href="../index.html"/>
+    <link rel="top" title="NGLView 0.4+222.gcc1018c documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -437,7 +437,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
-        <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shown</span> <span class="o">=</span> <span class="bp">True</span>
 
 <div class="viewcode-block" id="Trajectory.get_coordinates"><a class="viewcode-back" href="../api.html#nglview.Trajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
@@ -792,7 +792,10 @@
                 <span class="n">traj_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">traj_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">shown</span><span class="p">:</span>
+                        <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">traj_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">traj_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">)</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
                     <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">traj_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">)</span>
 
@@ -823,6 +826,9 @@
         <span class="sd">&quot;&quot;&quot;set and send coordinates at current frame</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NGLWidget.clear"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_representations</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NGLWidget.clear_representations"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.clear_representations">[docs]</a>    <span class="k">def</span> <span class="nf">clear_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;clear all representations for given component</span>
@@ -897,6 +903,11 @@
                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],],</span>
                           <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="NGLWidget.center"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.center">[docs]</a>    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;alias of `center_view`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NGLWidget.center_view"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.center_view">[docs]</a>    <span class="k">def</span> <span class="nf">center_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;center view</span>
@@ -1040,6 +1051,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># update via structure_list</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="s1">&#39;shown&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_count</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
@@ -1134,6 +1146,7 @@
 <span class="sd">        &gt;&gt;&gt; # remove last component</span>
 <span class="sd">        &gt;&gt;&gt; view.remove_component(view._ngl_component_ids[-1])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear_component_auto_completion</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">component_id</span><span class="p">:</span>
@@ -1202,6 +1215,65 @@
             <span class="c1"># all callbacks will be called right after widget is loaded</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_traj_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itsid</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">itsid</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">traj</span>
+
+<div class="viewcode-block" id="NGLWidget.hide"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;set invisibility for given components (by their indices)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">traj_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span>
+            <span class="n">comp_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">comp_id</span> <span class="ow">in</span> <span class="n">traj_ids</span><span class="p">:</span>
+                <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_traj_by_id</span><span class="p">(</span><span class="n">comp_id</span><span class="p">)</span>
+                <span class="n">traj</span><span class="o">.</span><span class="n">shown</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;setVisibility&quot;</span><span class="p">,</span>
+                    <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">False</span><span class="p">,],</span>
+                    <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="NGLWidget.show"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_only</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NGLWidget.show_only"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.show_only">[docs]</a>    <span class="k">def</span> <span class="nf">show_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;set visibility for given components (by their indices)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        indices : {&#39;all&#39;, array-like}, component index, default &#39;all&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">traj_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">indices</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">indices_</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indices_</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">comp_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">comp_id</span> <span class="ow">in</span> <span class="n">traj_ids</span><span class="p">:</span>
+                <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_traj_by_id</span><span class="p">(</span><span class="n">comp_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices_</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="bp">True</span><span class="p">,]</span>
+                <span class="k">if</span> <span class="n">traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">traj</span><span class="o">.</span><span class="n">shown</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="bp">False</span><span class="p">,]</span>
+                <span class="k">if</span> <span class="n">traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">traj</span><span class="o">.</span><span class="n">shown</span> <span class="o">=</span> <span class="bp">False</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;setVisibility&quot;</span><span class="p">,</span>
+                    <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+                    <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">})</span></div>
+
     <span class="k">def</span> <span class="nf">_js_console</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;any&#39;</span><span class="p">))</span>
 
@@ -1211,8 +1283,13 @@
         <span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
         <span class="k">return</span> <span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_clear_component_auto_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;component_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_update_component_auto_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">):</span>
             <span class="n">comp</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> 
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;component_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span>
@@ -1239,12 +1316,38 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="n">view</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
         <span class="n">_add_repr_method_shortcut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_borrow_attribute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;clear_representations&#39;</span><span class="p">,</span> <span class="s1">&#39;center_view&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_borrow_attribute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;clear_representations&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;center_view&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;clear&#39;</span><span class="p">,</span>
                                             <span class="s1">&#39;set_representations&#39;</span><span class="p">])</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Component.hide"><a class="viewcode-back" href="../api.html#nglview.Component.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;set invisibility for given components (by their indices)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;setVisibility&quot;</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">False</span><span class="p">,],</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">})</span>
+        <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_get_traj_by_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">traj</span><span class="o">.</span><span class="n">shown</span> <span class="o">=</span> <span class="bp">False</span></div>
+
+<div class="viewcode-block" id="Component.show"><a class="viewcode-back" href="../api.html#nglview.Component.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;set invisibility for given components (by their indices)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;setVisibility&quot;</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">True</span><span class="p">,],</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">})</span>
+
+        <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_get_traj_by_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">traj</span><span class="o">.</span><span class="n">shown</span> <span class="o">=</span> <span class="bp">True</span></div>
 
 <div class="viewcode-block" id="Component.add_representation"><a class="viewcode-back" href="../api.html#nglview.Component.add_representation">[docs]</a>    <span class="k">def</span> <span class="nf">add_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repr_type</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;component&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
@@ -1320,7 +1423,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0+unknown',
+            VERSION:'0.4+222.gcc1018c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
