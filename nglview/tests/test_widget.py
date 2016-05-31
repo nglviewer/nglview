@@ -4,6 +4,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 from __future__ import print_function
+import os
 
 import nose.tools as nt
 import gzip
@@ -315,3 +316,9 @@ def test_trajectory_show_hide_sending_cooridnates():
     coordinates_dict = copy_coordinate_dict(view)
     nt.assert_equal(coordinates_dict[0].shape[0], 0)
     nt.assert_equal(coordinates_dict[1].shape[0], 0)
+
+def test_existing_js_files():
+    from glob import glob
+    jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'js', '*js'))
+
+    nt.assert_equal(len(jsfiles), 12)
