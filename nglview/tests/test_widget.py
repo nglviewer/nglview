@@ -98,6 +98,8 @@ def test_API_promise_to_have():
     nv.NGLWidget.clear
     nv.NGLWidget.center
 
+    nv._get_notebook_info()
+
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     view = nv.show_pytraj(traj)
