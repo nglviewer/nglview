@@ -28,19 +28,6 @@ We highly recommend to install development version::
 
     python -m pip install git+https://github.com/arose/nglview
 
-Release
--------
-Notes: release version API is outdated. Please try development version.
-From PyPI:
-
-    python -m pip install nglview
-Note: The above will try to install `jupyter`, `traitlets` and `ipywidgets`  as dependencies. If that fails install it manually `pip install jupyter`.
-
-From Conda
-
-    conda install -c omnia nglview
-
-
 Usage
 =====
 
