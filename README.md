@@ -1,5 +1,4 @@
 
-[![Binder](http://mybinder.org/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
 [![Build Status](https://travis-ci.org/arose/nglview.svg?branch=master)](https://travis-ci.org/arose/nglview)
 
@@ -29,18 +28,9 @@ We highly recommend to install development version::
 
     python -m pip install git+https://github.com/arose/nglview
 
-Release
--------
-Notes: release version API is outdated. Please try development version.
-From PyPI:
+If for any reasons that the `widget` is not shown, try reinstall below packages
 
-    python -m pip install nglview
-Note: The above will try to install `jupyter`, `traitlets` and `ipywidgets`  as dependencies. If that fails install it manually `pip install jupyter`.
-
-From Conda
-
-    conda install -c omnia nglview
-
+    conda install traitlets=4.2.1 ipywidgets==4.1.1 notebook=4.1.0
 
 Usage
 =====
