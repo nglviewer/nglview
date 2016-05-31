@@ -912,13 +912,26 @@ class NGLWidget(widgets.DOMWidget):
 
         Parameters
         ----------
-        trajectory: nglview.Trajectory or derived class
+        trajectory: nglview.Trajectory or its derived class or 
+            pytraj.Trajectory-like, mdtraj.Trajectory or MDAnalysis objects
 
         Notes
         -----
         If you combine both Structure and Trajectory, make sure
         to load all trajectories first.
         '''
+        backends = dict(pytraj=PyTrajTrajectory,
+                       mdtraj=MDTrajTrajectory,
+                       MDAnalysis=MDAnalysisTrajectory,
+                       parmed=ParmEdTrajectory)
+
+        package_name = trajectory.__module__.split('.')[0]
+
+        if package_name in backends:
+            trajectory = backends[package_name](trajectory)
+        else:
+            trajectory = trajectory
+
         if self.loaded:
             self._load_data(trajectory, **kwargs)
         else:
