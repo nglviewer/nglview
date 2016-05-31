@@ -28,6 +28,17 @@ We highly recommend to install development version::
 
     python -m pip install git+https://github.com/arose/nglview
 
+Note: `nglview` is extensively tested with
+
+    In [5]: ipywidgets.__version__
+    Out[5]: '4.1.1'
+
+    In [6]: traitlets.__version__
+    Out[6]: '4.2.1'
+
+    In [7]: notebook.__version__
+    Out[7]: '4.1.0'
+
 Usage
 =====
 
