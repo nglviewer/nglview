@@ -66,9 +66,24 @@ API
 ### Representations
 
 ```python
-view.add_cartoon("protein", color="residueindex")
-view.add_surface("protein", opacity=0.3)
+view.add_representation(repr_type='cartoon', selection='protein')
+
+# or shorter
+view.add_cartoon(selection="protein")
+view.add_surface(selection="protein", opacity=0.3)
+
+# specify color
+view.add_cartoon(selection="protein", color='blue')
+
+# specify residue
+view.add_licorice('ALA, GLU')
+
+# clear representations
+view.clear_representations()
+...
 ```
+
+And many more, please check [Selection language](http://arose.github.io/ngl/doc/#User_manual/Usage/Selection_language)
 
 Representations can also be changed by overwriting the `representations` property
 of the widget instance `view`. The available `type` and `params` are described
