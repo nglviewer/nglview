@@ -13,6 +13,7 @@ Table of contents
 =================
 
 * [Installation](#installation)
+* [Example](#example)
 * [Usage](#usage)
 * [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
@@ -31,6 +32,11 @@ We highly recommend to install development version::
 If for any reasons that the `widget` is not shown, try reinstall below packages
 
     conda install traitlets=4.2.1 ipywidgets==4.1.1 notebook=4.1.0
+
+Example
+=======
+
+Please see our [Jupyter notebook examples](./examples)
 
 Usage
 =====
