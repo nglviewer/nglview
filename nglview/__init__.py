@@ -1276,3 +1276,11 @@ install(symlink=False)
 from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions
+
+def _get_notebook_info():
+    import notebook, ipywidgets, traitlets
+
+    print('notebook', notebook.__version__)
+    print('ipywidgets', ipywidgets.__version__)
+    print('traitlets', traitlets.__version__)
+    print('nglview', __version__)

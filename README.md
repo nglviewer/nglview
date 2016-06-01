@@ -13,6 +13,7 @@ Table of contents
 =================
 
 * [Installation](#installation)
+* [Example](#example)
 * [Usage](#usage)
 * [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
@@ -28,18 +29,14 @@ We highly recommend to install development version::
 
     python -m pip install git+https://github.com/arose/nglview
 
-Release
--------
-Notes: release version API is outdated. Please try development version.
-From PyPI:
+If for any reasons that the `widget` is not shown, try reinstall below packages
 
-    python -m pip install nglview
-Note: The above will try to install `jupyter`, `traitlets` and `ipywidgets`  as dependencies. If that fails install it manually `pip install jupyter`.
+    conda install traitlets=4.2.1 ipywidgets==4.1.1 notebook=4.1.0
 
-From Conda
+Example
+=======
 
-    conda install -c omnia nglview
-
+Please see our [Jupyter notebook examples](./examples)
 
 Usage
 =====
@@ -75,9 +72,24 @@ API
 ### Representations
 
 ```python
-view.add_cartoon("protein", color="residueindex")
-view.add_surface("protein", opacity=0.3)
+view.add_representation(repr_type='cartoon', selection='protein')
+
+# or shorter
+view.add_cartoon(selection="protein")
+view.add_surface(selection="protein", opacity=0.3)
+
+# specify color
+view.add_cartoon(selection="protein", color='blue')
+
+# specify residue
+view.add_licorice('ALA, GLU')
+
+# clear representations
+view.clear_representations()
+...
 ```
+
+And many more, please check [Selection language](http://arose.github.io/ngl/doc/#User_manual/Usage/Selection_language)
 
 Representations can also be changed by overwriting the `representations` property
 of the widget instance `view`. The available `type` and `params` are described
