@@ -34,7 +34,7 @@ before_script:
 
 script:
     - if [[ "$PYTHON_VERSION" == "3.5" ]]; then
-        nightwatch
+        nightwatch;
       fi
     - (cd nglview/tests && nosetests --with-coverage --cover-package nglview -vs .)
 
