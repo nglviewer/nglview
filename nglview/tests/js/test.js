@@ -5,7 +5,7 @@ module.exports = {
         browser.restartKernel(2000);
         for ( var i = 0; i < 20; i++) {
            browser.executeCell(i)
-                  .pause(2000)
+                  .pause(5000)
                   .cellHasError(i);
         }
         browser.end();
