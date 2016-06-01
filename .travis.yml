@@ -7,10 +7,19 @@ matrix:
      - { os: linux, env: PYTHON_VERSION=3.5 }
      # - { os: osx, env: PYTHON_VERSION=3.5 }
 
-sudo: false
+sudo: true
+
+
+addons:
+  packages:
+    - unzip
+    - google-chrome-stable
 
 before_install:
-  - 
+  - wget http://chromedriver.storage.googleapis.com/2.21/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip
+  - sudo chmod u+x chromedriver
+  - sudo mv chromedriver /usr/bin/
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew tap homebrew/science;
       brew update;
