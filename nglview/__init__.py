@@ -1093,6 +1093,8 @@ class NGLWidget(widgets.DOMWidget):
         return len(self._ngl_component_ids)
 
     def _get_traj_by_id(self, itsid):
+        """return nglview.Trajectory or its derived class object
+        """
         for traj in self._trajlist:
             if traj.id == itsid:
                 return traj
@@ -1162,10 +1164,16 @@ class NGLWidget(widgets.DOMWidget):
             delattr(self, name)
 
     def _update_component_auto_completion(self):
-        for index, _ in enumerate(self._ngl_component_ids):
+        trajids = set(traj.id for traj in self._trajlist)
+
+        for index, cid in enumerate(self._ngl_component_ids):
             comp = Component(self, index) 
             name = 'component_' + str(index)
             setattr(self, name, comp)
+
+            if cid in trajids:
+                traj_name = 'trajectory_' + str(index)
+                setattr(self, traj_name, comp)
 
     def __getitem__(self, index):
         assert index < len(self._ngl_component_ids)
