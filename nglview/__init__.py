@@ -1164,7 +1164,7 @@ class NGLWidget(widgets.DOMWidget):
             delattr(self, name)
 
     def _update_component_auto_completion(self):
-        trajids = set(traj.id for traj in self._trajlist)
+        trajids = [traj.id for traj in self._trajlist]
 
         for index, cid in enumerate(self._ngl_component_ids):
             comp = ComponentViewer(self, index) 
@@ -1172,7 +1172,7 @@ class NGLWidget(widgets.DOMWidget):
             setattr(self, name, comp)
 
             if cid in trajids:
-                traj_name = 'trajectory_' + str(index)
+                traj_name = 'trajectory_' + str(trajids.index(cid))
                 setattr(self, traj_name, comp)
 
     def __getitem__(self, index):
