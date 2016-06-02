@@ -916,8 +916,7 @@ class NGLWidget(widgets.DOMWidget):
 
         Notes
         -----
-        If you combine both Structure and Trajectory, make sure
-        to load all trajectories first.
+        `add_trajectory` is just a special case of `add_component`
         '''
         if self.loaded:
             self._load_data(trajectory, **kwargs)
