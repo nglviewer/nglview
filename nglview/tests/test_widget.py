@@ -232,19 +232,25 @@ def test_camelize_parameters():
 
 def test_component_for_duck_typing():
     view = NGLWidget()
+    traj = pt.load(nv.datafiles.PDB)
     view.add_component('data/tz2.pdb')
     view.add_component('data/tz2_2.pdb.gz')
+    view.add_trajectory(nv.PyTrajTrajectory(traj))
     
     c0 = view[0]
     c1 = view[1]
     nt.assert_true(hasattr(view, 'component_0'))
     nt.assert_true(hasattr(view, 'component_1'))
+    nt.assert_true(hasattr(view, 'trajectory_0'))
+    nt.assert_true(hasattr(view.trajectory_0, 'n_frames'))
+    nt.assert_true(hasattr(view.trajectory_0, 'get_coordinates'))
+    nt.assert_true(hasattr(view.trajectory_0, 'get_structure_string'))
 
     c0.show()
     c0.hide()
 
     view.remove_component(c0.id)
-    nt.assert_false(hasattr(view, 'component_1'))
+    nt.assert_false(hasattr(view, 'component_2'))
 
 def test_trajectory_show_hide_sending_cooridnates():
     view = NGLWidget()
