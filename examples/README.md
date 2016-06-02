@@ -3,7 +3,7 @@ Notes
 
 [Click me to view notebook on nbviewer server](http://nbviewer.jupyter.org/github/arose/nglview/tree/master/examples/)
 
-Try live nglview online [![Binder](http://mybinder.org/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
+[Try live nglview online](http://mybinder.org/repo/hainm/nglview-notebooks)
 
 Examples
 ========
