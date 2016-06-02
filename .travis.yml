@@ -43,8 +43,7 @@ before_script:
 
 script:
     - if [[ "$PYTHON_VERSION" == "3.5" ]]; then
-        echo "turn off nightwatch for now";
-        # nightwatch;
+         echo "turn off nightwatch for now";
       fi
     - (cd nglview/tests && nosetests --with-coverage --cover-package nglview -vs .)
 
