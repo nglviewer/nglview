@@ -36,7 +36,7 @@ If for any reasons that the `widget` is not shown, try reinstall below packages
 Example
 =======
 
-Please see our [Jupyter notebook examples](./examples)
+Please see our [Jupyter notebook examples](./examples/README.md)
 
 Usage
 =====
