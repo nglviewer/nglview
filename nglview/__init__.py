@@ -1167,7 +1167,7 @@ class NGLWidget(widgets.DOMWidget):
         trajids = set(traj.id for traj in self._trajlist)
 
         for index, cid in enumerate(self._ngl_component_ids):
-            comp = Component(self, index) 
+            comp = ComponentViewer(self, index) 
             name = 'component_' + str(index)
             setattr(self, name, comp)
 
@@ -1177,16 +1177,35 @@ class NGLWidget(widgets.DOMWidget):
 
     def __getitem__(self, index):
         assert index < len(self._ngl_component_ids)
-        return Component(self, index) 
+        return ComponentViewer(self, index) 
 
-class Component(object):
-    """
+    def _play(self, start=0, stop=-1, step=1, delay=0.08, n_times=1):
+        '''for testing. Might be removed in the future
+
+        Notes
+        -----
+        To stop, you need to choose 'Kernel' --> 'Interupt' in your notebook tab (top)
+        '''
+        from itertools import repeat
+        from time import sleep
+
+        if stop == -1:
+            stop = self.count
+
+        for indices in repeat(range(start, stop, step), n_times):
+            for frame in indices:
+                self.frame = frame
+                sleep(delay)
+
+
+class ComponentViewer(object):
+    """Convenient attribute for NGLWidget. See example below.
 
     Examples
     --------
     >>> view = nv.NGLWidget()
-    >>> view.add_trajectory(traj)
-    >>> view.add_component(filename)
+    >>> view.add_trajectory(traj) # traj is a component 0
+    >>> view.add_component(filename) # component 1
     >>> view.component_0.clear_representations()
     >>> view.component_0.add_cartoon()
     >>> view.component_1.add_licorice()
@@ -1201,7 +1220,11 @@ class Component(object):
                                             'center_view',
                                             'center',
                                             'clear',
-                                            'set_representations'])
+                                            'set_representations'],
+
+                                            ['get_structure_string',
+                                             'get_coordinates',
+                                             'n_frames'])
 
     @property
     def id(self):
@@ -1234,15 +1257,22 @@ class Component(object):
         kwargs['component'] = self._index
         self._view.add_representation(repr_type=repr_type, selection=selection, **kwargs)
 
-    def _borrow_attribute(self, view, attlist):
+    def _borrow_attribute(self, view, attributes, trajectory_atts=None):
         from functools import partial
         from types import MethodType
 
-        for attname in attlist:
+        traj = view._get_traj_by_id(self.id)
+
+        for attname in attributes:
             view_att = getattr(view, attname)
             setattr(self, '_' + attname, MethodType(view_att, view))
             self_att = partial(getattr(view, attname), component=self._index)
             setattr(self, attname, self_att) 
+
+        if traj is not None and trajectory_atts is not None:
+            for attname in trajectory_atts:
+                traj_att = getattr(traj, attname)
+                setattr(self, attname, traj_att) 
         
 def install(user=True, symlink=False):
     """Install the widget nbextension.
