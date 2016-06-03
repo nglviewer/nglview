@@ -3,6 +3,9 @@ import os, sys
 import gzip, bz2
 from zipfile import ZipFile
 
+__all__ = ['seq_to_string', '_camelize', '_camelize_dict',
+           'get_colors_from_b64']
+
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
@@ -10,6 +13,29 @@ if PY3:
     string_types = str
 else:
     string_types = basestring
+
+def get_colors_from_b64(b64_image):
+    """
+
+    Examples
+    --------
+    >>> view.render_image()
+    >>> get_colors_from_b64(view._image_data)
+
+    Returns
+    -------
+    list of tuple 
+    """
+    # should install PIL
+    # py3
+
+    from PIL import Image
+    import io, base64
+
+    fp = io.BytesIO(base64.b64decode(b64_image))
+    image = Image.open(fp)
+
+    return image.getcolors(int(1E6))
 
 
 def seq_to_string(seq):
