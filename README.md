@@ -1,4 +1,5 @@
 
+[![Binder](http://mybinder.org/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
 [![Build Status](https://travis-ci.org/arose/nglview.svg?branch=master)](https://travis-ci.org/arose/nglview)
 
@@ -13,6 +14,7 @@ Table of contents
 =================
 
 * [Installation](#installation)
+* [Example](#example)
 * [Usage](#usage)
 * [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
@@ -31,6 +33,11 @@ We highly recommend to install development version::
 If for any reasons that the `widget` is not shown, try reinstall below packages
 
     conda install traitlets=4.2.1 ipywidgets==4.1.1 notebook=4.1.0
+
+Example
+=======
+
+Please see our [Jupyter notebook examples](./examples/README.md)
 
 Usage
 =====
@@ -66,9 +73,24 @@ API
 ### Representations
 
 ```python
-view.add_cartoon("protein", color="residueindex")
-view.add_surface("protein", opacity=0.3)
+view.add_representation(repr_type='cartoon', selection='protein')
+
+# or shorter
+view.add_cartoon(selection="protein")
+view.add_surface(selection="protein", opacity=0.3)
+
+# specify color
+view.add_cartoon(selection="protein", color='blue')
+
+# specify residue
+view.add_licorice('ALA, GLU')
+
+# clear representations
+view.clear_representations()
+...
 ```
+
+And many more, please check [Selection language](http://arose.github.io/ngl/doc/#User_manual/Usage/Selection_language)
 
 Representations can also be changed by overwriting the `representations` property
 of the widget instance `view`. The available `type` and `params` are described
