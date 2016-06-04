@@ -328,3 +328,8 @@ def test_existing_js_files():
     jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'js', '*js'))
 
     nt.assert_equal(len(jsfiles), 12)
+
+def test_player():
+    traj = pt.datafiles.load_tz2()
+    view = nv.show_pytraj(traj)
+    nt.assert_false(view.player.sync_frame)
