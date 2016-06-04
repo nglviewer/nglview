@@ -451,7 +451,7 @@ define( [
                     }
                 }
                 var time1 = Date.now();
-                console.log( time0 - msg.mytime, time1 - time0, 'base64_single' );
+                //console.log( time0 - msg.mytime, time1 - time0, 'base64_single' );
             }else if( msg.type == 'binary_single' ){
                 // TODO: remove time
                 // console.log("buffers",msg.buffers);
@@ -469,7 +469,7 @@ define( [
                     }
                 }
                 var time1 = Date.now();
-                console.log( time0 - msg.mytime, time1 - time0, 'binary_single' );
+                //console.log( time0 - msg.mytime, time1 - time0, 'binary_single' );
             }else if( msg.type == 'get') {
                 console.log( msg.data );
 
