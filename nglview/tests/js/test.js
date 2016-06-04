@@ -2,8 +2,8 @@
 module.exports = {
 
 
-    "duck.ipynb": function (browser) {
-        browser.openNotebook("duck.ipynb");
+    "api/binary_vs_base64.ipynbduck.ipynb": function (browser) {
+        browser.openNotebook("api/binary_vs_base64.ipynbduck.ipynb");
         browser.restartKernel(2000);
         for ( var i = 0; i < 20; i++) {
            browser.executeCell(i)

@@ -535,7 +535,7 @@ class NGLWidget(widgets.DOMWidget):
 
     displayed = False
     _ngl_msg = None
-    _send_binary = Bool(True).tag(sync=False)
+    _send_binary = Bool(False).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
@@ -703,12 +703,12 @@ class NGLWidget(widgets.DOMWidget):
         else:
             # send binary
             buffers = []
-            self._coordinates_meta = dict()
+            coordinates_meta = dict()
             for index, arr in self._coordinates_dict.items():
                 buffers.append(arr.astype('f4').tobytes())
-                self._coordinates_meta[index] = index
+                coordinates_meta[index] = index
             mytime = time.time() * 1000
-            self.send({'type': 'binary_single', 'data': self._coordinates_meta,
+            self.send({'type': 'binary_single', 'data': coordinates_meta,
                 'mytime': mytime}, buffers=buffers)
 
     @observe('frame')
