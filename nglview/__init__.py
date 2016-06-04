@@ -4,6 +4,7 @@ from __future__ import print_function, absolute_import
 from . import datafiles
 from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
+import time
 
 import os
 import os.path
@@ -534,6 +535,7 @@ class NGLWidget(widgets.DOMWidget):
 
     displayed = False
     _ngl_msg = None
+    _send_binary = Bool(False).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
@@ -690,9 +692,24 @@ class NGLWidget(widgets.DOMWidget):
     @coordinates_dict.setter
     def coordinates_dict(self, arr_dict):
         self._coordinates_dict = arr_dict
-        encoded_coordinates_dict = dict((k, encode_base64(v))
-                             for (k, v) in self._coordinates_dict.items())
-        self.send({'type': 'base64_single', 'data': encoded_coordinates_dict})
+
+        if not self._send_binary:
+            # send base64
+            encoded_coordinates_dict = dict((k, encode_base64(v))
+                                 for (k, v) in self._coordinates_dict.items())
+            mytime = time.time() * 1000
+            self.send({'type': 'base64_single', 'data': encoded_coordinates_dict,
+                'mytime': mytime})
+        else:
+            # send binary
+            buffers = []
+            coordinates_meta = dict()
+            for index, arr in self._coordinates_dict.items():
+                buffers.append(arr.astype('f4').tobytes())
+                coordinates_meta[index] = index
+            mytime = time.time() * 1000
+            self.send({'type': 'binary_single', 'data': coordinates_meta,
+                'mytime': mytime}, buffers=buffers)
 
     @observe('frame')
     def on_frame(self, change):
