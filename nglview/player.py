@@ -7,7 +7,7 @@ class TrajectoryPlayer(DOMWidget):
     _delay = Float()
     _params = Dict()
 
-    def __init__(self, view, step=1, delay=0.1, sync_frame=True):
+    def __init__(self, view, step=1, delay=0.1, sync_frame=False):
         self._view = view
         self.step = step
         self._sync_frame = sync_frame
