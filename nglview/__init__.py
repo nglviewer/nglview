@@ -919,7 +919,8 @@ class NGLWidget(widgets.DOMWidget):
                 self.frame += self.player.step
                 if self.frame >= self.count:
                     self.frame = 0
-
+                elif self.frame < 0:
+                    self.frame = self.count - 1
 
     def add_structure(self, structure, **kwargs):
         '''

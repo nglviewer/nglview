@@ -1,6 +1,12 @@
+from ipywidgets import DOMWidget
+from traitlets import Int, Bool, Dict, Float
 
+class TrajectoryPlayer(DOMWidget):
+    step = Int() 
+    _sync_frame = Bool()
+    _delay = Float()
+    _params = Dict()
 
-class TrajectoryPlayer(object):
     def __init__(self, view, step=1, delay=0.1, sync_frame=True):
         self._view = view
         self.step = step

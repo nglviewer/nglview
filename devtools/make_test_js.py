@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 notebooks = [
+        "0delay.ipynb",
         "api/binary_vs_base64.ipynb",
         "duck.ipynb",
         "api/render_image.ipynb",
