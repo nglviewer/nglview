@@ -1,23 +1,40 @@
-var testsuits = {};
 
-var nbfiles = ["caching.ipynb", "representations.ipynb", 
-               "closest_waters.ipynb"];
+module.exports = {
 
-for (var i = 0; i < nbfiles.length; i++) {
-    var fn = nbfiles[i];
 
-    testsuits[fn] = function (browser) {
-        browser.openNotebook(fn);
-        
+    "duck.ipynb": function (browser) {
+        browser.openNotebook("duck.ipynb");
         browser.restartKernel(2000);
-        for (var i = 0; i < 5; i++) {
+        for ( var i = 0; i < 20; i++) {
            browser.executeCell(i)
-                  .pause(1000)
+                  .pause(2000)
                   .cellHasError(i);
         }
-        
         browser.end();
-    }
-}
+    },
 
-module.exports = testsuits;
+
+    "api/render_image.ipynb": function (browser) {
+        browser.openNotebook("api/render_image.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 20; i++) {
+           browser.executeCell(i)
+                  .pause(2000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "api/view_trajectory.ipynb": function (browser) {
+        browser.openNotebook("api/view_trajectory.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 20; i++) {
+           browser.executeCell(i)
+                  .pause(2000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+}

@@ -4,6 +4,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 from __future__ import print_function
+import os
 
 import nose.tools as nt
 import gzip
@@ -20,6 +21,7 @@ from ipywidgets import Widget
 
 import pytraj as pt
 import nglview as nv
+from nglview import NGLWidget
 import mdtraj as md
 import parmed as pmd
 # wait until MDAnalysis supports PY3
@@ -93,6 +95,11 @@ def test_API_promise_to_have():
     nv.NGLWidget.add_component
     nv.NGLWidget.add_trajectory
     nv.NGLWidget.coordinates_dict
+    nv.NGLWidget.set_representations
+    nv.NGLWidget.clear
+    nv.NGLWidget.center
+
+    nv._get_notebook_info()
 
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -222,3 +229,102 @@ def test_camelize_parameters():
     view = nv.NGLWidget()
     view.parameters = dict(background_color='black')
     nt.assert_true('backgroundColor' in view._parameters) 
+
+def test_component_for_duck_typing():
+    view = NGLWidget()
+    traj = pt.load(nv.datafiles.PDB)
+    view.add_component('data/tz2.pdb')
+    view.add_component('data/tz2_2.pdb.gz')
+    view.add_trajectory(nv.PyTrajTrajectory(traj))
+    
+    c0 = view[0]
+    c1 = view[1]
+    nt.assert_true(hasattr(view, 'component_0'))
+    nt.assert_true(hasattr(view, 'component_1'))
+    nt.assert_true(hasattr(view, 'trajectory_0'))
+    nt.assert_true(hasattr(view.trajectory_0, 'n_frames'))
+    nt.assert_true(hasattr(view.trajectory_0, 'get_coordinates'))
+    nt.assert_true(hasattr(view.trajectory_0, 'get_structure_string'))
+
+    c0.show()
+    c0.hide()
+
+    view.remove_component(c0.id)
+    nt.assert_false(hasattr(view, 'component_2'))
+
+def test_trajectory_show_hide_sending_cooridnates():
+    view = NGLWidget()
+
+    traj0 = pt.datafiles.load_tz2()
+    traj1 = pt.datafiles.load_trpcage()
+
+    view.add_trajectory(nv.PyTrajTrajectory(traj0))
+    view.add_trajectory(nv.PyTrajTrajectory(traj1))
+
+    for traj in view._trajlist:
+        nt.assert_true(traj.shown)
+
+    view.frame = 1
+
+    def copy_coordinate_dict(view):
+        # make copy to avoid memory free
+        return dict((k, v.copy()) for k, v in view.coordinates_dict.items())
+
+    coordinates_dict = copy_coordinate_dict(view)
+    aa_eq(coordinates_dict[0], traj0[1].xyz) 
+    aa_eq(coordinates_dict[1], traj1[1].xyz) 
+
+    # hide 0
+    view.hide([0,])
+    nt.assert_false(view._trajlist[0].shown)
+    nt.assert_true(view._trajlist[1].shown)
+
+    # update frame so view can update its coordinates
+    view.frame = 2
+    coordinates_dict = copy_coordinate_dict(view)
+    nt.assert_equal(coordinates_dict[0].shape[0], 0)
+    aa_eq(coordinates_dict[1], traj1[2].xyz)
+
+    # hide 0, 1
+    view.hide([0, 1])
+    nt.assert_false(view._trajlist[0].shown)
+    nt.assert_false(view._trajlist[1].shown)
+    view.frame = 3
+    coordinates_dict = copy_coordinate_dict(view)
+    nt.assert_equal(coordinates_dict[0].shape[0], 0)
+    nt.assert_equal(coordinates_dict[1].shape[0], 0)
+
+    # slicing, show only component 1
+    view[1].show()
+    view.frame = 0
+    nt.assert_false(view._trajlist[0].shown)
+    nt.assert_true(view._trajlist[1].shown)
+    coordinates_dict = copy_coordinate_dict(view)
+    nt.assert_equal(coordinates_dict[0].shape[0], 0)
+    aa_eq(coordinates_dict[1], traj1[0].xyz)
+
+    # show all
+    view[1].show()
+    view[0].show()
+    view.frame = 1
+    nt.assert_true(view._trajlist[0].shown)
+    nt.assert_true(view._trajlist[1].shown)
+    coordinates_dict = copy_coordinate_dict(view)
+    aa_eq(coordinates_dict[0], traj0[1].xyz)
+    aa_eq(coordinates_dict[1], traj1[1].xyz)
+
+    # hide all
+    view[1].hide()
+    view[0].hide()
+    view.frame = 2
+    nt.assert_false(view._trajlist[0].shown)
+    nt.assert_false(view._trajlist[1].shown)
+    coordinates_dict = copy_coordinate_dict(view)
+    nt.assert_equal(coordinates_dict[0].shape[0], 0)
+    nt.assert_equal(coordinates_dict[1].shape[0], 0)
+
+def test_existing_js_files():
+    from glob import glob
+    jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'js', '*js'))
+
+    nt.assert_equal(len(jsfiles), 12)

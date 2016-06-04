@@ -457,8 +457,8 @@ define( [
                 // console.log("buffers",msg.buffers);
                 var time0 = Date.now();
 
-                var coordinateDict2 = msg.data;
-                var keys = Object.keys( coordinateDict2 );
+                var coordinatesDict = msg.data;
+                var keys = Object.keys( coordinatesDict );
 
                 for ( var i = 0; i < keys.length ; i++ ){
                     var traj_index = keys[ i ];
