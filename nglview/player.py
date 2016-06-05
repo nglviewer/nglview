@@ -1,5 +1,6 @@
 from ipywidgets import DOMWidget
 from traitlets import Int, Bool, Dict, Float
+from traitlets import observe
 
 class TrajectoryPlayer(DOMWidget):
     step = Int().tag(sync=True)
@@ -45,6 +46,11 @@ class TrajectoryPlayer(DOMWidget):
     @delay.setter
     def delay(self, delay):
         self._delay = delay
+        self._view._set_delay(delay)
+
+    @observe("_delay")
+    def update_delay(self, change):
+        delay = change['new']
         self._view._set_delay(delay)
 
     @property
