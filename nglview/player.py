@@ -21,6 +21,10 @@ class TrajectoryPlayer(DOMWidget):
     def frame(self):
         return self._view.frame
 
+    @frame.setter
+    def frame(self, value):
+        return self._view.frame = value
+
     @property
     def count(self):
         return self._view.count
@@ -37,7 +41,6 @@ class TrajectoryPlayer(DOMWidget):
         else:
             self._view._set_unsync_frame()
             self._sync_frame = False
-
 
     @property
     def delay(self):
