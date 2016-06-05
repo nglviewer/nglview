@@ -546,7 +546,7 @@ class NGLWidget(widgets.DOMWidget):
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
 
-        # create after initilize _ngl_displayed_callbacks
+        # create after initilizing _ngl_displayed_callbacks
         self.player = TrajectoryPlayer(self)
 
         # register to get data from JS side
