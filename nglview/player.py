@@ -3,9 +3,11 @@ from traitlets import Int, Bool, Dict, Float
 from traitlets import observe
 
 class TrajectoryPlayer(DOMWidget):
-    step = Int().tag(sync=True)
-    sync_frame = Bool().tag(sync=True)
-    delay = Float().tag(sync=True)
+    # should set default values here different from desired defaults
+    # so `observe` can be triggered
+    step = Int(0).tag(sync=True)
+    sync_frame = Bool(True).tag(sync=True)
+    delay = Float(0.0).tag(sync=True)
     parameters = Dict().tag(sync=True)
 
     def __init__(self, view, step=1, delay=0.1, sync_frame=False):
