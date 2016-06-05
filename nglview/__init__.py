@@ -521,6 +521,7 @@ class NGLWidget(widgets.DOMWidget):
     _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
+    background_color = Unicode().tag(sync=True)
     loaded = Bool(False).tag(sync=True)
     frame = Int().tag(sync=True)
     # hack to always display movie
@@ -601,6 +602,11 @@ class NGLWidget(widgets.DOMWidget):
     def parameters(self, params):
         params = _camelize_dict(params)
         self._parameters = params
+
+    @observe('background_color')
+    def _update_background_color(self, change):
+        color = change['new']
+        self.parameters = dict(background_color=color)
 
     @observe('_n_dragged_files')
     def on_update_dragged_file(self, change):
