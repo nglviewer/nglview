@@ -1,4 +1,6 @@
-from ipywidgets import DOMWidget, IntText, BoundedFloatText, HBox, VBox, Checkbox
+from ipywidgets import (DOMWidget, IntText, BoundedFloatText, HBox, VBox, Checkbox,
+                        ColorPicker)
+                        
 from traitlets import Int, Bool, Dict, Float
 from traitlets import observe, link
 
@@ -10,11 +12,12 @@ class TrajectoryPlayer(DOMWidget):
     delay = Float(0.0).tag(sync=True)
     parameters = Dict().tag(sync=True)
 
-    def __init__(self, view, step=1, delay=0.1, sync_frame=False):
+    def __init__(self, view, step=1, delay=0.1, sync_frame=False, min_delay=0.04):
         self._view = view
         self.step = step
         self.sync_frame = sync_frame
         self.delay = delay
+        self.min_delay = min_delay
 
     @property
     def frame(self):
@@ -50,11 +53,14 @@ class TrajectoryPlayer(DOMWidget):
 
     def _display(self):
         int_text = IntText(self.step, description='step')
-        float_txt = BoundedFloatText(self.delay, description='delay', min=0.001)
+        float_txt = BoundedFloatText(self.delay, description='delay', min=self.min_delay)
         checkbox_sync_frame = Checkbox(self.sync_frame, description='sync_frame')
+        bg_color = ColorPicker(description='background_color')
+        bg_color.value = 'white'
 
         link((int_text, 'value'), (self, 'step'))
         link((float_txt, 'value'), (self, 'delay'))
         link((checkbox_sync_frame, 'value'), (self, 'sync_frame'))
+        link((bg_color, 'value'), (self._view, 'background_color'))
 
-        return VBox([int_text, float_txt, checkbox_sync_frame])
+        return VBox([int_text, float_txt, checkbox_sync_frame, bg_color])
