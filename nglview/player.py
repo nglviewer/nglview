@@ -4,15 +4,15 @@ from traitlets import observe
 
 class TrajectoryPlayer(DOMWidget):
     step = Int().tag(sync=True)
-    _sync_frame = Bool().tag(sync=True)
-    _delay = Float().tag(sync=True)
-    _params = Dict().tag(sync=True)
+    sync_frame = Bool().tag(sync=True)
+    delay = Float().tag(sync=True)
+    parameters = Dict().tag(sync=True)
 
     def __init__(self, view, step=1, delay=0.1, sync_frame=False):
         self._view = view
         self.step = step
         self.sync_frame = sync_frame
-        self._delay = delay
+        self.delay = delay
 
     @property
     def frame(self):
@@ -26,41 +26,22 @@ class TrajectoryPlayer(DOMWidget):
     def count(self):
         return self._view.count
 
-    @property
-    def sync_frame(self):
-        return self._sync_frame
-
-    @sync_frame.setter
-    def sync_frame(self, value):
+    @observe('sync_frame')
+    def update_sync_frame(self, change):
+        value = change['new']
         if value:
             self._view._set_sync_frame()
-            self._sync_frame = True
         else:
             self._view._set_unsync_frame()
-            self._sync_frame = False
 
-    @property
-    def delay(self):
-        return self._delay
-
-    @delay.setter
-    def delay(self, delay):
-        self._delay = delay
-        self._view._set_delay(delay)
-
-    @observe("_delay")
+    @observe("delay")
     def update_delay(self, change):
         delay = change['new']
         self._view._set_delay(delay)
 
-    @property
-    def parameters(self):
-        return dict(sync_frame=self.sync_frame,
-                    delay=self.delay,
-                    step=self.step)
-
-    @parameters.setter
-    def parameters(self, params):
+    @observe('parameters')
+    def update_parameters(self, change):
+        params = change['new']
         self.sync_frame = params.get("sync_frame", self.sync_frame)
         self.delay = params.get("delay", self.delay)
         self.step = params.get("step", self.step)
