@@ -176,7 +176,7 @@ define( [
         },
 
         requestFrame: function(){
-            this.send({type: 'send_back', data: 'frame'});
+            this.send({type: 'request_frame'});
         },
 
         setDelay: function( delay ){

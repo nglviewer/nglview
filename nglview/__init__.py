@@ -915,7 +915,7 @@ class NGLWidget(widgets.DOMWidget):
             self._ngl_msg = msg
 
             msg_type = self._ngl_msg.get('type')
-            if msg_type == 'send_back':
+            if msg_type == 'request_frame':
                 self.frame += self.player.step
                 if self.frame >= self.count:
                     self.frame = 0
