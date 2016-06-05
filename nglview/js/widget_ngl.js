@@ -67,8 +67,11 @@ define( [
             // init orientation handling
             this.model.on( "change:orientation", this.orientationChanged, this );
 
+            // for player
+            this.delay = 100; 
+            this.sync_frame = true;
+
             // get message from Python
-            this.coordsDict2 = {};
             this.model.on( "msg:custom", function (msg) {
                 this.on_msg( msg );
             }, this);
@@ -172,6 +175,22 @@ define( [
             }, false );
         },
 
+        requestFrame: function(){
+            this.send({type: 'request_frame', data: 'frame'});
+        },
+
+        setDelay: function( delay ){
+            this.delay = delay;
+        },
+
+        setSyncFrame: function(){
+            this.sync_frame = true;
+        },
+
+        setUnSyncFrame: function(){
+            this.sync_frame = false;
+        },
+
         makeDefaultRepr: function( o ){
             var reprDefList = this.model.get( "_init_representations" );
             reprDefList.forEach( function( reprDef ){
@@ -193,9 +212,14 @@ define( [
                         var frame = this.model.get( "frame" ) + 1;
                         var count = this.model.get( "count" );
                         if( frame >= count ) frame = 0;
-                        this.model.set( "frame", frame );
-                        this.model.save();
-                    }.bind( this ), 100 );
+
+                        if ( this.sync_frame ) {
+                            this.model.set( "frame", frame );
+                            this.model.save();
+                        }else{
+                            this.requestFrame();
+                        }
+                    }.bind( this ), this.delay);
                 }.bind( this );
                 var pause = function(){
                     this.$playerButton.text( "play" );

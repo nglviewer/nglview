@@ -13,18 +13,15 @@ from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
 import numpy as np
 
 from ipykernel.comm import Comm
+from ipywidgets import Widget, IntText, FloatText, HBox
 import ipywidgets as widgets
-
-from traitlets import TraitError
-from ipywidgets import Widget
-
+from traitlets import TraitError, link
 
 import pytraj as pt
 import nglview as nv
 from nglview import NGLWidget
 import mdtraj as md
 import parmed as pmd
-# wait until MDAnalysis supports PY3
 from nglview.utils import PY2, PY3
 
 
@@ -328,3 +325,24 @@ def test_existing_js_files():
     jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'js', '*js'))
 
     nt.assert_equal(len(jsfiles), 12)
+
+def test_player():
+    traj = pt.datafiles.load_tz2()
+    view = nv.show_pytraj(traj)
+    nt.assert_false(view.player.sync_frame)
+
+def test_player_link_to_ipywidgets():
+    traj = pt.datafiles.load_tz2()
+    view = nv.show_pytraj(traj)
+
+    int_text = IntText(2)
+    float_text = FloatText(0.04)
+    HBox([int_text, float_text])
+    link((int_text, 'value'), (view.player, 'step'))
+    link((float_text, 'value'), (view.player, 'delay'))
+
+    nt.assert_equal(view.player.step, 2)
+    nt.assert_equal(view.player.delay, 0.04)
+
+    float_text.value = 0.1
+    nt.assert_equal(view.player.delay, 0.1)

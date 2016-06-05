@@ -4,6 +4,7 @@ from __future__ import print_function, absolute_import
 from . import datafiles
 from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
+from .player import TrajectoryPlayer
 import time
 
 import os
@@ -535,14 +536,18 @@ class NGLWidget(widgets.DOMWidget):
 
     displayed = False
     _ngl_msg = None
-    _send_binary = Bool(False).tag(sync=False)
+    _send_binary = Bool(True).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
 
+
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
+
+        # create after initilizing _ngl_displayed_callbacks
+        self.player = TrajectoryPlayer(self)
 
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
@@ -614,6 +619,19 @@ class NGLWidget(widgets.DOMWidget):
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         self.displayed = True
+
+    def _set_sync_frame(self):
+        self._remote_call("setSyncFrame", target="Widget")
+
+    def _set_unsync_frame(self):
+        self._remote_call("setUnSyncFrame", target="Widget")
+        
+    def _set_delay(self, delay):
+        """unit is second
+        """
+        delay = delay * 1000
+
+        self._remote_call("setDelay", target="Widget", args=[delay,])
 
     @property
     def representations(self):
@@ -897,6 +915,14 @@ class NGLWidget(widgets.DOMWidget):
             self._ngl_msg = json.loads(msg)
         else:
             self._ngl_msg = msg
+
+            msg_type = self._ngl_msg.get('type')
+            if msg_type == 'request_frame':
+                self.frame += self.player.step
+                if self.frame >= self.count:
+                    self.frame = 0
+                elif self.frame < 0:
+                    self.frame = self.count - 1
 
     def add_structure(self, structure, **kwargs):
         '''
