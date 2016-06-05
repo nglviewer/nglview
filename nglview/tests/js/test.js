@@ -2,8 +2,8 @@
 module.exports = {
 
 
-    "0delay.ipynb": function (browser) {
-        browser.openNotebook("0delay.ipynb");
+    "test_link_player.ipynb": function (browser) {
+        browser.openNotebook("test_link_player.ipynb");
         browser.restartKernel(2000);
         for ( var i = 0; i < 20; i++) {
            browser.executeCell(i)
