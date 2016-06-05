@@ -4,6 +4,8 @@ from __future__ import print_function, absolute_import
 from . import datafiles
 from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
+from .player import TrajectoryPlayer
+import time
 
 import os
 import os.path
@@ -534,13 +536,18 @@ class NGLWidget(widgets.DOMWidget):
 
     displayed = False
     _ngl_msg = None
+    _send_binary = Bool(True).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
 
+
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
+
+        # create after initilizing _ngl_displayed_callbacks
+        self.player = TrajectoryPlayer(self)
 
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
@@ -612,6 +619,19 @@ class NGLWidget(widgets.DOMWidget):
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         self.displayed = True
+
+    def _set_sync_frame(self):
+        self._remote_call("setSyncFrame", target="Widget")
+
+    def _set_unsync_frame(self):
+        self._remote_call("setUnSyncFrame", target="Widget")
+        
+    def _set_delay(self, delay):
+        """unit is second
+        """
+        delay = delay * 1000
+
+        self._remote_call("setDelay", target="Widget", args=[delay,])
 
     @property
     def representations(self):
@@ -690,9 +710,24 @@ class NGLWidget(widgets.DOMWidget):
     @coordinates_dict.setter
     def coordinates_dict(self, arr_dict):
         self._coordinates_dict = arr_dict
-        encoded_coordinates_dict = dict((k, encode_base64(v))
-                             for (k, v) in self._coordinates_dict.items())
-        self.send({'type': 'base64_single', 'data': encoded_coordinates_dict})
+
+        if not self._send_binary:
+            # send base64
+            encoded_coordinates_dict = dict((k, encode_base64(v))
+                                 for (k, v) in self._coordinates_dict.items())
+            mytime = time.time() * 1000
+            self.send({'type': 'base64_single', 'data': encoded_coordinates_dict,
+                'mytime': mytime})
+        else:
+            # send binary
+            buffers = []
+            coordinates_meta = dict()
+            for index, arr in self._coordinates_dict.items():
+                buffers.append(arr.astype('f4').tobytes())
+                coordinates_meta[index] = index
+            mytime = time.time() * 1000
+            self.send({'type': 'binary_single', 'data': coordinates_meta,
+                'mytime': mytime}, buffers=buffers)
 
     @observe('frame')
     def on_frame(self, change):
@@ -881,6 +916,14 @@ class NGLWidget(widgets.DOMWidget):
         else:
             self._ngl_msg = msg
 
+            msg_type = self._ngl_msg.get('type')
+            if msg_type == 'request_frame':
+                self.frame += self.player.step
+                if self.frame >= self.count:
+                    self.frame = 0
+                elif self.frame < 0:
+                    self.frame = self.count - 1
+
     def add_structure(self, structure, **kwargs):
         '''
 
@@ -912,12 +955,25 @@ class NGLWidget(widgets.DOMWidget):
 
         Parameters
         ----------
-        trajectory: nglview.Trajectory or derived class
+        trajectory: nglview.Trajectory or its derived class or 
+            pytraj.Trajectory-like, mdtraj.Trajectory or MDAnalysis objects
 
         Notes
         -----
         `add_trajectory` is just a special case of `add_component`
         '''
+        backends = dict(pytraj=PyTrajTrajectory,
+                       mdtraj=MDTrajTrajectory,
+                       MDAnalysis=MDAnalysisTrajectory,
+                       parmed=ParmEdTrajectory)
+
+        package_name = trajectory.__module__.split('.')[0]
+
+        if package_name in backends:
+            trajectory = backends[package_name](trajectory)
+        else:
+            trajectory = trajectory
+
         if self.loaded:
             self._load_data(trajectory, **kwargs)
         else:

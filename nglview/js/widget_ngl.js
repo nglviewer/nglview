@@ -67,11 +67,25 @@ define( [
             // init orientation handling
             this.model.on( "change:orientation", this.orientationChanged, this );
 
+            // for player
+            this.delay = 100; 
+            this.sync_frame = true;
+
             // get message from Python
-            this.coordsDict2 = {};
             this.model.on( "msg:custom", function (msg) {
                 this.on_msg( msg );
             }, this);
+
+            this.model.comm.on_msg( function( msg ){
+                var buffers = msg.buffers;
+                var content = msg.content.data.content;
+                // console.log("buffers", buffers);
+                // console.log("content", content);
+                if( buffers.length && content ){
+                    content.buffers = buffers;
+                }
+                this.model._handle_comm_msg.call( this.model, msg );
+            }.bind( this ) );
 
             // init NGL stage
             NGL.useWorker = false;
@@ -161,6 +175,22 @@ define( [
             }, false );
         },
 
+        requestFrame: function(){
+            this.send({type: 'request_frame', data: 'frame'});
+        },
+
+        setDelay: function( delay ){
+            this.delay = delay;
+        },
+
+        setSyncFrame: function(){
+            this.sync_frame = true;
+        },
+
+        setUnSyncFrame: function(){
+            this.sync_frame = false;
+        },
+
         makeDefaultRepr: function( o ){
             var reprDefList = this.model.get( "_init_representations" );
             reprDefList.forEach( function( reprDef ){
@@ -182,9 +212,14 @@ define( [
                         var frame = this.model.get( "frame" ) + 1;
                         var count = this.model.get( "count" );
                         if( frame >= count ) frame = 0;
-                        this.model.set( "frame", frame );
-                        this.model.save();
-                    }.bind( this ), 100 );
+
+                        if ( this.sync_frame ) {
+                            this.model.set( "frame", frame );
+                            this.model.save();
+                        }else{
+                            this.requestFrame();
+                        }
+                    }.bind( this ), this.delay);
                 }.bind( this );
                 var pause = function(){
                     this.$playerButton.text( "play" );
@@ -363,6 +398,7 @@ define( [
         },
 
         on_msg: function(msg){
+            // console.log(msg)
             // TODO: re-organize
             if( msg.type == 'call_method' ){
                 var new_args = msg.args.slice();
@@ -425,6 +461,8 @@ define( [
                         break;
                 }
             }else if( msg.type == 'base64_single' ){
+                // TODO: remove time
+                var time0 = Date.now();
 
                 var coordinatesDict = msg.data;
                 var keys = Object.keys( coordinatesDict );
@@ -436,6 +474,26 @@ define( [
                         this.updateCoordinates( coordinates, traj_index );
                     }
                 }
+                var time1 = Date.now();
+                //console.log( time0 - msg.mytime, time1 - time0, 'base64_single' );
+            }else if( msg.type == 'binary_single' ){
+                // TODO: remove time
+                // console.log("buffers",msg.buffers);
+                var time0 = Date.now();
+
+                var coordinatesDict = msg.data;
+                var keys = Object.keys( coordinatesDict );
+
+                for ( var i = 0; i < keys.length ; i++ ){
+                    var traj_index = keys[ i ];
+                    var buffer_index = coordinatesDict[ traj_index ];
+                    var coordinates = new Float32Array( msg.buffers[ buffer_index ].buffer );
+                    if( coordinates.byteLength > 0 ){
+                        this.updateCoordinates( coordinates, traj_index );
+                    }
+                }
+                var time1 = Date.now();
+                //console.log( time0 - msg.mytime, time1 - time0, 'binary_single' );
             }else if( msg.type == 'get') {
                 console.log( msg.data );
 
