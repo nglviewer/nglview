@@ -2,20 +2,16 @@ from ipywidgets import DOMWidget
 from traitlets import Int, Bool, Dict, Float
 
 class TrajectoryPlayer(DOMWidget):
-    step = Int() 
-    _sync_frame = Bool()
-    _delay = Float()
-    _params = Dict()
+    step = Int().tag(sync=True)
+    _sync_frame = Bool().tag(sync=True)
+    _delay = Float().tag(sync=True)
+    _params = Dict().tag(sync=True)
 
     def __init__(self, view, step=1, delay=0.1, sync_frame=False):
         self._view = view
         self.step = step
-        self._sync_frame = sync_frame
+        self.sync_frame = sync_frame
         self._delay = delay
-
-        self._params = dict(sync_frame=self.sync_frame,
-                            delay=self.delay,
-                            step=self.step)
 
     @property
     def frame(self):
@@ -53,14 +49,12 @@ class TrajectoryPlayer(DOMWidget):
 
     @property
     def parameters(self):
-        return self._params
+        return dict(sync_frame=self.sync_frame,
+                    delay=self.delay,
+                    step=self.step)
 
     @parameters.setter
     def parameters(self, params):
         self.sync_frame = params.get("sync_frame", self.sync_frame)
         self.delay = params.get("delay", self.delay)
         self.step = params.get("step", self.step)
-
-        self._params = dict(sync_frame=self.sync_frame,
-                            delay=self.delay,
-                            step=self.step)

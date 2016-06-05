@@ -541,11 +541,13 @@ class NGLWidget(widgets.DOMWidget):
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
 
-        self.player = TrajectoryPlayer(self)
 
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
+
+        # create after initilize _ngl_displayed_callbacks
+        self.player = TrajectoryPlayer(self)
 
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
