@@ -137,6 +137,9 @@ view.parameters = {
     # background color
     "backgroundColor": "black",
 }
+
+# note: NGLView accepts both origin camel NGL keywords (e.g. "clipNear") 
+# and snake keywords (e.g "clip_near")
 ```
 
 ```python
