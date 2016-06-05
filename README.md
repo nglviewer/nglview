@@ -139,6 +139,13 @@ view.parameters = {
 }
 ```
 
+```python
+# parameters to control the `delay` between snapshots
+# change `step` to play forward (positive value) or backward (negative value)
+# note: experimental code
+view.player.parameters = dict(delay=0.04, step=-1)
+```
+
 ### Multiple widgets
 
 You can have multiple widgets per notebook cell:
