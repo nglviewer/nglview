@@ -23,7 +23,7 @@ class TrajectoryPlayer(DOMWidget):
 
     @frame.setter
     def frame(self, value):
-        return self._view.frame = value
+        self._view.frame = value
 
     @property
     def count(self):
