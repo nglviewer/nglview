@@ -13,7 +13,7 @@ from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
 import numpy as np
 
 from ipykernel.comm import Comm
-from ipywidgets import Widget, IntText, FloatText, HBox
+from ipywidgets import Widget, IntText, BoundedFloatText, HBox
 import ipywidgets as widgets
 from traitlets import TraitError, link
 
@@ -336,7 +336,7 @@ def test_player_link_to_ipywidgets():
     view = nv.show_pytraj(traj)
 
     int_text = IntText(2)
-    float_text = FloatText(0.04)
+    float_text = BoundedFloatText(0.04, min=0.01)
     HBox([int_text, float_text])
     link((int_text, 'value'), (view.player, 'step'))
     link((float_text, 'value'), (view.player, 'delay'))
@@ -346,3 +346,7 @@ def test_player_link_to_ipywidgets():
 
     float_text.value = 0.1
     nt.assert_equal(view.player.delay, 0.1)
+
+    float_text.value= 0.00
+    # we set min=0.01
+    nt.assert_equal(view.player.delay, 0.01)

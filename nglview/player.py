@@ -1,6 +1,6 @@
-from ipywidgets import DOMWidget
+from ipywidgets import DOMWidget, IntText, BoundedFloatText, HBox, VBox, Checkbox
 from traitlets import Int, Bool, Dict, Float
-from traitlets import observe
+from traitlets import observe, link
 
 class TrajectoryPlayer(DOMWidget):
     # should set default values here different from desired defaults
@@ -47,3 +47,14 @@ class TrajectoryPlayer(DOMWidget):
         self.sync_frame = params.get("sync_frame", self.sync_frame)
         self.delay = params.get("delay", self.delay)
         self.step = params.get("step", self.step)
+
+    def _display(self):
+        int_text = IntText(self.step, description='step')
+        float_txt = BoundedFloatText(self.delay, description='delay', min=0.001)
+        checkbox_sync_frame = Checkbox(self.sync_frame, description='sync_frame')
+
+        link((int_text, 'value'), (self, 'step'))
+        link((float_txt, 'value'), (self, 'delay'))
+        link((checkbox_sync_frame, 'value'), (self, 'sync_frame'))
+
+        return VBox([int_text, float_txt, checkbox_sync_frame])
