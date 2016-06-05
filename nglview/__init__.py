@@ -536,7 +536,7 @@ class NGLWidget(widgets.DOMWidget):
 
     displayed = False
     _ngl_msg = None
-    _send_binary = Bool(False).tag(sync=False)
+    _send_binary = Bool(True).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
