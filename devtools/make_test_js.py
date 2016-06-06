@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 notebooks = [
+        "test_load_url.ipynb",
         "test_link_player.ipynb",
         "api/binary_vs_base64.ipynb",
         "duck.ipynb",
@@ -18,7 +19,7 @@ body_template = """
     "%s": function (browser) {
         browser.openNotebook("%s");
         browser.restartKernel(2000);
-        for ( var i = 0; i < 20; i++) {
+        for ( var i = 0; i < %s; i++) {
            browser.executeCell(i)
                   .pause(2000)
                   .cellHasError(i);
@@ -32,8 +33,17 @@ tail = """
 """
 
 if __name__ == '__main__':
-    all_notebooks = '\n'.join(body_template % (notebook, notebook)
+
+    max_cells = 42
+    notebook = 'test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb'
+    comprehensive_nb = body_template % (notebook, notebook, max_cells)
+
+    max_cells = 20
+    others  = '\n'.join(body_template % (notebook, notebook, max_cells)
                               for notebook in notebooks)
+
+    all_notebooks = comprehensive_nb + '\n' + others
     fn = 'nglview/tests/js/test.js'
     with open(fn, 'w') as fh:
         fh.write(head + all_notebooks + tail)
+
