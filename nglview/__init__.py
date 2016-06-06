@@ -667,6 +667,11 @@ class NGLWidget(widgets.DOMWidget):
                               args=[params['type'],],
                               kwargs=kwargs)
 
+    def _remove_representations_by_name(self, repr_name, component=0):
+        self._remote_call('removeRepresentationsByName',
+                          target='Widget',
+                          args=[repr_name, component])
+
     def _set_initial_structure(self, structures):
         """initialize structures for Widget
 
@@ -1278,6 +1283,7 @@ class ComponentViewer(object):
         self._index = index
         _add_repr_method_shortcut(self, self._view)
         self._borrow_attribute(self._view, ['clear_representations',
+                                            '_remove_representations_by_name',
                                             'center_view',
                                             'center',
                                             'clear',
