@@ -2,6 +2,30 @@
 module.exports = {
 
 
+    "test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb": function (browser) {
+        browser.openNotebook("test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 42; i++) {
+           browser.executeCell(i)
+                  .pause(2000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "test_load_url.ipynb": function (browser) {
+        browser.openNotebook("test_load_url.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 20; i++) {
+           browser.executeCell(i)
+                  .pause(2000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
     "test_link_player.ipynb": function (browser) {
         browser.openNotebook("test_link_player.ipynb");
         browser.restartKernel(2000);
