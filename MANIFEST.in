@@ -1,6 +1,6 @@
 include nglview/datafiles/*
 include nglview/js/*
 include LICENSE README.md DEVELOPMENT.md CHANGELOG.md
-include setup.py nightwatch.json
+include setup.py
 include nglview/_version.py
 global-exclude *.pycinclude versioneer.py *.ipynb *.gif *tests/notebooks/*
