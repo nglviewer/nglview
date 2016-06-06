@@ -3,7 +3,7 @@
 if [ "$CONDA" = "yes" ]; then
     echo "test conda build"
     conda build devtools/travis-ci/conda-recipe
-    echo
+    # conda install 
 else
     echo "test pip build"
     python setup.py sdist
