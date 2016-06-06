@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 notebooks = [
+        "remove_representations_by_name_shortcut.ipynb",
         "remove_representations_by_name.ipynb",
         "test_load_url.ipynb",
         "test_link_player.ipynb",

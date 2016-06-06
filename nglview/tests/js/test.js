@@ -14,6 +14,18 @@ module.exports = {
     },
 
 
+    "remove_representations_by_name_shortcut.ipynb": function (browser) {
+        browser.openNotebook("remove_representations_by_name_shortcut.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 20; i++) {
+           browser.executeCell(i)
+                  .pause(2000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
     "remove_representations_by_name.ipynb": function (browser) {
         browser.openNotebook("remove_representations_by_name.ipynb");
         browser.restartKernel(2000);
