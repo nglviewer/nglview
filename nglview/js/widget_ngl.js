@@ -288,6 +288,17 @@ define( [
             }
         },
 
+        removeRepresentationsByName: function( repr_name, component_index ){
+           var component = this.stage.compList[ component_index ];
+
+           component.reprList.forEach( function(repr) {
+               if( repr.name == repr_name ){
+                   component.removeRepresentation( repr );
+                   repr.dispose();
+               }
+           })
+        },
+
         structureChanged: function(){
             this.structureComponent = undefined;
             var structureList = this.model.get( "_init_structure_list" );
