@@ -31,7 +31,8 @@ install:
     - source devtools/travis-ci/setup_env.sh
     - source devtools/travis-ci/clone_nbtest.sh
     - ls
-    - python setup.py install
+    - python setup.py sdist
+    - pip install dist/*gz
 
 before_script:
     - export CHROME_BIN=chromium-browser

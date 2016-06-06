@@ -2,5 +2,5 @@ include nglview/datafiles/*
 include nglview/js/*
 include LICENSE README.md DEVELOPMENT.md CHANGELOG.md
 include setup.py
-include nglview/_version.py
-global-exclude *.pycinclude versioneer.py *.ipynb *.gif *tests/notebooks/*
+include nglview/_version.py versioneer.py
+global-exclude *.pycinclude *.ipynb *.gif *tests/notebooks/*
