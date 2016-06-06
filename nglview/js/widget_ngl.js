@@ -292,7 +292,6 @@ define( [
            var component = this.stage.compList[ component_index ];
 
            component.reprList.forEach( function(repr) {
-               console.log(repr.name);
                if( repr.name == repr_name ){
                    component.removeRepresentation( repr );
                    repr.dispose();
