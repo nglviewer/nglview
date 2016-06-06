@@ -5,6 +5,7 @@ matrix:
      - { os: linux, env: PYTHON_VERSION=2.7 }
      - { os: linux, env: PYTHON_VERSION=3.4 }
      - { os: linux, env: PYTHON_VERSION=3.5 }
+     - { os: linux, env: PYTHON_VERSION=3.5 CONDA=yes}
      # - { os: osx, env: PYTHON_VERSION=3.5 }
 
 sudo: true
@@ -30,9 +31,7 @@ install:
     - npm install -g nightwatch
     - source devtools/travis-ci/setup_env.sh
     - source devtools/travis-ci/clone_nbtest.sh
-    - ls
-    - python setup.py sdist
-    - pip install dist/*gz
+    - source devtools/travis-ci/install_nglview.sh
 
 before_script:
     - export CHROME_BIN=chromium-browser

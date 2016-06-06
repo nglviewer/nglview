@@ -1,0 +1,27 @@
+package:
+  name: nglview-dev
+  version: !!str 0.5.dev
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - jupyter
+    - ipywidgets <=4.1.1
+    - traitlets
+  run:
+    - python
+    - numpy
+    - ipywidgets <=4.1.1
+    - jupyter
+    - traitlets
+    - notebook
+
+test:
+    imports:
+        - nglview
+
+about:
+  home: https://github.com/arose/nglview 
+  license: MIT
+  summary: An IPython widget to interactively view molecular structures and trajectories. Utilizes the embeddable NGL Viewer for rendering.
