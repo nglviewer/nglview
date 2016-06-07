@@ -644,6 +644,12 @@ class NGLWidget(widgets.DOMWidget):
 
     def _set_unsync_frame(self):
         self._remote_call("setUnSyncFrame", target="Widget")
+
+    def _set_sync_camera(self):
+        self._remote_call("setSyncCamera", target="Widget")
+
+    def _set_unsync_camera(self):
+        self._remote_call("setUnSyncCamera", target="Widget")
         
     def _set_delay(self, delay):
         """unit is second
