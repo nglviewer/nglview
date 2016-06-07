@@ -70,6 +70,7 @@ define( [
             // for player
             this.delay = 100; 
             this.sync_frame = true;
+            this.sync_frame = true;
 
             // get message from Python
             this.model.on( "msg:custom", function (msg) {
@@ -114,9 +115,11 @@ define( [
             }.bind( this ) );
 
             this.stage.viewer.controls.addEventListener( "change", function() {
-                this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
-                this.model.set('orientation', this.stage.viewer.getOrientation() );
-                this.touch();
+                if( this.sync_camera ){
+                    this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
+                    this.model.set('orientation', this.stage.viewer.getOrientation() );
+                    this.touch();
+                }
             }.bind( this) );
 
             // init toggle fullscreen
@@ -189,6 +192,14 @@ define( [
 
         setUnSyncFrame: function(){
             this.sync_frame = false;
+        },
+
+        setSyncCamera: function(){
+            this.sync_camera = true;
+        },
+
+        setUnSyncCamera: function(){
+            this.sync_camera = false;
         },
 
         makeDefaultRepr: function( o ){
