@@ -16,3 +16,8 @@ git push
 git push origin --tags
 python setup.py sdist upload -r pypi
 ```
+
+You can also use `twine` to upload 
+```bash
+twine upload nglview-{version}.tar.gz
+```
