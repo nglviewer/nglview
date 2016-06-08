@@ -49,7 +49,8 @@ def decode_base64(data, shape, dtype='f4'):
     return np.frombuffer(decoded_str, dtype=dtype).reshape(shape)
 
 def _add_repr_method_shortcut(self, other):
-    # dynamically add method for NGLWidget
+    from types import MethodType
+
     repr_names  = [
             ('point', 'point'),
             ('line', 'line'),
@@ -71,7 +72,7 @@ def _add_repr_method_shortcut(self, other):
             ('ball_and_stick', 'ball+stick'),
             ]
 
-    def make_func(rep):
+    def make_func_add(rep):
         """return a new function object
         """
         def func(this, selection='all', **kwargs):
@@ -80,12 +81,24 @@ def _add_repr_method_shortcut(self, other):
             self.add_representation(repr_type=rep[1], selection=selection, **kwargs)
         return func
 
-    for rep in repr_names:
-        func = make_func(rep)
-        fn = 'add_' + rep[0]
-        from types import MethodType
-        setattr(self, fn, MethodType(func, other))
+    def make_func_remove(rep):
+        """return a new function object
+        """
+        def func(this, **kwargs):
+            """
+            """
+            self._remove_representations_by_name(repr_name=rep[1], **kwargs)
+        return func
 
+    for rep in repr_names:
+        func_add = make_func_add(rep)
+        fn_add = 'add_' + rep[0]
+
+        func_remove = make_func_remove(rep)
+        fn_remove = '_remove_' + rep[0]
+
+        setattr(self, fn_add, MethodType(func_add, other))
+        setattr(self, fn_remove, MethodType(func_remove, other))
 
 
 ##############
@@ -631,6 +644,12 @@ class NGLWidget(widgets.DOMWidget):
 
     def _set_unsync_frame(self):
         self._remote_call("setUnSyncFrame", target="Widget")
+
+    def _set_sync_camera(self):
+        self._remote_call("setSyncCamera", target="Widget")
+
+    def _set_unsync_camera(self):
+        self._remote_call("setUnSyncCamera", target="Widget")
         
     def _set_delay(self, delay):
         """unit is second
@@ -666,6 +685,11 @@ class NGLWidget(widgets.DOMWidget):
                               target='compList',
                               args=[params['type'],],
                               kwargs=kwargs)
+
+    def _remove_representations_by_name(self, repr_name, component=0):
+        self._remote_call('removeRepresentationsByName',
+                          target='Widget',
+                          args=[repr_name, component])
 
     def _set_initial_structure(self, structures):
         """initialize structures for Widget
@@ -1240,6 +1264,10 @@ class NGLWidget(widgets.DOMWidget):
         assert index < len(self._ngl_component_ids)
         return ComponentViewer(self, index) 
 
+    def __iter__(self):
+        for i, _ in enumerate(self._ngl_component_ids):
+            yield self[i]
+
     def _play(self, start=0, stop=-1, step=1, delay=0.08, n_times=1):
         '''for testing. Might be removed in the future
 
@@ -1278,6 +1306,7 @@ class ComponentViewer(object):
         self._index = index
         _add_repr_method_shortcut(self, self._view)
         self._borrow_attribute(self._view, ['clear_representations',
+                                            '_remove_representations_by_name',
                                             'center_view',
                                             'center',
                                             'clear',
