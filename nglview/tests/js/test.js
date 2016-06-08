@@ -2,6 +2,18 @@
 module.exports = {
 
 
+    "nglview/tests/notebooks/test_load_binary_different_folder_ccp4.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/test_load_binary_different_folder_ccp4.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 20; i++) {
+           browser.executeCell(i)
+                  .pause(2000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
     "nglview/tests/notebooks/trajlist_pytraj.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/trajlist_pytraj.ipynb");
         browser.restartKernel(2000);
