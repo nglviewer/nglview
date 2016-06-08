@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 
 notebooks = [
-        "remove_representations_by_name_shortcut.ipynb",
-        "remove_representations_by_name.ipynb",
-        "test_load_url.ipynb",
-        "test_link_player.ipynb",
-        "api/binary_vs_base64.ipynb",
-        "duck.ipynb",
-        "api/render_image.ipynb",
-        "api/view_trajectory.ipynb"
+        "nglview/tests/notebooks/trajlist_pytraj.ipynb",
+        "nglview/tests/notebooks/trajlist_mdtraj.ipynb",
+        "nglview/tests/notebooks/trajlist_mdanalysis.ipynb",
+        "nglview/tests/notebooks/trajlist_parmed.ipynb",
+        "nglview/tests/notebooks/trajlist_simpletraj.ipynb",
+        "nglview/tests/notebooks/remove_representations_by_name_shortcut.ipynb",
+        "nglview/tests/notebooks/remove_representations_by_name.ipynb",
+        "nglview/tests/notebooks/test_load_url.ipynb",
+        "nglview/tests/notebooks/test_link_player.ipynb",
+        "nglview/tests/notebooks/api/binary_vs_base64.ipynb",
+        "nglview/tests/notebooks/duck.ipynb",
+        "nglview/tests/notebooks/api/render_image.ipynb",
+        "nglview/tests/notebooks/api/view_trajectory.ipynb"
         ]
 
 head = """
@@ -37,14 +42,14 @@ tail = """
 if __name__ == '__main__':
 
     max_cells = 42
-    notebook = 'test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb'
+    notebook = 'nglview/tests/notebooks/test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb'
     comprehensive_nb = body_template % (notebook, notebook, max_cells)
 
     max_cells = 20
     others  = '\n'.join(body_template % (notebook, notebook, max_cells)
                               for notebook in notebooks)
 
-    all_notebooks = comprehensive_nb + '\n' + others
+    all_notebooks = others + '\n' + comprehensive_nb
     fn = 'nglview/tests/js/test.js'
     with open(fn, 'w') as fh:
         fh.write(head + all_notebooks + tail)
