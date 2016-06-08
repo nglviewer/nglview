@@ -25,7 +25,7 @@ twine upload nglview-{version}.tar.gz
 Test notebook
 =============
 
-- [add more notebooks] and update notebook files
+- [edit to add more notebooks] and update notebook files
 ```bash
 python ./devtools/make_test_js.py
 ```
