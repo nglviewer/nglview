@@ -16,3 +16,25 @@ git push
 git push origin --tags
 python setup.py sdist upload -r pypi
 ```
+
+You can also use `twine` to upload 
+```bash
+twine upload nglview-{version}.tar.gz
+```
+
+Test notebook
+=============
+
+- [edit to add more notebooks] and update notebook files
+```bash
+python ./devtools/make_test_js.py
+```
+
+- run
+
+```bash
+source devtools/travis-ci/clone_nbtest.sh # only once
+jupyter notebook --port=8889 &
+# npm install -g nightwatch
+nightwatch
+```
