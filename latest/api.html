@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.4+222.gcc1018c documentation</title>
+  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.5+48.g9db701e documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.4+222.gcc1018c documentation" href="index.html"/> 
+    <link rel="top" title="NGLView 0.5+48.g9db701e documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -175,12 +175,13 @@
 </ul>
 </div>
 <span class="target" id="module-nglview"></span><dl class="class">
-<dt id="nglview.Component">
-<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">Component</code><span class="sig-paren">(</span><em>view</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Component" title="Permalink to this definition">¶</a></dt>
+<dt id="nglview.ComponentViewer">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">ComponentViewer</code><span class="sig-paren">(</span><em>view</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#ComponentViewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ComponentViewer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Convenient attribute for NGLWidget. See example below.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="c1"># traj is a component 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="c1"># component 1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">component_0</span><span class="o">.</span><span class="n">clear_representations</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">component_0</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">component_1</span><span class="o">.</span><span class="n">add_licorice</span><span class="p">()</span>
@@ -188,24 +189,24 @@
 </pre></div>
 </div>
 <dl class="method">
-<dt id="nglview.Component.add_representation">
-<code class="descname">add_representation</code><span class="sig-paren">(</span><em>repr_type</em>, <em>selection='all'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Component.add_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Component.add_representation" title="Permalink to this definition">¶</a></dt>
+<dt id="nglview.ComponentViewer.add_representation">
+<code class="descname">add_representation</code><span class="sig-paren">(</span><em>repr_type</em>, <em>selection='all'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#ComponentViewer.add_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ComponentViewer.add_representation" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="nglview.Component.hide">
-<code class="descname">hide</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Component.hide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Component.hide" title="Permalink to this definition">¶</a></dt>
+<dt id="nglview.ComponentViewer.hide">
+<code class="descname">hide</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#ComponentViewer.hide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ComponentViewer.hide" title="Permalink to this definition">¶</a></dt>
 <dd><p>set invisibility for given components (by their indices)</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="nglview.Component.id">
-<code class="descname">id</code><a class="headerlink" href="#nglview.Component.id" title="Permalink to this definition">¶</a></dt>
+<dt id="nglview.ComponentViewer.id">
+<code class="descname">id</code><a class="headerlink" href="#nglview.ComponentViewer.id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="nglview.Component.show">
-<code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#Component.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Component.show" title="Permalink to this definition">¶</a></dt>
+<dt id="nglview.ComponentViewer.show">
+<code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#ComponentViewer.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ComponentViewer.show" title="Permalink to this definition">¶</a></dt>
 <dd><p>set invisibility for given components (by their indices)</p>
 </dd></dl>
 
@@ -345,9 +346,17 @@ to load all trajectories first.</p>
 <dl class="method">
 <dt id="nglview.NGLWidget.add_trajectory">
 <code class="descname">add_trajectory</code><span class="sig-paren">(</span><em>trajectory</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.add_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.add_trajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>trajectory: nglview.Trajectory or derived class</p>
-<p>If you combine both Structure and Trajectory, make sure
-to load all trajectories first.</p>
+<dd><dl class="docutils">
+<dt>trajectory: nglview.Trajectory or its derived class or </dt>
+<dd>pytraj.Trajectory-like, mdtraj.Trajectory or MDAnalysis objects</dd>
+</dl>
+<p><cite>add_trajectory</cite> is just a special case of <cite>add_component</cite></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.NGLWidget.background_color">
+<code class="descname">background_color</code><a class="headerlink" href="#nglview.NGLWidget.background_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait for unicode strings.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -858,7 +867,7 @@ gro, mol2, sdf.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.4+222.gcc1018c',
+            VERSION:'0.5+48.g9db701e',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
