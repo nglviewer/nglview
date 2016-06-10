@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 notebooks = [
+        "nglview/tests/notebooks/test_camera.ipynb",
         "nglview/tests/notebooks/test_load_binary_different_folder_ccp4.ipynb",
         "nglview/tests/notebooks/trajlist_pytraj.ipynb",
         "nglview/tests/notebooks/trajlist_mdtraj.ipynb",
