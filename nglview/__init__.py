@@ -13,7 +13,8 @@ import uuid
 import warnings
 import tempfile
 import ipywidgets as widgets
-from traitlets import Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe
+from traitlets import (Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe,
+                       CaselessStrEnum)
 from ipywidgets import widget_image
 
 try:
@@ -534,7 +535,7 @@ class NGLWidget(widgets.DOMWidget):
     _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
-    background_color = Unicode().tag(sync=True)
+    background = Unicode().tag(sync=True)
     loaded = Bool(False).tag(sync=True)
     frame = Int().tag(sync=True)
     # hack to always display movie
@@ -545,7 +546,8 @@ class NGLWidget(widgets.DOMWidget):
     _parameters = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
-    camera_str = Unicode().tag(sync=True)
+    _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
+        default_value='orthographic').tag(sync=True)
     orientation = List().tag(sync=True)
 
     displayed = False
@@ -616,7 +618,26 @@ class NGLWidget(widgets.DOMWidget):
         params = _camelize_dict(params)
         self._parameters = params
 
-    @observe('background_color')
+    @property
+    def camera(self):
+        return self._camera_str
+
+    @camera.setter
+    def camera(self, value):
+        """
+        
+        Parameters
+        ----------
+        value : str, {'perspective', 'orthographic'}
+        """
+        self._camera_str = value
+        # use _remote_call so this function can be called right after
+        # self is displayed
+        self._remote_call("setParameters",
+                target='Stage',
+                kwargs=dict(cameraType=self._camera_str))
+
+    @observe('background')
     def _update_background_color(self, change):
         color = change['new']
         self.parameters = dict(background_color=color)
@@ -1236,6 +1257,9 @@ class NGLWidget(widgets.DOMWidget):
 
     def _js_console(self):
         self.send(dict(type='get', data='any'))
+
+    def _get_full_params(self):
+        self.send(dict(type='get', data='parameters'))
 
     def _display_image(self):
         '''for testing
