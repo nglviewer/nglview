@@ -151,6 +151,16 @@ view.parameters = {
 view.player.parameters = dict(delay=0.04, step=-1)
 ```
 
+```python
+# update camera type
+view.camera = 'orthographic'
+```
+
+```python
+# change background color
+view.background = 'black'
+```
+
 ### Multiple widgets
 
 You can have multiple widgets per notebook cell:
