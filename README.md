@@ -166,6 +166,15 @@ view.background = 'black'
 view.add_trajectory(traj)
 
 # traj could be `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
+# change representation
+view.trajectory_0.add_cartoon(...)
+view.trajectory_1.add_licorice(...)
+```
+
+### Add extra component
+```python
+# Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)
+view.add_component('my.ccp4')
 ```
 ### Multiple widgets
 
