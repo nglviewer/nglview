@@ -160,7 +160,13 @@ view.camera = 'orthographic'
 # change background color
 view.background = 'black'
 ```
+### Trajectory
+```python
+# adding new one
+view.add_trajectory(traj)
 
+# traj could be `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
+```
 ### Multiple widgets
 
 You can have multiple widgets per notebook cell:
