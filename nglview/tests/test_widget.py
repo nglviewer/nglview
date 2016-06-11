@@ -342,11 +342,11 @@ def test_player_link_to_ipywidgets():
     link((float_text, 'value'), (view.player, 'delay'))
 
     nt.assert_equal(view.player.step, 2)
-    nt.assert_equal(view.player.delay, 0.04)
+    nt.assert_equal(view.player.delay, 40)
 
-    float_text.value = 0.1
-    nt.assert_equal(view.player.delay, 0.1)
+    float_text.value = 100
+    nt.assert_equal(view.player.delay, 100)
 
     float_text.value= 0.00
     # we set min=0.01
-    nt.assert_equal(view.player.delay, 0.01)
+    nt.assert_equal(view.player.delay, 100)
