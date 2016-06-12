@@ -673,10 +673,8 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call("setUnSyncCamera", target="Widget")
         
     def _set_delay(self, delay):
-        """unit is second
+        """unit of millisecond
         """
-        delay = delay * 1000
-
         self._remote_call("setDelay", target="Widget", args=[delay,])
 
     @property
