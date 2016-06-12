@@ -336,7 +336,7 @@ def test_player_link_to_ipywidgets():
     view = nv.show_pytraj(traj)
 
     int_text = IntText(2)
-    float_text = BoundedFloatText(0.04, min=0.01)
+    float_text = BoundedFloatText(40, min=10)
     HBox([int_text, float_text])
     link((int_text, 'value'), (view.player, 'step'))
     link((float_text, 'value'), (view.player, 'delay'))
@@ -348,5 +348,5 @@ def test_player_link_to_ipywidgets():
     nt.assert_equal(view.player.delay, 100)
 
     float_text.value= 0.00
-    # we set min=0.01
-    nt.assert_equal(view.player.delay, 100)
+    # we set min=10
+    nt.assert_equal(view.player.delay, 10)
