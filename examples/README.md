@@ -14,3 +14,8 @@ Examples
 - [make movie](http://ambermd.org/tutorials/analysis/tutorial_notebooks/nglview_movie/)
 - [render and export image for publication](export_image.ipynb)
 - [membrane](membrane.gif)
+
+Tips
+====
+
+- [Using notebook remotely](http://ambermd.org/tutorials/analysis/tutorial_notebooks/remote_notebook/)
