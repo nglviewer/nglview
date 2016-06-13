@@ -7,3 +7,8 @@
 dist/*
 build/*
 *.egg-info
+
+.ipynb_checkpoints/
+*.npz
+selenium-debug.log
+nbtests/
