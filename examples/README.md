@@ -18,6 +18,7 @@ Examples
 Animations
 ==========
 - [mdanalysis](mdanalysis.md)
+- [pytraj](pytraj.md)
 
 Tips
 ====
