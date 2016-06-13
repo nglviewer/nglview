@@ -14,3 +14,15 @@ Examples
 - [make movie](http://ambermd.org/tutorials/analysis/tutorial_notebooks/nglview_movie/)
 - [render and export image for publication](export_image.ipynb)
 - [membrane](membrane.gif)
+
+Animations
+==========
+- [mdanalysis](mdanalysis.md)
+- [pytraj](pytraj.md)
+- [mdtraj](mdtraj.md)
+- [parmed](parmed.md)
+
+Tips
+====
+
+- [Using notebook remotely](http://ambermd.org/tutorials/analysis/tutorial_notebooks/remote_notebook/)

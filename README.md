@@ -10,7 +10,7 @@ An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular
 
 Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
-![membrane](examples/membrane.gif)
+![membrane](examples/images/membrane.gif)
 
 Table of contents
 =================
@@ -151,6 +151,31 @@ view.parameters = {
 view.player.parameters = dict(delay=0.04, step=-1)
 ```
 
+```python
+# update camera type
+view.camera = 'orthographic'
+```
+
+```python
+# change background color
+view.background = 'black'
+```
+### Trajectory
+```python
+# adding new one
+view.add_trajectory(traj)
+
+# traj could be `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
+# change representation
+view.trajectory_0.add_cartoon(...)
+view.trajectory_1.add_licorice(...)
+```
+
+### Add extra component
+```python
+# Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)
+view.add_component('my.ccp4')
+```
 ### Multiple widgets
 
 You can have multiple widgets per notebook cell:

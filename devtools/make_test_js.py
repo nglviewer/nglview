@@ -1,22 +1,11 @@
 #!/usr/bin/env python
 
-notebooks = [
-        "nglview/tests/notebooks/test_camera.ipynb",
-        "nglview/tests/notebooks/test_load_binary_different_folder_ccp4.ipynb",
-        "nglview/tests/notebooks/trajlist_pytraj.ipynb",
-        "nglview/tests/notebooks/trajlist_mdtraj.ipynb",
-        "nglview/tests/notebooks/trajlist_mdanalysis.ipynb",
-        "nglview/tests/notebooks/trajlist_parmed.ipynb",
-        "nglview/tests/notebooks/trajlist_simpletraj.ipynb",
-        "nglview/tests/notebooks/remove_representations_by_name_shortcut.ipynb",
-        "nglview/tests/notebooks/remove_representations_by_name.ipynb",
-        "nglview/tests/notebooks/test_load_url.ipynb",
-        "nglview/tests/notebooks/test_link_player.ipynb",
-        "nglview/tests/notebooks/api/binary_vs_base64.ipynb",
-        "nglview/tests/notebooks/duck.ipynb",
-        "nglview/tests/notebooks/api/render_image.ipynb",
-        "nglview/tests/notebooks/api/view_trajectory.ipynb"
-        ]
+from glob import glob
+
+notebooks = (glob('nglview/tests/notebooks/*ipynb') +
+            glob('nglview/tests/notebooks/api/*ipynb'))
+
+notebooks.remove('nglview/tests/notebooks/test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb')
 
 head = """
 module.exports = {
