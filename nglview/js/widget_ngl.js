@@ -500,16 +500,15 @@ define( [
                 //console.log( time0 - msg.mytime, time1 - time0, 'base64_single' );
             }else if( msg.type == 'binary_single' ){
                 // TODO: remove time
-                // console.log("buffers",msg.buffers);
+                // console.log("msg.buffers",msg.buffers);
                 var time0 = Date.now();
 
-                var coordinatesDict = msg.data;
-                var keys = Object.keys( coordinatesDict );
+                var coordinateMeta = msg.data;
+                var keys = Object.keys( coordinateMeta );
 
                 for ( var i = 0; i < keys.length ; i++ ){
                     var traj_index = keys[ i ];
-                    var buffer_index = coordinatesDict[ traj_index ];
-                    var coordinates = new Float32Array( msg.buffers[ buffer_index ].buffer );
+                    var coordinates = new Float32Array( msg.buffers[ i ].buffer );
                     if( coordinates.byteLength > 0 ){
                         this.updateCoordinates( coordinates, traj_index );
                     }

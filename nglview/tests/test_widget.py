@@ -350,3 +350,11 @@ def test_player_link_to_ipywidgets():
     float_text.value= 0.00
     # we set min=10
     nt.assert_equal(view.player.delay, 10)
+
+def test_add_struture_then_trajectory():
+    view = nv.show_structure_file('data/tz2.pdb')
+    traj = pt.datafiles.load_trpcage()
+    view.add_trajectory(traj)
+    view.frame = 3
+    coords = view.coordinates_dict[1].copy()
+    aa_eq(coords, traj[3].xyz)
