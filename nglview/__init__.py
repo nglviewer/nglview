@@ -1202,6 +1202,7 @@ class NGLWidget(widgets.DOMWidget):
         for traj in self._trajlist:
             if traj.id == itsid:
                 return traj
+        return None
 
     def hide(self, indices):
         """set invisibility for given components (by their indices)
@@ -1239,6 +1240,8 @@ class NGLWidget(widgets.DOMWidget):
         for index, comp_id in enumerate(self._ngl_component_ids):
             if comp_id in traj_ids:
                 traj = self._get_traj_by_id(comp_id)
+            else:
+                traj = None
             if index in indices_:
                 args = [True,]
                 if traj is not None:
