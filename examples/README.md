@@ -19,6 +19,8 @@ Animations
 ==========
 - [mdanalysis](mdanalysis.md)
 - [pytraj](pytraj.md)
+- [mdtraj](mdtraj.md)
+- [parmed](parmed.md)
 
 Tips
 ====
