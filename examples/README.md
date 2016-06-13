@@ -15,6 +15,10 @@ Examples
 - [render and export image for publication](export_image.ipynb)
 - [membrane](membrane.gif)
 
+Animations
+==========
+- [mdanalysis](mdanalysis.md)
+
 Tips
 ====
 
