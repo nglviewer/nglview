@@ -2,6 +2,42 @@
 module.exports = {
 
 
+    "nglview/tests/notebooks/test_delay.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/test_delay.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 20; i++) {
+           browser.executeCell(i)
+                  .pause(2000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/test_background.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/test_background.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 20; i++) {
+           browser.executeCell(i)
+                  .pause(2000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/test_camera.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/test_camera.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 20; i++) {
+           browser.executeCell(i)
+                  .pause(2000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
     "nglview/tests/notebooks/test_load_binary_different_folder_ccp4.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/test_load_binary_different_folder_ccp4.ipynb");
         browser.restartKernel(2000);

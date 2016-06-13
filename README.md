@@ -151,6 +151,31 @@ view.parameters = {
 view.player.parameters = dict(delay=0.04, step=-1)
 ```
 
+```python
+# update camera type
+view.camera = 'orthographic'
+```
+
+```python
+# change background color
+view.background = 'black'
+```
+### Trajectory
+```python
+# adding new one
+view.add_trajectory(traj)
+
+# traj could be `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
+# change representation
+view.trajectory_0.add_cartoon(...)
+view.trajectory_1.add_licorice(...)
+```
+
+### Add extra component
+```python
+# Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)
+view.add_component('my.ccp4')
+```
 ### Multiple widgets
 
 You can have multiple widgets per notebook cell:
