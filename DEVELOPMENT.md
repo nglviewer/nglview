@@ -14,12 +14,15 @@ We use [Versioneer](https://github.com/warner/python-versioneer) to automaticall
 git tag  -a vX.Y -m "version X.Y"
 git push
 git push origin --tags
-python setup.py sdist upload -r pypi
+python setup.py sdist upload -r pypi  # better use twine for uploading, see below
 ```
 
-You can also use `twine` to upload 
+To ensure a secure upload use `twine`:
 ```bash
-twine upload nglview-{version}.tar.gz
+# Create some distributions in the normal way:
+python setup.py sdist
+# Upload with twine:
+twine upload dist/*
 ```
 
 Test notebook
