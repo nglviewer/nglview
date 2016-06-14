@@ -25,6 +25,10 @@ Table of contents
 
 Installation
 ============
+
+Released version
+----------------
+
 - Available on `bioconda` channel
 
     `conda install nglview -c bioconda`
