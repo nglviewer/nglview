@@ -1,20 +1,36 @@
 Changelog
 =========
 
-Version 0.5.dev
----------------
+Version 0.5
+-----------
 
+* ADD: `delay`
+* ADD: `show_url`
+* ADD: `hide` and `show_only` methods
+* ADD: `show_rdkit`
+* ADD: `clear` for clearing representations
+* ADD: `add_unitcell` representation
+* ADD: attribute `view.trajectory_0`, `view.trajectory_1`, ...
+* ADD: drag and drop file to widget
+* ADD: `player`
+* ADD: `camera` (`perspective` and `orthographic`)
+* ADD: `background`
 * ADD: `orientation` for syncing two widget cameras
-* ADD: viewing more than one trajectory in the same widget
-* ADD: `export_image`
+* ADD: viewing many trajectories, `add_trajectory`, `add_component`
+* ADD: `download_image`
+* ADD: `render_image`
 * ADD: `center_view`
-* ADD: `caching` for smoother trajectory playing
 * ADD: atom selection by array
 * ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
-* ADD: `ParmEdTrajectory` adaptor
+* ADD: `ParmEdTrajectory` adaptor and `show_parmed`
+* MIGRATION: change sending base64 to binary coordinates
+* ENH: add_representations can accept both snake and CamelKeyword
+* ENH: smoother trajectory playing
 * ENH: smoother rendering if adding new representation
-* MIGRATION: change `view.trajectory` to `view.trajlist` 
+* MIGRATION: change html/static to js/
+* MIGRATION: change `view.trajectory` to `view._trajlist`
 * MIGRATION: change `get_frame_count` method to `n_frames` property
+* MIGRATION: remove `get_coordinates_dict`
 * FIX: symlink error
 
 Version 0.4
