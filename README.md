@@ -12,6 +12,7 @@ Should work with Python 2 and 3. If you experience problems, please file an [iss
 
 ![membrane](examples/images/membrane.gif)
 
+
 Table of contents
 =================
 
@@ -26,15 +27,20 @@ Table of contents
 Installation
 ============
 
+Available on [PyPI](https://pypi.python.org/pypi/nglview/): `pip install nglview`.
+
+
 Development version
 -------------------
-We highly recommend to install development version::
+
+The development version can be installed directly from github:
 
     python -m pip install git+https://github.com/arose/nglview
 
 If for any reasons that the `widget` is not shown, try reinstall below packages
 
     conda install traitlets=4.2.1 ipywidgets==4.1.1 notebook=4.1.0
+
 
 Example
 =======
@@ -68,6 +74,7 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_pytraj(traj)`                      | Shows `PyTraj` trajectory `traj`                      |
 | `show_parmed(structure)`                 | Shows `ParmEd` structure
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
+
 
 API
 ===
@@ -122,6 +129,7 @@ view = nglview.NGLWidget(struc, representation=initial_repr)
 view
 ```
 
+
 ### Properties
 
 ```Python
@@ -140,7 +148,7 @@ view.parameters = {
     "backgroundColor": "black",
 }
 
-# note: NGLView accepts both origin camel NGL keywords (e.g. "clipNear") 
+# note: NGLView accepts both origin camel NGL keywords (e.g. "clipNear")
 # and snake keywords (e.g "clip_near")
 ```
 
