@@ -1,6 +1,6 @@
 |Binder| |DOI| |Build Status|
 
-.. figure:: nglview.png
+.. figure:: images/membrane.gif
    :alt: nglview
 
 An `IPython/Jupyter <http://jupyter.org/>`__ widget to interactively
