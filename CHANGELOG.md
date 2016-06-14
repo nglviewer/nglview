@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Version 0.5.1
+-------------
+
+* FIX: correctly handle player when adding a structure first
+* FIX: cleaned-up outdated notebooks
+
+
 Version 0.5
 -----------
 
