@@ -82,7 +82,8 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 API
 ===
 
-### Representations
+Representations
+---------------
 
 ```python
 view.add_representation(repr_type='cartoon', selection='protein')
