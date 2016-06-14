@@ -4,6 +4,8 @@ Changelog
 Version 0.5
 -----------
 
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.55409.svg)](http://dx.doi.org/10.5281/zenodo.55409)
+
 * ADD: `view.delay` property to adjust trajectory playback
 * ADD: `show_url` function for loading & viewing from an url
 * ADD: `view.hide()` and `view.show_only()` convenience methods
@@ -29,7 +31,7 @@ Version 0.5
 * ENH: smoother rendering when adding new representation
 * MIGRATION: change html/static to js/
 * MIGRATION: change sending base64 to binary coordinates
-* MIGRATION: change `view.trajectory` to `view._trajlist`
+* MIGRATION: change `view.trajectory` to `view.trajlist`
 * MIGRATION: change `get_frame_count` method to `n_frames` property
 * MIGRATION: remove `get_coordinates_dict`
 * FIX: symlink error
