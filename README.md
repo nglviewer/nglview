@@ -25,7 +25,7 @@ Table of contents
 Installation
 ============
 
-Available on [PyPI](https://pypi.python.org/pypi/nglview/): `pip install nglview`.
+Available on [PyPI](https://pypi.python.org/pypi/nglview/): `pip install nglview`
 
 
 Development version
