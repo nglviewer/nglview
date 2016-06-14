@@ -5,14 +5,22 @@ import subprocess
 readme = open(sys.argv[1]).read()
 
 words = ["(nglview.gif)",
-         "(examples/membrane.gif)",
+         "(examples/images/membrane.gif)",
          "(doc/interface_classes.md)",
+         "(./doc/interface_classes.md)",
          "(CHANGELOG.md)",
          "(examples/README.md)",
+         "(./examples/README.md)",
          ]
 
 for word in words:
-    new_word = "(" + 'https://github.com/arose/nglview/' + word.strip('(')
+    if '.gif' in word:
+        new_word = "(" + 'https://github.com/arose/nglview/blob/master/' + word.strip('(').strip(')') + "?raw=true)"
+    else:
+        new_word = "(" + 'https://github.com/arose/nglview/blob/master/' + word.strip('(')
+    if './' in new_word:
+        new_word = new_word.replace('./', '')
+    print(new_word)
     readme = readme.replace(word, new_word)
 
 with open('doc/index.md', 'w') as fh:

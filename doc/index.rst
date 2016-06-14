@@ -1,7 +1,4 @@
-|Binder| |DOI| |Build Status|
-
-.. figure:: images/membrane.gif
-   :alt: nglview
+|Binder| |DOI| |Build Status| |bioconda-badge| |membrane|
 
 An `IPython/Jupyter <http://jupyter.org/>`__ widget to interactively
 view molecular structures and trajectories. Utilizes the embeddable `NGL
@@ -15,32 +12,56 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 Should work with Python 2 and 3. If you experience problems, please file
 an `issue <https://github.com/arose/nglview/issues>`__.
 
+.. figure:: https://github.com/arose/nglview/blob/master/nglview.gif?raw=true
+   :alt: nglview
+
+   nglview
 Table of contents
 =================
 
 -  `Installation <#installation>`__
+-  `Example <#example>`__
 -  `Usage <#usage>`__
--  `API <api.html>`__
+-  `Interface
+   classes <https://github.com/arose/nglview/blob/master/doc/interface_classes.md>`__
+-  `Changelog <https://github.com/arose/nglview/blob/master/CHANGELOG.md>`__
 -  `License <#license>`__
 
 Installation
 ============
 
-From PyPI:
+Released version
+----------------
+
+-  Available on ``bioconda`` channel
+
+   ``conda install nglview -c bioconda``
+
+-  Available on `PyPI <https://pypi.python.org/pypi/nglview/>`__
+
+   ``pip install nglview``
+
+Development version
+-------------------
+
+The development version can be installed directly from github:
 
 ::
 
-    pip install nglview
+    python -m pip install git+https://github.com/arose/nglview
 
-Note: The above will try to install ``jupyter``, ``traitlets`` and
-``ipywidgets`` as dependencies. If that fails install it manually
-``pip install jupyter``.
-
-From Conda
+If for any reasons that the ``widget`` is not shown, try reinstall below
+packages
 
 ::
 
-    conda install -c omnia nglview
+    conda install traitlets=4.2.1 ipywidgets==4.1.1 notebook=4.1.0
+
+Example
+=======
+
+Please see our `Jupyter notebook
+examples <https://github.com/arose/nglview/blob/master/examples/README.md>`__
 
 Usage
 =====
@@ -85,13 +106,32 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 | ``show_mdanalysis(univ)``                    | Shows ``MDAnalysis`` Universe or AtomGroup ``univ``       |
 +----------------------------------------------+-----------------------------------------------------------+
 
+API
+===
+
 Representations
-~~~~~~~~~~~~~~~
+---------------
 
 .. code:: python
 
-    view.add_cartoon("protein", color="residueindex")
-    view.add_surface("protein", opacity=0.3)
+    view.add_representation(repr_type='cartoon', selection='protein')
+
+    # or shorter
+    view.add_cartoon(selection="protein")
+    view.add_surface(selection="protein", opacity=0.3)
+
+    # specify color
+    view.add_cartoon(selection="protein", color='blue')
+
+    # specify residue
+    view.add_licorice('ALA, GLU')
+
+    # clear representations
+    view.clear_representations()
+    ...
+
+And many more, please check `Selection
+language <http://arose.github.io/ngl/doc/#User_manual/Usage/Selection_language>`__
 
 Representations can also be changed by overwriting the
 ``representations`` property of the widget instance ``view``. The
@@ -123,7 +163,7 @@ The widget constructor also accepts a ``representation`` argument:
     view
 
 Properties
-~~~~~~~~~~
+----------
 
 .. code:: Python
 
@@ -139,11 +179,52 @@ Properties
         # percentages, start of fog and where on full effect
         "fogNear": 0, "fogFar": 100,
         # background color
-        "theme": "dark",
+        "backgroundColor": "black",
     }
 
+    # note: NGLView accepts both origin camel NGL keywords (e.g. "clipNear")
+    # and snake keywords (e.g "clip_near")
+
+.. code:: python
+
+    # parameters to control the `delay` between snapshots
+    # change `step` to play forward (positive value) or backward (negative value)
+    # note: experimental code
+    view.player.parameters = dict(delay=0.04, step=-1)
+
+.. code:: python
+
+    # update camera type
+    view.camera = 'orthographic'
+
+.. code:: python
+
+    # change background color
+    view.background = 'black'
+
+Trajectory
+----------
+
+.. code:: python
+
+    # adding new one
+    view.add_trajectory(traj)
+
+    # traj could be `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
+    # change representation
+    view.trajectory_0.add_cartoon(...)
+    view.trajectory_1.add_licorice(...)
+
+Add extra component
+-------------------
+
+.. code:: python
+
+    # Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)
+    view.add_component('my.ccp4')
+
 Multiple widgets
-~~~~~~~~~~~~~~~~
+----------------
 
 You can have multiple widgets per notebook cell:
 
@@ -153,6 +234,11 @@ You can have multiple widgets per notebook cell:
     w1 = NGLWidget(...)
     w2 = NGLWidget(...)
     Box(children=(w1,w2))
+
+API doc
+-------
+
+`Please check here <http://arose.github.io/nglview/latest/api.html>`__
 
 License
 =======
@@ -165,3 +251,6 @@ Generally MIT, see the LICENSE file for details.
    :target: https://zenodo.org/badge/latestdoi/11846/arose/nglview
 .. |Build Status| image:: https://travis-ci.org/arose/nglview.svg?branch=master
    :target: https://travis-ci.org/arose/nglview
+.. |bioconda-badge| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square
+   :target: http://bioconda.github.io
+.. |membrane| image:: https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true
