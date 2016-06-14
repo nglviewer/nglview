@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Table of contents &mdash; NGLView 0.5 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="NGLView 0.5 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> NGLView
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.dev
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="simple">
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">NGLView</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Table of contents</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/readme.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <p><a class="reference external" href="http://mybinder.org/repo/hainm/nglview-notebooks"><img alt="Binder" src="http://mybinder.org/images/logo.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a></p>
+<div class="figure">
+<img alt="nglview" src="_images/nglview.png" />
+</div>
+<p>An <a class="reference external" href="http://jupyter.org/">IPython/Jupyter</a> widget to interactively
+view molecular structures and trajectories. Utilizes the embeddable <a class="reference external" href="https://github.com/arose/ngl">NGL
+Viewer</a> for rendering. Support for
+showing data from the file-system, <a class="reference external" href="http:www.rcsb.org">RCSB PDB</a>,
+<a class="reference external" href="https://github.com/arose/simpletraj">simpletraj</a> and from objects of
+analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtraj</a>,
+<a class="reference external" href="http://amber-md.github.io/pytraj/latest/index.html">pytraj</a>,
+<a class="reference external" href="http://www.mdanalysis.org/">mdanalysis</a>.</p>
+<p>Should work with Python 2 and 3. If you experience problems, please file
+an <a class="reference external" href="https://github.com/arose/nglview/issues">issue</a>.</p>
+<div class="section" id="table-of-contents">
+<h1>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference external" href="#installation">Installation</a></li>
+<li><a class="reference external" href="#usage">Usage</a></li>
+<li><a class="reference external" href="#license">License</a></li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>From PyPI:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">nglview</span>
+</pre></div>
+</div>
+<p>Note: The above will try to install <code class="docutils literal"><span class="pre">jupyter</span></code>, <code class="docutils literal"><span class="pre">traitlets</span></code> and
+<code class="docutils literal"><span class="pre">ipywidgets</span></code> as dependencies. If that fails install it manually
+<code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jupyter</span></code>.</p>
+<p>From Conda</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">omnia</span> <span class="n">nglview</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>Open a notebook</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">jupyter</span> <span class="n">notebook</span>
+</pre></div>
+</div>
+<p>and issue</p>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
+<span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">show_pdbid</span><span class="p">(</span><span class="s2">&quot;3pqr&quot;</span><span class="p">)</span>  <span class="c1"># load &quot;3pqr&quot; from RCSB PDB and display viewer widget</span>
+<span class="n">view</span>
+</pre></div>
+</div>
+<p>A number of convenience functions are available to quickly display data
+from the file-system, <a class="reference external" href="http:www.rcsb.org">RCSB PDB</a>,
+<a class="reference external" href="https://github.com/arose/simpletraj">simpletraj</a> and from objects of
+analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtraj</a>,
+<a class="reference external" href="http://amber-md.github.io/pytraj/latest/index.html">pytraj</a>,
+<a class="reference external" href="http://www.mdanalysis.org/">mdanalysis</a>,
+<a class="reference external" href="http://parmed.github.io/ParmEd/">ParmEd</a>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="44%" />
+<col width="56%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Function</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_structure_file(path)</span></code></td>
+<td>Shows structure (pdb, gro, mol2, sdf) in <code class="docutils literal"><span class="pre">path</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_pdbid(pdbid)</span></code></td>
+<td>Shows <code class="docutils literal"><span class="pre">pdbid</span></code> fetched from RCSB PDB</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_simpletraj(struc_path,</span> <span class="pre">traj_path)</span></code></td>
+<td>Shows structure &amp; trajectory loaded with <code class="docutils literal"><span class="pre">simpletraj</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_mdtraj(traj)</span></code></td>
+<td>Shows <code class="docutils literal"><span class="pre">MDTraj</span></code> trajectory <code class="docutils literal"><span class="pre">traj</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_pytraj(traj)</span></code></td>
+<td>Shows <code class="docutils literal"><span class="pre">PyTraj</span></code> trajectory <code class="docutils literal"><span class="pre">traj</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_parmed(structure)</span></code></td>
+<td>Shows <code class="docutils literal"><span class="pre">ParmEd</span></code> structure</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_mdanalysis(univ)</span></code></td>
+<td>Shows <code class="docutils literal"><span class="pre">MDAnalysis</span></code> Universe or AtomGroup <code class="docutils literal"><span class="pre">univ</span></code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="representations">
+<h2>Representations<a class="headerlink" href="#representations" title="Permalink to this headline">¶</a></h2>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;residueindex&quot;</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">add_surface</span><span class="p">(</span><span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Representations can also be changed by overwriting the
+<code class="docutils literal"><span class="pre">representations</span></code> property of the widget instance <code class="docutils literal"><span class="pre">view</span></code>. The
+available <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">params</span></code> are described in the NGL Viewer
+<a class="reference external" href="http://arose.github.io/ngl/doc">documentation</a>.</p>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;residueindex&quot;</span>
+    <span class="p">}},</span>
+    <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ball+stick&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;hetero&quot;</span>
+    <span class="p">}}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The widget constructor also accepts a <code class="docutils literal"><span class="pre">representation</span></code> argument:</p>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;sstruc&quot;</span>
+    <span class="p">}}</span>
+<span class="p">]</span>
+
+<span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">struc</span><span class="p">,</span> <span class="n">representation</span><span class="o">=</span><span class="n">initial_repr</span><span class="p">)</span>
+<span class="n">view</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
+<span class="n">view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="mi">100</span>
+</pre></div>
+</div>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
+<span class="n">view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># &quot;percentages, &quot;dist&quot; is distance too camera in Angstrom</span>
+    <span class="s2">&quot;clipNear&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;clipFar&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;clipDist&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="c1"># percentages, start of fog and where on full effect</span>
+    <span class="s2">&quot;fogNear&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;fogFar&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="c1"># background color</span>
+    <span class="s2">&quot;theme&quot;</span><span class="p">:</span> <span class="s2">&quot;dark&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="multiple-widgets">
+<h2>Multiple widgets<a class="headerlink" href="#multiple-widgets" title="Permalink to this headline">¶</a></h2>
+<p>You can have multiple widgets per notebook cell:</p>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipywidgets.widgets</span> <span class="k">import</span> <span class="n">Box</span>
+<span class="n">w1</span> <span class="o">=</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">w2</span> <span class="o">=</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">Box</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">(</span><span class="n">w1</span><span class="p">,</span><span class="n">w2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="license">
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>Generally MIT, see the LICENSE file for details.</p>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
