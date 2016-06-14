@@ -24,9 +24,13 @@ Table of contents
 
 Installation
 ============
+- Available on `bioconda` channel
 
-Available on [PyPI](https://pypi.python.org/pypi/nglview/): `pip install nglview`
+    `conda install nglview -c bioconda`
 
+Available on [PyPI](https://pypi.python.org/pypi/nglview/)
+
+    pip install nglview
 
 Development version
 -------------------
