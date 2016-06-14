@@ -3,37 +3,37 @@ Changelog
 
 Version 0.5
 -----------
-* ADD: basic use of binary messages for faster coordinate data transfer
-* ADD: updated `NGL` code, (e.g. orthographic camera, anti-aliasing, much faster rendering, ...)
-* ADD: `delay`
-* ADD: `show_url`
-* ADD: `hide` and `show_only` methods
-* ADD: `show_rdkit`
-* ADD: `clear` for clearing representations
-* ADD: `add_unitcell` representation
-* ADD: attribute `view.trajectory_0`, `view.trajectory_1`, `view.component_0`, ...
-* ADD: specify `component` index in `add_representations`, `clear_representations`
-* ADD: drag and drop file to widget
-* ADD: `player`
-* ADD: `camera` (`perspective` and `orthographic`)
-* ADD: `background`
-* ADD: `orientation` for syncing two widget cameras
-* ADD: viewing many trajectories, `add_trajectory`, `add_component`
-* ADD: `download_image`
-* ADD: `render_image`
-* ADD: `center_view`
-* ADD: atom selection by array
-* ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
-* ADD: `ParmEdTrajectory` adaptor and `show_parmed`
-* ENH: `add_trajectory` can accept `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
-* ENH: add_representations can accept both snake and CamelKeyword
+
+* ADD: `view.delay` property to adjust trajectory playback
+* ADD: `show_url` function for loading & viewing from an url
+* ADD: `view.hide()` and `view.show_only()` convenience methods
+* ADD: `show_rdkit` function to view rdkit Mol objects
+* ADD: `view.clear()` for clearing all representations
+* ADD: `view.add_unitcell()`, support for the new NGL unitcell representation
+* ADD: attribute `view.trajectory_0`, `view.trajectory_1`, ...
+* ADD: drag and drop files into widget
+* ADD: extra TrajectoryPlayer widget available via `view.player`
+* ADD: `view.camera` property (`perspective` and `orthographic`, new in NGL) 
+* ADD: `view.background` property to change the viewer background (color name or hex value)
+* ADD: `view.orientation` property to synchronize cameras of two viewer widgets
+* ADD: view multiple trajectories via `view.add_trajectory()`, `view.add_component()`
+* ADD: `view.download_image()` to render high quality image and trigger download in browser
+* ADD: `view.render_image()` to render image for display in the notebook
+* ADD: `view.center_view()` to center
+* ADD: select atoms by their indices, given as a List 
+* ADD: shortcuts for view.add_representation (view.add_cartoon, view.add_rope, ...)
+* ADD: `ParmEdTrajectory` adaptor and `show_parmed` function to view ParmEd objects
+* ENH: `view.add_trajectory` now accept `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
+* ENH: view.add_representations now accepts keywords in both snake_case and CamelCase
 * ENH: smoother trajectory playing
-* ENH: smoother rendering if adding new representation
+* ENH: smoother rendering when adding new representation
 * MIGRATION: change html/static to js/
+* MIGRATION: change sending base64 to binary coordinates
 * MIGRATION: change `view.trajectory` to `view._trajlist`
 * MIGRATION: change `get_frame_count` method to `n_frames` property
 * MIGRATION: remove `get_coordinates_dict`
 * FIX: symlink error
+
 
 Version 0.4
 -----------
