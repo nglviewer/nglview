@@ -31,7 +31,7 @@ Installation
 
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
-    pip install nglview
+    `pip install nglview`
 
 Development version
 -------------------
