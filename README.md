@@ -214,6 +214,11 @@ API doc
 [Please check here](http://arose.github.io/nglview/latest/api.html)
 
 
+FAQ
+===
+
+[Q&A](https://github.com/arose/nglview/wiki/Q&A)
+
 License
 =======
 
