@@ -3,14 +3,16 @@ Changelog
 
 Version 0.5
 -----------
-
+* ADD: basic use of binary messages for faster coordinate data transfer
+* ADD: updated `NGL` code, (e.g. orthographic camera, anti-aliasing, much faster rendering, ...)
 * ADD: `delay`
 * ADD: `show_url`
 * ADD: `hide` and `show_only` methods
 * ADD: `show_rdkit`
 * ADD: `clear` for clearing representations
 * ADD: `add_unitcell` representation
-* ADD: attribute `view.trajectory_0`, `view.trajectory_1`, ...
+* ADD: attribute `view.trajectory_0`, `view.trajectory_1`, `view.component_0`, ...
+* ADD: specify `component` index in `add_representations`, `clear_representations`
 * ADD: drag and drop file to widget
 * ADD: `player`
 * ADD: `camera` (`perspective` and `orthographic`)
@@ -28,7 +30,6 @@ Version 0.5
 * ENH: smoother trajectory playing
 * ENH: smoother rendering if adding new representation
 * MIGRATION: change html/static to js/
-* MIGRATION: change sending base64 to binary coordinates
 * MIGRATION: change `view.trajectory` to `view._trajlist`
 * MIGRATION: change `get_frame_count` method to `n_frames` property
 * MIGRATION: remove `get_coordinates_dict`
