@@ -23,11 +23,12 @@ Version 0.5
 * ADD: atom selection by array
 * ADD: shortcut for add_representation (add_cartoon, add_rope, ...)
 * ADD: `ParmEdTrajectory` adaptor and `show_parmed`
-* MIGRATION: change sending base64 to binary coordinates
+* ENH: `add_trajectory` can accept `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
 * ENH: add_representations can accept both snake and CamelKeyword
 * ENH: smoother trajectory playing
 * ENH: smoother rendering if adding new representation
 * MIGRATION: change html/static to js/
+* MIGRATION: change sending base64 to binary coordinates
 * MIGRATION: change `view.trajectory` to `view._trajlist`
 * MIGRATION: change `get_frame_count` method to `n_frames` property
 * MIGRATION: remove `get_coordinates_dict`
