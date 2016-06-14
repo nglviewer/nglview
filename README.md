@@ -29,7 +29,7 @@ Installation
 
     `conda install nglview -c bioconda`
 
-Available on [PyPI](https://pypi.python.org/pypi/nglview/)
+- Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
     pip install nglview
 
