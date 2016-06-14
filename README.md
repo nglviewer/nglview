@@ -198,6 +198,9 @@ w2 = NGLWidget(...)
 Box(children=(w1,w2))
 ```
 
+### API doc
+[Please check here](http://arose.github.io/nglview/latest/api.html)
+
 
 License
 =======
