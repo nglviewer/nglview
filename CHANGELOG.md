@@ -6,13 +6,16 @@ Version 0.5
 
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.55409.svg)](http://dx.doi.org/10.5281/zenodo.55409)
 
+* ADD: basic use of binary messages for faster coordinate data transfer
+* ADD: updated to newer `NGL` version, (e.g. orthographic camera, anti-aliasing, much faster rendering, ...)
 * ADD: `view.delay` property to adjust trajectory playback
 * ADD: `show_url` function for loading & viewing from an url
 * ADD: `view.hide()` and `view.show_only()` convenience methods
 * ADD: `show_rdkit` function to view rdkit Mol objects
 * ADD: `view.clear()` for clearing all representations
 * ADD: `view.add_unitcell()`, support for the new NGL unitcell representation
-* ADD: attribute `view.trajectory_0`, `view.trajectory_1`, ...
+* ADD: automatic creation of attributes: `view.trajectory_0`, `view.trajectory_1`, `view.component_0`, ...
+* ADD: specify `component` index in `view.add_representations`, `view.clear_representations`
 * ADD: drag and drop files into widget
 * ADD: extra TrajectoryPlayer widget available via `view.player`
 * ADD: `view.camera` property (`perspective` and `orthographic`, new in NGL) 
