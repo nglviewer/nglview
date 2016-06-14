@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview &mdash; NGLView 0.4+232.g9b37613 documentation</title>
+  <title>nglview &mdash; NGLView 0.5+8.gf7d1339.dirty documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.4+232.g9b37613 documentation" href="../index.html"/>
+    <link rel="top" title="NGLView 0.5+8.gf7d1339.dirty documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -140,7 +140,8 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="kn">as</span> <span class="nn">widgets</span>
-<span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="n">Unicode</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Bytes</span><span class="p">,</span> <span class="n">observe</span>
+<span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Unicode</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Bytes</span><span class="p">,</span> <span class="n">observe</span><span class="p">,</span>
+                       <span class="n">CaselessStrEnum</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">widget_image</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -661,7 +662,7 @@
     <span class="n">_view_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;nbextensions/nglview/widget_ngl&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">selection</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_image_data</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">background_color</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">background</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">loaded</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">frame</span> <span class="o">=</span> <span class="n">Int</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="c1"># hack to always display movie</span>
@@ -672,7 +673,8 @@
     <span class="n">_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">picked</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_coordinates_dict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">camera_str</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">_camera_str</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">([</span><span class="s1">&#39;perspective&#39;</span><span class="p">,</span> <span class="s1">&#39;orthographic&#39;</span><span class="p">],</span>
+        <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;orthographic&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">orientation</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
     <span class="n">displayed</span> <span class="o">=</span> <span class="bp">False</span>
@@ -743,7 +745,26 @@
         <span class="n">params</span> <span class="o">=</span> <span class="n">_camelize_dict</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span> <span class="o">=</span> <span class="n">params</span>
 
-    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;background_color&#39;</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">camera</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_str</span>
+
+    <span class="nd">@camera.setter</span>
+    <span class="k">def</span> <span class="nf">camera</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : str, {&#39;perspective&#39;, &#39;orthographic&#39;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_str</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="c1"># use _remote_call so this function can be called right after</span>
+        <span class="c1"># self is displayed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;setParameters&quot;</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">cameraType</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_camera_str</span><span class="p">))</span>
+
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;background&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_update_background_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="n">color</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">background_color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
@@ -779,10 +800,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;setUnSyncCamera&quot;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;Widget&quot;</span><span class="p">)</span>
         
     <span class="k">def</span> <span class="nf">_set_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;unit is second</span>
+        <span class="sd">&quot;&quot;&quot;unit of millisecond</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span> <span class="o">*</span> <span class="mi">1000</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;setDelay&quot;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;Widget&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">delay</span><span class="p">,])</span>
 
     <span class="nd">@property</span>
@@ -1310,6 +1329,7 @@
         <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">itsid</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">traj</span>
+        <span class="k">return</span> <span class="bp">None</span>
 
 <div class="viewcode-block" id="NGLWidget.hide"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;set invisibility for given components (by their indices)</span>
@@ -1347,6 +1367,8 @@
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">comp_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">comp_id</span> <span class="ow">in</span> <span class="n">traj_ids</span><span class="p">:</span>
                 <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_traj_by_id</span><span class="p">(</span><span class="n">comp_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">traj</span> <span class="o">=</span> <span class="bp">None</span>
             <span class="k">if</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices_</span><span class="p">:</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="bp">True</span><span class="p">,]</span>
                 <span class="k">if</span> <span class="n">traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
@@ -1363,6 +1385,9 @@
 
     <span class="k">def</span> <span class="nf">_js_console</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;any&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_full_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;parameters&#39;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_display_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;for testing</span>
@@ -1559,7 +1584,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.4+232.g9b37613',
+            VERSION:'0.5+8.gf7d1339.dirty',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
