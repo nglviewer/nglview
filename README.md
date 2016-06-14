@@ -20,6 +20,7 @@ Table of contents
 * [Usage](#usage)
 * [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
+* [FAQ](#faq)
 * [License](#license)
 
 
