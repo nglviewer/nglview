@@ -197,6 +197,8 @@ Add extra component
 ```python
 # Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)
 view.add_component('my.ccp4')
+
+# NOTE: Trajectory is a special case of component.
 ```
 Multiple widgets
 ----------------
