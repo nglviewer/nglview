@@ -677,6 +677,11 @@ class NGLWidget(widgets.DOMWidget):
         """
         self._remote_call("setDelay", target="Widget", args=[delay,])
 
+    def _set_spin(self, axis, angle):
+        self._remote_call('setSpin',
+                          target='Stage',
+                          args=[axis, angle])
+        
     @property
     def representations(self):
         return self._representations
