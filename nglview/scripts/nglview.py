@@ -50,13 +50,17 @@ def main(notebook_content=notebook_content):
     # parser.add_argument('-p', '--parm', help='Topology filename', required=True)
     parser.add_argument('parm', help='Topology filename (could be PDB, CIF, ... files)') 
     parser.add_argument('-c', '--crd', help='Coordinate filename')
+    parser.add_argument('--browser', help='web browser, optional')
     parser.add_argument('-j', '--jexe', default='jupyter', help='jupyter command, optional')
     args = parser.parse_args()
 
     parm = args.parm
+
     crd = args.crd
     if crd is None:
         crd = parm
+
+    browser = '--browser ' + args.browser if args.browser else ''
 
     notebook_name = 'tmpnb_ngl.ipynb'
     notebook_content = notebook_content.replace('test.nc', crd).replace('prmtop', parm)
@@ -65,7 +69,9 @@ def main(notebook_content=notebook_content):
         fh.write(notebook_content)
     
     
-    cm = '{jupyter} notebook {notebook_name}'.format(jupyter=args.jexe, notebook_name=notebook_name)
+    cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
+                                                               notebook_name=notebook_name,
+                                                               browser=browser)
     print(cm)
     os.system(cm)
 
