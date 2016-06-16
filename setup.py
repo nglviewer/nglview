@@ -39,7 +39,7 @@ if __name__ == '__main__':
             "nglview.datafiles": ["*"],
             "nglview.js": ["*"]
         },
-        packages=["nglview", "nglview.datafiles", "nglview.js"],
+        packages=["nglview", "nglview.datafiles", "nglview.js", "nglview.scripts"],
         install_requires=["jupyter", "traitlets>=4.2.1", "ipywidgets<5.0"],
         tests_require=["nose"],
         test_suite="nose.collector",
@@ -50,5 +50,8 @@ if __name__ == '__main__':
             "MDAnalysis": ["MDAnalysis"],
             "ParmEd": ["parmed"],
             "rdkit": ["rdkit"],
-        }
+        },
+      entry_points={'console_scripts':
+          ['nglview = nglview.scripts.nglview:main',]
+           },
     )
