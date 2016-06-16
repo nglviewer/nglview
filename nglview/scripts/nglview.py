@@ -47,7 +47,8 @@ notebook_content = r"""
 
 def main(notebook_content=notebook_content):
     parser = argparse.ArgumentParser(description='NGLView')
-    parser.add_argument('-p', '--parm', help='Topology filename', required=True)
+    # parser.add_argument('-p', '--parm', help='Topology filename', required=True)
+    parser.add_argument('parm', help='Topology filename (could be PDB, CIF, ... files)') 
     parser.add_argument('-c', '--crd', help='Coordinate filename')
     parser.add_argument('-j', '--jexe', default='jupyter', help='jupyter command, optional')
     args = parser.parse_args()
