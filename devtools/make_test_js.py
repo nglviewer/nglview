@@ -1,24 +1,25 @@
 #!/usr/bin/env python
 
-notebooks = [
-        "nglview/tests/notebooks/test_delay.ipynb",
-        "nglview/tests/notebooks/test_background.ipynb",
-        "nglview/tests/notebooks/test_camera.ipynb",
-        "nglview/tests/notebooks/test_load_binary_different_folder_ccp4.ipynb",
-        "nglview/tests/notebooks/trajlist_pytraj.ipynb",
-        "nglview/tests/notebooks/trajlist_mdtraj.ipynb",
-        "nglview/tests/notebooks/trajlist_mdanalysis.ipynb",
-        "nglview/tests/notebooks/trajlist_parmed.ipynb",
-        "nglview/tests/notebooks/trajlist_simpletraj.ipynb",
-        "nglview/tests/notebooks/remove_representations_by_name_shortcut.ipynb",
-        "nglview/tests/notebooks/remove_representations_by_name.ipynb",
-        "nglview/tests/notebooks/test_load_url.ipynb",
-        "nglview/tests/notebooks/test_link_player.ipynb",
-        "nglview/tests/notebooks/api/binary_vs_base64.ipynb",
-        "nglview/tests/notebooks/duck.ipynb",
-        "nglview/tests/notebooks/api/render_image.ipynb",
-        "nglview/tests/notebooks/api/view_trajectory.ipynb"
-        ]
+import subprocess
+from glob import glob
+from random import shuffle
+
+notebooks = ['nglview/tests/notebooks/dummy.ipynb',]
+
+notebooks += (glob('nglview/tests/notebooks/*ipynb') +
+            glob('nglview/tests/notebooks/api/*ipynb'))
+
+# shuffle(notebooks)
+def get_cell_length(nb):
+    n_cells = 0
+
+    with open(nb) as fh:
+        for line in fh.readlines():
+            if 'cell_type' in line:
+                n_cells += 1
+    return n_cells
+
+notebooks_with_cell_lengths = [(nb, 2*get_cell_length(nb)) for nb in notebooks]
 
 head = """
 module.exports = {
@@ -45,15 +46,9 @@ tail = """
 
 if __name__ == '__main__':
 
-    max_cells = 42
-    notebook = 'nglview/tests/notebooks/test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb'
-    comprehensive_nb = body_template % (notebook, notebook, max_cells)
+    all_notebooks = '\n'.join(body_template % (notebook, notebook, n_cells)
+                              for (notebook, n_cells) in notebooks_with_cell_lengths)
 
-    max_cells = 20
-    others  = '\n'.join(body_template % (notebook, notebook, max_cells)
-                              for notebook in notebooks)
-
-    all_notebooks = others + '\n' + comprehensive_nb
     fn = 'nglview/tests/js/test.js'
     with open(fn, 'w') as fh:
         fh.write(head + all_notebooks + tail)

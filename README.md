@@ -2,15 +2,15 @@
 [![Binder](http://mybinder.org/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
 [![Build Status](https://travis-ci.org/arose/nglview.svg?branch=master)](https://travis-ci.org/arose/nglview)
-
-![nglview](nglview.gif)
-
+[![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
+![membrane](examples/images/membrane.gif)
 
 An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/).
 
 Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
-![membrane](examples/membrane.gif)
+![nglview](nglview.gif)
+
 
 Table of contents
 =================
@@ -20,21 +20,35 @@ Table of contents
 * [Usage](#usage)
 * [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
+* [FAQ](#faq)
 * [License](#license)
 
 
 Installation
 ============
 
+Released version
+----------------
+
+- Available on `bioconda` channel
+
+    `conda install nglview -c bioconda`
+
+- Available on [PyPI](https://pypi.python.org/pypi/nglview/)
+
+    `pip install nglview`
+
 Development version
 -------------------
-We highly recommend to install development version::
+
+The development version can be installed directly from github:
 
     python -m pip install git+https://github.com/arose/nglview
 
 If for any reasons that the `widget` is not shown, try reinstall below packages
 
     conda install traitlets=4.2.1 ipywidgets==4.1.1 notebook=4.1.0
+
 
 Example
 =======
@@ -69,10 +83,12 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_parmed(structure)`                 | Shows `ParmEd` structure
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
 
+
 API
 ===
 
-### Representations
+Representations
+---------------
 
 ```python
 view.add_representation(repr_type='cartoon', selection='protein')
@@ -122,7 +138,9 @@ view = nglview.NGLWidget(struc, representation=initial_repr)
 view
 ```
 
-### Properties
+
+Properties
+----------
 
 ```Python
 # set the frame number
@@ -140,7 +158,7 @@ view.parameters = {
     "backgroundColor": "black",
 }
 
-# note: NGLView accepts both origin camel NGL keywords (e.g. "clipNear") 
+# note: NGLView accepts both origin camel NGL keywords (e.g. "clipNear")
 # and snake keywords (e.g "clip_near")
 ```
 
@@ -160,7 +178,9 @@ view.camera = 'orthographic'
 # change background color
 view.background = 'black'
 ```
-### Trajectory
+Trajectory
+----------
+
 ```python
 # adding new one
 view.add_trajectory(traj)
@@ -171,12 +191,17 @@ view.trajectory_0.add_cartoon(...)
 view.trajectory_1.add_licorice(...)
 ```
 
-### Add extra component
+Add extra component
+-------------------
+
 ```python
 # Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)
 view.add_component('my.ccp4')
+
+# NOTE: Trajectory is a special case of component.
 ```
-### Multiple widgets
+Multiple widgets
+----------------
 
 You can have multiple widgets per notebook cell:
 
@@ -187,6 +212,15 @@ w2 = NGLWidget(...)
 Box(children=(w1,w2))
 ```
 
+API doc
+-------
+[Please check here](http://arose.github.io/nglview/latest/api.html)
+
+
+FAQ
+===
+
+[Q&A](https://github.com/arose/nglview/wiki/Q&A)
 
 License
 =======
