@@ -1,14 +1,13 @@
 #!/usr/bin/env python
-import os, sys, argparse
+import os, sys, argparse, json
 
-notebook_content = r"""
-{
+notebook_dict = {
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 'null',
    "metadata": {
-    "collapsed": true
+    "collapsed": True
    },
    "outputs": [],
    "source": [
@@ -36,16 +35,16 @@ notebook_content = r"""
    "mimetype": "text/x-python",
    "name": "python",
    "nbconvert_exporter": "python",
-   "pygments_lexer": "ipython3",
+   "pygments_lexer": "ipython",
    "version": "3.5.1"
   }
  },
  "nbformat": 4,
  "nbformat_minor": 0
 }
-""".strip()
 
-def main(notebook_content=notebook_content):
+def main(notebook_dict=notebook_dict):
+    PY3 = sys.version_info[0] == 3
     parser = argparse.ArgumentParser(description='NGLView')
     # parser.add_argument('-p', '--parm', help='Topology filename', required=True)
     parser.add_argument('parm', help='Topology filename (could be PDB, CIF, ... files)') 
@@ -66,9 +65,12 @@ def main(notebook_content=notebook_content):
         notebook_name = parm
     else:
         notebook_name = 'tmpnb_ngl.ipynb'
-        notebook_content = notebook_content.replace('test.nc', crd).replace('prmtop', parm)
+        nb_json = json.dumps(notebook_dict)
+        nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
+        if not PY3:
+           nb_json.replace('python3', 'python')
         with open(notebook_name, 'w') as fh:
-            fh.write(notebook_content)
+            fh.write(nb_json)
     
     
     cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
