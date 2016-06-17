@@ -62,11 +62,13 @@ def main(notebook_content=notebook_content):
 
     browser = '--browser ' + args.browser if args.browser else ''
 
-    notebook_name = 'tmpnb_ngl.ipynb'
-    notebook_content = notebook_content.replace('test.nc', crd).replace('prmtop', parm)
-
-    with open(notebook_name, 'w') as fh:
-        fh.write(notebook_content)
+    if parm.endswith('.ipynb'):
+        notebook_name = parm
+    else:
+        notebook_name = 'tmpnb_ngl.ipynb'
+        notebook_content = notebook_content.replace('test.nc', crd).replace('prmtop', parm)
+        with open(notebook_name, 'w') as fh:
+            fh.write(notebook_content)
     
     
     cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
