@@ -124,7 +124,6 @@ def test_load_data():
     # turn of for now
     # view._load_data('data/tz2.pdb')
 
-
 def test_representations():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     nt.assert_equal(view.representations, DEFAULT_REPR)
@@ -158,6 +157,10 @@ def test_download_image():
 
 def test_show_structure_file():
     view = nv.show_structure_file(nv.datafiles.PDB)
+
+def test_show_text():
+    text = open(nv.datafiles.PDB).read()
+    nv.show_text(text)
 
 def test_show_simpletraj():
     traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
