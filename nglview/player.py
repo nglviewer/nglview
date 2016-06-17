@@ -61,6 +61,6 @@ class TrajectoryPlayer(DOMWidget):
         link((int_text, 'value'), (self, 'step'))
         link((float_txt, 'value'), (self, 'delay'))
         link((checkbox_sync_frame, 'value'), (self, 'sync_frame'))
-        link((bg_color, 'value'), (self._view, 'background_color'))
+        link((bg_color, 'value'), (self._view, 'background'))
 
         return VBox([int_text, float_txt, checkbox_sync_frame, bg_color])

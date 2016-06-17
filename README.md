@@ -20,11 +20,16 @@ Table of contents
 * [Usage](#usage)
 * [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
+* [FAQ](#faq)
 * [License](#license)
 
 
 Installation
 ============
+
+Released version
+----------------
+
 - Available on `bioconda` channel
 
     `conda install nglview -c bioconda`
@@ -82,7 +87,8 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 API
 ===
 
-### Representations
+Representations
+---------------
 
 ```python
 view.add_representation(repr_type='cartoon', selection='protein')
@@ -133,7 +139,8 @@ view
 ```
 
 
-### Properties
+Properties
+----------
 
 ```Python
 # set the frame number
@@ -171,7 +178,9 @@ view.camera = 'orthographic'
 # change background color
 view.background = 'black'
 ```
-### Trajectory
+Trajectory
+----------
+
 ```python
 # adding new one
 view.add_trajectory(traj)
@@ -182,12 +191,17 @@ view.trajectory_0.add_cartoon(...)
 view.trajectory_1.add_licorice(...)
 ```
 
-### Add extra component
+Add extra component
+-------------------
+
 ```python
 # Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)
 view.add_component('my.ccp4')
+
+# NOTE: Trajectory is a special case of component.
 ```
-### Multiple widgets
+Multiple widgets
+----------------
 
 You can have multiple widgets per notebook cell:
 
@@ -198,6 +212,15 @@ w2 = NGLWidget(...)
 Box(children=(w1,w2))
 ```
 
+API doc
+-------
+[Please check here](http://arose.github.io/nglview/latest/api.html)
+
+
+FAQ
+===
+
+[Q&A](https://github.com/arose/nglview/wiki/Q&A)
 
 License
 =======
