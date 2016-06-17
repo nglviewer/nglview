@@ -124,6 +124,12 @@ def show_url(url, **kwargs):
     view.add_component(url, **kwargs2)
     return view
 
+def show_text(text, **kwargs):
+    """for development
+    """
+    structure = TextStructure(text)
+    return NGLWidget(structure, **kwargs)
+
 def show_structure_file(path, **kwargs):
     '''Show structure file. Allowed are text-based structure
     file formats that are by supported by NGL, including pdb,
@@ -294,6 +300,18 @@ class FileStructure(Structure):
 
     def get_structure_string(self):
         return self.fm.read(force_buffer=True)
+
+class TextStructure(Structure):
+
+    def __init__(self, text, ext='pdb', params={}):
+        super(TextStructure, self).__init__()
+        self.path = ''
+        self.ext = ext
+        self.params = params
+        self._text = text
+
+    def get_structure_string(self):
+        return self._text
 
 class RdkitStructure(Structure):
 
