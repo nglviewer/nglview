@@ -1,15 +1,13 @@
 #!/usr/bin/env python
-import os, sys, argparse
+import os, sys, argparse, json
 
 remote_msg = """
 SSH port forwarding help
-
     In your remote machine
     ----------------------
     
         export port=8890 # if port=8890 is not available, pick another one
         jupyter notebook --port=$port --no-browser
-
     
     In your local machine
     ---------------------
@@ -22,22 +20,17 @@ SSH port forwarding help
         localhost:8890
     
         # Note: change 8890 to the port number you specified
-
-
 Troubleshooting:
-
-    If you get "bind: Address already in use", please issue another port number
-
+    If you get 'bind: Address already in use', please issue another port number
 """
 
-notebook_content = r"""
-{
+notebook_dict = {
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 'null',
    "metadata": {
-    "collapsed": true
+    "collapsed": True
    },
    "outputs": [],
    "source": [
@@ -65,14 +58,13 @@ notebook_content = r"""
    "mimetype": "text/x-python",
    "name": "python",
    "nbconvert_exporter": "python",
-   "pygments_lexer": "ipython3",
+   "pygments_lexer": "ipython",
    "version": "3.5.1"
   }
  },
  "nbformat": 4,
  "nbformat_minor": 0
 }
-""".strip()
 
 def help_remote(remote_msg=remote_msg):
     import os, socket
@@ -81,7 +73,8 @@ def help_remote(remote_msg=remote_msg):
 
     print(remote_msg.format(username=username, hostname=hostname))
 
-def main(notebook_content=notebook_content):
+def main(notebook_dict=notebook_dict):
+    PY3 = sys.version_info[0] == 3
     parser = argparse.ArgumentParser(description='NGLView')
     # parser.add_argument('-p', '--parm', help='Topology filename', required=True)
     parser.add_argument('parm', help='Topology filename (could be PDB, CIF, ... files)') 
@@ -96,16 +89,21 @@ def main(notebook_content=notebook_content):
     if crd is None:
         crd = parm
 
+    browser = '--browser ' + args.browser if args.browser else ''
+
     if parm.lower() == 'remote':
         help_remote()
     else:
-        browser = '--browser ' + args.browser if args.browser else ''
-
-        notebook_name = 'tmpnb_ngl.ipynb'
-        notebook_content = notebook_content.replace('test.nc', crd).replace('prmtop', parm)
-
-        with open(notebook_name, 'w') as fh:
-            fh.write(notebook_content)
+        if parm.endswith('.ipynb'):
+            notebook_name = parm
+        else:
+            notebook_name = 'tmpnb_ngl.ipynb'
+            nb_json = json.dumps(notebook_dict)
+            nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
+            if not PY3:
+               nb_json.replace('python3', 'python')
+            with open(notebook_name, 'w') as fh:
+                fh.write(nb_json)
         
         
         cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
