@@ -18,12 +18,9 @@ Examples
 Animations
 ==========
 - [mdanalysis](mdanalysis.md)
-<<<<<<< HEAD
-=======
 - [pytraj](pytraj.md)
 - [mdtraj](mdtraj.md)
 - [parmed](parmed.md)
->>>>>>> a9b516e2f5fe173fa9f1b09b2d5936560d1e16b4
 
 Tips
 ====
