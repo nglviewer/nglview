@@ -230,6 +230,10 @@ nglview my.pdb
 # then display `view`
 nglview my.parm7 -c traj.nc
 
+# load all trajectories with filename ending with 'nc'
+# make sure to use quote " "
+nglview my.parm7 -c "*.nc"
+
 # open notebook, copy content from `myscript.py` then execute it
 nglview myscript.py
 
