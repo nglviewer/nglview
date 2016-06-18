@@ -76,12 +76,14 @@ def help_remote(remote_msg=remote_msg):
 
     print(remote_msg.format(username=username, hostname=hostname))
 
-def install_nbextension(jupyter):
+def install_nbextension(jupyter, user=True):
     path = os.path.dirname(__file__)
     nglview_main = os.path.join(path, 'nglview_main.js')
 
-    cm_install = '{jupyter} nbextension install {nglview_main}'.format(jupyter=jupyter,
-            nglview_main=nglview_main)
+    local = '--user' if user else ''
+    cm_install = '{jupyter} nbextension install {nglview_main} {local}'.format(jupyter=jupyter,
+            nglview_main=nglview_main,
+            local=local)
     cm_activate = '{jupyter} nbextension enable nglview_main'.format(jupyter=jupyter) 
 
     subprocess.check_call(cm_install.split())
@@ -96,10 +98,10 @@ def main(notebook_dict=notebook_dict):
 
     parser = argparse.ArgumentParser(description='NGLView')
     # parser.add_argument('-p', '--parm', help='Topology filename', required=True)
-    parser.add_argument('parm', help='Topology filename (could be PDB, CIF, ... files)') 
-    parser.add_argument('-c', '--crd', help='Coordinate filename')
+    parser.add_argument('parm', help='topology filename (could be PDB, CIF, ... files)') 
+    parser.add_argument('-c', '--crd', help='coordinate filename')
     parser.add_argument('--browser', help='web browser, optional')
-    parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter command, optional')
+    parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path, optional')
     parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name, optional')
     args = parser.parse_args()
 
