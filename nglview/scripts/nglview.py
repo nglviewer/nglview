@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os, sys, argparse, json
+import subprocess
 
 remote_msg = """
 SSH port forwarding help
@@ -73,6 +74,18 @@ def help_remote(remote_msg=remote_msg):
 
     print(remote_msg.format(username=username, hostname=hostname))
 
+def install_nbextension(jupyter):
+    path = os.path.dirname(__file__)
+    nglview_main = os.path.join(path, 'nglview_main.js')
+
+    cm_install = '{jupyter} nbextension install {nglview_main}'.format(jupyter=jupyter,
+            nglview_main=nglview_main)
+    cm_activate = '{jupyter} nbextension enable nglview_main'.format(jupyter=jupyter) 
+
+    subprocess.check_call(cm_install.split())
+    subprocess.check_call(cm_activate.split())
+
+
 def main(notebook_dict=notebook_dict):
     PY3 = sys.version_info[0] == 3
     parser = argparse.ArgumentParser(description='NGLView')
@@ -110,7 +123,8 @@ def main(notebook_dict=notebook_dict):
                                                                    notebook_name=notebook_name,
                                                                    browser=browser)
         print(cm)
-        os.system(cm)
+        install_nbextension(jupyter=args.jexe)
+        subprocess.check_call(cm.split())
 
 if __name__ == '__main__':
     main()
