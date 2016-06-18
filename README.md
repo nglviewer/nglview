@@ -221,7 +221,7 @@ Command line
 ============
 
 ```bash
-# highly experimental code, require installing pytraj.
+# highly experimental code and very buggy, require installing pytraj.
 
 # open notebook, load `my.pdb` to pytraj's trajectory then display `view`
 nglview my.pdb
