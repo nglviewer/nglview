@@ -111,10 +111,18 @@ def main(notebook_dict=notebook_dict):
             notebook_name = parm
         else:
             notebook_name = 'tmpnb_ngl.ipynb'
-            nb_json = json.dumps(notebook_dict)
-            nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
+            if parm.endswith('.py'):
+                pycontent = open(parm).read().strip()
+                notebook_dict['cells'][0]['source'] = pycontent
+                nb_json = json.dumps(notebook_dict)
+            else:
+                nb_json = json.dumps(notebook_dict)
+                nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
             if not PY3:
                nb_json.replace('python3', 'python')
+
+            nb_json = nb_json.replace('"null"', 'null')
+
             with open(notebook_name, 'w') as fh:
                 fh.write(nb_json)
         
@@ -124,7 +132,9 @@ def main(notebook_dict=notebook_dict):
                                                                    browser=browser)
         print(cm)
         install_nbextension(jupyter=args.jexe)
-        subprocess.check_call(cm.split())
+        # subprocess.check_call(cm.split())
+        # not using subprocess to avoid nasty message after closing kernel
+        os.system(cm)
 
 if __name__ == '__main__':
     main()
