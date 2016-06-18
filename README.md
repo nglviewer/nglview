@@ -18,6 +18,7 @@ Table of contents
 * [Installation](#installation)
 * [Example](#example)
 * [Usage](#usage)
+* [Command line](#command-line)
 * [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
 * [FAQ](#faq)
@@ -216,6 +217,25 @@ API doc
 -------
 [Please check here](http://arose.github.io/nglview/latest/api.html)
 
+Command line
+============
+
+```bash
+# highly experimental code, require installing pytraj.
+
+# open notebook, load `my.pdb` to pytraj's trajectory then display `view`
+nglview my.pdb
+
+# open notebook, create trajectory with given topology `my.parm7` and trajecotry file `traj.nc`,
+# then display `view`
+nglview my.parm7 -c traj.nc
+
+# open notebook, copy content from `myscript.py` then execute it
+nglview myscript.py
+
+# open notebook and execute 1st cell
+nglview mynotebook.ipynb
+```
 
 FAQ
 ===
