@@ -94,6 +94,7 @@ def main(notebook_dict=notebook_dict):
     parser.add_argument('-c', '--crd', help='Coordinate filename')
     parser.add_argument('--browser', help='web browser, optional')
     parser.add_argument('-j', '--jexe', default='jupyter', help='jupyter command, optional')
+    parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name, optional')
     args = parser.parse_args()
 
     parm = args.parm
@@ -110,7 +111,7 @@ def main(notebook_dict=notebook_dict):
         if parm.endswith('.ipynb'):
             notebook_name = parm
         else:
-            notebook_name = 'tmpnb_ngl.ipynb'
+            notebook_name = args.notebook_name
             if parm.endswith('.py'):
                 pycontent = open(parm).read().strip()
                 notebook_dict['cells'][0]['source'] = pycontent
