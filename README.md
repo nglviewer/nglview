@@ -18,7 +18,7 @@ Table of contents
 * [Installation](#installation)
 * [Example](#example)
 * [Usage](#usage)
-* [Command line](#command line)
+* [Command line](#command-line)
 * [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
 * [FAQ](#faq)
