@@ -107,7 +107,7 @@ def main(notebook_dict=notebook_dict):
                                      epilog=CMD_EXAMPLE)
     parser.add_argument('command',
             help='command could be a topology filename (.pdb, .mol2, .parm7, ...) or \n'
-                          'could be "server", a python script, a notebook (.ipynb)') 
+                          'could be a python script (.py), a notebook (.ipynb)') 
     parser.add_argument('-c', '--crd', help='coordinate filename')
     parser.add_argument('--browser', help='web browser')
     parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path')
