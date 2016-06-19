@@ -67,6 +67,7 @@ def install_nbextension(jupyter, user=True):
             stderr=subprocess.STDOUT)
 
 def disable_extension(jupyter):
+    print("disable nglview_main extension")
     cm = '{jupyter} nbextension disable nglview_main'.format(jupyter=jupyter)
     subprocess.check_call(cm.split())
 
@@ -163,7 +164,6 @@ def main(notebook_dict=notebook_dict):
     try:
         subprocess.check_call(cm.split())
     except KeyboardInterrupt:
-        print("disable nglview_main extension")
         disable_extension(jupyter=args.jexe)
 
 if __name__ == '__main__':
