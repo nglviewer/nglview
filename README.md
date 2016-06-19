@@ -242,8 +242,9 @@ nglview myscript.py
 # open notebook and execute 1st cell
 nglview mynotebook.ipynb
 
-# read instruction to use nglview remotely (e.g from supercomputer cluster)
-nglview remote
+# create a remote notebook
+# just follow its instruction
+nglview my.pdb --server
 ```
 
 FAQ
