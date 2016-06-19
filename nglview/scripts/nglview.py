@@ -6,31 +6,6 @@ from .cmd_example import CMD_EXAMPLE
 
 bin_path = sys.prefix + '/bin/'
 
-REMOTE_MSG = """
-SSH port forwarding help
-
-    In your remote machine
-    ----------------------
-    
-        export port=8890 # if port=8890 is not available, pick another one
-        jupyter notebook --port=$port --no-browser
-    
-    In your local machine
-    ---------------------
-    
-        export port=8890 #  same as given port in your remote machine
-        ssh -N -f -L localhost:$port:localhost:$port {username}@{hostname}
-    
-    Then open your favorite web browser, paste
-    
-        localhost:8890
-    
-        # Note: change 8890 to the port number you specified
-
-Troubleshooting:
-    If you get 'bind: Address already in use', please issue another port number
-"""
-
 notebook_dict = {
  "cells": [
   {
@@ -73,13 +48,6 @@ notebook_dict = {
  "nbformat_minor": 0
 }
 
-def help_remote(REMOTE_MSG=REMOTE_MSG):
-    import os, socket
-    username = os.getlogin()
-    hostname = socket.gethostname()
-
-    print(REMOTE_MSG.format(username=username, hostname=hostname))
-
 def install_nbextension(jupyter, user=True):
     path = os.path.dirname(__file__)
     nglview_main = os.path.join(path, 'nglview_main.js')
@@ -90,13 +58,42 @@ def install_nbextension(jupyter, user=True):
             local=local)
     cm_activate = '{jupyter} nbextension enable nglview_main'.format(jupyter=jupyter) 
 
-    subprocess.check_call(cm_install.split())
-    subprocess.check_call(cm_activate.split())
+    with open(os.devnull, 'wb') as devnull:
+        subprocess.check_call(cm_install.split(),
+            stdout=devnull,
+            stderr=subprocess.STDOUT)
+        subprocess.check_call(cm_activate.split(),
+            stdout=devnull,
+            stderr=subprocess.STDOUT)
 
 def disable_extension(jupyter):
+    print("disable nglview_main extension")
     cm = '{jupyter} nbextension disable nglview_main'.format(jupyter=jupyter)
     subprocess.check_call(cm.split())
 
+remote_msg = """
+Try to use port = {port}
+
+In your local machine, run:
+
+    {client_cm}
+
+Then open your web browser, copy and paste:
+    http://localhost:{port}
+"""
+
+def get_remote_port(port=None):
+    import os, socket
+    from nglview.scripts.app import NGLViewApp
+    port = port if port is not None else NGLViewApp().get_port()
+
+    username = os.getlogin()
+    hostname = socket.gethostname()
+    client_cm = "ssh -NL localhost:{port}:localhost:{port} {username}@{hostname}".format(username=username,
+            hostname=hostname,
+            port=port)
+    print(remote_msg.format(client_cm=client_cm, port=port))
+    return port
 
 def main(notebook_dict=notebook_dict):
     PY3 = sys.version_info[0] == 3
@@ -110,14 +107,16 @@ def main(notebook_dict=notebook_dict):
                                      epilog=CMD_EXAMPLE)
     parser.add_argument('command',
             help='command could be a topology filename (.pdb, .mol2, .parm7, ...) or \n'
-                          'could be "remote", a python script, a notebook (.ipynb)') 
+                          'could be "server", a python script, a notebook (.ipynb)') 
     parser.add_argument('-c', '--crd', help='coordinate filename')
     parser.add_argument('--browser', help='web browser')
     parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path')
     parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
+    parser.add_argument('--port', type=int, help='port number')
+    parser.add_argument('--server', action='store_true', help='create remote notebook')
     args = parser.parse_args()
 
-    parm = args.command
+    command = parm = args.command
 
     crd = args.crd
     if crd is None:
@@ -125,44 +124,47 @@ def main(notebook_dict=notebook_dict):
 
     browser = '--browser ' + args.browser if args.browser else ''
 
-    if parm.lower() == 'remote':
-        help_remote()
+    if parm.endswith('.ipynb'):
+        notebook_name = parm
     else:
-        if parm.endswith('.ipynb'):
-            notebook_name = parm
+        notebook_name = args.notebook_name
+        if not PY3:
+            kernelspec = notebook_dict['metadata']['kernelspec']
+            kernelspec['display_name'] = 'Python 2'
+            kernelspec['name'] = 'python2'
+            notebook_dict['metadata']['kernelspec'] = kernelspec
+
+            notebook_dict['metadata']['language_info']['codemirror_mode']['version'] = pyv_short_string
+            notebook_dict['metadata']['version'] = pyv_full_string
+        if parm.endswith('.py'):
+            pycontent = open(parm).read().strip()
+            notebook_dict['cells'][0]['source'] = pycontent
+            nb_json = json.dumps(notebook_dict)
         else:
-            notebook_name = args.notebook_name
-            if not PY3:
-                kernelspec = notebook_dict['metadata']['kernelspec']
-                kernelspec['display_name'] = 'Python 2'
-                kernelspec['name'] = 'python2'
-                notebook_dict['metadata']['kernelspec'] = kernelspec
+            nb_json = json.dumps(notebook_dict)
+            nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
+        nb_json = nb_json.replace('"null"', 'null')
 
-                notebook_dict['metadata']['language_info']['codemirror_mode']['version'] = pyv_short_string
-                notebook_dict['metadata']['version'] = pyv_full_string
-            if parm.endswith('.py'):
-                pycontent = open(parm).read().strip()
-                notebook_dict['cells'][0]['source'] = pycontent
-                nb_json = json.dumps(notebook_dict)
-            else:
-                nb_json = json.dumps(notebook_dict)
-                nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
-            nb_json = nb_json.replace('"null"', 'null')
-
-            with open(notebook_name, 'w') as fh:
-                fh.write(nb_json)
-        
-        
+        with open(notebook_name, 'w') as fh:
+            fh.write(nb_json)
+    
+    
+    if not args.server:
         cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
                                                                    notebook_name=notebook_name,
-                                                                   browser=browser)
-        print(cm)
-        install_nbextension(jupyter=args.jexe)
-        try:
-            subprocess.check_call(cm.split())
-        except KeyboardInterrupt:
-            print("disable nglview_main extension")
-            disable_extension(jupyter=args.jexe)
+                                                               browser=browser)
+    else:
+        port = get_remote_port()
+        cm = '{jupyter} notebook --no-browser --port {port}'.format(jupyter=args.jexe,
+                                                                    port=port)
+        print('NOTE: make sure to open {0} in your local machine\n'.format(notebook_name))
+
+    install_nbextension(jupyter=args.jexe)
+
+    try:
+        subprocess.check_call(cm.split())
+    except KeyboardInterrupt:
+        disable_extension(jupyter=args.jexe)
 
 if __name__ == '__main__':
     main()
