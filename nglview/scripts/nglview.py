@@ -1,11 +1,14 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
 import os, sys, argparse, json
 import subprocess
+from .cmd_example import CMD_EXAMPLE 
 
 bin_path = sys.prefix + '/bin/'
 
-remote_msg = """
+REMOTE_MSG = """
 SSH port forwarding help
+
     In your remote machine
     ----------------------
     
@@ -23,6 +26,7 @@ SSH port forwarding help
         localhost:8890
     
         # Note: change 8890 to the port number you specified
+
 Troubleshooting:
     If you get 'bind: Address already in use', please issue another port number
 """
@@ -69,23 +73,29 @@ notebook_dict = {
  "nbformat_minor": 0
 }
 
-def help_remote(remote_msg=remote_msg):
+def help_remote(REMOTE_MSG=REMOTE_MSG):
     import os, socket
     username = os.getlogin()
     hostname = socket.gethostname()
 
-    print(remote_msg.format(username=username, hostname=hostname))
+    print(REMOTE_MSG.format(username=username, hostname=hostname))
 
-def install_nbextension(jupyter):
+def install_nbextension(jupyter, user=True):
     path = os.path.dirname(__file__)
     nglview_main = os.path.join(path, 'nglview_main.js')
 
-    cm_install = '{jupyter} nbextension install {nglview_main}'.format(jupyter=jupyter,
-            nglview_main=nglview_main)
+    local = '--user' if user else ''
+    cm_install = '{jupyter} nbextension install {nglview_main} {local}'.format(jupyter=jupyter,
+            nglview_main=nglview_main,
+            local=local)
     cm_activate = '{jupyter} nbextension enable nglview_main'.format(jupyter=jupyter) 
 
     subprocess.check_call(cm_install.split())
     subprocess.check_call(cm_activate.split())
+
+def disable_extension(jupyter):
+    cm = '{jupyter} nbextension disable nglview_main'.format(jupyter=jupyter)
+    subprocess.check_call(cm.split())
 
 
 def main(notebook_dict=notebook_dict):
@@ -94,16 +104,20 @@ def main(notebook_dict=notebook_dict):
     pyv_short_string = str(sys.version_info[0])
     default_jexe = bin_path + 'jupyter'
 
-    parser = argparse.ArgumentParser(description='NGLView')
-    # parser.add_argument('-p', '--parm', help='Topology filename', required=True)
-    parser.add_argument('parm', help='Topology filename (could be PDB, CIF, ... files)') 
-    parser.add_argument('-c', '--crd', help='Coordinate filename')
-    parser.add_argument('--browser', help='web browser, optional')
-    parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter command, optional')
-    parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name, optional')
+    parser = argparse.ArgumentParser(description='NGLView: An IPython/Jupyter widget to '
+                                     'interactively view molecular structures and trajectories.',
+                                     formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     epilog=CMD_EXAMPLE)
+    parser.add_argument('command',
+            help='command could be a topology filename (.pdb, .mol2, .parm7, ...) or \n'
+                          'could be "remote", a python script, a notebook (.ipynb)') 
+    parser.add_argument('-c', '--crd', help='coordinate filename')
+    parser.add_argument('--browser', help='web browser')
+    parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path')
+    parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
     args = parser.parse_args()
 
-    parm = args.parm
+    parm = args.command
 
     crd = args.crd
     if crd is None:
@@ -124,7 +138,7 @@ def main(notebook_dict=notebook_dict):
                 kernelspec['name'] = 'python2'
                 notebook_dict['metadata']['kernelspec'] = kernelspec
 
-                codemirror_mode = notebook_dict['metadata']['language_info']['codemirror_mode']['version'] = pyv_short_string
+                notebook_dict['metadata']['language_info']['codemirror_mode']['version'] = pyv_short_string
                 notebook_dict['metadata']['version'] = pyv_full_string
             if parm.endswith('.py'):
                 pycontent = open(parm).read().strip()
@@ -144,9 +158,11 @@ def main(notebook_dict=notebook_dict):
                                                                    browser=browser)
         print(cm)
         install_nbextension(jupyter=args.jexe)
-        # subprocess.check_call(cm.split())
-        # not using subprocess to avoid nasty message after closing kernel
-        os.system(cm)
+        try:
+            subprocess.check_call(cm.split())
+        except KeyboardInterrupt:
+            print("disable nglview_main extension")
+            disable_extension(jupyter=args.jexe)
 
 if __name__ == '__main__':
     main()
