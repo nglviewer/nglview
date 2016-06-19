@@ -117,7 +117,7 @@ def main(notebook_dict=notebook_dict):
     parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
     args = parser.parse_args()
 
-    parm = args.parm
+    parm = args.command
 
     crd = args.crd
     if crd is None:
