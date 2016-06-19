@@ -89,6 +89,10 @@ def install_nbextension(jupyter, user=True):
     subprocess.check_call(cm_install.split())
     subprocess.check_call(cm_activate.split())
 
+def disable_extension(jupyter):
+    cm = '{jupyter} nbextension disable nglview_main'.format(jupyter=jupyter)
+    subprocess.check_call(cm.split())
+
 
 def main(notebook_dict=notebook_dict):
     PY3 = sys.version_info[0] == 3
@@ -146,9 +150,11 @@ def main(notebook_dict=notebook_dict):
                                                                    browser=browser)
         print(cm)
         install_nbextension(jupyter=args.jexe)
-        # subprocess.check_call(cm.split())
-        # not using subprocess to avoid nasty message after closing kernel
-        os.system(cm)
+        try:
+            subprocess.check_call(cm.split())
+        except KeyboardInterrupt:
+            print("disable nglview_main extension")
+            disable_extension(jupyter=args.jexe)
 
 if __name__ == '__main__':
     main()
