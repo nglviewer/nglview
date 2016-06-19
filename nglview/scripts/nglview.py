@@ -6,31 +6,6 @@ from .cmd_example import CMD_EXAMPLE
 
 bin_path = sys.prefix + '/bin/'
 
-REMOTE_MSG = """
-SSH port forwarding help
-
-    In your remote machine
-    ----------------------
-    
-        export port=8890 # if port=8890 is not available, pick another one
-        jupyter notebook --port=$port --no-browser
-    
-    In your local machine
-    ---------------------
-    
-        export port=8890 #  same as given port in your remote machine
-        ssh -N -f -L localhost:$port:localhost:$port {username}@{hostname}
-    
-    Then open your favorite web browser, paste
-    
-        localhost:8890
-    
-        # Note: change 8890 to the port number you specified
-
-Troubleshooting:
-    If you get 'bind: Address already in use', please issue another port number
-"""
-
 notebook_dict = {
  "cells": [
   {
@@ -135,7 +110,7 @@ def main(notebook_dict=notebook_dict):
                                      epilog=CMD_EXAMPLE)
     parser.add_argument('command',
             help='command could be a topology filename (.pdb, .mol2, .parm7, ...) or \n'
-                          'could be "remote", a python script, a notebook (.ipynb)') 
+                          'could be "server", a python script, a notebook (.ipynb)') 
     parser.add_argument('-c', '--crd', help='coordinate filename')
     parser.add_argument('--browser', help='web browser')
     parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path')
@@ -151,9 +126,7 @@ def main(notebook_dict=notebook_dict):
 
     browser = '--browser ' + args.browser if args.browser else ''
 
-    if command.lower() == 'remote':
-        help_remote()
-    elif command.lower() == 'server':
+    if command.lower() == 'server':
         init_server(args.jexe, port=args.port)
     else:
         if parm.endswith('.ipynb'):
