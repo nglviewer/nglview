@@ -58,12 +58,28 @@ def install_nbextension(jupyter, user=True):
             local=local)
     cm_activate = '{jupyter} nbextension enable nglview_main'.format(jupyter=jupyter) 
 
-    subprocess.check_call(cm_install.split())
-    subprocess.check_call(cm_activate.split())
+    with open(os.devnull, 'wb') as devnull:
+        subprocess.check_call(cm_install.split(),
+            stdout=devnull,
+            stderr=subprocess.STDOUT)
+        subprocess.check_call(cm_activate.split(),
+            stdout=devnull,
+            stderr=subprocess.STDOUT)
 
 def disable_extension(jupyter):
     cm = '{jupyter} nbextension disable nglview_main'.format(jupyter=jupyter)
     subprocess.check_call(cm.split())
+
+remote_msg = """
+Try to use port = {port}
+
+In your local machine, run:
+
+    {client_cm}
+
+Then open your web browser, copy and paste:
+    http://localhost:{port}
+"""
 
 def get_remote_port(port=None):
     import os, socket
@@ -75,15 +91,7 @@ def get_remote_port(port=None):
     client_cm = "ssh -NL localhost:{port}:localhost:{port} {username}@{hostname}".format(username=username,
             hostname=hostname,
             port=port)
-    print("*"*10)
-    print('Try to use port = {}'.format(port))
-    print('In your local machine, run: \n')
-    print('    {}'.format(client_cm))
-    print("")
-    print("Then open your web browser, copy and paste: ")
-    print("    http://localhost:{port}".format(port=port))
-    print("*"*10)
-    print("")
+    print(remote_msg.format(client_cm=client_cm, port=port))
     return port
 
 def main(notebook_dict=notebook_dict):
@@ -144,22 +152,19 @@ def main(notebook_dict=notebook_dict):
         cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
                                                                    notebook_name=notebook_name,
                                                                browser=browser)
-        install_nbextension(jupyter=args.jexe)
-        try:
-            subprocess.check_call(cm.split())
-        except KeyboardInterrupt:
-            print("disable nglview_main extension")
-            disable_extension(jupyter=args.jexe)
-
     else:
         port = get_remote_port()
         cm = '{jupyter} notebook --no-browser --port {port}'.format(jupyter=args.jexe,
                                                                     port=port)
-        print('make sure to open {0} in your loca machine\n'.format(notebook_name))
-        try:
-            subprocess.check_call(cm.split())
-        except KeyboardInterrupt:
-            print("closing kernel")
+        print('NOTE: make sure to open {0} in your local machine\n'.format(notebook_name))
+
+    install_nbextension(jupyter=args.jexe)
+
+    try:
+        subprocess.check_call(cm.split())
+    except KeyboardInterrupt:
+        print("disable nglview_main extension")
+        disable_extension(jupyter=args.jexe)
 
 if __name__ == '__main__':
     main()
