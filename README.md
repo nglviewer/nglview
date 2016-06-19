@@ -243,7 +243,8 @@ nglview myscript.py
 nglview mynotebook.ipynb
 
 # create a remote notebook
-nglview server
+# just follow its instruction
+nglview my.pdb --server
 ```
 
 FAQ
