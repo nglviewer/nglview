@@ -44,7 +44,9 @@ Development version
 
 The development version can be installed directly from github:
 
-    python -m pip install git+https://github.com/arose/nglview
+    git clone https://github.com/arose/nglview
+    cd nglview
+    python -m pip install .
 
 If for any reasons that the `widget` is not shown, try reinstall below packages
 
@@ -229,6 +231,10 @@ nglview my.pdb
 # open notebook, create trajectory with given topology `my.parm7` and trajecotry file `traj.nc`,
 # then display `view`
 nglview my.parm7 -c traj.nc
+
+# load all trajectories with filename ending with 'nc'
+# make sure to use quote " "
+nglview my.parm7 -c "*.nc"
 
 # open notebook, copy content from `myscript.py` then execute it
 nglview myscript.py
