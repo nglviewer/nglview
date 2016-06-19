@@ -154,7 +154,7 @@ def main(notebook_dict=notebook_dict):
                                                                    notebook_name=notebook_name,
                                                                browser=browser)
     else:
-        port = get_remote_port()
+        port = get_remote_port(args.port)
         cm = '{jupyter} notebook --no-browser --port {port}'.format(jupyter=args.jexe,
                                                                     port=port)
         print('NOTE: make sure to open {0} in your local machine\n'.format(notebook_name))
