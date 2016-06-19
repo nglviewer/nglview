@@ -16,6 +16,6 @@ CMD_EXAMPLE = """Example
     # open my_notebook.ipynb notebook and run 1st cell
     nglview my_notebook.ipynb
     
-    # display instruction about using remote notebook
-    nglview remote
+    # running Jupyter notebook remotely
+    nglview server
 """
