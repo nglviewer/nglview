@@ -97,6 +97,31 @@ def disable_extension(jupyter):
     cm = '{jupyter} nbextension disable nglview_main'.format(jupyter=jupyter)
     subprocess.check_call(cm.split())
 
+def init_server(jupyter, port=None):
+    import os, socket
+    from nglview.scripts.app import NGLViewApp
+    port = port if port is not None else NGLViewApp().get_port()
+
+    username = os.getlogin()
+    hostname = socket.gethostname()
+    client_cm = "ssh -NL localhost:{port}:localhost:{port} {username}@{hostname}".format(username=username,
+            hostname=hostname,
+            port=port)
+    print("*"*10)
+    print('Try to use port = {}'.format(port))
+    print('In your local machine, run: \n')
+    print('    {}'.format(client_cm))
+    print("")
+    print("Then open your web browser, copy and paste: ")
+    print("    http://localhost:{port}".format(port=port))
+    print("*"*10)
+    print("")
+
+    cm = '{jupyter} notebook --no-browser --port {port}'.format(jupyter=jupyter, port=port)
+    try:
+        subprocess.check_call(cm.split())
+    except KeyboardInterrupt:
+        print("exit due to KeyboardInterrupt")
 
 def main(notebook_dict=notebook_dict):
     PY3 = sys.version_info[0] == 3
@@ -115,9 +140,10 @@ def main(notebook_dict=notebook_dict):
     parser.add_argument('--browser', help='web browser')
     parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path')
     parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
+    parser.add_argument('--port', type=int, help='port number')
     args = parser.parse_args()
 
-    parm = args.command
+    command = parm = args.command
 
     crd = args.crd
     if crd is None:
@@ -125,8 +151,10 @@ def main(notebook_dict=notebook_dict):
 
     browser = '--browser ' + args.browser if args.browser else ''
 
-    if parm.lower() == 'remote':
+    if command.lower() == 'remote':
         help_remote()
+    elif command.lower() == 'server':
+        init_server(args.jexe, port=args.port)
     else:
         if parm.endswith('.ipynb'):
             notebook_name = parm
