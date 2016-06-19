@@ -48,13 +48,6 @@ notebook_dict = {
  "nbformat_minor": 0
 }
 
-def help_remote(REMOTE_MSG=REMOTE_MSG):
-    import os, socket
-    username = os.getlogin()
-    hostname = socket.gethostname()
-
-    print(REMOTE_MSG.format(username=username, hostname=hostname))
-
 def install_nbextension(jupyter, user=True):
     path = os.path.dirname(__file__)
     nglview_main = os.path.join(path, 'nglview_main.js')
