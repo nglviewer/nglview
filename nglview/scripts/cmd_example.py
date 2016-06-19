@@ -7,7 +7,8 @@ CMD_EXAMPLE = """Example
     nglview 1tsu.parm7 -c traj.nc
 
     # open notebook and display trajectory by reading all files ending with .nc
-    nglview 1tsu.parm7 -c *.nc
+    # make sure to use quote " "
+    nglview 1tsu.parm7 -c "*.nc"
     
     # open notebook and copy myscript.py content to 1st cell
     nglview myscript.py
