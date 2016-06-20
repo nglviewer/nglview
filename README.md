@@ -245,6 +245,8 @@ nglview mynotebook.ipynb
 # create a remote notebook
 # just follow its instruction
 nglview my.pdb --remote
+nglview my.parm7 -c traj.nc --remote
+nglview mynotebook.ipynb --remote
 ```
 
 FAQ
