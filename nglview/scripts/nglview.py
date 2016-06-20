@@ -116,7 +116,7 @@ def main(notebook_dict=notebook_dict):
     parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
     parser.add_argument('--port', type=int, help='port number')
     parser.add_argument('--remote', action='store_true', help='create remote notebook')
-    parser.add_argument('--clean-cache', action='store_true', help='create remote notebook')
+    parser.add_argument('--clean-cache', action='store_true', help='delete temp file after closing notebook')
     args = parser.parse_args()
 
     command = parm = args.command
