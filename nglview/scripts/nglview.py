@@ -78,6 +78,8 @@ In your local machine, run:
 
     {client_cm}
 
+NOTE: you might want to replace {hostname} by full hostname with domain name
+
 Then open your web browser, copy and paste:
     http://localhost:{port}
 """
@@ -92,7 +94,7 @@ def get_remote_port(port=None):
     client_cm = "ssh -NL localhost:{port}:localhost:{port} {username}@{hostname}".format(username=username,
             hostname=hostname,
             port=port)
-    print(remote_msg.format(client_cm=client_cm, port=port))
+    print(remote_msg.format(client_cm=client_cm, port=port, hostname=hostname))
     return port
 
 def main(notebook_dict=notebook_dict):
@@ -107,13 +109,13 @@ def main(notebook_dict=notebook_dict):
                                      epilog=CMD_EXAMPLE)
     parser.add_argument('command',
             help='command could be a topology filename (.pdb, .mol2, .parm7, ...) or \n'
-                          'could be "server", a python script, a notebook (.ipynb)') 
+                          'could be a python script (.py), a notebook (.ipynb)') 
     parser.add_argument('-c', '--crd', help='coordinate filename')
     parser.add_argument('--browser', help='web browser')
     parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path')
     parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
     parser.add_argument('--port', type=int, help='port number')
-    parser.add_argument('--server', action='store_true', help='create remote notebook')
+    parser.add_argument('--remote', action='store_true', help='create remote notebook')
     args = parser.parse_args()
 
     command = parm = args.command
@@ -149,7 +151,7 @@ def main(notebook_dict=notebook_dict):
             fh.write(nb_json)
     
     
-    if not args.server:
+    if not args.remote:
         cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
                                                                    notebook_name=notebook_name,
                                                                browser=browser)
