@@ -1,6 +1,10 @@
 Changelog
 =========
 
+Version 0.5.2.dev
+-----------------
+- ADD: `nglview` command line
+
 Version 0.5.1
 -------------
 
