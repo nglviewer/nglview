@@ -14,7 +14,7 @@ class NGLViewApp(NotebookApp):
         for port in random_ports(self.port, self.port_retries+1):
             try:
                 self.http_server.listen(port, self.ip)
-            except OSError as e:
+            except (OSError, socket.error): 
                 pass
             else:
                 self.port = port
