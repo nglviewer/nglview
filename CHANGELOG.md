@@ -3,7 +3,7 @@ Changelog
 
 Version 0.5.2.dev
 -----------------
-- ADD: `nglview` command line
+- ADD: `nglview` [command line](https://github.com/arose/nglview/blob/master/README.md#command-line)
 
 Version 0.5.1
 -------------
