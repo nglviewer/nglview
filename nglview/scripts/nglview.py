@@ -116,6 +116,7 @@ def main(notebook_dict=notebook_dict):
     parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
     parser.add_argument('--port', type=int, help='port number')
     parser.add_argument('--remote', action='store_true', help='create remote notebook')
+    parser.add_argument('--clean-cache', action='store_true', help='create remote notebook')
     args = parser.parse_args()
 
     command = parm = args.command
@@ -125,6 +126,8 @@ def main(notebook_dict=notebook_dict):
         crd = parm
 
     browser = '--browser ' + args.browser if args.browser else ''
+
+    create_new_nb = False
 
     if parm.endswith('.ipynb'):
         notebook_name = parm
@@ -149,6 +152,7 @@ def main(notebook_dict=notebook_dict):
 
         with open(notebook_name, 'w') as fh:
             fh.write(nb_json)
+            create_new_nb = True
     
     
     if not args.remote:
@@ -166,6 +170,9 @@ def main(notebook_dict=notebook_dict):
     try:
         subprocess.check_call(cm.split())
     except KeyboardInterrupt:
+        if args.clean_cache and create_new_nb:
+            print("deleting {}".format(notebook_name))
+            os.remove(notebook_name)
         disable_extension(jupyter=args.jexe)
 
 if __name__ == '__main__':
