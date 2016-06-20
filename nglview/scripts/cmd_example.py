@@ -17,5 +17,5 @@ CMD_EXAMPLE = """Example
     nglview my_notebook.ipynb
     
     # running Jupyter notebook remotely
-    nglview 1tsu.parm7 -c traj.nc --server
+    nglview 1tsu.parm7 -c traj.nc --remote
 """

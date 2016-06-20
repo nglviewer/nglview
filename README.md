@@ -244,7 +244,7 @@ nglview mynotebook.ipynb
 
 # create a remote notebook
 # just follow its instruction
-nglview my.pdb --server
+nglview my.pdb --remote
 ```
 
 FAQ
