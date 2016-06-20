@@ -78,6 +78,8 @@ In your local machine, run:
 
     {client_cm}
 
+NOTE: you might want to replace {hostname} by full hostname with domain name
+
 Then open your web browser, copy and paste:
     http://localhost:{port}
 """
@@ -92,7 +94,7 @@ def get_remote_port(port=None):
     client_cm = "ssh -NL localhost:{port}:localhost:{port} {username}@{hostname}".format(username=username,
             hostname=hostname,
             port=port)
-    print(remote_msg.format(client_cm=client_cm, port=port))
+    print(remote_msg.format(client_cm=client_cm, port=port, hostname=hostname))
     return port
 
 def main(notebook_dict=notebook_dict):
