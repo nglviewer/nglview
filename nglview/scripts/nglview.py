@@ -113,7 +113,7 @@ def main(notebook_dict=notebook_dict):
     parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path')
     parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
     parser.add_argument('--port', type=int, help='port number')
-    parser.add_argument('--server', action='store_true', help='create remote notebook')
+    parser.add_argument('--remote', action='store_true', help='create remote notebook')
     args = parser.parse_args()
 
     command = parm = args.command
@@ -149,7 +149,7 @@ def main(notebook_dict=notebook_dict):
             fh.write(nb_json)
     
     
-    if not args.server:
+    if not args.remote:
         cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
                                                                    notebook_name=notebook_name,
                                                                browser=browser)
