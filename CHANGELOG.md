@@ -1,9 +1,11 @@
 Changelog
 =========
 
-Version 0.5.2.dev
------------------
-- ADD: `nglview` [command line](https://github.com/arose/nglview/blob/master/README.md#command-line)
+Version 0.5.2
+-------------
+* ADD: `nglview` command line for quickly opening notebook.
+* ADD: `add_text` to display
+* FIX: view.background assignment.
 
 Version 0.5.1
 -------------
