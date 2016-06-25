@@ -72,8 +72,6 @@ def disable_extension(jupyter):
     subprocess.check_call(cm.split())
 
 
-
-
 remote_msg = """
 Try to use port = {port}
 
