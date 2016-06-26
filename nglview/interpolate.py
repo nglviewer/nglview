@@ -31,7 +31,7 @@ def linear(index, t, traj, step=1):
 
 def spline(index, t, traj, step=1):
     i = index
-    ip = min(index + step, traj.n_frames-1)
+    ip = min(index + step, traj.n_frames - 1)
     ipp = min(index + 2 * step, traj.n_frames - 1)
     ippp = min(index + 3 * step, traj.n_frames - 1)
 
