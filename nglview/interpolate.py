@@ -1,5 +1,5 @@
 # translated from ngl code
-def spline(p0, p1, p2, p3, t, tension):
+def _spline(p0, p1, p2, p3, t, tension):
 
     v0 = (p2 - p0) * tension
     v1 = (p3 - p1) * tension
@@ -10,10 +10,10 @@ def spline(p0, p1, p2, p3, t, tension):
             (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 +
             v0 * t + p1)
 
-def lerp(a, b, t):
+def _lerp(a, b, t):
     return a + (b - a) * t
 
-def interpolate_lerp(index, t, traj, step=1):
+def lerp(index, t, traj, step=1):
     """
 
     Parameters
@@ -26,10 +26,10 @@ def interpolate_lerp(index, t, traj, step=1):
     c = traj.get_coordinates(index)
     cp = traj.get_coordinates(index + step)
 
-    coords = lerp(cp, c, t)
+    coords = _lerp(cp, c, t)
     return coords
 
-def interpolate_spline(index, t, traj, step=1):
+def spline(index, t, traj, step=1):
 
     i, ip, ipp, ippp = index, index + step, index + 2 * step, index + 3 * step
     c = traj.get_coordinates(i)
@@ -37,5 +37,5 @@ def interpolate_spline(index, t, traj, step=1):
     cpp = traj.get_coordinates(ipp)
     cppp = traj.get_coordinates(ippp)
 
-    coords = spline(cppp, cpp, cp, c, t, 1)
+    coords = _spline(cppp, cpp, cp, c, t, 1)
     return coords

@@ -12,7 +12,7 @@ class TrajectoryPlayer(DOMWidget):
     interpolate = Bool(False).tag(sync=False)
     delay = Float(0.0).tag(sync=True)
     parameters = Dict().tag(sync=True)
-    _params = Dict().tag(sync=False)
+    iparams = Dict().tag(sync=False)
 
     def __init__(self, view, step=1, delay=100, sync_frame=False, min_delay=40):
         self._view = view

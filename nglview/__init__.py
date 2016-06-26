@@ -759,14 +759,14 @@ class NGLWidget(widgets.DOMWidget):
 
                 try:
                     if trajectory.shown:
-                        if self.player.interpolate:
-                            t = self.player.interpolate_params.get('t', 1)
-                            step = self.player.interpolate_params.get('step', 1)
-                            interpolate_type = self.player.interpolate_params.get('type', 'lerp')
-                            if interpolate_type == 'lerp':
-                                coordinates_dict[traj_index] = interpolate.interpolate_lerp(index, t=t, traj=trajectory)
+                        if self.player.interpolate and index < self.count:
+                            t = self.player.iparams.get('t', 1)
+                            step = self.player.iparams.get('step', 1)
+                            itype = self.player.iparams.get('type', 'lerp')
+                            if itype == 'lerp':
+                                coordinates_dict[traj_index] = interpolate.lerp(index, t=t, traj=trajectory)
                             else:
-                                coordinates_dict[traj_index] = interpolate.interpolate_spline(index, t=t, traj=trajectory)
+                                coordinates_dict[traj_index] = interpolate.spline(index, t=t, traj=trajectory)
                         else:
                             coordinates_dict[traj_index] = trajectory.get_coordinates(index)
                     else:
