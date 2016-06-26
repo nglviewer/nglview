@@ -20,7 +20,7 @@ class TrajectoryPlayer(DOMWidget):
         self.sync_frame = sync_frame
         self.delay = delay
         self.min_delay = min_delay
-        self.iparams = dict(t=0.5, step=1)
+        self.iparams = dict(t=0.5, step=1, type='linear')
 
     @property
     def frame(self):

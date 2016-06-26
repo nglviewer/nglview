@@ -759,10 +759,17 @@ class NGLWidget(widgets.DOMWidget):
 
                 try:
                     if trajectory.shown:
-                        if self.player.interpolate and index < self.count:
+                        if self.player.interpolate:
                             t = self.player.iparams.get('t', 0.5)
                             step = self.player.iparams.get('step', 1)
-                            coordinates_dict[traj_index] = interpolate.linear(index, t=t, traj=trajectory)
+                            itype = self.player.iparams.get('type', 'linear')
+
+                            if itype == 'linear':
+                                coordinates_dict[traj_index] = interpolate.linear(index, t=t, traj=trajectory)
+                            elif itype == 'spline':
+                                coordinates_dict[traj_index] = interpolate.spline(index, t=t, traj=trajectory)
+                            else:
+                                raise ValueError('interpolation type must be linear or spline')
                         else:
                             coordinates_dict[traj_index] = trajectory.get_coordinates(index)
                     else:
