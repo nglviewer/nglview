@@ -11,6 +11,8 @@ def linear(index, t, traj, step=1):
     t : float, between 0. and 1.
     traj : nglview.Trajectory or subclass
     """
+    # need to copy coordinates to avoid early memory free
+    # in pytraj
     c = traj.get_coordinates(index).copy()
     cp = traj.get_coordinates(index + step).copy()
 
