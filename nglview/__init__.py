@@ -5,6 +5,7 @@ from . import datafiles
 from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
 from .player import TrajectoryPlayer
+from .interpolate import simple_lerp
 import time
 
 import os
@@ -758,7 +759,12 @@ class NGLWidget(widgets.DOMWidget):
 
                 try:
                     if trajectory.shown:
-                        coordinates_dict[traj_index] = trajectory.get_coordinates(index)
+                        if self.player.interpolate:
+                            t = self.player.interpolate_params.get('t', 1)
+                            step = self.player.interpolate_params.get('step', 1)
+                            coordinates_dict[traj_index] = simple_lerp(index, t=t, traj=trajectory)
+                        else:
+                            coordinates_dict[traj_index] = trajectory.get_coordinates(index)
                     else:
                         coordinates_dict[traj_index] = np.empty((0), dtype='f4')
                 except (IndexError, ValueError):
