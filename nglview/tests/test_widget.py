@@ -24,6 +24,9 @@ import mdtraj as md
 import parmed as pmd
 from nglview.utils import PY2, PY3
 
+def default_view():
+    traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
+    return nv.show_pytraj(traj)
 
 #-----------------------------------------------------------------------------
 # Utility stuff from ipywidgets tests
@@ -361,3 +364,17 @@ def test_add_struture_then_trajectory():
     view.frame = 3
     coords = view.coordinates_dict[1].copy()
     aa_eq(coords, traj[3].xyz)
+
+def test_interpolation():
+    view = default_view()
+
+    view.player.interpolate = True
+    nt.assert_equal(view.player.iparams.get('type'), 'linear')
+    nt.assert_equal(view.player.iparams.get('step'), 1)
+
+    def func():
+        view.player.interpolate = True
+        view.player.iparams = dict(type='spline_typos')
+        view._set_coordinates(3)
+
+    nt.assert_raises(ValueError, func())
