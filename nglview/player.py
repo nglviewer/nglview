@@ -9,8 +9,10 @@ class TrajectoryPlayer(DOMWidget):
     # so `observe` can be triggered
     step = Int(0).tag(sync=True)
     sync_frame = Bool(True).tag(sync=True)
+    interpolate = Bool(False).tag(sync=False)
     delay = Float(0.0).tag(sync=True)
     parameters = Dict().tag(sync=True)
+    iparams = Dict().tag(sync=False)
 
     def __init__(self, view, step=1, delay=100, sync_frame=False, min_delay=40):
         self._view = view
@@ -18,6 +20,7 @@ class TrajectoryPlayer(DOMWidget):
         self.sync_frame = sync_frame
         self.delay = delay
         self.min_delay = min_delay
+        self.iparams = dict(t=0.5, step=1, type='linear')
 
     @property
     def frame(self):
