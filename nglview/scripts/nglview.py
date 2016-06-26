@@ -71,16 +71,17 @@ def disable_extension(jupyter):
     cm = '{jupyter} nbextension disable nglview_main'.format(jupyter=jupyter)
     subprocess.check_call(cm.split())
 
+
 remote_msg = """
 Try to use port = {port}
 
-In your local machine, run:
+\033[32m In your local machine, run: \033[0m
 
     {client_cm}
 
-NOTE: you might want to replace {hostname} by full hostname with domain name
+\033[32m NOTE: you might want to replace {hostname} by full hostname with domain name \033[0m
 
-Then open your web browser, copy and paste:
+\033[32m Then open your web browser, copy and paste: \033[0m
     http://localhost:{port}
 """
 
