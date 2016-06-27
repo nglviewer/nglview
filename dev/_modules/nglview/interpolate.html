@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>nglview.interpolate &mdash; NGLView 0.5.2a+66.ge004681 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="NGLView 0.5.2a+66.ge004681 documentation" href="../../index.html"/>
+        <link rel="up" title="nglview" href="../nglview.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> NGLView
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.2a+66.ge004681
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">NGLView</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../nglview.html">nglview</a> &raquo;</li>
+      
+    <li>nglview.interpolate</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nglview.interpolate</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="lerp"><a class="viewcode-back" href="../../_api/nglview.html#nglview.interpolate.lerp">[docs]</a><span></span><span class="k">def</span> <span class="nf">lerp</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">a</span></div>
+
+<span class="k">def</span> <span class="nf">_spline</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">tension</span><span class="p">):</span>
+    <span class="n">v0</span> <span class="o">=</span> <span class="p">(</span> <span class="n">p2</span> <span class="o">-</span> <span class="n">p0</span> <span class="p">)</span> <span class="o">*</span> <span class="n">tension</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="p">(</span> <span class="n">p3</span> <span class="o">-</span> <span class="n">p1</span> <span class="p">)</span> <span class="o">*</span> <span class="n">tension</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">t</span>
+    <span class="n">t3</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">t2</span>
+    <span class="k">return</span> <span class="p">((</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">p2</span> <span class="o">+</span> <span class="n">v0</span> <span class="o">+</span> <span class="n">v1</span> <span class="p">)</span> <span class="o">*</span> <span class="n">t3</span> <span class="o">+</span>
+           <span class="p">(</span> <span class="o">-</span><span class="mi">3</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">p2</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">-</span> <span class="n">v1</span> <span class="p">)</span> <span class="o">*</span> <span class="n">t2</span> <span class="o">+</span>
+           <span class="n">v0</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">p1</span><span class="p">)</span>
+
+<span class="n">doc</span> <span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">    Parameters</span>
+<span class="s2">    ----------</span>
+<span class="s2">    index : int</span>
+<span class="s2">    t : float, between 0. and 1.</span>
+<span class="s2">    traj : nglview.Trajectory or subclass</span>
+<span class="s2">    step : int, default=1</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="linear"><a class="viewcode-back" href="../../_api/nglview.html#nglview.interpolate.linear">[docs]</a><span class="k">def</span> <span class="nf">linear</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="c1"># need to copy coordinates to avoid early memory free</span>
+    <span class="c1"># in pytraj</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">cp</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">lerp</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coords</span></div>
+
+<div class="viewcode-block" id="spline"><a class="viewcode-back" href="../../_api/nglview.html#nglview.interpolate.spline">[docs]</a><span class="k">def</span> <span class="nf">spline</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">index</span>
+    <span class="n">ip</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="n">step</span><span class="p">,</span> <span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ipp</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ippp</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">cp</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">cpp</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">ipp</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">cppp</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">ippp</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">_spline</span><span class="p">(</span><span class="n">cppp</span><span class="p">,</span> <span class="n">cpp</span><span class="p">,</span> <span class="n">cp</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">tension</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coords</span></div>
+
+<span class="n">linear</span><span class="o">.</span><span class="n">__doc__</span> <span class="o">=</span> <span class="n">doc</span>
+<span class="n">spline</span><span class="o">.</span><span class="n">__doc__</span> <span class="o">=</span> <span class="n">doc</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.5.2a+66.ge004681',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
