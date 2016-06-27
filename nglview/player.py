@@ -84,28 +84,28 @@ class TrajectoryPlayer(DOMWidget):
             self._view._set_spin(None, None)
 
     @observe('_spin_x')
-    def on_spin_changed(self, change):
+    def on_spin_x_changed(self, change):
         self._spin_x = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
                     self._spin_speed)
 
     @observe('_spin_y')
-    def on_spin_changed(self, change):
+    def on_spin_y_changed(self, change):
         self._spin_y = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
                     self._spin_speed)
 
     @observe('_spin_z')
-    def on_spin_changed(self, change):
+    def on_spin_z_changed(self, change):
         self._spin_z = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
                     self._spin_speed)
 
     @observe('_spin_speed')
-    def on_spin_changed(self, change):
+    def on_spin_speed_changed(self, change):
         self._spin_speed = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
@@ -119,7 +119,7 @@ class TrajectoryPlayer(DOMWidget):
         spin_x_slide = IntSlider(self._spin_x, min=-1, max=1, description='spin_x')
         spin_y_slide = IntSlider(self._spin_y, min=-1, max=1, description='spin_y')
         spin_z_slide = IntSlider(self._spin_z, min=-1, max=1, description='spin_z')
-        spin_speed_slide = FloatSlider(self._spin_speed, min=0, max=0.1, description='spin speed')
+        spin_speed_slide = FloatSlider(self._spin_speed, min=0, max=0.2, step=0.001, description='spin speed')
         bg_color = ColorPicker(value='white', description='background_color')
         # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
         interpolation_type = Dropdown(value=self._iterpolation_type,
@@ -137,6 +137,7 @@ class TrajectoryPlayer(DOMWidget):
         link((spin_x_slide, 'value'), (self, '_spin_x'))
         link((spin_y_slide, 'value'), (self, '_spin_y'))
         link((spin_z_slide, 'value'), (self, '_spin_z'))
+        link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
         v0 = VBox([step_slide, delay_text, bg_color,
                    checkbox_interpolate,
@@ -145,5 +146,6 @@ class TrajectoryPlayer(DOMWidget):
         v1 = VBox([checkbox_spin,
                    spin_x_slide,
                    spin_y_slide,
-                   spin_z_slide])
+                   spin_z_slide,
+                   spin_speed_slide])
         return HBox([v0, v1])
