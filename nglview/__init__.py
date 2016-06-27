@@ -5,6 +5,7 @@ from . import datafiles
 from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
 from .player import TrajectoryPlayer
+from . import interpolate
 import time
 
 import os
@@ -758,7 +759,19 @@ class NGLWidget(widgets.DOMWidget):
 
                 try:
                     if trajectory.shown:
-                        coordinates_dict[traj_index] = trajectory.get_coordinates(index)
+                        if self.player.interpolate:
+                            t = self.player.iparams.get('t', 0.5)
+                            step = self.player.iparams.get('step', 1)
+                            itype = self.player.iparams.get('type', 'linear')
+
+                            if itype == 'linear':
+                                coordinates_dict[traj_index] = interpolate.linear(index, t=t, traj=trajectory)
+                            elif itype == 'spline':
+                                coordinates_dict[traj_index] = interpolate.spline(index, t=t, traj=trajectory)
+                            else:
+                                raise ValueError('interpolation type must be linear or spline')
+                        else:
+                            coordinates_dict[traj_index] = trajectory.get_coordinates(index)
                     else:
                         coordinates_dict[traj_index] = np.empty((0), dtype='f4')
                 except (IndexError, ValueError):
