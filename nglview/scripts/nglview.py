@@ -102,7 +102,7 @@ def main(notebook_dict=notebook_dict):
     PY3 = sys.version_info[0] == 3
     pyv_full_string = ','.join(str(i) for i in sys.version_info)
     pyv_short_string = str(sys.version_info[0])
-    default_jexe = bin_path + 'jupyter'
+    default_jexe = ' '.join((sys.executable, '-m jupyter'))
 
     parser = argparse.ArgumentParser(description='NGLView: An IPython/Jupyter widget to '
                                      'interactively view molecular structures and trajectories.',
