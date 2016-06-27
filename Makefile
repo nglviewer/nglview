@@ -1,5 +1,5 @@
 html:
-	python  ./scripts/fix_readme_link.py ../nglview/README.md
+	python  ./scripts/fix_readme_link.py ../../nglview/README.md
 	(cd doc && make html)
 
 clean:
