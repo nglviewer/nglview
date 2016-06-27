@@ -71,16 +71,17 @@ def disable_extension(jupyter):
     cm = '{jupyter} nbextension disable nglview_main'.format(jupyter=jupyter)
     subprocess.check_call(cm.split())
 
+
 remote_msg = """
 Try to use port = {port}
 
-In your local machine, run:
+\033[32m In your local machine, run: \033[0m
 
     {client_cm}
 
-NOTE: you might want to replace {hostname} by full hostname with domain name
+\033[32m NOTE: you might want to replace {hostname} by full hostname with domain name \033[0m
 
-Then open your web browser, copy and paste:
+\033[32m Then open your web browser, copy and paste: \033[0m
     http://localhost:{port}
 """
 
@@ -101,7 +102,7 @@ def main(notebook_dict=notebook_dict):
     PY3 = sys.version_info[0] == 3
     pyv_full_string = ','.join(str(i) for i in sys.version_info)
     pyv_short_string = str(sys.version_info[0])
-    default_jexe = bin_path + 'jupyter'
+    default_jexe = ' '.join((sys.executable, '-m jupyter'))
 
     parser = argparse.ArgumentParser(description='NGLView: An IPython/Jupyter widget to '
                                      'interactively view molecular structures and trajectories.',
@@ -110,6 +111,7 @@ def main(notebook_dict=notebook_dict):
     parser.add_argument('command',
             help='command could be a topology filename (.pdb, .mol2, .parm7, ...) or \n'
                           'could be a python script (.py), a notebook (.ipynb)') 
+    parser.add_argument('traj', nargs='?', help='coordinate filename')
     parser.add_argument('-c', '--crd', help='coordinate filename')
     parser.add_argument('--browser', help='web browser')
     parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path')
@@ -121,7 +123,7 @@ def main(notebook_dict=notebook_dict):
 
     command = parm = args.command
 
-    crd = args.crd
+    crd = args.traj if args.traj is not None else args.crd
     if crd is None:
         crd = parm
 
