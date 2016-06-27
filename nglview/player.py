@@ -1,7 +1,8 @@
-from ipywidgets import (DOMWidget, IntText, BoundedFloatText, HBox, VBox, Checkbox,
-                        ColorPicker)
+from ipywidgets import (DOMWidget, IntText, FloatText, HBox, VBox, Checkbox,
+                        ColorPicker, FloatSlider,
+                        Dropdown)
                         
-from traitlets import Int, Bool, Dict, Float
+from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
 
 class TrajectoryPlayer(DOMWidget):
@@ -13,6 +14,8 @@ class TrajectoryPlayer(DOMWidget):
     delay = Float(0.0).tag(sync=True)
     parameters = Dict().tag(sync=True)
     iparams = Dict().tag(sync=False)
+    _t_interpolation = Float().tag(sync=False)
+    _type_interpolation = CaselessStrEnum(['linear', 'spline']).tag(sync=False)
 
     def __init__(self, view, step=1, delay=100, sync_frame=False, min_delay=40):
         self._view = view
@@ -20,7 +23,9 @@ class TrajectoryPlayer(DOMWidget):
         self.sync_frame = sync_frame
         self.delay = delay
         self.min_delay = min_delay
-        self.iparams = dict(t=0.5, step=1, type='linear')
+        self._t_interpolation = 0.5
+        self._type_interpolation = 'linear'
+        self.iparams = dict(t=self._t_interpolation, step=1, type=self._type_interpolation)
 
     @property
     def frame(self):
@@ -54,16 +59,31 @@ class TrajectoryPlayer(DOMWidget):
         self.delay = params.get("delay", self.delay)
         self.step = params.get("step", self.step)
 
-    def _display(self):
-        int_text = IntText(self.step, description='step')
-        float_txt = BoundedFloatText(self.delay, description='delay', min=self.min_delay)
-        checkbox_sync_frame = Checkbox(self.sync_frame, description='sync_frame')
-        bg_color = ColorPicker(description='background_color')
-        bg_color.value = 'white'
+    @observe('_t_interpolation')
+    def _t_interpolation_changed(self, change):
+        self.iparams['t'] = change['new']
 
-        link((int_text, 'value'), (self, 'step'))
-        link((float_txt, 'value'), (self, 'delay'))
-        link((checkbox_sync_frame, 'value'), (self, 'sync_frame'))
+    @observe('_type_interpolation')
+    def _t_interpolation_changed(self, change):
+        self.iparams['type'] = change['new']
+
+    def _display(self):
+        step_text = IntText(self.step, description='step')
+        delay_text = FloatText(value=self.delay, description='delay')
+        checkbox_interpolate = Checkbox(self.interpolate, description='interpolate')
+        bg_color = ColorPicker(value='white', description='background_color')
+        t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
+        type_iterpolation = Dropdown(value=self._type_interpolation,
+                options=['linear', 'spline'], description='interpolation type')
+
+        link((step_text, 'value'), (self, 'step'))
+        link((delay_text, 'value'), (self, 'delay'))
+        link((checkbox_interpolate, 'value'), (self, 'interpolate'))
+        link((t_interpolation, 'value'), (self, '_t_interpolation'))
+        link((type_iterpolation, 'value'), (self, '_type_interpolation'))
         link((bg_color, 'value'), (self._view, 'background'))
 
-        return VBox([int_text, float_txt, checkbox_sync_frame, bg_color])
+        return VBox([step_text, delay_text, bg_color,
+                     checkbox_interpolate,
+                     t_interpolation,
+                     type_iterpolation])
