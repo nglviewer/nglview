@@ -1,6 +1,7 @@
 # TODO: reorg
 import ipywidgets
-from ipywidgets import (DOMWidget, IntText, FloatText, HBox, VBox, Checkbox,
+from ipywidgets import (DOMWidget, IntText, FloatText,
+                        Box, HBox, VBox, Checkbox,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
                         Button,
@@ -197,7 +198,7 @@ class TrajectoryPlayer(DOMWidget):
         link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
         ibox = HBox([checkbox_interpolate, interpolation_type])
-        center_button = self._center_button()
+        center_button = self._add_button_center()
         v0 = VBox([step_slide,
                    delay_text,
                    bg_color,
@@ -213,17 +214,29 @@ class TrajectoryPlayer(DOMWidget):
 
         genbox = HBox([v0, v1])
         prefbox = self._show_preference()
-        tab = ipywidgets.Tab([genbox, prefbox])
+        themebox = Box([self._add_button_theme(),])
+
+        tab = ipywidgets.Tab([genbox, prefbox, themebox])
         tab.set_title(0, 'General')
         tab.set_title(1, 'Speed')
+        tab.set_title(2, 'Theme')
         return tab
 
-    def _center_button(self):
-        cbut = Button(description='Center')
-        def on_click(cbut):
+    def _add_button_center(self):
+        button = Button(description='Center')
+        def on_click(button):
             self._view.center()
-        cbut.on_click(on_click)
-        return cbut
+        button.on_click(on_click)
+        return button
+
+    def _add_button_theme(self):
+        button = Button(description='Oceans16')
+        def on_click(button):
+            from IPython.display import display
+            from nglview import theme
+            display(theme.oceans16())
+        button.on_click(on_click)
+        return button
 
     def _show_preference(self):
         def func(pan_speed=0.8,
