@@ -628,6 +628,8 @@ class NGLWidget(widgets.DOMWidget):
         if structure is not None:
             self._representations = self._init_representations[:]
 
+        self._set_unsync_camera()
+
     @property
     def parameters(self):
         return self._parameters
