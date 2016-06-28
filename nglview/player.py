@@ -152,11 +152,11 @@ class TrajectoryPlayer(DOMWidget):
         link((spin_z_slide, 'value'), (self, '_spin_z'))
         link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
+        ibox = HBox([checkbox_interpolate, interpolation_type])
         v0 = VBox([step_slide,
                    delay_text,
                    bg_color,
-                   checkbox_interpolate,
-                   interpolation_type,
+                   ibox,
                    camera_type])
 
         v1 = VBox([checkbox_spin,
