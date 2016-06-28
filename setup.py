@@ -38,9 +38,12 @@ if __name__ == '__main__':
         package_data={
             "nglview.datafiles": ["*"],
             "nglview.js": ["*"],
-            "nglview.scripts": ["*"]
+            "nglview.scripts": ["*"],
+            "nglview.theme": ["*"]
         },
-        packages=["nglview", "nglview.datafiles", "nglview.js", "nglview.scripts"],
+        packages=["nglview", "nglview.datafiles",
+                  "nglview.js", "nglview.scripts",
+                  "nglview.theme"],
         install_requires=["jupyter", "traitlets>=4.2.1", "ipywidgets<5.0"],
         tests_require=["nose"],
         test_suite="nose.collector",
