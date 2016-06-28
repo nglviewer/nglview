@@ -25,7 +25,7 @@ class TrajectoryPlayer(DOMWidget):
     _spin_z = Int(0).tag(sync=False)
     _spin_speed = Float(0.005).tag(sync=False)
     camera = CaselessStrEnum(['perspective', 'orthographic'],
-                             default_value='perspective').tag(sync=False)
+        default_value='perspective').tag(sync=False)
 
     def __init__(self, view, step=1, delay=100,
                  sync_frame=False, min_delay=40):
@@ -47,6 +47,13 @@ class TrajectoryPlayer(DOMWidget):
         self._view._remote_call("setParameters",
                                 target='Stage',
                                 kwargs=dict(cameraType=camera_type))
+
+    @observe('camera')
+    def on_camera_changed(self, change):
+        camera_type = change['new']
+        self._view._remote_call("setParameters",
+                target='Stage',
+                kwargs=dict(cameraType=camera_type))
 
     @property
     def frame(self):
@@ -168,6 +175,9 @@ class TrajectoryPlayer(DOMWidget):
 
         camera_type = Dropdown(value=self.camera,
                                options=['perspective', 'orthographic'], description='camera')
+
+        camera_type = Dropdown(value=self.camera,
+                options=['perspective', 'orthographic'], description='camera')
 
         link((step_slide, 'value'), (self, 'step'))
         link((delay_text, 'value'), (self, 'delay'))
