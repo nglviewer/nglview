@@ -8,12 +8,13 @@ Notes
 Examples
 ========
 
-- [representations and selection language](representations_and_selection_language.ipynb)
-- [using two screens](using_two_screens.ipynb)
-- [view trajectory](view_trajectory.ipynb)
+- [representations and selection language](notebooks/representations_and_selection_language.ipynb)
+- [using two screens](notebooks/using_two_screens.ipynb)
+- [view trajectory](notebooks/view_trajectory.ipynb)
 - [make movie](http://ambermd.org/tutorials/analysis/tutorial_notebooks/nglview_movie/)
-- [render and export image for publication](export_image.ipynb)
-- [membrane](membrane.gif)
+- [render and export image for publication](notebooks/export_image.ipynb)
+- [membrane](images/membrane.gif)
+- [change theme](images/dark_theme.md)
 
 Animations
 ==========
