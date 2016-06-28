@@ -220,5 +220,6 @@ class TrajectoryPlayer(DOMWidget):
             self._view.parameters = dict(
                 panSpeed=pan_speed,
                 rotateSpeed=rotate_speed,
-                zoomSpeed=zoom_speed)
+                zoomSpeed=zoom_speed,
+                clipDist=clip_dist)
         return func
