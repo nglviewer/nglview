@@ -10,10 +10,10 @@ https://github.com/dunovank/jupyter-themes
 
 """
 import os
-from IPython import display
+from IPython.display import HTML
 
 style = """
-<style>
+<style id='nglview_style'>
 {}
 </style>
 """
@@ -22,10 +22,7 @@ def _get_theme(css_file):
     dirname = os.path.dirname(os.path.abspath(__file__))
     css_file = os.path.join(dirname, css_file)
     css = open(css_file).read()
-    return display.HTML(style.format(css))
+    return HTML(style.format(css))
 
 def oceans16():
     return _get_theme('oceans16.css')
-
-def default():
-    return display.HTML()
