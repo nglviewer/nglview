@@ -22,6 +22,8 @@ class TrajectoryPlayer(DOMWidget):
     _spin_y = Int(0).tag(sync=False)
     _spin_z = Int(0).tag(sync=False)
     _spin_speed = Float(0.005).tag(sync=False)
+    camera = CaselessStrEnum(['perspective', 'orthographic'],
+        default_value='perspective').tag(sync=False)
 
     def __init__(self, view, step=1, delay=100, sync_frame=False, min_delay=40):
         self._view = view
@@ -32,6 +34,13 @@ class TrajectoryPlayer(DOMWidget):
         self._interpolation_t = 0.5
         self._iterpolation_type = 'linear'
         self.iparams = dict(t=self._interpolation_t, step=1, type=self._iterpolation_type)
+
+    @observe('camera')
+    def on_camera_changed(self, change):
+        camera_type = change['new']
+        self._view._remote_call("setParameters",
+                target='Stage',
+                kwargs=dict(cameraType=camera_type))
 
     @property
     def frame(self):
@@ -125,11 +134,15 @@ class TrajectoryPlayer(DOMWidget):
         interpolation_type = Dropdown(value=self._iterpolation_type,
                 options=['linear', 'spline'], description='interpolation type')
 
+        camera_type = Dropdown(value=self.camera,
+                options=['perspective', 'orthographic'], description='camera')
+
         link((step_slide, 'value'), (self, 'step'))
         link((delay_text, 'value'), (self, 'delay'))
         link((checkbox_interpolate, 'value'), (self, 'interpolate'))
         # link((t_interpolation, 'value'), (self, '_interpolation_t'))
         link((interpolation_type, 'value'), (self, '_iterpolation_type'))
+        link((camera_type, 'value'), (self, 'camera'))
         link((bg_color, 'value'), (self._view, 'background'))
 
         # spin
@@ -139,9 +152,12 @@ class TrajectoryPlayer(DOMWidget):
         link((spin_z_slide, 'value'), (self, '_spin_z'))
         link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
-        v0 = VBox([step_slide, delay_text, bg_color,
+        v0 = VBox([step_slide,
+                   delay_text,
+                   bg_color,
                    checkbox_interpolate,
-                   interpolation_type])
+                   interpolation_type,
+                   camera_type])
 
         v1 = VBox([checkbox_spin,
                    spin_x_slide,
