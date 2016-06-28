@@ -1,8 +1,9 @@
 # TODO: reorg
+import ipywidgets
 from ipywidgets import (DOMWidget, IntText, FloatText, HBox, VBox, Checkbox,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
-                        interact)
+                        interactive)
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
@@ -206,13 +207,15 @@ class TrajectoryPlayer(DOMWidget):
                    spin_y_slide,
                    spin_z_slide,
                    spin_speed_slide])
-        return HBox([v0, v1])
+
+        genbox = HBox([v0, v1])
+        prefbox = self._show_preference()
+        tab = ipywidgets.Tab([genbox, prefbox])
+        tab.set_title(0, 'General')
+        tab.set_title(1, 'Speed')
+        return tab
 
     def _show_preference(self):
-        @interact(pan_speed=(0, 10, 0.1),
-                  rotate_speed=(0, 10, 1),
-                  zoom_speed=(0, 10, 1),
-                  clip_dist=(0, 200, 5))
         def func(pan_speed=0.8,
                  rotate_speed=2,
                  zoom_speed=1.2,
@@ -222,4 +225,9 @@ class TrajectoryPlayer(DOMWidget):
                 rotateSpeed=rotate_speed,
                 zoomSpeed=zoom_speed,
                 clipDist=clip_dist)
-        return func
+
+        return interactive(func,
+                  pan_speed=(0, 10, 0.1),
+                  rotate_speed=(0, 10, 1),
+                  zoom_speed=(0, 10, 1),
+                  clip_dist=(0, 200, 5))
