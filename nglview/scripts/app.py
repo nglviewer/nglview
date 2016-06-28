@@ -1,17 +1,22 @@
 from notebook.notebookapp import NotebookApp, random_ports
 import socket
 from tornado import httpserver
+from itertools import chain
 
 
 class NGLViewApp(NotebookApp):
-    def get_port(self):
+    def get_port(self, port=None):
+
+        # user-given port
+        uport = [port,] if port is not None else [self.port,]
 
         def func():
             return
 
         self.http_server = httpserver.HTTPServer(func)
         success = None
-        for port in random_ports(self.port, self.port_retries+1):
+
+        for port in chain(uport, random_ports(self.port, self.port_retries+1)):
             try:
                 self.http_server.listen(port, self.ip)
             except (OSError, socket.error): 
