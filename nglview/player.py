@@ -3,6 +3,7 @@ import ipywidgets
 from ipywidgets import (DOMWidget, IntText, FloatText, HBox, VBox, Checkbox,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
+                        Button,
                         interactive)
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
@@ -172,7 +173,7 @@ class TrajectoryPlayer(DOMWidget):
         bg_color = ColorPicker(value='white', description='background_color')
         # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
         interpolation_type = Dropdown(value=self._iterpolation_type,
-                                      options=['linear', 'spline'], description='interpolation type')
+                                      options=['linear', 'spline'])
 
         camera_type = Dropdown(value=self.camera,
                                options=['perspective', 'orthographic'], description='camera')
@@ -196,11 +197,13 @@ class TrajectoryPlayer(DOMWidget):
         link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
         ibox = HBox([checkbox_interpolate, interpolation_type])
+        center_button = self._center_button()
         v0 = VBox([step_slide,
                    delay_text,
                    bg_color,
                    ibox,
-                   camera_type])
+                   camera_type,
+                   center_button])
 
         v1 = VBox([checkbox_spin,
                    spin_x_slide,
@@ -214,6 +217,13 @@ class TrajectoryPlayer(DOMWidget):
         tab.set_title(0, 'General')
         tab.set_title(1, 'Speed')
         return tab
+
+    def _center_button(self):
+        cbut = Button(description='Center')
+        def on_click(cbut):
+            self._view.center()
+        cbut.on_click(on_click)
+        return cbut
 
     def _show_preference(self):
         def func(pan_speed=0.8,
