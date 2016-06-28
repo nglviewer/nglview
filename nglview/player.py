@@ -206,20 +206,21 @@ class TrajectoryPlayer(DOMWidget):
                    camera_type,
                    center_button])
 
-        v1 = VBox([checkbox_spin,
+        spinbox= VBox([checkbox_spin,
                    spin_x_slide,
                    spin_y_slide,
                    spin_z_slide,
                    spin_speed_slide])
 
-        genbox = HBox([v0, v1])
+        genbox = HBox([v0,])
         prefbox = self._show_preference()
-        themebox = Box([self._add_button_theme(),])
+        themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
 
-        tab = ipywidgets.Tab([genbox, prefbox, themebox])
+        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox])
         tab.set_title(0, 'General')
-        tab.set_title(1, 'Speed')
-        tab.set_title(2, 'Theme')
+        tab.set_title(1, 'Spin')
+        tab.set_title(2, 'Speed')
+        tab.set_title(3, 'Theme')
         return tab
 
     def _add_button_center(self):
@@ -235,6 +236,16 @@ class TrajectoryPlayer(DOMWidget):
             from IPython.display import display
             from nglview import theme
             display(theme.oceans16())
+        button.on_click(on_click)
+        return button
+
+    def _add_button_reset_theme(self):
+        from nglview.theme.jsutils import js_clean_empty_output_area
+        button = Button(description='Default')
+        def on_click(button):
+            from IPython.display import display, Javascript
+            display(Javascript('$("#nglview_style").remove()'))
+            display(Javascript(js_clean_empty_output_area))
         button.on_click(on_click)
         return button
 

@@ -273,6 +273,9 @@ def show_mdanalysis(atomgroup, **kwargs):
     structure_trajectory = MDAnalysisTrajectory(atomgroup)
     return NGLWidget(structure_trajectory, **kwargs)
 
+def demo():
+    from nglview import datafiles, show_structure_file
+    return show_structure_file(datafiles.PDB)
 
 ###################
 # Adaptor classes
