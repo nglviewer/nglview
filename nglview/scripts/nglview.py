@@ -88,7 +88,7 @@ Try to use port = {port}
 def get_remote_port(port=None):
     import os, socket
     from nglview.scripts.app import NGLViewApp
-    port = port if port is not None else NGLViewApp().get_port()
+    port = NGLViewApp().get_port(port=port)
 
     username = os.getlogin()
     hostname = socket.gethostname()
