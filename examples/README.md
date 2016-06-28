@@ -14,7 +14,7 @@ Examples
 - [make movie](http://ambermd.org/tutorials/analysis/tutorial_notebooks/nglview_movie/)
 - [render and export image for publication](notebooks/export_image.ipynb)
 - [membrane](images/membrane.gif)
-- [change theme](images/dark_theme.png)
+- [change theme](images/dark_theme.md)
 
 Animations
 ==========
