@@ -208,37 +208,15 @@ class TrajectoryPlayer(DOMWidget):
                    spin_speed_slide])
         return HBox([v0, v1])
 
-    def show_preference(self):
-        @interact(ambientIntensity=(0, 10, 0.2),
-                  cameraFov=(15, 120, 1),
-                  clipDist=(0, 200, 10),
-                  clipNear=(0, 100, 1),
-                  clipFar=(0, 100, 1),
-                  fogFar=(0, 100, 1),
-                  fogNear=(0, 100, 1),
-                  lightIntensity=(0, 10, 1),
-                  panSpeed=(0, 10, 0.1),
-                  quality=('high', 'low', 'medium'),
-                  rotateSpeed=(0, 10, 1),
-                  sampleLevel=(-1, 5, 1),
-                  zoomSpeed=(0, 10, 1))
-        def func(ambientIntensity, cameraFov,
-                 clipDist, clipFar, clipNear, fogFar,
-                 fogNear, lightIntensity, panSpeed, quality,
-                 rotateSpeed, sampleLevel, zoomSpeed):
+    def _show_preference(self):
+        @interact(pan_speed=(0, 10, 0.1),
+                  rotate_speed=(0, 10, 1),
+                  zoom_speed=(0, 10, 1))
+        def func(pan_speed=0.8,
+                 rotate_speed=2,
+                 zoom_speed=1.2):
             self._view.parameters = dict(
-                ambientIntensity=ambientIntensity,
-                cameraFov=cameraFov,
-                clipDist=clipDist,
-                clipFar=clipFar,
-                clipNear=clipNear,
-                fogFar=fogFar,
-                fogNear=fogNear,
-                lightIntensity=lightIntensity,
-                panSpeed=panSpeed,
-                quality=quality,
-                rotateSpeed=rotateSpeed,
-                sampleLevel=sampleLevel,
-                zoomSpeed=zoomSpeed)
-
+                panSpeed=pan_speed,
+                rotateSpeed=rotate_speed,
+                zoomSpeed=zoom_speed)
         return func
