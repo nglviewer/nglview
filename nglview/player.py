@@ -212,7 +212,7 @@ class TrajectoryPlayer(DOMWidget):
         @interact(pan_speed=(0, 10, 0.1),
                   rotate_speed=(0, 10, 1),
                   zoom_speed=(0, 10, 1),
-                  clip_dist=(0, 200, 5)
+                  clip_dist=(0, 200, 5))
         def func(pan_speed=0.8,
                  rotate_speed=2,
                  zoom_speed=1.2,
