@@ -1,10 +1,12 @@
 # TODO: reorg
 from ipywidgets import (DOMWidget, IntText, FloatText, HBox, VBox, Checkbox,
                         ColorPicker, IntSlider, FloatSlider,
-                        Dropdown)
-                        
+                        Dropdown,
+                        interact)
+
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
+
 
 class TrajectoryPlayer(DOMWidget):
     # should set default values here different from desired defaults
@@ -23,9 +25,10 @@ class TrajectoryPlayer(DOMWidget):
     _spin_z = Int(0).tag(sync=False)
     _spin_speed = Float(0.005).tag(sync=False)
     camera = CaselessStrEnum(['perspective', 'orthographic'],
-        default_value='perspective').tag(sync=False)
+                             default_value='perspective').tag(sync=False)
 
-    def __init__(self, view, step=1, delay=100, sync_frame=False, min_delay=40):
+    def __init__(self, view, step=1, delay=100,
+                 sync_frame=False, min_delay=40):
         self._view = view
         self.step = step
         self.sync_frame = sync_frame
@@ -33,14 +36,17 @@ class TrajectoryPlayer(DOMWidget):
         self.min_delay = min_delay
         self._interpolation_t = 0.5
         self._iterpolation_type = 'linear'
-        self.iparams = dict(t=self._interpolation_t, step=1, type=self._iterpolation_type)
+        self.iparams = dict(
+            t=self._interpolation_t,
+            step=1,
+            type=self._iterpolation_type)
 
     @observe('camera')
     def on_camera_changed(self, change):
         camera_type = change['new']
         self._view._remote_call("setParameters",
-                target='Stage',
-                kwargs=dict(cameraType=camera_type))
+                                target='Stage',
+                                kwargs=dict(cameraType=camera_type))
 
     @property
     def frame(self):
@@ -87,7 +93,7 @@ class TrajectoryPlayer(DOMWidget):
         self.spin = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
-                    self._spin_speed)
+                                 self._spin_speed)
         else:
             # stop
             self._view._set_spin(None, None)
@@ -97,45 +103,71 @@ class TrajectoryPlayer(DOMWidget):
         self._spin_x = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
-                    self._spin_speed)
+                                 self._spin_speed)
 
     @observe('_spin_y')
     def on_spin_y_changed(self, change):
         self._spin_y = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
-                    self._spin_speed)
+                                 self._spin_speed)
 
     @observe('_spin_z')
     def on_spin_z_changed(self, change):
         self._spin_z = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
-                    self._spin_speed)
+                                 self._spin_speed)
 
     @observe('_spin_speed')
     def on_spin_speed_changed(self, change):
         self._spin_speed = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
-                    self._spin_speed)
+                                 self._spin_speed)
 
     def _display(self):
-        step_slide = IntSlider(value=self.step, min=-100, max=100, description='step')
-        delay_text = IntSlider(value=self.delay, min=10, max=1000, description='delay')
-        checkbox_interpolate = Checkbox(self.interpolate, description='interpolate')
+        step_slide = IntSlider(
+            value=self.step,
+            min=-100,
+            max=100,
+            description='step')
+        delay_text = IntSlider(
+            value=self.delay,
+            min=10,
+            max=1000,
+            description='delay')
+        checkbox_interpolate = Checkbox(
+            self.interpolate, description='interpolate')
         checkbox_spin = Checkbox(self.spin, description='spin')
-        spin_x_slide = IntSlider(self._spin_x, min=-1, max=1, description='spin_x')
-        spin_y_slide = IntSlider(self._spin_y, min=-1, max=1, description='spin_y')
-        spin_z_slide = IntSlider(self._spin_z, min=-1, max=1, description='spin_z')
-        spin_speed_slide = FloatSlider(self._spin_speed, min=0, max=0.2, step=0.001, description='spin speed')
+        spin_x_slide = IntSlider(
+            self._spin_x,
+            min=-1,
+            max=1,
+            description='spin_x')
+        spin_y_slide = IntSlider(
+            self._spin_y,
+            min=-1,
+            max=1,
+            description='spin_y')
+        spin_z_slide = IntSlider(
+            self._spin_z,
+            min=-1,
+            max=1,
+            description='spin_z')
+        spin_speed_slide = FloatSlider(
+            self._spin_speed,
+            min=0,
+            max=0.2,
+            step=0.001,
+            description='spin speed')
         bg_color = ColorPicker(value='white', description='background_color')
         # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
         interpolation_type = Dropdown(value=self._iterpolation_type,
-                options=['linear', 'spline'], description='interpolation type')
+                                      options=['linear', 'spline'], description='interpolation type')
 
         camera_type = Dropdown(value=self.camera,
-                options=['perspective', 'orthographic'], description='camera')
+                               options=['perspective', 'orthographic'], description='camera')
 
         link((step_slide, 'value'), (self, 'step'))
         link((delay_text, 'value'), (self, 'delay'))
@@ -165,3 +197,38 @@ class TrajectoryPlayer(DOMWidget):
                    spin_z_slide,
                    spin_speed_slide])
         return HBox([v0, v1])
+
+    def show_preference(self):
+        @interact(ambientIntensity=(0, 10, 0.2),
+                  cameraFov=(15, 120, 1),
+                  clipDist=(0, 200, 10),
+                  clipNear=(0, 100, 1),
+                  clipFar=(0, 100, 1),
+                  fogFar=(0, 100, 1),
+                  fogNear=(0, 100, 1),
+                  lightIntensity=(0, 10, 1),
+                  panSpeed=(0, 10, 0.1),
+                  quality=('high', 'low', 'medium'),
+                  rotateSpeed=(0, 10, 1),
+                  sampleLevel=(-1, 5, 1),
+                  zoomSpeed=(0, 10, 1))
+        def func(ambientIntensity, cameraFov,
+                 clipDist, clipFar, clipNear, fogFar,
+                 fogNear, lightIntensity, panSpeed, quality,
+                 rotateSpeed, sampleLevel, zoomSpeed):
+            self._view.parameters = dict(
+                ambientIntensity=ambientIntensity,
+                cameraFov=cameraFov,
+                clipDist=clipDist,
+                clipFar=clipFar,
+                clipNear=clipNear,
+                fogFar=fogFar,
+                fogNear=fogNear,
+                lightIntensity=lightIntensity,
+                panSpeed=panSpeed,
+                quality=quality,
+                rotateSpeed=rotateSpeed,
+                sampleLevel=sampleLevel,
+                zoomSpeed=zoomSpeed)
+
+        return func
