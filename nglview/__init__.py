@@ -684,6 +684,11 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         self.displayed = True
 
+    def display(self, player=False):
+        display(self)
+        if player:
+            display(self.player._display())
+
     def _set_sync_frame(self):
         self._remote_call("setSyncFrame", target="Widget")
 

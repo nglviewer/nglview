@@ -29,6 +29,7 @@ class TrajectoryPlayer(DOMWidget):
     _spin_speed = Float(0.005).tag(sync=False)
     camera = CaselessStrEnum(['perspective', 'orthographic'],
         default_value='perspective').tag(sync=False)
+    _render_params = Dict().tag(sync=False)
 
     def __init__(self, view, step=1, delay=100,
                  sync_frame=False, min_delay=40):
@@ -43,6 +44,10 @@ class TrajectoryPlayer(DOMWidget):
             t=self._interpolation_t,
             step=1,
             type=self._iterpolation_type)
+        self._render_params = dict(factor=4,
+                                   antialias=True,
+                                   trim=False,
+                                   transparent=False)
 
     @observe('camera')
     def on_camera_changed(self, change):
@@ -179,9 +184,6 @@ class TrajectoryPlayer(DOMWidget):
         camera_type = Dropdown(value=self.camera,
                                options=['perspective', 'orthographic'], description='camera')
 
-        camera_type = Dropdown(value=self.camera,
-                options=['perspective', 'orthographic'], description='camera')
-
         link((step_slide, 'value'), (self, 'step'))
         link((delay_text, 'value'), (self, 'delay'))
         link((checkbox_interpolate, 'value'), (self, 'interpolate'))
@@ -199,12 +201,15 @@ class TrajectoryPlayer(DOMWidget):
 
         ibox = HBox([checkbox_interpolate, interpolation_type])
         center_button = self._add_button_center()
+        render_button = self._show_download_image()
+        center_render_hbox = HBox([center_button, render_button])
+
         v0 = VBox([step_slide,
                    delay_text,
                    bg_color,
                    ibox,
                    camera_type,
-                   center_button])
+                   center_render_hbox])
 
         spinbox= VBox([checkbox_spin,
                    spin_x_slide,
@@ -215,12 +220,14 @@ class TrajectoryPlayer(DOMWidget):
         genbox = HBox([v0,])
         prefbox = self._show_preference()
         themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
+        hidebox = Box([])
 
-        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox])
+        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox])
         tab.set_title(0, 'General')
         tab.set_title(1, 'Spin')
         tab.set_title(2, 'Speed')
         tab.set_title(3, 'Theme')
+        tab.set_title(4, 'Hide player')
         return tab
 
     def _add_button_center(self):
@@ -265,3 +272,11 @@ class TrajectoryPlayer(DOMWidget):
                   rotate_speed=(0, 10, 1),
                   zoom_speed=(0, 10, 1),
                   clip_dist=(0, 200, 5))
+
+    def _show_download_image(self):
+        # "interactive" does not work for True/False in ipywidgets 4 yet.
+        button = Button(description='Download Image')
+        def on_click(button):
+            self._view.download_image()
+        button.on_click(on_click)
+        return button
