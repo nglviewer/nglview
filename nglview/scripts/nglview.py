@@ -71,35 +71,38 @@ def disable_extension(jupyter):
     cm = '{jupyter} nbextension disable nglview_main'.format(jupyter=jupyter)
     subprocess.check_call(cm.split())
 
+
 remote_msg = """
 Try to use port = {port}
 
-In your local machine, run:
+\033[32m In your local machine, run: \033[0m
 
     {client_cm}
 
-Then open your web browser, copy and paste:
+\033[32m NOTE: you might want to replace {hostname} by full hostname with domain name \033[0m
+
+\033[32m Then open your web browser, copy and paste: \033[0m
     http://localhost:{port}
 """
 
 def get_remote_port(port=None):
     import os, socket
     from nglview.scripts.app import NGLViewApp
-    port = port if port is not None else NGLViewApp().get_port()
+    port = NGLViewApp().get_port(port=port)
 
     username = os.getlogin()
     hostname = socket.gethostname()
     client_cm = "ssh -NL localhost:{port}:localhost:{port} {username}@{hostname}".format(username=username,
             hostname=hostname,
             port=port)
-    print(remote_msg.format(client_cm=client_cm, port=port))
+    print(remote_msg.format(client_cm=client_cm, port=port, hostname=hostname))
     return port
 
 def main(notebook_dict=notebook_dict):
     PY3 = sys.version_info[0] == 3
     pyv_full_string = ','.join(str(i) for i in sys.version_info)
     pyv_short_string = str(sys.version_info[0])
-    default_jexe = bin_path + 'jupyter'
+    default_jexe = ' '.join((sys.executable, '-m jupyter'))
 
     parser = argparse.ArgumentParser(description='NGLView: An IPython/Jupyter widget to '
                                      'interactively view molecular structures and trajectories.',
@@ -107,22 +110,26 @@ def main(notebook_dict=notebook_dict):
                                      epilog=CMD_EXAMPLE)
     parser.add_argument('command',
             help='command could be a topology filename (.pdb, .mol2, .parm7, ...) or \n'
-                          'could be "server", a python script, a notebook (.ipynb)') 
+                          'could be a python script (.py), a notebook (.ipynb)') 
+    parser.add_argument('traj', nargs='?', help='coordinate filename')
     parser.add_argument('-c', '--crd', help='coordinate filename')
     parser.add_argument('--browser', help='web browser')
     parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path')
     parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
     parser.add_argument('--port', type=int, help='port number')
-    parser.add_argument('--server', action='store_true', help='create remote notebook')
+    parser.add_argument('--remote', action='store_true', help='create remote notebook')
+    parser.add_argument('--clean-cache', action='store_true', help='delete temp file after closing notebook')
     args = parser.parse_args()
 
     command = parm = args.command
 
-    crd = args.crd
+    crd = args.traj if args.traj is not None else args.crd
     if crd is None:
         crd = parm
 
     browser = '--browser ' + args.browser if args.browser else ''
+
+    create_new_nb = False
 
     if parm.endswith('.ipynb'):
         notebook_name = parm
@@ -147,9 +154,10 @@ def main(notebook_dict=notebook_dict):
 
         with open(notebook_name, 'w') as fh:
             fh.write(nb_json)
+            create_new_nb = True
     
     
-    if not args.server:
+    if not args.remote:
         cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
                                                                    notebook_name=notebook_name,
                                                                browser=browser)
@@ -164,6 +172,9 @@ def main(notebook_dict=notebook_dict):
     try:
         subprocess.check_call(cm.split())
     except KeyboardInterrupt:
+        if args.clean_cache and create_new_nb:
+            print("deleting {}".format(notebook_name))
+            os.remove(notebook_name)
         disable_extension(jupyter=args.jexe)
 
 if __name__ == '__main__':

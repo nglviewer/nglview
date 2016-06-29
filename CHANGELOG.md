@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Version 0.5.2
+-------------
+* ADD: `nglview` command line for quickly opening notebook.
+* ADD: `add_text` to display
+* FIX: view.background assignment.
+
 Version 0.5.1
 -------------
 
