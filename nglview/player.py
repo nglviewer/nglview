@@ -221,13 +221,15 @@ class TrajectoryPlayer(DOMWidget):
         prefbox = self._show_preference()
         themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
         hidebox = Box([])
+        help_url = self._show_website()
 
-        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox])
+        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox, help_url])
         tab.set_title(0, 'General')
         tab.set_title(1, 'Spin')
         tab.set_title(2, 'Speed')
         tab.set_title(3, 'Theme')
-        tab.set_title(4, 'Hide player')
+        tab.set_title(4, 'Hide')
+        tab.set_title(5, 'Help')
         return tab
 
     def _add_button_center(self):
@@ -280,3 +282,20 @@ class TrajectoryPlayer(DOMWidget):
             self._view.download_image()
         button.on_click(on_click)
         return button
+
+    def _show_website(self):
+        import webbrowser
+        nglview_website_button  = Button(description='nglview')
+        ngl_website_button  = Button(description='NGL')
+
+        def on_click_nglview(button):
+            webbrowser.open('http://arose.github.io/nglview/latest/')
+
+        def on_click_ngl(button):
+            webbrowser.open('http://arose.github.io/ngl/api/dev/')
+
+        nglview_website_button.on_click(on_click_nglview)
+        ngl_website_button.on_click(on_click_ngl)
+
+        return HBox([nglview_website_button,
+                     ngl_website_button])
