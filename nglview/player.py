@@ -1,8 +1,10 @@
 # TODO: reorg
 import ipywidgets
-from ipywidgets import (DOMWidget, IntText, FloatText, HBox, VBox, Checkbox,
+from ipywidgets import (DOMWidget, IntText, FloatText,
+                        Box, HBox, VBox, Checkbox,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
+                        Button,
                         interactive)
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
@@ -172,7 +174,7 @@ class TrajectoryPlayer(DOMWidget):
         bg_color = ColorPicker(value='white', description='background_color')
         # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
         interpolation_type = Dropdown(value=self._iterpolation_type,
-                                      options=['linear', 'spline'], description='interpolation type')
+                                      options=['linear', 'spline'])
 
         camera_type = Dropdown(value=self.camera,
                                options=['perspective', 'orthographic'], description='camera')
@@ -196,24 +198,56 @@ class TrajectoryPlayer(DOMWidget):
         link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
         ibox = HBox([checkbox_interpolate, interpolation_type])
+        center_button = self._add_button_center()
         v0 = VBox([step_slide,
                    delay_text,
                    bg_color,
                    ibox,
-                   camera_type])
+                   camera_type,
+                   center_button])
 
-        v1 = VBox([checkbox_spin,
+        spinbox= VBox([checkbox_spin,
                    spin_x_slide,
                    spin_y_slide,
                    spin_z_slide,
                    spin_speed_slide])
 
-        genbox = HBox([v0, v1])
+        genbox = HBox([v0,])
         prefbox = self._show_preference()
-        tab = ipywidgets.Tab([genbox, prefbox])
+        themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
+
+        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox])
         tab.set_title(0, 'General')
-        tab.set_title(1, 'Speed')
+        tab.set_title(1, 'Spin')
+        tab.set_title(2, 'Speed')
+        tab.set_title(3, 'Theme')
         return tab
+
+    def _add_button_center(self):
+        button = Button(description='Center')
+        def on_click(button):
+            self._view.center()
+        button.on_click(on_click)
+        return button
+
+    def _add_button_theme(self):
+        button = Button(description='Oceans16')
+        def on_click(button):
+            from IPython.display import display
+            from nglview import theme
+            display(theme.oceans16())
+        button.on_click(on_click)
+        return button
+
+    def _add_button_reset_theme(self):
+        from nglview.theme.jsutils import js_clean_empty_output_area
+        button = Button(description='Default')
+        def on_click(button):
+            from IPython.display import display, Javascript
+            display(Javascript('$("#nglview_style").remove()'))
+            display(Javascript(js_clean_empty_output_area))
+        button.on_click(on_click)
+        return button
 
     def _show_preference(self):
         def func(pan_speed=0.8,
