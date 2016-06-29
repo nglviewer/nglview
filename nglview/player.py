@@ -220,12 +220,14 @@ class TrajectoryPlayer(DOMWidget):
         genbox = HBox([v0,])
         prefbox = self._show_preference()
         themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
+        hidebox = Box([])
 
-        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox])
+        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox])
         tab.set_title(0, 'General')
         tab.set_title(1, 'Spin')
         tab.set_title(2, 'Speed')
         tab.set_title(3, 'Theme')
+        tab.set_title(4, 'Hide player')
         return tab
 
     def _add_button_center(self):
