@@ -575,13 +575,13 @@ class NGLWidget(widgets.DOMWidget):
     displayed = False
     _ngl_msg = None
     _send_binary = Bool(True).tag(sync=False)
-    _init_player = Bool(False).tag(sync=False)
+    _init_gui = Bool(False).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
 
 
-        self._init_player = kwargs.pop('player', False)
+        self._init_gui = kwargs.pop('gui', False)
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
@@ -685,7 +685,7 @@ class NGLWidget(widgets.DOMWidget):
     def _ipython_display_(self, **kwargs):
         self.displayed = True
         super(NGLWidget, self)._ipython_display_(**kwargs)
-        if self._init_player:
+        if self._init_gui:
             display(self.player._display())
 
     def display(self, player=False):
