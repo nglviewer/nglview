@@ -7,3 +7,7 @@ for (var i=0; i < output_area.length; i++){
     }
 }
 """
+
+js_launch_qtconsole = """
+IPython.notebook.kernel.execute('%qtconsole')
+"""

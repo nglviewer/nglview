@@ -1,5 +1,7 @@
 # TODO: reorg
+# simplify code
 import ipywidgets
+from IPython.display import display, Javascript
 from ipywidgets import (DOMWidget, IntText, FloatText,
                         Box, HBox, VBox, Checkbox,
                         ColorPicker, IntSlider, FloatSlider,
@@ -29,6 +31,7 @@ class TrajectoryPlayer(DOMWidget):
     _spin_speed = Float(0.005).tag(sync=False)
     camera = CaselessStrEnum(['perspective', 'orthographic'],
         default_value='perspective').tag(sync=False)
+    _render_params = Dict().tag(sync=False)
 
     def __init__(self, view, step=1, delay=100,
                  sync_frame=False, min_delay=40):
@@ -43,6 +46,10 @@ class TrajectoryPlayer(DOMWidget):
             t=self._interpolation_t,
             step=1,
             type=self._iterpolation_type)
+        self._render_params = dict(factor=4,
+                                   antialias=True,
+                                   trim=False,
+                                   transparent=False)
 
     @observe('camera')
     def on_camera_changed(self, change):
@@ -179,9 +186,6 @@ class TrajectoryPlayer(DOMWidget):
         camera_type = Dropdown(value=self.camera,
                                options=['perspective', 'orthographic'], description='camera')
 
-        camera_type = Dropdown(value=self.camera,
-                options=['perspective', 'orthographic'], description='camera')
-
         link((step_slide, 'value'), (self, 'step'))
         link((delay_text, 'value'), (self, 'delay'))
         link((checkbox_interpolate, 'value'), (self, 'interpolate'))
@@ -197,14 +201,21 @@ class TrajectoryPlayer(DOMWidget):
         link((spin_z_slide, 'value'), (self, '_spin_z'))
         link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
+        qtconsole_button = self._add_button_qtconsole()
+
         ibox = HBox([checkbox_interpolate, interpolation_type])
         center_button = self._add_button_center()
-        v0 = VBox([step_slide,
+        render_button = self._show_download_image()
+        center_render_hbox = HBox([center_button, render_button])
+
+        v0_left = VBox([step_slide,
                    delay_text,
                    bg_color,
                    ibox,
                    camera_type,
-                   center_button])
+                   center_render_hbox,
+                   qtconsole_button,
+                   ])
 
         spinbox= VBox([checkbox_spin,
                    spin_x_slide,
@@ -212,15 +223,19 @@ class TrajectoryPlayer(DOMWidget):
                    spin_z_slide,
                    spin_speed_slide])
 
-        genbox = HBox([v0,])
+        genbox = HBox([v0_left, ])
         prefbox = self._show_preference()
         themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
+        hidebox = Box([])
+        help_url = self._show_website()
 
-        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox])
+        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox, help_url])
         tab.set_title(0, 'General')
         tab.set_title(1, 'Spin')
         tab.set_title(2, 'Speed')
         tab.set_title(3, 'Theme')
+        tab.set_title(4, 'Hide')
+        tab.set_title(5, 'Help')
         return tab
 
     def _add_button_center(self):
@@ -233,7 +248,6 @@ class TrajectoryPlayer(DOMWidget):
     def _add_button_theme(self):
         button = Button(description='Oceans16')
         def on_click(button):
-            from IPython.display import display
             from nglview import theme
             display(theme.oceans16())
         button.on_click(on_click)
@@ -243,7 +257,6 @@ class TrajectoryPlayer(DOMWidget):
         from nglview.theme.jsutils import js_clean_empty_output_area
         button = Button(description='Default')
         def on_click(button):
-            from IPython.display import display, Javascript
             display(Javascript('$("#nglview_style").remove()'))
             display(Javascript(js_clean_empty_output_area))
         button.on_click(on_click)
@@ -265,3 +278,37 @@ class TrajectoryPlayer(DOMWidget):
                   rotate_speed=(0, 10, 1),
                   zoom_speed=(0, 10, 1),
                   clip_dist=(0, 200, 5))
+
+    def _show_download_image(self):
+        # "interactive" does not work for True/False in ipywidgets 4 yet.
+        button = Button(description='Download Image')
+        def on_click(button):
+            self._view.download_image()
+        button.on_click(on_click)
+        return button
+
+    def _show_website(self):
+        import webbrowser
+        nglview_website_button  = Button(description='nglview')
+        ngl_website_button  = Button(description='NGL')
+
+        def on_click_nglview(button):
+            webbrowser.open('http://arose.github.io/nglview/latest/')
+
+        def on_click_ngl(button):
+            webbrowser.open('http://arose.github.io/ngl/api/dev/')
+
+        nglview_website_button.on_click(on_click_nglview)
+        ngl_website_button.on_click(on_click_ngl)
+
+        return HBox([nglview_website_button,
+                     ngl_website_button])
+
+    def _add_button_qtconsole(self):
+        from nglview.theme.jsutils import js_launch_qtconsole
+        button = Button(description='qtconsole')
+
+        def on_click(button):
+            display(Javascript(js_launch_qtconsole))
+        button.on_click(on_click)
+        return button
