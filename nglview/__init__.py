@@ -663,6 +663,12 @@ class NGLWidget(widgets.DOMWidget):
                 target='Stage',
                 kwargs=dict(cameraType=self._camera_str))
 
+    @observe('picked')
+    def _on_picked(self, change):
+        import json
+        picked = change['new']
+        self.player.picked_widget.value = json.dumps(picked)
+        
     @observe('background')
     def _update_background_color(self, change):
         color = change['new']

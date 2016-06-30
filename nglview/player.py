@@ -1,5 +1,6 @@
 # TODO: reorg
 # simplify code
+import json
 import ipywidgets
 from IPython.display import display, Javascript
 from ipywidgets import (DOMWidget, IntText, FloatText,
@@ -7,6 +8,7 @@ from ipywidgets import (DOMWidget, IntText, FloatText,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
                         Button,
+                        Textarea,
                         interactive)
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
@@ -50,6 +52,7 @@ class TrajectoryPlayer(DOMWidget):
                                    antialias=True,
                                    trim=False,
                                    transparent=False)
+        self.picked_widget = self._add_text_picked()
 
     @observe('camera')
     def on_camera_changed(self, change):
@@ -228,14 +231,16 @@ class TrajectoryPlayer(DOMWidget):
         themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
         hidebox = Box([])
         help_url = self._show_website()
+        extrabox = VBox([self.picked_widget,])
 
-        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox, help_url])
+        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox, help_url, extrabox])
         tab.set_title(0, 'General')
         tab.set_title(1, 'Spin')
         tab.set_title(2, 'Speed')
         tab.set_title(3, 'Theme')
         tab.set_title(4, 'Hide')
         tab.set_title(5, 'Help')
+        tab.set_title(6, 'Extra')
         return tab
 
     def _add_button_center(self):
@@ -314,3 +319,7 @@ class TrajectoryPlayer(DOMWidget):
             display(Javascript(js_launch_qtconsole))
         button.on_click(on_click)
         return button
+
+    def _add_text_picked(self):
+        ta = Textarea(value=json.dumps(self._view.picked))
+        return ta
