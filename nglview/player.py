@@ -1,5 +1,7 @@
 # TODO: reorg
+# simplify code
 import ipywidgets
+from IPython.display import display, Javascript
 from ipywidgets import (DOMWidget, IntText, FloatText,
                         Box, HBox, VBox, Checkbox,
                         ColorPicker, IntSlider, FloatSlider,
@@ -199,17 +201,21 @@ class TrajectoryPlayer(DOMWidget):
         link((spin_z_slide, 'value'), (self, '_spin_z'))
         link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
+        qtconsole_button = self._add_button_qtconsole()
+
         ibox = HBox([checkbox_interpolate, interpolation_type])
         center_button = self._add_button_center()
         render_button = self._show_download_image()
         center_render_hbox = HBox([center_button, render_button])
 
-        v0 = VBox([step_slide,
+        v0_left = VBox([step_slide,
                    delay_text,
                    bg_color,
                    ibox,
                    camera_type,
-                   center_render_hbox])
+                   center_render_hbox,
+                   qtconsole_button,
+                   ])
 
         spinbox= VBox([checkbox_spin,
                    spin_x_slide,
@@ -217,17 +223,19 @@ class TrajectoryPlayer(DOMWidget):
                    spin_z_slide,
                    spin_speed_slide])
 
-        genbox = HBox([v0,])
+        genbox = HBox([v0_left, ])
         prefbox = self._show_preference()
         themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
         hidebox = Box([])
+        help_url = self._show_website()
 
-        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox])
+        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox, help_url])
         tab.set_title(0, 'General')
         tab.set_title(1, 'Spin')
         tab.set_title(2, 'Speed')
         tab.set_title(3, 'Theme')
-        tab.set_title(4, 'Hide player')
+        tab.set_title(4, 'Hide')
+        tab.set_title(5, 'Help')
         return tab
 
     def _add_button_center(self):
@@ -240,7 +248,6 @@ class TrajectoryPlayer(DOMWidget):
     def _add_button_theme(self):
         button = Button(description='Oceans16')
         def on_click(button):
-            from IPython.display import display
             from nglview import theme
             display(theme.oceans16())
         button.on_click(on_click)
@@ -250,7 +257,6 @@ class TrajectoryPlayer(DOMWidget):
         from nglview.theme.jsutils import js_clean_empty_output_area
         button = Button(description='Default')
         def on_click(button):
-            from IPython.display import display, Javascript
             display(Javascript('$("#nglview_style").remove()'))
             display(Javascript(js_clean_empty_output_area))
         button.on_click(on_click)
@@ -278,5 +284,33 @@ class TrajectoryPlayer(DOMWidget):
         button = Button(description='Download Image')
         def on_click(button):
             self._view.download_image()
+        button.on_click(on_click)
+        return button
+
+    def _show_website(self):
+        from nglview.theme.jsutils import js_open_url_template
+        nglview_website_button  = Button(description='nglview')
+        ngl_website_button  = Button(description='NGL')
+
+        def on_click_nglview(button):
+            url = "'http://arose.github.io/nglview/latest/'"
+            display(Javascript(js_open_url_template.format(url=url)))
+
+        def on_click_ngl(button):
+            url = "'http://arose.github.io/ngl/api/dev/'"
+            display(Javascript(js_open_url_template.format(url=url)))
+
+        nglview_website_button.on_click(on_click_nglview)
+        ngl_website_button.on_click(on_click_ngl)
+
+        return HBox([nglview_website_button,
+                     ngl_website_button])
+
+    def _add_button_qtconsole(self):
+        from nglview.theme.jsutils import js_launch_qtconsole
+        button = Button(description='qtconsole')
+
+        def on_click(button):
+            display(Javascript(js_launch_qtconsole))
         button.on_click(on_click)
         return button
