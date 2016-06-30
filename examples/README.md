@@ -10,9 +10,8 @@ TOC
 Notes
 -----
 
-[View static notebook on nbviewer server](http://nbviewer.jupyter.org/github/arose/nglview/tree/master/examples/)
-
-[View live demo](http://mybinder.org/repo/hainm/nglview-notebooks)
+- [View static notebook on nbviewer server](http://nbviewer.jupyter.org/github/arose/nglview/tree/master/examples/)
+- [View live demo](http://mybinder.org/repo/hainm/nglview-notebooks)
 
 Examples
 --------
