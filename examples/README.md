@@ -1,12 +1,21 @@
+TOC
+===
+
+- [Notes](#notes)
+- [Examples](#examples)
+- [Animations](#animations)
+- [Unstable Features](#unstable-features)
+- [Tips](#tips)
+
 Notes
-=====
+-----
 
 [View static notebook on nbviewer server](http://nbviewer.jupyter.org/github/arose/nglview/tree/master/examples/)
 
 [View live demo](http://mybinder.org/repo/hainm/nglview-notebooks)
 
 Examples
-========
+--------
 
 - [representations and selection language](notebooks/representations_and_selection_language.ipynb)
 - [using two screens](notebooks/using_two_screens.ipynb)
@@ -16,18 +25,18 @@ Examples
 - [membrane](images/membrane.gif)
 
 Animations
-==========
+----------
 - [mdanalysis](mdanalysis.md)
 - [pytraj](pytraj.md)
 - [mdtraj](mdtraj.md)
 - [parmed](parmed.md)
 
 Unstable Features
-=================
+-----------------
 - [change theme](images/dark_theme.md)
 - [display GUI](images/display_gui.md)
 
 Tips
-====
+----
 
 - [Using notebook remotely](http://ambermd.org/tutorials/analysis/tutorial_notebooks/remote_notebook/)
