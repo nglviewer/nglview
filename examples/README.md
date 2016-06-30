@@ -14,8 +14,6 @@ Examples
 - [make movie](http://ambermd.org/tutorials/analysis/tutorial_notebooks/nglview_movie/)
 - [render and export image for publication](notebooks/export_image.ipynb)
 - [membrane](images/membrane.gif)
-- [change theme](images/dark_theme.md)
-- [display GUI (highly experimental)](images/display_gui.md)
 
 Animations
 ==========
@@ -23,6 +21,11 @@ Animations
 - [pytraj](pytraj.md)
 - [mdtraj](mdtraj.md)
 - [parmed](parmed.md)
+
+Unstable Features
+=================
+- [change theme](images/dark_theme.md)
+- [display GUI](images/display_gui.md)
 
 Tips
 ====
