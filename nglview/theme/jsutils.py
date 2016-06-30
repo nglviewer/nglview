@@ -11,3 +11,7 @@ for (var i=0; i < output_area.length; i++){
 js_launch_qtconsole = """
 IPython.notebook.kernel.execute('%qtconsole')
 """
+
+js_open_url_template = """
+window.open({url});
+"""

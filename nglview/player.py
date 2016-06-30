@@ -288,15 +288,17 @@ class TrajectoryPlayer(DOMWidget):
         return button
 
     def _show_website(self):
-        import webbrowser
+        from nglview.theme.jsutils import js_open_url_template
         nglview_website_button  = Button(description='nglview')
         ngl_website_button  = Button(description='NGL')
 
         def on_click_nglview(button):
-            webbrowser.open('http://arose.github.io/nglview/latest/')
+            url = "'http://arose.github.io/nglview/latest/'"
+            display(Javascript(js_open_url_template.format(url=url)))
 
         def on_click_ngl(button):
-            webbrowser.open('http://arose.github.io/ngl/api/dev/')
+            url = "'http://arose.github.io/ngl/api/dev/'"
+            display(Javascript(js_open_url_template.format(url=url)))
 
         nglview_website_button.on_click(on_click_nglview)
         ngl_website_button.on_click(on_click_ngl)
