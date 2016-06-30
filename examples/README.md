@@ -15,7 +15,7 @@ Examples
 - [render and export image for publication](notebooks/export_image.ipynb)
 - [membrane](images/membrane.gif)
 - [change theme](images/dark_theme.md)
-- [display GUI (highly experimental)](images/display_gui.png)
+- [display GUI (highly experimental)](images/display_gui.md)
 
 Animations
 ==========
