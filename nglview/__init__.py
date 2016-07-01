@@ -6,6 +6,7 @@ from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
 from .player import TrajectoryPlayer
 from . import interpolate
+from .repr import Representation
 import time
 
 import os
@@ -571,6 +572,7 @@ class NGLWidget(widgets.DOMWidget):
     _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
         default_value='orthographic').tag(sync=True)
     orientation = List().tag(sync=True)
+    _repr_dict = Dict().tag(sync=False)
 
     displayed = False
     _ngl_msg = None
@@ -582,6 +584,7 @@ class NGLWidget(widgets.DOMWidget):
 
 
         self._init_gui = kwargs.pop('gui', False)
+        self._repr_dict = dict()
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
@@ -615,7 +618,7 @@ class NGLWidget(widgets.DOMWidget):
             self._set_initial_structure(self._init_structures)
 
         if representations:
-            self._ini_representations = representations
+            self._init_representations = representations
         else:
             self._init_representations = [
                 {"type": "cartoon", "params": {
@@ -628,6 +631,8 @@ class NGLWidget(widgets.DOMWidget):
                     "sele": "not protein and not nucleic"
                 }}
             ]
+
+        self._repr_dict[0] = self._init_representations[:]
 
         # keep track but making copy
         if structure is not None:
@@ -911,6 +916,10 @@ class NGLWidget(widgets.DOMWidget):
 
         params = d['params']
         params.update({'component_index': component})
+        if component not in self._remote_call:
+            self._repr_dict[component] = []
+        else:
+            self._repr_dict[component].append(d)
         self._remote_call('addRepresentation',
                           target='compList',
                           args=[d['type'],],
