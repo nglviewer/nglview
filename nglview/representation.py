@@ -14,9 +14,11 @@ class Representation(DOMWidget):
     @observe('parameters')
     def _on_parameters_changed(self, change):
         parameters = change['new']
+
         kwargs = dict(component_index=self.cindex,
-                repr_index=self.repr_index)
+                      repr_index=self.repr_index)
         kwargs.update(parameters)
+
         self._view._remote_call('setParameters',
                  target='Representation',
                  kwargs=kwargs)
