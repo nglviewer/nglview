@@ -22,6 +22,7 @@ Examples
 - [make movie](http://ambermd.org/tutorials/analysis/tutorial_notebooks/nglview_movie/)
 - [render and export image for publication](notebooks/export_image.ipynb)
 - [membrane](images/membrane.gif)
+- [display ccp4 file](images/display_ccp4_file.md)
 
 Animations
 ----------
