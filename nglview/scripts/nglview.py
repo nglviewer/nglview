@@ -6,6 +6,13 @@ from .cmd_example import CMD_EXAMPLE
 
 bin_path = sys.prefix + '/bin/'
 
+demo_source = """
+import nglview as nv
+
+view = nv.demo(gui=True, theme='dark')
+view
+""".strip()
+
 notebook_dict = {
  "cells": [
   {
@@ -148,6 +155,8 @@ def main(notebook_dict=notebook_dict):
             notebook_dict['cells'][0]['source'] = pycontent
             nb_json = json.dumps(notebook_dict)
         else:
+            if parm == 'demo':
+                notebook_dict['cells'][0]['source'] = demo_source
             nb_json = json.dumps(notebook_dict)
             nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
         nb_json = nb_json.replace('"null"', 'null')
