@@ -1238,6 +1238,8 @@ class NGLWidget(widgets.DOMWidget):
 
         if 'component_index' in kwargs:
             msg['component_index'] = kwargs.pop('component_index')
+        if 'repr_index' in kwargs:
+            msg['repr_index'] = kwargs.pop('repr_index')
 
         msg['target'] = target
         msg['type'] = 'call_method'
