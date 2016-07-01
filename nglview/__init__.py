@@ -6,7 +6,7 @@ from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
 from .player import TrajectoryPlayer
 from . import interpolate
-from .repr import Representation
+from .representation import Representation
 import time
 
 import os
@@ -274,9 +274,9 @@ def show_mdanalysis(atomgroup, **kwargs):
     structure_trajectory = MDAnalysisTrajectory(atomgroup)
     return NGLWidget(structure_trajectory, **kwargs)
 
-def demo():
+def demo(*args, **kwargs):
     from nglview import datafiles, show_structure_file
-    return show_structure_file(datafiles.PDB)
+    return show_structure_file(datafiles.PDB, *args, **kwargs)
 
 ###################
 # Adaptor classes
@@ -584,6 +584,7 @@ class NGLWidget(widgets.DOMWidget):
 
 
         self._init_gui = kwargs.pop('gui', False)
+        self._theme = kwargs.pop('theme', 'default')
         self._repr_dict = dict()
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
@@ -698,6 +699,9 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._init_gui:
             display(self.player._display())
+            if self._theme in ['dark', 'oceans16']:
+                from nglview import theme
+                display(theme.oceans16())
 
     def display(self, player=False):
         display(self)
