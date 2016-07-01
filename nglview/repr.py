@@ -1,3 +1,5 @@
+from traitlets import (Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe,
+                       CaselessStrEnum)
 from ipywidgets import DOMWidget
 
 class Representation(DOMWidget):
@@ -5,7 +7,8 @@ class Representation(DOMWidget):
 
     def __init__(self, view, *args, **kwargs):
         super(Representation, self).__init__(*args, **kwargs)
-        self._coponent_index = self.type = self.params = None
+        self._coponent_index = self.type = None
+        self.params = dict()
         self._view = view
 
     @property
@@ -16,8 +19,8 @@ class Representation(DOMWidget):
     def type(self):
         pass
 
-    @observe('params'):
-    def params(self, change):
+    @observe('params')
+    def _on_params_changed(self, change):
         params = change['new']
         self._view._update_representation(component=self.component_index,
                 params=params)

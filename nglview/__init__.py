@@ -916,7 +916,7 @@ class NGLWidget(widgets.DOMWidget):
 
         params = d['params']
         params.update({'component_index': component})
-        if component not in self._remote_call:
+        if component not in self._repr_dict:
             self._repr_dict[component] = []
         else:
             self._repr_dict[component].append(d)
