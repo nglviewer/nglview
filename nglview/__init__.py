@@ -699,9 +699,10 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._init_gui:
             display(self.player._display())
-            if self._theme in ['dark', 'oceans16']:
-                from nglview import theme
-                display(theme.oceans16())
+
+        if self._theme in ['dark', 'oceans16']:
+            from nglview import theme
+            display(theme.oceans16())
 
     def display(self, player=False):
         display(self)

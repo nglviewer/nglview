@@ -4,7 +4,7 @@ from traitlets import (Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observ
 from ipywidgets import DOMWidget, interactive
 
 # local
-from .colors import color_scheme as COLOR_SCHEMES
+from .colors import color_schemes as COLOR_SCHEMES
 
 class Representation(DOMWidget):
     parameters = Dict().tag(sync=False)
@@ -31,8 +31,13 @@ class Representation(DOMWidget):
         def func(opacity=1.,
                 assembly='default',
                 color_scheme=""):
-            self.parameters = dict(opacity=opacity, assembly=assembly,
+            parameters = dict(opacity=opacity,
+                    assembly=assembly,
                     colorScheme=color_scheme)
+            if not color_scheme:
+                parameters.pop('colorScheme')
+
+            self.parameters = parameters 
 
         assembly_list = ['default', 'AU', 'BU1', 'UNITCELL', 'SUPERCELL']
         return interactive(func, opacity=(0., 1., 0.1),

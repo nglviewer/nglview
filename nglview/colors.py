@@ -1,4 +1,4 @@
-color_scheme = [
+color_schemes = [
     "",
     "picking",
     "random",
