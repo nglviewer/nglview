@@ -706,9 +706,12 @@ class NGLWidget(widgets.DOMWidget):
             from nglview import theme
             display(theme.oceans16())
 
-    def display(self, player=False):
+    def _gui(self):
+        display(self.player._display())
+
+    def display(self, gui=False):
         display(self)
-        if player:
+        if gui:
             display(self.player._display())
 
     def _set_sync_frame(self):
@@ -1068,7 +1071,10 @@ class NGLWidget(widgets.DOMWidget):
             elif msg_type == 'repr_parameters':
                 data_dict = self._ngl_msg.get('data')
                 repr_name = data_dict.pop('name') + '\n'
-                self.player.repr_widget.children[-1].value = repr_name + json.dumps(data_dict)
+                # json change True to true
+                data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
+                data_dict_json = data_dict_json.replace('null', '"null"')
+                self.player.repr_widget.children[-1].value = repr_name + data_dict_json
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
