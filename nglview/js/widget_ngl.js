@@ -310,6 +310,12 @@ define( [
            })
         },
 
+        updateRepresentationForComponent: function( repr_index, component_index, params ){
+           var component = this.stage.compList[ component_index ];
+           var repr = component.reprList[ repr_index ];
+           repr.setParameters( params );
+        },
+
         structureChanged: function(){
             this.structureComponent = undefined;
             var structureList = this.model.get( "_init_structure_list" );
@@ -477,6 +483,14 @@ define( [
                     case 'Widget':
                         var func = this[ msg.methodName ];
                         func.apply( this, new_args );
+                        break;
+                    case 'Representation':
+                        var component_index = msg['component_index'];
+                        var repr_index = msg['repr_index'];
+                        var component = this.stage.compList[ component_index ];
+                        var repr = component.reprList[repr_index];
+                        var func = repr[ msg.methodName ];
+                        func.apply( repr, new_args );
                         break;
                     default:
                         console.log( "nothing done for " + msg.target );

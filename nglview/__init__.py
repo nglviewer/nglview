@@ -6,6 +6,7 @@ from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
 from .player import TrajectoryPlayer
 from . import interpolate
+from .representation import Representation
 import time
 
 import os
@@ -273,9 +274,9 @@ def show_mdanalysis(atomgroup, **kwargs):
     structure_trajectory = MDAnalysisTrajectory(atomgroup)
     return NGLWidget(structure_trajectory, **kwargs)
 
-def demo():
+def demo(*args, **kwargs):
     from nglview import datafiles, show_structure_file
-    return show_structure_file(datafiles.PDB)
+    return show_structure_file(datafiles.PDB, *args, **kwargs)
 
 ###################
 # Adaptor classes
@@ -571,6 +572,7 @@ class NGLWidget(widgets.DOMWidget):
     _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
         default_value='orthographic').tag(sync=True)
     orientation = List().tag(sync=True)
+    _repr_dict = Dict().tag(sync=False)
 
     displayed = False
     _ngl_msg = None
@@ -582,6 +584,8 @@ class NGLWidget(widgets.DOMWidget):
 
 
         self._init_gui = kwargs.pop('gui', False)
+        self._theme = kwargs.pop('theme', 'default')
+        self._repr_dict = dict()
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
@@ -615,7 +619,7 @@ class NGLWidget(widgets.DOMWidget):
             self._set_initial_structure(self._init_structures)
 
         if representations:
-            self._ini_representations = representations
+            self._init_representations = representations
         else:
             self._init_representations = [
                 {"type": "cartoon", "params": {
@@ -628,6 +632,8 @@ class NGLWidget(widgets.DOMWidget):
                     "sele": "not protein and not nucleic"
                 }}
             ]
+
+        self._repr_dict[0] = self._init_representations[:]
 
         # keep track but making copy
         if structure is not None:
@@ -693,6 +699,10 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._init_gui:
             display(self.player._display())
+
+        if self._theme in ['dark', 'oceans16']:
+            from nglview import theme
+            display(theme.oceans16())
 
     def display(self, player=False):
         display(self)
@@ -911,6 +921,10 @@ class NGLWidget(widgets.DOMWidget):
 
         params = d['params']
         params.update({'component_index': component})
+        if component not in self._repr_dict:
+            self._repr_dict[component] = []
+        else:
+            self._repr_dict[component].append(d)
         self._remote_call('addRepresentation',
                           target='compList',
                           args=[d['type'],],
@@ -1229,6 +1243,8 @@ class NGLWidget(widgets.DOMWidget):
 
         if 'component_index' in kwargs:
             msg['component_index'] = kwargs.pop('component_index')
+        if 'repr_index' in kwargs:
+            msg['repr_index'] = kwargs.pop('repr_index')
 
         msg['target'] = target
         msg['type'] = 'call_method'
