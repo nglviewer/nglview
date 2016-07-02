@@ -304,24 +304,24 @@ class TrajectoryPlayer(DOMWidget):
         button.on_click(on_click)
         return button
 
-    def _show_website(self):
+    def _make_button_url(self, url, description):
         from nglview.theme.jsutils import js_open_url_template
-        nglview_website_button  = Button(description='nglview')
-        ngl_website_button  = Button(description='NGL')
+        button = Button(description=description)
 
-        def on_click_nglview(button):
-            url = "'http://arose.github.io/nglview/latest/'"
+        def on_click(button):
             display(Javascript(js_open_url_template.format(url=url)))
 
-        def on_click_ngl(button):
-            url = "'http://arose.github.io/ngl/api/dev/'"
-            display(Javascript(js_open_url_template.format(url=url)))
+        button.on_click(on_click)
+        return button
 
-        nglview_website_button.on_click(on_click_nglview)
-        ngl_website_button.on_click(on_click_ngl)
-
-        return HBox([nglview_website_button,
-                     ngl_website_button])
+    def _show_website(self):
+        buttons = [self._make_button_url(url, description) for url, description in
+            [("'http://arose.github.io/nglview/latest/'", "nglview"),
+            ("'http://arose.github.io/ngl/api/dev/'", "NGL"),
+            ("'http://arose.github.io/ngl/api/dev/tutorial-selection-language.html'", "Selection"),
+            ("'http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html'", "Representation")]
+        ]
+        return HBox(buttons)
 
     def _add_button_qtconsole(self):
         from nglview.theme.jsutils import js_launch_qtconsole
