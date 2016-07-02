@@ -5,9 +5,9 @@ from ipywidgets import DOMWidget, interactive
 class Representation(DOMWidget):
     parameters = Dict().tag(sync=False)
 
-    def __init__(self, view, cindex, repr_index, *args, **kwargs):
+    def __init__(self, view, component_index, repr_index, *args, **kwargs):
         super(Representation, self).__init__(*args, **kwargs)
-        self.cindex = cindex   
+        self.component_index = component_index   
         self.repr_index = repr_index
         self._view = view
 
@@ -15,7 +15,7 @@ class Representation(DOMWidget):
     def _on_parameters_changed(self, change):
         parameters = change['new']
 
-        kwargs = dict(component_index=self.cindex,
+        kwargs = dict(component_index=self.component_index,
                       repr_index=self.repr_index)
         kwargs.update(parameters)
 
