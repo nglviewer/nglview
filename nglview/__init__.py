@@ -586,6 +586,8 @@ class NGLWidget(widgets.DOMWidget):
         self._init_gui = kwargs.pop('gui', False)
         self._theme = kwargs.pop('theme', 'default')
         self._repr_dict = dict()
+        self._widget_image = widget_image.Image()
+        self._widget_image.width = 900.
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
@@ -971,16 +973,14 @@ class NGLWidget(widgets.DOMWidget):
                           kwargs={'component_index': component})
 
     @observe('_image_data')
-    def get_image(self, change=""):
-        '''get rendered image. Make sure to call `render_image` first
+    def _on_render_image(self, change):
+        '''update image data to widget_image
 
         Notes
         -----
         method name might be changed
         '''
-        image = widget_image.Image()
-        image._b64value = self._image_data
-        return image
+        self._widget_image._b64value = change['new']
 
     def render_image(self, frame=None,
                      factor=4,
