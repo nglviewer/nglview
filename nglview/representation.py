@@ -1,6 +1,10 @@
+from __future__ import absolute_import
 from traitlets import (Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe,
                        CaselessStrEnum)
 from ipywidgets import DOMWidget, interactive
+
+# local
+from .colors import color_scheme as COLOR_SCHEMES
 
 class Representation(DOMWidget):
     parameters = Dict().tag(sync=False)
@@ -25,9 +29,12 @@ class Representation(DOMWidget):
 
     def _add_button(self):
         def func(opacity=1.,
-                assembly='defaul'):
-            self.parameters = dict(opacity=opacity, assembly=assembly)
+                assembly='default',
+                color_scheme=""):
+            self.parameters = dict(opacity=opacity, assembly=assembly,
+                    colorScheme=color_scheme)
 
         assembly_list = ['default', 'AU', 'BU1', 'UNITCELL', 'SUPERCELL']
         return interactive(func, opacity=(0., 1., 0.1),
+                                 color_scheme=COLOR_SCHEMES,
                                  assembly=assembly_list)
