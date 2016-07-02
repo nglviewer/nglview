@@ -24,6 +24,10 @@ class Representation(DOMWidget):
                  kwargs=kwargs)
 
     def _add_button(self):
-        def func(opacity=1.):
-            self.parameters = dict(opacity=opacity)
-        return interactive(func, opacity=(0., 1., 0.1))
+        def func(opacity=1.,
+                assembly='defaul'):
+            self.parameters = dict(opacity=opacity, assembly=assembly)
+
+        assembly_list = ['default', 'AU', 'BU1', 'UNITCELL', 'SUPERCELL']
+        return interactive(func, opacity=(0., 1., 0.1),
+                                 assembly=assembly_list)
