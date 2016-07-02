@@ -706,9 +706,12 @@ class NGLWidget(widgets.DOMWidget):
             from nglview import theme
             display(theme.oceans16())
 
-    def display(self, player=False):
+    def _gui(self):
+        display(self.player._display())
+
+    def display(self, gui=False):
         display(self)
-        if player:
+        if gui:
             display(self.player._display())
 
     def _set_sync_frame(self):
