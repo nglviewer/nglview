@@ -27,7 +27,7 @@ class Representation(DOMWidget):
                  target='Representation',
                  kwargs=kwargs)
 
-    def _add_button(self):
+    def _display(self):
         def func(opacity=1.,
                 assembly='default',
                 color_scheme=""):
