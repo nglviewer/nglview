@@ -1045,6 +1045,15 @@ class NGLWidget(widgets.DOMWidget):
                     self.frame = 0
                 elif self.frame < 0:
                     self.frame = self.count - 1
+            elif msg_type == 'repr_parameters':
+                data_dict = self._ngl_msg.get('data')
+                self.player.repr_widget.children[-1].value = json.dumps(data_dict)
+
+    def _request_repr_parameters(self, component=0, repr_index=0):
+        self._remote_call('requestReprParameters',
+                target='Widget',
+                args=[component,
+                      repr_index])
 
     def add_structure(self, structure, **kwargs):
         '''
