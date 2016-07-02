@@ -340,7 +340,7 @@ class TrajectoryPlayer(DOMWidget):
         ta = Textarea(value='', description='rinfo')
         component_text = Text(value='0', description='cindex')
         repr_text = Text(value='0', description='rindex')
-        button = Button(description='Get representation info')
+        button = Button(description='info', tooltip='Get representation info')
 
         def on_click(button):
             self._view._request_repr_parameters(component=int(component_text.value),

@@ -741,6 +741,26 @@ class NGLWidget(widgets.DOMWidget):
         for index in range(len(self._ngl_component_ids)):
             self.set_representations(reps)
 
+    def update_representation(self, component=0, repr_index=0, **parameters):
+        """
+
+        Parameters
+        ----------
+        component : int, default 0
+            component index
+        repr_index : int, default 0
+            representation index for given component
+        parameters : dict
+        """
+        parameters = _camelize_dict(parameters)
+        kwargs = dict(component_index=component,
+                      repr_index=repr_index)
+        kwargs.update(parameters)
+
+        self._remote_call('setParameters',
+                 target='Representation',
+                 kwargs=kwargs)
+
     def set_representations(self, representations, component=0):
         """
         
