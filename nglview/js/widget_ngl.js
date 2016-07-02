@@ -182,6 +182,14 @@ define( [
             this.send({type: 'request_frame', data: 'frame'});
         },
 
+        requestReprParameters: function( component_index, repr_index ){
+            var comp = this.stage.compList[ component_index ];
+            var repr = comp.reprList[ repr_index ];
+            var msg = repr.repr.getParameters();
+            msg['name'] = repr.name;
+            this.send({type: 'repr_parameters', data: msg});
+        },
+
         setDelay: function( delay ){
             this.delay = delay;
         },

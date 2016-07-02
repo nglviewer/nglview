@@ -19,13 +19,9 @@ class Representation(DOMWidget):
     def _on_parameters_changed(self, change):
         parameters = change['new']
 
-        kwargs = dict(component_index=self.component_index,
-                      repr_index=self.repr_index)
-        kwargs.update(parameters)
-
-        self._view._remote_call('setParameters',
-                 target='Representation',
-                 kwargs=kwargs)
+        self._view.update_representation(component=self.component_index,
+                repr_index=self.repr_index,
+                **parameters)
 
     def _display(self):
         def func(opacity=1.,

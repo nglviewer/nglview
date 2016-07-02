@@ -741,6 +741,26 @@ class NGLWidget(widgets.DOMWidget):
         for index in range(len(self._ngl_component_ids)):
             self.set_representations(reps)
 
+    def update_representation(self, component=0, repr_index=0, **parameters):
+        """
+
+        Parameters
+        ----------
+        component : int, default 0
+            component index
+        repr_index : int, default 0
+            representation index for given component
+        parameters : dict
+        """
+        parameters = _camelize_dict(parameters)
+        kwargs = dict(component_index=component,
+                      repr_index=repr_index)
+        kwargs.update(parameters)
+
+        self._remote_call('setParameters',
+                 target='Representation',
+                 kwargs=kwargs)
+
     def set_representations(self, representations, component=0):
         """
         
@@ -1045,6 +1065,16 @@ class NGLWidget(widgets.DOMWidget):
                     self.frame = 0
                 elif self.frame < 0:
                     self.frame = self.count - 1
+            elif msg_type == 'repr_parameters':
+                data_dict = self._ngl_msg.get('data')
+                repr_name = data_dict.pop('name') + '\n'
+                self.player.repr_widget.children[-1].value = repr_name + json.dumps(data_dict)
+
+    def _request_repr_parameters(self, component=0, repr_index=0):
+        self._remote_call('requestReprParameters',
+                target='Widget',
+                args=[component,
+                      repr_index])
 
     def add_structure(self, structure, **kwargs):
         '''

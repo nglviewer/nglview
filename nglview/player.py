@@ -9,7 +9,8 @@ from ipywidgets import (DOMWidget, IntText, FloatText,
                         Dropdown,
                         Button,
                         Text, Textarea,
-                        interactive)
+                        interactive,
+                        Tab)
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
@@ -53,6 +54,7 @@ class TrajectoryPlayer(DOMWidget):
                                    trim=False,
                                    transparent=False)
         self.picked_widget = self._add_text_picked()
+        self.repr_widget = self._add_text_repr_widget()
 
     @observe('camera')
     def on_camera_changed(self, change):
@@ -231,10 +233,16 @@ class TrajectoryPlayer(DOMWidget):
         themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
         hidebox = Box([])
         help_url = self._show_website()
-        extrabox = HBox([self.picked_widget])
+
+        picked_box = HBox([self.picked_widget,])
+        repr_box= VBox([self.repr_widget])
+        extrabox = Tab([picked_box, repr_box])
+        extrabox.set_title(0, 'picked atom')
+        extrabox.set_title(1, 'repr')
+
         export_image_box = HBox([self._add_button_export_image()])
 
-        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, 
+        tab = Tab([genbox, spinbox, prefbox, themebox, 
             hidebox, help_url, extrabox,
             export_image_box])
         tab.set_title(0, 'General')
@@ -327,6 +335,18 @@ class TrajectoryPlayer(DOMWidget):
     def _add_text_picked(self):
         ta = Textarea(value=json.dumps(self._view.picked), description='Picked atom')
         return ta
+
+    def _add_text_repr_widget(self):
+        ta = Textarea(value='', description='rinfo')
+        component_text = Text(value='0', description='cindex')
+        repr_text = Text(value='0', description='rindex')
+        button = Button(description='info', tooltip='Get representation info')
+
+        def on_click(button):
+            self._view._request_repr_parameters(component=int(component_text.value),
+                                                repr_index=int(repr_text.value))
+        button.on_click(on_click)
+        return VBox([button, component_text, repr_text, ta])
 
     def _add_button_export_image(self):
         slider_factor = IntSlider(value=4, min=1, max=10, description='scale')
