@@ -318,7 +318,7 @@ class TrajectoryPlayer(DOMWidget):
         buttons = [self._make_button_url(url, description) for url, description in
             [("'http://arose.github.io/nglview/latest/'", "nglview"),
             ("'http://arose.github.io/ngl/api/dev/'", "NGL"),
-            ("'http://arose.github.io/ngl/api/dev/tutorial-selection-language.html'", "Selection")]
+            ("'http://arose.github.io/ngl/api/dev/tutorial-selection-language.html'", "Selection"),
             ("'http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html'", "Representation")]
         ]
         return HBox(buttons)
