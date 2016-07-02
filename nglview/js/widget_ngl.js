@@ -184,8 +184,9 @@ define( [
 
         requestReprParameters: function( component_index, repr_index ){
             var comp = this.stage.compList[ component_index ];
-            var repr = comp.reprList[ repr_index ].repr;
-            var msg = repr.getParameters();
+            var repr = comp.reprList[ repr_index ];
+            var msg = repr.repr.getParameters();
+            msg['name'] = repr.name;
             this.send({type: 'repr_parameters', data: msg});
         },
 

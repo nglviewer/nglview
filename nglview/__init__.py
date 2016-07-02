@@ -1067,7 +1067,8 @@ class NGLWidget(widgets.DOMWidget):
                     self.frame = self.count - 1
             elif msg_type == 'repr_parameters':
                 data_dict = self._ngl_msg.get('data')
-                self.player.repr_widget.children[-1].value = json.dumps(data_dict)
+                repr_name = data_dict.pop('name') + '\n'
+                self.player.repr_widget.children[-1].value = repr_name + json.dumps(data_dict)
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
