@@ -8,7 +8,7 @@ from ipywidgets import (DOMWidget, IntText, FloatText,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
                         Button,
-                        Textarea,
+                        Text, Textarea,
                         interactive)
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
@@ -231,9 +231,12 @@ class TrajectoryPlayer(DOMWidget):
         themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
         hidebox = Box([])
         help_url = self._show_website()
-        extrabox = VBox([self.picked_widget,])
+        extrabox = HBox([self.picked_widget])
+        export_image_box = HBox([self._add_button_export_image()])
 
-        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox, help_url, extrabox])
+        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, 
+            hidebox, help_url, extrabox,
+            export_image_box])
         tab.set_title(0, 'General')
         tab.set_title(1, 'Spin')
         tab.set_title(2, 'Speed')
@@ -241,6 +244,7 @@ class TrajectoryPlayer(DOMWidget):
         tab.set_title(4, 'Hide')
         tab.set_title(5, 'Help')
         tab.set_title(6, 'Extra')
+        tab.set_title(7, 'Image')
         return tab
 
     def _add_button_center(self):
@@ -286,7 +290,7 @@ class TrajectoryPlayer(DOMWidget):
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
-        button = Button(description='Download Image')
+        button = Button(description='Screenshot')
         def on_click(button):
             self._view.download_image()
         button.on_click(on_click)
@@ -321,5 +325,30 @@ class TrajectoryPlayer(DOMWidget):
         return button
 
     def _add_text_picked(self):
-        ta = Textarea(value=json.dumps(self._view.picked))
+        ta = Textarea(value=json.dumps(self._view.picked), description='Picked atom')
         return ta
+
+    def _add_button_export_image(self):
+        slider_factor = IntSlider(value=4, min=1, max=10, description='scale')
+        checkbox_antialias = Checkbox(value=True, description='antialias')
+        checkbox_trim = Checkbox(value=False, description='trim')
+        checkbox_transparent = Checkbox(value=False, description='transparent')
+        filename_text = Text(value='Screenshot', description='Filename')
+
+        button = Button(description='Export Image')
+
+        def on_click(button):
+            self._view.download_image(factor=slider_factor.value,
+                    antialias=checkbox_antialias.value,
+                    trim=checkbox_trim.value,
+                    transparent=checkbox_transparent.value,
+                    filename=filename_text.value)
+
+        button.on_click(on_click)
+
+        return VBox([button,
+            filename_text,
+            slider_factor,
+            checkbox_antialias,
+            checkbox_trim,
+            checkbox_transparent])
