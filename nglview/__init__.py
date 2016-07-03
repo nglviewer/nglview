@@ -1074,13 +1074,18 @@ class NGLWidget(widgets.DOMWidget):
                 # json change True to true
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
-                self.player.repr_widget.children[-1].value = repr_name + data_dict_json
+                self.player.repr_widget.children[1].value = repr_name
+                self.player.repr_widget.children[-1].value = data_dict_json
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
                 target='Widget',
                 args=[component,
                       repr_index])
+
+    def _request_viewer_info(self):
+        self._remote_call('requestViewerInfo',
+                target='Widget')
 
     def add_structure(self, structure, **kwargs):
         '''
@@ -1121,9 +1126,9 @@ class NGLWidget(widgets.DOMWidget):
         `add_trajectory` is just a special case of `add_component`
         '''
         backends = dict(pytraj=PyTrajTrajectory,
-                       mdtraj=MDTrajTrajectory,
-                       MDAnalysis=MDAnalysisTrajectory,
-                       parmed=ParmEdTrajectory)
+                        mdtraj=MDTrajTrajectory,
+                        MDAnalysis=MDAnalysisTrajectory,
+                        parmed=ParmEdTrajectory)
 
         package_name = trajectory.__module__.split('.')[0]
 
