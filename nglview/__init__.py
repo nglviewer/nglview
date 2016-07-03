@@ -586,7 +586,6 @@ class NGLWidget(widgets.DOMWidget):
 
         self._init_gui = kwargs.pop('gui', False)
         self._theme = kwargs.pop('theme', 'default')
-        self._repr_dict = dict()
         self._widget_image = widget_image.Image()
         self._widget_image.width = 900.
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
@@ -636,8 +635,6 @@ class NGLWidget(widgets.DOMWidget):
                     "sele": "not protein and not nucleic"
                 }}
             ]
-
-        self._repr_dict[0] = self._init_representations[:]
 
         # keep track but making copy
         if structure is not None:
@@ -956,10 +953,6 @@ class NGLWidget(widgets.DOMWidget):
 
         params = d['params']
         params.update({'component_index': component})
-        if component not in self._repr_dict:
-            self._repr_dict[component] = []
-        else:
-            self._repr_dict[component].append(d)
         self._remote_call('addRepresentation',
                           target='compList',
                           args=[d['type'],],
@@ -1083,6 +1076,8 @@ class NGLWidget(widgets.DOMWidget):
                 data_dict_json = data_dict_json.replace('null', '"null"')
                 self.player.repr_widget.children[1].value = repr_name
                 self.player.repr_widget.children[-1].value = data_dict_json
+            elif msg_type == 'viewer_info':
+                self._repr_dict = self._ngl_msg.get('data')
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
