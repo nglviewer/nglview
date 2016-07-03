@@ -598,7 +598,6 @@ class NGLWidget(widgets.DOMWidget):
 
         self._trajlist = []
 
-        # create after initilizing _ngl_displayed_callbacks
         # need to initialize before _ngl_component_ids
         self.player = TrajectoryPlayer(self)
 
