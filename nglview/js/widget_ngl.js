@@ -190,6 +190,23 @@ define( [
             this.send({type: 'repr_parameters', data: msg});
         },
 
+        requestViewerInfo: function(){
+            var n_components = this.stage.compList.length;
+            var msg = {};
+
+            for (var i=0; i < n_components; i++) {
+                var comp = this.stage.compList[i];
+                msg['c' + i] = {};
+                var msgi = msg['c' + i];
+                for (var j=0; j < comp.reprList.length; j++){
+                    var repr = comp.reprList[j];
+                    msgi[j] = [];
+                    msgi[j].push(repr.name);
+                }
+            }
+            this.send({type: 'viewer_info', data: msg});
+        },
+
         setDelay: function( delay ){
             this.delay = delay;
         },
