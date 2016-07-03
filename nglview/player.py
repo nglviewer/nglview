@@ -355,6 +355,7 @@ class TrajectoryPlayer(DOMWidget):
             self._view.update_representation(component=int(component_slider.value),
                                              repr_index=int(repr_slider.value),
                                              **parameters)
+            self._view._request_update_reprs()
         button_update.on_click(on_click_update)
 
         def update_slide_info(change):

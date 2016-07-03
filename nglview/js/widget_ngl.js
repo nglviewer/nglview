@@ -190,7 +190,7 @@ define( [
             this.send({type: 'repr_parameters', data: msg});
         },
 
-        requestViewerInfo: function(){
+        requestReprsInfo: function(){
             var n_components = this.stage.compList.length;
             var msg = {};
 
@@ -200,11 +200,12 @@ define( [
                 var msgi = msg['c' + i];
                 for (var j=0; j < comp.reprList.length; j++){
                     var repr = comp.reprList[j];
-                    msgi[j] = [];
-                    msgi[j].push(repr.name);
+                    msgi[j] = {};
+                    msgi[j]['name'] = repr.name;
+                    msgi[j]['parameters'] = repr.repr.getParameters();
                 }
             }
-            this.send({type: 'viewer_info', data: msg});
+            this.send({type: 'all_reprs_info', data: msg});
         },
 
         setDelay: function( delay ){
