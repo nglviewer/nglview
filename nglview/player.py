@@ -353,8 +353,8 @@ class TrajectoryPlayer(DOMWidget):
         def on_click_update(button):
             parameters = json.loads(ta.value.replace("False", "false").replace("True", "true"))
             self._view.update_representation(component=int(component_text.value),
-                                           repr_index=int(repr_text.value),
-                                           **parameters)
+                                             repr_index=int(repr_text.value),
+                                             **parameters)
         button_update.on_click(on_click_update)
         return VBox([bbox, repr_name, component_text, repr_text, ta])
 
