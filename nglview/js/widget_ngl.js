@@ -190,7 +190,7 @@ define( [
             this.send({type: 'repr_parameters', data: msg});
         },
 
-        requestViewerInfo: function(){
+        requestReprsInfo: function(){
             var n_components = this.stage.compList.length;
             var msg = {};
 
@@ -205,7 +205,7 @@ define( [
                     msgi[j]['parameters'] = repr.repr.getParameters();
                 }
             }
-            this.send({type: 'viewer_info', data: msg});
+            this.send({type: 'all_reprs_info', data: msg});
         },
 
         setDelay: function( delay ){

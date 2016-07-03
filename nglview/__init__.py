@@ -699,7 +699,7 @@ class NGLWidget(widgets.DOMWidget):
     def on_loaded(self, change):
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
-            self._request_viewer_info()
+            self._request_update_reprs()
 
     def _ipython_display_(self, **kwargs):
         self.displayed = True
@@ -793,7 +793,7 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('removeRepresentationsByName',
                           target='Widget',
                           args=[repr_name, component])
-        self._request_viewer_info()
+        self._request_update_reprs()
 
     def _display_repr(self, component=0, repr_index=0, name=None):
         return Representation(self, component, repr_index, name=name)._display()
@@ -959,7 +959,7 @@ class NGLWidget(widgets.DOMWidget):
                           target='compList',
                           args=[d['type'],],
                           kwargs=params)
-        self._request_viewer_info()
+        self._request_update_reprs()
 
 
     def center(self, *args, **kwargs):
@@ -1079,7 +1079,7 @@ class NGLWidget(widgets.DOMWidget):
                 data_dict_json = data_dict_json.replace('null', '"null"')
                 self.player.repr_widget.children[1].value = repr_name
                 self.player.repr_widget.children[-1].value = data_dict_json
-            elif msg_type == 'viewer_info':
+            elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
 
     def _request_repr_parameters(self, component=0, repr_index=0):
@@ -1088,8 +1088,8 @@ class NGLWidget(widgets.DOMWidget):
                 args=[component,
                       repr_index])
 
-    def _request_viewer_info(self):
-        self._remote_call('requestViewerInfo',
+    def _request_update_reprs(self):
+        self._remote_call('requestReprsInfo',
                 target='Widget')
 
     def add_structure(self, structure, **kwargs):
