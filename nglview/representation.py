@@ -26,10 +26,14 @@ class Representation(DOMWidget):
                 **parameters)
 
     def _display(self):
+        c_string = 'c' + str(self.component_index)
+        r_string = str(self.repr_index)
+        _repr_dict = self._view._repr_dict[c_string][r_string]['parameters']
+
         def func(opacity=1.,
-                assembly='default',
-                color_scheme="",
-                wireframe=False):
+                assembly=_repr_dict.get('assembly', 'default'),
+                color_scheme=_repr_dict.get('colorScheme', ""),
+                wireframe=_repr_dict.get('wireframe', False)):
             parameters = dict(opacity=opacity,
                     assembly=assembly,
                     colorScheme=color_scheme,
