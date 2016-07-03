@@ -699,6 +699,7 @@ class NGLWidget(widgets.DOMWidget):
     def on_loaded(self, change):
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
+            self._request_viewer_info()
 
     def _ipython_display_(self, **kwargs):
         self.displayed = True
@@ -792,6 +793,7 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('removeRepresentationsByName',
                           target='Widget',
                           args=[repr_name, component])
+        self._request_viewer_info()
 
     def _display_repr(self, component=0, repr_index=0, name=None):
         return Representation(self, component, repr_index, name=name)._display()
@@ -957,6 +959,7 @@ class NGLWidget(widgets.DOMWidget):
                           target='compList',
                           args=[d['type'],],
                           kwargs=params)
+        self._request_viewer_info()
 
 
     def center(self, *args, **kwargs):
