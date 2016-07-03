@@ -573,6 +573,7 @@ class NGLWidget(widgets.DOMWidget):
         default_value='orthographic').tag(sync=True)
     orientation = List().tag(sync=True)
     _repr_dict = Dict().tag(sync=False)
+    _ngl_component_ids = List().tag(sync=False)
 
     displayed = False
     _ngl_msg = None
@@ -592,13 +593,15 @@ class NGLWidget(widgets.DOMWidget):
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
 
-        # create after initilizing _ngl_displayed_callbacks
-        self.player = TrajectoryPlayer(self)
-
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
 
         self._trajlist = []
+
+        # create after initilizing _ngl_displayed_callbacks
+        # need to initialize before _ngl_component_ids
+        self.player = TrajectoryPlayer(self)
+
         self._ngl_component_ids = []
         self._init_structures = []
 
@@ -686,6 +689,11 @@ class NGLWidget(widgets.DOMWidget):
     def on_update_dragged_file(self, change):
         if change['new'] - change['old'] == 1:
             self._ngl_component_ids.append(uuid.uuid4())
+
+    @observe('_ngl_component_ids')
+    def _update_player_component_slider_max(self, change):
+        component_slider = self.player.repr_widget.children[2]
+        component_slider.max = len(self._ngl_component_ids)
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
