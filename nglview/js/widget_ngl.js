@@ -200,8 +200,9 @@ define( [
                 var msgi = msg['c' + i];
                 for (var j=0; j < comp.reprList.length; j++){
                     var repr = comp.reprList[j];
-                    msgi[j] = [];
-                    msgi[j].push(repr.name);
+                    msgi[j] = {};
+                    msgi[j]['name'] = repr.name;
+                    msgi[j]['parameters'] = repr.repr.getParameters();
                 }
             }
             this.send({type: 'viewer_info', data: msg});
