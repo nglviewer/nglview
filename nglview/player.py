@@ -337,16 +337,26 @@ class TrajectoryPlayer(DOMWidget):
         return ta
 
     def _add_text_repr_widget(self):
+        button_info = Button(description='info', tooltip='Get representation info')
+        button_update = Button(description='Update', tooltip='Update representation')
+        bbox = HBox([button_info, button_update])
+        repr_name = Text(value='', description='repr_name')
+        component_text = IntSlider(value=0, description='cindex')
+        repr_text = IntSlider(value=0, description='rindex')
         ta = Textarea(value='', description='rinfo')
-        component_text = Text(value='0', description='cindex')
-        repr_text = Text(value='0', description='rindex')
-        button = Button(description='info', tooltip='Get representation info')
 
-        def on_click(button):
+        def on_click_info(button):
             self._view._request_repr_parameters(component=int(component_text.value),
                                                 repr_index=int(repr_text.value))
-        button.on_click(on_click)
-        return VBox([button, component_text, repr_text, ta])
+        button_info.on_click(on_click_info)
+
+        def on_click_update(button):
+            parameters = json.loads(ta.value.replace("False", "false").replace("True", "true"))
+            self._view.update_representation(component=int(component_text.value),
+                                             repr_index=int(repr_text.value),
+                                             **parameters)
+        button_update.on_click(on_click_update)
+        return VBox([bbox, repr_name, component_text, repr_text, ta])
 
     def _add_button_export_image(self):
         slider_factor = IntSlider(value=4, min=1, max=10, description='scale')
