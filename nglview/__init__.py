@@ -796,8 +796,8 @@ class NGLWidget(widgets.DOMWidget):
                           target='Widget',
                           args=[repr_name, component])
 
-    def _display_repr(self, component=0, repr_index=0):
-        return Representation(self, component, repr_index)._display()
+    def _display_repr(self, component=0, repr_index=0, name=None):
+        return Representation(self, component, repr_index, name=name)._display()
 
     def _set_initial_structure(self, structures):
         """initialize structures for Widget
