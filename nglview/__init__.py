@@ -770,6 +770,7 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('setParameters',
                  target='Representation',
                  kwargs=kwargs)
+        self._request_update_reprs()
 
     def set_representations(self, representations, component=0):
         """
