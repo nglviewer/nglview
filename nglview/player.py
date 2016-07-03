@@ -337,7 +337,7 @@ class TrajectoryPlayer(DOMWidget):
         return ta
 
     def _add_text_repr_widget(self):
-        button_info = Button(description='info', tooltip='Get representation info')
+        button_info = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation')
         bbox = HBox([button_info, button_update])
         repr_name = Text(value='', description='repr_name')
