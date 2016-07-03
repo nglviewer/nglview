@@ -236,9 +236,10 @@ class TrajectoryPlayer(DOMWidget):
 
         picked_box = HBox([self.picked_widget,])
         repr_box= HBox([self.repr_widget, self._add_repr_sliders()])
-        extrabox = Tab([picked_box, repr_box])
-        extrabox.set_title(0, 'picked atom')
-        extrabox.set_title(1, 'repr')
+
+        extrabox = Tab([repr_box, picked_box])
+        extrabox.set_title(0, 'repr')
+        extrabox.set_title(1, 'picked atom')
 
         export_image_box = HBox([self._add_button_export_image()])
 
@@ -377,6 +378,7 @@ class TrajectoryPlayer(DOMWidget):
         def create_widget(change):
             if change['new']:
                 # repr_name
+                # TODO: correctly upate name
                 name = self.repr_widget.children[1].value
                 component_slider = self.repr_widget.children[2]
                 repr_slider = self.repr_widget.children[3]
