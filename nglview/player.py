@@ -341,8 +341,8 @@ class TrajectoryPlayer(DOMWidget):
         button_update = Button(description='Update', tooltip='Update representation')
         bbox = HBox([button_info, button_update])
         repr_name = Text(value='', description='repr_name')
-        component_text = Text(value='0', description='cindex')
-        repr_text = Text(value='0', description='rindex')
+        component_text = IntSlider(value=0, description='cindex')
+        repr_text = IntSlider(value=0, description='rindex')
         ta = Textarea(value='', description='rinfo')
 
         def on_click_info(button):
@@ -351,8 +351,8 @@ class TrajectoryPlayer(DOMWidget):
         button_info.on_click(on_click_info)
 
         def on_click_update(button):
-            parameters = json.loads(ta.value)
-            self._view.update_repsentation(component=int(component_text.value),
+            parameters = json.loads(ta.value.replace("False", "false").replace("True", "true"))
+            self._view.update_representation(component=int(component_text.value),
                                            repr_index=int(repr_text.value),
                                            **parameters)
         button_update.on_click(on_click_update)
