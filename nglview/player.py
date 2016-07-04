@@ -248,7 +248,7 @@ class TrajectoryPlayer(DOMWidget):
                    hide_box, help_url_box])
 
         tab.set_title(0, 'General')
-        tab.set_title(1, 'Repr')
+        tab.set_title(1, 'Representation')
         tab.set_title(2, 'Preference')
         tab.set_title(3, 'Theme')
         tab.set_title(4, 'Extra')
