@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview.scripts.app &mdash; NGLView 0.5.2a+66.ge004681 documentation</title>
+  <title>nglview.scripts.app &mdash; NGLView 0.5.2a+56.g9e870fa documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+66.ge004681 documentation" href="../../../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+56.g9e870fa documentation" href="../../../index.html"/>
         <link rel="up" title="nglview" href="../../nglview.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+66.ge004681
+                0.5.2a+56.g9e870fa
               </div>
             
           
@@ -130,17 +130,22 @@
 <span></span><span class="kn">from</span> <span class="nn">notebook.notebookapp</span> <span class="kn">import</span> <span class="n">NotebookApp</span><span class="p">,</span> <span class="n">random_ports</span>
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">from</span> <span class="nn">tornado</span> <span class="kn">import</span> <span class="n">httpserver</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 
 
 <div class="viewcode-block" id="NGLViewApp"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.app.NGLViewApp">[docs]</a><span class="k">class</span> <span class="nc">NGLViewApp</span><span class="p">(</span><span class="n">NotebookApp</span><span class="p">):</span>
-<div class="viewcode-block" id="NGLViewApp.get_port"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.app.NGLViewApp.get_port">[docs]</a>    <span class="k">def</span> <span class="nf">get_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLViewApp.get_port"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.app.NGLViewApp.get_port">[docs]</a>    <span class="k">def</span> <span class="nf">get_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="c1"># user-given port</span>
+        <span class="n">uport</span> <span class="o">=</span> <span class="p">[</span><span class="n">port</span><span class="p">,]</span> <span class="k">if</span> <span class="n">port</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,]</span>
 
         <span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">http_server</span> <span class="o">=</span> <span class="n">httpserver</span><span class="o">.</span><span class="n">HTTPServer</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="n">success</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">random_ports</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port_retries</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span><span class="n">uport</span><span class="p">,</span> <span class="n">random_ports</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port_retries</span><span class="o">+</span><span class="mi">1</span><span class="p">)):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">http_server</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">):</span> 
@@ -188,7 +193,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.5.2a+66.ge004681',
+            VERSION:'0.5.2a+56.g9e870fa',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

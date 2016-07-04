@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview.scripts.nglview &mdash; NGLView 0.5.2a+66.ge004681 documentation</title>
+  <title>nglview.scripts.nglview &mdash; NGLView 0.5.2a+56.g9e870fa documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+66.ge004681 documentation" href="../../../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+56.g9e870fa documentation" href="../../../index.html"/>
         <link rel="up" title="nglview" href="../../nglview.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+66.ge004681
+                0.5.2a+56.g9e870fa
               </div>
             
           
@@ -134,6 +134,13 @@
 <span class="kn">from</span> <span class="nn">.cmd_example</span> <span class="kn">import</span> <span class="n">CMD_EXAMPLE</span> 
 
 <span class="n">bin_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;/bin/&#39;</span>
+
+<span class="n">demo_source</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">import nglview as nv</span>
+
+<span class="s2">view = nv.demo(gui=True, theme=&#39;dark&#39;)</span>
+<span class="s2">view</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
 <span class="n">notebook_dict</span> <span class="o">=</span> <span class="p">{</span>
  <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -217,7 +224,7 @@
 <div class="viewcode-block" id="get_remote_port"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.get_remote_port">[docs]</a><span class="k">def</span> <span class="nf">get_remote_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">socket</span>
     <span class="kn">from</span> <span class="nn">nglview.scripts.app</span> <span class="kn">import</span> <span class="n">NGLViewApp</span>
-    <span class="n">port</span> <span class="o">=</span> <span class="n">port</span> <span class="k">if</span> <span class="n">port</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">NGLViewApp</span><span class="p">()</span><span class="o">.</span><span class="n">get_port</span><span class="p">()</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="n">NGLViewApp</span><span class="p">()</span><span class="o">.</span><span class="n">get_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
 
     <span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getlogin</span><span class="p">()</span>
     <span class="n">hostname</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span>
@@ -231,7 +238,7 @@
     <span class="n">PY3</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
     <span class="n">pyv_full_string</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">)</span>
     <span class="n">pyv_short_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">default_jexe</span> <span class="o">=</span> <span class="n">bin_path</span> <span class="o">+</span> <span class="s1">&#39;jupyter&#39;</span>
+    <span class="n">default_jexe</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s1">&#39;-m jupyter&#39;</span><span class="p">))</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;NGLView: An IPython/Jupyter widget to &#39;</span>
                                      <span class="s1">&#39;interactively view molecular structures and trajectories.&#39;</span><span class="p">,</span>
@@ -277,6 +284,8 @@
             <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pycontent</span>
             <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parm</span> <span class="o">==</span> <span class="s1">&#39;demo&#39;</span><span class="p">:</span>
+                <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">demo_source</span>
             <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
             <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;test.nc&#39;</span><span class="p">,</span> <span class="n">crd</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;prmtop&#39;</span><span class="p">,</span> <span class="n">parm</span><span class="p">)</span>
         <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span>
@@ -341,7 +350,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.5.2a+66.ge004681',
+            VERSION:'0.5.2a+56.g9e870fa',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

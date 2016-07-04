@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.5.2a+66.ge004681 documentation</title>
+  <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.5.2a+56.g9e870fa documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+66.ge004681 documentation" href="index.html"/> 
+    <link rel="top" title="NGLView 0.5.2a+56.g9e870fa documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.5.2a+66.ge004681
+                0.5.2a+56.g9e870fa
               </div>
             
           
@@ -407,6 +407,11 @@ to load all trajectories first.</p>
 <dd><p>An int trait.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="nglview.NGLWidget.display">
+<code class="descname">display</code><span class="sig-paren">(</span><em>gui=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="nglview.NGLWidget.displayed">
 <code class="descname">displayed</code><em class="property"> = False</em><a class="headerlink" href="#nglview.NGLWidget.displayed" title="Permalink to this definition">¶</a></dt>
@@ -430,11 +435,6 @@ transparent : bool, default False</p>
 <code class="descname">frame</code><a class="headerlink" href="#nglview.NGLWidget.frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>An int trait.</p>
 </dd></dl>
-
-<dl class="attribute">
-<dt id="nglview.NGLWidget.get_image">
-<code class="descname">get_image</code><a class="headerlink" href="#nglview.NGLWidget.get_image" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="method">
 <dt id="nglview.NGLWidget.hide">
@@ -548,6 +548,18 @@ view.get_image()</p>
 <code class="descname">show_only</code><span class="sig-paren">(</span><em>indices='all'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.show_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.show_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>set visibility for given components (by their indices)</p>
 <p>indices : {&#8216;all&#8217;, array-like}, component index, default &#8216;all&#8217;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.NGLWidget.update_representation">
+<code class="descname">update_representation</code><span class="sig-paren">(</span><em>component=0</em>, <em>repr_index=0</em>, <em>**parameters</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#NGLWidget.update_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.update_representation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>component <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0</span></dt>
+<dd>component index</dd>
+<dt>repr_index <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0</span></dt>
+<dd>representation index for given component</dd>
+</dl>
+<p>parameters : dict</p>
 </dd></dl>
 
 </dd></dl>
@@ -695,6 +707,11 @@ view.get_image()</p>
 <dl class="function">
 <dt id="nglview.decode_base64">
 <code class="descclassname">nglview.</code><code class="descname">decode_base64</code><span class="sig-paren">(</span><em>data</em>, <em>shape</em>, <em>dtype='f4'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#decode_base64"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.decode_base64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nglview.demo">
+<code class="descclassname">nglview.</code><code class="descname">demo</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview.html#demo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.demo" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -883,7 +900,7 @@ gro, mol2, sdf.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5.2a+66.ge004681',
+            VERSION:'0.5.2a+56.g9e870fa',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

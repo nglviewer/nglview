@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview.player &mdash; NGLView 0.5.2a+66.ge004681 documentation</title>
+  <title>nglview.player &mdash; NGLView 0.5.2a+56.g9e870fa documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+66.ge004681 documentation" href="../../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+56.g9e870fa documentation" href="../../index.html"/>
         <link rel="up" title="nglview" href="../nglview.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+66.ge004681
+                0.5.2a+56.g9e870fa
               </div>
             
           
@@ -127,12 +127,23 @@
            <div itemprop="articleBody">
             
   <h1>Source code for nglview.player</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DOMWidget</span><span class="p">,</span> <span class="n">IntText</span><span class="p">,</span> <span class="n">FloatText</span><span class="p">,</span> <span class="n">HBox</span><span class="p">,</span> <span class="n">VBox</span><span class="p">,</span> <span class="n">Checkbox</span><span class="p">,</span>
+<span></span><span class="c1"># TODO: reorg</span>
+<span class="c1"># simplify code</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">ipywidgets</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DOMWidget</span><span class="p">,</span> <span class="n">IntText</span><span class="p">,</span> <span class="n">FloatText</span><span class="p">,</span>
+                        <span class="n">Box</span><span class="p">,</span> <span class="n">HBox</span><span class="p">,</span> <span class="n">VBox</span><span class="p">,</span> <span class="n">Checkbox</span><span class="p">,</span>
                         <span class="n">ColorPicker</span><span class="p">,</span> <span class="n">IntSlider</span><span class="p">,</span> <span class="n">FloatSlider</span><span class="p">,</span>
-                        <span class="n">Dropdown</span><span class="p">)</span>
-                        
+                        <span class="n">Dropdown</span><span class="p">,</span>
+                        <span class="n">Button</span><span class="p">,</span>
+                        <span class="n">Text</span><span class="p">,</span> <span class="n">Textarea</span><span class="p">,</span>
+                        <span class="n">interactive</span><span class="p">,</span>
+                        <span class="n">Tab</span><span class="p">)</span>
+
 <span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">CaselessStrEnum</span>
 <span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="n">observe</span><span class="p">,</span> <span class="n">link</span>
+
 
 <div class="viewcode-block" id="TrajectoryPlayer"><a class="viewcode-back" href="../../_api/nglview.html#nglview.player.TrajectoryPlayer">[docs]</a><span class="k">class</span> <span class="nc">TrajectoryPlayer</span><span class="p">(</span><span class="n">DOMWidget</span><span class="p">):</span>
     <span class="c1"># should set default values here different from desired defaults</span>
@@ -145,8 +156,17 @@
     <span class="n">iparams</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">_interpolation_t</span> <span class="o">=</span> <span class="n">Float</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">_iterpolation_type</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">([</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;spline&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">spin</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">_spin_x</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">_spin_y</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">_spin_z</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">_spin_speed</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">0.005</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">camera</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">([</span><span class="s1">&#39;perspective&#39;</span><span class="p">,</span> <span class="s1">&#39;orthographic&#39;</span><span class="p">],</span>
+        <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;perspective&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">_render_params</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">sync_frame</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">min_delay</span><span class="o">=</span><span class="mi">40</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">sync_frame</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">min_delay</span><span class="o">=</span><span class="mi">40</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_view</span> <span class="o">=</span> <span class="n">view</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sync_frame</span> <span class="o">=</span> <span class="n">sync_frame</span>
@@ -154,7 +174,30 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">min_delay</span> <span class="o">=</span> <span class="n">min_delay</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_t</span> <span class="o">=</span> <span class="mf">0.5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iterpolation_type</span> <span class="o">=</span> <span class="s1">&#39;linear&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iparams</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_t</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iterpolation_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iparams</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_t</span><span class="p">,</span>
+            <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iterpolation_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_render_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                                   <span class="n">antialias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                   <span class="n">trim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                   <span class="n">transparent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">picked_widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_text_picked</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_text_repr_widget</span><span class="p">()</span>
+
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;camera&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">on_camera_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="n">camera_type</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;setParameters&quot;</span><span class="p">,</span>
+                                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
+                                <span class="n">kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">cameraType</span><span class="o">=</span><span class="n">camera_type</span><span class="p">))</span>
+
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;camera&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">on_camera_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="n">camera_type</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;setParameters&quot;</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">cameraType</span><span class="o">=</span><span class="n">camera_type</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">frame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -196,25 +239,311 @@
     <span class="k">def</span> <span class="nf">_interpolation_t_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iparams</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
 
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;spin&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">on_spin_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># stop</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_spin_x&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">on_spin_x_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span><span class="p">)</span>
+
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_spin_y&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">on_spin_y_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span><span class="p">)</span>
+
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_spin_z&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">on_spin_z_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span><span class="p">)</span>
+
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_spin_speed&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">on_spin_speed_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">step_slide</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">,</span> <span class="nb">min</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;step&#39;</span><span class="p">)</span>
-        <span class="n">delay_text</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;delay&#39;</span><span class="p">)</span>
-        <span class="n">checkbox_interpolate</span> <span class="o">=</span> <span class="n">Checkbox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolate</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;interpolate&#39;</span><span class="p">)</span>
+        <span class="n">step_slide</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;step&#39;</span><span class="p">)</span>
+        <span class="n">delay_text</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;delay&#39;</span><span class="p">)</span>
+        <span class="n">checkbox_interpolate</span> <span class="o">=</span> <span class="n">Checkbox</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interpolate</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;interpolate&#39;</span><span class="p">)</span>
+        <span class="n">checkbox_spin</span> <span class="o">=</span> <span class="n">Checkbox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;spin&#39;</span><span class="p">)</span>
+        <span class="n">spin_x_slide</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;spin_x&#39;</span><span class="p">)</span>
+        <span class="n">spin_y_slide</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;spin_y&#39;</span><span class="p">)</span>
+        <span class="n">spin_z_slide</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;spin_z&#39;</span><span class="p">)</span>
+        <span class="n">spin_speed_slide</span> <span class="o">=</span> <span class="n">FloatSlider</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+            <span class="n">step</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;spin speed&#39;</span><span class="p">)</span>
         <span class="n">bg_color</span> <span class="o">=</span> <span class="n">ColorPicker</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;background_color&#39;</span><span class="p">)</span>
         <span class="c1"># t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)</span>
         <span class="n">interpolation_type</span> <span class="o">=</span> <span class="n">Dropdown</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iterpolation_type</span><span class="p">,</span>
-                <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;spline&#39;</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;interpolation type&#39;</span><span class="p">)</span>
+                                      <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;spline&#39;</span><span class="p">])</span>
+
+        <span class="n">camera_type</span> <span class="o">=</span> <span class="n">Dropdown</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="p">,</span>
+                               <span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;perspective&#39;</span><span class="p">,</span> <span class="s1">&#39;orthographic&#39;</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;camera&#39;</span><span class="p">)</span>
 
         <span class="n">link</span><span class="p">((</span><span class="n">step_slide</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;step&#39;</span><span class="p">))</span>
         <span class="n">link</span><span class="p">((</span><span class="n">delay_text</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;delay&#39;</span><span class="p">))</span>
         <span class="n">link</span><span class="p">((</span><span class="n">checkbox_interpolate</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;interpolate&#39;</span><span class="p">))</span>
         <span class="c1"># link((t_interpolation, &#39;value&#39;), (self, &#39;_interpolation_t&#39;))</span>
         <span class="n">link</span><span class="p">((</span><span class="n">interpolation_type</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_iterpolation_type&#39;</span><span class="p">))</span>
+        <span class="n">link</span><span class="p">((</span><span class="n">camera_type</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;camera&#39;</span><span class="p">))</span>
         <span class="n">link</span><span class="p">((</span><span class="n">bg_color</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">,</span> <span class="s1">&#39;background&#39;</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">VBox</span><span class="p">([</span><span class="n">step_slide</span><span class="p">,</span> <span class="n">delay_text</span><span class="p">,</span> <span class="n">bg_color</span><span class="p">,</span>
-                     <span class="n">checkbox_interpolate</span><span class="p">,</span>
-                     <span class="n">interpolation_type</span><span class="p">])</span></div>
+        <span class="c1"># spin</span>
+        <span class="n">link</span><span class="p">((</span><span class="n">checkbox_spin</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;spin&#39;</span><span class="p">))</span>
+        <span class="n">link</span><span class="p">((</span><span class="n">spin_x_slide</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_spin_x&#39;</span><span class="p">))</span>
+        <span class="n">link</span><span class="p">((</span><span class="n">spin_y_slide</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_spin_y&#39;</span><span class="p">))</span>
+        <span class="n">link</span><span class="p">((</span><span class="n">spin_z_slide</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_spin_z&#39;</span><span class="p">))</span>
+        <span class="n">link</span><span class="p">((</span><span class="n">spin_speed_slide</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_spin_speed&#39;</span><span class="p">))</span>
+
+        <span class="n">qtconsole_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_button_qtconsole</span><span class="p">()</span>
+
+        <span class="n">ibox</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">checkbox_interpolate</span><span class="p">,</span> <span class="n">interpolation_type</span><span class="p">])</span>
+        <span class="n">center_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_button_center</span><span class="p">()</span>
+        <span class="n">render_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_download_image</span><span class="p">()</span>
+        <span class="n">center_render_hbox</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">center_button</span><span class="p">,</span> <span class="n">render_button</span><span class="p">])</span>
+
+        <span class="n">v0_left</span> <span class="o">=</span> <span class="n">VBox</span><span class="p">([</span><span class="n">step_slide</span><span class="p">,</span>
+                   <span class="n">delay_text</span><span class="p">,</span>
+                   <span class="n">bg_color</span><span class="p">,</span>
+                   <span class="n">ibox</span><span class="p">,</span>
+                   <span class="n">camera_type</span><span class="p">,</span>
+                   <span class="n">center_render_hbox</span><span class="p">,</span>
+                   <span class="n">qtconsole_button</span><span class="p">,</span>
+                   <span class="p">])</span>
+
+        <span class="n">spinbox</span><span class="o">=</span> <span class="n">VBox</span><span class="p">([</span><span class="n">checkbox_spin</span><span class="p">,</span>
+                   <span class="n">spin_x_slide</span><span class="p">,</span>
+                   <span class="n">spin_y_slide</span><span class="p">,</span>
+                   <span class="n">spin_z_slide</span><span class="p">,</span>
+                   <span class="n">spin_speed_slide</span><span class="p">])</span>
+
+        <span class="n">genbox</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">v0_left</span><span class="p">,</span> <span class="p">])</span>
+        <span class="n">prefbox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_preference</span><span class="p">()</span>
+        <span class="n">themebox</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_button_theme</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_button_reset_theme</span><span class="p">()])</span>
+        <span class="n">hidebox</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([])</span>
+        <span class="n">help_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_website</span><span class="p">()</span>
+
+        <span class="n">picked_box</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">picked_widget</span><span class="p">,])</span>
+        <span class="n">repr_box</span><span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_repr_sliders</span><span class="p">()])</span>
+
+        <span class="n">extrabox</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">([</span><span class="n">repr_box</span><span class="p">,</span> <span class="n">picked_box</span><span class="p">])</span>
+        <span class="n">extrabox</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;repr&#39;</span><span class="p">)</span>
+        <span class="n">extrabox</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;picked atom&#39;</span><span class="p">)</span>
+
+        <span class="n">export_image_box</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_button_export_image</span><span class="p">()])</span>
+
+        <span class="n">tab</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">([</span><span class="n">genbox</span><span class="p">,</span> <span class="n">spinbox</span><span class="p">,</span> <span class="n">prefbox</span><span class="p">,</span> <span class="n">themebox</span><span class="p">,</span> 
+            <span class="n">hidebox</span><span class="p">,</span> <span class="n">help_url</span><span class="p">,</span> <span class="n">extrabox</span><span class="p">,</span>
+            <span class="n">export_image_box</span><span class="p">])</span>
+
+        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;General&#39;</span><span class="p">)</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Spin&#39;</span><span class="p">)</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Speed&#39;</span><span class="p">)</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Theme&#39;</span><span class="p">)</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;Hide&#39;</span><span class="p">)</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;Help&#39;</span><span class="p">)</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;Extra&#39;</span><span class="p">)</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;Image&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tab</span>
+
+    <span class="k">def</span> <span class="nf">_add_button_center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Center&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">center</span><span class="p">()</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+
+    <span class="k">def</span> <span class="nf">_add_button_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Oceans16&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">theme</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">theme</span><span class="o">.</span><span class="n">oceans16</span><span class="p">())</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+
+    <span class="k">def</span> <span class="nf">_add_button_reset_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">nglview.jsutils</span> <span class="kn">import</span> <span class="n">js_clean_empty_output_area</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Default&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="s1">&#39;$(&quot;#nglview_style&quot;).remove()&#39;</span><span class="p">))</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">js_clean_empty_output_area</span><span class="p">))</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+
+    <span class="k">def</span> <span class="nf">_show_preference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">pan_speed</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                 <span class="n">rotate_speed</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">zoom_speed</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+                 <span class="n">clip_dist</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">panSpeed</span><span class="o">=</span><span class="n">pan_speed</span><span class="p">,</span>
+                <span class="n">rotateSpeed</span><span class="o">=</span><span class="n">rotate_speed</span><span class="p">,</span>
+                <span class="n">zoomSpeed</span><span class="o">=</span><span class="n">zoom_speed</span><span class="p">,</span>
+                <span class="n">clipDist</span><span class="o">=</span><span class="n">clip_dist</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">interactive</span><span class="p">(</span><span class="n">func</span><span class="p">,</span>
+                  <span class="n">pan_speed</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+                  <span class="n">rotate_speed</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                  <span class="n">zoom_speed</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                  <span class="n">clip_dist</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_show_download_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># &quot;interactive&quot; does not work for True/False in ipywidgets 4 yet.</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Screenshot&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">download_image</span><span class="p">()</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+
+    <span class="k">def</span> <span class="nf">_make_button_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">nglview.jsutils</span> <span class="kn">import</span> <span class="n">js_open_url_template</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">js_open_url_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)))</span>
+
+        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+
+    <span class="k">def</span> <span class="nf">_show_website</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">buttons</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_button_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span> <span class="k">for</span> <span class="n">url</span><span class="p">,</span> <span class="n">description</span> <span class="ow">in</span>
+            <span class="p">[(</span><span class="s2">&quot;&#39;http://arose.github.io/nglview/latest/&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;nglview&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;&#39;http://arose.github.io/ngl/api/dev/&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;NGL&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;&#39;http://arose.github.io/ngl/api/dev/tutorial-selection-language.html&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;Selection&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;&#39;http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;Representation&quot;</span><span class="p">)]</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">HBox</span><span class="p">(</span><span class="n">buttons</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_button_qtconsole</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">nglview.jsutils</span> <span class="kn">import</span> <span class="n">js_launch_qtconsole</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;qtconsole&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">js_launch_qtconsole</span><span class="p">))</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+
+    <span class="k">def</span> <span class="nf">_add_text_picked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ta</span> <span class="o">=</span> <span class="n">Textarea</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">picked</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Picked atom&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ta</span>
+
+    <span class="k">def</span> <span class="nf">_add_text_repr_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">button_info</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Refresh&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Get representation info&#39;</span><span class="p">)</span>
+        <span class="n">button_update</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Update&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Update representation&#39;</span><span class="p">)</span>
+        <span class="n">bbox</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">button_info</span><span class="p">,</span> <span class="n">button_update</span><span class="p">])</span>
+        <span class="n">repr_name</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;repr_name&#39;</span><span class="p">)</span>
+        <span class="n">component_slider</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;cindex&#39;</span><span class="p">)</span>
+        <span class="n">repr_slider</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;rindex&#39;</span><span class="p">)</span>
+        <span class="n">ta</span> <span class="o">=</span> <span class="n">Textarea</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;rinfo&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">on_click_info</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_request_repr_parameters</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                                                <span class="n">repr_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">button_info</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click_info</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">on_click_update</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">update_representation</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                                             <span class="n">repr_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                                             <span class="o">**</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_request_update_reprs</span><span class="p">()</span>
+        <span class="n">button_update</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click_update</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">update_slide_info</span><span class="p">(</span><span class="n">change</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_request_repr_parameters</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                                                <span class="n">repr_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">repr_slider</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">update_slide_info</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+        <span class="n">component_slider</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">update_slide_info</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+
+        <span class="c1"># NOTE: if you update below list, make sure to update _add_repr_sliders</span>
+        <span class="c1"># or refactor</span>
+        <span class="k">return</span> <span class="n">VBox</span><span class="p">([</span><span class="n">bbox</span><span class="p">,</span> <span class="n">repr_name</span><span class="p">,</span> <span class="n">component_slider</span><span class="p">,</span> <span class="n">repr_slider</span><span class="p">,</span> <span class="n">ta</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_add_repr_sliders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">repr_checkbox</span> <span class="o">=</span> <span class="n">Checkbox</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;repr slider&#39;</span><span class="p">)</span>
+
+        <span class="n">vbox</span> <span class="o">=</span> <span class="n">VBox</span><span class="p">([</span><span class="n">repr_checkbox</span><span class="p">])</span>
+
+        <span class="k">def</span> <span class="nf">create_widget</span><span class="p">(</span><span class="n">change</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]:</span>
+                <span class="c1"># repr_name</span>
+                <span class="c1"># TODO: correctly upate name</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                <span class="n">component_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">repr_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_display_repr</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                                         <span class="n">repr_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                                         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">vbox</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">repr_checkbox</span><span class="p">,</span> <span class="n">widget</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vbox</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">repr_checkbox</span><span class="p">,</span> <span class="p">]</span>
+        <span class="n">repr_checkbox</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">create_widget</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vbox</span>
+
+    <span class="k">def</span> <span class="nf">_add_button_export_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">slider_factor</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;scale&#39;</span><span class="p">)</span>
+        <span class="n">checkbox_antialias</span> <span class="o">=</span> <span class="n">Checkbox</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;antialias&#39;</span><span class="p">)</span>
+        <span class="n">checkbox_trim</span> <span class="o">=</span> <span class="n">Checkbox</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;trim&#39;</span><span class="p">)</span>
+        <span class="n">checkbox_transparent</span> <span class="o">=</span> <span class="n">Checkbox</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;transparent&#39;</span><span class="p">)</span>
+        <span class="n">filename_text</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;Screenshot&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Filename&#39;</span><span class="p">)</span>
+
+        <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Export Image&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">download_image</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="n">slider_factor</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">antialias</span><span class="o">=</span><span class="n">checkbox_antialias</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">trim</span><span class="o">=</span><span class="n">checkbox_trim</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">transparent</span><span class="o">=</span><span class="n">checkbox_transparent</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">filename</span><span class="o">=</span><span class="n">filename_text</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">VBox</span><span class="p">([</span><span class="n">button</span><span class="p">,</span>
+            <span class="n">filename_text</span><span class="p">,</span>
+            <span class="n">slider_factor</span><span class="p">,</span>
+            <span class="n">checkbox_antialias</span><span class="p">,</span>
+            <span class="n">checkbox_trim</span><span class="p">,</span>
+            <span class="n">checkbox_transparent</span><span class="p">])</span></div>
 </pre></div>
 
            </div>
@@ -248,7 +577,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.5.2a+66.ge004681',
+            VERSION:'0.5.2a+56.g9e870fa',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
