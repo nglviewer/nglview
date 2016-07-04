@@ -30,7 +30,7 @@ class Representation(DOMWidget):
         r_string = str(self.repr_index)
         _repr_dict = self._view._repr_dict[c_string][r_string]['parameters']
 
-        def func(opacity=_repr_dict.get('opacity', 1.)
+        def func(opacity=_repr_dict.get('opacity', 1.),
                  assembly=_repr_dict.get('assembly', 'default'),
                  color_scheme=_repr_dict.get('colorScheme', ""),
                  wireframe=_repr_dict.get('wireframe', False)):
