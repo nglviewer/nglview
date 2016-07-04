@@ -273,7 +273,7 @@ class TrajectoryPlayer(DOMWidget):
         return button
 
     def _add_button_reset_theme(self):
-        from nglview.theme.jsutils import js_clean_empty_output_area
+        from nglview.jsutils import js_clean_empty_output_area
         button = Button(description='Default')
         def on_click(button):
             display(Javascript('$("#nglview_style").remove()'))
@@ -307,7 +307,7 @@ class TrajectoryPlayer(DOMWidget):
         return button
 
     def _make_button_url(self, url, description):
-        from nglview.theme.jsutils import js_open_url_template
+        from nglview.jsutils import js_open_url_template
         button = Button(description=description)
 
         def on_click(button):
@@ -326,7 +326,7 @@ class TrajectoryPlayer(DOMWidget):
         return HBox(buttons)
 
     def _add_button_qtconsole(self):
-        from nglview.theme.jsutils import js_launch_qtconsole
+        from nglview.jsutils import js_launch_qtconsole
         button = Button(description='qtconsole')
 
         def on_click(button):
@@ -340,7 +340,7 @@ class TrajectoryPlayer(DOMWidget):
 
     def _add_text_repr_widget(self):
         button_info = Button(description='Refresh', tooltip='Get representation info')
-        button_update = Button(description='Update', tooltip='Update representation')
+        button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         bbox = HBox([button_info, button_update])
         repr_name = Text(value='', description='repr_name')
         component_slider = IntSlider(value=0, description='cindex')
