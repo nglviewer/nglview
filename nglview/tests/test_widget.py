@@ -16,6 +16,7 @@ from ipykernel.comm import Comm
 from ipywidgets import Widget, IntText, BoundedFloatText, HBox
 import ipywidgets as widgets
 from traitlets import TraitError, link
+from IPython import display
 
 import pytraj as pt
 import nglview as nv
@@ -23,6 +24,7 @@ from nglview import NGLWidget
 import mdtraj as md
 import parmed as pmd
 from nglview.utils import PY2, PY3
+from nglview import jsutils
 
 def default_view():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -80,6 +82,7 @@ def _assert_dict_list_equal(listdict0, listdict1):
             nt.assert_equal(dict0.get(key0), dict1.get(key1))
 
 def test_API_promise_to_have():
+    view = nv.demo()
 
     # Structure
     structure = nv.Structure()
@@ -101,6 +104,10 @@ def test_API_promise_to_have():
 
     nv._get_notebook_info()
 
+    # display
+    display.Javascript(jsutils.js_clean_error_output)
+    display.display(view.player.repr_widget)
+    
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     view = nv.show_pytraj(traj)
