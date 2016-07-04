@@ -584,6 +584,7 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self).__init__(**kwargs)
 
 
+        self._gui = None
         self._init_gui = kwargs.pop('gui', False)
         self._theme = kwargs.pop('theme', 'default')
         self._widget_image = widget_image.Image()
@@ -712,14 +713,12 @@ class NGLWidget(widgets.DOMWidget):
         self.displayed = True
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._init_gui:
-            display(self.player._display())
+            self._gui = self.player._display()
+            display(self._gui)
 
         if self._theme in ['dark', 'oceans16']:
             from nglview import theme
             display(theme.oceans16())
-
-    def _gui(self):
-        display(self.player._display())
 
     def display(self, gui=False):
         display(self)

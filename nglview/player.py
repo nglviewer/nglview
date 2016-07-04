@@ -340,7 +340,7 @@ class TrajectoryPlayer(DOMWidget):
 
     def _add_text_repr_widget(self):
         button_info = Button(description='Refresh', tooltip='Get representation info')
-        button_update = Button(description='Update', tooltip='Update representation')
+        button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         bbox = HBox([button_info, button_update])
         repr_name = Text(value='', description='repr_name')
         component_slider = IntSlider(value=0, description='cindex')
