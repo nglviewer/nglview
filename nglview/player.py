@@ -243,18 +243,18 @@ class TrajectoryPlayer(DOMWidget):
 
         export_image_box = HBox([self._add_button_export_image()])
 
-        tab = Tab([gen_box, repr_box, preference_box,
-                   theme_box, extra_box, export_image_box,
-                   hide_box, help_url_box])
+        box_couple = [(gen_box, 'General'),
+                      (repr_box, 'Representation'),
+                      (preference_box, 'Preference'),
+                      (theme_box, 'Theme'),
+                      (extra_box, 'Extra'),
+                      (export_image_box, 'Image'),
+                      (hide_box, 'Hide'),
+                      (help_url_box, 'Help')]
 
-        tab.set_title(0, 'General')
-        tab.set_title(1, 'Representation')
-        tab.set_title(2, 'Preference')
-        tab.set_title(3, 'Theme')
-        tab.set_title(4, 'Extra')
-        tab.set_title(5, 'Image')
-        tab.set_title(6, 'Hide')
-        tab.set_title(7, 'Help')
+        tab = Tab([box for box, _ in box_couple])
+        [tab.set_title(i, title) for i, (_, title) in enumerate(box_couple)]
+
         return tab
 
     def _add_button_center(self):
