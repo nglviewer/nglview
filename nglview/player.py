@@ -235,16 +235,18 @@ class TrajectoryPlayer(DOMWidget):
         help_url = self._show_website()
 
         picked_box = HBox([self.picked_widget,])
-        repr_box= VBox([self.repr_widget])
-        extrabox = Tab([picked_box, repr_box])
-        extrabox.set_title(0, 'picked atom')
-        extrabox.set_title(1, 'repr')
+        repr_box= HBox([self.repr_widget, self._add_repr_sliders()])
+
+        extrabox = Tab([repr_box, picked_box])
+        extrabox.set_title(0, 'repr')
+        extrabox.set_title(1, 'picked atom')
 
         export_image_box = HBox([self._add_button_export_image()])
 
         tab = Tab([genbox, spinbox, prefbox, themebox, 
             hidebox, help_url, extrabox,
             export_image_box])
+
         tab.set_title(0, 'General')
         tab.set_title(1, 'Spin')
         tab.set_title(2, 'Speed')
@@ -363,7 +365,31 @@ class TrajectoryPlayer(DOMWidget):
                                                 repr_index=int(repr_slider.value))
         repr_slider.observe(update_slide_info, names='value')
         component_slider.observe(update_slide_info, names='value')
+
+        # NOTE: if you update below list, make sure to update _add_repr_sliders
+        # or refactor
         return VBox([bbox, repr_name, component_slider, repr_slider, ta])
+
+    def _add_repr_sliders(self):
+        repr_checkbox = Checkbox(value=False, description='repr slider')
+
+        vbox = VBox([repr_checkbox])
+
+        def create_widget(change):
+            if change['new']:
+                # repr_name
+                # TODO: correctly upate name
+                name = self.repr_widget.children[1].value
+                component_slider = self.repr_widget.children[2]
+                repr_slider = self.repr_widget.children[3]
+                widget = self._view._display_repr(component=int(component_slider.value),
+                                         repr_index=int(repr_slider.value),
+                                         name=name)
+                vbox.children = [repr_checkbox, widget]
+            else:
+                vbox.children = [repr_checkbox, ]
+        repr_checkbox.observe(create_widget, names='value')
+        return vbox
 
     def _add_button_export_image(self):
         slider_factor = IntSlider(value=4, min=1, max=10, description='scale')

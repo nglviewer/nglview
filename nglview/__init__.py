@@ -691,6 +691,13 @@ class NGLWidget(widgets.DOMWidget):
         component_slider = self.player.repr_widget.children[2]
         component_slider.max = len(self._ngl_component_ids)
 
+    @observe('_repr_dict')
+    def _update_max_reps_count(self, change):
+        repr_slider = self.player.repr_widget.children[-2]
+        component_slider = self.player.repr_widget.children[2]
+        cindex = str(component_slider.value)
+        repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
+
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
                          'n_frames'))
@@ -797,6 +804,12 @@ class NGLWidget(widgets.DOMWidget):
         self._request_update_reprs()
 
     def _display_repr(self, component=0, repr_index=0, name=None):
+        try:
+            c = 'c' + str(component)
+            r = str(repr_index)
+            name = self._repr_dict[c][r]['name']
+        except KeyError:
+            name = ''
         return Representation(self, component, repr_index, name=name)._display()
 
     def _set_initial_structure(self, structures):
