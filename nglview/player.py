@@ -228,33 +228,33 @@ class TrajectoryPlayer(DOMWidget):
                    spin_z_slide,
                    spin_speed_slide])
 
-        genbox = HBox([v0_left, ])
-        prefbox = self._show_preference()
-        themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
-        hidebox = Box([])
-        help_url = self._show_website()
+        gen_box = HBox([v0_left, ])
+        preference_box = self._show_preference()
+        theme_box = Box([self._add_button_theme(), self._add_button_reset_theme()])
+        hide_box = Box([])
+        help_url_box = self._show_website()
 
         picked_box = HBox([self.picked_widget,])
         repr_box= HBox([self.repr_widget, self._add_repr_sliders()])
 
-        extrabox = Tab([repr_box, picked_box])
-        extrabox.set_title(0, 'repr')
-        extrabox.set_title(1, 'picked atom')
+        extra_box = Tab([spinbox, picked_box])
+        extra_box.set_title(0, 'spinbox')
+        extra_box.set_title(1, 'picked atom')
 
         export_image_box = HBox([self._add_button_export_image()])
 
-        tab = Tab([genbox, spinbox, prefbox, themebox, 
-            hidebox, help_url, extrabox,
-            export_image_box])
+        box_couple = [(gen_box, 'General'),
+                      (repr_box, 'Representation'),
+                      (preference_box, 'Preference'),
+                      (theme_box, 'Theme'),
+                      (extra_box, 'Extra'),
+                      (export_image_box, 'Image'),
+                      (hide_box, 'Hide'),
+                      (help_url_box, 'Help')]
 
-        tab.set_title(0, 'General')
-        tab.set_title(1, 'Spin')
-        tab.set_title(2, 'Speed')
-        tab.set_title(3, 'Theme')
-        tab.set_title(4, 'Hide')
-        tab.set_title(5, 'Help')
-        tab.set_title(6, 'Extra')
-        tab.set_title(7, 'Image')
+        tab = Tab([box for box, _ in box_couple])
+        [tab.set_title(i, title) for i, (_, title) in enumerate(box_couple)]
+
         return tab
 
     def _add_button_center(self):
@@ -269,6 +269,8 @@ class TrajectoryPlayer(DOMWidget):
         def on_click(button):
             from nglview import theme
             display(theme.oceans16())
+            self._view._remote_call('cleanOutput',
+                                    target='Widget')
         button.on_click(on_click)
         return button
 

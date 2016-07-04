@@ -719,6 +719,8 @@ class NGLWidget(widgets.DOMWidget):
         if self._theme in ['dark', 'oceans16']:
             from nglview import theme
             display(theme.oceans16())
+            self._remote_call('cleanOutput',
+                              target='Widget')
 
     def display(self, gui=False):
         display(self)

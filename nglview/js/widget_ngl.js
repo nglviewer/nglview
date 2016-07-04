@@ -451,6 +451,21 @@ define( [
             }.bind( this ));
         },
 
+        cleanOutput: function(){
+
+            var cells = Jupyter.notebook.get_cells();
+            
+            for (var i = 0; i < cells.length; i++){
+                var cell = cells[i];
+                if (cell.output_area.outputs.length > 0) {
+                    var out = cell.output_area.outputs[0];
+                    if (out.output_type == 'display_data') {
+                        cell.clear_output();
+                    }
+                }
+            }
+        },
+
         on_msg: function(msg){
             // console.log(msg)
             // TODO: re-organize
