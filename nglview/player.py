@@ -269,6 +269,8 @@ class TrajectoryPlayer(DOMWidget):
         def on_click(button):
             from nglview import theme
             display(theme.oceans16())
+            self._view._remote_call('cleanOutput',
+                                    target='Widget')
         button.on_click(on_click)
         return button
 
