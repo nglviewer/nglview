@@ -104,6 +104,8 @@ define( [
             this.displayed.then( function(){
                 var width = this.$el.parent().width() + "px";
                 var height = "300px";
+                var state_params = this.stage.getParameters();
+
                 this.setSize( width, height );
                 this.$container.resizable(
                     "option", "maxWidth", this.$el.parent().width()
@@ -111,6 +113,8 @@ define( [
                 this.model.set('loaded', true);
                 this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
                 this.model.set('orientation', this.stage.viewer.getOrientation() );
+                this.requestUpdateStageParameters();
+                this.model.set('_original_stage_parameters', state_params);
                 this.touch();
             }.bind( this ) );
 
@@ -180,6 +184,12 @@ define( [
 
         requestFrame: function(){
             this.send({type: 'request_frame', data: 'frame'});
+        },
+
+        requestUpdateStageParameters(){
+            var updated_params = this.stage.getParameters();
+            this.model.set('_full_stage_parameters', updated_params);
+            this.touch();
         },
 
         requestReprParameters: function( component_index, repr_index ){
@@ -425,6 +435,12 @@ define( [
         parametersChanged: function(){
             var _parameters = this.model.get( "_parameters" );
             this.stage.setParameters( _parameters );
+
+            // do not set _full_stage_parameters here
+            // or parameters will be never updated (not sure why) 
+            // use observe in python side
+            var updated_params = this.stage.getParameters();
+            this.send({'type': 'stage_parameters', 'data': updated_params})
         },
 
         orientationChanged: function(){
