@@ -183,10 +183,10 @@ define( [
         },
 
         requestFrame: function(){
-            this.send({type: 'request_frame', data: 'frame'});
+            this.send({'type': 'request_frame', 'data': 'frame'});
         },
 
-        requestUpdateStageParameters(){
+        requestUpdateStageParameters: function(){
             var updated_params = this.stage.getParameters();
             this.model.set('_full_stage_parameters', updated_params);
             this.touch();
@@ -197,7 +197,7 @@ define( [
             var repr = comp.reprList[ repr_index ];
             var msg = repr.repr.getParameters();
             msg['name'] = repr.name;
-            this.send({type: 'repr_parameters', data: msg});
+            this.send({'type': 'repr_parameters', 'data': msg});
         },
 
         requestReprsInfo: function(){
@@ -215,7 +215,7 @@ define( [
                     msgi[j]['parameters'] = repr.repr.getParameters();
                 }
             }
-            this.send({type: 'all_reprs_info', data: msg});
+            this.send({'type': 'all_reprs_info', 'data': msg});
         },
 
         setDelay: function( delay ){
