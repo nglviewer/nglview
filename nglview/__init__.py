@@ -567,6 +567,8 @@ class NGLWidget(widgets.DOMWidget):
     _init_representations = List().tag(sync=True)
     _init_structure_list = List().tag(sync=True)
     _parameters = Dict().tag(sync=True)
+    _full_stage_parameters = Dict().tag(sync=True)
+    _original_stage_parameters = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
     _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
@@ -670,6 +672,10 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call("setParameters",
                 target='Stage',
                 kwargs=dict(cameraType=self._camera_str))
+
+    def _request_stage_parameters(self):
+        self._remote_call('requestUpdateStageParameters',
+                target='Widget')
 
     @observe('picked')
     def _on_picked(self, change):
@@ -1096,6 +1102,8 @@ class NGLWidget(widgets.DOMWidget):
                 self.player.repr_widget.children[-1].value = data_dict_json
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
+            elif msg_type == 'stage_parameters':
+                self._full_stage_parameters = msg.get('data')
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',

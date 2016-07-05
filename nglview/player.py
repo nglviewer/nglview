@@ -55,6 +55,7 @@ class TrajectoryPlayer(DOMWidget):
                                    transparent=False)
         self.picked_widget = self._add_text_picked()
         self.repr_widget = self._add_text_repr_widget()
+        self._preference_widget = self._add_reference_widget()
 
     @observe('camera')
     def on_camera_changed(self, change):
@@ -229,7 +230,6 @@ class TrajectoryPlayer(DOMWidget):
                    spin_speed_slide])
 
         gen_box = HBox([v0_left, ])
-        preference_box = self._show_preference()
         theme_box = Box([self._add_button_theme(), self._add_button_reset_theme()])
         hide_box = Box([])
         help_url_box = self._show_website()
@@ -245,7 +245,7 @@ class TrajectoryPlayer(DOMWidget):
 
         box_couple = [(gen_box, 'General'),
                       (repr_box, 'Representation'),
-                      (preference_box, 'Preference'),
+                      (self._preference_widget, 'Preference'),
                       (theme_box, 'Theme'),
                       (extra_box, 'Extra'),
                       (export_image_box, 'Image'),
@@ -283,22 +283,68 @@ class TrajectoryPlayer(DOMWidget):
         button.on_click(on_click)
         return button
 
-    def _show_preference(self):
-        def func(pan_speed=0.8,
-                 rotate_speed=2,
-                 zoom_speed=1.2,
-                 clip_dist=10):
-            self._view.parameters = dict(
-                panSpeed=pan_speed,
-                rotateSpeed=rotate_speed,
-                zoomSpeed=zoom_speed,
-                clipDist=clip_dist)
+    def _add_reference_widget(self):
+        def make_func():
+            parameters = self._view._full_stage_parameters
+            def func(pan_speed=parameters.get('panSpeed', 0.8),
+                     rotate_speed=parameters.get('rotateSpeed', 2),
+                     zoom_speed=parameters.get('zoomSpeed', 1.2),
+                     clip_dist=parameters.get('clipDist', 10),
+                     camera_fov=parameters.get('cameraFov', 40),
+                     clip_far=parameters.get('clipFar', 100),
+                     clip_near=parameters.get('clipNear', 0),
+                     fog_far=parameters.get('fogFar', 100),
+                     fog_near=parameters.get('fogNear', 50),
+                     impostor=parameters.get('impostor', True),
+                     light_intensity=parameters.get('lightIntensity', 1),
+                     quality=parameters.get('quality', 'medium'),
+                     sample_level=parameters.get('sampleLevel', 1)):
 
-        return interactive(func,
-                  pan_speed=(0, 10, 0.1),
-                  rotate_speed=(0, 10, 1),
-                  zoom_speed=(0, 10, 1),
-                  clip_dist=(0, 200, 5))
+                self._view.parameters = dict(
+                    panSpeed=pan_speed,
+                    rotateSpeed=rotate_speed,
+                    zoomSpeed=zoom_speed,
+                    clipDist=clip_dist,
+                    clipFar=clip_far,
+                    clipNear=clip_near,
+                    cameraFov=camera_fov,
+                    fogFar=fog_far,
+                    fogNear=fog_near,
+                    impostor=impostor,
+                    lightIntensity=light_intensity,
+                    quality=quality,
+                    sampleLevel=sample_level)
+
+            return func
+
+        def make_widget():
+            widget_sliders = interactive(make_func(),
+                      pan_speed=(0, 10, 0.1),
+                      rotate_speed=(0, 10, 1),
+                      zoom_speed=(0, 10, 1),
+                      clip_dist=(0, 200, 5),
+                      clip_far=(0, 100, 1),
+                      clip_near=(0, 100, 1),
+                      camera_fov=(15, 120, 1),
+                      fog_far=(0, 100, 1),
+                      fog_near=(0, 100, 1),
+                      light_intensity=(0, 10, 0.02),
+                      quality=['low', 'medium', 'high'],
+                      sample_level=(-1, 5, 1))
+            return widget_sliders
+
+        widget_sliders = make_widget()
+        reset_button = Button(description='Reset')
+        hbox = HBox([widget_sliders, reset_button])
+
+        def on_click(reset_button):
+            self._view.parameters = self._view._original_stage_parameters
+            self._view._full_stage_parameters = self._view._original_stage_parameters
+            widget_sliders = make_widget()
+            hbox.children = [widget_sliders, reset_button]
+        reset_button.on_click(on_click)
+
+        return hbox
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
