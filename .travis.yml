@@ -17,21 +17,21 @@ addons:
     - google-chrome-stable
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew tap homebrew/science;
-      brew update;
-      brew install netcdf fftw;
-    fi
+    - source devtools/travis-ci/install_chrome.sh
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        brew tap homebrew/science;
+        brew update;
+        brew install netcdf fftw;
+      fi
 
 install:
     - npm install -g nightwatch
-    - source devtools/travis-ci/install_chrome.sh
     - source devtools/travis-ci/setup_env.sh
     - source devtools/travis-ci/clone_nbtest.sh
     - source devtools/travis-ci/install_nglview.sh
 
 before_script:
-    - sh -e /etc/init.d/xvfb start
+    # - sh -e /etc/init.d/xvfb start
     - sleep 3
     - jupyter notebook --port=8889 &
     - sleep 3
