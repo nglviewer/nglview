@@ -39,15 +39,9 @@ install:
     - source devtools/travis-ci/install_nglview.sh
 
 before_script:
-    # - sh -e /etc/init.d/xvfb start
-    - sleep 3
-    - jupyter notebook --port=8889 &
-    - sleep 3
+    - source devtools/travis-ci/open_notebook.sh
 
 script:
-    - if [[ "$PYTHON_VERSION" == "3.5" ]]; then
-         nightwatch
-      fi
     - (cd nglview/tests && nosetests --with-coverage --cover-package nglview -vs .)
 
 after_success:
