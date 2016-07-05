@@ -716,6 +716,9 @@ class NGLWidget(widgets.DOMWidget):
 
     @observe('loaded')
     def on_loaded(self, change):
+        # trick for firefox on Linux
+        time.sleep(0.1)
+
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
             self._request_update_reprs()
