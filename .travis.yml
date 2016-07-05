@@ -9,12 +9,20 @@ matrix:
      # - { os: osx, env: PYTHON_VERSION=3.5 }
 
 sudo: true
-
+dist: trusty
 
 addons:
-  packages:
+  apt:
+    sources:
+    # add PPAs with more up-to-date toolchains
+    - ubuntu-toolchain-r-test
+    packages:
+    # install toolchains
+    - gcc-5
+    - g++-5
+    - clang-3.6
     - unzip
-    - google-chrome-stable
+    # - google-chrome-stable
 
 before_install:
     - source devtools/travis-ci/install_chrome.sh
