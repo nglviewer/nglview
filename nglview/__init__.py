@@ -16,7 +16,8 @@ import warnings
 import tempfile
 import ipywidgets as widgets
 from traitlets import (Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe,
-                       CaselessStrEnum)
+                       CaselessStrEnum,
+                       TraitError)
 from ipywidgets import widget_image
 
 try:
@@ -703,7 +704,11 @@ class NGLWidget(widgets.DOMWidget):
         repr_slider = self.player.repr_widget.children[-2]
         component_slider = self.player.repr_widget.children[2]
         cindex = str(component_slider.value)
-        repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
+        try:
+            repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
+        except TraitError:
+            # TraitError: setting max < min
+            pass
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
