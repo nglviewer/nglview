@@ -5,8 +5,7 @@ matrix:
      - { os: linux, env: PYTHON_VERSION=2.7 }
      - { os: linux, env: PYTHON_VERSION=3.4 }
      - { os: linux, env: PYTHON_VERSION=3.5 }
-     - { os: linux, env: PYTHON_VERSION=3.5 CONDA=yes}
-     # - { os: osx, env: PYTHON_VERSION=3.5 }
+     - { os: linux, env: PYTHON_VERSION=3.4 CONDA=yes}
 
 sudo: true
 dist: trusty
