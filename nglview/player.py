@@ -229,7 +229,7 @@ class TrajectoryPlayer(DOMWidget):
                    spin_z_slide,
                    spin_speed_slide])
 
-        drag_button = Button(description='widget drag: off')
+        drag_button = Button(description='widget drag: off', tooltip='dangerous')
         def on_drag(drag_button):
             if drag_button.description == 'widget drag: off':
                 self._view._set_draggable(True)
@@ -238,7 +238,7 @@ class TrajectoryPlayer(DOMWidget):
                 self._view._set_draggable(False)
                 drag_button.description = 'widget drag: off'
 
-        drag_nb = Button(description='notebook drag: off')
+        drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
         def on_drag_nb(drag_button):
             if drag_nb.description == 'notebook drag: off':
                 self._view._set_notebook_draggable(True)
