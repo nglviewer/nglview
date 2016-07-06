@@ -36,8 +36,6 @@ install:
     - source devtools/travis-ci/setup_env.sh
     - source devtools/travis-ci/clone_nbtest.sh
     - source devtools/travis-ci/install_nglview.sh
-
-before_script:
     - source devtools/travis-ci/open_notebook.sh
 
 script:
