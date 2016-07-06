@@ -42,3 +42,7 @@ pip install pytest-cov
 if [ "$TEST_NOTEBOOK" = "yes" ]; then
     npm install -g nightwatch
 fi
+
+# download ngl data
+git clone https://github.com/arose/ngl
+mv ngl ../
