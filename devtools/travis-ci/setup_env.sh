@@ -40,5 +40,5 @@ pip install pytest
 pip install pytest-cov
 
 if [ "$TEST_NOTEBOOK" = "yes" ]; then
-    - npm install -g nightwatch
+    npm install -g nightwatch
 fi
