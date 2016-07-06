@@ -11,7 +11,7 @@ parser.add_argument('--basic', action='store_true')
 args = parser.parse_args()
 
 if args.basic:
-    notebooks = ['nglview/tests/notebooks/dummy.ipynb',
+    notebooks = [
                  'nglview/tests/notebooks/api/view_trajectory.ipynb',
                  'nglview/tests/notebooks/test_API_coordinates_dict.ipynb',
                  'nglview/tests/notebooks/test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb',
