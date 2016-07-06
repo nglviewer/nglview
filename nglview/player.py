@@ -223,11 +223,33 @@ class TrajectoryPlayer(DOMWidget):
                    qtconsole_button,
                    ])
 
-        spinbox= VBox([checkbox_spin,
+        spin_box= VBox([checkbox_spin,
                    spin_x_slide,
                    spin_y_slide,
                    spin_z_slide,
                    spin_speed_slide])
+
+        drag_button = Button(description='widget drag: off')
+        def on_drag(drag_button):
+            if drag_button.description == 'widget drag: off':
+                self._view._set_draggable(True)
+                drag_button.description = 'widget drag: on'
+            else:
+                self._view._set_draggable(False)
+                drag_button.description = 'widget drag: off'
+
+        drag_nb = Button(description='notebook drag: off')
+        def on_drag_nb(drag_button):
+            if drag_nb.description == 'notebook drag: off':
+                self._view._set_notebook_draggable(True)
+                drag_nb.description = 'notebook drag: on'
+            else:
+                self._view._set_notebook_draggable(False)
+                drag_nb.description = 'notebook drag: off'
+
+        drag_button.on_click(on_drag)
+        drag_nb.on_click(on_drag_nb)
+        drag_box = VBox([drag_button, drag_nb])
 
         gen_box = HBox([v0_left, ])
         theme_box = Box([self._add_button_theme(), self._add_button_reset_theme()])
@@ -237,9 +259,12 @@ class TrajectoryPlayer(DOMWidget):
         picked_box = HBox([self.picked_widget,])
         repr_box= HBox([self.repr_widget, self._add_repr_sliders()])
 
-        extra_box = Tab([spinbox, picked_box])
-        extra_box.set_title(0, 'spinbox')
-        extra_box.set_title(1, 'picked atom')
+        extra_list = [(spin_box, 'spin_box'),
+                      (picked_box, 'picked atom'),
+                      (drag_box, 'Drag')]
+
+        extra_box = Tab([w for w, _ in extra_list])
+        [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]
 
         export_image_box = HBox([self._add_button_export_image()])
 
