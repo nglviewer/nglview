@@ -218,6 +218,13 @@ define( [
             this.send({'type': 'all_reprs_info', 'data': msg});
         },
 
+        setDraggable: function( params ){
+            if (params){
+                this.$container.draggable(params);
+            }else{
+                this.$container.draggable();
+            }
+        },
         setDelay: function( delay ){
             this.delay = delay;
         },

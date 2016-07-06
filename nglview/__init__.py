@@ -1291,6 +1291,28 @@ class NGLWidget(widgets.DOMWidget):
                 target='Stage',
                 args=[component,])
         
+    def _set_draggable(self, yes=True):
+        if yes:
+            self._remote_call('setDraggable',
+                             target='Widget',
+                             args=['',])
+
+        else:
+            self._remote_call('setDraggable',
+                             target='Widget',
+                             args=['destroy',])
+
+    def _set_notebook_draggable(self, yes=True, width='20%'):
+        script_template = """
+        var x = $('#notebook-container');
+        x.draggable({arg});
+        x.width('{width}')
+        """
+        if yes:
+            display(Javascript(script_template.format(arg='', width=width)))
+        else:
+            display(Javascript(script_template.format(arg='"destroy"', width=width)))
+
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
         
