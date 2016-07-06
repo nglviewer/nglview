@@ -5,7 +5,7 @@ matrix:
      - { os: linux, env: PYTHON_VERSION=2.7 }
      - { os: linux, env: PYTHON_VERSION=3.4 }
      - { os: linux, env: PYTHON_VERSION=3.5 }
-     - { os: linux, env: PYTHON_VERSION=3.5 CONDA=yes}
+     - { os: linux, env: PYTHON_VERSION=3.5 CONDA=yes} # do not change 3.5
      - { os: linux, env: PYTHON_VERSION=3.5 TEST_NOTEBOOK=yes}
 
 sudo: true
@@ -33,19 +33,16 @@ before_install:
       fi
 
 install:
-    - npm install -g nightwatch
     - source devtools/travis-ci/setup_env.sh
     - source devtools/travis-ci/clone_nbtest.sh
     - source devtools/travis-ci/install_nglview.sh
     - python devtools/make_test_js.py --basic
 
 script:
-    - source devtools/travis-ci/open_notebook.sh
-    - (cd nglview/tests && py.test --cov=nglview -vs .)
+    - source devtools/travis-ci/run_tests.sh
 
 after_success:
-    - echo "after_success"
-    # - coveralls
+    - echo "Congrats"
 
 notifications:
   email: false
