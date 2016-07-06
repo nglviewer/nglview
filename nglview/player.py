@@ -8,8 +8,9 @@ from ipywidgets import (DOMWidget, IntText, FloatText,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
                         Button,
-                        Textarea,
-                        interactive)
+                        Text, Textarea,
+                        interactive,
+                        Tab)
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
@@ -53,6 +54,8 @@ class TrajectoryPlayer(DOMWidget):
                                    trim=False,
                                    transparent=False)
         self.picked_widget = self._add_text_picked()
+        self.repr_widget = self._add_text_repr_widget()
+        self._preference_widget = self._add_reference_widget()
 
     @observe('camera')
     def on_camera_changed(self, change):
@@ -220,27 +223,63 @@ class TrajectoryPlayer(DOMWidget):
                    qtconsole_button,
                    ])
 
-        spinbox= VBox([checkbox_spin,
+        spin_box= VBox([checkbox_spin,
                    spin_x_slide,
                    spin_y_slide,
                    spin_z_slide,
                    spin_speed_slide])
 
-        genbox = HBox([v0_left, ])
-        prefbox = self._show_preference()
-        themebox = Box([self._add_button_theme(), self._add_button_reset_theme()])
-        hidebox = Box([])
-        help_url = self._show_website()
-        extrabox = VBox([self.picked_widget,])
+        drag_button = Button(description='widget drag: off', tooltip='dangerous')
+        def on_drag(drag_button):
+            if drag_button.description == 'widget drag: off':
+                self._view._set_draggable(True)
+                drag_button.description = 'widget drag: on'
+            else:
+                self._view._set_draggable(False)
+                drag_button.description = 'widget drag: off'
 
-        tab = ipywidgets.Tab([genbox, spinbox, prefbox, themebox, hidebox, help_url, extrabox])
-        tab.set_title(0, 'General')
-        tab.set_title(1, 'Spin')
-        tab.set_title(2, 'Speed')
-        tab.set_title(3, 'Theme')
-        tab.set_title(4, 'Hide')
-        tab.set_title(5, 'Help')
-        tab.set_title(6, 'Extra')
+        drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
+        def on_drag_nb(drag_button):
+            if drag_nb.description == 'notebook drag: off':
+                self._view._set_notebook_draggable(True)
+                drag_nb.description = 'notebook drag: on'
+            else:
+                self._view._set_notebook_draggable(False)
+                drag_nb.description = 'notebook drag: off'
+
+        drag_button.on_click(on_drag)
+        drag_nb.on_click(on_drag_nb)
+        drag_box = VBox([drag_button, drag_nb])
+
+        gen_box = HBox([v0_left, ])
+        theme_box = Box([self._add_button_theme(), self._add_button_reset_theme()])
+        hide_box = Box([])
+        help_url_box = self._show_website()
+
+        picked_box = HBox([self.picked_widget,])
+        repr_box= HBox([self.repr_widget, self._add_repr_sliders()])
+
+        extra_list = [(spin_box, 'spin_box'),
+                      (picked_box, 'picked atom'),
+                      (drag_box, 'Drag')]
+
+        extra_box = Tab([w for w, _ in extra_list])
+        [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]
+
+        export_image_box = HBox([self._add_button_export_image()])
+
+        box_couple = [(gen_box, 'General'),
+                      (repr_box, 'Representation'),
+                      (self._preference_widget, 'Preference'),
+                      (theme_box, 'Theme'),
+                      (extra_box, 'Extra'),
+                      (export_image_box, 'Image'),
+                      (hide_box, 'Hide'),
+                      (help_url_box, 'Help')]
+
+        tab = Tab([box for box, _ in box_couple])
+        [tab.set_title(i, title) for i, (_, title) in enumerate(box_couple)]
+
         return tab
 
     def _add_button_center(self):
@@ -255,11 +294,13 @@ class TrajectoryPlayer(DOMWidget):
         def on_click(button):
             from nglview import theme
             display(theme.oceans16())
+            self._view._remote_call('cleanOutput',
+                                    target='Widget')
         button.on_click(on_click)
         return button
 
     def _add_button_reset_theme(self):
-        from nglview.theme.jsutils import js_clean_empty_output_area
+        from nglview.jsutils import js_clean_empty_output_area
         button = Button(description='Default')
         def on_click(button):
             display(Javascript('$("#nglview_style").remove()'))
@@ -267,52 +308,98 @@ class TrajectoryPlayer(DOMWidget):
         button.on_click(on_click)
         return button
 
-    def _show_preference(self):
-        def func(pan_speed=0.8,
-                 rotate_speed=2,
-                 zoom_speed=1.2,
-                 clip_dist=10):
-            self._view.parameters = dict(
-                panSpeed=pan_speed,
-                rotateSpeed=rotate_speed,
-                zoomSpeed=zoom_speed,
-                clipDist=clip_dist)
+    def _add_reference_widget(self):
+        def make_func():
+            parameters = self._view._full_stage_parameters
+            def func(pan_speed=parameters.get('panSpeed', 0.8),
+                     rotate_speed=parameters.get('rotateSpeed', 2),
+                     zoom_speed=parameters.get('zoomSpeed', 1.2),
+                     clip_dist=parameters.get('clipDist', 10),
+                     camera_fov=parameters.get('cameraFov', 40),
+                     clip_far=parameters.get('clipFar', 100),
+                     clip_near=parameters.get('clipNear', 0),
+                     fog_far=parameters.get('fogFar', 100),
+                     fog_near=parameters.get('fogNear', 50),
+                     impostor=parameters.get('impostor', True),
+                     light_intensity=parameters.get('lightIntensity', 1),
+                     quality=parameters.get('quality', 'medium'),
+                     sample_level=parameters.get('sampleLevel', 1)):
 
-        return interactive(func,
-                  pan_speed=(0, 10, 0.1),
-                  rotate_speed=(0, 10, 1),
-                  zoom_speed=(0, 10, 1),
-                  clip_dist=(0, 200, 5))
+                self._view.parameters = dict(
+                    panSpeed=pan_speed,
+                    rotateSpeed=rotate_speed,
+                    zoomSpeed=zoom_speed,
+                    clipDist=clip_dist,
+                    clipFar=clip_far,
+                    clipNear=clip_near,
+                    cameraFov=camera_fov,
+                    fogFar=fog_far,
+                    fogNear=fog_near,
+                    impostor=impostor,
+                    lightIntensity=light_intensity,
+                    quality=quality,
+                    sampleLevel=sample_level)
+
+            return func
+
+        def make_widget():
+            widget_sliders = interactive(make_func(),
+                      pan_speed=(0, 10, 0.1),
+                      rotate_speed=(0, 10, 1),
+                      zoom_speed=(0, 10, 1),
+                      clip_dist=(0, 200, 5),
+                      clip_far=(0, 100, 1),
+                      clip_near=(0, 100, 1),
+                      camera_fov=(15, 120, 1),
+                      fog_far=(0, 100, 1),
+                      fog_near=(0, 100, 1),
+                      light_intensity=(0, 10, 0.02),
+                      quality=['low', 'medium', 'high'],
+                      sample_level=(-1, 5, 1))
+            return widget_sliders
+
+        widget_sliders = make_widget()
+        reset_button = Button(description='Reset')
+        hbox = HBox([widget_sliders, reset_button])
+
+        def on_click(reset_button):
+            self._view.parameters = self._view._original_stage_parameters
+            self._view._full_stage_parameters = self._view._original_stage_parameters
+            widget_sliders = make_widget()
+            hbox.children = [widget_sliders, reset_button]
+        reset_button.on_click(on_click)
+
+        return hbox
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
-        button = Button(description='Download Image')
+        button = Button(description='Screenshot')
         def on_click(button):
             self._view.download_image()
         button.on_click(on_click)
         return button
 
+    def _make_button_url(self, url, description):
+        from nglview.jsutils import js_open_url_template
+        button = Button(description=description)
+
+        def on_click(button):
+            display(Javascript(js_open_url_template.format(url=url)))
+
+        button.on_click(on_click)
+        return button
+
     def _show_website(self):
-        from nglview.theme.jsutils import js_open_url_template
-        nglview_website_button  = Button(description='nglview')
-        ngl_website_button  = Button(description='NGL')
-
-        def on_click_nglview(button):
-            url = "'http://arose.github.io/nglview/latest/'"
-            display(Javascript(js_open_url_template.format(url=url)))
-
-        def on_click_ngl(button):
-            url = "'http://arose.github.io/ngl/api/dev/'"
-            display(Javascript(js_open_url_template.format(url=url)))
-
-        nglview_website_button.on_click(on_click_nglview)
-        ngl_website_button.on_click(on_click_ngl)
-
-        return HBox([nglview_website_button,
-                     ngl_website_button])
+        buttons = [self._make_button_url(url, description) for url, description in
+            [("'http://arose.github.io/nglview/latest/'", "nglview"),
+            ("'http://arose.github.io/ngl/api/dev/'", "NGL"),
+            ("'http://arose.github.io/ngl/api/dev/tutorial-selection-language.html'", "Selection"),
+            ("'http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html'", "Representation")]
+        ]
+        return HBox(buttons)
 
     def _add_button_qtconsole(self):
-        from nglview.theme.jsutils import js_launch_qtconsole
+        from nglview.jsutils import js_launch_qtconsole
         button = Button(description='qtconsole')
 
         def on_click(button):
@@ -321,5 +408,83 @@ class TrajectoryPlayer(DOMWidget):
         return button
 
     def _add_text_picked(self):
-        ta = Textarea(value=json.dumps(self._view.picked))
+        ta = Textarea(value=json.dumps(self._view.picked), description='Picked atom')
         return ta
+
+    def _add_text_repr_widget(self):
+        button_info = Button(description='Refresh', tooltip='Get representation info')
+        button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
+        bbox = HBox([button_info, button_update])
+        repr_name = Text(value='', description='repr_name')
+        component_slider = IntSlider(value=0, description='cindex')
+        repr_slider = IntSlider(value=0, description='rindex')
+        ta = Textarea(value='', description='rinfo')
+
+        def on_click_info(button):
+            self._view._request_repr_parameters(component=int(component_slider.value),
+                                                repr_index=int(repr_slider.value))
+        button_info.on_click(on_click_info)
+
+        def on_click_update(button):
+            parameters = json.loads(ta.value.replace("False", "false").replace("True", "true"))
+            self._view.update_representation(component=int(component_slider.value),
+                                             repr_index=int(repr_slider.value),
+                                             **parameters)
+            self._view._request_update_reprs()
+        button_update.on_click(on_click_update)
+
+        def update_slide_info(change):
+            self._view._request_repr_parameters(component=int(component_slider.value),
+                                                repr_index=int(repr_slider.value))
+        repr_slider.observe(update_slide_info, names='value')
+        component_slider.observe(update_slide_info, names='value')
+
+        # NOTE: if you update below list, make sure to update _add_repr_sliders
+        # or refactor
+        return VBox([bbox, repr_name, component_slider, repr_slider, ta])
+
+    def _add_repr_sliders(self):
+        repr_checkbox = Checkbox(value=False, description='repr slider')
+
+        vbox = VBox([repr_checkbox])
+
+        def create_widget(change):
+            if change['new']:
+                # repr_name
+                # TODO: correctly upate name
+                name = self.repr_widget.children[1].value
+                component_slider = self.repr_widget.children[2]
+                repr_slider = self.repr_widget.children[3]
+                widget = self._view._display_repr(component=int(component_slider.value),
+                                         repr_index=int(repr_slider.value),
+                                         name=name)
+                vbox.children = [repr_checkbox, widget]
+            else:
+                vbox.children = [repr_checkbox, ]
+        repr_checkbox.observe(create_widget, names='value')
+        return vbox
+
+    def _add_button_export_image(self):
+        slider_factor = IntSlider(value=4, min=1, max=10, description='scale')
+        checkbox_antialias = Checkbox(value=True, description='antialias')
+        checkbox_trim = Checkbox(value=False, description='trim')
+        checkbox_transparent = Checkbox(value=False, description='transparent')
+        filename_text = Text(value='Screenshot', description='Filename')
+
+        button = Button(description='Export Image')
+
+        def on_click(button):
+            self._view.download_image(factor=slider_factor.value,
+                    antialias=checkbox_antialias.value,
+                    trim=checkbox_trim.value,
+                    transparent=checkbox_transparent.value,
+                    filename=filename_text.value)
+
+        button.on_click(on_click)
+
+        return VBox([button,
+            filename_text,
+            slider_factor,
+            checkbox_antialias,
+            checkbox_trim,
+            checkbox_transparent])

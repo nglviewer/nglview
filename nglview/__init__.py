@@ -6,6 +6,7 @@ from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
 from .player import TrajectoryPlayer
 from . import interpolate
+from .representation import Representation
 import time
 
 import os
@@ -15,7 +16,8 @@ import warnings
 import tempfile
 import ipywidgets as widgets
 from traitlets import (Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe,
-                       CaselessStrEnum)
+                       CaselessStrEnum,
+                       TraitError)
 from ipywidgets import widget_image
 
 try:
@@ -273,9 +275,9 @@ def show_mdanalysis(atomgroup, **kwargs):
     structure_trajectory = MDAnalysisTrajectory(atomgroup)
     return NGLWidget(structure_trajectory, **kwargs)
 
-def demo():
+def demo(*args, **kwargs):
     from nglview import datafiles, show_structure_file
-    return show_structure_file(datafiles.PDB)
+    return show_structure_file(datafiles.PDB, *args, **kwargs)
 
 ###################
 # Adaptor classes
@@ -566,11 +568,15 @@ class NGLWidget(widgets.DOMWidget):
     _init_representations = List().tag(sync=True)
     _init_structure_list = List().tag(sync=True)
     _parameters = Dict().tag(sync=True)
+    _full_stage_parameters = Dict().tag(sync=True)
+    _original_stage_parameters = Dict().tag(sync=True)
     picked = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
     _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
         default_value='orthographic').tag(sync=True)
     orientation = List().tag(sync=True)
+    _repr_dict = Dict().tag(sync=False)
+    _ngl_component_ids = List().tag(sync=False)
 
     displayed = False
     _ngl_msg = None
@@ -581,18 +587,23 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self).__init__(**kwargs)
 
 
+        self._gui = None
         self._init_gui = kwargs.pop('gui', False)
+        self._theme = kwargs.pop('theme', 'default')
+        self._widget_image = widget_image.Image()
+        self._widget_image.width = 900.
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
-
-        # create after initilizing _ngl_displayed_callbacks
-        self.player = TrajectoryPlayer(self)
 
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
 
         self._trajlist = []
+
+        # need to initialize before _ngl_component_ids
+        self.player = TrajectoryPlayer(self)
+
         self._ngl_component_ids = []
         self._init_structures = []
 
@@ -615,7 +626,7 @@ class NGLWidget(widgets.DOMWidget):
             self._set_initial_structure(self._init_structures)
 
         if representations:
-            self._ini_representations = representations
+            self._init_representations = representations
         else:
             self._init_representations = [
                 {"type": "cartoon", "params": {
@@ -663,6 +674,10 @@ class NGLWidget(widgets.DOMWidget):
                 target='Stage',
                 kwargs=dict(cameraType=self._camera_str))
 
+    def _request_stage_parameters(self):
+        self._remote_call('requestUpdateStageParameters',
+                target='Widget')
+
     @observe('picked')
     def _on_picked(self, change):
         import json
@@ -679,24 +694,51 @@ class NGLWidget(widgets.DOMWidget):
         if change['new'] - change['old'] == 1:
             self._ngl_component_ids.append(uuid.uuid4())
 
+    @observe('_ngl_component_ids')
+    def _update_player_component_slider_max(self, change):
+        component_slider = self.player.repr_widget.children[2]
+        component_slider.max = len(self._ngl_component_ids)
+
+    @observe('_repr_dict')
+    def _update_max_reps_count(self, change):
+        repr_slider = self.player.repr_widget.children[-2]
+        component_slider = self.player.repr_widget.children[2]
+        cindex = str(component_slider.value)
+        try:
+            repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
+        except TraitError:
+            # TraitError: setting max < min
+            pass
+
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
                          'n_frames'))
 
     @observe('loaded')
     def on_loaded(self, change):
+        # trick for firefox on Linux
+        time.sleep(0.1)
+
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
+            self._request_update_reprs()
 
     def _ipython_display_(self, **kwargs):
         self.displayed = True
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._init_gui:
-            display(self.player._display())
+            self._gui = self.player._display()
+            display(self._gui)
 
-    def display(self, player=False):
+        if self._theme in ['dark', 'oceans16']:
+            from nglview import theme
+            display(theme.oceans16())
+            self._remote_call('cleanOutput',
+                              target='Widget')
+
+    def display(self, gui=False):
         display(self)
-        if player:
+        if gui:
             display(self.player._display())
 
     def _set_sync_frame(self):
@@ -731,6 +773,27 @@ class NGLWidget(widgets.DOMWidget):
         for index in range(len(self._ngl_component_ids)):
             self.set_representations(reps)
 
+    def update_representation(self, component=0, repr_index=0, **parameters):
+        """
+
+        Parameters
+        ----------
+        component : int, default 0
+            component index
+        repr_index : int, default 0
+            representation index for given component
+        parameters : dict
+        """
+        parameters = _camelize_dict(parameters)
+        kwargs = dict(component_index=component,
+                      repr_index=repr_index)
+        kwargs.update(parameters)
+
+        self._remote_call('setParameters',
+                 target='Representation',
+                 kwargs=kwargs)
+        self._request_update_reprs()
+
     def set_representations(self, representations, component=0):
         """
         
@@ -753,6 +816,16 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('removeRepresentationsByName',
                           target='Widget',
                           args=[repr_name, component])
+        self._request_update_reprs()
+
+    def _display_repr(self, component=0, repr_index=0, name=None):
+        try:
+            c = 'c' + str(component)
+            r = str(repr_index)
+            name = self._repr_dict[c][r]['name']
+        except KeyError:
+            name = ''
+        return Representation(self, component, repr_index, name=name)._display()
 
     def _set_initial_structure(self, structures):
         """initialize structures for Widget
@@ -915,6 +988,7 @@ class NGLWidget(widgets.DOMWidget):
                           target='compList',
                           args=[d['type'],],
                           kwargs=params)
+        self._request_update_reprs()
 
 
     def center(self, *args, **kwargs):
@@ -934,16 +1008,14 @@ class NGLWidget(widgets.DOMWidget):
                           kwargs={'component_index': component})
 
     @observe('_image_data')
-    def get_image(self, change=""):
-        '''get rendered image. Make sure to call `render_image` first
+    def _on_render_image(self, change):
+        '''update image data to widget_image
 
         Notes
         -----
         method name might be changed
         '''
-        image = widget_image.Image()
-        image._b64value = self._image_data
-        return image
+        self._widget_image._b64value = change['new']
 
     def render_image(self, frame=None,
                      factor=4,
@@ -1028,6 +1100,28 @@ class NGLWidget(widgets.DOMWidget):
                     self.frame = 0
                 elif self.frame < 0:
                     self.frame = self.count - 1
+            elif msg_type == 'repr_parameters':
+                data_dict = self._ngl_msg.get('data')
+                repr_name = data_dict.pop('name') + '\n'
+                # json change True to true
+                data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
+                data_dict_json = data_dict_json.replace('null', '"null"')
+                self.player.repr_widget.children[1].value = repr_name
+                self.player.repr_widget.children[-1].value = data_dict_json
+            elif msg_type == 'all_reprs_info':
+                self._repr_dict = self._ngl_msg.get('data')
+            elif msg_type == 'stage_parameters':
+                self._full_stage_parameters = msg.get('data')
+
+    def _request_repr_parameters(self, component=0, repr_index=0):
+        self._remote_call('requestReprParameters',
+                target='Widget',
+                args=[component,
+                      repr_index])
+
+    def _request_update_reprs(self):
+        self._remote_call('requestReprsInfo',
+                target='Widget')
 
     def add_structure(self, structure, **kwargs):
         '''
@@ -1068,9 +1162,9 @@ class NGLWidget(widgets.DOMWidget):
         `add_trajectory` is just a special case of `add_component`
         '''
         backends = dict(pytraj=PyTrajTrajectory,
-                       mdtraj=MDTrajTrajectory,
-                       MDAnalysis=MDAnalysisTrajectory,
-                       parmed=ParmEdTrajectory)
+                        mdtraj=MDTrajTrajectory,
+                        MDAnalysis=MDAnalysisTrajectory,
+                        parmed=ParmEdTrajectory)
 
         package_name = trajectory.__module__.split('.')[0]
 
@@ -1197,6 +1291,28 @@ class NGLWidget(widgets.DOMWidget):
                 target='Stage',
                 args=[component,])
         
+    def _set_draggable(self, yes=True):
+        if yes:
+            self._remote_call('setDraggable',
+                             target='Widget',
+                             args=['',])
+
+        else:
+            self._remote_call('setDraggable',
+                             target='Widget',
+                             args=['destroy',])
+
+    def _set_notebook_draggable(self, yes=True, width='20%'):
+        script_template = """
+        var x = $('#notebook-container');
+        x.draggable({arg});
+        x.width('{width}')
+        """
+        if yes:
+            display(Javascript(script_template.format(arg='', width=width)))
+        else:
+            display(Javascript(script_template.format(arg='"destroy"', width=width)))
+
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
         
@@ -1229,6 +1345,8 @@ class NGLWidget(widgets.DOMWidget):
 
         if 'component_index' in kwargs:
             msg['component_index'] = kwargs.pop('component_index')
+        if 'repr_index' in kwargs:
+            msg['repr_index'] = kwargs.pop('repr_index')
 
         msg['target'] = target
         msg['type'] = 'call_method'

@@ -104,6 +104,8 @@ define( [
             this.displayed.then( function(){
                 var width = this.$el.parent().width() + "px";
                 var height = "300px";
+                var state_params = this.stage.getParameters();
+
                 this.setSize( width, height );
                 this.$container.resizable(
                     "option", "maxWidth", this.$el.parent().width()
@@ -111,6 +113,8 @@ define( [
                 this.model.set('loaded', true);
                 this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
                 this.model.set('orientation', this.stage.viewer.getOrientation() );
+                this.requestUpdateStageParameters();
+                this.model.set('_original_stage_parameters', state_params);
                 this.touch();
             }.bind( this ) );
 
@@ -179,9 +183,48 @@ define( [
         },
 
         requestFrame: function(){
-            this.send({type: 'request_frame', data: 'frame'});
+            this.send({'type': 'request_frame', 'data': 'frame'});
         },
 
+        requestUpdateStageParameters: function(){
+            var updated_params = this.stage.getParameters();
+            this.model.set('_full_stage_parameters', updated_params);
+            this.touch();
+        },
+
+        requestReprParameters: function( component_index, repr_index ){
+            var comp = this.stage.compList[ component_index ];
+            var repr = comp.reprList[ repr_index ];
+            var msg = repr.repr.getParameters();
+            msg['name'] = repr.name;
+            this.send({'type': 'repr_parameters', 'data': msg});
+        },
+
+        requestReprsInfo: function(){
+            var n_components = this.stage.compList.length;
+            var msg = {};
+
+            for (var i=0; i < n_components; i++) {
+                var comp = this.stage.compList[i];
+                msg['c' + i] = {};
+                var msgi = msg['c' + i];
+                for (var j=0; j < comp.reprList.length; j++){
+                    var repr = comp.reprList[j];
+                    msgi[j] = {};
+                    msgi[j]['name'] = repr.name;
+                    msgi[j]['parameters'] = repr.repr.getParameters();
+                }
+            }
+            this.send({'type': 'all_reprs_info', 'data': msg});
+        },
+
+        setDraggable: function( params ){
+            if (params){
+                this.$container.draggable(params);
+            }else{
+                this.$container.draggable();
+            }
+        },
         setDelay: function( delay ){
             this.delay = delay;
         },
@@ -310,6 +353,12 @@ define( [
            })
         },
 
+        updateRepresentationForComponent: function( repr_index, component_index, params ){
+           var component = this.stage.compList[ component_index ];
+           var repr = component.reprList[ repr_index ];
+           repr.setParameters( params );
+        },
+
         structureChanged: function(){
             this.structureComponent = undefined;
             var structureList = this.model.get( "_init_structure_list" );
@@ -393,6 +442,12 @@ define( [
         parametersChanged: function(){
             var _parameters = this.model.get( "_parameters" );
             this.stage.setParameters( _parameters );
+
+            // do not set _full_stage_parameters here
+            // or parameters will be never updated (not sure why) 
+            // use observe in python side
+            var updated_params = this.stage.getParameters();
+            this.send({'type': 'stage_parameters', 'data': updated_params})
         },
 
         orientationChanged: function(){
@@ -417,6 +472,21 @@ define( [
                  }.bind( this );
                  reader.readAsDataURL( blob );
             }.bind( this ));
+        },
+
+        cleanOutput: function(){
+
+            var cells = Jupyter.notebook.get_cells();
+            
+            for (var i = 0; i < cells.length; i++){
+                var cell = cells[i];
+                if (cell.output_area.outputs.length > 0) {
+                    var out = cell.output_area.outputs[0];
+                    if (out.output_type == 'display_data') {
+                        cell.clear_output();
+                    }
+                }
+            }
         },
 
         on_msg: function(msg){
@@ -477,6 +547,14 @@ define( [
                     case 'Widget':
                         var func = this[ msg.methodName ];
                         func.apply( this, new_args );
+                        break;
+                    case 'Representation':
+                        var component_index = msg['component_index'];
+                        var repr_index = msg['repr_index'];
+                        var component = this.stage.compList[ component_index ];
+                        var repr = component.reprList[repr_index];
+                        var func = repr[ msg.methodName ];
+                        func.apply( repr, new_args );
                         break;
                     default:
                         console.log( "nothing done for " + msg.target );
