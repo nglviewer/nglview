@@ -34,3 +34,7 @@ pip install https://github.com/ParmEd/ParmEd/archive/2.5.1.tar.gz
 
 # simpletraj
 pip install git+https://github.com/arose/simpletraj
+
+# pytest
+pip install pytest
+pip install pytest-cov

@@ -40,7 +40,7 @@ install:
 
 script:
     - source devtools/travis-ci/open_notebook.sh
-    - (cd nglview/tests && nosetests --with-coverage --cover-package nglview -vs .)
+    - (cd nglview/tests && py.test --cov=nglview -vs .)
 
 after_success:
     - echo "after_success"
