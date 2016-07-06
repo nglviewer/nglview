@@ -4,10 +4,20 @@ import subprocess
 from glob import glob
 from random import shuffle
 
-notebooks = ['nglview/tests/notebooks/dummy.ipynb',]
+import argparse
 
-notebooks += (glob('nglview/tests/notebooks/*ipynb') +
-            glob('nglview/tests/notebooks/api/*ipynb'))
+parser = argparse.ArgumentParser()
+parser.add_argument('--basic', action='store_true')
+args = parser.parse_args()
+
+if args.basic:
+    notebooks = ['nglview/tests/notebooks/dummy.ipynb',
+                ]
+else:
+    notebooks = ['nglview/tests/notebooks/dummy.ipynb',]
+    
+    notebooks += (glob('nglview/tests/notebooks/*ipynb') +
+                glob('nglview/tests/notebooks/api/*ipynb'))
 
 # shuffle(notebooks)
 def get_cell_length(nb):
@@ -52,4 +62,3 @@ if __name__ == '__main__':
     fn = 'nglview/tests/js/test.js'
     with open(fn, 'w') as fh:
         fh.write(head + all_notebooks + tail)
-

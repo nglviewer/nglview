@@ -36,9 +36,10 @@ install:
     - source devtools/travis-ci/setup_env.sh
     - source devtools/travis-ci/clone_nbtest.sh
     - source devtools/travis-ci/install_nglview.sh
-    - source devtools/travis-ci/open_notebook.sh
+    - python devtools/make_test_js.py --basic
 
 script:
+    - source devtools/travis-ci/open_notebook.sh
     - (cd nglview/tests && nosetests --with-coverage --cover-package nglview -vs .)
 
 after_success:
