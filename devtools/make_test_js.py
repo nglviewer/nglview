@@ -12,6 +12,13 @@ args = parser.parse_args()
 
 if args.basic:
     notebooks = ['nglview/tests/notebooks/dummy.ipynb',
+                 'nglview/tests/notebooks/api/view_trajectory.ipynb',
+                 'nglview/tests/notebooks/test_API_coordinates_dict.ipynb',
+                 'nglview/tests/notebooks/test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb',
+                 'nglview/tests/notebooks/test_no_gui_demo.ipynb',
+                 'nglview/tests/notebooks/add_structure_then_trajectory.ipynb',
+                 'nglview/tests/notebooks/automatically_added_attributes_0.ipynb',
+                 'nglview/tests/notebooks/fix_player_if_adding_single_struture_first.ipynb',
                 ]
 else:
     notebooks = ['nglview/tests/notebooks/dummy.ipynb',]
