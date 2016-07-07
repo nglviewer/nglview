@@ -13,8 +13,6 @@ args = parser.parse_args()
 if args.basic:
     root = 'nglview/tests/notebooks/api/'
     notebook_names  = [
-                 # 'test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb',
-                 'test_view_trajectory.ipynb',
                  'test_no_gui_demo.ipynb',
                  'test_add_structure_then_trajectory.ipynb',
                  'test_automatically_added_attributes_0.ipynb',
@@ -52,7 +50,7 @@ body_template = """
         browser.restartKernel(2000);
         for ( var i = 0; i < %s; i++) {
            browser.executeCell(i)
-                  .pause(4000)
+                  .pause(2500)
                   .cellHasError(i);
         }
         browser.end();
