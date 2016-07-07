@@ -1314,6 +1314,14 @@ class NGLWidget(widgets.DOMWidget):
         else:
             display(Javascript(script_template.replace('{args}', '"destroy"')))
 
+    def _reset_notebook(self, yes=True):
+        script_template = """
+        var x = $('#notebook-container');
+        x.width('40%');
+        x.css({position: "relative", left: "0%"});
+        """
+        display(Javascript(script_template))
+
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
         
