@@ -247,9 +247,14 @@ class TrajectoryPlayer(DOMWidget):
                 self._view._set_notebook_draggable(False)
                 drag_nb.description = 'notebook drag: off'
 
+        reset_nb = Button(description='notebook: reset', tooltip='reset?')
+        def on_reset(reset_nb):
+            self._view._reset_notebook()
+
         drag_button.on_click(on_drag)
         drag_nb.on_click(on_drag_nb)
-        drag_box = VBox([drag_button, drag_nb])
+        reset_nb.on_click(on_reset)
+        drag_box = VBox([drag_button, drag_nb, reset_nb])
 
         gen_box = HBox([v0_left, ])
         theme_box = Box([self._add_button_theme(), self._add_button_reset_theme()])
