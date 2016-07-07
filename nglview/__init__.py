@@ -1305,13 +1305,14 @@ class NGLWidget(widgets.DOMWidget):
     def _set_notebook_draggable(self, yes=True, width='20%'):
         script_template = """
         var x = $('#notebook-container');
-        x.draggable({arg});
-        x.width('{width}')
+        x.draggable({args});
+        x.width('20%');
+        x.css({position: "relative", left: "20%"});
         """
         if yes:
-            display(Javascript(script_template.format(arg='', width=width)))
+            display(Javascript(script_template.replace('{args}', '')))
         else:
-            display(Javascript(script_template.format(arg='"destroy"', width=width)))
+            display(Javascript(script_template.replace('{args}', '"destroy"')))
 
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
