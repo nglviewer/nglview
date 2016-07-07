@@ -25,6 +25,7 @@ import mdtraj as md
 import parmed as pmd
 from nglview.utils import PY2, PY3
 from nglview import jsutils
+from nglview.representation import Representation
 
 def default_view():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -107,7 +108,8 @@ def test_API_promise_to_have():
     # display
     display.Javascript(jsutils.js_clean_error_output)
     display.display(view.player.repr_widget)
-    
+    view.player._display()
+
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     view = nv.show_pytraj(traj)
@@ -143,6 +145,12 @@ def test_representations():
     print(representations_2)
     print(view.representations)
     _assert_dict_list_equal(view.representations, representations_2)
+
+    # Representations
+    # make fake params
+    view._repr_dict = {'c0': {'0': {'parameters': {}}}}
+    representation_widget = Representation(view, 0, 0)
+    representation_widget._display()
                     
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
