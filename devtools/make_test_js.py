@@ -52,7 +52,7 @@ body_template = """
         browser.restartKernel(2000);
         for ( var i = 0; i < %s; i++) {
            browser.executeCell(i)
-                  .pause(3000)
+                  .pause(4000)
                   .cellHasError(i);
         }
         browser.end();
