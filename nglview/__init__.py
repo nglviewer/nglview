@@ -706,7 +706,7 @@ class NGLWidget(widgets.DOMWidget):
         cindex = str(component_slider.value)
         try:
             repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
-        except TraitError:
+        except (TraitError, IndexError):
             # TraitError: setting max < min
             pass
 
