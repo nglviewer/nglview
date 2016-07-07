@@ -16,7 +16,6 @@ if args.basic:
                  'test_no_gui_demo.ipynb',
                  'test_add_structure_then_trajectory.ipynb',
                  'test_automatically_added_attributes_0.ipynb',
-                 'test_fix_player_if_adding_single_struture_first.ipynb',
                 ]
 
     notebooks = [root + notebook_name for notebook_name in notebook_names]
