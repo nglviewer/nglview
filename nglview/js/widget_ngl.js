@@ -439,6 +439,17 @@ define( [
             this.stage.handleResize();
         },
 
+        setDialog: function(){
+            dialog  = this.$container.dialog({
+                title: "NGLView",
+                draggable: true,
+                resizable: true,
+                width: document.width / 2,
+                height: document.height,
+            });
+            this.setSize(dialog.width() + 'px', dialog.height() + 'px');
+        },
+
         parametersChanged: function(){
             var _parameters = this.model.get( "_parameters" );
             this.stage.setParameters( _parameters );
