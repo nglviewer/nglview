@@ -126,6 +126,7 @@ def main(notebook_dict=notebook_dict):
     parser.add_argument('--port', type=int, help='port number')
     parser.add_argument('--remote', action='store_true', help='create remote notebook')
     parser.add_argument('--clean-cache', action='store_true', help='delete temp file after closing notebook')
+    parser.add_argument('--disable-autorun', action='store_true', help='do not run 1st cell right after openning notebook')
     args = parser.parse_args()
 
     command = parm = args.command
@@ -176,7 +177,8 @@ def main(notebook_dict=notebook_dict):
                                                                     port=port)
         print('NOTE: make sure to open {0} in your local machine\n'.format(notebook_name))
 
-    install_nbextension(jupyter=args.jexe)
+    if not args.disable_autorun:
+        install_nbextension(jupyter=args.jexe)
 
     try:
         subprocess.check_call(cm.split())
@@ -184,7 +186,8 @@ def main(notebook_dict=notebook_dict):
         if args.clean_cache and create_new_nb:
             print("deleting {}".format(notebook_name))
             os.remove(notebook_name)
-        disable_extension(jupyter=args.jexe)
+        if not args.disable_autorun:
+            disable_extension(jupyter=args.jexe)
 
 if __name__ == '__main__':
     main()
