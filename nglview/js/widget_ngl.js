@@ -449,14 +449,13 @@ define( [
 
         setDialog: function(){
             var nb_container = Jupyter.notebook.container;
-            var nb_parents = nb_container.parents();
             var that = this;
             dialog  = this.$container.dialog({
                 title: "NGLView",
                 draggable: true,
                 resizable: true,
                 modal: false,
-                width: nb_parents.width() - nb_container.width() - 20,
+                width: nb_container.offset().left,
                 height:"auto",
                 show: { effect: "blind", duration: 150 },
                 close: function (event, ui) {

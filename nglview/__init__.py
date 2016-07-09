@@ -1492,10 +1492,14 @@ class NGLWidget(widgets.DOMWidget):
         """
         if not self.loaded:
             raise RuntimeError("must display view first")
-        self._remote_call('setDialog', target='Widget')
+
+        # resize notebook first
+        # width of the dialog will be calculated based on notebook container offset
         if split:
             # rename
             self._move_notebook_to_the_right()
+            time.sleep(0.1)
+        self._remote_call('setDialog', target='Widget')
 
     def _play(self, start=0, stop=-1, step=1, delay=0.08, n_times=1):
         '''for testing. Might be removed in the future
