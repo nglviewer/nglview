@@ -218,7 +218,8 @@ Box(children=(w1,w2))
 
 API doc
 -------
-[Please check here](http://arose.github.io/nglview/latest/api.html)
+- [Latest version](http://arose.github.io/nglview/latest/api.html)
+- [Development version](http://arose.github.io/nglview/dev/api.html)
 
 Command line
 ============

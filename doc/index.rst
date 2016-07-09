@@ -245,7 +245,8 @@ You can have multiple widgets per notebook cell:
 API doc
 -------
 
-`Please check here <http://arose.github.io/nglview/latest/api.html>`__
+-  `Latest version <http://arose.github.io/nglview/latest/api.html>`__
+-  `Development version <http://arose.github.io/nglview/dev/api.html>`__
 
 Command line
 ============
