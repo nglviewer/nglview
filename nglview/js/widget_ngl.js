@@ -444,10 +444,18 @@ define( [
                 title: "NGLView",
                 draggable: true,
                 resizable: true,
-                width: document.width / 2,
-                height: document.height,
+                modal: false,
+                width: document.width / 2.,
+                height:"auto",
+                show: { effect: "blind", duration: 50 },
+                close: function (event, ui) {
+                    console.log(this.$el);
+                },
+                resize: function( event, ui ){
+                    this.setSize( ui.size.width + "px", ui.size.height + "px" );
+                }.bind( this )
             });
-            this.setSize(dialog.width() + 'px', dialog.height() + 'px');
+            dialog.css({overflow: 'hidden'});
         },
 
         parametersChanged: function(){
