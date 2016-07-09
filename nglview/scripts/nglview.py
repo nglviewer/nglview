@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 import os, sys, argparse, json
 import subprocess
+from subprocess import CalledProcessError
 from .cmd_example import CMD_EXAMPLE 
 
 bin_path = sys.prefix + '/bin/'
@@ -180,7 +181,10 @@ def main(notebook_dict=notebook_dict):
     if not args.disable_autorun:
         install_nbextension(jupyter=args.jexe)
     else:
-        disable_extension(jupyter=args.jexe)
+        try:
+            disable_extension(jupyter=args.jexe)
+        except CalledProcessError:
+            pass
 
     try:
         subprocess.check_call(cm.split())
