@@ -1498,7 +1498,6 @@ class NGLWidget(widgets.DOMWidget):
         if split:
             # rename
             self._move_notebook_to_the_right()
-            time.sleep(0.1)
         self._remote_call('setDialog', target='Widget')
 
     def _play(self, start=0, stop=-1, step=1, delay=0.08, n_times=1):
