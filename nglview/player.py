@@ -251,10 +251,22 @@ class TrajectoryPlayer(DOMWidget):
         def on_reset(reset_nb):
             self._view._reset_notebook()
 
+        dialog_button = Button(description='dialog', tooltip='make a dialog')
+        def on_dialog(dialog_button):
+            self._view._remote_call('setDialog', target='Widget')
+
+        lucky_button = Button(description='lucky', tooltip='try best to make a good layout')
+        def on_being_lucky(dialog_button):
+            self._view._set_notebook_draggable(True)
+            self._view._remote_call('setDialog', target='Widget')
+            self._view._set_notebook_draggable(False)
+
         drag_button.on_click(on_drag)
         drag_nb.on_click(on_drag_nb)
         reset_nb.on_click(on_reset)
-        drag_box = HBox([drag_button, drag_nb, reset_nb])
+        dialog_button.on_click(on_dialog)
+        lucky_button.on_click(on_being_lucky)
+        drag_box = HBox([drag_button, drag_nb, reset_nb, dialog_button, lucky_button])
 
         gen_box = HBox([v0_left, ])
         theme_box = Box([self._add_button_theme(), self._add_button_reset_theme()])
@@ -267,6 +279,7 @@ class TrajectoryPlayer(DOMWidget):
         extra_list = [(spin_box, 'spin_box'),
                       (picked_box, 'picked atom'),
                       (drag_box, 'Drag')]
+        extra_list = extra_list[::-1]
 
         extra_box = Tab([w for w, _ in extra_list])
         [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]

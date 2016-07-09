@@ -20,6 +20,12 @@ div#ipython_notebook {display: none;}
 .item_buttons .kernel-name {
     color: #3572C6;
 }
+
+.ui-dialog-titlebar {
+    background:transparent;
+    border:none;
+}
+
 .running_notebook_icon:before {
     color: #02ac65 !important;
 }
