@@ -455,9 +455,10 @@ define( [
                 draggable: true,
                 resizable: true,
                 modal: false,
-                width: nb_container.width() - 100,
+                width: nb_container.offset().left,
                 height:"auto",
-                show: { effect: "blind", duration: 50 },
+                position: {my: 'left', at: 'left', of: window},
+                show: { effect: "blind", duration: 150 },
                 close: function (event, ui) {
                     that.$el.append(that.$container);
                     that.$container.dialog('destroy');
@@ -465,9 +466,12 @@ define( [
                 },
                 resize: function( event, ui ){
                     that.setSize( ui.size.width + "px", ui.size.height + "px" );
-                }.bind( that )
+                }.bind( that ),
             });
             dialog.css({overflow: 'hidden'});
+            dialog.prev('.ui-dialog-titlebar')
+                  .css({'background': 'transparent',
+                        'border': 'none'});
         },
 
         parametersChanged: function(){

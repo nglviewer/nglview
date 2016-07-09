@@ -257,9 +257,8 @@ class TrajectoryPlayer(DOMWidget):
 
         lucky_button = Button(description='lucky', tooltip='try best to make a good layout')
         def on_being_lucky(dialog_button):
-            self._view._set_notebook_draggable(True)
+            self._view._move_notebook_to_the_right()
             self._view._remote_call('setDialog', target='Widget')
-            self._view._set_notebook_draggable(False)
 
         drag_button.on_click(on_drag)
         drag_nb.on_click(on_drag_nb)
