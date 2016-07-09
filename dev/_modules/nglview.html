@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview &mdash; NGLView 0.5.2a+56.g9e870fa documentation</title>
+  <title>nglview &mdash; NGLView 0.5.2a+155.gbea1c53 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+56.g9e870fa documentation" href="../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+155.gbea1c53 documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+56.g9e870fa
+                0.5.2a+155.gbea1c53
               </div>
             
           
@@ -143,7 +143,8 @@
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="kn">as</span> <span class="nn">widgets</span>
 <span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Unicode</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Bytes</span><span class="p">,</span> <span class="n">observe</span><span class="p">,</span>
-                       <span class="n">CaselessStrEnum</span><span class="p">)</span>
+                       <span class="n">CaselessStrEnum</span><span class="p">,</span>
+                       <span class="n">TraitError</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">widget_image</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -694,6 +695,8 @@
     <span class="n">_init_representations</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_init_structure_list</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">_full_stage_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">_original_stage_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">picked</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_coordinates_dict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">_camera_str</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">([</span><span class="s1">&#39;perspective&#39;</span><span class="p">,</span> <span class="s1">&#39;orthographic&#39;</span><span class="p">],</span>
@@ -711,6 +714,7 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">NGLWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gui</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_gui</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;gui&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_theme</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;theme&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_widget_image</span> <span class="o">=</span> <span class="n">widget_image</span><span class="o">.</span><span class="n">Image</span><span class="p">()</span>
@@ -797,6 +801,10 @@
                 <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">cameraType</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_camera_str</span><span class="p">))</span>
 
+    <span class="k">def</span> <span class="nf">_request_stage_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;requestUpdateStageParameters&#39;</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
+
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;picked&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_on_picked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">json</span>
@@ -823,7 +831,11 @@
         <span class="n">repr_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">component_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">cindex</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">repr_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">][</span><span class="s1">&#39;c&#39;</span> <span class="o">+</span> <span class="n">cindex</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">repr_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">][</span><span class="s1">&#39;c&#39;</span> <span class="o">+</span> <span class="n">cindex</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">TraitError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+            <span class="c1"># TraitError: setting max &lt; min</span>
+            <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">_update_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span>
@@ -831,6 +843,9 @@
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;loaded&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">on_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="c1"># trick for firefox on Linux</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]:</span>
             <span class="p">[</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_request_update_reprs</span><span class="p">()</span>
@@ -839,14 +854,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">displayed</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NGLWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_ipython_display_</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_gui</span><span class="p">:</span>
-            <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">_display</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gui</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">_display</span><span class="p">()</span>
+            <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gui</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_theme</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dark&#39;</span><span class="p">,</span> <span class="s1">&#39;oceans16&#39;</span><span class="p">]:</span>
             <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">theme</span>
             <span class="n">display</span><span class="p">(</span><span class="n">theme</span><span class="o">.</span><span class="n">oceans16</span><span class="p">())</span>
-
-    <span class="k">def</span> <span class="nf">_gui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">_display</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;cleanOutput&#39;</span><span class="p">,</span>
+                              <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NGLWidget.display"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gui</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -1222,6 +1237,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">data_dict_json</span>
             <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;all_reprs_info&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_repr_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;stage_parameters&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_full_stage_parameters</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_request_repr_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">repr_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;requestReprParameters&#39;</span><span class="p">,</span>
@@ -1401,6 +1418,43 @@
                 <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">component</span><span class="p">,])</span>
         
+    <span class="k">def</span> <span class="nf">_set_draggable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yes</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">yes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setDraggable&#39;</span><span class="p">,</span>
+                             <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
+                             <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setDraggable&#39;</span><span class="p">,</span>
+                             <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
+                             <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;destroy&#39;</span><span class="p">,])</span>
+
+    <span class="k">def</span> <span class="nf">_set_notebook_draggable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yes</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">&#39;20%&#39;</span><span class="p">):</span>
+        <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        var x = $(&#39;#notebook-container&#39;);</span>
+<span class="s2">        x.draggable({args});</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">yes</span><span class="p">:</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{args}&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{args}&#39;</span><span class="p">,</span> <span class="s1">&#39;&quot;destroy&quot;&#39;</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_move_notebook_to_the_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        var x = $(&#39;#notebook-container&#39;);</span>
+<span class="s2">        x.width(&#39;20%&#39;);</span>
+<span class="s2">        x.css({position: &quot;relative&quot;, left: &quot;20%&quot;});</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_reset_notebook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yes</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        var x = $(&#39;#notebook-container&#39;);</span>
+<span class="s2">        x.width(&#39;40%&#39;);</span>
+<span class="s2">        x.css({position: &quot;relative&quot;, left: &quot;0%&quot;});</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="p">))</span>
+
     <span class="k">def</span> <span class="nf">_remote_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;call NGL&#39;s methods from Python.</span>
 <span class="sd">        </span>
@@ -1554,6 +1608,24 @@
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">):</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+<div class="viewcode-block" id="NGLWidget.detach"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.detach">[docs]</a>    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;detach player from its original container.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        split : bool, default False</span>
+<span class="sd">            if True, resize notebook then move it to the right of its container</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;must display view first&quot;</span><span class="p">)</span>
+
+        <span class="c1"># resize notebook first</span>
+        <span class="c1"># width of the dialog will be calculated based on notebook container offset</span>
+        <span class="k">if</span> <span class="n">split</span><span class="p">:</span>
+            <span class="c1"># rename</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_move_notebook_to_the_right</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setDialog&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;for testing. Might be removed in the future</span>
@@ -1719,7 +1791,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.5.2a+56.g9e870fa',
+            VERSION:'0.5.2a+155.gbea1c53',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

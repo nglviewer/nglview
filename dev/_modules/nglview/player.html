@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview.player &mdash; NGLView 0.5.2a+56.g9e870fa documentation</title>
+  <title>nglview.player &mdash; NGLView 0.5.2a+155.gbea1c53 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+56.g9e870fa documentation" href="../../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+155.gbea1c53 documentation" href="../../index.html"/>
         <link rel="up" title="nglview" href="../nglview.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+56.g9e870fa
+                0.5.2a+155.gbea1c53
               </div>
             
           
@@ -184,6 +184,7 @@
                                    <span class="n">transparent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">picked_widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_text_picked</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_text_repr_widget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preference_widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_reference_widget</span><span class="p">()</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;camera&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">on_camera_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
@@ -351,39 +352,80 @@
                    <span class="n">qtconsole_button</span><span class="p">,</span>
                    <span class="p">])</span>
 
-        <span class="n">spinbox</span><span class="o">=</span> <span class="n">VBox</span><span class="p">([</span><span class="n">checkbox_spin</span><span class="p">,</span>
+        <span class="n">spin_box</span><span class="o">=</span> <span class="n">VBox</span><span class="p">([</span><span class="n">checkbox_spin</span><span class="p">,</span>
                    <span class="n">spin_x_slide</span><span class="p">,</span>
                    <span class="n">spin_y_slide</span><span class="p">,</span>
                    <span class="n">spin_z_slide</span><span class="p">,</span>
                    <span class="n">spin_speed_slide</span><span class="p">])</span>
 
-        <span class="n">genbox</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">v0_left</span><span class="p">,</span> <span class="p">])</span>
-        <span class="n">prefbox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_preference</span><span class="p">()</span>
-        <span class="n">themebox</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_button_theme</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_button_reset_theme</span><span class="p">()])</span>
-        <span class="n">hidebox</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([])</span>
-        <span class="n">help_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_website</span><span class="p">()</span>
+        <span class="n">drag_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;widget drag: off&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;dangerous&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_drag</span><span class="p">(</span><span class="n">drag_button</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">drag_button</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s1">&#39;widget drag: off&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_draggable</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">drag_button</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;widget drag: on&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_draggable</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">drag_button</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;widget drag: off&#39;</span>
+
+        <span class="n">drag_nb</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;notebook drag: off&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;dangerous&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_drag_nb</span><span class="p">(</span><span class="n">drag_button</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">drag_nb</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s1">&#39;notebook drag: off&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_notebook_draggable</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">drag_nb</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;notebook drag: on&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_notebook_draggable</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">drag_nb</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;notebook drag: off&#39;</span>
+
+        <span class="n">reset_nb</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;notebook: reset&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;reset?&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_reset</span><span class="p">(</span><span class="n">reset_nb</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_reset_notebook</span><span class="p">()</span>
+
+        <span class="n">dialog_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;dialog&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;make a dialog&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_dialog</span><span class="p">(</span><span class="n">dialog_button</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setDialog&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
+
+        <span class="n">lucky_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;lucky&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;try best to make a good layout&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_being_lucky</span><span class="p">(</span><span class="n">dialog_button</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_move_notebook_to_the_right</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setDialog&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
+
+        <span class="n">drag_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_drag</span><span class="p">)</span>
+        <span class="n">drag_nb</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_drag_nb</span><span class="p">)</span>
+        <span class="n">reset_nb</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_reset</span><span class="p">)</span>
+        <span class="n">dialog_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_dialog</span><span class="p">)</span>
+        <span class="n">lucky_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_being_lucky</span><span class="p">)</span>
+        <span class="n">drag_box</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">drag_button</span><span class="p">,</span> <span class="n">drag_nb</span><span class="p">,</span> <span class="n">reset_nb</span><span class="p">,</span> <span class="n">dialog_button</span><span class="p">,</span> <span class="n">lucky_button</span><span class="p">])</span>
+
+        <span class="n">gen_box</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">v0_left</span><span class="p">,</span> <span class="p">])</span>
+        <span class="n">theme_box</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_button_theme</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_button_reset_theme</span><span class="p">()])</span>
+        <span class="n">hide_box</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([])</span>
+        <span class="n">help_url_box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_website</span><span class="p">()</span>
 
         <span class="n">picked_box</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">picked_widget</span><span class="p">,])</span>
         <span class="n">repr_box</span><span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_repr_sliders</span><span class="p">()])</span>
 
-        <span class="n">extrabox</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">([</span><span class="n">repr_box</span><span class="p">,</span> <span class="n">picked_box</span><span class="p">])</span>
-        <span class="n">extrabox</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;repr&#39;</span><span class="p">)</span>
-        <span class="n">extrabox</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;picked atom&#39;</span><span class="p">)</span>
+        <span class="n">extra_list</span> <span class="o">=</span> <span class="p">[(</span><span class="n">spin_box</span><span class="p">,</span> <span class="s1">&#39;spin_box&#39;</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">picked_box</span><span class="p">,</span> <span class="s1">&#39;picked atom&#39;</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">drag_box</span><span class="p">,</span> <span class="s1">&#39;Drag&#39;</span><span class="p">)]</span>
+        <span class="n">extra_list</span> <span class="o">=</span> <span class="n">extra_list</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">extra_box</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">([</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">extra_list</span><span class="p">])</span>
+        <span class="p">[</span><span class="n">extra_box</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">extra_list</span><span class="p">)]</span>
 
         <span class="n">export_image_box</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_button_export_image</span><span class="p">()])</span>
 
-        <span class="n">tab</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">([</span><span class="n">genbox</span><span class="p">,</span> <span class="n">spinbox</span><span class="p">,</span> <span class="n">prefbox</span><span class="p">,</span> <span class="n">themebox</span><span class="p">,</span> 
-            <span class="n">hidebox</span><span class="p">,</span> <span class="n">help_url</span><span class="p">,</span> <span class="n">extrabox</span><span class="p">,</span>
-            <span class="n">export_image_box</span><span class="p">])</span>
+        <span class="n">box_couple</span> <span class="o">=</span> <span class="p">[(</span><span class="n">gen_box</span><span class="p">,</span> <span class="s1">&#39;General&#39;</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">repr_box</span><span class="p">,</span> <span class="s1">&#39;Representation&#39;</span><span class="p">),</span>
+                      <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_preference_widget</span><span class="p">,</span> <span class="s1">&#39;Preference&#39;</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">theme_box</span><span class="p">,</span> <span class="s1">&#39;Theme&#39;</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">extra_box</span><span class="p">,</span> <span class="s1">&#39;Extra&#39;</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">export_image_box</span><span class="p">,</span> <span class="s1">&#39;Image&#39;</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">hide_box</span><span class="p">,</span> <span class="s1">&#39;Hide&#39;</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">help_url_box</span><span class="p">,</span> <span class="s1">&#39;Help&#39;</span><span class="p">)]</span>
 
-        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;General&#39;</span><span class="p">)</span>
-        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Spin&#39;</span><span class="p">)</span>
-        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Speed&#39;</span><span class="p">)</span>
-        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Theme&#39;</span><span class="p">)</span>
-        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;Hide&#39;</span><span class="p">)</span>
-        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;Help&#39;</span><span class="p">)</span>
-        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;Extra&#39;</span><span class="p">)</span>
-        <span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;Image&#39;</span><span class="p">)</span>
+        <span class="n">tab</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">([</span><span class="n">box</span> <span class="k">for</span> <span class="n">box</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">box_couple</span><span class="p">])</span>
+        <span class="p">[</span><span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">box_couple</span><span class="p">)]</span>
+
         <span class="k">return</span> <span class="n">tab</span>
 
     <span class="k">def</span> <span class="nf">_add_button_center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -398,6 +440,8 @@
         <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
             <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">theme</span>
             <span class="n">display</span><span class="p">(</span><span class="n">theme</span><span class="o">.</span><span class="n">oceans16</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;cleanOutput&#39;</span><span class="p">,</span>
+                                    <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
         <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">button</span>
 
@@ -410,22 +454,68 @@
         <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">button</span>
 
-    <span class="k">def</span> <span class="nf">_show_preference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">pan_speed</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-                 <span class="n">rotate_speed</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                 <span class="n">zoom_speed</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
-                 <span class="n">clip_dist</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                <span class="n">panSpeed</span><span class="o">=</span><span class="n">pan_speed</span><span class="p">,</span>
-                <span class="n">rotateSpeed</span><span class="o">=</span><span class="n">rotate_speed</span><span class="p">,</span>
-                <span class="n">zoomSpeed</span><span class="o">=</span><span class="n">zoom_speed</span><span class="p">,</span>
-                <span class="n">clipDist</span><span class="o">=</span><span class="n">clip_dist</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_add_reference_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">make_func</span><span class="p">():</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_full_stage_parameters</span>
+            <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">pan_speed</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;panSpeed&#39;</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span>
+                     <span class="n">rotate_speed</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rotateSpeed&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                     <span class="n">zoom_speed</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;zoomSpeed&#39;</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">),</span>
+                     <span class="n">clip_dist</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;clipDist&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                     <span class="n">camera_fov</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cameraFov&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+                     <span class="n">clip_far</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;clipFar&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+                     <span class="n">clip_near</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;clipNear&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                     <span class="n">fog_far</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fogFar&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+                     <span class="n">fog_near</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fogNear&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+                     <span class="n">impostor</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;impostor&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">),</span>
+                     <span class="n">light_intensity</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lightIntensity&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                     <span class="n">quality</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;quality&#39;</span><span class="p">,</span> <span class="s1">&#39;medium&#39;</span><span class="p">),</span>
+                     <span class="n">sample_level</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sampleLevel&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
 
-        <span class="k">return</span> <span class="n">interactive</span><span class="p">(</span><span class="n">func</span><span class="p">,</span>
-                  <span class="n">pan_speed</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
-                  <span class="n">rotate_speed</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                  <span class="n">zoom_speed</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                  <span class="n">clip_dist</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">panSpeed</span><span class="o">=</span><span class="n">pan_speed</span><span class="p">,</span>
+                    <span class="n">rotateSpeed</span><span class="o">=</span><span class="n">rotate_speed</span><span class="p">,</span>
+                    <span class="n">zoomSpeed</span><span class="o">=</span><span class="n">zoom_speed</span><span class="p">,</span>
+                    <span class="n">clipDist</span><span class="o">=</span><span class="n">clip_dist</span><span class="p">,</span>
+                    <span class="n">clipFar</span><span class="o">=</span><span class="n">clip_far</span><span class="p">,</span>
+                    <span class="n">clipNear</span><span class="o">=</span><span class="n">clip_near</span><span class="p">,</span>
+                    <span class="n">cameraFov</span><span class="o">=</span><span class="n">camera_fov</span><span class="p">,</span>
+                    <span class="n">fogFar</span><span class="o">=</span><span class="n">fog_far</span><span class="p">,</span>
+                    <span class="n">fogNear</span><span class="o">=</span><span class="n">fog_near</span><span class="p">,</span>
+                    <span class="n">impostor</span><span class="o">=</span><span class="n">impostor</span><span class="p">,</span>
+                    <span class="n">lightIntensity</span><span class="o">=</span><span class="n">light_intensity</span><span class="p">,</span>
+                    <span class="n">quality</span><span class="o">=</span><span class="n">quality</span><span class="p">,</span>
+                    <span class="n">sampleLevel</span><span class="o">=</span><span class="n">sample_level</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">func</span>
+
+        <span class="k">def</span> <span class="nf">make_widget</span><span class="p">():</span>
+            <span class="n">widget_sliders</span> <span class="o">=</span> <span class="n">interactive</span><span class="p">(</span><span class="n">make_func</span><span class="p">(),</span>
+                      <span class="n">pan_speed</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+                      <span class="n">rotate_speed</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                      <span class="n">zoom_speed</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                      <span class="n">clip_dist</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                      <span class="n">clip_far</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                      <span class="n">clip_near</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                      <span class="n">camera_fov</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                      <span class="n">fog_far</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                      <span class="n">fog_near</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                      <span class="n">light_intensity</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">),</span>
+                      <span class="n">quality</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;low&#39;</span><span class="p">,</span> <span class="s1">&#39;medium&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">],</span>
+                      <span class="n">sample_level</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">widget_sliders</span>
+
+        <span class="n">widget_sliders</span> <span class="o">=</span> <span class="n">make_widget</span><span class="p">()</span>
+        <span class="n">reset_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Reset&#39;</span><span class="p">)</span>
+        <span class="n">hbox</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">widget_sliders</span><span class="p">,</span> <span class="n">reset_button</span><span class="p">])</span>
+
+        <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">reset_button</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_original_stage_parameters</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_full_stage_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_original_stage_parameters</span>
+            <span class="n">widget_sliders</span> <span class="o">=</span> <span class="n">make_widget</span><span class="p">()</span>
+            <span class="n">hbox</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">widget_sliders</span><span class="p">,</span> <span class="n">reset_button</span><span class="p">]</span>
+        <span class="n">reset_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">hbox</span>
 
     <span class="k">def</span> <span class="nf">_show_download_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># &quot;interactive&quot; does not work for True/False in ipywidgets 4 yet.</span>
@@ -469,7 +559,7 @@
 
     <span class="k">def</span> <span class="nf">_add_text_repr_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">button_info</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Refresh&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Get representation info&#39;</span><span class="p">)</span>
-        <span class="n">button_update</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Update&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Update representation&#39;</span><span class="p">)</span>
+        <span class="n">button_update</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Update&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Update representation by updating rinfo box&#39;</span><span class="p">)</span>
         <span class="n">bbox</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">button_info</span><span class="p">,</span> <span class="n">button_update</span><span class="p">])</span>
         <span class="n">repr_name</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;repr_name&#39;</span><span class="p">)</span>
         <span class="n">component_slider</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;cindex&#39;</span><span class="p">)</span>
@@ -577,7 +667,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.5.2a+56.g9e870fa',
+            VERSION:'0.5.2a+155.gbea1c53',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
