@@ -279,6 +279,7 @@ class TrajectoryPlayer(DOMWidget):
         extra_list = [(spin_box, 'spin_box'),
                       (picked_box, 'picked atom'),
                       (drag_box, 'Drag')]
+        extra_list = extra_list[::-1]
 
         extra_box = Tab([w for w, _ in extra_list])
         [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]

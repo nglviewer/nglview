@@ -440,20 +440,22 @@ define( [
         },
 
         setDialog: function(){
+            var nb_container = Jupyter.notebook.container;
+            var that = this;
             dialog  = this.$container.dialog({
                 title: "NGLView",
                 draggable: true,
                 resizable: true,
                 modal: false,
-                width: document.width / 2.,
+                width: nb_container.width() - 100,
                 height:"auto",
                 show: { effect: "blind", duration: 50 },
                 close: function (event, ui) {
-                    console.log(this.$el);
+                    that.$el.append(that.$container);
                 },
                 resize: function( event, ui ){
-                    this.setSize( ui.size.width + "px", ui.size.height + "px" );
-                }.bind( this )
+                    that.setSize( ui.size.width + "px", ui.size.height + "px" );
+                }.bind( that )
             });
             dialog.css({overflow: 'hidden'});
         },
