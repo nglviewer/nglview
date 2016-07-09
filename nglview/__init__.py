@@ -1306,13 +1306,19 @@ class NGLWidget(widgets.DOMWidget):
         script_template = """
         var x = $('#notebook-container');
         x.draggable({args});
-        x.width('20%');
-        x.css({position: "relative", left: "20%"});
         """
         if yes:
             display(Javascript(script_template.replace('{args}', '')))
         else:
             display(Javascript(script_template.replace('{args}', '"destroy"')))
+
+    def _move_notebook_to_the_right(self):
+        script_template = """
+        var x = $('#notebook-container');
+        x.width('20%');
+        x.css({position: "relative", left: "20%"});
+        """
+        display(Javascript(script_template))
 
     def _reset_notebook(self, yes=True):
         script_template = """
@@ -1475,6 +1481,21 @@ class NGLWidget(widgets.DOMWidget):
     def __iter__(self):
         for i, _ in enumerate(self._ngl_component_ids):
             yield self[i]
+
+    def detach(self, split=False):
+        """detach player from its original container.
+
+        Parameters
+        ----------
+        split : bool, default False
+            if True, resize notebook then move it to the right of its container
+        """
+        if not self.loaded:
+            raise RuntimeError("must display view first")
+        self._remote_call('setDialog', target='Widget')
+        if split:
+            # rename
+            self._move_notebook_to_the_right()
 
     def _play(self, start=0, stop=-1, step=1, delay=0.08, n_times=1):
         '''for testing. Might be removed in the future

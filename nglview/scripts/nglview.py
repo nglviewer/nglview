@@ -179,6 +179,8 @@ def main(notebook_dict=notebook_dict):
 
     if not args.disable_autorun:
         install_nbextension(jupyter=args.jexe)
+    else:
+        disable_extension(jupyter=args.jexe)
 
     try:
         subprocess.check_call(cm.split())

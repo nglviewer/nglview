@@ -449,15 +449,16 @@ define( [
 
         setDialog: function(){
             var nb_container = Jupyter.notebook.container;
+            var nb_parents = nb_container.parents();
             var that = this;
             dialog  = this.$container.dialog({
                 title: "NGLView",
                 draggable: true,
                 resizable: true,
                 modal: false,
-                width: nb_container.width() - 100,
+                width: nb_parents.width() - nb_container.width() - 20,
                 height:"auto",
-                show: { effect: "blind", duration: 50 },
+                show: { effect: "blind", duration: 150 },
                 close: function (event, ui) {
                     that.$el.append(that.$container);
                     that.$container.dialog('destroy');
@@ -465,9 +466,12 @@ define( [
                 },
                 resize: function( event, ui ){
                     that.setSize( ui.size.width + "px", ui.size.height + "px" );
-                }.bind( that )
+                }.bind( that ),
             });
             dialog.css({overflow: 'hidden'});
+            dialog.prev('.ui-dialog-titlebar')
+                  .css({'background': 'transparent',
+                        'border': 'none'});
         },
 
         parametersChanged: function(){
