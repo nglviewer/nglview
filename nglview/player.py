@@ -505,3 +505,13 @@ class TrajectoryPlayer(DOMWidget):
             checkbox_antialias,
             checkbox_trim,
             checkbox_transparent])
+
+    def _make_resize_notebook_slider(self):
+        resize_notebook_slider = IntSlider(min=300, max=2000, description='resize notebook')
+        def on_resize_notebook(change):
+            width = change['new']
+            self._view._remote_call('resizeNotebook',
+                    target='Widget',
+                    args=[width,])
+        resize_notebook_slider.observe(on_resize_notebook, names='value')
+        return resize_notebook_slider
