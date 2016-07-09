@@ -448,14 +448,14 @@ define( [
         },
 
         setDialog: function(){
-            var nb_container = Jupyter.notebook.container;
+            var $nb_container = Jupyter.notebook.container;
             var that = this;
             dialog  = this.$container.dialog({
                 title: "NGLView",
                 draggable: true,
                 resizable: true,
                 modal: false,
-                width: nb_container.offset().left,
+                width: $nb_container.offset().left,
                 height:"auto",
                 position: {my: 'left', at: 'left', of: window},
                 show: { effect: "blind", duration: 150 },
@@ -472,6 +472,15 @@ define( [
             dialog.prev('.ui-dialog-titlebar')
                   .css({'background': 'transparent',
                         'border': 'none'});
+        },
+
+        resizeNotebook(width){
+            var $nb_container = Jupyter.notebook.container;
+            $nb_container.width(width);
+
+            if (this.$container.dialog){
+                this.$container.dialog({width: $nb_container.offset().left});
+            }
         },
 
         parametersChanged: function(){
