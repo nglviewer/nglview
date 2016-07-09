@@ -27,6 +27,7 @@ Table of contents
    classes <https://github.com/arose/nglview/blob/master/doc/interface_classes.md>`__
 -  `Changelog <https://github.com/arose/nglview/blob/master/CHANGELOG.md>`__
 -  `FAQ <#faq>`__
+-  `Website <#website>`__
 -  `License <#license>`__
 
 Installation
@@ -280,6 +281,12 @@ FAQ
 ===
 
 `Q&A <https://github.com/arose/nglview/wiki/Q&A>`__
+
+Website
+=======
+
+-  http://arose.github.io/nglview/latest
+-  http://arose.github.io/nglview/dev
 
 License
 =======
