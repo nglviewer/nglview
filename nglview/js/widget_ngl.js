@@ -452,6 +452,7 @@ define( [
                 show: { effect: "blind", duration: 50 },
                 close: function (event, ui) {
                     that.$el.append(that.$container);
+                    that.$container.dialog('destroy');
                 },
                 resize: function( event, ui ){
                     that.setSize( ui.size.width + "px", ui.size.height + "px" );
