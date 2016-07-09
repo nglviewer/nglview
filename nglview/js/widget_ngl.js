@@ -433,6 +433,14 @@ define( [
             }
         },
 
+        handleResize: function(){
+            this.$container.resizable( {
+                resize: function( event, ui ){
+                    this.setSize( ui.size.width + "px", ui.size.height + "px" );
+                }.bind( this )
+            })
+        },
+
         setSize: function( width, height ){
             this.stage.viewer.container.style.width = width;
             this.stage.viewer.container.style.height = height;
@@ -453,6 +461,7 @@ define( [
                 close: function (event, ui) {
                     that.$el.append(that.$container);
                     that.$container.dialog('destroy');
+                    that.handleResize();
                 },
                 resize: function( event, ui ){
                     that.setSize( ui.size.width + "px", ui.size.height + "px" );
