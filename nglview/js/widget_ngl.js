@@ -457,6 +457,7 @@ define( [
                 modal: false,
                 width: nb_container.offset().left,
                 height:"auto",
+                position: {my: 'left', at: 'left', of: window},
                 show: { effect: "blind", duration: 150 },
                 close: function (event, ui) {
                     that.$el.append(that.$container);
