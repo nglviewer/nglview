@@ -762,6 +762,12 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('setSpin',
                           target='Stage',
                           args=[axis, angle])
+    def _set_selection(self, selection, component=0, repr_index=0):
+        self._remote_call("setSelection",
+                         target='Representation',
+                         args=[selection],
+                         kwargs=dict(component_index=component,
+                                     repr_index=repr_index))
         
     @property
     def representations(self):
@@ -1103,10 +1109,13 @@ class NGLWidget(widgets.DOMWidget):
             elif msg_type == 'repr_parameters':
                 data_dict = self._ngl_msg.get('data')
                 repr_name = data_dict.pop('name') + '\n'
+                repr_selection = data_dict.get('sele') + '\n'
                 # json change True to true
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
-                self.player.repr_widget.children[1].value = repr_name
+                # TODO: refactor
+                self.player.repr_widget.children[1].children[0].value = repr_name
+                self.player.repr_widget.children[1].children[1].value = repr_selection
                 self.player.repr_widget.children[-1].value = data_dict_json
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
