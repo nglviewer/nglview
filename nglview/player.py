@@ -53,9 +53,9 @@ class TrajectoryPlayer(DOMWidget):
                                    antialias=True,
                                    trim=False,
                                    transparent=False)
-        self.picked_widget = self._add_text_picked()
-        self.repr_widget = self._add_text_repr_widget()
-        self._preference_widget = self._add_reference_widget()
+        self.picked_widget = self._make_text_picked()
+        self.repr_widget = self._make_text_repr_widget()
+        self._preference_widget = self._make_reference_widget()
 
     @observe('camera')
     def on_camera_changed(self, change):
@@ -207,10 +207,10 @@ class TrajectoryPlayer(DOMWidget):
         link((spin_z_slide, 'value'), (self, '_spin_z'))
         link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
-        qtconsole_button = self._add_button_qtconsole()
+        qtconsole_button = self._make_button_qtconsole()
 
         ibox = HBox([checkbox_interpolate, interpolation_type])
-        center_button = self._add_button_center()
+        center_button = self._make_button_center()
         render_button = self._show_download_image()
         center_render_hbox = HBox([center_button, render_button])
 
@@ -268,12 +268,12 @@ class TrajectoryPlayer(DOMWidget):
         drag_box = HBox([drag_button, drag_nb, reset_nb, dialog_button, lucky_button])
 
         gen_box = HBox([v0_left, ])
-        theme_box = Box([self._add_button_theme(), self._add_button_reset_theme()])
+        theme_box = Box([self._make_button_theme(), self._make_button_reset_theme()])
         hide_box = Box([])
         help_url_box = self._show_website()
 
         picked_box = HBox([self.picked_widget,])
-        repr_box= HBox([self.repr_widget, self._add_repr_sliders()])
+        repr_box= HBox([self.repr_widget, self._make_repr_sliders()])
 
         extra_list = [(spin_box, 'spin_box'),
                       (picked_box, 'picked atom'),
@@ -283,7 +283,7 @@ class TrajectoryPlayer(DOMWidget):
         extra_box = Tab([w for w, _ in extra_list])
         [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]
 
-        export_image_box = HBox([self._add_button_export_image()])
+        export_image_box = HBox([self._make_button_export_image()])
 
         box_couple = [(gen_box, 'General'),
                       (repr_box, 'Representation'),
@@ -299,14 +299,14 @@ class TrajectoryPlayer(DOMWidget):
 
         return tab
 
-    def _add_button_center(self):
+    def _make_button_center(self):
         button = Button(description='Center')
         def on_click(button):
             self._view.center()
         button.on_click(on_click)
         return button
 
-    def _add_button_theme(self):
+    def _make_button_theme(self):
         button = Button(description='Oceans16')
         def on_click(button):
             from nglview import theme
@@ -316,7 +316,7 @@ class TrajectoryPlayer(DOMWidget):
         button.on_click(on_click)
         return button
 
-    def _add_button_reset_theme(self):
+    def _make_button_reset_theme(self):
         from nglview.jsutils import js_clean_empty_output_area
         button = Button(description='Default')
         def on_click(button):
@@ -325,7 +325,7 @@ class TrajectoryPlayer(DOMWidget):
         button.on_click(on_click)
         return button
 
-    def _add_reference_widget(self):
+    def _make_reference_widget(self):
         def make_func():
             parameters = self._view._full_stage_parameters
             def func(pan_speed=parameters.get('panSpeed', 0.8),
@@ -415,7 +415,7 @@ class TrajectoryPlayer(DOMWidget):
         ]
         return HBox(buttons)
 
-    def _add_button_qtconsole(self):
+    def _make_button_qtconsole(self):
         from nglview.jsutils import js_launch_qtconsole
         button = Button(description='qtconsole')
 
@@ -424,15 +424,17 @@ class TrajectoryPlayer(DOMWidget):
         button.on_click(on_click)
         return button
 
-    def _add_text_picked(self):
+    def _make_text_picked(self):
         ta = Textarea(value=json.dumps(self._view.picked), description='Picked atom')
         return ta
 
-    def _add_text_repr_widget(self):
+    def _make_text_repr_widget(self):
         button_info = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         bbox = HBox([button_info, button_update])
         repr_name = Text(value='', description='repr_name')
+        repr_selection = Text(value='', description='selection')
+        repr_info_box = VBox([repr_name, repr_selection])
         component_slider = IntSlider(value=0, description='cindex')
         repr_slider = IntSlider(value=0, description='rindex')
         ta = Textarea(value='', description='rinfo')
@@ -447,20 +449,30 @@ class TrajectoryPlayer(DOMWidget):
             self._view.update_representation(component=int(component_slider.value),
                                              repr_index=int(repr_slider.value),
                                              **parameters)
+            self._view._set_selection(repr_selection.value,
+                                      component=int(component_slider.value),
+                                      repr_index=int(repr_slider.value))
             self._view._request_update_reprs()
         button_update.on_click(on_click_update)
 
         def update_slide_info(change):
             self._view._request_repr_parameters(component=int(component_slider.value),
                                                 repr_index=int(repr_slider.value))
+
+        def on_change_selection(change):
+            self._view._set_selection(change['new'],
+                                      component=int(component_slider.value),
+                                      repr_index=int(repr_slider.value))
+
         repr_slider.observe(update_slide_info, names='value')
         component_slider.observe(update_slide_info, names='value')
+        repr_selection.observe(on_change_selection, names='value')
 
-        # NOTE: if you update below list, make sure to update _add_repr_sliders
+        # NOTE: if you update below list, make sure to update _make_repr_sliders
         # or refactor
-        return VBox([bbox, repr_name, component_slider, repr_slider, ta])
+        return VBox([bbox, repr_info_box, component_slider, repr_slider, ta])
 
-    def _add_repr_sliders(self):
+    def _make_repr_sliders(self):
         repr_checkbox = Checkbox(value=False, description='repr slider')
 
         vbox = VBox([repr_checkbox])
@@ -469,7 +481,7 @@ class TrajectoryPlayer(DOMWidget):
             if change['new']:
                 # repr_name
                 # TODO: correctly upate name
-                name = self.repr_widget.children[1].value
+                name = self.repr_widget.children[1].children[0].value
                 component_slider = self.repr_widget.children[2]
                 repr_slider = self.repr_widget.children[3]
                 widget = self._view._display_repr(component=int(component_slider.value),
@@ -481,7 +493,7 @@ class TrajectoryPlayer(DOMWidget):
         repr_checkbox.observe(create_widget, names='value')
         return vbox
 
-    def _add_button_export_image(self):
+    def _make_button_export_image(self):
         slider_factor = IntSlider(value=4, min=1, max=10, description='scale')
         checkbox_antialias = Checkbox(value=True, description='antialias')
         checkbox_trim = Checkbox(value=False, description='trim')
