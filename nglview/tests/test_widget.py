@@ -21,10 +21,12 @@ from IPython import display
 import pytraj as pt
 import nglview as nv
 from nglview import NGLWidget
+from nglview import widget_utils
 import mdtraj as md
 import parmed as pmd
 from nglview.utils import PY2, PY3
 from nglview import jsutils
+from nglview.representation import Representation
 
 def default_view():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -107,7 +109,8 @@ def test_API_promise_to_have():
     # display
     display.Javascript(jsutils.js_clean_error_output)
     display.display(view.player.repr_widget)
-    
+    view.player._display()
+
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     view = nv.show_pytraj(traj)
@@ -143,6 +146,12 @@ def test_representations():
     print(representations_2)
     print(view.representations)
     _assert_dict_list_equal(view.representations, representations_2)
+
+    # Representations
+    # make fake params
+    view._repr_dict = {'c0': {'0': {'parameters': {}}}}
+    representation_widget = Representation(view, 0, 0)
+    representation_widget._display()
                     
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -385,3 +394,18 @@ def test_interpolation():
         view._set_coordinates(3)
 
     nt.assert_raises(ValueError, func())
+
+def test_widget_utils():
+    box = HBox()
+    i0 = IntText()
+    i0._ngl_name = 'i0'
+    i1 = IntText()
+    i1._ngl_name = 'i1'
+    box.children = [i0, i1]
+
+    assert i0 is widget_utils.get_widget_by_name(box, 'i0')
+    assert i1 is widget_utils.get_widget_by_name(box, 'i1')
+
+    box.children = [i1, i0]
+    assert i0 is widget_utils.get_widget_by_name(box, 'i0')
+    assert i1 is widget_utils.get_widget_by_name(box, 'i1')

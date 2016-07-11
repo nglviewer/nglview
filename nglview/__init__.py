@@ -4,9 +4,11 @@ from __future__ import print_function, absolute_import
 from . import datafiles
 from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
+from .widget_utils import get_widget_by_name
 from .player import TrajectoryPlayer
 from . import interpolate
 from .representation import Representation
+from .ngl_params import REPR_NAME_PAIRS
 import time
 
 import os
@@ -55,27 +57,6 @@ def decode_base64(data, shape, dtype='f4'):
 def _add_repr_method_shortcut(self, other):
     from types import MethodType
 
-    repr_names  = [
-            ('point', 'point'),
-            ('line', 'line'),
-            ('rope', 'rope'),
-            ('tube', 'tube'),
-            ('trace', 'trace'),
-            ('label', 'label'),
-            ('unitcell', 'unitcell'),
-            ('cartoon', 'cartoon'),
-            ('licorice', 'licorice'),
-            ('ribbon', 'ribbon'),
-            ('surface', 'surface'),
-            ('backbone', 'backbone'),
-            ('contact', 'contact'),
-            ('hyperball', 'hyperball'),
-            ('rocket', 'rocket'),
-            ('helixorient', 'helixorient'),
-            ('simplified_base', 'base'),
-            ('ball_and_stick', 'ball+stick'),
-            ]
-
     def make_func_add(rep):
         """return a new function object
         """
@@ -94,7 +75,7 @@ def _add_repr_method_shortcut(self, other):
             self._remove_representations_by_name(repr_name=rep[1], **kwargs)
         return func
 
-    for rep in repr_names:
+    for rep in REPR_NAME_PAIRS:
         func_add = make_func_add(rep)
         fn_add = 'add_' + rep[0]
 
@@ -701,12 +682,12 @@ class NGLWidget(widgets.DOMWidget):
 
     @observe('_repr_dict')
     def _update_max_reps_count(self, change):
-        repr_slider = self.player.repr_widget.children[-2]
-        component_slider = self.player.repr_widget.children[2]
+        repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
+        component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
         cindex = str(component_slider.value)
         try:
             repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
-        except TraitError:
+        except (TraitError, IndexError, KeyError):
             # TraitError: setting max < min
             pass
 
@@ -762,6 +743,12 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('setSpin',
                           target='Stage',
                           args=[axis, angle])
+    def _set_selection(self, selection, component=0, repr_index=0):
+        self._remote_call("setSelection",
+                         target='Representation',
+                         args=[selection],
+                         kwargs=dict(component_index=component,
+                                     repr_index=repr_index))
         
     @property
     def representations(self):
@@ -1103,11 +1090,18 @@ class NGLWidget(widgets.DOMWidget):
             elif msg_type == 'repr_parameters':
                 data_dict = self._ngl_msg.get('data')
                 repr_name = data_dict.pop('name') + '\n'
+                repr_selection = data_dict.get('sele') + '\n'
                 # json change True to true
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
-                self.player.repr_widget.children[1].value = repr_name
-                self.player.repr_widget.children[-1].value = data_dict_json
+
+                # TODO: refactor
+                repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+                repr_info_box.children[0].value = repr_name
+                repr_info_box.children[1].value = repr_selection
+
+                repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
+                repr_text_box.children[-1].value = data_dict_json
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':
@@ -1305,13 +1299,28 @@ class NGLWidget(widgets.DOMWidget):
     def _set_notebook_draggable(self, yes=True, width='20%'):
         script_template = """
         var x = $('#notebook-container');
-        x.draggable({arg});
-        x.width('{width}')
+        x.draggable({args});
         """
         if yes:
-            display(Javascript(script_template.format(arg='', width=width)))
+            display(Javascript(script_template.replace('{args}', '')))
         else:
-            display(Javascript(script_template.format(arg='"destroy"', width=width)))
+            display(Javascript(script_template.replace('{args}', '"destroy"')))
+
+    def _move_notebook_to_the_right(self):
+        script_template = """
+        var x = $('#notebook-container');
+        x.width('20%');
+        x.css({position: "relative", left: "20%"});
+        """
+        display(Javascript(script_template))
+
+    def _reset_notebook(self, yes=True):
+        script_template = """
+        var x = $('#notebook-container');
+        x.width('40%');
+        x.css({position: "relative", left: "0%"});
+        """
+        display(Javascript(script_template))
 
     def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
         """call NGL's methods from Python.
@@ -1466,6 +1475,24 @@ class NGLWidget(widgets.DOMWidget):
     def __iter__(self):
         for i, _ in enumerate(self._ngl_component_ids):
             yield self[i]
+
+    def detach(self, split=False):
+        """detach player from its original container.
+
+        Parameters
+        ----------
+        split : bool, default False
+            if True, resize notebook then move it to the right of its container
+        """
+        if not self.loaded:
+            raise RuntimeError("must display view first")
+
+        # resize notebook first
+        # width of the dialog will be calculated based on notebook container offset
+        if split:
+            # rename
+            self._move_notebook_to_the_right()
+        self._remote_call('setDialog', target='Widget')
 
     def _play(self, start=0, stop=-1, step=1, delay=0.08, n_times=1):
         '''for testing. Might be removed in the future

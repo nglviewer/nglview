@@ -359,6 +359,14 @@ define( [
            repr.setParameters( params );
         },
 
+        setRepresentation: function(name, params, component_index, repr_index){
+              var component = this.stage.compList[ component_index ];
+              var repr = component.reprList[ repr_index ];
+              var new_repr = NGL.makeRepresentation(name, component.structure,
+                                                    this.stage.viewer, params);
+              repr.setRepresentation(new_repr);
+        },
+
         structureChanged: function(){
             this.structureComponent = undefined;
             var structureList = this.model.get( "_init_structure_list" );
@@ -433,10 +441,55 @@ define( [
             }
         },
 
+        handleResize: function(){
+            this.$container.resizable( {
+                resize: function( event, ui ){
+                    this.setSize( ui.size.width + "px", ui.size.height + "px" );
+                }.bind( this )
+            })
+        },
+
         setSize: function( width, height ){
             this.stage.viewer.container.style.width = width;
             this.stage.viewer.container.style.height = height;
             this.stage.handleResize();
+        },
+
+        setDialog: function(){
+            var $nb_container = Jupyter.notebook.container;
+            var that = this;
+            dialog  = this.$container.dialog({
+                title: "NGLView",
+                draggable: true,
+                resizable: true,
+                modal: false,
+                width: $nb_container.offset().left,
+                height:"auto",
+                position: {my: 'left', at: 'left', of: window},
+                show: { effect: "blind", duration: 150 },
+                close: function (event, ui) {
+                    that.$el.append(that.$container);
+                    that.$container.dialog('destroy');
+                    that.handleResize();
+                },
+                resize: function( event, ui ){
+                    that.stage.handleResize();
+                    that.setSize( ui.size.width + "px", ui.size.height + "px" );
+                }.bind( that ),
+            });
+            dialog.css({overflow: 'hidden'});
+            dialog.prev('.ui-dialog-titlebar')
+                  .css({'background': 'transparent',
+                        'border': 'none'});
+        },
+
+        resizeNotebook(width){
+            var $nb_container = Jupyter.notebook.container;
+            $nb_container.width(width);
+
+            if (this.$container.dialog){
+                this.$container.dialog({width: $nb_container.offset().left});
+            }
         },
 
         parametersChanged: function(){

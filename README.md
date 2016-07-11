@@ -22,6 +22,7 @@ Table of contents
 * [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
 * [FAQ](#faq)
+* [Website](#website)
 * [License](#license)
 
 
@@ -217,7 +218,8 @@ Box(children=(w1,w2))
 
 API doc
 -------
-[Please check here](http://arose.github.io/nglview/latest/api.html)
+- [Latest version](http://arose.github.io/nglview/latest/api.html)
+- [Development version](http://arose.github.io/nglview/dev/api.html)
 
 Command line
 ============
@@ -253,6 +255,12 @@ FAQ
 ===
 
 [Q&A](https://github.com/arose/nglview/wiki/Q&A)
+
+Website
+=======
+
+- http://arose.github.io/nglview/latest
+- http://arose.github.io/nglview/dev
 
 License
 =======

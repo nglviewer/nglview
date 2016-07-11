@@ -35,6 +35,7 @@ Unstable Features
 -----------------
 - [change theme](images/dark_theme.md)
 - [display GUI](images/display_gui.md)
+- [pop up viewer](images/viewer_pop_up.md)
 
 Tips
 ----

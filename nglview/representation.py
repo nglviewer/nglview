@@ -62,12 +62,14 @@ class Representation(DOMWidget):
                         boxSize=box_size,
                         cutoff=cutoff)
             surface_types = ['vws', 'sas', 'ms', 'ses']
+            # use continuous_update=False to avoid expensive surface calculation and update
             widget_extra = interactive(func_extra,
                     probe_radius=(0., 5., 0.1),
                     isolevel=(0., 10., 0.1),
                     smooth=(0, 10, 1),
                     surface_type=surface_types,
                     box_size=(0, 100, 2),
-                    cutoff=(0., 100, 0.1))
+                    cutoff=(0., 100, 0.1),
+                    continuous_update=False)
             wbox.children = [iwidget, widget_extra]
         return wbox

@@ -8,6 +8,7 @@ requirements:
     - setuptools
     - jupyter
     - ipywidgets <=4.1.1
+    - notebook <=4.1
     - traitlets
   run:
     - python
@@ -15,7 +16,7 @@ requirements:
     - ipywidgets <=4.1.1
     - jupyter
     - traitlets
-    - notebook
+    - notebook <=4.1
 
 test:
     imports:
