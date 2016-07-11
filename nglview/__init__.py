@@ -7,6 +7,7 @@ from .utils import FileManager
 from .player import TrajectoryPlayer
 from . import interpolate
 from .representation import Representation
+from .ngl_params import REPR_NAME_PAIRS
 import time
 
 import os
@@ -55,27 +56,6 @@ def decode_base64(data, shape, dtype='f4'):
 def _add_repr_method_shortcut(self, other):
     from types import MethodType
 
-    repr_names  = [
-            ('point', 'point'),
-            ('line', 'line'),
-            ('rope', 'rope'),
-            ('tube', 'tube'),
-            ('trace', 'trace'),
-            ('label', 'label'),
-            ('unitcell', 'unitcell'),
-            ('cartoon', 'cartoon'),
-            ('licorice', 'licorice'),
-            ('ribbon', 'ribbon'),
-            ('surface', 'surface'),
-            ('backbone', 'backbone'),
-            ('contact', 'contact'),
-            ('hyperball', 'hyperball'),
-            ('rocket', 'rocket'),
-            ('helixorient', 'helixorient'),
-            ('simplified_base', 'base'),
-            ('ball_and_stick', 'ball+stick'),
-            ]
-
     def make_func_add(rep):
         """return a new function object
         """
@@ -94,7 +74,7 @@ def _add_repr_method_shortcut(self, other):
             self._remove_representations_by_name(repr_name=rep[1], **kwargs)
         return func
 
-    for rep in repr_names:
+    for rep in REPR_NAME_PAIRS:
         func_add = make_func_add(rep)
         fn_add = 'add_' + rep[0]
 

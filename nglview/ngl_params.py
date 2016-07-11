@@ -8,6 +8,7 @@ REPR_NAME_PAIRS = [
         ('unitcell', 'unitcell'),
         ('cartoon', 'cartoon'),
         ('licorice', 'licorice'),
+        ('distance', 'distance'),
         ('ribbon', 'ribbon'),
         ('surface', 'surface'),
         ('backbone', 'backbone'),
