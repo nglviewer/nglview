@@ -1,5 +1,6 @@
 # TODO: reorg
 # simplify code
+from __future__ import absolute_import
 import json
 import ipywidgets
 from IPython.display import display, Javascript
@@ -14,6 +15,8 @@ from ipywidgets import (DOMWidget, IntText, FloatText,
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
+
+from .ngl_params import REPR_NAMES
 
 
 class TrajectoryPlayer(DOMWidget):
@@ -35,6 +38,7 @@ class TrajectoryPlayer(DOMWidget):
     camera = CaselessStrEnum(['perspective', 'orthographic'],
         default_value='perspective').tag(sync=False)
     _render_params = Dict().tag(sync=False)
+    _real_time_update = Bool(True).tag(sync=False)
 
     def __init__(self, view, step=1, delay=100,
                  sync_frame=False, min_delay=40):
@@ -455,17 +459,35 @@ class TrajectoryPlayer(DOMWidget):
             self._view._request_update_reprs()
         button_update.on_click(on_click_update)
 
+        def on_change_repr_name(change):
+            name = change['new'].strip()
+            old = change['old'].strip()
+
+            should_update = (self._real_time_update
+                             and old and name
+                             and name in REPR_NAMES
+                             and name != change['old'].strip())
+
+            if should_update:
+                component=int(component_slider.value)
+                repr_index=int(repr_slider.value)
+                self._view._remote_call('setRepresentation',
+                                 target='Widget',
+                                 args=[change['new'], {}, component, repr_index])
+
         def update_slide_info(change):
             self._view._request_repr_parameters(component=int(component_slider.value),
                                                 repr_index=int(repr_slider.value))
 
         def on_change_selection(change):
-            self._view._set_selection(change['new'],
-                                      component=int(component_slider.value),
-                                      repr_index=int(repr_slider.value))
+            if self._real_time_update:
+                self._view._set_selection(change['new'],
+                                          component=int(component_slider.value),
+                                          repr_index=int(repr_slider.value))
 
         repr_slider.observe(update_slide_info, names='value')
         component_slider.observe(update_slide_info, names='value')
+        repr_name.observe(on_change_repr_name, names='value')
         repr_selection.observe(on_change_selection, names='value')
 
         # NOTE: if you update below list, make sure to update _make_repr_sliders

@@ -359,6 +359,14 @@ define( [
            repr.setParameters( params );
         },
 
+        setRepresentation: function(name, params, component_index, repr_index){
+              var component = this.stage.compList[ component_index ];
+              var repr = component.reprList[ repr_index ];
+              var new_repr = NGL.makeRepresentation(name, component.structure,
+                                                    this.stage.viewer, params);
+              repr.setRepresentation(new_repr);
+        },
+
         structureChanged: function(){
             this.structureComponent = undefined;
             var structureList = this.model.get( "_init_structure_list" );
