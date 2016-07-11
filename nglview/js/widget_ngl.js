@@ -473,6 +473,7 @@ define( [
                     that.handleResize();
                 },
                 resize: function( event, ui ){
+                    that.stage.handleResize();
                     that.setSize( ui.size.width + "px", ui.size.height + "px" );
                 }.bind( that ),
             });

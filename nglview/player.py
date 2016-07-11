@@ -1,6 +1,7 @@
 # TODO: reorg
 # simplify code
 from __future__ import absolute_import
+import time
 import json
 import ipywidgets
 from IPython.display import display, Javascript
@@ -17,6 +18,7 @@ from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
 
 from .ngl_params import REPR_NAMES
+from .widget_utils import get_widget_by_name
 
 
 class TrajectoryPlayer(DOMWidget):
@@ -277,7 +279,7 @@ class TrajectoryPlayer(DOMWidget):
         help_url_box = self._show_website()
 
         picked_box = HBox([self.picked_widget,])
-        repr_box= HBox([self.repr_widget, self._make_repr_sliders()])
+        repr_box= VBox([self.repr_widget, self._make_repr_sliders()])
 
         extra_list = [(spin_box, 'spin_box'),
                       (picked_box, 'picked atom'),
@@ -436,20 +438,41 @@ class TrajectoryPlayer(DOMWidget):
         button_info = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         bbox = HBox([button_info, button_update])
-        repr_name = Text(value='', description='repr_name')
+        repr_name = Text(value='', description='representation name')
+
         repr_selection = Text(value='', description='selection')
+        repr_selection._ngl_name = 'repr_selection'
+
         repr_info_box = VBox([repr_name, repr_selection])
-        component_slider = IntSlider(value=0, description='cindex')
-        repr_slider = IntSlider(value=0, description='rindex')
-        ta = Textarea(value='', description='rinfo')
+        repr_info_box._ngl_name = 'repr_info_box'
+
+        center_selection_button = Button(description='center', tooltip='center at selection')
+        center_selection_button._ngl_name = 'center_selection_button'
+
+        component_slider = IntSlider(value=0, description='component index')
+        component_slider._ngl_name = 'component_slider'
+
+        repr_slider = IntSlider(value=0, description='representation index')
+        repr_slider._ngl_name = 'repr_slider'
+
+        repr_text_info = Textarea(value='', description='representation parameters')
+        repr_text_info.visible = False
+        checkbox_repr_text = Checkbox(value=False, description='show parameters')
+        repr_text_box = VBox([checkbox_repr_text, repr_text_info])
+        repr_text_box._ngl_name = 'repr_text_box'
 
         def on_click_info(button):
             self._view._request_repr_parameters(component=int(component_slider.value),
                                                 repr_index=int(repr_slider.value))
         button_info.on_click(on_click_info)
 
+        def on_click_center(center_selection):
+            self._view.center_view(selection=repr_selection.value,
+                                   component=int(component_slider.value))
+        center_selection_button.on_click(on_click_center)
+
         def on_click_update(button):
-            parameters = json.loads(ta.value.replace("False", "false").replace("True", "true"))
+            parameters = json.loads(repr_text_info.value.replace("False", "false").replace("True", "true"))
             self._view.update_representation(component=int(component_slider.value),
                                              repr_index=int(repr_slider.value),
                                              **parameters)
@@ -485,14 +508,19 @@ class TrajectoryPlayer(DOMWidget):
                                           component=int(component_slider.value),
                                           repr_index=int(repr_slider.value))
 
+        def on_change_checkbox_repr_text(change):
+            repr_text_info.visible = change['new']
+
         repr_slider.observe(update_slide_info, names='value')
         component_slider.observe(update_slide_info, names='value')
         repr_name.observe(on_change_repr_name, names='value')
         repr_selection.observe(on_change_selection, names='value')
+        checkbox_repr_text.observe(on_change_checkbox_repr_text, names='value')
 
         # NOTE: if you update below list, make sure to update _make_repr_sliders
         # or refactor
-        return VBox([bbox, repr_info_box, component_slider, repr_slider, ta])
+        return VBox([bbox, repr_info_box, center_selection_button,
+                     component_slider, repr_slider, repr_text_box])
 
     def _make_repr_sliders(self):
         repr_checkbox = Checkbox(value=False, description='repr slider')
@@ -504,8 +532,8 @@ class TrajectoryPlayer(DOMWidget):
                 # repr_name
                 # TODO: correctly upate name
                 name = self.repr_widget.children[1].children[0].value
-                component_slider = self.repr_widget.children[2]
-                repr_slider = self.repr_widget.children[3]
+                component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
+                repr_slider = get_widget_by_name(self.repr_widget, 'repr_slider')
                 widget = self._view._display_repr(component=int(component_slider.value),
                                          repr_index=int(repr_slider.value),
                                          name=name)
