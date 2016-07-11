@@ -4,6 +4,7 @@ from __future__ import print_function, absolute_import
 from . import datafiles
 from .utils import seq_to_string, string_types, _camelize, _camelize_dict
 from .utils import FileManager
+from .widget_utils import get_widget_by_name
 from .player import TrajectoryPlayer
 from . import interpolate
 from .representation import Representation
@@ -681,8 +682,8 @@ class NGLWidget(widgets.DOMWidget):
 
     @observe('_repr_dict')
     def _update_max_reps_count(self, change):
-        repr_slider = self.player.repr_widget.children[-2]
-        component_slider = self.player.repr_widget.children[2]
+        repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
+        component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
         cindex = str(component_slider.value)
         try:
             repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
@@ -1093,10 +1094,14 @@ class NGLWidget(widgets.DOMWidget):
                 # json change True to true
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
+
                 # TODO: refactor
-                self.player.repr_widget.children[1].children[0].value = repr_name
-                self.player.repr_widget.children[1].children[1].value = repr_selection
-                self.player.repr_widget.children[-1].value = data_dict_json
+                repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+                repr_info_box.children[0].value = repr_name
+                repr_info_box.children[1].value = repr_selection
+
+                repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
+                repr_text_box.children[-1].value = data_dict_json
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':
