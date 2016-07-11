@@ -21,6 +21,7 @@ from IPython import display
 import pytraj as pt
 import nglview as nv
 from nglview import NGLWidget
+from nglview import widget_utils
 import mdtraj as md
 import parmed as pmd
 from nglview.utils import PY2, PY3
@@ -393,3 +394,18 @@ def test_interpolation():
         view._set_coordinates(3)
 
     nt.assert_raises(ValueError, func())
+
+def test_widget_utils():
+    box = HBox()
+    i0 = IntText()
+    i0._ngl_name = 'i0'
+    i1 = IntText()
+    i1._ngl_name = 'i1'
+    box.children = [i0, i1]
+
+    assert i0 is widget_utils.get_widget_by_name(box, 'i0')
+    assert i1 is widget_utils.get_widget_by_name(box, 'i1')
+
+    box.children = [i1, i0]
+    assert i0 is widget_utils.get_widget_by_name(box, 'i0')
+    assert i1 is widget_utils.get_widget_by_name(box, 'i1')
