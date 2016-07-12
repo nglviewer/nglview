@@ -151,6 +151,13 @@ define( [
             var $buttonHide = $('<button>Hide</button>');
             var that = this;
 
+            $inputSelection.submit(function(){
+                var name = $("#name").val();
+                var sele = $("#selection").val();
+                var comp = that.stage.compList[0];
+                comp.addRepresentation(name, {'sele': sele});
+            });
+
             $buttonAdd.click(function(){
                 var name = $("#name").val();
                 var sele = $("#selection").val();
@@ -182,6 +189,7 @@ define( [
                 .append($buttonRemove)
                 .append($buttonHide)
                 .appendTo(this.$container);
+            this.$addRepresentation.hide();
 
             this.stage.signals.onPicking.add( function( pd ){
                 var pd2 = {};
