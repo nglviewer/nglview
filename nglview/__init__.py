@@ -799,6 +799,12 @@ class NGLWidget(widgets.DOMWidget):
                               args=[params['type'],],
                               kwargs=kwargs)
 
+    def _remove_representation(self, component=0, repr_index=0):
+        self._remote_call('removeRepresentation',
+                          target='Widget',
+                          args=[component, repr_index])
+        self._request_update_reprs()
+
     def _remove_representations_by_name(self, repr_name, component=0):
         self._remote_call('removeRepresentationsByName',
                           target='Widget',
@@ -1311,6 +1317,15 @@ class NGLWidget(widgets.DOMWidget):
         var x = $('#notebook-container');
         x.width('20%');
         x.css({position: "relative", left: "20%"});
+        """
+        display(Javascript(script_template))
+
+    def _move_notebook_to_the_left(self):
+        script_template = """
+        var cb = Jupyter.notebook.container;
+
+        cb.width('20%');
+        cb.offset({'left': 0})
         """
         display(Javascript(script_template))
 

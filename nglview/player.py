@@ -1,11 +1,9 @@
 # TODO: reorg
 # simplify code
 from __future__ import absolute_import
-import time
 import json
-import ipywidgets
 from IPython.display import display, Javascript
-from ipywidgets import (DOMWidget, IntText, FloatText,
+from ipywidgets import (DOMWidget,
                         Box, HBox, VBox, Checkbox,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
@@ -69,13 +67,6 @@ class TrajectoryPlayer(DOMWidget):
         self._view._remote_call("setParameters",
                                 target='Stage',
                                 kwargs=dict(cameraType=camera_type))
-
-    @observe('camera')
-    def on_camera_changed(self, change):
-        camera_type = change['new']
-        self._view._remote_call("setParameters",
-                target='Stage',
-                kwargs=dict(cameraType=camera_type))
 
     @property
     def frame(self):
@@ -279,7 +270,8 @@ class TrajectoryPlayer(DOMWidget):
         help_url_box = self._show_website()
 
         picked_box = HBox([self.picked_widget,])
-        repr_box= VBox([self.repr_widget, self._make_repr_sliders()])
+        repr_box= HBox([VBox([self.repr_widget, self._make_repr_sliders()]),
+                        self._make_add_repr_widget()])
 
         extra_list = [(spin_box, 'spin_box'),
                       (picked_box, 'picked atom'),
@@ -437,7 +429,8 @@ class TrajectoryPlayer(DOMWidget):
     def _make_text_repr_widget(self):
         button_info = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
-        bbox = HBox([button_info, button_update])
+        button_remove = Button(description='Remove', tooltip='Remove current representation')
+        bbox = HBox([button_info, button_update, button_remove])
         repr_name = Text(value='', description='representation name')
 
         repr_selection = Text(value='', description='selection')
@@ -461,15 +454,22 @@ class TrajectoryPlayer(DOMWidget):
         repr_text_box = VBox([checkbox_repr_text, repr_text_info])
         repr_text_box._ngl_name = 'repr_text_box'
 
+        checkbox_reprlist = Checkbox(value=False, description='reprlist')
+        checkbox_reprlist._ngl_name = 'checkbox_reprlist'
+        reprlist_choices = Dropdown(value=repr_name.value, options=[repr_name.value,])
+        reprlist_choices.visible = False
+        reprlist_choices._ngl_name = 'reprlist_choices'
+        reprlist_box = VBox([checkbox_reprlist, reprlist_choices])
+        reprlist_box._ngl_name = 'reprlist_box'
+
+        def on_update_checkbox_reprlist(change):
+            reprlist_choices.visible= change['new']
+        checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
+
         def on_click_info(button):
             self._view._request_repr_parameters(component=int(component_slider.value),
                                                 repr_index=int(repr_slider.value))
         button_info.on_click(on_click_info)
-
-        def on_click_center(center_selection):
-            self._view.center_view(selection=repr_selection.value,
-                                   component=int(component_slider.value))
-        center_selection_button.on_click(on_click_center)
 
         def on_click_update(button):
             parameters = json.loads(repr_text_info.value.replace("False", "false").replace("True", "true"))
@@ -481,6 +481,19 @@ class TrajectoryPlayer(DOMWidget):
                                       repr_index=int(repr_slider.value))
             self._view._request_update_reprs()
         button_update.on_click(on_click_update)
+
+        def on_click_remove(button_remove):
+            self._view._remove_representation(component=int(component_slider.value),
+                                              repr_index=int(repr_slider.value))
+            self._view._request_repr_parameters(component=int(component_slider.value),
+                                                repr_index=int(repr_slider.value))
+        button_remove.on_click(on_click_remove)
+
+        def on_click_center(center_selection):
+            self._view.center_view(selection=repr_selection.value,
+                                   component=int(component_slider.value))
+        center_selection_button.on_click(on_click_center)
+
 
         def on_change_repr_name(change):
             name = change['new'].strip()
@@ -497,6 +510,7 @@ class TrajectoryPlayer(DOMWidget):
                 self._view._remote_call('setRepresentation',
                                  target='Widget',
                                  args=[change['new'], {}, component, repr_index])
+                self._view._request_update_reprs()
 
         def update_slide_info(change):
             self._view._request_repr_parameters(component=int(component_slider.value),
@@ -520,7 +534,7 @@ class TrajectoryPlayer(DOMWidget):
         # NOTE: if you update below list, make sure to update _make_repr_sliders
         # or refactor
         return VBox([bbox, repr_info_box, center_selection_button,
-                     component_slider, repr_slider, repr_text_box])
+                     component_slider, repr_slider, reprlist_box, repr_text_box])
 
     def _make_repr_sliders(self):
         repr_checkbox = Checkbox(value=False, description='repr slider')
@@ -577,3 +591,17 @@ class TrajectoryPlayer(DOMWidget):
                     args=[width,])
         resize_notebook_slider.observe(on_resize_notebook, names='value')
         return resize_notebook_slider
+
+    def _make_add_repr_widget(self):
+        repr_name = Dropdown(options=sorted(list(REPR_NAMES)), value='cartoon')
+        repr_selection = Text(value='*', description='Selection')
+        repr_button = Button(description='Add')
+
+        def on_click(button):
+            self._view.add_representation(selection=repr_selection.value.strip(),
+                    repr_type=repr_name.value)
+            self._view._request_update_reprs()
+        repr_button.on_click(on_click)
+        add_repr_box = VBox([repr_button, repr_name, repr_selection])
+        add_repr_box._ngl_name = 'add_repr_box'
+        return add_repr_box

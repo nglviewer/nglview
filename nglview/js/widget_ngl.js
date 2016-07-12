@@ -196,8 +196,11 @@ define( [
             var comp = this.stage.compList[ component_index ];
             var repr = comp.reprList[ repr_index ];
             var msg = repr.repr.getParameters();
-            msg['name'] = repr.name;
-            this.send({'type': 'repr_parameters', 'data': msg});
+
+            if (msg){
+                msg['name'] = repr.name;
+                this.send({'type': 'repr_parameters', 'data': msg});
+            }
         },
 
         requestReprsInfo: function(){
@@ -342,6 +345,16 @@ define( [
             }
         },
 
+        removeRepresentation: function(component_index, repr_index){
+           var component = this.stage.compList[ component_index ];
+           var repr = component.reprList[repr_index]
+
+           if (repr) {
+               component.removeRepresentation(repr);
+               repr.dispose();
+               }
+        },
+
         removeRepresentationsByName: function( repr_name, component_index ){
            var component = this.stage.compList[ component_index ];
 
@@ -356,15 +369,24 @@ define( [
         updateRepresentationForComponent: function( repr_index, component_index, params ){
            var component = this.stage.compList[ component_index ];
            var repr = component.reprList[ repr_index ];
-           repr.setParameters( params );
+           if (repr) {
+               repr.setParameters( params );
+           }
         },
 
         setRepresentation: function(name, params, component_index, repr_index){
               var component = this.stage.compList[ component_index ];
               var repr = component.reprList[ repr_index ];
-              var new_repr = NGL.makeRepresentation(name, component.structure,
+
+              if (repr){
+                  var new_repr = NGL.makeRepresentation(name, component.structure,
                                                     this.stage.viewer, params);
-              repr.setRepresentation(new_repr);
+                  if (new_repr) {
+                      repr.setRepresentation(new_repr);
+                      repr.name = name;
+                      component.reprList[repr_index] = repr;
+                  }
+              }
         },
 
         structureChanged: function(){
@@ -607,7 +629,9 @@ define( [
                         var component = this.stage.compList[ component_index ];
                         var repr = component.reprList[repr_index];
                         var func = repr[ msg.methodName ];
-                        func.apply( repr, new_args );
+                        if (repr && func){
+                            func.apply( repr, new_args );
+                        }
                         break;
                     default:
                         console.log( "nothing done for " + msg.target );
