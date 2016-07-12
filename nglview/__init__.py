@@ -1314,6 +1314,15 @@ class NGLWidget(widgets.DOMWidget):
         """
         display(Javascript(script_template))
 
+    def _move_notebook_to_the_left(self):
+        script_template = """
+        var cb = Jupyter.notebook.container;
+
+        cb.width('20%');
+        cb.offset({'left': 0})
+        """
+        display(Javascript(script_template))
+
     def _reset_notebook(self, yes=True):
         script_template = """
         var x = $('#notebook-container');
