@@ -460,8 +460,6 @@ class TrajectoryPlayer(DOMWidget):
         reprlist_box = VBox([checkbox_reprlist, reprlist_choices])
         reprlist_box._ngl_name = 'reprlist_box'
 
-        link((repr_name, 'value'), (reprlist_choices, 'value'))
-
         def on_update_checkbox_reprlist(change):
             reprlist_choices.visible= change['new']
         checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
@@ -502,6 +500,7 @@ class TrajectoryPlayer(DOMWidget):
                 self._view._remote_call('setRepresentation',
                                  target='Widget',
                                  args=[change['new'], {}, component, repr_index])
+                self._view._request_update_reprs()
 
         def update_slide_info(change):
             self._view._request_repr_parameters(component=int(component_slider.value),

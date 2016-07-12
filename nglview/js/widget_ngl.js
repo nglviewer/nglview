@@ -356,15 +356,22 @@ define( [
         updateRepresentationForComponent: function( repr_index, component_index, params ){
            var component = this.stage.compList[ component_index ];
            var repr = component.reprList[ repr_index ];
-           repr.setParameters( params );
+           if (repr) {
+               repr.setParameters( params );
+           }
         },
 
         setRepresentation: function(name, params, component_index, repr_index){
               var component = this.stage.compList[ component_index ];
               var repr = component.reprList[ repr_index ];
-              var new_repr = NGL.makeRepresentation(name, component.structure,
+
+              if (repr){
+                  var new_repr = NGL.makeRepresentation(name, component.structure,
                                                     this.stage.viewer, params);
-              repr.setRepresentation(new_repr);
+                  repr.setRepresentation(new_repr);
+                  repr.name = name;
+                  component.reprList[repr_index] = repr;
+              }
         },
 
         structureChanged: function(){
