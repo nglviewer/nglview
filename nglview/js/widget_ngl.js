@@ -181,7 +181,6 @@ define( [
                 .append($buttonAdd)
                 .append($buttonRemove)
                 .append($buttonHide)
-                .draggable()
                 .appendTo(this.$container);
 
             this.stage.signals.onPicking.add( function( pd ){
@@ -530,7 +529,6 @@ define( [
 
         setReprDialog: function(){
             var that = this;
-            this.$addRepresentation.draggable('destroy');
             dialog  = this.$addRepresentation.dialog({
                 draggable: true,
                 resizable: true,
@@ -539,7 +537,6 @@ define( [
                 close: function (event, ui) {
                     that.$container.append(that.$addRepresentation);
                     that.$addRepresentation.dialog('destroy');
-                    this.$addRepresentation.draggable();
                 },
             });
             dialog.css({overflow: 'hidden'});
