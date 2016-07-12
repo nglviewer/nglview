@@ -375,7 +375,8 @@ class TrajectoryPlayer(DOMWidget):
 
         widget_sliders = make_widget()
         reset_button = Button(description='Reset')
-        hbox = HBox([widget_sliders, reset_button])
+        display_reprbox_on_screen_button = Button(description='repr_on_screen')
+        hbox = HBox([widget_sliders, reset_button, display_reprbox_on_screen_button])
 
         def on_click(reset_button):
             self._view.parameters = self._view._original_stage_parameters
@@ -383,6 +384,10 @@ class TrajectoryPlayer(DOMWidget):
             widget_sliders = make_widget()
             hbox.children = [widget_sliders, reset_button]
         reset_button.on_click(on_click)
+
+        def on_click_reprbox(button):
+            self._view._remote_call('showReprButton', target='Widget')
+        display_reprbox_on_screen_button.on_click(on_click_reprbox)
 
         return hbox
 
