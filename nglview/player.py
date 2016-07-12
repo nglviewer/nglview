@@ -1,11 +1,9 @@
 # TODO: reorg
 # simplify code
 from __future__ import absolute_import
-import time
 import json
-import ipywidgets
 from IPython.display import display, Javascript
-from ipywidgets import (DOMWidget, IntText, FloatText,
+from ipywidgets import (DOMWidget,
                         Box, HBox, VBox, Checkbox,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
@@ -69,13 +67,6 @@ class TrajectoryPlayer(DOMWidget):
         self._view._remote_call("setParameters",
                                 target='Stage',
                                 kwargs=dict(cameraType=camera_type))
-
-    @observe('camera')
-    def on_camera_changed(self, change):
-        camera_type = change['new']
-        self._view._remote_call("setParameters",
-                target='Stage',
-                kwargs=dict(cameraType=camera_type))
 
     @property
     def frame(self):
@@ -461,6 +452,18 @@ class TrajectoryPlayer(DOMWidget):
         repr_text_box = VBox([checkbox_repr_text, repr_text_info])
         repr_text_box._ngl_name = 'repr_text_box'
 
+        checkbox_reprlist = Checkbox(value=False, description='reprlist')
+        checkbox_reprlist._ngl_name = 'checkbox_reprlist'
+        reprlist_choices = Dropdown(value=repr_name.value, options=[repr_name.value,])
+        reprlist_choices.visible = False
+        reprlist_choices._ngl_name = 'reprlist_choices'
+        reprlist_box = VBox([checkbox_reprlist, reprlist_choices])
+        reprlist_box._ngl_name = 'reprlist_box'
+
+        def on_update_checkbox_reprlist(change):
+            reprlist_choices.visible= change['new']
+        checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
+
         def on_click_info(button):
             self._view._request_repr_parameters(component=int(component_slider.value),
                                                 repr_index=int(repr_slider.value))
@@ -497,6 +500,7 @@ class TrajectoryPlayer(DOMWidget):
                 self._view._remote_call('setRepresentation',
                                  target='Widget',
                                  args=[change['new'], {}, component, repr_index])
+                self._view._request_update_reprs()
 
         def update_slide_info(change):
             self._view._request_repr_parameters(component=int(component_slider.value),
@@ -520,7 +524,7 @@ class TrajectoryPlayer(DOMWidget):
         # NOTE: if you update below list, make sure to update _make_repr_sliders
         # or refactor
         return VBox([bbox, repr_info_box, center_selection_button,
-                     component_slider, repr_slider, repr_text_box])
+                     component_slider, repr_slider, reprlist_box, repr_text_box])
 
     def _make_repr_sliders(self):
         repr_checkbox = Checkbox(value=False, description='repr slider')
