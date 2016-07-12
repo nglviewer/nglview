@@ -505,7 +505,7 @@ define( [
                         'border': 'none'});
         },
 
-        resizeNotebook(width){
+        resizeNotebook: function(width){
             var $nb_container = Jupyter.notebook.container;
             $nb_container.width(width);
 

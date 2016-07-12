@@ -44,7 +44,7 @@ if __name__ == '__main__':
         packages=["nglview", "nglview.datafiles",
                   "nglview.js", "nglview.scripts",
                   "nglview.theme"],
-        install_requires=["jupyter", "traitlets>=4.2.1", "ipywidgets<5.0", "notebook<4.2"],
+        install_requires=["jupyter", "traitlets>=4.2.1", "ipywidgets<5.0"],
         tests_require=["pytest"],
         # test_suite="nose.collector",
         extras_require={
