@@ -799,6 +799,12 @@ class NGLWidget(widgets.DOMWidget):
                               args=[params['type'],],
                               kwargs=kwargs)
 
+    def _remove_representation(self, component=0, repr_index=0):
+        self._remote_call('removeRepresentation',
+                          target='Widget',
+                          args=[component, repr_index])
+        self._request_update_reprs()
+
     def _remove_representations_by_name(self, repr_name, component=0):
         self._remote_call('removeRepresentationsByName',
                           target='Widget',

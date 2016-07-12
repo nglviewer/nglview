@@ -428,7 +428,8 @@ class TrajectoryPlayer(DOMWidget):
     def _make_text_repr_widget(self):
         button_info = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
-        bbox = HBox([button_info, button_update])
+        button_remove = Button(description='Remove', tooltip='Remove current representation')
+        bbox = HBox([button_info, button_update, button_remove])
         repr_name = Text(value='', description='representation name')
 
         repr_selection = Text(value='', description='selection')
@@ -469,11 +470,6 @@ class TrajectoryPlayer(DOMWidget):
                                                 repr_index=int(repr_slider.value))
         button_info.on_click(on_click_info)
 
-        def on_click_center(center_selection):
-            self._view.center_view(selection=repr_selection.value,
-                                   component=int(component_slider.value))
-        center_selection_button.on_click(on_click_center)
-
         def on_click_update(button):
             parameters = json.loads(repr_text_info.value.replace("False", "false").replace("True", "true"))
             self._view.update_representation(component=int(component_slider.value),
@@ -484,6 +480,19 @@ class TrajectoryPlayer(DOMWidget):
                                       repr_index=int(repr_slider.value))
             self._view._request_update_reprs()
         button_update.on_click(on_click_update)
+
+        def on_click_remove(button_remove):
+            self._view._remove_representation(component=int(component_slider.value),
+                                              repr_index=int(repr_slider.value))
+            self._view._request_repr_parameters(component=int(component_slider.value),
+                                                repr_index=int(repr_slider.value))
+        button_remove.on_click(on_click_remove)
+
+        def on_click_center(center_selection):
+            self._view.center_view(selection=repr_selection.value,
+                                   component=int(component_slider.value))
+        center_selection_button.on_click(on_click_center)
+
 
         def on_change_repr_name(change):
             name = change['new'].strip()

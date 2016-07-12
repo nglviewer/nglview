@@ -345,6 +345,16 @@ define( [
             }
         },
 
+        removeRepresentation: function(component_index, repr_index){
+           var component = this.stage.compList[ component_index ];
+           var repr = component.reprList[repr_index]
+
+           if (repr) {
+               component.removeRepresentation(repr);
+               repr.dispose();
+               }
+        },
+
         removeRepresentationsByName: function( repr_name, component_index ){
            var component = this.stage.compList[ component_index ];
 
