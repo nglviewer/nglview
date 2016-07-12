@@ -270,7 +270,8 @@ class TrajectoryPlayer(DOMWidget):
         help_url_box = self._show_website()
 
         picked_box = HBox([self.picked_widget,])
-        repr_box= VBox([self.repr_widget, self._make_repr_sliders()])
+        repr_box= HBox([VBox([self.repr_widget, self._make_repr_sliders()]),
+                        self._make_add_repr_widget()])
 
         extra_list = [(spin_box, 'spin_box'),
                       (picked_box, 'picked atom'),
@@ -590,3 +591,17 @@ class TrajectoryPlayer(DOMWidget):
                     args=[width,])
         resize_notebook_slider.observe(on_resize_notebook, names='value')
         return resize_notebook_slider
+
+    def _make_add_repr_widget(self):
+        repr_name = Dropdown(options=sorted(list(REPR_NAMES)), value='cartoon')
+        repr_selection = Text(value='*', description='Selection')
+        repr_button = Button(description='Add')
+
+        def on_click(button):
+            self._view.add_representation(selection=repr_selection.value.strip(),
+                    repr_type=repr_name.value)
+            self._view._request_update_reprs()
+        repr_button.on_click(on_click)
+        add_repr_box = VBox([repr_button, repr_name, repr_selection])
+        add_repr_box._ngl_name = 'add_repr_box'
+        return add_repr_box
