@@ -196,8 +196,11 @@ define( [
             var comp = this.stage.compList[ component_index ];
             var repr = comp.reprList[ repr_index ];
             var msg = repr.repr.getParameters();
-            msg['name'] = repr.name;
-            this.send({'type': 'repr_parameters', 'data': msg});
+
+            if (msg){
+                msg['name'] = repr.name;
+                this.send({'type': 'repr_parameters', 'data': msg});
+            }
         },
 
         requestReprsInfo: function(){
@@ -368,9 +371,11 @@ define( [
               if (repr){
                   var new_repr = NGL.makeRepresentation(name, component.structure,
                                                     this.stage.viewer, params);
-                  repr.setRepresentation(new_repr);
-                  repr.name = name;
-                  component.reprList[repr_index] = repr;
+                  if (new_repr) {
+                      repr.setRepresentation(new_repr);
+                      repr.name = name;
+                      component.reprList[repr_index] = repr;
+                  }
               }
         },
 
@@ -614,7 +619,9 @@ define( [
                         var component = this.stage.compList[ component_index ];
                         var repr = component.reprList[repr_index];
                         var func = repr[ msg.methodName ];
-                        func.apply( repr, new_args );
+                        if (repr && func){
+                            func.apply( repr, new_args );
+                        }
                         break;
                     default:
                         console.log( "nothing done for " + msg.target );
