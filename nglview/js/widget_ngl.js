@@ -345,6 +345,17 @@ define( [
             }
         },
 
+        setVisibilityForRepr: function(component_index, repr_index, value){
+           // value = True/False
+           var component = this.stage.compList[ component_index ];
+           var repr = component.reprList[repr_index];
+           console.log(repr, value);
+           
+           if (repr) {       
+               repr.setVisibility(value);
+               }
+        },
+
         removeRepresentation: function(component_index, repr_index){
            var component = this.stage.compList[ component_index ];
            var repr = component.reprList[repr_index]

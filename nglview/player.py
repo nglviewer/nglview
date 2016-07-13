@@ -430,7 +430,8 @@ class TrajectoryPlayer(DOMWidget):
         button_info = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         button_remove = Button(description='Remove', tooltip='Remove current representation')
-        bbox = HBox([button_info, button_update, button_remove])
+        button_hide = Button(description='Hide', tooltip='Hide/show current representation')
+        bbox = HBox([button_info, button_update, button_hide, button_remove])
         repr_name = Text(value='', description='representation name')
 
         repr_selection = Text(value='', description='selection')
@@ -488,6 +489,25 @@ class TrajectoryPlayer(DOMWidget):
             self._view._request_repr_parameters(component=int(component_slider.value),
                                                 repr_index=int(repr_slider.value))
         button_remove.on_click(on_click_remove)
+
+        def on_click_hide(button_hide):
+            component=int(component_slider.value)
+            repr_index=int(repr_slider.value)
+
+            if button_hide.description == 'Hide':
+                hide = True
+                button_hide.description = 'Show'
+            elif button_hide.description == 'Show':
+                hide = False
+                button_hide.description = 'Hide'
+            else:
+                raise ValueError("must be Hide or Show")
+
+            self._view._remote_call('setVisibilityForRepr',
+                                    target='Widget',
+                                    args=[component, repr_index, not hide])
+
+        button_hide.on_click(on_click_hide)
 
         def on_click_center(center_selection):
             self._view.center_view(selection=repr_selection.value,
