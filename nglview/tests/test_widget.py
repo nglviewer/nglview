@@ -409,3 +409,13 @@ def test_widget_utils():
     box.children = [i1, i0]
     assert i0 is widget_utils.get_widget_by_name(box, 'i0')
     assert i1 is widget_utils.get_widget_by_name(box, 'i1')
+
+def test_make_methods_of_player():
+    """test_make_methods_of_player: just to make sure there is no error
+    """
+    view = nv.demo()
+
+    for method in dir(view.player):
+        if method.startswith('_make') and method != '_make_button_url':
+            func = getattr(view.player, method)
+            func()
