@@ -1419,7 +1419,6 @@ class NGLWidget(widgets.DOMWidget):
         traj_ids = set(traj.id for traj in self._trajlist)
 
         for index in indices:
-            assert index < self.n_components
             comp_id = self._ngl_component_ids[index]
             if comp_id in traj_ids:
                 traj = self._get_traj_by_id(comp_id)
