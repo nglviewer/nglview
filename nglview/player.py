@@ -544,13 +544,19 @@ class TrajectoryPlayer(DOMWidget):
         def update_slider_info(change):
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
-            component_dropdown.options = self._view._ngl_component_ids
+            component_dropdown.options = self._view._ngl_component_names
 
         def on_change_selection(change):
             if self._real_time_update:
                 self._view._set_selection(change['new'],
                                           component=component_slider.value,
                                           repr_index=repr_slider.value)
+
+        def on_change_component_dropdown(change):
+            choice = change['new']
+            component_slider.value = self._view._ngl_component_names.index(choice)
+
+        component_dropdown.observe(on_change_component_dropdown, names='value')
 
         def on_change_checkbox_repr_text(change):
             repr_text_info.visible = change['new']
