@@ -20,4 +20,4 @@ REPR_NAME_PAIRS = [
         ('ball_and_stick', 'ball+stick'),
         ]
 
-REPR_NAMES = set([name for pairs in REPR_NAME_PAIRS for name in pairs])
+REPR_NAMES = list(sorted(set([name for pairs in REPR_NAME_PAIRS for name in pairs])))
