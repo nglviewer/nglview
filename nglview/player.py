@@ -2,12 +2,13 @@
 # simplify code
 from __future__ import absolute_import
 import json
+import numpy as np
 from IPython.display import display, Javascript
 from ipywidgets import (DOMWidget,
                         Box, HBox, VBox, Checkbox,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
-                        Button,
+                        Button, ToggleButton,
                         Text, Textarea,
                         interactive,
                         Tab)
@@ -272,11 +273,14 @@ class TrajectoryPlayer(DOMWidget):
         picked_box = HBox([self.picked_widget,])
         repr_box= HBox([VBox([self.repr_widget, self._make_repr_sliders()]),
                         self._make_add_repr_widget()])
+        repr_playground = self._make_selection_repr_buttons()
 
-        extra_list = [(spin_box, 'spin_box'),
+        extra_list = [
+                      (drag_box, 'Drag'),
+                      (spin_box, 'spin_box'),
                       (picked_box, 'picked atom'),
-                      (drag_box, 'Drag')]
-        extra_list = extra_list[::-1]
+                      (repr_playground, 'quick repr')]
+        # extra_list = extra_list[::-1]
 
         extra_box = Tab([w for w, _ in extra_list])
         [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]
@@ -613,7 +617,7 @@ class TrajectoryPlayer(DOMWidget):
         return resize_notebook_slider
 
     def _make_add_repr_widget(self):
-        repr_name = Dropdown(options=sorted(list(REPR_NAMES)), value='cartoon')
+        repr_name = Dropdown(options=REPR_NAMES, value='cartoon')
         repr_selection = Text(value='*', description='Selection')
         repr_button = Button(description='Add')
 
@@ -625,3 +629,34 @@ class TrajectoryPlayer(DOMWidget):
         add_repr_box = VBox([repr_button, repr_name, repr_selection])
         add_repr_box._ngl_name = 'add_repr_box'
         return add_repr_box
+
+    def _make_selection_repr_buttons(self):
+        vbox = VBox()
+        children = []
+
+        rep_names = REPR_NAMES[:]
+        excluded_names = ['ball+stick', 'distance']
+        for name in excluded_names:
+            rep_names.remove(name)
+
+        for index, name in enumerate(rep_names):
+            button = ToggleButton(description=name)
+
+            def make_func():
+                def on_toggle_button_value_change(change, button=button):
+                    new = change['new'] # True/False
+                    if new:
+                        self._view.add_representation(button.description)
+                    else:
+                        self._view._remove_representations_by_name(button.description)
+                return on_toggle_button_value_change
+
+            button.observe(make_func(), names='value')
+            children.append(button)
+
+        boxes = []
+        for index, arr in enumerate(np.array_split(children, 4)):
+            box = HBox([child for child in arr])
+            boxes.append(box)
+        vbox.children = boxes
+        return vbox
