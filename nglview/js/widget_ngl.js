@@ -379,6 +379,7 @@ define( [
               var repr = component.reprList[ repr_index ];
 
               if (repr){
+                  params['useWorker'] = false;
                   var new_repr = NGL.makeRepresentation(name, component.structure,
                                                     this.stage.viewer, params);
                   if (new_repr) {
