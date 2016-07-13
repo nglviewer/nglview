@@ -559,6 +559,7 @@ class NGLWidget(widgets.DOMWidget):
     orientation = List().tag(sync=True)
     _repr_dict = Dict().tag(sync=False)
     _ngl_component_ids = List().tag(sync=False)
+    _ngl_component_names = List().tag(sync=False)
     n_components = Int(0).tag(sync=True)
 
     displayed = False
@@ -584,12 +585,8 @@ class NGLWidget(widgets.DOMWidget):
 
         self._trajlist = []
 
-        # need to initialize before _ngl_component_ids
-        self.player = TrajectoryPlayer(self)
-
         self._ngl_component_ids = []
         self._init_structures = []
-
         if parameters:
             self.parameters = parameters
 
@@ -628,6 +625,10 @@ class NGLWidget(widgets.DOMWidget):
             self._representations = self._init_representations[:]
 
         self._set_unsync_camera()
+
+        # need to initialize before _ngl_component_ids
+        self.player = TrajectoryPlayer(self)
+
 
     @property
     def parameters(self):
@@ -680,9 +681,10 @@ class NGLWidget(widgets.DOMWidget):
     @observe('n_components')
     def _update_player_component_slider_max(self, change):
         component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
-        component_slider.max = change['new']
+        if change['new'] - 1 >= component_slider.min:
+            component_slider.max = change['new'] - 1
         component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
-        component_dropdown.options = self._ngl_component_ids
+        component_dropdown.options = list(self._ngl_component_names)
 
     @observe('_repr_dict')
     def _update_max_reps_count(self, change):
@@ -713,7 +715,7 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._init_gui:
             self._gui = self.player._display()
-            time.sleep(0.1)
+            time.sleep(0.01)
             display(self._gui)
 
         if self._theme in ['dark', 'oceans16']:
@@ -1151,6 +1153,8 @@ class NGLWidget(widgets.DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(structure)
+            name = kwargs.pop('name', str(structure))
+            self._ngl_component_names.append(name)
         self._ngl_component_ids.append(structure.id)
         self.center_view(component=len(self._ngl_component_ids)-1)
         self._update_component_auto_completion()
@@ -1184,6 +1188,8 @@ class NGLWidget(widgets.DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(trajectory)
+            name = kwargs.pop('name', str(trajectory))
+            self._ngl_component_names.append(name)
         setattr(trajectory, 'shown', True)
         self._trajlist.append(trajectory)
         self._update_count()
@@ -1263,6 +1269,8 @@ class NGLWidget(widgets.DOMWidget):
             url = obj
             args=[{'type': blob_type, 'data': url, 'binary': False}]
 
+        name = kwargs2.pop('name', str(obj))
+        self._ngl_component_names.append(name)
         self._remote_call("loadFile",
                 target='Stage',
                 args=args,
@@ -1286,6 +1294,7 @@ class NGLWidget(widgets.DOMWidget):
                     self._trajlist.remove(traj)
         component_index = self._ngl_component_ids.index(component_id)
         self._ngl_component_ids.remove(component_id)
+        self._ngl_component_names.pop(component_index)
 
         self._remove_component(component=component_index)
         self._update_component_auto_completion()
