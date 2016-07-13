@@ -9,6 +9,7 @@ from .player import TrajectoryPlayer
 from . import interpolate
 from .representation import Representation
 from .ngl_params import REPR_NAME_PAIRS
+from .widget_utils import get_widget_by_name
 import time
 
 import os
@@ -558,6 +559,7 @@ class NGLWidget(widgets.DOMWidget):
     orientation = List().tag(sync=True)
     _repr_dict = Dict().tag(sync=False)
     _ngl_component_ids = List().tag(sync=False)
+    n_components = Int(0).tag(sync=True)
 
     displayed = False
     _ngl_msg = None
@@ -675,10 +677,12 @@ class NGLWidget(widgets.DOMWidget):
         if change['new'] - change['old'] == 1:
             self._ngl_component_ids.append(uuid.uuid4())
 
-    @observe('_ngl_component_ids')
+    @observe('n_components')
     def _update_player_component_slider_max(self, change):
-        component_slider = self.player.repr_widget.children[2]
-        component_slider.max = len(self._ngl_component_ids)
+        component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+        component_slider.max = change['new']
+        component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
+        component_dropdown.options = self._ngl_component_ids
 
     @observe('_repr_dict')
     def _update_max_reps_count(self, change):
@@ -709,6 +713,7 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._init_gui:
             self._gui = self.player._display()
+            time.sleep(0.1)
             display(self._gui)
 
         if self._theme in ['dark', 'oceans16']:
@@ -720,6 +725,7 @@ class NGLWidget(widgets.DOMWidget):
     def display(self, gui=False):
         display(self)
         if gui:
+            time.sleep(0.1)
             display(self.player._display())
 
     def _set_sync_frame(self):
@@ -1389,10 +1395,6 @@ class NGLWidget(widgets.DOMWidget):
 
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
-
-    @property
-    def n_components(self):
-        return len(self._ngl_component_ids)
 
     def _get_traj_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object

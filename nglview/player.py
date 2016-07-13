@@ -431,13 +431,13 @@ class TrajectoryPlayer(DOMWidget):
         return ta
 
     def _make_text_repr_widget(self):
-        button_info = Button(description='Refresh', tooltip='Get representation info')
+        button_refresh = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         button_remove = Button(description='Remove', tooltip='Remove current representation')
         button_hide = Button(description='Hide', tooltip='Hide/show current representation')
-        bbox = HBox([button_info, button_update, button_hide, button_remove])
-        repr_name = Text(value='', description='representation name')
+        bbox = HBox([button_refresh, button_update, button_hide, button_remove])
 
+        repr_name = Text(value='', description='representation name')
         repr_selection = Text(value='', description='selection')
         repr_selection._ngl_name = 'repr_selection'
 
@@ -449,6 +449,11 @@ class TrajectoryPlayer(DOMWidget):
 
         component_slider = IntSlider(value=0, description='component index')
         component_slider._ngl_name = 'component_slider'
+
+        cvalue = ''
+        component_dropdown = Dropdown(value=cvalue, options=[cvalue,],
+                description='component')
+        component_dropdown._ngl_name = 'component_dropdown'
 
         repr_slider = IntSlider(value=0, description='representation index')
         repr_slider._ngl_name = 'repr_slider'
@@ -471,32 +476,32 @@ class TrajectoryPlayer(DOMWidget):
             reprlist_choices.visible= change['new']
         checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
 
-        def on_click_info(button):
-            self._view._request_repr_parameters(component=int(component_slider.value),
-                                                repr_index=int(repr_slider.value))
-        button_info.on_click(on_click_info)
+        def on_click_refresh(button):
+            self._view._request_repr_parameters(component=component_slider.value,
+                                                repr_index=repr_slider.value)
+        button_refresh.on_click(on_click_refresh)
 
         def on_click_update(button):
             parameters = json.loads(repr_text_info.value.replace("False", "false").replace("True", "true"))
-            self._view.update_representation(component=int(component_slider.value),
-                                             repr_index=int(repr_slider.value),
+            self._view.update_representation(component=component_slider.value,
+                                             repr_index=repr_slider.value,
                                              **parameters)
             self._view._set_selection(repr_selection.value,
-                                      component=int(component_slider.value),
-                                      repr_index=int(repr_slider.value))
+                                      component=component_slider.value,
+                                      repr_index=repr_slider.value)
             self._view._request_update_reprs()
         button_update.on_click(on_click_update)
 
         def on_click_remove(button_remove):
-            self._view._remove_representation(component=int(component_slider.value),
-                                              repr_index=int(repr_slider.value))
-            self._view._request_repr_parameters(component=int(component_slider.value),
-                                                repr_index=int(repr_slider.value))
+            self._view._remove_representation(component=component_slider.value,
+                                              repr_index=repr_slider.value)
+            self._view._request_repr_parameters(component=component_slider.value,
+                                                repr_index=repr_slider.value)
         button_remove.on_click(on_click_remove)
 
         def on_click_hide(button_hide):
-            component=int(component_slider.value)
-            repr_index=int(repr_slider.value)
+            component=component_slider.value
+            repr_index=repr_slider.value
 
             if button_hide.description == 'Hide':
                 hide = True
@@ -515,7 +520,7 @@ class TrajectoryPlayer(DOMWidget):
 
         def on_click_center(center_selection):
             self._view.center_view(selection=repr_selection.value,
-                                   component=int(component_slider.value))
+                                   component=component_slider.value)
         center_selection_button.on_click(on_click_center)
 
 
@@ -529,28 +534,29 @@ class TrajectoryPlayer(DOMWidget):
                              and name != change['old'].strip())
 
             if should_update:
-                component=int(component_slider.value)
-                repr_index=int(repr_slider.value)
+                component=component_slider.value
+                repr_index=repr_slider.value
                 self._view._remote_call('setRepresentation',
                                  target='Widget',
                                  args=[change['new'], {}, component, repr_index])
                 self._view._request_update_reprs()
 
-        def update_slide_info(change):
-            self._view._request_repr_parameters(component=int(component_slider.value),
-                                                repr_index=int(repr_slider.value))
+        def update_slider_info(change):
+            self._view._request_repr_parameters(component=component_slider.value,
+                                                repr_index=repr_slider.value)
+            component_dropdown.options = self._view._ngl_component_ids
 
         def on_change_selection(change):
             if self._real_time_update:
                 self._view._set_selection(change['new'],
-                                          component=int(component_slider.value),
-                                          repr_index=int(repr_slider.value))
+                                          component=component_slider.value,
+                                          repr_index=repr_slider.value)
 
         def on_change_checkbox_repr_text(change):
             repr_text_info.visible = change['new']
 
-        repr_slider.observe(update_slide_info, names='value')
-        component_slider.observe(update_slide_info, names='value')
+        repr_slider.observe(update_slider_info, names='value')
+        component_slider.observe(update_slider_info, names='value')
         repr_name.observe(on_change_repr_name, names='value')
         repr_selection.observe(on_change_selection, names='value')
         checkbox_repr_text.observe(on_change_checkbox_repr_text, names='value')
@@ -558,7 +564,7 @@ class TrajectoryPlayer(DOMWidget):
         # NOTE: if you update below list, make sure to update _make_repr_sliders
         # or refactor
         return VBox([bbox, repr_info_box, center_selection_button,
-                     component_slider, repr_slider, reprlist_box, repr_text_box])
+                     component_dropdown, component_slider, repr_slider, reprlist_box, repr_text_box])
 
     def _make_repr_sliders(self):
         repr_checkbox = Checkbox(value=False, description='repr slider')
@@ -572,8 +578,8 @@ class TrajectoryPlayer(DOMWidget):
                 name = self.repr_widget.children[1].children[0].value
                 component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
                 repr_slider = get_widget_by_name(self.repr_widget, 'repr_slider')
-                widget = self._view._display_repr(component=int(component_slider.value),
-                                         repr_index=int(repr_slider.value),
+                widget = self._view._display_repr(component=component_slider.value,
+                                         repr_index=repr_slider.value,
                                          name=name)
                 vbox.children = [repr_checkbox, widget]
             else:
