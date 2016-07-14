@@ -716,7 +716,6 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._init_gui:
             self._gui = self.player._display()
-            time.sleep(0.01)
             display(self._gui)
 
         if self._theme in ['dark', 'oceans16']:
@@ -728,7 +727,6 @@ class NGLWidget(widgets.DOMWidget):
     def display(self, gui=False):
         display(self)
         if gui:
-            time.sleep(0.1)
             display(self.player._display())
 
     def _set_sync_frame(self):
