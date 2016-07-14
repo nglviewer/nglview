@@ -1,7 +1,6 @@
 # TODO: reorg
 # simplify code
 from __future__ import absolute_import
-from itertools import chain
 import json
 import numpy as np
 from IPython.display import display, Javascript
@@ -105,10 +104,6 @@ class TrajectoryPlayer(DOMWidget):
     @observe('_interpolation_t')
     def _interpolation_t_changed(self, change):
         self.iparams['t'] = change['new']
-
-    @observe('_iterpolation_type')
-    def _interpolation_t_changed(self, change):
-        self.iparams['type'] = change['new']
 
     @observe('spin')
     def on_spin_changed(self, change):
@@ -362,7 +357,7 @@ class TrajectoryPlayer(DOMWidget):
 
             return func
 
-        def make_widget():
+        def make_widget_box():
             widget_sliders = interactive(make_func(),
                       pan_speed=(0, 10, 0.1),
                       rotate_speed=(0, 10, 1),
@@ -378,15 +373,14 @@ class TrajectoryPlayer(DOMWidget):
                       sample_level=(-1, 5, 1))
             return widget_sliders
 
-        widget_sliders = make_widget()
+        widget_sliders = make_widget_box()
         reset_button = Button(description='Reset')
-        widget_sliders.children = list(chain([reset_button,], widget_sliders.children))
+        widget_sliders.children = [reset_button,] + list(widget_sliders.children)
 
         def on_click(reset_button):
             self._view.parameters = self._view._original_stage_parameters
             self._view._full_stage_parameters = self._view._original_stage_parameters
-            widget_sliders = make_widget()
-            hbox.children = [widget_sliders, reset_button]
+            widget_sliders.children = [reset_button,] + list(make_widget_box().children)
         reset_button.on_click(on_click)
 
         return widget_sliders 
