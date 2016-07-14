@@ -678,7 +678,6 @@ class TrajectoryPlayer(DOMWidget):
         return vbox
 
     def _make_repr_name_choices(self, component_slider, repr_slider):
-        from nglview.utils import get_repr_names_from_dict
         repr_choices = Dropdown()
 
         def on_chose(change):
