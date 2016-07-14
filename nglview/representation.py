@@ -1,6 +1,5 @@
 from __future__ import absolute_import
-from traitlets import (Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe,
-                       CaselessStrEnum)
+from traitlets import Dict, observe
 from ipywidgets import DOMWidget, interactive
 from ipywidgets import VBox
 
