@@ -570,7 +570,6 @@ class NGLWidget(widgets.DOMWidget):
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
 
-
         self._gui = None
         self._init_gui = kwargs.pop('gui', False)
         self._theme = kwargs.pop('theme', 'default')
@@ -591,11 +590,13 @@ class NGLWidget(widgets.DOMWidget):
             self.parameters = parameters
 
         if isinstance(structure, Trajectory):
-            self.add_trajectory(structure)
+            name = kwargs.pop('name', str(structure))
+            self.add_trajectory(structure, name=name)
         elif isinstance(structure, (list, tuple)):
             trajectories = structure
             for trajectory in trajectories:
-                self.add_trajectory(trajectory)
+                name = kwargs.pop('name', str(trajectory))
+                self.add_trajectory(trajectory, name=name)
         else:
             if structure is not None:
                 self.add_structure(structure)

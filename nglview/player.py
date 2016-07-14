@@ -1,6 +1,7 @@
 # TODO: reorg
 # simplify code
 from __future__ import absolute_import
+from itertools import chain
 import json
 import numpy as np
 from IPython.display import display, Javascript
@@ -274,25 +275,25 @@ class TrajectoryPlayer(DOMWidget):
         repr_box= HBox([VBox([self.repr_widget, self._make_repr_sliders()]),
                         self._make_add_repr_widget()])
         repr_playground = self._make_selection_repr_buttons()
+        export_image_box = HBox([self._make_button_export_image()])
 
         extra_list = [
                       (drag_box, 'Drag'),
                       (spin_box, 'spin_box'),
                       (picked_box, 'picked atom'),
-                      (repr_playground, 'quick repr')]
+                      (repr_playground, 'quick repr'),
+                      (export_image_box, 'Image')]
         # extra_list = extra_list[::-1]
 
         extra_box = Tab([w for w, _ in extra_list])
         [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]
 
-        export_image_box = HBox([self._make_button_export_image()])
 
         box_couple = [(gen_box, 'General'),
                       (repr_box, 'Representation'),
                       (self._preference_widget, 'Preference'),
                       (theme_box, 'Theme'),
                       (extra_box, 'Extra'),
-                      (export_image_box, 'Image'),
                       (hide_box, 'Hide'),
                       (help_url_box, 'Help')]
 
@@ -379,7 +380,7 @@ class TrajectoryPlayer(DOMWidget):
 
         widget_sliders = make_widget()
         reset_button = Button(description='Reset')
-        hbox = HBox([widget_sliders, reset_button])
+        widget_sliders.children = list(chain([reset_button,], widget_sliders.children))
 
         def on_click(reset_button):
             self._view.parameters = self._view._original_stage_parameters
@@ -388,7 +389,7 @@ class TrajectoryPlayer(DOMWidget):
             hbox.children = [widget_sliders, reset_button]
         reset_button.on_click(on_click)
 
-        return hbox
+        return widget_sliders 
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
@@ -435,7 +436,8 @@ class TrajectoryPlayer(DOMWidget):
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         button_remove = Button(description='Remove', tooltip='Remove current representation')
         button_hide = Button(description='Hide', tooltip='Hide/show current representation')
-        bbox = HBox([button_refresh, button_update, button_hide, button_remove])
+        # bbox = HBox([button_refresh, button_update, button_hide, button_remove])
+        bbox = HBox([button_update, button_hide, button_remove])
 
         repr_name = Text(value='', description='representation name')
         repr_selection = Text(value='', description='selection')
@@ -569,8 +571,13 @@ class TrajectoryPlayer(DOMWidget):
 
         # NOTE: if you update below list, make sure to update _make_repr_sliders
         # or refactor
-        return VBox([bbox, repr_info_box, center_selection_button,
+        # try to "refresh"
+        vbox = VBox([bbox, repr_info_box, center_selection_button,
                      component_dropdown, component_slider, repr_slider, reprlist_box, repr_text_box])
+        self._view._request_repr_parameters(component=component_slider.value,
+            repr_index=repr_slider.value)
+        return vbox
+
 
     def _make_repr_sliders(self):
         repr_checkbox = Checkbox(value=False, description='repr slider')
