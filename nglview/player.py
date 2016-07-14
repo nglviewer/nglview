@@ -468,11 +468,8 @@ class TrajectoryPlayer(DOMWidget):
 
         checkbox_reprlist = Checkbox(value=False, description='reprlist')
         checkbox_reprlist._ngl_name = 'checkbox_reprlist'
-        reprlist_choices = Dropdown(value=repr_name.value, options=[repr_name.value,])
-        reprlist_choices.visible = False
+        reprlist_choices = self._make_repr_name_choices(component_slider, repr_slider)
         reprlist_choices._ngl_name = 'reprlist_choices'
-        reprlist_box = VBox([checkbox_reprlist, reprlist_choices])
-        reprlist_box._ngl_name = 'reprlist_box'
 
         def on_update_checkbox_reprlist(change):
             reprlist_choices.visible= change['new']
@@ -573,7 +570,7 @@ class TrajectoryPlayer(DOMWidget):
         # or refactor
         # try to "refresh"
         vbox = VBox([bbox, repr_info_box, center_selection_button,
-                     component_dropdown, component_slider, repr_slider, reprlist_box, repr_text_box])
+                     component_dropdown, component_slider, repr_slider, reprlist_choices, repr_text_box])
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
         return vbox
@@ -679,3 +676,22 @@ class TrajectoryPlayer(DOMWidget):
             boxes.append(box)
         vbox.children = boxes
         return vbox
+
+    def _make_repr_name_choices(self, component_slider, repr_slider):
+        from nglview.utils import get_repr_names_from_dict
+        repr_choices = Dropdown()
+
+        try:
+            repr_names = get_repr_names_from_dict(self._view._repr_dict, component_slider.value)
+        except KeyError:
+            repr_names = []
+        repr_choices.options = [str(i)  + '-' + name for (i, name) in enumerate(repr_names)]
+
+        def on_chose(change):
+            repr_name = change['new']
+            repr_index = repr_choices.options.index(repr_name)
+            repr_slider.value = repr_index
+
+        repr_choices.observe(on_chose, names='value')
+
+        return repr_choices

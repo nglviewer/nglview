@@ -3,7 +3,7 @@ from __future__ import print_function, absolute_import
 
 from . import datafiles
 from .utils import seq_to_string, string_types, _camelize, _camelize_dict
-from .utils import FileManager
+from .utils import FileManager, get_repr_names_from_dict
 from .widget_utils import get_widget_by_name
 from .player import TrajectoryPlayer
 from . import interpolate
@@ -692,6 +692,11 @@ class NGLWidget(widgets.DOMWidget):
         repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
         component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
         cindex = str(component_slider.value)
+
+        reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+        repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
+        reprlist_choices.options = [name +  ' ' + str(i) for (i, name) in enumerate(repr_names)]
+
         try:
             repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
         except (TraitError, IndexError, KeyError):
@@ -1115,6 +1120,7 @@ class NGLWidget(widgets.DOMWidget):
 
                 repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
                 repr_text_box.children[-1].value = data_dict_json
+
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':
