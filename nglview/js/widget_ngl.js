@@ -180,6 +180,16 @@ define( [
                 that.model.set("_n_dragged_files", numDroppedFiles + 1 );
                 that.touch();
             }, false );
+
+            this.stage.signals.componentAdded.add( function(){
+                this.model.set("n_components", this.stage.compList.length);
+                this.touch();
+            }, this);
+
+            this.stage.signals.componentRemoved.add( function(){
+                this.model.set("n_components", this.stage.compList.length);
+                this.touch();
+            }, this);
         },
 
         requestFrame: function(){
