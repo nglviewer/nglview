@@ -1,7 +1,6 @@
 # TODO: reorg
 # simplify code
 from __future__ import absolute_import
-from itertools import chain
 import json
 import numpy as np
 from IPython.display import display, Javascript
@@ -105,10 +104,6 @@ class TrajectoryPlayer(DOMWidget):
     @observe('_interpolation_t')
     def _interpolation_t_changed(self, change):
         self.iparams['t'] = change['new']
-
-    @observe('_iterpolation_type')
-    def _interpolation_t_changed(self, change):
-        self.iparams['type'] = change['new']
 
     @observe('spin')
     def on_spin_changed(self, change):
@@ -362,7 +357,7 @@ class TrajectoryPlayer(DOMWidget):
 
             return func
 
-        def make_widget():
+        def make_widget_box():
             widget_sliders = interactive(make_func(),
                       pan_speed=(0, 10, 0.1),
                       rotate_speed=(0, 10, 1),
@@ -378,15 +373,14 @@ class TrajectoryPlayer(DOMWidget):
                       sample_level=(-1, 5, 1))
             return widget_sliders
 
-        widget_sliders = make_widget()
+        widget_sliders = make_widget_box()
         reset_button = Button(description='Reset')
-        widget_sliders.children = list(chain([reset_button,], widget_sliders.children))
+        widget_sliders.children = [reset_button,] + list(widget_sliders.children)
 
         def on_click(reset_button):
             self._view.parameters = self._view._original_stage_parameters
             self._view._full_stage_parameters = self._view._original_stage_parameters
-            widget_sliders = make_widget()
-            hbox.children = [widget_sliders, reset_button]
+            widget_sliders.children = [reset_button,] + list(make_widget_box().children)
         reset_button.on_click(on_click)
 
         return widget_sliders 
@@ -449,7 +443,7 @@ class TrajectoryPlayer(DOMWidget):
         center_selection_button = Button(description='center', tooltip='center at selection')
         center_selection_button._ngl_name = 'center_selection_button'
 
-        component_slider = IntSlider(value=0, description='component index')
+        component_slider = IntSlider(value=0, description='component')
         component_slider._ngl_name = 'component_slider'
 
         cvalue = ''
@@ -457,7 +451,7 @@ class TrajectoryPlayer(DOMWidget):
                 description='component')
         component_dropdown._ngl_name = 'component_dropdown'
 
-        repr_slider = IntSlider(value=0, description='representation index')
+        repr_slider = IntSlider(value=0, description='representation')
         repr_slider._ngl_name = 'repr_slider'
 
         repr_text_info = Textarea(value='', description='representation parameters')
@@ -468,11 +462,8 @@ class TrajectoryPlayer(DOMWidget):
 
         checkbox_reprlist = Checkbox(value=False, description='reprlist')
         checkbox_reprlist._ngl_name = 'checkbox_reprlist'
-        reprlist_choices = Dropdown(value=repr_name.value, options=[repr_name.value,])
-        reprlist_choices.visible = False
+        reprlist_choices = self._make_repr_name_choices(component_slider, repr_slider)
         reprlist_choices._ngl_name = 'reprlist_choices'
-        reprlist_box = VBox([checkbox_reprlist, reprlist_choices])
-        reprlist_box._ngl_name = 'reprlist_box'
 
         def on_update_checkbox_reprlist(change):
             reprlist_choices.visible= change['new']
@@ -542,17 +533,20 @@ class TrajectoryPlayer(DOMWidget):
                                  target='Widget',
                                  args=[change['new'], {}, component, repr_index])
                 self._view._request_update_reprs()
+                self._view._request_repr_parameters(component, repr_index)
 
         def update_slider_info(change):
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
-            component_dropdown.options = self._view._ngl_component_names
+            component_dropdown.options = tuple(self._view._ngl_component_names)
 
         def on_change_selection(change):
             if self._real_time_update:
+                component=component_slider.value
+                repr_index=repr_slider.value
                 self._view._set_selection(change['new'],
-                                          component=component_slider.value,
-                                          repr_index=repr_slider.value)
+                                          component=component,
+                                          repr_index=repr_index)
 
         def on_change_component_dropdown(change):
             choice = change['new']
@@ -573,7 +567,7 @@ class TrajectoryPlayer(DOMWidget):
         # or refactor
         # try to "refresh"
         vbox = VBox([bbox, repr_info_box, center_selection_button,
-                     component_dropdown, component_slider, repr_slider, reprlist_box, repr_text_box])
+                     component_dropdown, component_slider, repr_slider, reprlist_choices, repr_text_box])
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
         return vbox
@@ -679,3 +673,15 @@ class TrajectoryPlayer(DOMWidget):
             boxes.append(box)
         vbox.children = boxes
         return vbox
+
+    def _make_repr_name_choices(self, component_slider, repr_slider):
+        repr_choices = Dropdown()
+
+        def on_chose(change):
+            repr_name = change['new']
+            repr_index = repr_choices.options.index(repr_name)
+            repr_slider.value = repr_index
+
+        repr_choices.observe(on_chose, names='value')
+
+        return repr_choices

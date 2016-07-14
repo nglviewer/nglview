@@ -1,5 +1,6 @@
 from __future__ import print_function
 import unittest
+from nglview import utils
 from nglview.utils import seq_to_string, _camelize, _camelize_dict, FileManager
 import nose.tools as nt
 import gzip
@@ -123,3 +124,13 @@ def test_file_passing_blob_from_gzip():
     nt.assert_false(fm.is_filename)
 
     nt.assert_raises(ValueError, lambda: fm.ext)
+
+def test_get_repr_names_from_dict():
+    fake_repr_dict = dict(c0={'0': {'name': 'cartoon'},
+                              '1': {'name': 'licorice'}},
+                          c1={'0': {'name': 'base'}})
+
+    nt.assert_equal(utils.get_repr_names_from_dict(fake_repr_dict, 0),
+                    ['cartoon', 'licorice'])
+    nt.assert_equal(utils.get_repr_names_from_dict(fake_repr_dict, 1),
+                    ['base'])

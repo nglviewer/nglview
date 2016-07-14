@@ -149,7 +149,11 @@ def test_representations():
 
     # Representations
     # make fake params
-    view._repr_dict = {'c0': {'0': {'parameters': {}}}}
+    try:
+        view._repr_dict = {'c0': {'0': {'parameters': {}}}}
+    except KeyError:
+        # in real application, we are not allowed to assign values
+        pass
     representation_widget = Representation(view, 0, 0)
     representation_widget._display()
                     
@@ -415,7 +419,11 @@ def test_make_methods_of_player():
     """
     view = nv.demo()
 
+    excluded = ['_make_button_url', '_make_repr_name_choices']
     for method in dir(view.player):
-        if method.startswith('_make') and method != '_make_button_url':
+        if method.startswith('_make') and method not in excluded:
             func = getattr(view.player, method)
             func()
+
+    # run excluded
+    view.player._make_repr_name_choices({}, 0)

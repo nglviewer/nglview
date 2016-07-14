@@ -2,14 +2,13 @@
 from __future__ import print_function, absolute_import
 
 from . import datafiles
-from .utils import seq_to_string, string_types, _camelize, _camelize_dict
-from .utils import FileManager
+from .utils import seq_to_string, string_types, _camelize_dict
+from .utils import FileManager, get_repr_names_from_dict
 from .widget_utils import get_widget_by_name
 from .player import TrajectoryPlayer
 from . import interpolate
 from .representation import Representation
 from .ngl_params import REPR_NAME_PAIRS
-from .widget_utils import get_widget_by_name
 import time
 
 import os
@@ -18,7 +17,7 @@ import uuid
 import warnings
 import tempfile
 import ipywidgets as widgets
-from traitlets import (Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe,
+from traitlets import (Unicode, Bool, Dict, List, Int, observe,
                        CaselessStrEnum,
                        TraitError)
 from ipywidgets import widget_image
@@ -258,7 +257,7 @@ def show_mdanalysis(atomgroup, **kwargs):
     return NGLWidget(structure_trajectory, **kwargs)
 
 def demo(*args, **kwargs):
-    from nglview import datafiles, show_structure_file
+    from nglview import show_structure_file
     return show_structure_file(datafiles.PDB, *args, **kwargs)
 
 ###################
@@ -516,7 +515,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
     def get_structure_string(self):
         try:
             import MDAnalysis as mda
-        except ImportError as e:
+        except ImportError:
             raise ImportError(
                 "'MDAnalysisTrajectory' requires the 'MDAnalysis' package"
             )
@@ -599,7 +598,7 @@ class NGLWidget(widgets.DOMWidget):
                 self.add_trajectory(trajectory, name=name)
         else:
             if structure is not None:
-                self.add_structure(structure)
+                self.add_structure(structure, **kwargs)
 
         # initialize _init_structure_list
         # hack to trigger update on JS side
@@ -685,13 +684,18 @@ class NGLWidget(widgets.DOMWidget):
         if change['new'] - 1 >= component_slider.min:
             component_slider.max = change['new'] - 1
         component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
-        component_dropdown.options = list(self._ngl_component_names)
+        component_dropdown.options = tuple(self._ngl_component_names)
 
     @observe('_repr_dict')
     def _update_max_reps_count(self, change):
         repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
         component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
         cindex = str(component_slider.value)
+
+        reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+        repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
+        reprlist_choices.options = [str(i) + '-' + name for (i, name) in enumerate(repr_names)]
+
         try:
             repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
         except (TraitError, IndexError, KeyError):
@@ -716,7 +720,6 @@ class NGLWidget(widgets.DOMWidget):
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._init_gui:
             self._gui = self.player._display()
-            time.sleep(0.01)
             display(self._gui)
 
         if self._theme in ['dark', 'oceans16']:
@@ -728,7 +731,6 @@ class NGLWidget(widgets.DOMWidget):
     def display(self, gui=False):
         display(self)
         if gui:
-            time.sleep(0.1)
             display(self.player._display())
 
     def _set_sync_frame(self):
@@ -860,9 +862,11 @@ class NGLWidget(widgets.DOMWidget):
                             itype = self.player.iparams.get('type', 'linear')
 
                             if itype == 'linear':
-                                coordinates_dict[traj_index] = interpolate.linear(index, t=t, traj=trajectory)
+                                coordinates_dict[traj_index] = interpolate.linear(index,
+                                        t=t, traj=trajectory, step=step)
                             elif itype == 'spline':
-                                coordinates_dict[traj_index] = interpolate.spline(index, t=t, traj=trajectory)
+                                coordinates_dict[traj_index] = interpolate.spline(index,
+                                        t=t, traj=trajectory, step=step)
                             else:
                                 raise ValueError('interpolation type must be linear or spline')
                         else:
@@ -1117,6 +1121,7 @@ class NGLWidget(widgets.DOMWidget):
 
                 repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
                 repr_text_box.children[-1].value = data_dict_json
+
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':
