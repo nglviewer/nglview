@@ -533,6 +533,7 @@ class TrajectoryPlayer(DOMWidget):
                                  target='Widget',
                                  args=[change['new'], {}, component, repr_index])
                 self._view._request_update_reprs()
+                self._view._request_repr_parameters(component, repr_index)
 
         def update_slider_info(change):
             self._view._request_repr_parameters(component=component_slider.value,
@@ -541,9 +542,11 @@ class TrajectoryPlayer(DOMWidget):
 
         def on_change_selection(change):
             if self._real_time_update:
+                component=component_slider.value
+                repr_index=repr_slider.value
                 self._view._set_selection(change['new'],
-                                          component=component_slider.value,
-                                          repr_index=repr_slider.value)
+                                          component=component,
+                                          repr_index=repr_index)
 
         def on_change_component_dropdown(change):
             choice = change['new']
