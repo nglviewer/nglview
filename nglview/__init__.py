@@ -599,7 +599,7 @@ class NGLWidget(widgets.DOMWidget):
                 self.add_trajectory(trajectory, name=name)
         else:
             if structure is not None:
-                self.add_structure(structure)
+                self.add_structure(structure, **kwargs)
 
         # initialize _init_structure_list
         # hack to trigger update on JS side
@@ -695,7 +695,7 @@ class NGLWidget(widgets.DOMWidget):
 
         reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
         repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
-        reprlist_choices.options = [name +  ' ' + str(i) for (i, name) in enumerate(repr_names)]
+        reprlist_choices.options = [str(i) + '-' + name for (i, name) in enumerate(repr_names)]
 
         try:
             repr_slider.max = len(change['new']['c' + cindex].keys()) - 1

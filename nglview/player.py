@@ -449,7 +449,7 @@ class TrajectoryPlayer(DOMWidget):
         center_selection_button = Button(description='center', tooltip='center at selection')
         center_selection_button._ngl_name = 'center_selection_button'
 
-        component_slider = IntSlider(value=0, description='component index')
+        component_slider = IntSlider(value=0, description='component')
         component_slider._ngl_name = 'component_slider'
 
         cvalue = ''
@@ -457,7 +457,7 @@ class TrajectoryPlayer(DOMWidget):
                 description='component')
         component_dropdown._ngl_name = 'component_dropdown'
 
-        repr_slider = IntSlider(value=0, description='representation index')
+        repr_slider = IntSlider(value=0, description='representation')
         repr_slider._ngl_name = 'repr_slider'
 
         repr_text_info = Textarea(value='', description='representation parameters')
@@ -680,12 +680,6 @@ class TrajectoryPlayer(DOMWidget):
     def _make_repr_name_choices(self, component_slider, repr_slider):
         from nglview.utils import get_repr_names_from_dict
         repr_choices = Dropdown()
-
-        try:
-            repr_names = get_repr_names_from_dict(self._view._repr_dict, component_slider.value)
-        except KeyError:
-            repr_names = []
-        repr_choices.options = [str(i)  + '-' + name for (i, name) in enumerate(repr_names)]
 
         def on_chose(change):
             repr_name = change['new']
