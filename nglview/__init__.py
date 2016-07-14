@@ -684,7 +684,7 @@ class NGLWidget(widgets.DOMWidget):
         if change['new'] - 1 >= component_slider.min:
             component_slider.max = change['new'] - 1
         component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
-        component_dropdown.options = list(self._ngl_component_names)
+        component_dropdown.options = tuple(self._ngl_component_names)
 
     @observe('_repr_dict')
     def _update_max_reps_count(self, change):
