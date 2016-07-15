@@ -430,19 +430,20 @@ class TrajectoryPlayer(DOMWidget):
         button_refresh = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         button_remove = Button(description='Remove', tooltip='Remove current representation')
-        button_hide = Button(description='Hide', tooltip='Hide/show current representation')
+        button_hide = Button(description='Hide', tooltip='Hide/Show current representation')
         # bbox = HBox([button_refresh, button_update, button_hide, button_remove])
-        bbox = HBox([button_update, button_hide, button_remove])
 
-        repr_name = Text(value='', description='representation name')
-        repr_selection = Text(value='', description='selection')
+        repr_name = Text(value='', description='')
+        repr_selection = Text(value='', description='')
         repr_selection._ngl_name = 'repr_selection'
 
         repr_info_box = VBox([repr_name, repr_selection])
         repr_info_box._ngl_name = 'repr_info_box'
 
-        center_selection_button = Button(description='center', tooltip='center at selection')
+        center_selection_button = Button(description='center', tooltip='center selected atoms')
         center_selection_button._ngl_name = 'center_selection_button'
+
+        bbox = HBox([center_selection_button, button_update, button_hide, button_remove])
 
         component_slider = IntSlider(value=0, description='component')
         component_slider._ngl_name = 'component_slider'
@@ -460,6 +461,7 @@ class TrajectoryPlayer(DOMWidget):
         repr_text_info = Textarea(value='', description='representation parameters')
         repr_text_info.visible = False
         checkbox_repr_text = Checkbox(value=False, description='show parameters')
+        checkbox_repr_text.visible = False
         repr_text_box = VBox([checkbox_repr_text, repr_text_info])
         repr_text_box._ngl_name = 'repr_text_box'
 
@@ -569,7 +571,7 @@ class TrajectoryPlayer(DOMWidget):
         # NOTE: if you update below list, make sure to update _make_repr_sliders
         # or refactor
         # try to "refresh"
-        vbox = VBox([bbox, repr_info_box, center_selection_button,
+        vbox = VBox([bbox, repr_info_box,
                      component_dropdown, component_slider, repr_slider, reprlist_choices, repr_text_box])
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
