@@ -17,7 +17,7 @@ from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
 
 from .ngl_params import REPR_NAMES
-from .widget_utils import get_widget_by_name
+from .widget_utils import get_widget_by_name, make_default_slider_width
 from .default import DEFAULT_TEXT_WIDTH, DEFAULT_SLIDER_WIDTH
 
 class TrajectoryPlayer(DOMWidget):
@@ -293,6 +293,10 @@ class TrajectoryPlayer(DOMWidget):
                       (extra_box, 'Extra'),
                       (hide_box, 'Hide'),
                       (help_url_box, 'Help')]
+
+        for box in gen_box.children:
+            make_default_slider_width(box)
+        make_default_slider_width(self._preference_widget)
 
         tab = Tab([box for box, _ in box_couple])
         [tab.set_title(i, title) for i, (_, title) in enumerate(box_couple)]
