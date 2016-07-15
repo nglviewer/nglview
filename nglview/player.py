@@ -19,6 +19,7 @@ from traitlets import observe, link
 from .ngl_params import REPR_NAMES
 from .widget_utils import get_widget_by_name
 
+DEFAULT_TEXT_WIDTH = 150.
 
 class TrajectoryPlayer(DOMWidget):
     # should set default values here different from desired defaults
@@ -178,7 +179,8 @@ class TrajectoryPlayer(DOMWidget):
             max=0.2,
             step=0.001,
             description='spin speed')
-        bg_color = ColorPicker(value='white', description='background_color')
+        bg_color = ColorPicker(value='white', description='background')
+        bg_color.width = 100.
         # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
         interpolation_type = Dropdown(value=self._iterpolation_type,
                                       options=['linear', 'spline'])
@@ -436,6 +438,7 @@ class TrajectoryPlayer(DOMWidget):
         repr_name = Text(value='', description='')
         repr_selection = Text(value='', description='')
         repr_selection._ngl_name = 'repr_selection'
+        repr_selection.width = repr_name.width = DEFAULT_TEXT_WIDTH 
 
         repr_info_box = VBox([repr_name, repr_selection])
         repr_info_box._ngl_name = 'repr_info_box'
@@ -636,8 +639,10 @@ class TrajectoryPlayer(DOMWidget):
 
     def _make_add_repr_widget(self, component_slider):
         repr_name = Dropdown(options=REPR_NAMES, value='cartoon')
-        repr_selection = Text(value='*', description='Selection')
+        repr_selection = Text(value='*', description='')
         repr_button = Button(description='Add')
+
+        repr_selection.width = DEFAULT_TEXT_WIDTH
 
         def on_click(button):
             self._view.add_representation(selection=repr_selection.value.strip(),
@@ -645,7 +650,7 @@ class TrajectoryPlayer(DOMWidget):
                     component=component_slider.value)
             self._view._request_update_reprs()
         repr_button.on_click(on_click)
-        add_repr_box = VBox([repr_button, repr_name, repr_selection])
+        add_repr_box = HBox([repr_button, repr_name, repr_selection])
         add_repr_box._ngl_name = 'add_repr_box'
         return add_repr_box
 
