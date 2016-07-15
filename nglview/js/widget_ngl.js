@@ -180,6 +180,16 @@ define( [
                 that.model.set("_n_dragged_files", numDroppedFiles + 1 );
                 that.touch();
             }, false );
+
+            this.stage.signals.componentAdded.add( function(){
+                this.model.set("n_components", this.stage.compList.length);
+                this.touch();
+            }, this);
+
+            this.stage.signals.componentRemoved.add( function(){
+                this.model.set("n_components", this.stage.compList.length);
+                this.touch();
+            }, this);
         },
 
         requestFrame: function(){
@@ -345,6 +355,17 @@ define( [
             }
         },
 
+        setVisibilityForRepr: function(component_index, repr_index, value){
+           // value = True/False
+           var component = this.stage.compList[ component_index ];
+           var repr = component.reprList[repr_index];
+           console.log(repr, value);
+           
+           if (repr) {       
+               repr.setVisibility(value);
+               }
+        },
+
         removeRepresentation: function(component_index, repr_index){
            var component = this.stage.compList[ component_index ];
            var repr = component.reprList[repr_index]
@@ -379,6 +400,7 @@ define( [
               var repr = component.reprList[ repr_index ];
 
               if (repr){
+                  params['useWorker'] = false;
                   var new_repr = NGL.makeRepresentation(name, component.structure,
                                                     this.stage.viewer, params);
                   if (new_repr) {
@@ -505,7 +527,7 @@ define( [
                         'border': 'none'});
         },
 
-        resizeNotebook(width){
+        resizeNotebook: function(width){
             var $nb_container = Jupyter.notebook.container;
             $nb_container.width(width);
 

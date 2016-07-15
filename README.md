@@ -204,17 +204,6 @@ view.add_component('my.ccp4')
 
 # NOTE: Trajectory is a special case of component.
 ```
-Multiple widgets
-----------------
-
-You can have multiple widgets per notebook cell:
-
-```Python
-from ipywidgets.widgets import Box
-w1 = NGLWidget(...)
-w2 = NGLWidget(...)
-Box(children=(w1,w2))
-```
 
 API doc
 -------

@@ -14,7 +14,6 @@ if args.basic:
     root = 'nglview/tests/notebooks/api/'
     notebook_names  = [
                  'test_no_gui_demo.ipynb',
-                 # 'test_detach.ipynb',
                  'test_add_structure_then_trajectory.ipynb',
                  'test_automatically_added_attributes_0.ipynb',
                 ]
