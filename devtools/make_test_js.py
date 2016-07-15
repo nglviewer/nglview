@@ -13,7 +13,7 @@ args = parser.parse_args()
 if args.basic:
     root = 'nglview/tests/notebooks/api/'
     notebook_names  = [
-                 'test_removing_all_comopnents_and_clear_all_info.ipynb',
+                 # 'test_removing_all_comopnents_and_clear_all_info.ipynb',
                  'test_no_gui_demo.ipynb',
                  'test_add_structure_then_trajectory.ipynb',
                  'test_automatically_added_attributes_0.ipynb',
