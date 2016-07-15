@@ -17,8 +17,8 @@ from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
 
 from .ngl_params import REPR_NAMES
-from .widget_utils import get_widget_by_name
-
+from .widget_utils import get_widget_by_name, make_default_slider_width
+from .default import DEFAULT_TEXT_WIDTH, DEFAULT_SLIDER_WIDTH
 
 class TrajectoryPlayer(DOMWidget):
     # should set default values here different from desired defaults
@@ -178,7 +178,8 @@ class TrajectoryPlayer(DOMWidget):
             max=0.2,
             step=0.001,
             description='spin speed')
-        bg_color = ColorPicker(value='white', description='background_color')
+        bg_color = ColorPicker(value='white', description='background')
+        bg_color.width = 100.
         # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
         interpolation_type = Dropdown(value=self._iterpolation_type,
                                       options=['linear', 'spline'])
@@ -267,8 +268,10 @@ class TrajectoryPlayer(DOMWidget):
         help_url_box = self._show_website()
 
         picked_box = HBox([self.picked_widget,])
+        component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
+        repr_add_widget = self._make_add_repr_widget(component_slider)
         repr_box= HBox([VBox([self.repr_widget, self._make_repr_sliders()]),
-                        self._make_add_repr_widget()])
+                        repr_add_widget])
         repr_playground = self._make_selection_repr_buttons()
         export_image_box = HBox([self._make_button_export_image()])
 
@@ -278,7 +281,6 @@ class TrajectoryPlayer(DOMWidget):
                       (picked_box, 'picked atom'),
                       (repr_playground, 'quick repr'),
                       (export_image_box, 'Image')]
-        # extra_list = extra_list[::-1]
 
         extra_box = Tab([w for w, _ in extra_list])
         [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]
@@ -291,6 +293,10 @@ class TrajectoryPlayer(DOMWidget):
                       (extra_box, 'Extra'),
                       (hide_box, 'Hide'),
                       (help_url_box, 'Help')]
+
+        for box in gen_box.children:
+            make_default_slider_width(box)
+        make_default_slider_width(self._preference_widget)
 
         tab = Tab([box for box, _ in box_couple])
         [tab.set_title(i, title) for i, (_, title) in enumerate(box_couple)]
@@ -371,6 +377,10 @@ class TrajectoryPlayer(DOMWidget):
                       light_intensity=(0, 10, 0.02),
                       quality=['low', 'medium', 'high'],
                       sample_level=(-1, 5, 1))
+
+            for child in widget_sliders.children:
+                if isinstance(child, (IntSlider, FloatSlider)):
+                    child.width = DEFAULT_SLIDER_WIDTH
             return widget_sliders
 
         widget_sliders = make_widget_box()
@@ -429,34 +439,37 @@ class TrajectoryPlayer(DOMWidget):
         button_refresh = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         button_remove = Button(description='Remove', tooltip='Remove current representation')
-        button_hide = Button(description='Hide', tooltip='Hide/show current representation')
-        # bbox = HBox([button_refresh, button_update, button_hide, button_remove])
-        bbox = HBox([button_update, button_hide, button_remove])
+        button_hide = Button(description='Hide', tooltip='Hide/Show current representation')
+        button_center_selection = Button(description='Center', tooltip='center selected atoms')
+        button_center_selection._ngl_name = 'button_center_selection'
 
-        repr_name = Text(value='', description='representation name')
-        repr_selection = Text(value='', description='selection')
+        bbox = HBox([button_center_selection, button_hide, button_remove])
+
+        repr_name = Text(value='', description='')
+        repr_selection = Text(value='', description='')
         repr_selection._ngl_name = 'repr_selection'
+        repr_selection.width = repr_name.width = DEFAULT_TEXT_WIDTH 
 
         repr_info_box = VBox([repr_name, repr_selection])
         repr_info_box._ngl_name = 'repr_info_box'
 
-        center_selection_button = Button(description='center', tooltip='center at selection')
-        center_selection_button._ngl_name = 'center_selection_button'
-
         component_slider = IntSlider(value=0, description='component')
         component_slider._ngl_name = 'component_slider'
+        component_slider.visible = False
 
         cvalue = ''
         component_dropdown = Dropdown(value=cvalue, options=[cvalue,],
                 description='component')
         component_dropdown._ngl_name = 'component_dropdown'
 
-        repr_slider = IntSlider(value=0, description='representation')
+        repr_slider = IntSlider(value=0, description='representation', width=DEFAULT_SLIDER_WIDTH)
         repr_slider._ngl_name = 'repr_slider'
+        repr_slider.visible = False
 
         repr_text_info = Textarea(value='', description='representation parameters')
         repr_text_info.visible = False
         checkbox_repr_text = Checkbox(value=False, description='show parameters')
+        checkbox_repr_text.visible = False
         repr_text_box = VBox([checkbox_repr_text, repr_text_info])
         repr_text_box._ngl_name = 'repr_text_box'
 
@@ -514,7 +527,7 @@ class TrajectoryPlayer(DOMWidget):
         def on_click_center(center_selection):
             self._view.center_view(selection=repr_selection.value,
                                    component=component_slider.value)
-        center_selection_button.on_click(on_click_center)
+        button_center_selection.on_click(on_click_center)
 
 
         def on_change_repr_name(change):
@@ -566,28 +579,28 @@ class TrajectoryPlayer(DOMWidget):
         # NOTE: if you update below list, make sure to update _make_repr_sliders
         # or refactor
         # try to "refresh"
-        vbox = VBox([bbox, repr_info_box, center_selection_button,
-                     component_dropdown, component_slider, repr_slider, reprlist_choices, repr_text_box])
+        vbox = VBox([component_dropdown, bbox, repr_info_box,
+                     component_slider, repr_slider, reprlist_choices, repr_text_box])
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
         return vbox
 
 
     def _make_repr_sliders(self):
-        repr_checkbox = Checkbox(value=False, description='repr slider')
+        repr_checkbox = Checkbox(value=False, description='Parameters')
 
         vbox = VBox([repr_checkbox])
 
         def create_widget(change):
             if change['new']:
                 # repr_name
-                # TODO: correctly upate name
-                name = self.repr_widget.children[1].children[0].value
+                repr_info_box = get_widget_by_name(self.repr_widget, 'repr_info_box')
+                repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
                 component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
                 repr_slider = get_widget_by_name(self.repr_widget, 'repr_slider')
                 widget = self._view._display_repr(component=component_slider.value,
                                          repr_index=repr_slider.value,
-                                         name=name)
+                                         name=repr_selection.value)
                 vbox.children = [repr_checkbox, widget]
             else:
                 vbox.children = [repr_checkbox, ]
@@ -629,17 +642,20 @@ class TrajectoryPlayer(DOMWidget):
         resize_notebook_slider.observe(on_resize_notebook, names='value')
         return resize_notebook_slider
 
-    def _make_add_repr_widget(self):
+    def _make_add_repr_widget(self, component_slider):
         repr_name = Dropdown(options=REPR_NAMES, value='cartoon')
-        repr_selection = Text(value='*', description='Selection')
+        repr_selection = Text(value='*', description='')
         repr_button = Button(description='Add')
+
+        repr_selection.width = DEFAULT_TEXT_WIDTH
 
         def on_click(button):
             self._view.add_representation(selection=repr_selection.value.strip(),
-                    repr_type=repr_name.value)
+                    repr_type=repr_name.value,
+                    component=component_slider.value)
             self._view._request_update_reprs()
         repr_button.on_click(on_click)
-        add_repr_box = VBox([repr_button, repr_name, repr_selection])
+        add_repr_box = HBox([repr_button, repr_name, repr_selection])
         add_repr_box._ngl_name = 'add_repr_box'
         return add_repr_box
 

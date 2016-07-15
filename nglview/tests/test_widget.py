@@ -419,7 +419,7 @@ def test_make_methods_of_player():
     """
     view = nv.demo()
 
-    excluded = ['_make_button_url', '_make_repr_name_choices']
+    excluded = ['_make_button_url', '_make_repr_name_choices', '_make_add_repr_widget']
     for method in dir(view.player):
         if method.startswith('_make') and method not in excluded:
             func = getattr(view.player, method)
