@@ -698,7 +698,15 @@ class NGLWidget(widgets.DOMWidget):
         reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
         repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
         reprlist_choices.options = [str(i) + '-' + name for (i, name) in enumerate(repr_names)]
-        reprlist_choices.value = reprlist_choices.options[repr_slider.value]
+
+        try:
+            reprlist_choices.value = reprlist_choices.options[repr_slider.value]
+        except IndexError:
+            if repr_slider.value == 0:
+                reprlist_choices.options = tuple(['',])
+                reprlist_choices.value = ''
+            else:
+                reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
 
         # e.g: 0-cartoon
         repr_name_text.value = reprlist_choices.value.split('-')[-1]
@@ -1123,7 +1131,6 @@ class NGLWidget(widgets.DOMWidget):
 
                 repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
                 repr_text_box.children[-1].value = data_dict_json
-
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':
