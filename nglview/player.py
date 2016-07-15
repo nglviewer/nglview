@@ -561,7 +561,8 @@ class TrajectoryPlayer(DOMWidget):
 
         def on_change_component_dropdown(change):
             choice = change['new']
-            component_slider.value = self._view._ngl_component_names.index(choice)
+            if choice:
+                 component_slider.value = self._view._ngl_component_names.index(choice)
 
         component_dropdown.observe(on_change_component_dropdown, names='value')
 
@@ -599,10 +600,12 @@ class TrajectoryPlayer(DOMWidget):
                 widget = self._view._display_repr(component=component_slider.value,
                                          repr_index=repr_slider.value,
                                          name=repr_selection.value)
+                widget._ngl_name = 'repr_parameters'
                 vbox.children = [repr_checkbox, widget]
             else:
                 vbox.children = [repr_checkbox, ]
         repr_checkbox.observe(create_widget, names='value')
+        vbox._ngl_name = 'repr_parameters_box'
         return vbox
 
     def _make_button_export_image(self):

@@ -679,43 +679,62 @@ class NGLWidget(widgets.DOMWidget):
             self._ngl_component_ids.append(uuid.uuid4())
 
     @observe('n_components')
-    def _update_player_component_slider_max(self, change):
+    def _handle_n_components_changed(self, change):
         component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
         if change['new'] - 1 >= component_slider.min:
             component_slider.max = change['new'] - 1
         component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
         component_dropdown.options = tuple(self._ngl_component_names)
 
+        if change['new'] == 0:
+            component_dropdown.options = tuple([''])
+            component_dropdown.value = ''
+
+            component_slider.max = 0
+
+            reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+            reprlist_choices.options = tuple([''])
+
+            repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
+            repr_slider.max = 0
+
+            repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+            repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
+            repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+            repr_name_text.value = ''
+            repr_selection.value = ''
+
     @observe('_repr_dict')
     def _update_max_reps_count(self, change):
-        repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
-        component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
-        cindex = str(component_slider.value)
+        if change['new']:
+            repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
+            component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+            cindex = str(component_slider.value)
 
-        repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-        repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
+            repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+            repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
 
-        reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
-        repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
-        reprlist_choices.options = [str(i) + '-' + name for (i, name) in enumerate(repr_names)]
+            reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+            repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
+            reprlist_choices.options = [str(i) + '-' + name for (i, name) in enumerate(repr_names)]
 
-        try:
-            reprlist_choices.value = reprlist_choices.options[repr_slider.value]
-        except IndexError:
-            if repr_slider.value == 0:
-                reprlist_choices.options = tuple(['',])
-                reprlist_choices.value = ''
-            else:
-                reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
+            try:
+                reprlist_choices.value = reprlist_choices.options[repr_slider.value]
+            except IndexError:
+                if repr_slider.value == 0:
+                    reprlist_choices.options = tuple(['',])
+                    reprlist_choices.value = ''
+                else:
+                    reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
 
-        # e.g: 0-cartoon
-        repr_name_text.value = reprlist_choices.value.split('-')[-1]
+            # e.g: 0-cartoon
+            repr_name_text.value = reprlist_choices.value.split('-')[-1]
 
-        try:
-            repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
-        except (TraitError, IndexError, KeyError):
-            # TraitError: setting max < min
-            pass
+            try:
+                repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
+            except (TraitError, IndexError, KeyError):
+                # TraitError: setting max < min
+                pass
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
