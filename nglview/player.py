@@ -440,7 +440,10 @@ class TrajectoryPlayer(DOMWidget):
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         button_remove = Button(description='Remove', tooltip='Remove current representation')
         button_hide = Button(description='Hide', tooltip='Hide/Show current representation')
-        # bbox = HBox([button_refresh, button_update, button_hide, button_remove])
+        button_center_selection = Button(description='Center', tooltip='center selected atoms')
+        button_center_selection._ngl_name = 'button_center_selection'
+
+        bbox = HBox([button_center_selection, button_hide, button_remove])
 
         repr_name = Text(value='', description='')
         repr_selection = Text(value='', description='')
@@ -449,11 +452,6 @@ class TrajectoryPlayer(DOMWidget):
 
         repr_info_box = VBox([repr_name, repr_selection])
         repr_info_box._ngl_name = 'repr_info_box'
-
-        center_selection_button = Button(description='center', tooltip='center selected atoms')
-        center_selection_button._ngl_name = 'center_selection_button'
-
-        bbox = HBox([center_selection_button, button_update, button_hide, button_remove])
 
         component_slider = IntSlider(value=0, description='component')
         component_slider._ngl_name = 'component_slider'
@@ -529,7 +527,7 @@ class TrajectoryPlayer(DOMWidget):
         def on_click_center(center_selection):
             self._view.center_view(selection=repr_selection.value,
                                    component=component_slider.value)
-        center_selection_button.on_click(on_click_center)
+        button_center_selection.on_click(on_click_center)
 
 
         def on_change_repr_name(change):
@@ -581,8 +579,8 @@ class TrajectoryPlayer(DOMWidget):
         # NOTE: if you update below list, make sure to update _make_repr_sliders
         # or refactor
         # try to "refresh"
-        vbox = VBox([bbox, repr_info_box,
-                     component_dropdown, component_slider, repr_slider, reprlist_choices, repr_text_box])
+        vbox = VBox([component_dropdown, bbox, repr_info_box,
+                     component_slider, repr_slider, reprlist_choices, repr_text_box])
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
         return vbox
@@ -596,13 +594,13 @@ class TrajectoryPlayer(DOMWidget):
         def create_widget(change):
             if change['new']:
                 # repr_name
-                # TODO: correctly upate name
-                name = self.repr_widget.children[1].children[0].value
+                repr_info_box = get_widget_by_name(self.repr_widget, 'repr_info_box')
+                repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
                 component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
                 repr_slider = get_widget_by_name(self.repr_widget, 'repr_slider')
                 widget = self._view._display_repr(component=component_slider.value,
                                          repr_index=repr_slider.value,
-                                         name=name)
+                                         name=repr_selection.value)
                 vbox.children = [repr_checkbox, widget]
             else:
                 vbox.children = [repr_checkbox, ]
