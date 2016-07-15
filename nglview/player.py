@@ -18,8 +18,7 @@ from traitlets import observe, link
 
 from .ngl_params import REPR_NAMES
 from .widget_utils import get_widget_by_name
-
-DEFAULT_TEXT_WIDTH = 150.
+from .default import DEFAULT_TEXT_WIDTH, DEFAULT_SLIDER_WIDTH
 
 class TrajectoryPlayer(DOMWidget):
     # should set default values here different from desired defaults
@@ -374,6 +373,10 @@ class TrajectoryPlayer(DOMWidget):
                       light_intensity=(0, 10, 0.02),
                       quality=['low', 'medium', 'high'],
                       sample_level=(-1, 5, 1))
+
+            for child in widget_sliders.children:
+                if isinstance(child, (IntSlider, FloatSlider)):
+                    child.width = DEFAULT_SLIDER_WIDTH
             return widget_sliders
 
         widget_sliders = make_widget_box()
@@ -457,7 +460,7 @@ class TrajectoryPlayer(DOMWidget):
                 description='component')
         component_dropdown._ngl_name = 'component_dropdown'
 
-        repr_slider = IntSlider(value=0, description='representation')
+        repr_slider = IntSlider(value=0, description='representation', width=DEFAULT_SLIDER_WIDTH)
         repr_slider._ngl_name = 'repr_slider'
         repr_slider.visible = False
 
@@ -582,7 +585,7 @@ class TrajectoryPlayer(DOMWidget):
 
 
     def _make_repr_sliders(self):
-        repr_checkbox = Checkbox(value=False, description='repr slider')
+        repr_checkbox = Checkbox(value=False, description='Parameters')
 
         vbox = VBox([repr_checkbox])
 
