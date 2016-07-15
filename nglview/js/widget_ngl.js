@@ -181,9 +181,18 @@ define( [
                 that.touch();
             }, false );
 
+            var that = this;
             this.stage.signals.componentAdded.add( function(){
-                this.model.set("n_components", this.stage.compList.length);
+                var len = this.stage.compList.length;
+                this.model.set("n_components", len);
                 this.touch();
+                var comp = this.stage.compList[len-1];
+                comp.signals.representationRemoved.add(function(){
+                    that.requestReprsInfo();
+                });
+                comp.signals.representationAdded.add(function(){
+                    that.requestReprsInfo();
+                });
             }, this);
 
             this.stage.signals.componentRemoved.add( function(){
@@ -407,6 +416,7 @@ define( [
                       repr.setRepresentation(new_repr);
                       repr.name = name;
                       component.reprList[repr_index] = repr;
+                      this.requestReprsInfo();
                   }
               }
         },
