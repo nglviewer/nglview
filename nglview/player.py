@@ -445,12 +445,13 @@ class TrajectoryPlayer(DOMWidget):
 
         bbox = HBox([button_center_selection, button_hide, button_remove])
 
-        repr_name = Text(value='', description='')
+        repr_name_text = Text(value='', description='')
+        repr_name_text._ngl_name = 'repr_name_text'
         repr_selection = Text(value='', description='')
         repr_selection._ngl_name = 'repr_selection'
-        repr_selection.width = repr_name.width = DEFAULT_TEXT_WIDTH 
+        repr_selection.width = repr_name_text.width = DEFAULT_TEXT_WIDTH 
 
-        repr_info_box = VBox([repr_name, repr_selection])
+        repr_info_box = VBox([repr_name_text, repr_selection])
         repr_info_box._ngl_name = 'repr_info_box'
 
         component_slider = IntSlider(value=0, description='component')
@@ -464,7 +465,7 @@ class TrajectoryPlayer(DOMWidget):
 
         repr_slider = IntSlider(value=0, description='representation', width=DEFAULT_SLIDER_WIDTH)
         repr_slider._ngl_name = 'repr_slider'
-        repr_slider.visible = False
+        repr_slider.visible = True
 
         repr_text_info = Textarea(value='', description='representation parameters')
         repr_text_info.visible = False
@@ -495,7 +496,6 @@ class TrajectoryPlayer(DOMWidget):
             self._view._set_selection(repr_selection.value,
                                       component=component_slider.value,
                                       repr_index=repr_slider.value)
-            self._view._request_update_reprs()
         button_update.on_click(on_click_update)
 
         def on_click_remove(button_remove):
@@ -529,7 +529,6 @@ class TrajectoryPlayer(DOMWidget):
                                    component=component_slider.value)
         button_center_selection.on_click(on_click_center)
 
-
         def on_change_repr_name(change):
             name = change['new'].strip()
             old = change['old'].strip()
@@ -545,7 +544,6 @@ class TrajectoryPlayer(DOMWidget):
                 self._view._remote_call('setRepresentation',
                                  target='Widget',
                                  args=[change['new'], {}, component, repr_index])
-                self._view._request_update_reprs()
                 self._view._request_repr_parameters(component, repr_index)
 
         def update_slider_info(change):
@@ -572,7 +570,7 @@ class TrajectoryPlayer(DOMWidget):
 
         repr_slider.observe(update_slider_info, names='value')
         component_slider.observe(update_slider_info, names='value')
-        repr_name.observe(on_change_repr_name, names='value')
+        repr_name_text.observe(on_change_repr_name, names='value')
         repr_selection.observe(on_change_selection, names='value')
         checkbox_repr_text.observe(on_change_checkbox_repr_text, names='value')
 
@@ -653,7 +651,6 @@ class TrajectoryPlayer(DOMWidget):
             self._view.add_representation(selection=repr_selection.value.strip(),
                     repr_type=repr_name.value,
                     component=component_slider.value)
-            self._view._request_update_reprs()
         repr_button.on_click(on_click)
         add_repr_box = HBox([repr_button, repr_name, repr_selection])
         add_repr_box._ngl_name = 'add_repr_box'
