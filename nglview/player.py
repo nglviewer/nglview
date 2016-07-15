@@ -267,8 +267,10 @@ class TrajectoryPlayer(DOMWidget):
         help_url_box = self._show_website()
 
         picked_box = HBox([self.picked_widget,])
+        component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
+        repr_add_widget = self._make_add_repr_widget(component_slider)
         repr_box= HBox([VBox([self.repr_widget, self._make_repr_sliders()]),
-                        self._make_add_repr_widget()])
+                        repr_add_widget])
         repr_playground = self._make_selection_repr_buttons()
         export_image_box = HBox([self._make_button_export_image()])
 
@@ -278,7 +280,6 @@ class TrajectoryPlayer(DOMWidget):
                       (picked_box, 'picked atom'),
                       (repr_playground, 'quick repr'),
                       (export_image_box, 'Image')]
-        # extra_list = extra_list[::-1]
 
         extra_box = Tab([w for w, _ in extra_list])
         [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]
@@ -629,14 +630,15 @@ class TrajectoryPlayer(DOMWidget):
         resize_notebook_slider.observe(on_resize_notebook, names='value')
         return resize_notebook_slider
 
-    def _make_add_repr_widget(self):
+    def _make_add_repr_widget(self, component_slider):
         repr_name = Dropdown(options=REPR_NAMES, value='cartoon')
         repr_selection = Text(value='*', description='Selection')
         repr_button = Button(description='Add')
 
         def on_click(button):
             self._view.add_representation(selection=repr_selection.value.strip(),
-                    repr_type=repr_name.value)
+                    repr_type=repr_name.value,
+                    component=component_slider.value)
             self._view._request_update_reprs()
         repr_button.on_click(on_click)
         add_repr_box = VBox([repr_button, repr_name, repr_selection])
