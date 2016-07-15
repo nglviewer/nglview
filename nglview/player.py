@@ -446,6 +446,7 @@ class TrajectoryPlayer(DOMWidget):
 
         component_slider = IntSlider(value=0, description='component')
         component_slider._ngl_name = 'component_slider'
+        component_slider.visible = False
 
         cvalue = ''
         component_dropdown = Dropdown(value=cvalue, options=[cvalue,],
@@ -454,6 +455,7 @@ class TrajectoryPlayer(DOMWidget):
 
         repr_slider = IntSlider(value=0, description='representation')
         repr_slider._ngl_name = 'repr_slider'
+        repr_slider.visible = False
 
         repr_text_info = Textarea(value='', description='representation parameters')
         repr_text_info.visible = False
