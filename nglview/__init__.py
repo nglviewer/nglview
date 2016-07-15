@@ -702,7 +702,11 @@ class NGLWidget(widgets.DOMWidget):
         try:
             reprlist_choices.value = reprlist_choices.options[repr_slider.value]
         except IndexError:
-            reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
+            if repr_slider.value == 0:
+                reprlist_choices.options = tuple(['',])
+                reprlist_choices.value = ''
+            else:
+                reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
 
         # e.g: 0-cartoon
         repr_name_text.value = reprlist_choices.value.split('-')[-1]
