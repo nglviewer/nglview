@@ -15,7 +15,6 @@ args = parser.parse_args()
 
 api_root_dir = 'nglview/tests/notebooks/api/'
 
-#
 if args.basic:
     notebook_names  = [
                  'test_no_gui_demo.ipynb',
