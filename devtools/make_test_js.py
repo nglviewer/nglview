@@ -20,7 +20,6 @@ if args.basic:
                  'test_no_gui_demo.ipynb',
                  'test_add_structure_then_trajectory.ipynb',
                  'test_automatically_added_attributes_0.ipynb',
-                 'binary_vs_base64.ipynb',
                 ]
 
     notebooks = [api_root_dir + notebook_name for notebook_name in notebook_names]
