@@ -2,10 +2,10 @@ language: cpp
 
 matrix:
   include:
-     # - { os: linux, env: PYTHON_VERSION=2.7 }
-     # - { os: linux, env: PYTHON_VERSION=3.4 }
-     # - { os: linux, env: PYTHON_VERSION=3.5 }
-     # - { os: linux, env: PYTHON_VERSION=3.5 CONDA=yes} # do not change 3.5
+     - { os: linux, env: PYTHON_VERSION=2.7 }
+     - { os: linux, env: PYTHON_VERSION=3.4 }
+     - { os: linux, env: PYTHON_VERSION=3.5 }
+     - { os: linux, env: PYTHON_VERSION=3.5 CONDA=yes} # do not change 3.5
      - { os: linux, env: PYTHON_VERSION=3.5 TEST_NOTEBOOK=yes}
 
 sudo: true
@@ -14,15 +14,12 @@ dist: trusty
 addons:
   apt:
     sources:
-    # add PPAs with more up-to-date toolchains
     - ubuntu-toolchain-r-test
     packages:
-    # install toolchains
     - gcc-5
     - g++-5
     - clang-3.6
     - unzip
-    # - google-chrome-stable
 
 before_install:
     - source devtools/travis-ci/install_chrome.sh
