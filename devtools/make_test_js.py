@@ -17,10 +17,15 @@ api_root_dir = 'nglview/tests/notebooks/api/'
 
 if args.basic:
     notebook_names  = [
+                 'test_component_names.ipynb',
+                 'test_component_dropdown_options.ipynb',
+                 'test_add_structure_then_trajectory.ipynb',
+                 'test_sync_n_components.ipynb',
                  'test_no_gui_demo.ipynb',
-                 # 'test_removing_all_comopnents_and_clear_all_info.ipynb',
                  'test_add_structure_then_trajectory.ipynb',
                  'test_automatically_added_attributes_0.ipynb',
+                 # 'binary_vs_base64.ipynb',
+                 # 'test_removing_all_comopnents_and_clear_all_info.ipynb',
                 ]
 
     notebooks = [api_root_dir + notebook_name for notebook_name in notebook_names]
