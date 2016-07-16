@@ -414,6 +414,11 @@ def test_widget_utils():
     assert i0 is widget_utils.get_widget_by_name(box, 'i0')
     assert i1 is widget_utils.get_widget_by_name(box, 'i1')
 
+    def test_raise():
+        widget_utils.get_widget_by_name(box, 'i100')
+
+    nt.assert_raises(ValueError, test_raise)
+
 def test_make_methods_of_player():
     """test_make_methods_of_player: just to make sure there is no error
     """

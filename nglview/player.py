@@ -59,7 +59,7 @@ class TrajectoryPlayer(DOMWidget):
                                    trim=False,
                                    transparent=False)
         self.picked_widget = self._make_text_picked()
-        self.repr_widget = self._make_text_repr_widget()
+        self.repr_widget = self._make_repr_widget()
         self._preference_widget = self._make_reference_widget()
 
     @observe('camera')
@@ -270,7 +270,7 @@ class TrajectoryPlayer(DOMWidget):
         picked_box = HBox([self.picked_widget,])
         component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
         repr_add_widget = self._make_add_repr_widget(component_slider)
-        repr_box= HBox([VBox([self.repr_widget, self._make_repr_sliders()]),
+        repr_box= HBox([self.repr_widget,
                         repr_add_widget])
         repr_playground = self._make_selection_repr_buttons()
         export_image_box = HBox([self._make_button_export_image()])
@@ -435,7 +435,7 @@ class TrajectoryPlayer(DOMWidget):
         ta = Textarea(value=json.dumps(self._view.picked), description='Picked atom')
         return ta
 
-    def _make_text_repr_widget(self):
+    def _make_repr_widget(self):
         button_refresh = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         button_remove = Button(description='Remove', tooltip='Remove current representation')
@@ -443,7 +443,7 @@ class TrajectoryPlayer(DOMWidget):
         button_center_selection = Button(description='Center', tooltip='center selected atoms')
         button_center_selection._ngl_name = 'button_center_selection'
 
-        bbox = HBox([button_center_selection, button_hide, button_remove])
+        bbox = HBox([button_refresh, button_center_selection, button_hide, button_remove])
 
         repr_name_text = Text(value='', description='')
         repr_name_text._ngl_name = 'repr_name_text'
@@ -486,6 +486,7 @@ class TrajectoryPlayer(DOMWidget):
         def on_click_refresh(button):
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
+            self._view._remote_call('requestReprInfo', target='Widget')
         button_refresh.on_click(on_click_refresh)
 
         def on_click_update(button):
@@ -561,7 +562,8 @@ class TrajectoryPlayer(DOMWidget):
 
         def on_change_component_dropdown(change):
             choice = change['new']
-            component_slider.value = self._view._ngl_component_names.index(choice)
+            if choice:
+                 component_slider.value = self._view._ngl_component_names.index(choice)
 
         component_dropdown.observe(on_change_component_dropdown, names='value')
 
@@ -574,17 +576,22 @@ class TrajectoryPlayer(DOMWidget):
         repr_selection.observe(on_change_selection, names='value')
         checkbox_repr_text.observe(on_change_checkbox_repr_text, names='value')
 
-        # NOTE: if you update below list, make sure to update _make_repr_sliders
+        # HC
+        repr_parameters_box = self._make_repr_parameter_slider()
+        repr_parameters_box._ngl_name = 'repr_parameters_box'
+
+        # NOTE: if you update below list, make sure to update _make_repr_parameter_slider
         # or refactor
         # try to "refresh"
         vbox = VBox([component_dropdown, bbox, repr_info_box,
-                     component_slider, repr_slider, reprlist_choices, repr_text_box])
+                     component_slider, repr_slider, reprlist_choices, repr_text_box,
+                     repr_parameters_box])
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
         return vbox
 
 
-    def _make_repr_sliders(self):
+    def _make_repr_parameter_slider(self):
         repr_checkbox = Checkbox(value=False, description='Parameters')
 
         vbox = VBox([repr_checkbox])
@@ -599,10 +606,12 @@ class TrajectoryPlayer(DOMWidget):
                 widget = self._view._display_repr(component=component_slider.value,
                                          repr_index=repr_slider.value,
                                          name=repr_selection.value)
+                widget._ngl_name = 'repr_parameters'
                 vbox.children = [repr_checkbox, widget]
             else:
                 vbox.children = [repr_checkbox, ]
         repr_checkbox.observe(create_widget, names='value')
+        vbox._ngl_name = 'repr_parameters_box'
         return vbox
 
     def _make_button_export_image(self):

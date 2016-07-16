@@ -28,7 +28,10 @@ class Representation(DOMWidget):
     def _display(self):
         c_string = 'c' + str(self.component_index)
         r_string = str(self.repr_index)
-        _repr_dict = self._view._repr_dict[c_string][r_string]['parameters']
+        try:
+            _repr_dict = self._view._repr_dict[c_string][r_string]['parameters']
+        except KeyError:
+            _repr_dict = dict()
 
         def func(opacity=_repr_dict.get('opacity', 1.),
                  assembly=_repr_dict.get('assembly', 'default'),
