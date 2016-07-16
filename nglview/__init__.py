@@ -731,7 +731,7 @@ class NGLWidget(widgets.DOMWidget):
             # e.g: 0-cartoon
             repr_name_text.value = reprlist_choices.value.split('-')[-1]
 
-            repr_slider.max = len(repr_names) - 1
+            repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
