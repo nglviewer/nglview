@@ -23,6 +23,7 @@ Table of contents
 * [Changelog](CHANGELOG.md)
 * [FAQ](#faq)
 * [Website](#website)
+* [Acknowledgment](#acknowledgment)
 * [License](#license)
 
 
@@ -250,6 +251,11 @@ Website
 
 - http://arose.github.io/nglview/latest
 - http://arose.github.io/nglview/dev
+
+Acknowledgment
+==============
+
+- [dunovank/jupyter-themes](https://github.com/dunovank/jupyter-themes): for `oceans16` theme
 
 License
 =======
