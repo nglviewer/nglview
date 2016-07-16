@@ -9,13 +9,14 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--basic', action='store_true')
 parser.add_argument('--api', action='store_true')
+parser.add_argument('--single', action='store_true')
+parser.add_argument('-n', '--nb', nargs='?')
 args = parser.parse_args()
 
 api_root_dir = 'nglview/tests/notebooks/api/'
 
 if args.basic:
     notebook_names  = [
-                 # 'test_removing_all_comopnents_and_clear_all_info.ipynb',
                  'test_no_gui_demo.ipynb',
                  'test_add_structure_then_trajectory.ipynb',
                  'test_automatically_added_attributes_0.ipynb',
@@ -24,6 +25,8 @@ if args.basic:
     notebooks = [api_root_dir + notebook_name for notebook_name in notebook_names]
 elif args.api:
     notebooks = glob(api_root_dir + '/*.ipynb')
+elif args.single:
+    notebooks = [args.nb]
 else:
     notebooks = ['nglview/tests/notebooks/dummy.ipynb',]
     
