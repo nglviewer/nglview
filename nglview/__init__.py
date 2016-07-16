@@ -679,28 +679,63 @@ class NGLWidget(widgets.DOMWidget):
             self._ngl_component_ids.append(uuid.uuid4())
 
     @observe('n_components')
-    def _update_player_component_slider_max(self, change):
+    def _handle_n_components_changed(self, change):
         component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
         if change['new'] - 1 >= component_slider.min:
             component_slider.max = change['new'] - 1
         component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
         component_dropdown.options = tuple(self._ngl_component_names)
 
+        if change['new'] == 0:
+            component_dropdown.options = tuple([''])
+            component_dropdown.value = ''
+
+            component_slider.max = 0
+
+            reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+            reprlist_choices.options = tuple([''])
+
+            repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
+            repr_slider.max = 0
+
+            repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+            repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
+            repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+            repr_name_text.value = ''
+            repr_selection.value = ''
+
     @observe('_repr_dict')
-    def _update_max_reps_count(self, change):
+    def _handle_repr_dict_changed(self, change):
         repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
         component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
         cindex = str(component_slider.value)
 
+        repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+        repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
+        repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+
         reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
         repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
-        reprlist_choices.options = [str(i) + '-' + name for (i, name) in enumerate(repr_names)]
 
-        try:
-            repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
-        except (TraitError, IndexError, KeyError):
-            # TraitError: setting max < min
-            pass
+        if change['new']:
+            reprlist_choices.options = tuple([str(i) + '-' + name for (i, name) in enumerate(repr_names)])
+
+            try:
+                reprlist_choices.value = reprlist_choices.options[repr_slider.value]
+            except IndexError:
+                if repr_slider.value == 0:
+                    reprlist_choices.options = tuple(['',])
+                    reprlist_choices.value = ''
+                else:
+                    reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
+
+            # e.g: 0-cartoon
+            repr_name_text.value = reprlist_choices.value.split('-')[-1]
+
+            repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
+
+        if change['new'] == {'c0': {}}:
+            repr_selection.value = ''
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
@@ -713,7 +748,6 @@ class NGLWidget(widgets.DOMWidget):
 
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
-            self._request_update_reprs()
 
     def _ipython_display_(self, **kwargs):
         self.displayed = True
@@ -790,7 +824,6 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('setParameters',
                  target='Representation',
                  kwargs=kwargs)
-        self._request_update_reprs()
 
     def set_representations(self, representations, component=0):
         """
@@ -814,13 +847,11 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('removeRepresentation',
                           target='Widget',
                           args=[component, repr_index])
-        self._request_update_reprs()
 
     def _remove_representations_by_name(self, repr_name, component=0):
         self._remote_call('removeRepresentationsByName',
                           target='Widget',
                           args=[repr_name, component])
-        self._request_update_reprs()
 
     def _display_repr(self, component=0, repr_index=0, name=None):
         try:
@@ -994,7 +1025,6 @@ class NGLWidget(widgets.DOMWidget):
                           target='compList',
                           args=[d['type'],],
                           kwargs=params)
-        self._request_update_reprs()
 
 
     def center(self, *args, **kwargs):
@@ -1121,7 +1151,6 @@ class NGLWidget(widgets.DOMWidget):
 
                 repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
                 repr_text_box.children[-1].value = data_dict_json
-
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':
@@ -1132,10 +1161,6 @@ class NGLWidget(widgets.DOMWidget):
                 target='Widget',
                 args=[component,
                       repr_index])
-
-    def _request_update_reprs(self):
-        self._remote_call('requestReprsInfo',
-                target='Widget')
 
     def add_structure(self, structure, **kwargs):
         '''
