@@ -443,7 +443,7 @@ class TrajectoryPlayer(DOMWidget):
         button_center_selection = Button(description='Center', tooltip='center selected atoms')
         button_center_selection._ngl_name = 'button_center_selection'
 
-        bbox = HBox([button_center_selection, button_hide, button_remove])
+        bbox = HBox([button_refresh, button_center_selection, button_hide, button_remove])
 
         repr_name_text = Text(value='', description='')
         repr_name_text._ngl_name = 'repr_name_text'
@@ -486,6 +486,7 @@ class TrajectoryPlayer(DOMWidget):
         def on_click_refresh(button):
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
+            self._view._remote_call('requestReprInfo', target='Widget')
         button_refresh.on_click(on_click_refresh)
 
         def on_click_update(button):
