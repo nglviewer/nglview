@@ -724,6 +724,7 @@ define( [
 
     return {
         'NGLView': NGLView,
+        'NGL': NGL
     };
 
 } );
