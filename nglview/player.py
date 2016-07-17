@@ -458,7 +458,7 @@ class TrajectoryPlayer(DOMWidget):
         component_slider._ngl_name = 'component_slider'
         component_slider.visible = False
 
-        cvalue = ''
+        cvalue = ' '
         component_dropdown = Dropdown(value=cvalue, options=[cvalue,],
                 description='component')
         component_dropdown._ngl_name = 'component_dropdown'

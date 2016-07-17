@@ -145,7 +145,12 @@ setup_args = {
     'install_requires': [
         'ipywidgets>=5.1.5',
     ],
-    'packages': find_packages(),
+    'packages': ['nglview',
+                 'nglview.static',
+                 'nglview.theme',
+                 'nglview.datafiles',
+                 'nglview.tests',
+                 'nglview.scripts'],
     'zip_safe': False,
     'cmdclass': {
         'build_py': js_prerelease(build_py),
