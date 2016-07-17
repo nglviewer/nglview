@@ -534,7 +534,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
 
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
-    _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
+    _view_module = Unicode("nglview-js").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
     background = Unicode('white').tag(sync=True)
