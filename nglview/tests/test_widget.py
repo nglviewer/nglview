@@ -350,7 +350,7 @@ def test_existing_js_files():
     from glob import glob
     jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'js', '*js'))
 
-    nt.assert_equal(len(jsfiles), 12)
+    nt.assert_equal(len(jsfiles), 2)
 
 def test_player():
     traj = pt.datafiles.load_tz2()
