@@ -1,8 +1,7 @@
 var widgets = require("jupyter-js-widgets");
 var NGL = require('./ngl');
 
-
-var NGLView = widgets.WidgetView.extend({
+var NGLView = widget.DOMWidgetView.extend( {
 
     render: function(){
 
@@ -137,6 +136,25 @@ var NGLView = widgets.WidgetView.extend({
             that.model.set("_n_dragged_files", numDroppedFiles + 1 );
             that.touch();
         }, false );
+
+        var that = this;
+        this.stage.signals.componentAdded.add( function(){
+            var len = this.stage.compList.length;
+            this.model.set("n_components", len);
+            this.touch();
+            var comp = this.stage.compList[len-1];
+            comp.signals.representationRemoved.add(function(){
+                that.requestReprsInfo();
+            });
+            comp.signals.representationAdded.add(function(){
+                that.requestReprsInfo();
+            });
+        }, this);
+
+        this.stage.signals.componentRemoved.add( function(){
+            this.model.set("n_components", this.stage.compList.length);
+            this.touch();
+        }, this);
     },
 
     requestFrame: function(){
@@ -153,8 +171,11 @@ var NGLView = widgets.WidgetView.extend({
         var comp = this.stage.compList[ component_index ];
         var repr = comp.reprList[ repr_index ];
         var msg = repr.repr.getParameters();
-        msg['name'] = repr.name;
-        this.send({'type': 'repr_parameters', 'data': msg});
+
+        if (msg){
+            msg['name'] = repr.name;
+            this.send({'type': 'repr_parameters', 'data': msg});
+        }
     },
 
     requestReprsInfo: function(){
@@ -299,6 +320,27 @@ var NGLView = widgets.WidgetView.extend({
         }
     },
 
+    setVisibilityForRepr: function(component_index, repr_index, value){
+       // value = True/False
+       var component = this.stage.compList[ component_index ];
+       var repr = component.reprList[repr_index];
+       console.log(repr, value);
+       
+       if (repr) {       
+           repr.setVisibility(value);
+           }
+    },
+
+    removeRepresentation: function(component_index, repr_index){
+       var component = this.stage.compList[ component_index ];
+       var repr = component.reprList[repr_index]
+
+       if (repr) {
+           component.removeRepresentation(repr);
+           repr.dispose();
+           }
+    },
+
     removeRepresentationsByName: function( repr_name, component_index ){
        var component = this.stage.compList[ component_index ];
 
@@ -313,7 +355,26 @@ var NGLView = widgets.WidgetView.extend({
     updateRepresentationForComponent: function( repr_index, component_index, params ){
        var component = this.stage.compList[ component_index ];
        var repr = component.reprList[ repr_index ];
-       repr.setParameters( params );
+       if (repr) {
+           repr.setParameters( params );
+       }
+    },
+
+    setRepresentation: function(name, params, component_index, repr_index){
+          var component = this.stage.compList[ component_index ];
+          var repr = component.reprList[ repr_index ];
+
+          if (repr){
+              params['useWorker'] = false;
+              var new_repr = NGL.makeRepresentation(name, component.structure,
+                                                this.stage.viewer, params);
+              if (new_repr) {
+                  repr.setRepresentation(new_repr);
+                  repr.name = name;
+                  component.reprList[repr_index] = repr;
+                  this.requestReprsInfo();
+              }
+          }
     },
 
     structureChanged: function(){
@@ -390,10 +451,55 @@ var NGLView = widgets.WidgetView.extend({
         }
     },
 
+    handleResize: function(){
+        this.$container.resizable( {
+            resize: function( event, ui ){
+                this.setSize( ui.size.width + "px", ui.size.height + "px" );
+            }.bind( this )
+        })
+    },
+
     setSize: function( width, height ){
         this.stage.viewer.container.style.width = width;
         this.stage.viewer.container.style.height = height;
         this.stage.handleResize();
+    },
+
+    setDialog: function(){
+        var $nb_container = Jupyter.notebook.container;
+        var that = this;
+        dialog  = this.$container.dialog({
+            title: "NGLView",
+            draggable: true,
+            resizable: true,
+            modal: false,
+            width: $nb_container.offset().left,
+            height:"auto",
+            position: {my: 'left', at: 'left', of: window},
+            show: { effect: "blind", duration: 150 },
+            close: function (event, ui) {
+                that.$el.append(that.$container);
+                that.$container.dialog('destroy');
+                that.handleResize();
+            },
+            resize: function( event, ui ){
+                that.stage.handleResize();
+                that.setSize( ui.size.width + "px", ui.size.height + "px" );
+            }.bind( that ),
+        });
+        dialog.css({overflow: 'hidden'});
+        dialog.prev('.ui-dialog-titlebar')
+              .css({'background': 'transparent',
+                    'border': 'none'});
+    },
+
+    resizeNotebook: function(width){
+        var $nb_container = Jupyter.notebook.container;
+        $nb_container.width(width);
+
+        if (this.$container.dialog){
+            this.$container.dialog({width: $nb_container.offset().left});
+        }
     },
 
     parametersChanged: function(){
@@ -511,7 +617,9 @@ var NGLView = widgets.WidgetView.extend({
                     var component = this.stage.compList[ component_index ];
                     var repr = component.reprList[repr_index];
                     var func = repr[ msg.methodName ];
-                    func.apply( repr, new_args );
+                    if (repr && func){
+                        func.apply( repr, new_args );
+                    }
                     break;
                 default:
                     console.log( "nothing done for " + msg.target );
@@ -565,10 +673,10 @@ var NGLView = widgets.WidgetView.extend({
                 }
             }
         }
-    }
-})
+},
+});
 
 module.exports = {
-    NGLView: NGLView,
-    NGL: NGL
-}
+    'NGLView': NGLView,
+    'NGL': NGL
+};
