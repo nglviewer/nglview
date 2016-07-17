@@ -105,7 +105,7 @@ define([
                 .css( "padding", "2px 5px 2px 5px" )
                 .css( "opacity", "0.7" )
                 .appendTo( this.$container );
-            this.stage.signals.onPicking.add( function( pd ){
+            this.stage.signals.clicked.add( function( pd ){
                 var pd2 = {};
                 if( pd.atom ) pd2.atom = pd.atom.toObject();
                 if( pd.bond ) pd2.bond = pd.bond.toObject();
