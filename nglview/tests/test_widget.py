@@ -348,9 +348,11 @@ def test_trajectory_show_hide_sending_cooridnates():
 
 def test_existing_js_files():
     from glob import glob
-    jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'js', '*js'))
+    jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*js'))
+    mapfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*map'))
 
     nt.assert_equal(len(jsfiles), 2)
+    nt.assert_equal(len(mapfiles), 1)
 
 def test_player():
     traj = pt.datafiles.load_tz2()
