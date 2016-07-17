@@ -129,7 +129,8 @@ setup_args = {
     'package_data': {
          "nglview.datafiles": ["*"],
          "nglview.scripts": ["*"],
-         "nglview.theme": ["*"]
+         "nglview.theme": ["*"],
+         "nglview.static": ["*"]
      },
     'entry_points': {'console_scripts':
           ['nglview = nglview.scripts.nglview:main',]
