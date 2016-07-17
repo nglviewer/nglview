@@ -29,3 +29,7 @@ def install(user=True, symlink=False):
             "widgets/notebook/js/extension": True,
         }
     })
+
+def enable_nglview_js():
+    # place holder for ipywidget >= 5.1
+    pass
