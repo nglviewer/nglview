@@ -1,5 +1,36 @@
-
 from __future__ import print_function, absolute_import
+
+from .install import install, enable_nglview_js
+
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+
+install()
+enable_nglview_js()
+
+import os
+import os.path
+import time
+import base64
+import uuid
+import tempfile
+import numpy as np 
+from IPython.display import display, Javascript
+from ipywidgets import DOMWidget, widget_image
+from traitlets import (Unicode, Bool, Dict, List, Int, observe,
+                       CaselessStrEnum,
+                       TraitError)
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 from . import datafiles
 from .utils import seq_to_string, string_types, _camelize_dict
@@ -9,41 +40,7 @@ from .player import TrajectoryPlayer
 from . import interpolate
 from .representation import Representation
 from .ngl_params import REPR_NAME_PAIRS
-import time
 
-import os
-import os.path
-import uuid
-import warnings
-import tempfile
-import ipywidgets as widgets
-from traitlets import (Unicode, Bool, Dict, List, Int, observe,
-                       CaselessStrEnum,
-                       TraitError)
-from ipywidgets import widget_image
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
-
-from IPython.display import display, Javascript
-from notebook.nbextensions import install_nbextension
-from notebook.services.config import ConfigManager
-
-import numpy as np
-
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    from pkg_resources import resource_filename
-
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
-
-
-import base64
 
 def encode_base64(arr, dtype='f4'):
     arr = arr.astype(dtype)
@@ -535,12 +532,12 @@ class MDAnalysisTrajectory(Trajectory, Structure):
 # Jupyter notebook widget
 
 
-class NGLWidget(widgets.DOMWidget):
+class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
-    _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
+    _view_module = Unicode("nglview-js").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
-    background = Unicode().tag(sync=True)
+    background = Unicode('white').tag(sync=True)
     loaded = Bool(False).tag(sync=True)
     frame = Int().tag(sync=True)
     # hack to always display movie
@@ -1646,30 +1643,6 @@ class ComponentViewer(object):
                 traj_att = getattr(traj, attname)
                 setattr(self, attname, traj_att) 
         
-def install(user=True, symlink=False):
-    """Install the widget nbextension.
-
-    Parameters
-    ----------
-    user: bool
-        Install for current user instead of system-wide.
-    symlink: bool
-        Symlink instead of copy (for development).
-    """
-    staticdir = resource_filename('nglview', 'js')
-    install_nbextension(staticdir, destination='nglview',
-                        user=user, symlink=symlink,
-                        verbose=0)
-
-    cm = ConfigManager()
-    cm.update('notebook', {
-        "load_extensions": {
-            "widgets/notebook/js/extension": True,
-        }
-    })
-
-install(symlink=False)
-
 from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions

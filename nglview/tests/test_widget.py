@@ -14,6 +14,7 @@ import numpy as np
 
 from ipykernel.comm import Comm
 from ipywidgets import Widget, IntText, BoundedFloatText, HBox
+from traitlets import TraitError
 import ipywidgets as widgets
 from traitlets import TraitError, link
 from IPython import display
@@ -151,11 +152,16 @@ def test_representations():
     # make fake params
     try:
         view._repr_dict = {'c0': {'0': {'parameters': {}}}}
-    except KeyError:
+    except (KeyError, TraitError):
         # in real application, we are not allowed to assign values
         pass
+
     representation_widget = Representation(view, 0, 0)
-    representation_widget._display()
+    try:
+        representation_widget._display()
+    except TraitError as e:
+        print("TraitError")
+        print(e)
                     
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -348,9 +354,11 @@ def test_trajectory_show_hide_sending_cooridnates():
 
 def test_existing_js_files():
     from glob import glob
-    jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'js', '*js'))
+    jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*js'))
+    mapfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*map'))
 
-    nt.assert_equal(len(jsfiles), 12)
+    nt.assert_equal(len(jsfiles), 2)
+    nt.assert_equal(len(mapfiles), 1)
 
 def test_player():
     traj = pt.datafiles.load_tz2()
