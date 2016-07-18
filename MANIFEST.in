@@ -1,5 +1,7 @@
 include nglview/datafiles/*
 include nglview/js/*
+include nglview/static/*
+include nglview/theme/*
 include LICENSE README.md DEVELOPMENT.md CHANGELOG.md
 include setup.py
 include nglview/_version.py versioneer.py
