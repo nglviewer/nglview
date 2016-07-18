@@ -1,49 +1,11 @@
-
-require.config( {
-    paths: {
-        "THREE": "../nbextensions/nglview/three.custom.min",
-        "Promise": "../nbextensions/nglview/promise.min",
-        "sprintf": "../nbextensions/nglview/sprintf.min",
-        "pako": "../nbextensions/nglview/pako_inflate.min",
-        "chroma": "../nbextensions/nglview/chroma.min",
-        "jsfeat": "../nbextensions/nglview/svd.min",
-        "signals": "../nbextensions/nglview/signals.min",
-        "msgpackDecode": "../nbextensions/nglview/msgpack-decode",
-        "mmtfDecode": "../nbextensions/nglview/mmtf-decode",
-        "TypedFastBitSet": "../nbextensions/nglview/TypedFastBitSet",
-        "NGL": "../nbextensions/nglview/ngl"
-    },
-    shim: {
-        THREE: { exports: "THREE" },
-        Promise: { exports: "Promise" },
-        sprintf: { exports: "sprintf" },
-        jsfeat: { exports: "jsfeat" },
-        msgpackDecode: { exports: "msgpackDecode" },
-        mmtfDecode: { exports: "mmtfDecode" },
-        NGL: {
-            deps: [
-                "THREE", "Promise", "sprintf", "pako", "chroma", "jsfeat",
-                "signals", "msgpackDecode", "mmtfDecode", "TypedFastBitSet"
-            ],
-            exports: "NGL"
-        }
-    },
-} );
-
-define( [
+define([
     "nbextensions/widgets/widgets/js/widget",
     "nbextensions/widgets/widgets/js/manager",
     "jqueryui",
-    "THREE", "Promise", "sprintf", "pako", "chroma", "jsfeat", "signals",
-    "msgpackDecode", "mmtfDecode", "TypedFastBitSet", "NGL"
+    "nbextensions/nglview/ngl"
 ], function(
-    widget, manager, $, _THREE, _Promise, _sprintf, pako, chroma, _jsfeat,
-    signals, _msgpackDecode, _mmtfDecode, _TypedFastBitSet, _NGL
+    widget, manager, $, NGL
 ){
-
-    window.pako = pako;
-    window.signals = signals;
-    window.chroma = chroma;
 
     var NGLView = widget.DOMWidgetView.extend( {
 
@@ -143,7 +105,7 @@ define( [
                 .css( "padding", "2px 5px 2px 5px" )
                 .css( "opacity", "0.7" )
                 .appendTo( this.$container );
-            this.stage.signals.onPicking.add( function( pd ){
+            this.stage.signals.clicked.add( function( pd ){
                 var pd2 = {};
                 if( pd.atom ) pd2.atom = pd.atom.toObject();
                 if( pd.bond ) pd2.bond = pd.bond.toObject();
@@ -724,6 +686,7 @@ define( [
 
     return {
         'NGLView': NGLView,
+        'NGL': NGL
     };
 
 } );

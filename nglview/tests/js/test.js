@@ -2,8 +2,44 @@
 module.exports = {
 
 
-    "nglview/tests/notebooks/api/test_removing_all_comopnents_and_clear_all_info.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/test_removing_all_comopnents_and_clear_all_info.ipynb");
+    "nglview/tests/notebooks/api/test_component_names.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_component_names.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 12; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/api/test_component_dropdown_options.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_component_dropdown_options.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 12; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/api/test_add_structure_then_trajectory.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_add_structure_then_trajectory.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 8; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/api/test_sync_n_components.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_sync_n_components.ipynb");
         browser.restartKernel(2000);
         for ( var i = 0; i < 12; i++) {
            browser.executeCell(i)
