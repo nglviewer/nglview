@@ -152,11 +152,16 @@ def test_representations():
     # make fake params
     try:
         view._repr_dict = {'c0': {'0': {'parameters': {}}}}
-    except (KeyError, TraitError):
+    except KeyError:
         # in real application, we are not allowed to assign values
         pass
+
     representation_widget = Representation(view, 0, 0)
-    representation_widget._display()
+    try:
+        representation_widget._display()
+    except TraitError as e:
+        print("TraitError")
+        print(e)
                     
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
