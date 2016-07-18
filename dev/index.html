@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Table of contents &mdash; NGLView 0.5.2a+159.g264945a documentation</title>
+  <title>Table of contents &mdash; NGLView 0.5.2a+194.ga53fcb7 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+159.g264945a documentation" href="#"/> 
+    <link rel="top" title="NGLView 0.5.2a+194.ga53fcb7 documentation" href="#"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.5.2a+159.g264945a
+                0.5.2a+194.ga53fcb7
               </div>
             
           
@@ -94,13 +94,13 @@
 <li><a class="reference internal" href="#properties">Properties</a></li>
 <li><a class="reference internal" href="#trajectory">Trajectory</a></li>
 <li><a class="reference internal" href="#add-extra-component">Add extra component</a></li>
-<li><a class="reference internal" href="#multiple-widgets">Multiple widgets</a></li>
 <li><a class="reference internal" href="#api-doc">API doc</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#command-line">Command line</a></li>
 <li><a class="reference internal" href="#faq">FAQ</a></li>
 <li><a class="reference internal" href="#website">Website</a></li>
+<li><a class="reference internal" href="#acknowledgment">Acknowledgment</a></li>
 <li><a class="reference internal" href="#license">License</a></li>
 </ul>
 </div>
@@ -146,7 +146,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <p><a class="reference external" href="http://mybinder.org/repo/hainm/nglview-notebooks"><img alt="Binder" src="http://mybinder.org/images/logo.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="http://bioconda.github.io"><img alt="bioconda-badge" src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square" /></a> <img alt="membrane" src="https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true" /></p>
+  <p><a class="reference external" href="http://mybinder.org/repo/hainm/nglview-notebooks"><img alt="Binder" src="http://mybinder.org/assets/images/logo.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="http://bioconda.github.io"><img alt="bioconda-badge" src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square" /></a> <img alt="membrane" src="https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true" /></p>
 <p>An <a class="reference external" href="http://jupyter.org/">IPython/Jupyter</a> widget to interactively
 view molecular structures and trajectories. Utilizes the embeddable <a class="reference external" href="https://github.com/arose/ngl">NGL
 Viewer</a> for rendering. Support for
@@ -173,6 +173,7 @@ classes</a></li>
 <li><a class="reference external" href="https://github.com/arose/nglview/blob/master/CHANGELOG.md">Changelog</a></li>
 <li><a class="reference external" href="#faq">FAQ</a></li>
 <li><a class="reference external" href="#website">Website</a></li>
+<li><a class="reference external" href="#acknowledgment">Acknowledgment</a></li>
 <li><a class="reference external" href="#license">License</a></li>
 </ul>
 </div>
@@ -368,16 +369,6 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </pre></div>
 </div>
 </div>
-<div class="section" id="multiple-widgets">
-<h2>Multiple widgets<a class="headerlink" href="#multiple-widgets" title="Permalink to this headline">¶</a></h2>
-<p>You can have multiple widgets per notebook cell:</p>
-<div class="code Python highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipywidgets.widgets</span> <span class="kn">import</span> <span class="n">Box</span>
-<span class="n">w1</span> <span class="o">=</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">w2</span> <span class="o">=</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">Box</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">(</span><span class="n">w1</span><span class="p">,</span><span class="n">w2</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
 <div class="section" id="api-doc">
 <h2>API doc<a class="headerlink" href="#api-doc" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -426,6 +417,13 @@ nglview mynotebook.ipynb --remote
 <li><a class="reference external" href="http://arose.github.io/nglview/dev">http://arose.github.io/nglview/dev</a></li>
 </ul>
 </div>
+<div class="section" id="acknowledgment">
+<h1>Acknowledgment<a class="headerlink" href="#acknowledgment" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/dunovank/jupyter-themes">dunovank/jupyter-themes</a>:
+for <code class="docutils literal"><span class="pre">oceans16</span></code> theme</li>
+</ul>
+</div>
 <div class="section" id="license">
 <h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
 <p>Generally MIT, see the LICENSE file for details.</p>
@@ -463,7 +461,7 @@ nglview mynotebook.ipynb --remote
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5.2a+159.g264945a',
+            VERSION:'0.5.2a+194.ga53fcb7',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

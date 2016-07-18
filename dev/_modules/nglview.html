@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview &mdash; NGLView 0.5.2a+159.g264945a documentation</title>
+  <title>nglview &mdash; NGLView 0.5.2a+194.ga53fcb7 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+159.g264945a documentation" href="../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+194.ga53fcb7 documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+159.g264945a
+                0.5.2a+194.ga53fcb7
               </div>
             
           
@@ -125,50 +125,49 @@
            <div itemprop="articleBody">
             
   <h1>Source code for nglview</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">datafiles</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">seq_to_string</span><span class="p">,</span> <span class="n">string_types</span><span class="p">,</span> <span class="n">_camelize</span><span class="p">,</span> <span class="n">_camelize_dict</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">FileManager</span>
-<span class="kn">from</span> <span class="nn">.player</span> <span class="kn">import</span> <span class="n">TrajectoryPlayer</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">interpolate</span>
-<span class="kn">from</span> <span class="nn">.representation</span> <span class="kn">import</span> <span class="n">Representation</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">.install</span> <span class="kn">import</span> <span class="n">install</span><span class="p">,</span> <span class="n">enable_nglview_js</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+<span class="n">install</span><span class="p">()</span>
+<span class="n">enable_nglview_js</span><span class="p">()</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="kn">as</span> <span class="nn">widgets</span>
-<span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Unicode</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Bytes</span><span class="p">,</span> <span class="n">observe</span><span class="p">,</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span> 
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">DOMWidget</span><span class="p">,</span> <span class="n">widget_image</span>
+<span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Unicode</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">observe</span><span class="p">,</span>
                        <span class="n">CaselessStrEnum</span><span class="p">,</span>
                        <span class="n">TraitError</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">widget_image</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">cStringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span>
-<span class="kn">from</span> <span class="nn">notebook.nbextensions</span> <span class="kn">import</span> <span class="n">install_nbextension</span>
-<span class="kn">from</span> <span class="nn">notebook.services.config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-
-<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
-
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">urllib2</span> <span class="kn">import</span> <span class="n">urlopen</span>
 
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">datafiles</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">seq_to_string</span><span class="p">,</span> <span class="n">string_types</span><span class="p">,</span> <span class="n">_camelize_dict</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">FileManager</span><span class="p">,</span> <span class="n">get_repr_names_from_dict</span>
+<span class="kn">from</span> <span class="nn">.widget_utils</span> <span class="kn">import</span> <span class="n">get_widget_by_name</span>
+<span class="kn">from</span> <span class="nn">.player</span> <span class="kn">import</span> <span class="n">TrajectoryPlayer</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">interpolate</span>
+<span class="kn">from</span> <span class="nn">.representation</span> <span class="kn">import</span> <span class="n">Representation</span>
+<span class="kn">from</span> <span class="nn">.ngl_params</span> <span class="kn">import</span> <span class="n">REPR_NAME_PAIRS</span>
 
-<span class="kn">import</span> <span class="nn">base64</span>
 
 <div class="viewcode-block" id="encode_base64"><a class="viewcode-back" href="../api.html#nglview.encode_base64">[docs]</a><span class="k">def</span> <span class="nf">encode_base64</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">):</span>
     <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
@@ -181,27 +180,6 @@
 
 <span class="k">def</span> <span class="nf">_add_repr_method_shortcut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
-
-    <span class="n">repr_names</span>  <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span><span class="s1">&#39;point&#39;</span><span class="p">,</span> <span class="s1">&#39;point&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;line&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;rope&#39;</span><span class="p">,</span> <span class="s1">&#39;rope&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;tube&#39;</span><span class="p">,</span> <span class="s1">&#39;tube&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;trace&#39;</span><span class="p">,</span> <span class="s1">&#39;trace&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;unitcell&#39;</span><span class="p">,</span> <span class="s1">&#39;unitcell&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="s1">&#39;cartoon&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;licorice&#39;</span><span class="p">,</span> <span class="s1">&#39;licorice&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;ribbon&#39;</span><span class="p">,</span> <span class="s1">&#39;ribbon&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">,</span> <span class="s1">&#39;surface&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;backbone&#39;</span><span class="p">,</span> <span class="s1">&#39;backbone&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;contact&#39;</span><span class="p">,</span> <span class="s1">&#39;contact&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;hyperball&#39;</span><span class="p">,</span> <span class="s1">&#39;hyperball&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;rocket&#39;</span><span class="p">,</span> <span class="s1">&#39;rocket&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;helixorient&#39;</span><span class="p">,</span> <span class="s1">&#39;helixorient&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;simplified_base&#39;</span><span class="p">,</span> <span class="s1">&#39;base&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;ball_and_stick&#39;</span><span class="p">,</span> <span class="s1">&#39;ball+stick&#39;</span><span class="p">),</span>
-            <span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">make_func_add</span><span class="p">(</span><span class="n">rep</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;return a new function object</span>
@@ -221,7 +199,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_remove_representations_by_name</span><span class="p">(</span><span class="n">repr_name</span><span class="o">=</span><span class="n">rep</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">func</span>
 
-    <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">repr_names</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">REPR_NAME_PAIRS</span><span class="p">:</span>
         <span class="n">func_add</span> <span class="o">=</span> <span class="n">make_func_add</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span>
         <span class="n">fn_add</span> <span class="o">=</span> <span class="s1">&#39;add_&#39;</span> <span class="o">+</span> <span class="n">rep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -403,7 +381,7 @@
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="demo"><a class="viewcode-back" href="../api.html#nglview.demo">[docs]</a><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">datafiles</span><span class="p">,</span> <span class="n">show_structure_file</span>
+    <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">show_structure_file</span>
     <span class="k">return</span> <span class="n">show_structure_file</span><span class="p">(</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <span class="c1">###################</span>
@@ -661,7 +639,7 @@
 <div class="viewcode-block" id="MDAnalysisTrajectory.get_structure_string"><a class="viewcode-back" href="../api.html#nglview.MDAnalysisTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="kn">as</span> <span class="nn">mda</span>
-        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
                 <span class="s2">&quot;&#39;MDAnalysisTrajectory&#39; requires the &#39;MDAnalysis&#39; package&quot;</span>
             <span class="p">)</span>
@@ -681,7 +659,7 @@
 <span class="c1"># Jupyter notebook widget</span>
 
 
-<div class="viewcode-block" id="NGLWidget"><a class="viewcode-back" href="../api.html#nglview.NGLWidget">[docs]</a><span class="k">class</span> <span class="nc">NGLWidget</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">DOMWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget"><a class="viewcode-back" href="../api.html#nglview.NGLWidget">[docs]</a><span class="k">class</span> <span class="nc">NGLWidget</span><span class="p">(</span><span class="n">DOMWidget</span><span class="p">):</span>
     <span class="n">_view_name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;NGLView&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_view_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;nbextensions/nglview/widget_ngl&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">selection</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -704,6 +682,8 @@
     <span class="n">orientation</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_repr_dict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">_ngl_component_ids</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">_ngl_component_names</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">n_components</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
     <span class="n">displayed</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="n">_ngl_msg</span> <span class="o">=</span> <span class="bp">None</span>
@@ -712,7 +692,6 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">representations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NGLWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_gui</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_gui</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;gui&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
@@ -728,24 +707,22 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c1"># need to initialize before _ngl_component_ids</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="n">TrajectoryPlayer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span> <span class="o">=</span> <span class="p">[]</span>
-
         <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">Trajectory</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">structure</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="n">trajectories</span> <span class="o">=</span> <span class="n">structure</span>
             <span class="k">for</span> <span class="n">trajectory</span> <span class="ow">in</span> <span class="n">trajectories</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">trajectory</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">structure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># initialize _init_structure_list</span>
         <span class="c1"># hack to trigger update on JS side</span>
@@ -772,6 +749,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_representations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_representations</span><span class="p">[:]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_unsync_camera</span><span class="p">()</span>
+
+        <span class="c1"># need to initialize before _ngl_component_ids</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="n">TrajectoryPlayer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -821,21 +802,64 @@
         <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;old&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
 
-    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_ngl_component_ids&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">_update_player_component_slider_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
-        <span class="n">component_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">component_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span>
+    <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;n_components&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_handle_n_components_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="n">component_slider</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;component_slider&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="n">component_slider</span><span class="o">.</span><span class="n">min</span><span class="p">:</span>
+            <span class="n">component_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">component_dropdown</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;component_dropdown&#39;</span><span class="p">)</span>
+        <span class="n">component_dropdown</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_names</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">component_dropdown</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">])</span>
+            <span class="n">component_dropdown</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+            <span class="n">component_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">reprlist_choices</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;reprlist_choices&#39;</span><span class="p">)</span>
+            <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">])</span>
+
+            <span class="n">repr_slider</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_slider&#39;</span><span class="p">)</span>
+            <span class="n">repr_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">repr_info_box</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_info_box&#39;</span><span class="p">)</span>
+            <span class="n">repr_name_text</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="n">repr_info_box</span><span class="p">,</span> <span class="s1">&#39;repr_name_text&#39;</span><span class="p">)</span>
+            <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="n">repr_info_box</span><span class="p">,</span> <span class="s1">&#39;repr_selection&#39;</span><span class="p">)</span>
+            <span class="n">repr_name_text</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">repr_selection</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_repr_dict&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">_update_max_reps_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
-        <span class="n">repr_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">component_slider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">_handle_repr_dict_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="n">repr_slider</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_slider&#39;</span><span class="p">)</span>
+        <span class="n">component_slider</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;component_slider&#39;</span><span class="p">)</span>
         <span class="n">cindex</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">repr_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">][</span><span class="s1">&#39;c&#39;</span> <span class="o">+</span> <span class="n">cindex</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">TraitError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
-            <span class="c1"># TraitError: setting max &lt; min</span>
-            <span class="k">pass</span>
+
+        <span class="n">repr_info_box</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_info_box&#39;</span><span class="p">)</span>
+        <span class="n">repr_name_text</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="n">repr_info_box</span><span class="p">,</span> <span class="s1">&#39;repr_name_text&#39;</span><span class="p">)</span>
+        <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="n">repr_info_box</span><span class="p">,</span> <span class="s1">&#39;repr_selection&#39;</span><span class="p">)</span>
+
+        <span class="n">reprlist_choices</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;reprlist_choices&#39;</span><span class="p">)</span>
+        <span class="n">repr_names</span> <span class="o">=</span> <span class="n">get_repr_names_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_repr_dict</span><span class="p">,</span> <span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]:</span>
+            <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">repr_names</span><span class="p">)])</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,])</span>
+                    <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># e.g: 0-cartoon</span>
+            <span class="n">repr_name_text</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">repr_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">repr_names</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">repr_names</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">repr_names</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;c0&#39;</span><span class="p">:</span> <span class="p">{}}:</span>
+            <span class="n">repr_selection</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">_update_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span>
@@ -848,7 +872,6 @@
 
         <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]:</span>
             <span class="p">[</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_request_update_reprs</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_ipython_display_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">displayed</span> <span class="o">=</span> <span class="bp">True</span>
@@ -889,6 +912,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setSpin&#39;</span><span class="p">,</span>
                           <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">axis</span><span class="p">,</span> <span class="n">angle</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">_set_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">repr_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;setSelection&quot;</span><span class="p">,</span>
+                         <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Representation&#39;</span><span class="p">,</span>
+                         <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">selection</span><span class="p">],</span>
+                         <span class="n">kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">component_index</span><span class="o">=</span><span class="n">component</span><span class="p">,</span>
+                                     <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_index</span><span class="p">))</span>
         
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">representations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -918,8 +947,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setParameters&#39;</span><span class="p">,</span>
                  <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Representation&#39;</span><span class="p">,</span>
-                 <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_request_update_reprs</span><span class="p">()</span></div>
+                 <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NGLWidget.set_representations"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.set_representations">[docs]</a>    <span class="k">def</span> <span class="nf">set_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representations</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -939,11 +967,15 @@
                               <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],],</span>
                               <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">_remove_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">repr_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;removeRepresentation&#39;</span><span class="p">,</span>
+                          <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
+                          <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">component</span><span class="p">,</span> <span class="n">repr_index</span><span class="p">])</span>
+
     <span class="k">def</span> <span class="nf">_remove_representations_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repr_name</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;removeRepresentationsByName&#39;</span><span class="p">,</span>
                           <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">repr_name</span><span class="p">,</span> <span class="n">component</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_request_update_reprs</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_display_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">repr_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -985,9 +1017,11 @@
                             <span class="n">itype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">iparams</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;linear&#39;</span><span class="p">)</span>
 
                             <span class="k">if</span> <span class="n">itype</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
-                                <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">traj_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">traj</span><span class="o">=</span><span class="n">trajectory</span><span class="p">)</span>
+                                <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">traj_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">index</span><span class="p">,</span>
+                                        <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">traj</span><span class="o">=</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
                             <span class="k">elif</span> <span class="n">itype</span> <span class="o">==</span> <span class="s1">&#39;spline&#39;</span><span class="p">:</span>
-                                <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">traj_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">spline</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">traj</span><span class="o">=</span><span class="n">trajectory</span><span class="p">)</span>
+                                <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">traj_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">spline</span><span class="p">(</span><span class="n">index</span><span class="p">,</span>
+                                        <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">traj</span><span class="o">=</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
                             <span class="k">else</span><span class="p">:</span>
                                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;interpolation type must be linear or spline&#39;</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
@@ -1114,8 +1148,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;addRepresentation&#39;</span><span class="p">,</span>
                           <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],],</span>
-                          <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_request_update_reprs</span><span class="p">()</span></div>
+                          <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NGLWidget.center"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.center">[docs]</a>    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1230,11 +1263,18 @@
             <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;repr_parameters&#39;</span><span class="p">:</span>
                 <span class="n">data_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
                 <span class="n">repr_name</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sele&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
                 <span class="c1"># json change True to true</span>
                 <span class="n">data_dict_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;false&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">)</span>
                 <span class="n">data_dict_json</span> <span class="o">=</span> <span class="n">data_dict_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;null&#39;</span><span class="p">,</span> <span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">repr_name</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">data_dict_json</span>
+
+                <span class="c1"># TODO: refactor</span>
+                <span class="n">repr_info_box</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_info_box&#39;</span><span class="p">)</span>
+                <span class="n">repr_info_box</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">repr_name</span>
+                <span class="n">repr_info_box</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">repr_selection</span>
+
+                <span class="n">repr_text_box</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_text_box&#39;</span><span class="p">)</span>
+                <span class="n">repr_text_box</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">data_dict_json</span>
             <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;all_reprs_info&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_repr_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;stage_parameters&#39;</span><span class="p">:</span>
@@ -1245,10 +1285,6 @@
                 <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">component</span><span class="p">,</span>
                       <span class="n">repr_index</span><span class="p">])</span>
-
-    <span class="k">def</span> <span class="nf">_request_update_reprs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;requestReprsInfo&#39;</span><span class="p">,</span>
-                <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NGLWidget.add_structure"><a class="viewcode-back" href="../api.html#nglview.NGLWidget.add_structure">[docs]</a>    <span class="k">def</span> <span class="nf">add_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -1272,6 +1308,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># update via structure_list</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">structure</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_auto_completion</span><span class="p">()</span></div>
@@ -1305,6 +1343,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># update via structure_list</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">trajectory</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="s1">&#39;shown&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_count</span><span class="p">()</span>
@@ -1384,6 +1424,8 @@
             <span class="n">url</span> <span class="o">=</span> <span class="n">obj</span>
             <span class="n">args</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">blob_type</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span> <span class="s1">&#39;binary&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}]</span>
 
+        <span class="n">name</span> <span class="o">=</span> <span class="n">kwargs2</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s2">&quot;loadFile&quot;</span><span class="p">,</span>
                 <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Stage&#39;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
@@ -1407,6 +1449,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
         <span class="n">component_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">component_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">component_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_names</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">component_index</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_remove_component</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component_index</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_auto_completion</span><span class="p">()</span></div>
@@ -1444,6 +1487,15 @@
 <span class="s2">        var x = $(&#39;#notebook-container&#39;);</span>
 <span class="s2">        x.width(&#39;20%&#39;);</span>
 <span class="s2">        x.css({position: &quot;relative&quot;, left: &quot;20%&quot;});</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_move_notebook_to_the_left</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        var cb = Jupyter.notebook.container;</span>
+
+<span class="s2">        cb.width(&#39;20%&#39;);</span>
+<span class="s2">        cb.offset({&#39;left&#39;: 0})</span>
 <span class="s2">        &quot;&quot;&quot;</span>
         <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="p">))</span>
 
@@ -1508,10 +1560,6 @@
             <span class="c1"># all callbacks will be called right after widget is loaded</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span>
-
     <span class="k">def</span> <span class="nf">_get_traj_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itsid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;return nglview.Trajectory or its derived class object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1526,7 +1574,6 @@
         <span class="n">traj_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span>
             <span class="n">comp_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">comp_id</span> <span class="ow">in</span> <span class="n">traj_ids</span><span class="p">:</span>
                 <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_traj_by_id</span><span class="p">(</span><span class="n">comp_id</span><span class="p">)</span>
@@ -1723,30 +1770,6 @@
                 <span class="n">traj_att</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">attname</span><span class="p">)</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attname</span><span class="p">,</span> <span class="n">traj_att</span><span class="p">)</span> </div>
         
-<div class="viewcode-block" id="install"><a class="viewcode-back" href="../api.html#nglview.install">[docs]</a><span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Install the widget nbextension.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    user: bool</span>
-<span class="sd">        Install for current user instead of system-wide.</span>
-<span class="sd">    symlink: bool</span>
-<span class="sd">        Symlink instead of copy (for development).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">staticdir</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;nglview&#39;</span><span class="p">,</span> <span class="s1">&#39;js&#39;</span><span class="p">)</span>
-    <span class="n">install_nbextension</span><span class="p">(</span><span class="n">staticdir</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;nglview&#39;</span><span class="p">,</span>
-                        <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="n">symlink</span><span class="p">,</span>
-                        <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="n">cm</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">()</span>
-    <span class="n">cm</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;notebook&#39;</span><span class="p">,</span> <span class="p">{</span>
-        <span class="s2">&quot;load_extensions&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;widgets/notebook/js/extension&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
-        <span class="p">}</span>
-    <span class="p">})</span></div>
-
-<span class="n">install</span><span class="p">(</span><span class="n">symlink</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-
 <span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">get_versions</span>
 <span class="n">__version__</span> <span class="o">=</span> <span class="n">get_versions</span><span class="p">()[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
 <span class="k">del</span> <span class="n">get_versions</span>
@@ -1791,7 +1814,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.5.2a+159.g264945a',
+            VERSION:'0.5.2a+194.ga53fcb7',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

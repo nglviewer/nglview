@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview.utils &mdash; NGLView 0.5.2a+159.g264945a documentation</title>
+  <title>nglview.utils &mdash; NGLView 0.5.2a+194.ga53fcb7 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+159.g264945a documentation" href="../../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+194.ga53fcb7 documentation" href="../../index.html"/>
         <link rel="up" title="nglview" href="../nglview.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+159.g264945a
+                0.5.2a+194.ga53fcb7
               </div>
             
           
@@ -142,6 +142,20 @@
     <span class="n">string_types</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">string_types</span> <span class="o">=</span> <span class="nb">basestring</span>
+
+<span class="k">def</span> <span class="nf">get_repr_names_from_dict</span><span class="p">(</span><span class="n">repr_dict</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">this_repr_dict</span> <span class="o">=</span> <span class="n">repr_dict</span><span class="p">[</span><span class="s1">&#39;c&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">component</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">this_repr_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">this_repr_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
 
 <div class="viewcode-block" id="get_colors_from_b64"><a class="viewcode-back" href="../../_api/nglview.html#nglview.utils.get_colors_from_b64">[docs]</a><span class="k">def</span> <span class="nf">get_colors_from_b64</span><span class="p">(</span><span class="n">b64_image</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -318,7 +332,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.5.2a+159.g264945a',
+            VERSION:'0.5.2a+194.ga53fcb7',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

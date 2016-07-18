@@ -28,6 +28,7 @@ Table of contents
 -  `Changelog <https://github.com/arose/nglview/blob/master/CHANGELOG.md>`__
 -  `FAQ <#faq>`__
 -  `Website <#website>`__
+-  `Acknowledgment <#acknowledgment>`__
 -  `License <#license>`__
 
 Installation
@@ -230,18 +231,6 @@ Add extra component
 
     # NOTE: Trajectory is a special case of component.
 
-Multiple widgets
-----------------
-
-You can have multiple widgets per notebook cell:
-
-.. code:: Python
-
-    from ipywidgets.widgets import Box
-    w1 = NGLWidget(...)
-    w2 = NGLWidget(...)
-    Box(children=(w1,w2))
-
 API doc
 -------
 
@@ -289,12 +278,18 @@ Website
 -  http://arose.github.io/nglview/latest
 -  http://arose.github.io/nglview/dev
 
+Acknowledgment
+==============
+
+-  `dunovank/jupyter-themes <https://github.com/dunovank/jupyter-themes>`__:
+   for ``oceans16`` theme
+
 License
 =======
 
 Generally MIT, see the LICENSE file for details.
 
-.. |Binder| image:: http://mybinder.org/images/logo.svg
+.. |Binder| image:: http://mybinder.org/assets/images/logo.svg
    :target: http://mybinder.org/repo/hainm/nglview-notebooks
 .. |DOI| image:: https://zenodo.org/badge/11846/arose/nglview.svg
    :target: https://zenodo.org/badge/latestdoi/11846/arose/nglview

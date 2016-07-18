@@ -1,5 +1,5 @@
 
-[![Binder](http://mybinder.org/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
+[![Binder](http://mybinder.org/assets/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
 [![Build Status](https://travis-ci.org/arose/nglview.svg?branch=master)](https://travis-ci.org/arose/nglview)
 [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
@@ -23,6 +23,7 @@ Table of contents
 * [Changelog](https://github.com/arose/nglview/blob/master/CHANGELOG.md)
 * [FAQ](#faq)
 * [Website](#website)
+* [Acknowledgment](#acknowledgment)
 * [License](#license)
 
 
@@ -204,17 +205,6 @@ view.add_component('my.ccp4')
 
 # NOTE: Trajectory is a special case of component.
 ```
-Multiple widgets
-----------------
-
-You can have multiple widgets per notebook cell:
-
-```Python
-from ipywidgets.widgets import Box
-w1 = NGLWidget(...)
-w2 = NGLWidget(...)
-Box(children=(w1,w2))
-```
 
 API doc
 -------
@@ -261,6 +251,11 @@ Website
 
 - http://arose.github.io/nglview/latest
 - http://arose.github.io/nglview/dev
+
+Acknowledgment
+==============
+
+- [dunovank/jupyter-themes](https://github.com/dunovank/jupyter-themes): for `oceans16` theme
 
 License
 =======
