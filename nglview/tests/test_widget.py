@@ -14,6 +14,7 @@ import numpy as np
 
 from ipykernel.comm import Comm
 from ipywidgets import Widget, IntText, BoundedFloatText, HBox
+from traitlets import TraitError
 import ipywidgets as widgets
 from traitlets import TraitError, link
 from IPython import display
@@ -151,7 +152,7 @@ def test_representations():
     # make fake params
     try:
         view._repr_dict = {'c0': {'0': {'parameters': {}}}}
-    except KeyError:
+    except (KeyError, TraitError):
         # in real application, we are not allowed to assign values
         pass
     representation_widget = Representation(view, 0, 0)
