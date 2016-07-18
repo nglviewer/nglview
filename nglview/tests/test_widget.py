@@ -152,7 +152,7 @@ def test_representations():
     # make fake params
     try:
         view._repr_dict = {'c0': {'0': {'parameters': {}}}}
-    except KeyError:
+    except (KeyError, TraitError):
         # in real application, we are not allowed to assign values
         pass
 
