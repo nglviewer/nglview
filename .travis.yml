@@ -33,7 +33,7 @@ install:
     - source devtools/travis-ci/setup_env.sh
     - source devtools/travis-ci/clone_nbtest.sh
     - source devtools/travis-ci/install_nglview.sh
-    - python devtools/make_test_js.py --basic
+    - python devtools/make_test_js.py --travis
 
 script:
     - source devtools/travis-ci/run_tests.sh
