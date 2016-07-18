@@ -1,4 +1,4 @@
-test
+nglview-js
 
 Package Install
 ---------------
@@ -7,5 +7,5 @@ Package Install
 - [node](http://nodejs.org/)
 
 ```bash
-npm install --save nglview
+npm install --save nglview-js
 ```
