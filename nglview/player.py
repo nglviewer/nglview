@@ -58,9 +58,9 @@ class TrajectoryPlayer(DOMWidget):
                                    antialias=True,
                                    trim=False,
                                    transparent=False)
-        self.picked_widget = self._make_text_picked()
-        self.repr_widget = self._make_repr_widget()
-        self._preference_widget = self._make_reference_widget()
+        self.picked_widget = None
+        self.repr_widget = None
+        self._preference_widget = None
 
     @observe('camera')
     def on_camera_changed(self, change):
@@ -144,6 +144,10 @@ class TrajectoryPlayer(DOMWidget):
                                  self._spin_speed)
 
     def _display(self):
+        self.picked_widget = self._make_text_picked()
+        self.repr_widget = self._make_repr_widget()
+        self._preference_widget = self._make_reference_widget()
+
         step_slide = IntSlider(
             value=self.step,
             min=-100,
