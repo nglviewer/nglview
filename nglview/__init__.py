@@ -6,9 +6,6 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
 
-install()
-enable_nglview_js()
-
 # Register nbextension
 def _jupyter_nbextension_paths():
     return [{
@@ -17,6 +14,9 @@ def _jupyter_nbextension_paths():
         'dest': 'nglview',
         'require': 'nglview/extension'
     }]
+
+install()
+enable_nglview_js()
 
 import os
 import os.path

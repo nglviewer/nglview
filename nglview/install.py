@@ -22,6 +22,7 @@ def install(user=True, symlink=False, overwrite=True, **kwargs):
                         **kwargs)
 
 def enable_nglview_js():
+    enable_nbextension('nglview', '')
     enable_nbextension('nglview-js', '')
 
     
