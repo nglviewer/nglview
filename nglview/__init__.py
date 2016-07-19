@@ -9,6 +9,15 @@ with warnings.catch_warnings():
 install()
 enable_nglview_js()
 
+# Register nbextension
+def _jupyter_nbextension_paths():
+    return [{
+        'section': 'notebook',
+        'src': 'static',
+        'dest': 'nglview',
+        'require': 'nglview/extension'
+    }]
+
 import os
 import os.path
 import time
