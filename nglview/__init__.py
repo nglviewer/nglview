@@ -677,7 +677,7 @@ class NGLWidget(DOMWidget):
 
     @observe('n_components')
     def _handle_n_components_changed(self, change):
-        if self.player.repr_widget:
+        if self.player.repr_widget is not None:
             component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
             if change['new'] - 1 >= component_slider.min:
                 component_slider.max = change['new'] - 1
@@ -704,7 +704,7 @@ class NGLWidget(DOMWidget):
 
     @observe('_repr_dict')
     def _handle_repr_dict_changed(self, change):
-        if self.player.repr_widget:
+        if self.player.repr_widget is not None:
             repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
             component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
             cindex = str(component_slider.value)
@@ -1143,7 +1143,7 @@ class NGLWidget(DOMWidget):
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
 
-                if self.player.repr_widget:
+                if self.player.repr_widget is not None:
                     # TODO: refactor
                     repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
                     repr_info_box.children[0].value = repr_name
