@@ -6,7 +6,19 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
 
+# we already install from setup
+# but it's better to install again. haizz
 install()
+
+# Register nbextension
+def _jupyter_nbextension_paths():
+    return [{
+        'section': 'notebook',
+        'src': 'static',
+        'dest': 'nglview',
+        'require': 'nglview/extension'
+    }]
+
 enable_nglview_js()
 
 import os

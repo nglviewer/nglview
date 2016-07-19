@@ -1,6 +1,7 @@
 import argparse
 from os.path import dirname, abspath, join
-from notebook.nbextensions import install_nbextension, enable_nbextension
+from notebook.nbextensions import (install_nbextension, install_nbextension_python,
+                                   enable_nbextension, enable_nbextension_python)
 
 def install(user=True, symlink=False, overwrite=True, **kwargs):
     """Install the bqplot nbextension.
@@ -20,9 +21,16 @@ def install(user=True, symlink=False, overwrite=True, **kwargs):
     install_nbextension(directory, destination='nglview',
                         symlink=symlink, user=user, overwrite=overwrite,
                         **kwargs)
+    # don't need below yet. Why?
+    # install_nbextension_python('nglview', user=user, symlink=symlink, overwrite=overwrite,
+    #         **kwargs)
 
-def enable_nglview_js():
-    enable_nbextension('nglview-js', '')
+def enable_nglview_js(user=True):
+    # seriously I don't know what I shoule type here
+    enable_nbextension('nglview', '', user=user)
+
+    # do we need this?
+    # enable_nbextension_python('nglview', user=user)
 
     
 if __name__ == '__main__':
