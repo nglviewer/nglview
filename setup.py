@@ -8,6 +8,9 @@ import os
 import sys
 import platform
 
+from nglview.install import install
+install()
+
 here = os.path.dirname(os.path.abspath(__file__))
 node_root = os.path.join(here, 'js')
 is_repo = os.path.exists(os.path.join(here, '.git'))
