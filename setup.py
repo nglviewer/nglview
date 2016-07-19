@@ -8,7 +8,8 @@ import os
 import sys
 import platform
 
-from nglview.install import install, enable_nglview_js
+sys.path.append('./nglview/')
+from install import install, enable_nglview_js
 install()
 enable_nglview_js()
 
