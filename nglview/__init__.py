@@ -6,9 +6,9 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
 
-# we install from setup
-# turn off for now
-# install()
+# we already install from setup
+# but it's better to install again. haizz
+install()
 
 # Register nbextension
 def _jupyter_nbextension_paths():

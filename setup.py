@@ -8,8 +8,9 @@ import os
 import sys
 import platform
 
-from nglview.install import install
+from nglview.install import install, enable_nglview_js
 install()
+enable_nglview_js()
 
 here = os.path.dirname(os.path.abspath(__file__))
 node_root = os.path.join(here, 'js')
