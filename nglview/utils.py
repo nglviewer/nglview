@@ -14,6 +14,28 @@ if PY3:
 else:
     string_types = basestring
 
+def ngl_demo(width=400, height=400):
+    """make a viewport, create stage object and populate NGL namespace
+    """
+    from IPython.display import display, Javascript, HTML
+
+    command = """
+    <div id='viewport'></div>
+    <script>
+        $('#viewport').width(%s).height(%s);
+    </script>
+    """ % (width, height)
+
+    command2 = """
+    <script>
+        var NGL = require('nbextensions/nglview/widget_ngl').NGL;
+        var stage = new NGL.Stage('viewport')
+    </script>
+    """
+
+    display(HTML(command))
+    display(HTML(command2))
+
 def get_repr_names_from_dict(repr_dict, component):
     """
     

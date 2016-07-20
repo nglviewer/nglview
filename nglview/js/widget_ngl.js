@@ -438,7 +438,7 @@ define([
             }
         },
 
-        superpose: function(cindex0, cindex1, params){
+        superpose: function(cindex0, cindex1){
            // superpose two components with given params
            var component0 = this.stage.compList[cindex0];
            var component1 = this.stage.compList[cindex1];
