@@ -105,6 +105,28 @@ define([
                 .css( "padding", "2px 5px 2px 5px" )
                 .css( "opacity", "0.7" )
                 .appendTo( this.$container );
+
+            $inputNotebookCommand = $('<input id="input_notebook_command" type="text"></input>');
+            var that = this;
+
+            $inputNotebookCommand.keypress(function(e){
+                var command = $("#input_notebook_command").val();
+                if (e.which == 13){
+                    $("#input_notebook_command").val("")
+                    Jupyter.notebook.kernel.execute(command);
+                }
+            });
+
+            this.$notebook_text= $( "<div></div>" )
+                .css( "position", "absolute" )
+                .css( "bottom", "5%" )
+                .css( "left", "3%" )
+                .css( "padding", "2px 5px 2px 5px" )
+                .css( "opacity", "0.7" )
+                .append($inputNotebookCommand)
+                .appendTo(this.$container);
+            this.$notebook_text.hide();
+
             this.stage.signals.clicked.add( function( pd ){
                 var pd2 = {};
                 if( pd.atom ) pd2.atom = pd.atom.toObject();
@@ -161,6 +183,14 @@ define([
                 this.model.set("n_components", this.stage.compList.length);
                 this.touch();
             }, this);
+        },
+
+        hideNotebookCommandBox: function(){
+            this.$notebook_text.hide();
+        },
+
+        showNotebookCommandBox: function(){
+            this.$notebook_text.show();
         },
 
         requestFrame: function(){
@@ -350,12 +380,14 @@ define([
         removeRepresentationsByName: function( repr_name, component_index ){
            var component = this.stage.compList[ component_index ];
 
-           component.reprList.forEach( function(repr) {
-               if( repr.name == repr_name ){
-                   component.removeRepresentation( repr );
-                   repr.dispose();
-               }
-           })
+           if (component){
+               component.reprList.forEach( function(repr) {
+                   if( repr.name == repr_name ){
+                       component.removeRepresentation( repr );
+                       repr.dispose();
+                   }
+               })
+           }
         },
 
         updateRepresentationForComponent: function( repr_index, component_index, params ){
@@ -469,6 +501,25 @@ define([
             this.stage.viewer.container.style.width = width;
             this.stage.viewer.container.style.height = height;
             this.stage.handleResize();
+        },
+
+        openNotebookCommandDialog: function(){
+            var that = this;
+            dialog  = this.$notebook_text.dialog({
+                draggable: true,
+                resizable: true,
+                modal: false,
+                show: { effect: "blind", duration: 150 },
+                close: function (event, ui) {
+                    that.$container.append(that.$notebook_text);
+                    that.$notebook_text.dialog('destroy');
+                },
+            });
+            dialog.css({overflow: 'hidden'});
+            dialog.prev('.ui-dialog-titlebar')
+                  .css({'background': 'transparent',
+                        'border': 'none'});
+            Jupyter.keyboard_manager.register_events(dialog);
         },
 
         setDialog: function(){
