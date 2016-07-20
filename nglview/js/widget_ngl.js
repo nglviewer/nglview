@@ -438,6 +438,13 @@ define([
             }
         },
 
+        superpose: function(cindex0, cindex1, params){
+           // superpose two components with given params
+           var component0 = this.stage.compList[cindex0];
+           var component1 = this.stage.compList[cindex1];
+           component0.superpose(component1);
+        },
+
         decode_base64: function(base64) {
             // lightly adapted from Niklas
 
