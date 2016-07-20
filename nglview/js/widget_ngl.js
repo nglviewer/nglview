@@ -105,6 +105,54 @@ define([
                 .css( "padding", "2px 5px 2px 5px" )
                 .css( "opacity", "0.7" )
                 .appendTo( this.$container );
+
+            var $inputReprName = $('<input id="name" type="text"></input>');
+            var $inputSelection = $('<input id="selection" type="text"></input>');
+            var $buttonAdd = $('<button>Add</button>');
+            var $buttonRemove = $('<button>Remove</button>');
+            var $buttonHide = $('<button>Hide Dialog</button>');
+            var that = this;
+
+            $inputSelection.submit(function(){
+                var name = $("#name").val();
+                var sele = $("#selection").val();
+                var comp = that.stage.compList[0];
+                comp.addRepresentation(name, {'sele': sele});
+            });
+
+            $buttonAdd.click(function(){
+                var name = $("#name").val();
+                var sele = $("#selection").val();
+                var comp = that.stage.compList[0];
+                comp.addRepresentation(name, {'sele': sele});
+            });
+
+            $buttonRemove.click(function(){
+                var name = $("#name").val();
+                var comp = that.stage.compList[0];
+                that.removeRepresentationsByName(name, 0);
+            });
+
+            $buttonHide.click(function(){
+                that.hideReprButton();
+            });
+
+            this.$addRepresentationDialog= $( "<div></div>" )
+                .css( "position", "absolute" )
+                .css( "top", "5%" )
+                .css( "left", "3%" )
+                .css( "padding", "2px 5px 2px 5px" )
+                .css( "opacity", "0.7" )
+                .append($inputReprName)
+                .append($("<br></br>"))
+                .append($inputSelection)
+                .append($("<br></br>"))
+                .append($buttonAdd)
+                .append($buttonRemove)
+                .append($buttonHide)
+                .appendTo(this.$container);
+            this.$addRepresentationDialog.hide();
+
             this.stage.signals.clicked.add( function( pd ){
                 var pd2 = {};
                 if( pd.atom ) pd2.atom = pd.atom.toObject();
@@ -161,6 +209,14 @@ define([
                 this.model.set("n_components", this.stage.compList.length);
                 this.touch();
             }, this);
+        },
+
+        hideReprButton: function(){
+            this.$addRepresentationDialog.hide();
+        },
+
+        showReprButton: function(){
+            this.$addRepresentationDialog.show();
         },
 
         requestFrame: function(){
@@ -348,14 +404,16 @@ define([
         },
 
         removeRepresentationsByName: function( repr_name, component_index ){
-           var component = this.stage.compList[ component_index ];
+           var component = this.stage.compList[ component_index ] || 0;
 
-           component.reprList.forEach( function(repr) {
-               if( repr.name == repr_name ){
-                   component.removeRepresentation( repr );
-                   repr.dispose();
-               }
-           })
+           if (component){
+               component.reprList.forEach( function(repr) {
+                   if( repr.name == repr_name ){
+                       component.removeRepresentation( repr );
+                       repr.dispose();
+                   }
+               })
+           }
         },
 
         updateRepresentationForComponent: function( repr_index, component_index, params ){
@@ -469,6 +527,25 @@ define([
             this.stage.viewer.container.style.width = width;
             this.stage.viewer.container.style.height = height;
             this.stage.handleResize();
+        },
+
+        openReprDialog: function(){
+            var that = this;
+            dialog  = this.$addRepresentationDialog.dialog({
+                draggable: true,
+                resizable: true,
+                modal: false,
+                show: { effect: "blind", duration: 150 },
+                close: function (event, ui) {
+                    that.$container.append(that.$addRepresentationDialog);
+                    that.$addRepresentationDialog.dialog('destroy');
+                },
+            });
+            dialog.css({overflow: 'hidden'});
+            dialog.prev('.ui-dialog-titlebar')
+                  .css({'background': 'transparent',
+                        'border': 'none'});
+            Jupyter.keyboard_manager.register_events(dialog);
         },
 
         setDialog: function(){
