@@ -110,7 +110,7 @@ define([
             var $inputSelection = $('<input id="selection" type="text"></input>');
             var $buttonAdd = $('<button>Add</button>');
             var $buttonRemove = $('<button>Remove</button>');
-            var $buttonHide = $('<button>Hide</button>');
+            var $buttonHide = $('<button>Hide Dialog</button>');
             var that = this;
 
             $inputSelection.submit(function(){
@@ -137,7 +137,7 @@ define([
                 that.hideReprButton();
             });
 
-            this.$addRepresentation= $( "<div></div>" )
+            this.$addRepresentationDialog= $( "<div></div>" )
                 .css( "position", "absolute" )
                 .css( "top", "5%" )
                 .css( "left", "3%" )
@@ -151,7 +151,7 @@ define([
                 .append($buttonRemove)
                 .append($buttonHide)
                 .appendTo(this.$container);
-            this.$addRepresentation.hide();
+            this.$addRepresentationDialog.hide();
 
             this.stage.signals.clicked.add( function( pd ){
                 var pd2 = {};
@@ -212,11 +212,11 @@ define([
         },
 
         hideReprButton: function(){
-            this.$addRepresentation.hide();
+            this.$addRepresentationDialog.hide();
         },
 
         showReprButton: function(){
-            this.$addRepresentation.show();
+            this.$addRepresentationDialog.show();
         },
 
         requestFrame: function(){
@@ -529,16 +529,16 @@ define([
             this.stage.handleResize();
         },
 
-        setReprDialog: function(){
+        openReprDialog: function(){
             var that = this;
-            dialog  = this.$addRepresentation.dialog({
+            dialog  = this.$addRepresentationDialog.dialog({
                 draggable: true,
                 resizable: true,
                 modal: false,
                 show: { effect: "blind", duration: 150 },
                 close: function (event, ui) {
-                    that.$container.append(that.$addRepresentation);
-                    that.$addRepresentation.dialog('destroy');
+                    that.$container.append(that.$addRepresentationDialog);
+                    that.$addRepresentationDialog.dialog('destroy');
                 },
             });
             dialog.css({overflow: 'hidden'});
