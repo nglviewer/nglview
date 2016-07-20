@@ -1,11 +1,11 @@
 from __future__ import absolute_import
-from traitlets import (Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe,
-                       CaselessStrEnum)
+from traitlets import Dict, observe
 from ipywidgets import DOMWidget, interactive
 from ipywidgets import VBox
 
 # local
 from .colors import color_schemes as COLOR_SCHEMES
+from .widget_utils import make_default_slider_width
 
 class Representation(DOMWidget):
     parameters = Dict().tag(sync=False)
@@ -28,7 +28,10 @@ class Representation(DOMWidget):
     def _display(self):
         c_string = 'c' + str(self.component_index)
         r_string = str(self.repr_index)
-        _repr_dict = self._view._repr_dict[c_string][r_string]['parameters']
+        try:
+            _repr_dict = self._view._repr_dict[c_string][r_string]['parameters']
+        except KeyError:
+            _repr_dict = dict()
 
         def func(opacity=_repr_dict.get('opacity', 1.),
                  assembly=_repr_dict.get('assembly', 'default'),
@@ -47,6 +50,7 @@ class Representation(DOMWidget):
         iwidget = interactive(func, opacity=(0., 1., 0.1),
                                  color_scheme=COLOR_SCHEMES,
                                  assembly=assembly_list)
+        make_default_slider_width(iwidget)
         wbox = VBox([iwidget,])
         if self.name == 'surface':
             def func_extra(probe_radius=1.4,
@@ -71,5 +75,7 @@ class Representation(DOMWidget):
                     box_size=(0, 100, 2),
                     cutoff=(0., 100, 0.1),
                     continuous_update=False)
+
+            make_default_slider_width(widget_extra)
             wbox.children = [iwidget, widget_extra]
         return wbox

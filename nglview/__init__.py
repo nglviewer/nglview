@@ -1,49 +1,46 @@
-
 from __future__ import print_function, absolute_import
 
-from . import datafiles
-from .utils import seq_to_string, string_types, _camelize, _camelize_dict
-from .utils import FileManager
-from .widget_utils import get_widget_by_name
-from .player import TrajectoryPlayer
-from . import interpolate
-from .representation import Representation
-from .ngl_params import REPR_NAME_PAIRS
-import time
+from .install import install, enable_nglview_js
+
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+
+install()
+enable_nglview_js()
 
 import os
 import os.path
+import time
+import base64
 import uuid
-import warnings
 import tempfile
-import ipywidgets as widgets
-from traitlets import (Unicode, Bool, Dict, List, Int, Float, Any, Bytes, observe,
+import numpy as np 
+from IPython.display import display, Javascript
+from ipywidgets import DOMWidget, widget_image
+from traitlets import (Unicode, Bool, Dict, List, Int, observe,
                        CaselessStrEnum,
                        TraitError)
-from ipywidgets import widget_image
 
 try:
     from cStringIO import StringIO
 except ImportError:
     from io import StringIO
 
-from IPython.display import display, Javascript
-from notebook.nbextensions import install_nbextension
-from notebook.services.config import ConfigManager
-
-import numpy as np
-
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    from pkg_resources import resource_filename
-
 try:
     from urllib.request import urlopen
 except ImportError:
     from urllib2 import urlopen
 
+from . import datafiles
+from .utils import seq_to_string, string_types, _camelize_dict
+from .utils import FileManager, get_repr_names_from_dict
+from .widget_utils import get_widget_by_name
+from .player import TrajectoryPlayer
+from . import interpolate
+from .representation import Representation
+from .ngl_params import REPR_NAME_PAIRS
 
-import base64
 
 def encode_base64(arr, dtype='f4'):
     arr = arr.astype(dtype)
@@ -257,7 +254,7 @@ def show_mdanalysis(atomgroup, **kwargs):
     return NGLWidget(structure_trajectory, **kwargs)
 
 def demo(*args, **kwargs):
-    from nglview import datafiles, show_structure_file
+    from nglview import show_structure_file
     return show_structure_file(datafiles.PDB, *args, **kwargs)
 
 ###################
@@ -515,7 +512,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
     def get_structure_string(self):
         try:
             import MDAnalysis as mda
-        except ImportError as e:
+        except ImportError:
             raise ImportError(
                 "'MDAnalysisTrajectory' requires the 'MDAnalysis' package"
             )
@@ -535,7 +532,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
 # Jupyter notebook widget
 
 
-class NGLWidget(widgets.DOMWidget):
+class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
@@ -558,6 +555,8 @@ class NGLWidget(widgets.DOMWidget):
     orientation = List().tag(sync=True)
     _repr_dict = Dict().tag(sync=False)
     _ngl_component_ids = List().tag(sync=False)
+    _ngl_component_names = List().tag(sync=False)
+    n_components = Int(0).tag(sync=True)
 
     displayed = False
     _ngl_msg = None
@@ -566,7 +565,6 @@ class NGLWidget(widgets.DOMWidget):
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
-
 
         self._gui = None
         self._init_gui = kwargs.pop('gui', False)
@@ -582,24 +580,22 @@ class NGLWidget(widgets.DOMWidget):
 
         self._trajlist = []
 
-        # need to initialize before _ngl_component_ids
-        self.player = TrajectoryPlayer(self)
-
         self._ngl_component_ids = []
         self._init_structures = []
-
         if parameters:
             self.parameters = parameters
 
         if isinstance(structure, Trajectory):
-            self.add_trajectory(structure)
+            name = kwargs.pop('name', str(structure))
+            self.add_trajectory(structure, name=name)
         elif isinstance(structure, (list, tuple)):
             trajectories = structure
             for trajectory in trajectories:
-                self.add_trajectory(trajectory)
+                name = kwargs.pop('name', str(trajectory))
+                self.add_trajectory(trajectory, name=name)
         else:
             if structure is not None:
-                self.add_structure(structure)
+                self.add_structure(structure, **kwargs)
 
         # initialize _init_structure_list
         # hack to trigger update on JS side
@@ -626,6 +622,10 @@ class NGLWidget(widgets.DOMWidget):
             self._representations = self._init_representations[:]
 
         self._set_unsync_camera()
+
+        # need to initialize before _ngl_component_ids
+        self.player = TrajectoryPlayer(self)
+
 
     @property
     def parameters(self):
@@ -675,21 +675,66 @@ class NGLWidget(widgets.DOMWidget):
         if change['new'] - change['old'] == 1:
             self._ngl_component_ids.append(uuid.uuid4())
 
-    @observe('_ngl_component_ids')
-    def _update_player_component_slider_max(self, change):
-        component_slider = self.player.repr_widget.children[2]
-        component_slider.max = len(self._ngl_component_ids)
+    @observe('n_components')
+    def _handle_n_components_changed(self, change):
+        if self.player.repr_widget is not None:
+            component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+            if change['new'] - 1 >= component_slider.min:
+                component_slider.max = change['new'] - 1
+            component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
+            component_dropdown.options = tuple(self._ngl_component_names)
+
+            if change['new'] == 0:
+                component_dropdown.options = tuple([''])
+                component_dropdown.value = ''
+
+                component_slider.max = 0
+
+                reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+                reprlist_choices.options = tuple([''])
+
+                repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
+                repr_slider.max = 0
+
+                repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+                repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
+                repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+                repr_name_text.value = ''
+                repr_selection.value = ''
 
     @observe('_repr_dict')
-    def _update_max_reps_count(self, change):
-        repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
-        component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
-        cindex = str(component_slider.value)
-        try:
-            repr_slider.max = len(change['new']['c' + cindex].keys()) - 1
-        except (TraitError, IndexError, KeyError):
-            # TraitError: setting max < min
-            pass
+    def _handle_repr_dict_changed(self, change):
+        if self.player.repr_widget is not None:
+            repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
+            component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+            cindex = str(component_slider.value)
+
+            repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+            repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
+            repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+
+            reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+            repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
+
+            if change['new']:
+                reprlist_choices.options = tuple([str(i) + '-' + name for (i, name) in enumerate(repr_names)])
+
+                try:
+                    reprlist_choices.value = reprlist_choices.options[repr_slider.value]
+                except IndexError:
+                    if repr_slider.value == 0:
+                        reprlist_choices.options = tuple(['',])
+                        reprlist_choices.value = ''
+                    else:
+                        reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
+
+                # e.g: 0-cartoon
+                repr_name_text.value = reprlist_choices.value.split('-')[-1]
+
+                repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
+
+            if change['new'] == {'c0': {}}:
+                repr_selection.value = ''
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
@@ -702,7 +747,6 @@ class NGLWidget(widgets.DOMWidget):
 
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
-            self._request_update_reprs()
 
     def _ipython_display_(self, **kwargs):
         self.displayed = True
@@ -779,7 +823,6 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('setParameters',
                  target='Representation',
                  kwargs=kwargs)
-        self._request_update_reprs()
 
     def set_representations(self, representations, component=0):
         """
@@ -803,13 +846,11 @@ class NGLWidget(widgets.DOMWidget):
         self._remote_call('removeRepresentation',
                           target='Widget',
                           args=[component, repr_index])
-        self._request_update_reprs()
 
     def _remove_representations_by_name(self, repr_name, component=0):
         self._remote_call('removeRepresentationsByName',
                           target='Widget',
                           args=[repr_name, component])
-        self._request_update_reprs()
 
     def _display_repr(self, component=0, repr_index=0, name=None):
         try:
@@ -851,9 +892,11 @@ class NGLWidget(widgets.DOMWidget):
                             itype = self.player.iparams.get('type', 'linear')
 
                             if itype == 'linear':
-                                coordinates_dict[traj_index] = interpolate.linear(index, t=t, traj=trajectory)
+                                coordinates_dict[traj_index] = interpolate.linear(index,
+                                        t=t, traj=trajectory, step=step)
                             elif itype == 'spline':
-                                coordinates_dict[traj_index] = interpolate.spline(index, t=t, traj=trajectory)
+                                coordinates_dict[traj_index] = interpolate.spline(index,
+                                        t=t, traj=trajectory, step=step)
                             else:
                                 raise ValueError('interpolation type must be linear or spline')
                         else:
@@ -981,7 +1024,6 @@ class NGLWidget(widgets.DOMWidget):
                           target='compList',
                           args=[d['type'],],
                           kwargs=params)
-        self._request_update_reprs()
 
 
     def center(self, *args, **kwargs):
@@ -1101,13 +1143,14 @@ class NGLWidget(widgets.DOMWidget):
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
 
-                # TODO: refactor
-                repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-                repr_info_box.children[0].value = repr_name
-                repr_info_box.children[1].value = repr_selection
+                if self.player.repr_widget is not None:
+                    # TODO: refactor
+                    repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+                    repr_info_box.children[0].value = repr_name
+                    repr_info_box.children[1].value = repr_selection
 
-                repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
-                repr_text_box.children[-1].value = data_dict_json
+                    repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
+                    repr_text_box.children[-1].value = data_dict_json
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':
@@ -1118,10 +1161,6 @@ class NGLWidget(widgets.DOMWidget):
                 target='Widget',
                 args=[component,
                       repr_index])
-
-    def _request_update_reprs(self):
-        self._remote_call('requestReprsInfo',
-                target='Widget')
 
     def add_structure(self, structure, **kwargs):
         '''
@@ -1145,6 +1184,8 @@ class NGLWidget(widgets.DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(structure)
+            name = kwargs.pop('name', str(structure))
+            self._ngl_component_names.append(name)
         self._ngl_component_ids.append(structure.id)
         self.center_view(component=len(self._ngl_component_ids)-1)
         self._update_component_auto_completion()
@@ -1178,6 +1219,8 @@ class NGLWidget(widgets.DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(trajectory)
+            name = kwargs.pop('name', str(trajectory))
+            self._ngl_component_names.append(name)
         setattr(trajectory, 'shown', True)
         self._trajlist.append(trajectory)
         self._update_count()
@@ -1257,6 +1300,8 @@ class NGLWidget(widgets.DOMWidget):
             url = obj
             args=[{'type': blob_type, 'data': url, 'binary': False}]
 
+        name = kwargs2.pop('name', str(obj))
+        self._ngl_component_names.append(name)
         self._remote_call("loadFile",
                 target='Stage',
                 args=args,
@@ -1280,6 +1325,7 @@ class NGLWidget(widgets.DOMWidget):
                     self._trajlist.remove(traj)
         component_index = self._ngl_component_ids.index(component_id)
         self._ngl_component_ids.remove(component_id)
+        self._ngl_component_names.pop(component_index)
 
         self._remove_component(component=component_index)
         self._update_component_auto_completion()
@@ -1390,10 +1436,6 @@ class NGLWidget(widgets.DOMWidget):
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
 
-    @property
-    def n_components(self):
-        return len(self._ngl_component_ids)
-
     def _get_traj_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object
         """
@@ -1408,7 +1450,6 @@ class NGLWidget(widgets.DOMWidget):
         traj_ids = set(traj.id for traj in self._trajlist)
 
         for index in indices:
-            assert index < self.n_components
             comp_id = self._ngl_component_ids[index]
             if comp_id in traj_ids:
                 traj = self._get_traj_by_id(comp_id)
@@ -1605,30 +1646,6 @@ class ComponentViewer(object):
                 traj_att = getattr(traj, attname)
                 setattr(self, attname, traj_att) 
         
-def install(user=True, symlink=False):
-    """Install the widget nbextension.
-
-    Parameters
-    ----------
-    user: bool
-        Install for current user instead of system-wide.
-    symlink: bool
-        Symlink instead of copy (for development).
-    """
-    staticdir = resource_filename('nglview', 'js')
-    install_nbextension(staticdir, destination='nglview',
-                        user=user, symlink=symlink,
-                        verbose=0)
-
-    cm = ConfigManager()
-    cm.update('notebook', {
-        "load_extensions": {
-            "widgets/notebook/js/extension": True,
-        }
-    })
-
-install(symlink=False)
-
 from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions

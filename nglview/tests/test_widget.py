@@ -149,7 +149,11 @@ def test_representations():
 
     # Representations
     # make fake params
-    view._repr_dict = {'c0': {'0': {'parameters': {}}}}
+    try:
+        view._repr_dict = {'c0': {'0': {'parameters': {}}}}
+    except KeyError:
+        # in real application, we are not allowed to assign values
+        pass
     representation_widget = Representation(view, 0, 0)
     representation_widget._display()
                     
@@ -346,7 +350,7 @@ def test_existing_js_files():
     from glob import glob
     jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'js', '*js'))
 
-    nt.assert_equal(len(jsfiles), 12)
+    nt.assert_equal(len(jsfiles), 2)
 
 def test_player():
     traj = pt.datafiles.load_tz2()
@@ -409,3 +413,22 @@ def test_widget_utils():
     box.children = [i1, i0]
     assert i0 is widget_utils.get_widget_by_name(box, 'i0')
     assert i1 is widget_utils.get_widget_by_name(box, 'i1')
+
+    def test_raise():
+        widget_utils.get_widget_by_name(box, 'i100')
+
+    nt.assert_raises(ValueError, test_raise)
+
+def test_make_methods_of_player():
+    """test_make_methods_of_player: just to make sure there is no error
+    """
+    view = nv.demo()
+
+    excluded = ['_make_button_url', '_make_repr_name_choices', '_make_add_repr_widget']
+    for method in dir(view.player):
+        if method.startswith('_make') and method not in excluded:
+            func = getattr(view.player, method)
+            func()
+
+    # run excluded
+    view.player._make_repr_name_choices({}, 0)

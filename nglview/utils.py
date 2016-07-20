@@ -14,6 +14,20 @@ if PY3:
 else:
     string_types = basestring
 
+def get_repr_names_from_dict(repr_dict, component):
+    """
+    
+    Parameters
+    ----------
+    """
+
+    try:
+        this_repr_dict = repr_dict['c' + str(component)]
+        return [this_repr_dict[str(key)]['name'] for key in sorted(this_repr_dict.keys())]
+    except KeyError:
+        return []
+
+
 def get_colors_from_b64(b64_image):
     """
 

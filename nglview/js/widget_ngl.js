@@ -1,49 +1,11 @@
-
-require.config( {
-    paths: {
-        "THREE": "../nbextensions/nglview/three.custom.min",
-        "Promise": "../nbextensions/nglview/promise.min",
-        "sprintf": "../nbextensions/nglview/sprintf.min",
-        "pako": "../nbextensions/nglview/pako_inflate.min",
-        "chroma": "../nbextensions/nglview/chroma.min",
-        "jsfeat": "../nbextensions/nglview/svd.min",
-        "signals": "../nbextensions/nglview/signals.min",
-        "msgpackDecode": "../nbextensions/nglview/msgpack-decode",
-        "mmtfDecode": "../nbextensions/nglview/mmtf-decode",
-        "TypedFastBitSet": "../nbextensions/nglview/TypedFastBitSet",
-        "NGL": "../nbextensions/nglview/ngl"
-    },
-    shim: {
-        THREE: { exports: "THREE" },
-        Promise: { exports: "Promise" },
-        sprintf: { exports: "sprintf" },
-        jsfeat: { exports: "jsfeat" },
-        msgpackDecode: { exports: "msgpackDecode" },
-        mmtfDecode: { exports: "mmtfDecode" },
-        NGL: {
-            deps: [
-                "THREE", "Promise", "sprintf", "pako", "chroma", "jsfeat",
-                "signals", "msgpackDecode", "mmtfDecode", "TypedFastBitSet"
-            ],
-            exports: "NGL"
-        }
-    },
-} );
-
-define( [
+define([
     "nbextensions/widgets/widgets/js/widget",
     "nbextensions/widgets/widgets/js/manager",
     "jqueryui",
-    "THREE", "Promise", "sprintf", "pako", "chroma", "jsfeat", "signals",
-    "msgpackDecode", "mmtfDecode", "TypedFastBitSet", "NGL"
+    "nbextensions/nglview/ngl"
 ], function(
-    widget, manager, $, _THREE, _Promise, _sprintf, pako, chroma, _jsfeat,
-    signals, _msgpackDecode, _mmtfDecode, _TypedFastBitSet, _NGL
+    widget, manager, $, NGL
 ){
-
-    window.pako = pako;
-    window.signals = signals;
-    window.chroma = chroma;
 
     var NGLView = widget.DOMWidgetView.extend( {
 
@@ -191,7 +153,7 @@ define( [
                 .appendTo(this.$container);
             this.$addRepresentation.hide();
 
-            this.stage.signals.onPicking.add( function( pd ){
+            this.stage.signals.clicked.add( function( pd ){
                 var pd2 = {};
                 if( pd.atom ) pd2.atom = pd.atom.toObject();
                 if( pd.bond ) pd2.bond = pd.bond.toObject();
@@ -228,6 +190,25 @@ define( [
                 that.model.set("_n_dragged_files", numDroppedFiles + 1 );
                 that.touch();
             }, false );
+
+            var that = this;
+            this.stage.signals.componentAdded.add( function(){
+                var len = this.stage.compList.length;
+                this.model.set("n_components", len);
+                this.touch();
+                var comp = this.stage.compList[len-1];
+                comp.signals.representationRemoved.add(function(){
+                    that.requestReprsInfo();
+                });
+                comp.signals.representationAdded.add(function(){
+                    that.requestReprsInfo();
+                });
+            }, this);
+
+            this.stage.signals.componentRemoved.add( function(){
+                this.model.set("n_components", this.stage.compList.length);
+                this.touch();
+            }, this);
         },
 
         hideReprButton: function(){
@@ -401,6 +382,17 @@ define( [
             }
         },
 
+        setVisibilityForRepr: function(component_index, repr_index, value){
+           // value = True/False
+           var component = this.stage.compList[ component_index ];
+           var repr = component.reprList[repr_index];
+           console.log(repr, value);
+           
+           if (repr) {       
+               repr.setVisibility(value);
+               }
+        },
+
         removeRepresentation: function(component_index, repr_index){
            var component = this.stage.compList[ component_index ];
            var repr = component.reprList[repr_index]
@@ -437,12 +429,14 @@ define( [
               var repr = component.reprList[ repr_index ];
 
               if (repr){
+                  params['useWorker'] = false;
                   var new_repr = NGL.makeRepresentation(name, component.structure,
                                                     this.stage.viewer, params);
                   if (new_repr) {
                       repr.setRepresentation(new_repr);
                       repr.name = name;
                       component.reprList[repr_index] = repr;
+                      this.requestReprsInfo();
                   }
               }
         },
@@ -582,7 +576,7 @@ define( [
                         'border': 'none'});
         },
 
-        resizeNotebook(width){
+        resizeNotebook: function(width){
             var $nb_container = Jupyter.notebook.container;
             $nb_container.width(width);
 
@@ -769,6 +763,7 @@ define( [
 
     return {
         'NGLView': NGLView,
+        'NGL': NGL
     };
 
 } );

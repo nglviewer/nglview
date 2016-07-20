@@ -2,36 +2,24 @@
 module.exports = {
 
 
-    "nglview/tests/notebooks/api/test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb");
+    "nglview/tests/notebooks/api/test_component_names.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_component_names.ipynb");
         browser.restartKernel(2000);
-        for ( var i = 0; i < 82; i++) {
+        for ( var i = 0; i < 12; i++) {
            browser.executeCell(i)
-                  .pause(2000)
+                  .pause(3000)
                   .cellHasError(i);
         }
         browser.end();
     },
 
 
-    "nglview/tests/notebooks/api/test_view_trajectory.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/test_view_trajectory.ipynb");
+    "nglview/tests/notebooks/api/test_component_dropdown_options.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_component_dropdown_options.ipynb");
         browser.restartKernel(2000);
-        for ( var i = 0; i < 38; i++) {
+        for ( var i = 0; i < 12; i++) {
            browser.executeCell(i)
-                  .pause(2000)
-                  .cellHasError(i);
-        }
-        browser.end();
-    },
-
-
-    "nglview/tests/notebooks/api/test_no_gui_demo.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/test_no_gui_demo.ipynb");
-        browser.restartKernel(2000);
-        for ( var i = 0; i < 4; i++) {
-           browser.executeCell(i)
-                  .pause(2000)
+                  .pause(3000)
                   .cellHasError(i);
         }
         browser.end();
@@ -43,7 +31,43 @@ module.exports = {
         browser.restartKernel(2000);
         for ( var i = 0; i < 8; i++) {
            browser.executeCell(i)
-                  .pause(2000)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/api/test_sync_n_components.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_sync_n_components.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 12; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/api/test_no_gui_demo.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_no_gui_demo.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 4; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/api/test_add_structure_then_trajectory.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_add_structure_then_trajectory.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 8; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
                   .cellHasError(i);
         }
         browser.end();
@@ -53,21 +77,9 @@ module.exports = {
     "nglview/tests/notebooks/api/test_automatically_added_attributes_0.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/api/test_automatically_added_attributes_0.ipynb");
         browser.restartKernel(2000);
-        for ( var i = 0; i < 42; i++) {
+        for ( var i = 0; i < 32; i++) {
            browser.executeCell(i)
-                  .pause(2000)
-                  .cellHasError(i);
-        }
-        browser.end();
-    },
-
-
-    "nglview/tests/notebooks/api/test_fix_player_if_adding_single_struture_first.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/test_fix_player_if_adding_single_struture_first.ipynb");
-        browser.restartKernel(2000);
-        for ( var i = 0; i < 24; i++) {
-           browser.executeCell(i)
-                  .pause(2000)
+                  .pause(3000)
                   .cellHasError(i);
         }
         browser.end();

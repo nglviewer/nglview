@@ -8,18 +8,27 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--basic', action='store_true')
+parser.add_argument('--api', action='store_true')
+parser.add_argument('--single', action='store_true')
+parser.add_argument('--travis', action='store_true')
+parser.add_argument('-n', '--nb', nargs='?')
 args = parser.parse_args()
 
-if args.basic:
-    root = 'nglview/tests/notebooks/api/'
-    notebook_names  = [
-                 'test_no_gui_demo.ipynb',
-                 # 'test_detach.ipynb',
-                 'test_add_structure_then_trajectory.ipynb',
-                 'test_automatically_added_attributes_0.ipynb',
-                ]
+api_root_dir = 'nglview/tests/notebooks/api/'
 
-    notebooks = [root + notebook_name for notebook_name in notebook_names]
+notebook_names_for_travis  = [
+             'test_no_gui_demo.ipynb',
+             'test_add_structure_then_trajectory.ipynb',
+             'test_automatically_added_attributes_0.ipynb',
+            ]
+
+if args.travis:
+    notebook_names = notebook_names_for_travis
+    notebooks = [api_root_dir + notebook_name for notebook_name in notebook_names]
+elif args.api:
+    notebooks = glob(api_root_dir + '/*.ipynb')
+elif args.single:
+    notebooks = [args.nb]
 else:
     notebooks = ['nglview/tests/notebooks/dummy.ipynb',]
     
@@ -50,7 +59,7 @@ body_template = """
         browser.restartKernel(2000);
         for ( var i = 0; i < %s; i++) {
            browser.executeCell(i)
-                  .pause(2500)
+                  .pause(3000)
                   .cellHasError(i);
         }
         browser.end();
