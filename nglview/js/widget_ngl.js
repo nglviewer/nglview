@@ -378,7 +378,7 @@ define([
         },
 
         removeRepresentationsByName: function( repr_name, component_index ){
-           var component = this.stage.compList[ component_index ] || 0;
+           var component = this.stage.compList[ component_index ];
 
            if (component){
                component.reprList.forEach( function(repr) {
