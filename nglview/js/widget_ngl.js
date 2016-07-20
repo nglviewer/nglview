@@ -106,52 +106,26 @@ define([
                 .css( "opacity", "0.7" )
                 .appendTo( this.$container );
 
-            var $inputReprName = $('<input id="name" type="text"></input>');
-            var $inputSelection = $('<input id="selection" type="text"></input>');
-            var $buttonAdd = $('<button>Add</button>');
-            var $buttonRemove = $('<button>Remove</button>');
-            var $buttonHide = $('<button>Hide Dialog</button>');
+            $inputNotebookCommand = $('<input id="input_notebook_command" type="text"></input>');
             var that = this;
 
-            $inputSelection.submit(function(){
-                var name = $("#name").val();
-                var sele = $("#selection").val();
-                var comp = that.stage.compList[0];
-                comp.addRepresentation(name, {'sele': sele});
+            $inputNotebookCommand.keypress(function(e){
+                var command = $("#input_notebook_command").val();
+                if (e.which == 13){
+                    $("#input_notebook_command").val("")
+                    Jupyter.notebook.kernel.execute(command);
+                }
             });
 
-            $buttonAdd.click(function(){
-                var name = $("#name").val();
-                var sele = $("#selection").val();
-                var comp = that.stage.compList[0];
-                comp.addRepresentation(name, {'sele': sele});
-            });
-
-            $buttonRemove.click(function(){
-                var name = $("#name").val();
-                var comp = that.stage.compList[0];
-                that.removeRepresentationsByName(name, 0);
-            });
-
-            $buttonHide.click(function(){
-                that.hideReprButton();
-            });
-
-            this.$addRepresentationDialog= $( "<div></div>" )
+            this.$notebook_text= $( "<div></div>" )
                 .css( "position", "absolute" )
-                .css( "top", "5%" )
+                .css( "bottom", "5%" )
                 .css( "left", "3%" )
                 .css( "padding", "2px 5px 2px 5px" )
                 .css( "opacity", "0.7" )
-                .append($inputReprName)
-                .append($("<br></br>"))
-                .append($inputSelection)
-                .append($("<br></br>"))
-                .append($buttonAdd)
-                .append($buttonRemove)
-                .append($buttonHide)
+                .append($inputNotebookCommand)
                 .appendTo(this.$container);
-            this.$addRepresentationDialog.hide();
+            this.$notebook_text.hide();
 
             this.stage.signals.clicked.add( function( pd ){
                 var pd2 = {};
@@ -211,12 +185,12 @@ define([
             }, this);
         },
 
-        hideReprButton: function(){
-            this.$addRepresentationDialog.hide();
+        hideNotebookCommandBox: function(){
+            this.$notebook_text.hide();
         },
 
-        showReprButton: function(){
-            this.$addRepresentationDialog.show();
+        showNotebookCommandBox: function(){
+            this.$notebook_text.show();
         },
 
         requestFrame: function(){
@@ -529,16 +503,16 @@ define([
             this.stage.handleResize();
         },
 
-        openReprDialog: function(){
+        openNotebookCommandDialog: function(){
             var that = this;
-            dialog  = this.$addRepresentationDialog.dialog({
+            dialog  = this.$notebook_text.dialog({
                 draggable: true,
                 resizable: true,
                 modal: false,
                 show: { effect: "blind", duration: 150 },
                 close: function (event, ui) {
-                    that.$container.append(that.$addRepresentationDialog);
-                    that.$addRepresentationDialog.dialog('destroy');
+                    that.$container.append(that.$notebook_text);
+                    that.$notebook_text.dialog('destroy');
                 },
             });
             dialog.css({overflow: 'hidden'});
