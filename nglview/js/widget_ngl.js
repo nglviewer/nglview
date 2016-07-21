@@ -398,6 +398,18 @@ define([
            }
         },
 
+        updateRepresentationsByName: function(repr_name, component_index, params){
+           var component = this.stage.compList[ component_index ];
+
+           if (component){
+               component.reprList.forEach( function(repr) {
+                   if( repr.name == repr_name ){
+                       repr.setParameters(params);
+                   }
+               })
+           }
+        },
+
         setRepresentation: function(name, params, component_index, repr_index){
               var component = this.stage.compList[ component_index ];
               var repr = component.reprList[ repr_index ];
