@@ -1,6 +1,7 @@
 # TODO: reorg
 # simplify code
 from __future__ import absolute_import
+import time
 import json
 import numpy as np
 from IPython.display import display, Javascript
@@ -9,7 +10,7 @@ from ipywidgets import (DOMWidget,
                         ColorPicker, IntSlider, FloatSlider,
                         Dropdown,
                         Button, ToggleButton,
-                        Text, Textarea,
+                        Text, Textarea, IntText, FloatText,
                         interactive,
                         Tab)
 
@@ -58,9 +59,9 @@ class TrajectoryPlayer(DOMWidget):
                                    antialias=True,
                                    trim=False,
                                    transparent=False)
-        self.picked_widget = self._make_text_picked()
-        self.repr_widget = self._make_repr_widget()
-        self._preference_widget = self._make_reference_widget()
+        self.picked_widget = None
+        self.repr_widget = None
+        self._preference_widget = None
 
     @observe('camera')
     def on_camera_changed(self, change):
@@ -144,6 +145,10 @@ class TrajectoryPlayer(DOMWidget):
                                  self._spin_speed)
 
     def _display(self):
+        self.picked_widget = self._make_text_picked()
+        self.repr_widget = self._make_repr_widget()
+        self._preference_widget = self._make_reference_widget()
+
         step_slide = IntSlider(
             value=self.step,
             min=-100,
@@ -458,7 +463,7 @@ class TrajectoryPlayer(DOMWidget):
         component_slider._ngl_name = 'component_slider'
         component_slider.visible = False
 
-        cvalue = ''
+        cvalue = ' '
         component_dropdown = Dropdown(value=cvalue, options=[cvalue,],
                 description='component')
         component_dropdown._ngl_name = 'component_dropdown'
@@ -620,24 +625,41 @@ class TrajectoryPlayer(DOMWidget):
         checkbox_trim = Checkbox(value=False, description='trim')
         checkbox_transparent = Checkbox(value=False, description='transparent')
         filename_text = Text(value='Screenshot', description='Filename')
+        delay_text = FloatText(value=1, description='delay (s)', tooltip='hello')
 
-        button = Button(description='Export Image')
+        start_text, stop_text, step_text = (IntText(value=0), IntText(value=self._view.count),
+                             IntText(value=1))
 
-        def on_click(button):
+        button_movie_images = Button(description='Export Images')
+
+        def download_image(filename):
             self._view.download_image(factor=slider_factor.value,
                     antialias=checkbox_antialias.value,
                     trim=checkbox_trim.value,
                     transparent=checkbox_transparent.value,
-                    filename=filename_text.value)
+                    filename=filename)
 
-        button.on_click(on_click)
+        def on_click_images(button_movie_images):
+            for i in range(start_text.value, stop_text.value, step_text.value):
+                self._view.frame = i
+                time.sleep(delay_text.value)
+                download_image(filename=filename_text.value + str(i))
+                time.sleep(delay_text.value)
 
-        return VBox([button,
+        button_movie_images.on_click(on_click_images)
+
+        box_movie_image_export = VBox(
+                [HBox([button_movie_images, start_text, stop_text, step_text,]),
+                 delay_text])
+
+        return VBox([
+            box_movie_image_export,
             filename_text,
             slider_factor,
             checkbox_antialias,
             checkbox_trim,
-            checkbox_transparent])
+            checkbox_transparent,
+            ])
 
     def _make_resize_notebook_slider(self):
         resize_notebook_slider = IntSlider(min=300, max=2000, description='resize notebook')

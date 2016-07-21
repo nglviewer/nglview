@@ -677,62 +677,64 @@ class NGLWidget(DOMWidget):
 
     @observe('n_components')
     def _handle_n_components_changed(self, change):
-        component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
-        if change['new'] - 1 >= component_slider.min:
-            component_slider.max = change['new'] - 1
-        component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
-        component_dropdown.options = tuple(self._ngl_component_names)
+        if self.player.repr_widget is not None:
+            component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+            if change['new'] - 1 >= component_slider.min:
+                component_slider.max = change['new'] - 1
+            component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
+            component_dropdown.options = tuple(self._ngl_component_names)
 
-        if change['new'] == 0:
-            component_dropdown.options = tuple([''])
-            component_dropdown.value = ''
+            if change['new'] == 0:
+                component_dropdown.options = tuple([''])
+                component_dropdown.value = ''
 
-            component_slider.max = 0
+                component_slider.max = 0
 
-            reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
-            reprlist_choices.options = tuple([''])
+                reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+                reprlist_choices.options = tuple([''])
 
+                repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
+                repr_slider.max = 0
+
+                repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+                repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
+                repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+                repr_name_text.value = ''
+                repr_selection.value = ''
+
+    @observe('_repr_dict')
+    def _handle_repr_dict_changed(self, change):
+        if self.player.repr_widget is not None:
             repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
-            repr_slider.max = 0
+            component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+            cindex = str(component_slider.value)
 
             repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
             repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
             repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
-            repr_name_text.value = ''
-            repr_selection.value = ''
 
-    @observe('_repr_dict')
-    def _handle_repr_dict_changed(self, change):
-        repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
-        component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
-        cindex = str(component_slider.value)
+            reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+            repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
 
-        repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-        repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
-        repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+            if change['new']:
+                reprlist_choices.options = tuple([str(i) + '-' + name for (i, name) in enumerate(repr_names)])
 
-        reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
-        repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
+                try:
+                    reprlist_choices.value = reprlist_choices.options[repr_slider.value]
+                except IndexError:
+                    if repr_slider.value == 0:
+                        reprlist_choices.options = tuple(['',])
+                        reprlist_choices.value = ''
+                    else:
+                        reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
 
-        if change['new']:
-            reprlist_choices.options = tuple([str(i) + '-' + name for (i, name) in enumerate(repr_names)])
+                # e.g: 0-cartoon
+                repr_name_text.value = reprlist_choices.value.split('-')[-1]
 
-            try:
-                reprlist_choices.value = reprlist_choices.options[repr_slider.value]
-            except IndexError:
-                if repr_slider.value == 0:
-                    reprlist_choices.options = tuple(['',])
-                    reprlist_choices.value = ''
-                else:
-                    reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
+                repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
 
-            # e.g: 0-cartoon
-            repr_name_text.value = reprlist_choices.value.split('-')[-1]
-
-            repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
-
-        if change['new'] == {'c0': {}}:
-            repr_selection.value = ''
+            if change['new'] == {'c0': {}}:
+                repr_selection.value = ''
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
@@ -1115,6 +1117,25 @@ class NGLWidget(DOMWidget):
                           args=[filename,],
                           kwargs=params)
 
+    def superpose(self, components=[1,], ref=0, **kwargs):
+        """port superpose method from NGL. Good for single structures.
+        If you are viewing trajectory, it's better to use your engine (ptraj, mdtraj,
+        MDAnalysis, ...)
+
+        Note: unstable feature
+
+        Parameters
+        ----------
+        components : 1D int array-like, default [1,]
+            component index
+        ref : int, default 0
+            reference index
+        """
+
+        for index in components:
+            self._remote_call('superpose', target='Widget',
+                    args=[ref, index])
+
     def _ngl_handle_msg(self, widget, msg, buffers):
         """store message sent from Javascript.
 
@@ -1141,13 +1162,14 @@ class NGLWidget(DOMWidget):
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
 
-                # TODO: refactor
-                repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-                repr_info_box.children[0].value = repr_name
-                repr_info_box.children[1].value = repr_selection
+                if self.player.repr_widget is not None:
+                    # TODO: refactor
+                    repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+                    repr_info_box.children[0].value = repr_name
+                    repr_info_box.children[1].value = repr_selection
 
-                repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
-                repr_text_box.children[-1].value = data_dict_json
+                    repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
+                    repr_text_box.children[-1].value = data_dict_json
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':
