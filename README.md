@@ -118,11 +118,11 @@ view.update_cartoon(opacity=0.4, component=0)
 view.remove_cartoon(opacity=0.4, component=0)
 ```
 
-And many more, please check [Selection language](http://arose.github.io/ngl/doc/#User_manual/Usage/Selection_language)
+And many more, please check [Selection language](http://arose.github.io/ngl/api/dev/tutorial-selection-language.html)
 
 Representations can also be changed by overwriting the `representations` property
 of the widget instance `view`. The available `type` and `params` are described
-in the NGL Viewer [documentation](http://arose.github.io/ngl/doc).
+in the NGL Viewer [documentation](http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html).
 
 ```Python
 view.representations = [
