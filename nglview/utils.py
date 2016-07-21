@@ -36,6 +36,22 @@ def ngl_demo(width=400, height=400):
     display(HTML(command))
     display(HTML(command2))
 
+def init_js_funcs():
+    """print
+    """
+    from IPython.display import display, Javascript, HTML
+
+    command = """
+    <script>
+        var print = function(x){
+            for (var i in x){
+                console.log(i)
+            }
+        }
+    </script>
+    """
+    display(HTML(command))
+
 def get_repr_names_from_dict(repr_dict, component):
     """
     
