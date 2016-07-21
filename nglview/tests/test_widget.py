@@ -160,8 +160,18 @@ def test_representations():
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     assert isinstance(view, nv.NGLWidget), 'must be instance of NGLWidget'
+
+    # add
     view.add_cartoon(color='residueindex')
     view.add_rope(color='red')
+
+    # update
+    view.update_cartoon(opacity=0.4)
+    view.update_rope(coor='blue')
+
+    # remove
+    view.remove_cartoon()
+    view.remove_rope()
 
 def test_remote_call():
     # how to test JS?

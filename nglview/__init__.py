@@ -72,15 +72,22 @@ def _add_repr_method_shortcut(self, other):
             self._remove_representations_by_name(repr_name=rep[1], **kwargs)
         return func
 
+    def make_func_update(rep):
+        """return a new function object
+        """
+        def func(this, **kwargs):
+            """
+            """
+            self._update_representations_by_name(repr_name=rep[1], **kwargs)
+        return func
+
     for rep in REPR_NAME_PAIRS:
-        func_add = make_func_add(rep)
-        fn_add = 'add_' + rep[0]
-
-        func_remove = make_func_remove(rep)
-        fn_remove = '_remove_' + rep[0]
-
-        setattr(self, fn_add, MethodType(func_add, other))
-        setattr(self, fn_remove, MethodType(func_remove, other))
+        for make_func, root_fn in [(make_func_add, 'add'),
+                                   (make_func_update, 'update'), 
+                                   (make_func_remove, 'remove')]:
+            func= make_func(rep)
+            fn = '_'.join((root_fn, rep[0]))
+            setattr(self, fn, MethodType(func, other))
 
 
 ##############
@@ -852,6 +859,14 @@ class NGLWidget(DOMWidget):
                           target='Widget',
                           args=[repr_name, component])
 
+    def _update_representations_by_name(self, repr_name, component=0, **kwargs):
+        kwargs = _camelize_dict(kwargs)
+
+        self._remote_call('updateRepresentationsByName',
+                          target='Widget',
+                          args=[repr_name, component],
+                          kwargs=kwargs)
+
     def _display_repr(self, component=0, repr_index=0, name=None):
         try:
             c = 'c' + str(component)
@@ -1608,6 +1623,7 @@ class ComponentViewer(object):
         _add_repr_method_shortcut(self, self._view)
         self._borrow_attribute(self._view, ['clear_representations',
                                             '_remove_representations_by_name',
+                                            '_update_representations_by_name',
                                             'center_view',
                                             'center',
                                             'clear',
