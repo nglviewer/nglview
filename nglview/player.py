@@ -63,6 +63,9 @@ class TrajectoryPlayer(DOMWidget):
         self.repr_widget = None
         self._preference_widget = None
 
+    def smooth(self):
+        self.interpolate = True
+
     @observe('camera')
     def on_camera_changed(self, change):
         camera_type = change['new']
