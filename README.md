@@ -110,6 +110,12 @@ view.add_licorice('ALA, GLU')
 
 # clear representations
 view.clear_representations()
+
+# update parameters for ALL cartoons of component 0 (default)
+view.update_cartoon(opacity=0.4, component=0)
+
+# remove ALL cartoons of component 0 (default)
+view.remove_cartoon(opacity=0.4, component=0)
 ...
 ```
 
