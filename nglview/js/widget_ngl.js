@@ -450,11 +450,11 @@ define([
             }
         },
 
-        superpose: function(cindex0, cindex1){
+        superpose: function(cindex0, cindex1, align, sele0, sele1){
            // superpose two components with given params
            var component0 = this.stage.compList[cindex0];
            var component1 = this.stage.compList[cindex1];
-           component0.superpose(component1);
+           component1.superpose(component0, align, sele0, sele1);
         },
 
         decode_base64: function(base64) {
