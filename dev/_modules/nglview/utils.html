@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview.utils &mdash; NGLView 0.5.2a+194.ga53fcb7 documentation</title>
+  <title>nglview.utils &mdash; NGLView 0.5.2a+262.gce25759.dirty documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+194.ga53fcb7 documentation" href="../../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+262.gce25759.dirty documentation" href="../../index.html"/>
         <link rel="up" title="nglview" href="../nglview.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+194.ga53fcb7
+                0.5.2a+262.gce25759.dirty
               </div>
             
           
@@ -142,6 +142,44 @@
     <span class="n">string_types</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">string_types</span> <span class="o">=</span> <span class="nb">basestring</span>
+
+<span class="k">def</span> <span class="nf">ngl_demo</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;make a viewport, create stage object and populate NGL namespace</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">HTML</span>
+
+    <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;div id=&#39;viewport&#39;&gt;&lt;/div&gt;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">        $(&#39;#viewport&#39;).width(</span><span class="si">%s</span><span class="s2">).height(</span><span class="si">%s</span><span class="s2">);</span>
+<span class="s2">    &lt;/script&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+
+    <span class="n">command2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">        var NGL = require(&#39;nbextensions/nglview/widget_ngl&#39;).NGL;</span>
+<span class="s2">        var stage = new NGL.Stage(&#39;viewport&#39;)</span>
+<span class="s2">    &lt;/script&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">command2</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">init_js_funcs</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;print</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">HTML</span>
+
+    <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">        var print = function(x){</span>
+<span class="s2">            for (var i in x){</span>
+<span class="s2">                console.log(i)</span>
+<span class="s2">            }</span>
+<span class="s2">        }</span>
+<span class="s2">    &lt;/script&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">get_repr_names_from_dict</span><span class="p">(</span><span class="n">repr_dict</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -332,7 +370,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.5.2a+194.ga53fcb7',
+            VERSION:'0.5.2a+262.gce25759.dirty',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

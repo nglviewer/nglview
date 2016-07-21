@@ -134,7 +134,12 @@ Representations
 
     # clear representations
     view.clear_representations()
-    ...
+
+    # update parameters for ALL cartoons of component 0 (default)
+    view.update_cartoon(opacity=0.4, component=0)
+
+    # remove ALL cartoons of component 0 (default)
+    view.remove_cartoon(opacity=0.4, component=0)
 
 And many more, please check `Selection
 language <http://arose.github.io/ngl/doc/#User_manual/Usage/Selection_language>`__
