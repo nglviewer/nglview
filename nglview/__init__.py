@@ -1195,7 +1195,6 @@ class NGLWidget(DOMWidget):
                     repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
                     repr_text_box.children[-1].value = data_dict_json
             elif msg_type == 'request_loaded':
-                print('ngl_msg', self._ngl_msg)
                 if not self.loaded:
                     # trick to trigger observe loaded
                     # so two viewers can have the same representations
