@@ -31,8 +31,8 @@ define([
 
             // for player
             this.delay = 100; 
-            this.sync_frame = true;
-            this.sync_camera = true;
+            this.sync_frame = false;
+            this.sync_camera = false;
 
             // get message from Python
             this.model.on( "msg:custom", function (msg) {
