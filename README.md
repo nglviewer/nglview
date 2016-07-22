@@ -246,7 +246,7 @@ nglview mynotebook.ipynb --remote
 # demo (don't need pytraj)
 nglview demo
 
-# disable autorun run the 1st cell of the notebook
+# disable autorun the 1st cell of the notebook
 nglview my.pdb --disable-autorun
 
 # specify web browser
