@@ -755,6 +755,15 @@ class NGLWidget(DOMWidget):
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
 
+    def sync_view(self):
+        """call this if you want to sync multiple views of a single viewer
+
+        Note: unstable feature
+        """
+        self.loaded = False
+        # trigger reload callbacks
+        self.loaded = True
+
     def _ipython_display_(self, **kwargs):
         self.displayed = True
         super(NGLWidget, self)._ipython_display_(**kwargs)
