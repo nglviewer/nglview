@@ -66,18 +66,12 @@ define([
             this.displayed.then( function(){
                 var width = this.$el.parent().width() + "px";
                 var height = "300px";
-                var state_params = this.stage.getParameters();
 
                 this.setSize( width, height );
                 this.$container.resizable(
                     "option", "maxWidth", this.$el.parent().width()
                 );
-                this.model.set('loaded', true);
-                this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
-                this.model.set('orientation', this.stage.viewer.getOrientation() );
                 this.requestUpdateStageParameters();
-                this.model.set('_original_stage_parameters', state_params);
-                this.touch();
             }.bind( this ) );
 
             this.stage.viewer.controls.addEventListener( "change", function() {
@@ -183,6 +177,13 @@ define([
                 this.model.set("n_components", this.stage.compList.length);
                 this.touch();
             }, this);
+
+            // for callbacks from Python
+            // must be after initialize NGL.Stage
+            // this.model.set('loaded', true);
+            var state_params = this.stage.getParameters();
+            this.model.set('_original_stage_parameters', state_params);
+            this.touch();
         },
 
         hideNotebookCommandBox: function(){
