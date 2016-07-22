@@ -545,7 +545,7 @@ class NGLWidget(DOMWidget):
     selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
     background = Unicode().tag(sync=True)
-    loaded = Bool(False).tag(sync=True)
+    loaded = Bool(False).tag(sync=False)
     frame = Int().tag(sync=True)
     # hack to always display movie
     count = Int(1).tag(sync=True)
@@ -1185,6 +1185,13 @@ class NGLWidget(DOMWidget):
 
                     repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
                     repr_text_box.children[-1].value = data_dict_json
+            elif msg_type == 'request_loaded':
+                print('ngl_msg', self._ngl_msg)
+                if not self.loaded:
+                    # trick to trigger observe loaded
+                    # so two viewers can have the same representations
+                    self.loaded = False
+                self.loaded = msg.get('data')
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':

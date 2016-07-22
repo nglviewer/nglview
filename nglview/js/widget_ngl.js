@@ -180,7 +180,7 @@ define([
 
             // for callbacks from Python
             // must be after initialize NGL.Stage
-            // this.model.set('loaded', true);
+            this.model.send({'type': 'request_loaded', 'data': true})
             var state_params = this.stage.getParameters();
             this.model.set('_original_stage_parameters', state_params);
             this.touch();
