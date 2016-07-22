@@ -209,6 +209,20 @@ view.add_component('my.ccp4')
 # NOTE: Trajectory is a special case of component.
 ```
 
+Display more than two widgets
+-----------------------------
+
+```python
+# 1st cell
+import ipywidgets
+vbox = ipywidgets.VBox([view1, view2])
+vbox # display
+
+# 2nd cell
+view1.sync_view()
+view2.sync_view()
+```
+
 API doc
 -------
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
