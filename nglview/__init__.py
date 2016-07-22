@@ -546,6 +546,7 @@ class NGLWidget(DOMWidget):
     _image_data = Unicode().tag(sync=True)
     background = Unicode().tag(sync=True)
     loaded = Bool(False).tag(sync=False)
+    _first_time_loaded = Bool(True).tag(sync=False)
     frame = Int().tag(sync=True)
     # hack to always display movie
     count = Int(1).tag(sync=True)
@@ -767,6 +768,10 @@ class NGLWidget(DOMWidget):
     def _ipython_display_(self, **kwargs):
         self.displayed = True
         super(NGLWidget, self)._ipython_display_(**kwargs)
+        if self._first_time_loaded:
+            self._first_time_loaded = False
+        else:
+            self.sync_view()
         if self._init_gui:
             self._gui = self.player._display()
             display(self._gui)
