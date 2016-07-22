@@ -242,6 +242,15 @@ nglview mynotebook.ipynb
 nglview my.pdb --remote
 nglview my.parm7 -c traj.nc --remote
 nglview mynotebook.ipynb --remote
+
+# demo (don't need pytraj)
+nglview demo
+
+# disable autorun run the 1st cell of the notebook
+nglview my.pdb --disable-autorun
+
+# specify web browser
+nglview my.pdb --browser=google-chrome
 ```
 
 FAQ
