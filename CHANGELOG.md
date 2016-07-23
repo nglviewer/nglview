@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Dev
+---
+* ADD: `ngl v0.8`
+
+
 Version 0.5.2
 -------------
 * ADD: `nglview` command line for quickly opening notebook.
