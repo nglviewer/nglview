@@ -545,7 +545,8 @@ class NGLWidget(DOMWidget):
     selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
     background = Unicode().tag(sync=True)
-    loaded = Bool(False).tag(sync=True)
+    loaded = Bool(False).tag(sync=False)
+    _first_time_loaded = Bool(True).tag(sync=False)
     frame = Int().tag(sync=True)
     # hack to always display movie
     count = Int(1).tag(sync=True)
@@ -755,9 +756,22 @@ class NGLWidget(DOMWidget):
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
 
+    def sync_view(self):
+        """call this if you want to sync multiple views of a single viewer
+
+        Note: unstable feature
+        """
+        self.loaded = False
+        # trigger reload callbacks
+        self.loaded = True
+
     def _ipython_display_(self, **kwargs):
         self.displayed = True
         super(NGLWidget, self)._ipython_display_(**kwargs)
+        if self._first_time_loaded:
+            self._first_time_loaded = False
+        else:
+            self.sync_view()
         if self._init_gui:
             self._gui = self.player._display()
             display(self._gui)
@@ -1185,6 +1199,12 @@ class NGLWidget(DOMWidget):
 
                     repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
                     repr_text_box.children[-1].value = data_dict_json
+            elif msg_type == 'request_loaded':
+                if not self.loaded:
+                    # trick to trigger observe loaded
+                    # so two viewers can have the same representations
+                    self.loaded = False
+                self.loaded = msg.get('data')
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':
