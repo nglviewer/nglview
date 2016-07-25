@@ -495,6 +495,7 @@ class TrajectoryPlayer(DOMWidget):
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
             self._view._remote_call('requestReprInfo', target='Widget')
+            self._view._handle_repr_dict_changed(change=dict(new=self._view._repr_dict))
         button_refresh.on_click(on_click_refresh)
 
         def on_click_update(button):
@@ -681,11 +682,13 @@ class TrajectoryPlayer(DOMWidget):
 
         repr_selection.width = DEFAULT_TEXT_WIDTH
 
-        def on_click(button):
+        def on_click_or_submit(button_or_text_area):
             self._view.add_representation(selection=repr_selection.value.strip(),
                     repr_type=repr_name.value,
                     component=component_slider.value)
-        repr_button.on_click(on_click)
+
+        repr_button.on_click(on_click_or_submit)
+        repr_selection.on_submit(on_click_or_submit)
         add_repr_box = HBox([repr_button, repr_name, repr_selection])
         add_repr_box._ngl_name = 'add_repr_box'
         return add_repr_box
