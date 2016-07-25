@@ -495,6 +495,7 @@ class TrajectoryPlayer(DOMWidget):
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
             self._view._remote_call('requestReprInfo', target='Widget')
+            self._view._handle_repr_dict_changed(change=dict(new=self._view._repr_dict))
         button_refresh.on_click(on_click_refresh)
 
         def on_click_update(button):
