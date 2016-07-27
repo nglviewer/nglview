@@ -999,10 +999,11 @@ class NGLWidget(DOMWidget):
     def _add_shape(self, shapes, name='shape'):
         """add shape objects
 
+        TODO: update doc, caseless shape keyword
+
         Parameters
         ----------
         shapes : list of tuple
-            TODO: add doc
         name : str, default 'shape'
             name of given shape
 
