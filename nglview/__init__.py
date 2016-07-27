@@ -996,6 +996,33 @@ class NGLWidget(DOMWidget):
                 target='compList',
                 kwargs={'component_index': component})
 
+    def _add_shape(self, shapes, name='shape'):
+        """add shape objects
+
+        Parameters
+        ----------
+        shapes : list of tuple
+            TODO: add doc
+        name : str, default 'shape'
+            name of given shape
+
+        Notes
+        -----
+        Supported shape: 'mesh', 'sphere', 'ellipsoid', 'cylinder', 'cone', 'arrow'.
+        
+        See also
+        --------
+        http://arose.github.io/ngl/api/current/Shape.html
+
+        Examples
+        --------
+        >>> sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
+        >>> arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
+        >>> view._add_shape([sphere, arrow], name='my_shape')
+        """
+        self._remote_call('addShape', target='Widget',
+                args=[name, shapes])
+
     def add_representation(self, repr_type, selection='all', **kwargs):
         '''Add representation.
 

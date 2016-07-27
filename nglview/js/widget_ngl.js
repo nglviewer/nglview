@@ -2,9 +2,10 @@ define([
     "nbextensions/widgets/widgets/js/widget",
     "nbextensions/widgets/widgets/js/manager",
     "jqueryui",
-    "nbextensions/nglview/ngl"
+    "nbextensions/nglview/ngl",
+    "nbextensions/nglview/dat.gui.min"
 ], function(
-    widget, manager, $, NGL
+    widget, manager, $, NGL, GUI
 ){
 
     var NGLView = widget.DOMWidgetView.extend( {
@@ -428,6 +429,30 @@ define([
               }
         },
 
+        addShape: function(name, shapes){
+            // shapes: list of tuple
+            // e.g: [('sphere', ...), ('cone', ...)]
+            var shape = new NGL.Shape(name);
+            var shape_dict = {'sphere': shape.addSphere,
+                              'ellipsoid': shape.addEllipsoid,
+                              'cylinder': shape.addCylinder,
+                              'cone': shape.addCone,
+                              'mesh': shape.addMesh,
+                              'arrow': shape.addArrow};
+            for (var i=0; i < shapes.length; i++){
+                var shapes_i = shapes[i]
+                var shape_type = shapes_i[0];          
+                var params = shapes_i.slice(1, shapes_i.length);
+                // e.g params = ('sphere', [ 0, 0, 9 ], [ 1, 0, 0 ], 1.5)
+
+                var func = shape_dict[shape_type];
+                console.log(shape_type, func);
+                func.apply(this, params);
+            }
+           var shapeComp = this.stage.addComponentFromObject(shape);
+           shapeComp.addRepresentation("buffer");
+        },
+
         structureChanged: function(){
             this.structureComponent = undefined;
             var structureList = this.model.get( "_init_structure_list" );
@@ -757,7 +782,8 @@ define([
 
     return {
         'NGLView': NGLView,
-        'NGL': NGL
+        'NGL': NGL,
+        'GUI': GUI
     };
 
 } );
