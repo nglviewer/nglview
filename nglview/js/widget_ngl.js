@@ -2,10 +2,9 @@ define([
     "nbextensions/widgets/widgets/js/widget",
     "nbextensions/widgets/widgets/js/manager",
     "jqueryui",
-    "nbextensions/nglview/ngl",
-    "nbextensions/nglview/dat.gui.min"
+    "nbextensions/nglview/ngl"
 ], function(
-    widget, manager, $, NGL, GUI
+    widget, manager, $, NGL
 ){
 
     var NGLView = widget.DOMWidgetView.extend( {
@@ -782,8 +781,7 @@ define([
 
     return {
         'NGLView': NGLView,
-        'NGL': NGL,
-        'GUI': GUI
+        'NGL': NGL
     };
 
 } );
