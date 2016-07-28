@@ -1423,6 +1423,9 @@ class NGLWidget(DOMWidget):
                 target='Stage',
                 args=[component,])
         
+    def _set_ipython_cell(self):
+        self._remote_call('setIPythonLikeCell', target='Widget')
+
     def _set_draggable(self, yes=True):
         if yes:
             self._remote_call('setDraggable',

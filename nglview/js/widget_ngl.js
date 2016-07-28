@@ -187,7 +187,10 @@ define([
         },
 
         setIPythonLikeCell: function(){
-            var cell = Jupyter.notebook.insert_cell_at_bottom();
+            //var cell = Jupyter.notebook.insert_cell_at_bottom();
+            var cell = Jupyter.notebook.get_selected_cell();
+            var $el = cell.element;
+            cell.set_text('');
 
             var handler = function(event) {
                 var selected_cell = Jupyter.notebook.get_selected_cell();
