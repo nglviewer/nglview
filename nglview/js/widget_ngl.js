@@ -191,6 +191,7 @@ define([
             var cell = Jupyter.notebook.get_selected_cell();
             var $el = cell.element;
             cell.set_text('');
+            $el.css({'background': '#e5f5f9'});
 
             var handler = function(event) {
                 var selected_cell = Jupyter.notebook.get_selected_cell();
