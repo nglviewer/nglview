@@ -147,7 +147,7 @@ setup_args = {
         ]),
     ],
     'install_requires': [
-        'jupyter', 'ipywidgets>=5.1.5',
+        'ipywidgets>=5.1.5',
     ],
     'tests_require': [
         'pytest'
