@@ -46,12 +46,10 @@ The development version can be installed directly from github:
 
     git clone https://github.com/arose/nglview
     cd nglview
-    python -m pip install .
+    python setup.py install
 
-If for any reasons that the `widget` is not shown, try reinstall below packages
-
-    conda install traitlets=4.2.1 ipywidgets==4.1.1 notebook=4.1.0
-
+    # probably need to activate widgetsnbextension
+    # jupyter nbextension enable --py widgetsnbextension
 
 Example
 =======
