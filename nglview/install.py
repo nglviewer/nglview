@@ -1,35 +1,49 @@
-import warnings
-from notebook.nbextensions import install_nbextension
-from notebook.services.config import ConfigManager
+import argparse
+from os.path import dirname, abspath, join
+from notebook.nbextensions import (install_nbextension, install_nbextension_python,
+                                   enable_nbextension, enable_nbextension_python)
 
-import numpy as np
-
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    from pkg_resources import resource_filename
-
-def install(user=True, symlink=False):
-    """Install the widget nbextension.
-
+def install(user=True, symlink=False, overwrite=True, **kwargs):
+    """Install the bqplot nbextension.
+    
     Parameters
     ----------
     user: bool
         Install for current user instead of system-wide.
     symlink: bool
         Symlink instead of copy (for development).
+    overwrite: bool
+        Overwrite previously-installed files for this extension
+    **kwargs: keyword arguments
+        Other keyword arguments passed to the install_nbextension command
     """
-    staticdir = resource_filename('nglview', 'js')
-    install_nbextension(staticdir, destination='nglview',
-                        user=user, symlink=symlink,
-                        verbose=0)
+    directory = join(dirname(abspath(__file__)), 'static')
+    install_nbextension(directory, destination='nglview',
+                        symlink=symlink, user=user, overwrite=overwrite,
+                        **kwargs)
+    # don't need below yet. Why?
+    # install_nbextension_python('nglview', user=user, symlink=symlink, overwrite=overwrite,
+    #         **kwargs)
 
-    cm = ConfigManager()
-    cm.update('notebook', {
-        "load_extensions": {
-            "widgets/notebook/js/extension": True,
-        }
-    })
+def enable_nglview_js(user=True):
+    # seriously I don't know what I shoule type here
+    enable_nbextension('nglview', '', user=user)
 
-def enable_nglview_js():
-    # place holder for ipywidget >= 5.1
-    pass
+    # do we need this?
+    # enable_nbextension_python('nglview', user=user)
+
+    
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="nglview")
+    parser.add_argument("-u", "--user",
+                        help="Install as current user instead of system-wide",
+                        action="store_true")
+    parser.add_argument("-s", "--symlink",
+                        help="Symlink instead of copying files",
+                        action="store_true")
+    parser.add_argument("-f", "--force",
+                        help="Overwrite any previously-installed files for this extension",
+                        action="store_true")
+    args = parser.parse_args()
+    install(user=args.user, symlink=args.symlink, overwrite=args.force)
+    enable_nglview_js()

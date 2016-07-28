@@ -1,22 +1,22 @@
 package:
   name: nglview-dev
-  version: !!str 0.5.dev
+  version: !!str 0.6.dev
 
 requirements:
   build:
     - python
     - setuptools
     - jupyter
-    - ipywidgets <=4.1.1
-    - notebook <=4.1
+    - ipywidgets >5.1.0
+    - notebook >4.1
     - traitlets
   run:
     - python
     - numpy
-    - ipywidgets <=4.1.1
+    - ipywidgets >5.1.0
+    - notebook >4.1
     - jupyter
     - traitlets
-    - notebook <=4.1
 
 test:
     imports:

@@ -6,7 +6,19 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
 
+# we already install from setup
+# but it's better to install again. haizz
 install()
+
+# Register nbextension
+def _jupyter_nbextension_paths():
+    return [{
+        'section': 'notebook',
+        'src': 'static',
+        'dest': 'nglview',
+        'require': 'nglview/extension'
+    }]
+
 enable_nglview_js()
 
 import os
@@ -541,7 +553,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
 
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
-    _view_module = Unicode("nbextensions/nglview/widget_ngl").tag(sync=True)
+    _view_module = Unicode("nglview-js").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
     background = Unicode().tag(sync=True)
