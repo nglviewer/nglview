@@ -4,9 +4,12 @@ from setuptools.command.sdist import sdist
 from setuptools.command.build_py import build_py
 from setuptools.command.egg_info import egg_info
 from subprocess import check_call
+
 import os
 import sys
 import platform
+
+import versioneer
 
 sys.path.append('./nglview/')
 from install import install, enable_nglview_js

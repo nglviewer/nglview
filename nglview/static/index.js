@@ -1138,7 +1138,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 		"name": "nglview-js",
 		"version": "0.5.2",
 		"description": "nglview",
-		"author": "arose",
+		"author": "Alexander S. Rose",
 		"main": "src/index.js",
 		"repository": {
 			"type": "git",
