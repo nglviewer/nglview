@@ -85,6 +85,7 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_pytraj(traj)`                      | Shows `PyTraj` trajectory `traj`                      |
 | `show_parmed(structure)`                 | Shows `ParmEd` structure
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
+| `show_rdkit(mol)`                        | Shows `rdkit` rdkit.Chem.rdchem.Mol                   |
 
 
 API
