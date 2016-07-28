@@ -556,7 +556,7 @@ class NGLWidget(DOMWidget):
     _view_module = Unicode("nglview-js").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
-    background = Unicode().tag(sync=True)
+    background = Unicode('white').tag(sync=True)
     loaded = Bool(False).tag(sync=False)
     _first_time_loaded = Bool(True).tag(sync=False)
     frame = Int().tag(sync=True)
