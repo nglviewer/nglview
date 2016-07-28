@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview.player &mdash; NGLView 0.5.2a+262.gce25759.dirty documentation</title>
+  <title>nglview.player &mdash; NGLView 0.5.2a+284.gdc7e05c documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+262.gce25759.dirty documentation" href="../../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+284.gdc7e05c documentation" href="../../index.html"/>
         <link rel="up" title="nglview" href="../nglview.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+262.gce25759.dirty
+                0.5.2a+284.gdc7e05c
               </div>
             
           
@@ -624,6 +624,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_request_repr_parameters</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                                                 <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;requestReprInfo&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_handle_repr_dict_changed</span><span class="p">(</span><span class="n">change</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">new</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_repr_dict</span><span class="p">))</span>
         <span class="n">button_refresh</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click_refresh</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">on_click_update</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
@@ -810,11 +811,13 @@
 
         <span class="n">repr_selection</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">DEFAULT_TEXT_WIDTH</span>
 
-        <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">on_click_or_submit</span><span class="p">(</span><span class="n">button_or_text_area</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">selection</span><span class="o">=</span><span class="n">repr_selection</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
                     <span class="n">repr_type</span><span class="o">=</span><span class="n">repr_name</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                     <span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">repr_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+
+        <span class="n">repr_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click_or_submit</span><span class="p">)</span>
+        <span class="n">repr_selection</span><span class="o">.</span><span class="n">on_submit</span><span class="p">(</span><span class="n">on_click_or_submit</span><span class="p">)</span>
         <span class="n">add_repr_box</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">repr_button</span><span class="p">,</span> <span class="n">repr_name</span><span class="p">,</span> <span class="n">repr_selection</span><span class="p">])</span>
         <span class="n">add_repr_box</span><span class="o">.</span><span class="n">_ngl_name</span> <span class="o">=</span> <span class="s1">&#39;add_repr_box&#39;</span>
         <span class="k">return</span> <span class="n">add_repr_box</span>
@@ -894,7 +897,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.5.2a+262.gce25759.dirty',
+            VERSION:'0.5.2a+284.gdc7e05c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

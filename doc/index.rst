@@ -1,4 +1,4 @@
-|Binder| |DOI| |Build Status| |bioconda-badge| |membrane|
+|Binder| |DOI| |Build Status| |bioconda-badge|
 
 An `IPython/Jupyter <http://jupyter.org/>`__ widget to interactively
 view molecular structures and trajectories. Utilizes the embeddable `NGL
@@ -7,15 +7,17 @@ showing data from the file-system, `RCSB PDB <http:www.rcsb.org>`__,
 `simpletraj <https://github.com/arose/simpletraj>`__ and from objects of
 analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `pytraj <http://amber-md.github.io/pytraj/latest/index.html>`__,
-`mdanalysis <http://www.mdanalysis.org/>`__.
+`mdanalysis <http://www.mdanalysis.org/>`__,
+`ParmEd <http://parmed.github.io/ParmEd/>`__,
+`rdkit <https://github.com/rdkit/rdkit>`__.
 
 Should work with Python 2 and 3. If you experience problems, please file
 an `issue <https://github.com/arose/nglview/issues>`__.
 
-.. figure:: https://github.com/arose/nglview/blob/master/nglview.gif?raw=true
-   :alt: nglview
+.. figure:: https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true
+   :alt: membrane
 
-   nglview
+   membrane
 Table of contents
 =================
 
@@ -92,7 +94,8 @@ from the file-system, `RCSB PDB <http:www.rcsb.org>`__,
 analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `pytraj <http://amber-md.github.io/pytraj/latest/index.html>`__,
 `mdanalysis <http://www.mdanalysis.org/>`__,
-`ParmEd <http://parmed.github.io/ParmEd/>`__.
+`ParmEd <http://parmed.github.io/ParmEd/>`__,
+`rdkit <https://github.com/rdkit/rdkit>`__.
 
 +----------------------------------------------+-----------------------------------------------------------+
 | Function                                     | Description                                               |
@@ -110,6 +113,8 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 | ``show_parmed(structure)``                   | Shows ``ParmEd`` structure                                |
 +----------------------------------------------+-----------------------------------------------------------+
 | ``show_mdanalysis(univ)``                    | Shows ``MDAnalysis`` Universe or AtomGroup ``univ``       |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_rdkit(mol)``                          | Shows ``rdkit`` rdkit.Chem.rdchem.Mol                     |
 +----------------------------------------------+-----------------------------------------------------------+
 
 API
@@ -142,12 +147,12 @@ Representations
     view.remove_cartoon(opacity=0.4, component=0)
 
 And many more, please check `Selection
-language <http://arose.github.io/ngl/doc/#User_manual/Usage/Selection_language>`__
+language <http://arose.github.io/ngl/api/dev/tutorial-selection-language.html>`__
 
 Representations can also be changed by overwriting the
 ``representations`` property of the widget instance ``view``. The
 available ``type`` and ``params`` are described in the NGL Viewer
-`documentation <http://arose.github.io/ngl/doc>`__.
+`documentation <http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html>`__.
 
 .. code:: Python
 
@@ -236,6 +241,20 @@ Add extra component
 
     # NOTE: Trajectory is a special case of component.
 
+Display more than two widgets
+-----------------------------
+
+.. code:: python
+
+    # 1st cell
+    import ipywidgets
+    vbox = ipywidgets.VBox([view1, view2])
+    vbox # display
+
+    # 2nd cell
+    view1.sync_view()
+    view2.sync_view()
+
 API doc
 -------
 
@@ -247,7 +266,7 @@ Command line
 
 .. code:: bash
 
-    # highly experimental code and very buggy, require installing pytraj.
+    # Require installing pytraj (PR for other backends is welcome)
 
     # open notebook, load `my.pdb` to pytraj's trajectory then display `view`
     nglview my.pdb
@@ -271,6 +290,15 @@ Command line
     nglview my.pdb --remote
     nglview my.parm7 -c traj.nc --remote
     nglview mynotebook.ipynb --remote
+
+    # demo (don't need pytraj)
+    nglview demo
+
+    # disable autorun the 1st cell of the notebook
+    nglview my.pdb --disable-autorun
+
+    # specify web browser
+    nglview my.pdb --browser=google-chrome
 
 FAQ
 ===
@@ -302,4 +330,3 @@ Generally MIT, see the LICENSE file for details.
    :target: https://travis-ci.org/arose/nglview
 .. |bioconda-badge| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square
    :target: http://bioconda.github.io
-.. |membrane| image:: https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true

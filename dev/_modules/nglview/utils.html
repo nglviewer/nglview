@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview.utils &mdash; NGLView 0.5.2a+262.gce25759.dirty documentation</title>
+  <title>nglview.utils &mdash; NGLView 0.5.2a+284.gdc7e05c documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+262.gce25759.dirty documentation" href="../../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+284.gdc7e05c documentation" href="../../index.html"/>
         <link rel="up" title="nglview" href="../nglview.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+262.gce25759.dirty
+                0.5.2a+284.gdc7e05c
               </div>
             
           
@@ -142,6 +142,38 @@
     <span class="n">string_types</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">string_types</span> <span class="o">=</span> <span class="nb">basestring</span>
+
+<span class="k">def</span> <span class="nf">_set_ipython_cell</span><span class="p">():</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    var setIPythonLikeCell = function(){</span>
+<span class="s2">        //var cell = Jupyter.notebook.insert_cell_at_bottom();</span>
+<span class="s2">        var cell = Jupyter.notebook.get_selected_cell();</span>
+<span class="s2">        var $el = cell.element;</span>
+<span class="s2">        cell.set_text(&#39;&#39;);</span>
+<span class="s2">        $el.css({&#39;background&#39;: &#39;#e5f5f9&#39;});</span>
+
+<span class="s2">        var handler = function(event) {</span>
+<span class="s2">            var selected_cell = Jupyter.notebook.get_selected_cell();</span>
+<span class="s2">            if (selected_cell.cell_id === cell.cell_id){</span>
+<span class="s2">                selected_cell.execute();</span>
+<span class="s2">                selected_cell.set_text(&#39;&#39;);</span>
+<span class="s2">            }</span>
+<span class="s2">            return false;</span>
+<span class="s2">        };</span>
+
+<span class="s2">        var action = {</span>
+<span class="s2">            help: &#39;run cell&#39;,</span>
+<span class="s2">            help_index: &#39;zz&#39;,</span>
+<span class="s2">            handler: handler</span>
+<span class="s2">        };</span>
+
+<span class="s2">        Jupyter.keyboard_manager.edit_shortcuts.add_shortcut(&#39;enter&#39;, action); </span>
+<span class="s2">    };</span>
+
+<span class="s2">    setIPythonLikeCell()</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">HTML</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">cm</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">ngl_demo</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;make a viewport, create stage object and populate NGL namespace</span>
@@ -370,7 +402,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.5.2a+262.gce25759.dirty',
+            VERSION:'0.5.2a+284.gdc7e05c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

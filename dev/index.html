@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Table of contents &mdash; NGLView 0.5.2a+262.gce25759.dirty documentation</title>
+  <title>Table of contents &mdash; NGLView 0.5.2a+284.gdc7e05c documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+262.gce25759.dirty documentation" href="#"/> 
+    <link rel="top" title="NGLView 0.5.2a+284.gdc7e05c documentation" href="#"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.5.2a+262.gce25759.dirty
+                0.5.2a+284.gdc7e05c
               </div>
             
           
@@ -94,6 +94,7 @@
 <li><a class="reference internal" href="#properties">Properties</a></li>
 <li><a class="reference internal" href="#trajectory">Trajectory</a></li>
 <li><a class="reference internal" href="#add-extra-component">Add extra component</a></li>
+<li><a class="reference internal" href="#display-more-than-two-widgets">Display more than two widgets</a></li>
 <li><a class="reference internal" href="#api-doc">API doc</a></li>
 </ul>
 </li>
@@ -146,7 +147,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <p><a class="reference external" href="http://mybinder.org/repo/hainm/nglview-notebooks"><img alt="Binder" src="http://mybinder.org/assets/images/logo.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="http://bioconda.github.io"><img alt="bioconda-badge" src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square" /></a> <img alt="membrane" src="https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true" /></p>
+  <p><a class="reference external" href="http://mybinder.org/repo/hainm/nglview-notebooks"><img alt="Binder" src="http://mybinder.org/assets/images/logo.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="http://bioconda.github.io"><img alt="bioconda-badge" src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square" /></a></p>
 <p>An <a class="reference external" href="http://jupyter.org/">IPython/Jupyter</a> widget to interactively
 view molecular structures and trajectories. Utilizes the embeddable <a class="reference external" href="https://github.com/arose/ngl">NGL
 Viewer</a> for rendering. Support for
@@ -154,12 +155,14 @@ showing data from the file-system, <a class="reference external" href="http:www.
 <a class="reference external" href="https://github.com/arose/simpletraj">simpletraj</a> and from objects of
 analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtraj</a>,
 <a class="reference external" href="http://amber-md.github.io/pytraj/latest/index.html">pytraj</a>,
-<a class="reference external" href="http://www.mdanalysis.org/">mdanalysis</a>.</p>
+<a class="reference external" href="http://www.mdanalysis.org/">mdanalysis</a>,
+<a class="reference external" href="http://parmed.github.io/ParmEd/">ParmEd</a>,
+<a class="reference external" href="https://github.com/rdkit/rdkit">rdkit</a>.</p>
 <p>Should work with Python 2 and 3. If you experience problems, please file
 an <a class="reference external" href="https://github.com/arose/nglview/issues">issue</a>.</p>
 <div class="figure" id="id1">
-<img alt="nglview" src="https://github.com/arose/nglview/blob/master/nglview.gif?raw=true" />
-<p class="caption"><span class="caption-text">nglview</span></p>
+<img alt="membrane" src="https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true" />
+<p class="caption"><span class="caption-text">membrane</span></p>
 </div>
 <div class="section" id="table-of-contents">
 <h1>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
@@ -228,7 +231,8 @@ from the file-system, <a class="reference external" href="http:www.rcsb.org">RCS
 analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtraj</a>,
 <a class="reference external" href="http://amber-md.github.io/pytraj/latest/index.html">pytraj</a>,
 <a class="reference external" href="http://www.mdanalysis.org/">mdanalysis</a>,
-<a class="reference external" href="http://parmed.github.io/ParmEd/">ParmEd</a>.</p>
+<a class="reference external" href="http://parmed.github.io/ParmEd/">ParmEd</a>,
+<a class="reference external" href="https://github.com/rdkit/rdkit">rdkit</a>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="44%" />
@@ -261,6 +265,9 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">show_mdanalysis(univ)</span></code></td>
 <td>Shows <code class="docutils literal"><span class="pre">MDAnalysis</span></code> Universe or AtomGroup <code class="docutils literal"><span class="pre">univ</span></code></td>
 </tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_rdkit(mol)</span></code></td>
+<td>Shows <code class="docutils literal"><span class="pre">rdkit</span></code> rdkit.Chem.rdchem.Mol</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -290,12 +297,12 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <span class="n">view</span><span class="o">.</span><span class="n">remove_cartoon</span><span class="p">(</span><span class="n">opacity</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>And many more, please check <a class="reference external" href="http://arose.github.io/ngl/doc/#User_manual/Usage/Selection_language">Selection
+<p>And many more, please check <a class="reference external" href="http://arose.github.io/ngl/api/dev/tutorial-selection-language.html">Selection
 language</a></p>
 <p>Representations can also be changed by overwriting the
 <code class="docutils literal"><span class="pre">representations</span></code> property of the widget instance <code class="docutils literal"><span class="pre">view</span></code>. The
 available <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">params</span></code> are described in the NGL Viewer
-<a class="reference external" href="http://arose.github.io/ngl/doc">documentation</a>.</p>
+<a class="reference external" href="http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html">documentation</a>.</p>
 <div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;residueindex&quot;</span>
@@ -374,6 +381,19 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </pre></div>
 </div>
 </div>
+<div class="section" id="display-more-than-two-widgets">
+<h2>Display more than two widgets<a class="headerlink" href="#display-more-than-two-widgets" title="Permalink to this headline">¶</a></h2>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># 1st cell</span>
+<span class="kn">import</span> <span class="nn">ipywidgets</span>
+<span class="n">vbox</span> <span class="o">=</span> <span class="n">ipywidgets</span><span class="o">.</span><span class="n">VBox</span><span class="p">([</span><span class="n">view1</span><span class="p">,</span> <span class="n">view2</span><span class="p">])</span>
+<span class="n">vbox</span> <span class="c1"># display</span>
+
+<span class="c1"># 2nd cell</span>
+<span class="n">view1</span><span class="o">.</span><span class="n">sync_view</span><span class="p">()</span>
+<span class="n">view2</span><span class="o">.</span><span class="n">sync_view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="api-doc">
 <h2>API doc<a class="headerlink" href="#api-doc" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -384,7 +404,7 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 <div class="section" id="command-line">
 <h1>Command line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h1>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># highly experimental code and very buggy, require installing pytraj.</span>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Require installing pytraj (PR for other backends is welcome)</span>
 
 <span class="c1"># open notebook, load `my.pdb` to pytraj&#39;s trajectory then display `view`</span>
 <span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">pdb</span>
@@ -408,6 +428,15 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 <span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">pdb</span> <span class="o">--</span><span class="n">remote</span>
 <span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">parm7</span> <span class="o">-</span><span class="n">c</span> <span class="n">traj</span><span class="o">.</span><span class="n">nc</span> <span class="o">--</span><span class="n">remote</span>
 <span class="n">nglview</span> <span class="n">mynotebook</span><span class="o">.</span><span class="n">ipynb</span> <span class="o">--</span><span class="n">remote</span>
+
+<span class="c1"># demo (don&#39;t need pytraj)</span>
+<span class="n">nglview</span> <span class="n">demo</span>
+
+<span class="c1"># disable autorun the 1st cell of the notebook</span>
+<span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">pdb</span> <span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">autorun</span>
+
+<span class="c1"># specify web browser</span>
+<span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">pdb</span> <span class="o">--</span><span class="n">browser</span><span class="o">=</span><span class="n">google</span><span class="o">-</span><span class="n">chrome</span>
 </pre></div>
 </div>
 </div>
@@ -466,7 +495,7 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5.2a+262.gce25759.dirty',
+            VERSION:'0.5.2a+284.gdc7e05c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
