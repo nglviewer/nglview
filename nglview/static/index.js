@@ -83,7 +83,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	var widgets = __webpack_require__(2);
 	var NGL = __webpack_require__(3);
 	
-	var NGLView = widget.DOMWidgetView.extend({
+	var NGLView = widgets.DOMWidgetView.extend({
 	
 	    render: function(){
 	

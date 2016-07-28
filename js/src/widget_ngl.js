@@ -1,7 +1,7 @@
 var widgets = require("jupyter-js-widgets");
 var NGL = require('./ngl');
 
-var NGLView = widget.DOMWidgetView.extend({
+var NGLView = widgets.DOMWidgetView.extend({
 
     render: function(){
 

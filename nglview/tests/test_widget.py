@@ -374,10 +374,7 @@ def test_existing_js_files():
     mapfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*map'))
 
     nt.assert_equal(len(jsfiles), 2)
-<<<<<<< HEAD
     nt.assert_equal(len(mapfiles), 1)
-=======
->>>>>>> upstream/master
 
 def test_player():
     traj = pt.datafiles.load_tz2()
