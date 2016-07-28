@@ -2,7 +2,7 @@ define([
     "nbextensions/widgets/widgets/js/widget",
     "nbextensions/widgets/widgets/js/manager",
     "jqueryui",
-    "nbextensions/nglview/ngl",
+    "nbextensions/nglview/ngl"
 ], function(
     widget, manager, $, NGL
 ){
@@ -802,7 +802,7 @@ define([
 
     return {
         'NGLView': NGLView,
-        'NGL': NGL,
+        'NGL': NGL
     };
 
 } );
