@@ -738,7 +738,10 @@ class NGLWidget(DOMWidget):
             reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
             repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
 
-            if change['new']:
+            if change['new'] == {'c0': {}}:
+                repr_selection.value = ''
+
+            else:
                 reprlist_choices.options = tuple([str(i) + '-' + name for (i, name) in enumerate(repr_names)])
 
                 try:
@@ -754,9 +757,6 @@ class NGLWidget(DOMWidget):
                 repr_name_text.value = reprlist_choices.value.split('-')[-1]
 
                 repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
-
-            if change['new'] == {'c0': {}}:
-                repr_selection.value = ''
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
