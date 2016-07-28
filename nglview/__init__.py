@@ -570,6 +570,7 @@ class NGLWidget(DOMWidget):
     _ngl_msg = None
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
+    _hold_image = Bool(False).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
@@ -579,6 +580,7 @@ class NGLWidget(DOMWidget):
         self._theme = kwargs.pop('theme', 'default')
         self._widget_image = widget_image.Image()
         self._widget_image.width = 900.
+        self._image_array = []
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
@@ -996,6 +998,34 @@ class NGLWidget(DOMWidget):
                 target='compList',
                 kwargs={'component_index': component})
 
+    def _add_shape(self, shapes, name='shape'):
+        """add shape objects
+
+        TODO: update doc, caseless shape keyword
+
+        Parameters
+        ----------
+        shapes : list of tuple
+        name : str, default 'shape'
+            name of given shape
+
+        Notes
+        -----
+        Supported shape: 'mesh', 'sphere', 'ellipsoid', 'cylinder', 'cone', 'arrow'.
+        
+        See also
+        --------
+        http://arose.github.io/ngl/api/current/Shape.html
+
+        Examples
+        --------
+        >>> sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
+        >>> arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
+        >>> view._add_shape([sphere, arrow], name='my_shape')
+        """
+        self._remote_call('addShape', target='Widget',
+                args=[name, shapes])
+
     def add_representation(self, repr_type, selection='all', **kwargs):
         '''Add representation.
 
@@ -1080,6 +1110,8 @@ class NGLWidget(DOMWidget):
         method name might be changed
         '''
         self._widget_image._b64value = change['new']
+        if self._hold_image:
+            self._image_array.append(change['new'])
 
     def render_image(self, frame=None,
                      factor=4,
