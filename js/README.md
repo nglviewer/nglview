@@ -1,7 +1,5 @@
-nglview-js
-
-Package Install
----------------
+nglview-js: package install
+---------------------------
 
 **Prerequisites**
 - [node](http://nodejs.org/)
