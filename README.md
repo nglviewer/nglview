@@ -47,6 +47,9 @@ The development version can be installed directly from github:
     git clone https://github.com/arose/nglview
     cd nglview
     python setup.py install
+    
+    # if you edit files in ./js folder, make sure to add --npm flag (require npm)
+    python setup.py install --npm
 
     # probably need to activate widgetsnbextension
     # jupyter nbextension enable --py widgetsnbextension
