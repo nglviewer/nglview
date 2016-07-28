@@ -2,7 +2,7 @@ define([
     "nbextensions/widgets/widgets/js/widget",
     "nbextensions/widgets/widgets/js/manager",
     "jqueryui",
-    "nbextensions/nglview/ngl"
+    "nbextensions/nglview/ngl",
 ], function(
     widget, manager, $, NGL
 ){
@@ -184,6 +184,27 @@ define([
             var state_params = this.stage.getParameters();
             this.model.set('_original_stage_parameters', state_params);
             this.touch();
+        },
+
+        setIPythonLikeCell: function(){
+            var cell = Jupyter.notebook.insert_cell_at_bottom();
+
+            var handler = function(event) {
+                var selected_cell = Jupyter.notebook.get_selected_cell();
+                if (selected_cell.cell_id === cell.cell_id){
+                    selected_cell.execute();
+                    selected_cell.set_text('');
+                }
+                return false;
+            };
+
+            var action = {
+                help: 'run cell',
+                help_index: 'zz',
+                handler: handler
+            };
+
+            Jupyter.keyboard_manager.edit_shortcuts.add_shortcut('enter', action); 
         },
 
         hideNotebookCommandBox: function(){
@@ -781,7 +802,7 @@ define([
 
     return {
         'NGLView': NGLView,
-        'NGL': NGL
+        'NGL': NGL,
     };
 
 } );
