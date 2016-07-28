@@ -186,6 +186,27 @@ define([
             this.touch();
         },
 
+        setIPythonLikeCell: function(){
+            var cell = Jupyter.notebook.insert_cell_at_bottom();
+
+            var handler = function(event) {
+                var selected_cell = Jupyter.notebook.get_selected_cell();
+                if (selected_cell.cell_id === cell.cell_id){
+                    selected_cell.execute();
+                    selected_cell.set_text('');
+                }
+                return false;
+            };
+
+            var action = {
+                help: 'run cell',
+                help_index: 'zz',
+                handler: handler
+            };
+
+            Jupyter.keyboard_manager.edit_shortcuts.add_shortcut('enter', action); 
+        },
+
         hideNotebookCommandBox: function(){
             this.$notebook_text.hide();
         },
