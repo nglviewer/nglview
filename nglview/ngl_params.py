@@ -1,4 +1,5 @@
 REPR_NAME_PAIRS = [
+        ('axes', 'axes'),
         ('point', 'point'),
         ('line', 'line'),
         ('rope', 'rope'),

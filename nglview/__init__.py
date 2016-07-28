@@ -84,15 +84,22 @@ def _add_repr_method_shortcut(self, other):
             self._remove_representations_by_name(repr_name=rep[1], **kwargs)
         return func
 
+    def make_func_update(rep):
+        """return a new function object
+        """
+        def func(this, **kwargs):
+            """
+            """
+            self._update_representations_by_name(repr_name=rep[1], **kwargs)
+        return func
+
     for rep in REPR_NAME_PAIRS:
-        func_add = make_func_add(rep)
-        fn_add = 'add_' + rep[0]
-
-        func_remove = make_func_remove(rep)
-        fn_remove = '_remove_' + rep[0]
-
-        setattr(self, fn_add, MethodType(func_add, other))
-        setattr(self, fn_remove, MethodType(func_remove, other))
+        for make_func, root_fn in [(make_func_add, 'add'),
+                                   (make_func_update, 'update'), 
+                                   (make_func_remove, 'remove')]:
+            func= make_func(rep)
+            fn = '_'.join((root_fn, rep[0]))
+            setattr(self, fn, MethodType(func, other))
 
 
 ##############
@@ -549,8 +556,9 @@ class NGLWidget(DOMWidget):
     _view_module = Unicode("nglview-js").tag(sync=True)
     selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
-    background = Unicode('white').tag(sync=True)
-    loaded = Bool(False).tag(sync=True)
+    background = Unicode().tag(sync=True)
+    loaded = Bool(False).tag(sync=False)
+    _first_time_loaded = Bool(True).tag(sync=False)
     frame = Int().tag(sync=True)
     # hack to always display movie
     count = Int(1).tag(sync=True)
@@ -574,6 +582,7 @@ class NGLWidget(DOMWidget):
     _ngl_msg = None
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
+    _hold_image = Bool(False).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
@@ -583,6 +592,7 @@ class NGLWidget(DOMWidget):
         self._theme = kwargs.pop('theme', 'default')
         self._widget_image = widget_image.Image()
         self._widget_image.width = 900.
+        self._image_array = []
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
@@ -689,62 +699,64 @@ class NGLWidget(DOMWidget):
 
     @observe('n_components')
     def _handle_n_components_changed(self, change):
-        component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
-        if change['new'] - 1 >= component_slider.min:
-            component_slider.max = change['new'] - 1
-        component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
-        component_dropdown.options = tuple(self._ngl_component_names)
+        if self.player.repr_widget is not None:
+            component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+            if change['new'] - 1 >= component_slider.min:
+                component_slider.max = change['new'] - 1
+            component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
+            component_dropdown.options = tuple(self._ngl_component_names)
 
-        if change['new'] == 0:
-            component_dropdown.options = tuple([''])
-            component_dropdown.value = ''
+            if change['new'] == 0:
+                component_dropdown.options = tuple([''])
+                component_dropdown.value = ''
 
-            component_slider.max = 0
+                component_slider.max = 0
 
-            reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
-            reprlist_choices.options = tuple([''])
+                reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+                reprlist_choices.options = tuple([''])
 
+                repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
+                repr_slider.max = 0
+
+                repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+                repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
+                repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+                repr_name_text.value = ''
+                repr_selection.value = ''
+
+    @observe('_repr_dict')
+    def _handle_repr_dict_changed(self, change):
+        if self.player.repr_widget is not None:
             repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
-            repr_slider.max = 0
+            component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+            cindex = str(component_slider.value)
 
             repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
             repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
             repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
-            repr_name_text.value = ''
-            repr_selection.value = ''
 
-    @observe('_repr_dict')
-    def _handle_repr_dict_changed(self, change):
-        repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
-        component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
-        cindex = str(component_slider.value)
+            reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+            repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
 
-        repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-        repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
-        repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+            if change['new']:
+                reprlist_choices.options = tuple([str(i) + '-' + name for (i, name) in enumerate(repr_names)])
 
-        reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
-        repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
+                try:
+                    reprlist_choices.value = reprlist_choices.options[repr_slider.value]
+                except IndexError:
+                    if repr_slider.value == 0:
+                        reprlist_choices.options = tuple(['',])
+                        reprlist_choices.value = ''
+                    else:
+                        reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
 
-        if change['new']:
-            reprlist_choices.options = tuple([str(i) + '-' + name for (i, name) in enumerate(repr_names)])
+                # e.g: 0-cartoon
+                repr_name_text.value = reprlist_choices.value.split('-')[-1]
 
-            try:
-                reprlist_choices.value = reprlist_choices.options[repr_slider.value]
-            except IndexError:
-                if repr_slider.value == 0:
-                    reprlist_choices.options = tuple(['',])
-                    reprlist_choices.value = ''
-                else:
-                    reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
+                repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
 
-            # e.g: 0-cartoon
-            repr_name_text.value = reprlist_choices.value.split('-')[-1]
-
-            repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
-
-        if change['new'] == {'c0': {}}:
-            repr_selection.value = ''
+            if change['new'] == {'c0': {}}:
+                repr_selection.value = ''
 
     def _update_count(self):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
@@ -758,9 +770,22 @@ class NGLWidget(DOMWidget):
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
 
+    def sync_view(self):
+        """call this if you want to sync multiple views of a single viewer
+
+        Note: unstable feature
+        """
+        self.loaded = False
+        # trigger reload callbacks
+        self.loaded = True
+
     def _ipython_display_(self, **kwargs):
         self.displayed = True
         super(NGLWidget, self)._ipython_display_(**kwargs)
+        if self._first_time_loaded:
+            self._first_time_loaded = False
+        else:
+            self.sync_view()
         if self._init_gui:
             self._gui = self.player._display()
             display(self._gui)
@@ -861,6 +886,14 @@ class NGLWidget(DOMWidget):
         self._remote_call('removeRepresentationsByName',
                           target='Widget',
                           args=[repr_name, component])
+
+    def _update_representations_by_name(self, repr_name, component=0, **kwargs):
+        kwargs = _camelize_dict(kwargs)
+
+        self._remote_call('updateRepresentationsByName',
+                          target='Widget',
+                          args=[repr_name, component],
+                          kwargs=kwargs)
 
     def _display_repr(self, component=0, repr_index=0, name=None):
         try:
@@ -977,6 +1010,34 @@ class NGLWidget(DOMWidget):
                 target='compList',
                 kwargs={'component_index': component})
 
+    def _add_shape(self, shapes, name='shape'):
+        """add shape objects
+
+        TODO: update doc, caseless shape keyword
+
+        Parameters
+        ----------
+        shapes : list of tuple
+        name : str, default 'shape'
+            name of given shape
+
+        Notes
+        -----
+        Supported shape: 'mesh', 'sphere', 'ellipsoid', 'cylinder', 'cone', 'arrow'.
+        
+        See also
+        --------
+        http://arose.github.io/ngl/api/current/Shape.html
+
+        Examples
+        --------
+        >>> sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
+        >>> arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
+        >>> view._add_shape([sphere, arrow], name='my_shape')
+        """
+        self._remote_call('addShape', target='Widget',
+                args=[name, shapes])
+
     def add_representation(self, repr_type, selection='all', **kwargs):
         '''Add representation.
 
@@ -1061,6 +1122,8 @@ class NGLWidget(DOMWidget):
         method name might be changed
         '''
         self._widget_image._b64value = change['new']
+        if self._hold_image:
+            self._image_array.append(change['new'])
 
     def render_image(self, frame=None,
                      factor=4,
@@ -1127,6 +1190,25 @@ class NGLWidget(DOMWidget):
                           args=[filename,],
                           kwargs=params)
 
+    def superpose(self, components=[1,], ref=0, align=True, selection_0='', selection_1=''):
+        """port superpose method from NGL. Good for single structures.
+        If you are viewing trajectory, it's better to use your engine (ptraj, mdtraj,
+        MDAnalysis, ...)
+
+        Note: unstable feature
+
+        Parameters
+        ----------
+        components : 1D int array-like, default [1,]
+            component index
+        ref : int, default 0
+            reference index
+        """
+
+        for index in components:
+            self._remote_call('superpose', target='Widget',
+                    args=[ref, index, align, selection_0, selection_1])
+
     def _ngl_handle_msg(self, widget, msg, buffers):
         """store message sent from Javascript.
 
@@ -1153,13 +1235,20 @@ class NGLWidget(DOMWidget):
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
 
-                # TODO: refactor
-                repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-                repr_info_box.children[0].value = repr_name
-                repr_info_box.children[1].value = repr_selection
+                if self.player.repr_widget is not None:
+                    # TODO: refactor
+                    repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
+                    repr_info_box.children[0].value = repr_name
+                    repr_info_box.children[1].value = repr_selection
 
-                repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
-                repr_text_box.children[-1].value = data_dict_json
+                    repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
+                    repr_text_box.children[-1].value = data_dict_json
+            elif msg_type == 'request_loaded':
+                if not self.loaded:
+                    # trick to trigger observe loaded
+                    # so two viewers can have the same representations
+                    self.loaded = False
+                self.loaded = msg.get('data')
             elif msg_type == 'all_reprs_info':
                 self._repr_dict = self._ngl_msg.get('data')
             elif msg_type == 'stage_parameters':
@@ -1598,6 +1687,7 @@ class ComponentViewer(object):
         _add_repr_method_shortcut(self, self._view)
         self._borrow_attribute(self._view, ['clear_representations',
                                             '_remove_representations_by_name',
+                                            '_update_representations_by_name',
                                             'center_view',
                                             'center',
                                             'clear',

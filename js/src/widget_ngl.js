@@ -1,7 +1,7 @@
 var widgets = require("jupyter-js-widgets");
 var NGL = require('./ngl');
 
-var NGLView = widgets.DOMWidgetView.extend( {
+var NGLView = widget.DOMWidgetView.extend({
 
     render: function(){
 
@@ -25,8 +25,8 @@ var NGLView = widgets.DOMWidgetView.extend( {
 
         // for player
         this.delay = 100; 
-        this.sync_frame = true;
-        this.sync_camera = true;
+        this.sync_frame = false;
+        this.sync_camera = false;
 
         // get message from Python
         this.model.on( "msg:custom", function (msg) {
@@ -60,18 +60,12 @@ var NGLView = widgets.DOMWidgetView.extend( {
         this.displayed.then( function(){
             var width = this.$el.parent().width() + "px";
             var height = "300px";
-            var state_params = this.stage.getParameters();
 
             this.setSize( width, height );
             this.$container.resizable(
                 "option", "maxWidth", this.$el.parent().width()
             );
-            this.model.set('loaded', true);
-            this.model.set('camera_str', JSON.stringify( this.stage.viewer.camera ) );
-            this.model.set('orientation', this.stage.viewer.getOrientation() );
             this.requestUpdateStageParameters();
-            this.model.set('_original_stage_parameters', state_params);
-            this.touch();
         }.bind( this ) );
 
         this.stage.viewer.controls.addEventListener( "change", function() {
@@ -99,6 +93,28 @@ var NGLView = widgets.DOMWidgetView.extend( {
             .css( "padding", "2px 5px 2px 5px" )
             .css( "opacity", "0.7" )
             .appendTo( this.$container );
+
+        $inputNotebookCommand = $('<input id="input_notebook_command" type="text"></input>');
+        var that = this;
+
+        $inputNotebookCommand.keypress(function(e){
+            var command = $("#input_notebook_command").val();
+            if (e.which == 13){
+                $("#input_notebook_command").val("")
+                Jupyter.notebook.kernel.execute(command);
+            }
+        });
+
+        this.$notebook_text= $( "<div></div>" )
+            .css( "position", "absolute" )
+            .css( "bottom", "5%" )
+            .css( "left", "3%" )
+            .css( "padding", "2px 5px 2px 5px" )
+            .css( "opacity", "0.7" )
+            .append($inputNotebookCommand)
+            .appendTo(this.$container);
+        this.$notebook_text.hide();
+
         this.stage.signals.clicked.add( function( pd ){
             var pd2 = {};
             if( pd.atom ) pd2.atom = pd.atom.toObject();
@@ -155,6 +171,42 @@ var NGLView = widgets.DOMWidgetView.extend( {
             this.model.set("n_components", this.stage.compList.length);
             this.touch();
         }, this);
+
+        // for callbacks from Python
+        // must be after initialize NGL.Stage
+        this.model.send({'type': 'request_loaded', 'data': true})
+        var state_params = this.stage.getParameters();
+        this.model.set('_original_stage_parameters', state_params);
+        this.touch();
+    },
+
+    setIPythonLikeCell: function(){
+        var cell = Jupyter.notebook.insert_cell_at_bottom();
+
+        var handler = function(event) {
+            var selected_cell = Jupyter.notebook.get_selected_cell();
+            if (selected_cell.cell_id === cell.cell_id){
+                selected_cell.execute();
+                selected_cell.set_text('');
+            }
+            return false;
+        };
+
+        var action = {
+            help: 'run cell',
+            help_index: 'zz',
+            handler: handler
+        };
+
+        Jupyter.keyboard_manager.edit_shortcuts.add_shortcut('enter', action); 
+    },
+
+    hideNotebookCommandBox: function(){
+        this.$notebook_text.hide();
+    },
+
+    showNotebookCommandBox: function(){
+        this.$notebook_text.show();
     },
 
     requestFrame: function(){
@@ -344,12 +396,14 @@ var NGLView = widgets.DOMWidgetView.extend( {
     removeRepresentationsByName: function( repr_name, component_index ){
        var component = this.stage.compList[ component_index ];
 
-       component.reprList.forEach( function(repr) {
-           if( repr.name == repr_name ){
-               component.removeRepresentation( repr );
-               repr.dispose();
-           }
-       })
+       if (component){
+           component.reprList.forEach( function(repr) {
+               if( repr.name == repr_name ){
+                   component.removeRepresentation( repr );
+                   repr.dispose();
+               }
+           })
+       }
     },
 
     updateRepresentationForComponent: function( repr_index, component_index, params ){
@@ -357,6 +411,18 @@ var NGLView = widgets.DOMWidgetView.extend( {
        var repr = component.reprList[ repr_index ];
        if (repr) {
            repr.setParameters( params );
+       }
+    },
+
+    updateRepresentationsByName: function(repr_name, component_index, params){
+       var component = this.stage.compList[ component_index ];
+
+       if (component){
+           component.reprList.forEach( function(repr) {
+               if( repr.name == repr_name ){
+                   repr.setParameters(params);
+               }
+           })
        }
     },
 
@@ -375,6 +441,30 @@ var NGLView = widgets.DOMWidgetView.extend( {
                   this.requestReprsInfo();
               }
           }
+    },
+
+    addShape: function(name, shapes){
+        // shapes: list of tuple
+        // e.g: [('sphere', ...), ('cone', ...)]
+        var shape = new NGL.Shape(name);
+        var shape_dict = {'sphere': shape.addSphere,
+                          'ellipsoid': shape.addEllipsoid,
+                          'cylinder': shape.addCylinder,
+                          'cone': shape.addCone,
+                          'mesh': shape.addMesh,
+                          'arrow': shape.addArrow};
+        for (var i=0; i < shapes.length; i++){
+            var shapes_i = shapes[i]
+            var shape_type = shapes_i[0];          
+            var params = shapes_i.slice(1, shapes_i.length);
+            // e.g params = ('sphere', [ 0, 0, 9 ], [ 1, 0, 0 ], 1.5)
+
+            var func = shape_dict[shape_type];
+            console.log(shape_type, func);
+            func.apply(this, params);
+        }
+       var shapeComp = this.stage.addComponentFromObject(shape);
+       shapeComp.addRepresentation("buffer");
     },
 
     structureChanged: function(){
@@ -398,6 +488,13 @@ var NGLView = widgets.DOMWidgetView.extend( {
             }
         // only use _init_structure_list before Widget is loaded.
         }
+    },
+
+    superpose: function(cindex0, cindex1, align, sele0, sele1){
+       // superpose two components with given params
+       var component0 = this.stage.compList[cindex0];
+       var component1 = this.stage.compList[cindex1];
+       component1.superpose(component0, align, sele0, sele1);
     },
 
     decode_base64: function(base64) {
@@ -463,6 +560,25 @@ var NGLView = widgets.DOMWidgetView.extend( {
         this.stage.viewer.container.style.width = width;
         this.stage.viewer.container.style.height = height;
         this.stage.handleResize();
+    },
+
+    openNotebookCommandDialog: function(){
+        var that = this;
+        dialog  = this.$notebook_text.dialog({
+            draggable: true,
+            resizable: true,
+            modal: false,
+            show: { effect: "blind", duration: 150 },
+            close: function (event, ui) {
+                that.$container.append(that.$notebook_text);
+                that.$notebook_text.dialog('destroy');
+            },
+        });
+        dialog.css({overflow: 'hidden'});
+        dialog.prev('.ui-dialog-titlebar')
+              .css({'background': 'transparent',
+                    'border': 'none'});
+        Jupyter.keyboard_manager.register_events(dialog);
     },
 
     setDialog: function(){

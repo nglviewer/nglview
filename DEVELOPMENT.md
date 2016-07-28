@@ -41,3 +41,8 @@ jupyter notebook --port=8889 &
 # npm install -g nightwatch
 nightwatch
 ```
+
+More stuff
+==========
+
+[wiki](https://github.com/arose/nglview/wiki)

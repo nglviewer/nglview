@@ -1,16 +1,14 @@
 
-[![Binder](http://mybinder.org/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
+[![Binder](http://mybinder.org/assets/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
 [![Build Status](https://travis-ci.org/arose/nglview.svg?branch=master)](https://travis-ci.org/arose/nglview)
 [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
-![membrane](examples/images/membrane.gif)
 
-An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/).
+An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit).
 
 Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
-![nglview](nglview.gif)
-
+![membrane](examples/images/membrane.gif)
 
 Table of contents
 =================
@@ -110,14 +108,19 @@ view.add_licorice('ALA, GLU')
 
 # clear representations
 view.clear_representations()
-...
+
+# update parameters for ALL cartoons of component 0 (default)
+view.update_cartoon(opacity=0.4, component=0)
+
+# remove ALL cartoons of component 0 (default)
+view.remove_cartoon(opacity=0.4, component=0)
 ```
 
-And many more, please check [Selection language](http://arose.github.io/ngl/doc/#User_manual/Usage/Selection_language)
+And many more, please check [Selection language](http://arose.github.io/ngl/api/dev/tutorial-selection-language.html)
 
 Representations can also be changed by overwriting the `representations` property
 of the widget instance `view`. The available `type` and `params` are described
-in the NGL Viewer [documentation](http://arose.github.io/ngl/doc).
+in the NGL Viewer [documentation](http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html).
 
 ```Python
 view.representations = [
@@ -206,6 +209,20 @@ view.add_component('my.ccp4')
 # NOTE: Trajectory is a special case of component.
 ```
 
+Display more than two widgets
+-----------------------------
+
+```python
+# 1st cell
+import ipywidgets
+vbox = ipywidgets.VBox([view1, view2])
+vbox # display
+
+# 2nd cell
+view1.sync_view()
+view2.sync_view()
+```
+
 API doc
 -------
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
@@ -215,7 +232,7 @@ Command line
 ============
 
 ```bash
-# highly experimental code and very buggy, require installing pytraj.
+# Require installing pytraj (PR for other backends is welcome)
 
 # open notebook, load `my.pdb` to pytraj's trajectory then display `view`
 nglview my.pdb
@@ -239,6 +256,15 @@ nglview mynotebook.ipynb
 nglview my.pdb --remote
 nglview my.parm7 -c traj.nc --remote
 nglview mynotebook.ipynb --remote
+
+# demo (don't need pytraj)
+nglview demo
+
+# disable autorun the 1st cell of the notebook
+nglview my.pdb --disable-autorun
+
+# specify web browser
+nglview my.pdb --browser=google-chrome
 ```
 
 FAQ

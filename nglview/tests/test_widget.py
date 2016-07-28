@@ -166,8 +166,24 @@ def test_representations():
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     assert isinstance(view, nv.NGLWidget), 'must be instance of NGLWidget'
+
+    # add
     view.add_cartoon(color='residueindex')
     view.add_rope(color='red')
+
+    # update
+    view.update_cartoon(opacity=0.4)
+    view.update_rope(coor='blue')
+
+    # remove
+    view.remove_cartoon()
+    view.remove_rope()
+
+def test_add_new_shape():
+    view = nv.NGLWidget()
+    sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
+    arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
+    view._add_shape([sphere, arrow], name='my_shape')
 
 def test_remote_call():
     # how to test JS?
@@ -358,7 +374,10 @@ def test_existing_js_files():
     mapfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*map'))
 
     nt.assert_equal(len(jsfiles), 2)
+<<<<<<< HEAD
     nt.assert_equal(len(mapfiles), 1)
+=======
+>>>>>>> upstream/master
 
 def test_player():
     traj = pt.datafiles.load_tz2()

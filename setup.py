@@ -27,8 +27,6 @@ log.set_verbosity(log.DEBUG)
 log.info('setup.py entered')
 log.info('$PATH=%s' % os.environ['PATH'])
 
-LONG_DESCRIPTION = 'test'
-
 try:
     sys.argv.remove('--npm')
     rebuild_nglview_js = True
@@ -123,14 +121,12 @@ class NPM(Command):
         # update package data in case this created new files
         update_package_data(self.distribution)
 
-version_ns = {'__version__': ""}
-
 setup_args = {
     'name': 'nglview',
-    'version': version_ns['__version__'],
-    'description': 'test',
-    'long_description': LONG_DESCRIPTION,
+    'version': versioneer.get_version(),
+    'description': 'IPython widget to interactively view molecular structures and trajectories.',
     'include_package_data': True,
+    'license': "MIT",
     'package_data': {
          "nglview.datafiles": ["*"],
          "nglview.scripts": ["*"],
@@ -148,8 +144,19 @@ setup_args = {
         ]),
     ],
     'install_requires': [
-        'ipywidgets>=5.1.5',
+        'jupyter', 'ipywidgets>=5.1.5',
     ],
+    'tests_require': [
+        'pytest'
+    ],
+    'extras_require': {
+        "simpletraj": ["simpletraj"],
+        "mdtraj": ["mdtraj"],
+        "pytraj": ["pytraj"],
+        "MDAnalysis": ["MDAnalysis"],
+        "ParmEd": ["parmed"],
+        "rdkit": ["rdkit"],
+    },
     'packages': set(find_packages() + ['nglview',
                  'nglview.static',
                  'nglview.theme',
@@ -164,26 +171,32 @@ setup_args = {
         'jsdeps': NPM,
     },
 
-    'author': 'arose',
-    'author_email': 'arose@test.com',
-    'url': 'http://jupyter.org',
+    'author': 'Alexander S. Rose',
+    'author_email': 'alexander.rose@weirdbyte.de',
+    'url': 'https://github.com/arose/nglview',
     'keywords': [
         'ipython',
         'jupyter',
         'widgets',
     ],
     'classifiers': [
-        'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
         'Framework :: IPython',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
-        'Topic :: Multimedia :: Graphics',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: JavaScript',
+        'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Topic :: Multimedia :: Graphics',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'Topic :: Scientific/Engineering :: Chemistry',
+        'Topic :: Scientific/Engineering :: Visualization',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX',
+        'Operating System :: Unix',
+        'Operating System :: MacOS',
     ],
 }
 
