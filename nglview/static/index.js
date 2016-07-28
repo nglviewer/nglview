@@ -1139,6 +1139,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 		"version": "0.5.2",
 		"description": "nglview",
 		"author": "Alexander S. Rose",
+		"license": "MIT",
 		"main": "src/index.js",
 		"repository": {
 			"type": "git",
