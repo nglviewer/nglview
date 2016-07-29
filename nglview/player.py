@@ -335,7 +335,7 @@ class TrajectoryPlayer(DOMWidget):
 
         button = Button(description='Default')
         def on_click(button):
-            theme._reset()
+            theme.reset()
         button.on_click(on_click)
 
         return button
