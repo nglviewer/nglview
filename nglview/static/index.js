@@ -115,16 +115,17 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	            this.on_msg( msg );
 	        }, this);
 	
-	        this.model.comm.on_msg( function( msg ){
-	            var buffers = msg.buffers;
-	            var content = msg.content.data.content;
-	            // console.log("buffers", buffers);
-	            // console.log("content", content);
-	            if( buffers.length && content ){
-	                content.buffers = buffers;
-	            }
-	            this.model._handle_comm_msg.call( this.model, msg );
-	        }.bind( this ) );
+	        if (this.model.comm){
+	            // for embeding in website
+	            this.model.comm.on_msg( function( msg ){
+	                var buffers = msg.buffers;
+	                var content = msg.content.data.content;
+	                if( buffers.length && content ){
+	                    content.buffers = buffers;
+	                }
+	                this.model._handle_comm_msg.call( this.model, msg );
+	            }.bind( this ) );
+	        }
 	
 	        // init NGL stage
 	        NGL.useWorker = false;
