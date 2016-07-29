@@ -1756,3 +1756,5 @@ def _get_notebook_info():
     print('ipywidgets', ipywidgets.__version__)
     print('traitlets', traitlets.__version__)
     print('nglview', __version__)
+
+    print(ipywidgets)
