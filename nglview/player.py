@@ -215,7 +215,7 @@ class TrajectoryPlayer(DOMWidget):
         ibox = HBox([checkbox_interpolate, interpolation_type])
         center_button = self._make_button_center()
         render_button = self._show_download_image()
-        center_render_hbox = HBox([center_button, render_button])
+        center_render_hbox = HBox([center_button, render_button, qtconsole_button])
 
         v0_left = VBox([step_slide,
                    delay_text,
@@ -223,7 +223,6 @@ class TrajectoryPlayer(DOMWidget):
                    ibox,
                    camera_type,
                    center_render_hbox,
-                   qtconsole_button,
                    ])
 
         spin_box= VBox([checkbox_spin,
@@ -308,6 +307,9 @@ class TrajectoryPlayer(DOMWidget):
 
         tab = Tab([box for box, _ in box_couple])
         [tab.set_title(i, title) for i, (_, title) in enumerate(box_couple)]
+
+        # Hide
+        tab.selected_index = -1
 
         return tab
 
@@ -702,14 +704,23 @@ class TrajectoryPlayer(DOMWidget):
         for name in excluded_names:
             rep_names.remove(name)
 
+        repr_selection = Text(value='*')
+        repr_selection.layout.width = DEFAULT_TEXT_WIDTH
+
+        button_clear = Button(description='clear')
+        def on_clear(button_clear):
+            self._view.clear()
+        button_clear.on_click(on_clear)
+
         for index, name in enumerate(rep_names):
             button = ToggleButton(description=name)
 
             def make_func():
                 def on_toggle_button_value_change(change, button=button):
+                    selection = repr_selection.value
                     new = change['new'] # True/False
                     if new:
-                        self._view.add_representation(button.description)
+                        self._view.add_representation(button.description, selection=selection)
                     else:
                         self._view._remove_representations_by_name(button.description)
                 return on_toggle_button_value_change
@@ -722,7 +733,8 @@ class TrajectoryPlayer(DOMWidget):
             box = HBox([child for child in arr])
             boxes.append(box)
         vbox.children = boxes
-        return vbox
+        return HBox([vbox,
+                     VBox([repr_selection, button_clear])])
 
     def _make_repr_name_choices(self, component_slider, repr_slider):
         repr_choices = Dropdown()
