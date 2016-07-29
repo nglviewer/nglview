@@ -331,12 +331,13 @@ class TrajectoryPlayer(DOMWidget):
         return button
 
     def _make_button_reset_theme(self):
-        from nglview.jsutils import js_clean_empty_output_area
+        from nglview import theme
+
         button = Button(description='Default')
         def on_click(button):
-            display(Javascript('$("#nglview_style").remove()'))
-            display(Javascript(js_clean_empty_output_area))
+            theme.reset()
         button.on_click(on_click)
+
         return button
 
     def _make_reference_widget(self):
@@ -437,7 +438,7 @@ class TrajectoryPlayer(DOMWidget):
         button = Button(description='qtconsole')
 
         def on_click(button):
-            display(Javascript(js_launch_qtconsole))
+            js_launch_qtconsole()
         button.on_click(on_click)
         return button
 
