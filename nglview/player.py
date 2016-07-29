@@ -436,7 +436,7 @@ class TrajectoryPlayer(DOMWidget):
         button = Button(description='qtconsole')
 
         def on_click(button):
-            display(Javascript(js_launch_qtconsole))
+            js_launch_qtconsole()
         button.on_click(on_click)
         return button
 

@@ -38,4 +38,4 @@ def reset():
     from IPython.display import Javascript, display
     from nglview.jsutils import js_clean_empty_output_area
     display(Javascript('$("#nglview_style").remove()'))
-    display(Javascript(js_clean_empty_output_area))
+    js_clean_empty_output_area()
