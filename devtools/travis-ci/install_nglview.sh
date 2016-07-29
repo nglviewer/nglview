@@ -3,6 +3,7 @@
 if [ "$CONDA" = "yes" ]; then
     echo "test conda build"
     pip uninstall ipywidgets -y
+    conda remove ipywidgets --yes
     conda config --add channels conda-forge
     conda build devtools/travis-ci/conda-recipe --py=3.5
     conda install /home/travis/miniconda/conda-bld/linux-64/nglview-*.bz2
