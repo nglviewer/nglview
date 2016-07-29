@@ -52,7 +52,8 @@ The development version can be installed directly from github:
     python setup.py install --npm
 
     # probably need to activate widgetsnbextension
-    # jupyter nbextension enable --py widgetsnbextension
+    # jupyter nbextension enable --py --user widgetsnbextension
+    # jupyter nbextension enable --py --user nglview
     
     # tested with ipywidgets 5.2.2, notebook 4.2.1
 
