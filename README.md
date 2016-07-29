@@ -46,12 +46,15 @@ The development version can be installed directly from github:
 
     git clone https://github.com/arose/nglview
     cd nglview
-    python -m pip install .
+    python setup.py install
+    
+    # if you edit files in ./js folder, make sure to add --npm flag (require npm)
+    python setup.py install --npm
 
-If for any reasons that the `widget` is not shown, try reinstall below packages
-
-    conda install traitlets=4.2.1 ipywidgets==4.1.1 notebook=4.1.0
-
+    # probably need to activate widgetsnbextension
+    # jupyter nbextension enable --py widgetsnbextension
+    
+    # tested with ipywidgets 5.2.2, notebook 4.2.1
 
 Example
 =======
@@ -74,7 +77,7 @@ view
 ```
 
 A number of convenience functions are available to quickly display data from
-the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/).
+the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit).
 
 | Function                                 | Description                                           |
 |------------------------------------------|-------------------------------------------------------|
@@ -85,6 +88,7 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_pytraj(traj)`                      | Shows `PyTraj` trajectory `traj`                      |
 | `show_parmed(structure)`                 | Shows `ParmEd` structure
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
+| `show_rdkit(mol)`                        | Shows `rdkit` rdkit.Chem.rdchem.Mol                   |
 
 
 API
