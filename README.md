@@ -53,6 +53,8 @@ The development version can be installed directly from github:
 
     # probably need to activate widgetsnbextension
     # jupyter nbextension enable --py widgetsnbextension
+    
+    # tested with ipywidgets 5.2.2, notebook 4.2.1
 
 Example
 =======
