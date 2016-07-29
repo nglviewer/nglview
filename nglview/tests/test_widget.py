@@ -456,3 +456,9 @@ def test_make_methods_of_player():
 
     # run excluded
     view.player._make_repr_name_choices({}, 0)
+
+def test_theme():
+    from nglview import theme
+    theme.oceans16()
+    theme.reset()
+    theme._get_theme('oceans16.css')
