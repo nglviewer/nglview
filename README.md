@@ -42,6 +42,8 @@ Released version
 Development version
 -------------------
 
+Note: We drop supporting `ipywidgets < 5.0`
+
 The development version can be installed directly from github:
 
     git clone https://github.com/arose/nglview
