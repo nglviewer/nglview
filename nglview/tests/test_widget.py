@@ -185,6 +185,9 @@ def test_add_new_shape():
     arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
     view._add_shape([sphere, arrow], name='my_shape')
 
+    # Shape
+    view.shape.add_arrow([1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
+
 def test_remote_call():
     # how to test JS?
     view = nv.show_pytraj(pt.datafiles.load_tz2())
