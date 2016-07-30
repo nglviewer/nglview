@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nglview.player &mdash; NGLView 0.5.2a+284.gdc7e05c documentation</title>
+  <title>nglview.player &mdash; NGLView 0.5.2a+134.g4c9d754 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="NGLView 0.5.2a+284.gdc7e05c documentation" href="../../index.html"/>
+    <link rel="top" title="NGLView 0.5.2a+134.g4c9d754 documentation" href="../../index.html"/>
         <link rel="up" title="nglview" href="../nglview.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.2a+284.gdc7e05c
+                0.5.2a+134.g4c9d754
               </div>
             
           
@@ -344,7 +344,7 @@
         <span class="n">ibox</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">checkbox_interpolate</span><span class="p">,</span> <span class="n">interpolation_type</span><span class="p">])</span>
         <span class="n">center_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_button_center</span><span class="p">()</span>
         <span class="n">render_button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_download_image</span><span class="p">()</span>
-        <span class="n">center_render_hbox</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">center_button</span><span class="p">,</span> <span class="n">render_button</span><span class="p">])</span>
+        <span class="n">center_render_hbox</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">center_button</span><span class="p">,</span> <span class="n">render_button</span><span class="p">,</span> <span class="n">qtconsole_button</span><span class="p">])</span>
 
         <span class="n">v0_left</span> <span class="o">=</span> <span class="n">VBox</span><span class="p">([</span><span class="n">step_slide</span><span class="p">,</span>
                    <span class="n">delay_text</span><span class="p">,</span>
@@ -352,7 +352,6 @@
                    <span class="n">ibox</span><span class="p">,</span>
                    <span class="n">camera_type</span><span class="p">,</span>
                    <span class="n">center_render_hbox</span><span class="p">,</span>
-                   <span class="n">qtconsole_button</span><span class="p">,</span>
                    <span class="p">])</span>
 
         <span class="n">spin_box</span><span class="o">=</span> <span class="n">VBox</span><span class="p">([</span><span class="n">checkbox_spin</span><span class="p">,</span>
@@ -438,6 +437,9 @@
         <span class="n">tab</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">([</span><span class="n">box</span> <span class="k">for</span> <span class="n">box</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">box_couple</span><span class="p">])</span>
         <span class="p">[</span><span class="n">tab</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">box_couple</span><span class="p">)]</span>
 
+        <span class="c1"># Hide</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">selected_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
         <span class="k">return</span> <span class="n">tab</span>
 
     <span class="k">def</span> <span class="nf">_make_button_center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -458,12 +460,13 @@
         <span class="k">return</span> <span class="n">button</span>
 
     <span class="k">def</span> <span class="nf">_make_button_reset_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">nglview.jsutils</span> <span class="kn">import</span> <span class="n">js_clean_empty_output_area</span>
+        <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">theme</span>
+
         <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Default&#39;</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
-            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="s1">&#39;$(&quot;#nglview_style&quot;).remove()&#39;</span><span class="p">))</span>
-            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">js_clean_empty_output_area</span><span class="p">))</span>
+            <span class="n">theme</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
         <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">button</span>
 
     <span class="k">def</span> <span class="nf">_make_reference_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -564,7 +567,7 @@
         <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;qtconsole&#39;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
-            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">js_launch_qtconsole</span><span class="p">))</span>
+            <span class="n">js_launch_qtconsole</span><span class="p">()</span>
         <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">button</span>
 
@@ -831,14 +834,23 @@
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">excluded_names</span><span class="p">:</span>
             <span class="n">rep_names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
+        <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+        <span class="n">repr_selection</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">DEFAULT_TEXT_WIDTH</span>
+
+        <span class="n">button_clear</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;clear&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">on_clear</span><span class="p">(</span><span class="n">button_clear</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">button_clear</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_clear</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rep_names</span><span class="p">):</span>
             <span class="n">button</span> <span class="o">=</span> <span class="n">ToggleButton</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
             <span class="k">def</span> <span class="nf">make_func</span><span class="p">():</span>
                 <span class="k">def</span> <span class="nf">on_toggle_button_value_change</span><span class="p">(</span><span class="n">change</span><span class="p">,</span> <span class="n">button</span><span class="o">=</span><span class="n">button</span><span class="p">):</span>
+                    <span class="n">selection</span> <span class="o">=</span> <span class="n">repr_selection</span><span class="o">.</span><span class="n">value</span>
                     <span class="n">new</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="c1"># True/False</span>
                     <span class="k">if</span> <span class="n">new</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remove_representations_by_name</span><span class="p">(</span><span class="n">button</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">on_toggle_button_value_change</span>
@@ -851,7 +863,8 @@
             <span class="n">box</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">child</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">])</span>
             <span class="n">boxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
         <span class="n">vbox</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="n">boxes</span>
-        <span class="k">return</span> <span class="n">vbox</span>
+        <span class="k">return</span> <span class="n">HBox</span><span class="p">([</span><span class="n">vbox</span><span class="p">,</span>
+                     <span class="n">VBox</span><span class="p">([</span><span class="n">repr_selection</span><span class="p">,</span> <span class="n">button_clear</span><span class="p">])])</span>
 
     <span class="k">def</span> <span class="nf">_make_repr_name_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_slider</span><span class="p">,</span> <span class="n">repr_slider</span><span class="p">):</span>
         <span class="n">repr_choices</span> <span class="o">=</span> <span class="n">Dropdown</span><span class="p">()</span>
@@ -897,7 +910,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.5.2a+284.gdc7e05c',
+            VERSION:'0.5.2a+134.g4c9d754',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
