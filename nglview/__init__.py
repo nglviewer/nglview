@@ -45,6 +45,7 @@ except ImportError:
     from urllib2 import urlopen
 
 from . import datafiles
+from . import utils
 from .utils import seq_to_string, string_types, _camelize_dict
 from .utils import FileManager, get_repr_names_from_dict
 from .widget_utils import get_widget_by_name
@@ -608,12 +609,12 @@ class NGLWidget(DOMWidget):
             self.parameters = parameters
 
         if isinstance(structure, Trajectory):
-            name = kwargs.pop('name', str(structure))
+            name = utils.get_name(structure, kwargs)
             self.add_trajectory(structure, name=name)
         elif isinstance(structure, (list, tuple)):
             trajectories = structure
             for trajectory in trajectories:
-                name = kwargs.pop('name', str(trajectory))
+                name = utils.get_name(trajectory, kwargs)
                 self.add_trajectory(trajectory, name=name)
         else:
             if structure is not None:
@@ -1282,7 +1283,7 @@ class NGLWidget(DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(structure)
-            name = kwargs.pop('name', str(structure))
+            name = utils.get_name(structure, kwargs)
             self._ngl_component_names.append(name)
         self._ngl_component_ids.append(structure.id)
         self.center_view(component=len(self._ngl_component_ids)-1)
@@ -1317,7 +1318,7 @@ class NGLWidget(DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(trajectory)
-            name = kwargs.pop('name', str(trajectory))
+            name = utils.get_name(trajectory, kwargs)
             self._ngl_component_names.append(name)
         setattr(trajectory, 'shown', True)
         self._trajlist.append(trajectory)
@@ -1398,7 +1399,7 @@ class NGLWidget(DOMWidget):
             url = obj
             args=[{'type': blob_type, 'data': url, 'binary': False}]
 
-        name = kwargs2.pop('name', str(obj))
+        name = utils.get_name(obj, kwargs2)
         self._ngl_component_names.append(name)
         self._remote_call("loadFile",
                 target='Stage',

@@ -14,6 +14,12 @@ if PY3:
 else:
     string_types = basestring
 
+def get_name(obj, kwargs):
+    name = kwargs.pop('name', str(obj))
+    if name.startswith('<nglview.'):
+        name = name.split()[0].strip('<')
+    return name
+
 def _set_ipython_cell():
     cm = """
     var setIPythonLikeCell = function(){
