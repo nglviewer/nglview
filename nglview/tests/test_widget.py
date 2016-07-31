@@ -108,7 +108,7 @@ def test_API_promise_to_have():
     nv._get_notebook_info()
 
     # display
-    display.Javascript(jsutils.js_clean_error_output)
+    jsutils.js_clean_error_output()
     display.display(view.player.repr_widget)
     view.player._display()
 
@@ -184,6 +184,9 @@ def test_add_new_shape():
     sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
     arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
     view._add_shape([sphere, arrow], name='my_shape')
+
+    # Shape
+    view.shape.add_arrow([1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
 
 def test_remote_call():
     # how to test JS?
@@ -456,3 +459,9 @@ def test_make_methods_of_player():
 
     # run excluded
     view.player._make_repr_name_choices({}, 0)
+
+def test_theme():
+    from nglview import theme
+    theme.oceans16()
+    theme.reset()
+    theme._get_theme('oceans16.css')

@@ -33,16 +33,17 @@ var NGLView = widgets.DOMWidgetView.extend({
             this.on_msg( msg );
         }, this);
 
-        this.model.comm.on_msg( function( msg ){
-            var buffers = msg.buffers;
-            var content = msg.content.data.content;
-            // console.log("buffers", buffers);
-            // console.log("content", content);
-            if( buffers.length && content ){
-                content.buffers = buffers;
-            }
-            this.model._handle_comm_msg.call( this.model, msg );
-        }.bind( this ) );
+        if (this.model.comm){
+            // for embeding in website
+            this.model.comm.on_msg( function( msg ){
+                var buffers = msg.buffers;
+                var content = msg.content.data.content;
+                if( buffers.length && content ){
+                    content.buffers = buffers;
+                }
+                this.model._handle_comm_msg.call( this.model, msg );
+            }.bind( this ) );
+        }
 
         // init NGL stage
         NGL.useWorker = false;
@@ -376,7 +377,6 @@ var NGLView = widgets.DOMWidgetView.extend({
        // value = True/False
        var component = this.stage.compList[ component_index ];
        var repr = component.reprList[repr_index];
-       console.log(repr, value);
        
        if (repr) {       
            repr.setVisibility(value);
@@ -460,7 +460,6 @@ var NGLView = widgets.DOMWidgetView.extend({
             // e.g params = ('sphere', [ 0, 0, 9 ], [ 1, 0, 0 ], 1.5)
 
             var func = shape_dict[shape_type];
-            console.log(shape_type, func);
             func.apply(this, params);
         }
        var shapeComp = this.stage.addComponentFromObject(shape);
@@ -669,7 +668,6 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     on_msg: function(msg){
-        // console.log(msg)
         // TODO: re-organize
         if( msg.type == 'call_method' ){
             var new_args = msg.args.slice();
@@ -682,7 +680,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                     if ( msg.methodName == 'screenshot' ){
                          NGL.screenshot( this.stage.viewer, msg.kwargs );
                     }else if( msg.methodName == 'removeComponent' ) {
-                        console.log( "removeComponent" );
                         var index = msg.args[0];
                         var component = this.stage.compList[ index ];
                         this.stage.removeComponent( component );
@@ -738,7 +735,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                     }
                     break;
                 default:
-                    console.log( "nothing done for " + msg.target );
                     break;
             }
         }else if( msg.type == 'base64_single' ){
@@ -756,10 +752,8 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             }
             var time1 = Date.now();
-            //console.log( time0 - msg.mytime, time1 - time0, 'base64_single' );
         }else if( msg.type == 'binary_single' ){
             // TODO: remove time
-            // console.log("msg.buffers",msg.buffers);
             var time0 = Date.now();
 
             var coordinateMeta = msg.data;
@@ -773,16 +767,12 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             }
             var time1 = Date.now();
-            //console.log( time0 - msg.mytime, time1 - time0, 'binary_single' );
         }else if( msg.type == 'get') {
-            console.log( msg.data );
-
             if( msg.data == 'camera' ) {
                 this.send( JSON.stringify( this.stage.viewer.camera ) );
             }else if( msg.data == 'parameters' ){
                 this.send( JSON.stringify( this.stage.parameters ));
             }else{
-                console.log( "nothing done");
                 console.log( this.stage.compList.length );
                 for ( var i = 0; i < this.stage.compList.length; i++ ) {
                     console.log( this.stage.compList[ i ] );

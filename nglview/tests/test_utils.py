@@ -1,9 +1,15 @@
 from __future__ import print_function
 import unittest
-from nglview import utils
+import nglview
+from nglview import utils, jsutils
 from nglview.utils import seq_to_string, _camelize, _camelize_dict, FileManager
 import nose.tools as nt
 import gzip
+
+def test_get_name():
+    fn = nglview.datafiles.PDB
+    nt.assert_equal(utils.get_name(object, dict(name='hello')), 'hello')
+    nt.assert_equal(utils.get_name(nglview.FileStructure(fn), dict()), 'nglview.FileStructure')
 
 def test_seq_to_string():
     nt.assert_equal(seq_to_string([1, 2, 3]), '@1,2,3')
@@ -134,3 +140,8 @@ def test_get_repr_names_from_dict():
                     ['cartoon', 'licorice'])
     nt.assert_equal(utils.get_repr_names_from_dict(fake_repr_dict, 1),
                     ['base'])
+
+def test_jsutils():
+    jsutils.js_launch_qtconsole()
+    jsutils.js_clean_empty_output_area()
+    jsutils.js_clean_error_output()

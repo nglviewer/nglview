@@ -45,6 +45,7 @@ except ImportError:
     from urllib2 import urlopen
 
 from . import datafiles
+from . import utils
 from .utils import seq_to_string, string_types, _camelize_dict
 from .utils import FileManager, get_repr_names_from_dict
 from .widget_utils import get_widget_by_name
@@ -596,6 +597,7 @@ class NGLWidget(DOMWidget):
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
+        self.shape = Shape(view=self)
 
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
@@ -608,12 +610,12 @@ class NGLWidget(DOMWidget):
             self.parameters = parameters
 
         if isinstance(structure, Trajectory):
-            name = kwargs.pop('name', str(structure))
+            name = utils.get_name(structure, kwargs)
             self.add_trajectory(structure, name=name)
         elif isinstance(structure, (list, tuple)):
             trajectories = structure
             for trajectory in trajectories:
-                name = kwargs.pop('name', str(trajectory))
+                name = utils.get_name(trajectory, kwargs)
                 self.add_trajectory(trajectory, name=name)
         else:
             if structure is not None:
@@ -1282,7 +1284,7 @@ class NGLWidget(DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(structure)
-            name = kwargs.pop('name', str(structure))
+            name = utils.get_name(structure, kwargs)
             self._ngl_component_names.append(name)
         self._ngl_component_ids.append(structure.id)
         self.center_view(component=len(self._ngl_component_ids)-1)
@@ -1317,7 +1319,7 @@ class NGLWidget(DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(trajectory)
-            name = kwargs.pop('name', str(trajectory))
+            name = utils.get_name(trajectory, kwargs)
             self._ngl_component_names.append(name)
         setattr(trajectory, 'shown', True)
         self._trajlist.append(trajectory)
@@ -1398,7 +1400,7 @@ class NGLWidget(DOMWidget):
             url = obj
             args=[{'type': blob_type, 'data': url, 'binary': False}]
 
-        name = kwargs2.pop('name', str(obj))
+        name = utils.get_name(obj, kwargs2)
         self._ngl_component_names.append(name)
         self._remote_call("loadFile",
                 target='Stage',
@@ -1666,6 +1668,59 @@ class NGLWidget(DOMWidget):
                 self.frame = frame
                 sleep(delay)
 
+class Shape(object):
+    """TODO: doc
+
+    Notes
+    -----
+    Unstable feature
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> view = nv.NGLWidget()
+    >>> view
+    >>> shape = nv.Shape(view=view)
+    >>> shape.add_sphere(from=[0, 0, 0], to=[10, 10, 10], color=[1, 0, 0], radius=1.5])
+
+    See also
+    --------
+    http://arose.github.io/ngl/api/dev/Shape.html
+    """
+
+    def __init__(self, view):
+        self.view = view
+        names = ['mesh', 'sphere', 'ellipsoid', 'cylinder', 'cone', 'arrow']
+        self._make_func(names)
+
+    def _make_func(self, names):
+        from types import MethodType
+
+        def make_func(name):
+            def func(this, *args):
+                args_with_name = [name, ] + list(args)
+                self.add(*args_with_name)
+            func.__doc__ = 'check `add` method'
+            return func
+
+        for name in names:
+            func_name = 'add_' + name
+            func = make_func(name)
+            setattr(self, func_name, MethodType(func, self))
+
+    def add(self, *args):
+        """
+
+        Examples
+        --------
+        >>> shape = nv.Shape(view)
+        >>> shape.add('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
+
+        See also
+        --------
+        http://arose.github.io/ngl/api/dev/Shape.html
+        """
+        self.view._add_shape([args,])
 
 class ComponentViewer(object):
     """Convenient attribute for NGLWidget. See example below.
@@ -1756,3 +1811,5 @@ def _get_notebook_info():
     print('ipywidgets', ipywidgets.__version__)
     print('traitlets', traitlets.__version__)
     print('nglview', __version__)
+
+    print(ipywidgets)

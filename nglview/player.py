@@ -215,7 +215,7 @@ class TrajectoryPlayer(DOMWidget):
         ibox = HBox([checkbox_interpolate, interpolation_type])
         center_button = self._make_button_center()
         render_button = self._show_download_image()
-        center_render_hbox = HBox([center_button, render_button])
+        center_render_hbox = HBox([center_button, render_button, qtconsole_button])
 
         v0_left = VBox([step_slide,
                    delay_text,
@@ -223,7 +223,6 @@ class TrajectoryPlayer(DOMWidget):
                    ibox,
                    camera_type,
                    center_render_hbox,
-                   qtconsole_button,
                    ])
 
         spin_box= VBox([checkbox_spin,
@@ -309,6 +308,9 @@ class TrajectoryPlayer(DOMWidget):
         tab = Tab([box for box, _ in box_couple])
         [tab.set_title(i, title) for i, (_, title) in enumerate(box_couple)]
 
+        # Hide
+        tab.selected_index = -1
+
         return tab
 
     def _make_button_center(self):
@@ -329,12 +331,13 @@ class TrajectoryPlayer(DOMWidget):
         return button
 
     def _make_button_reset_theme(self):
-        from nglview.jsutils import js_clean_empty_output_area
+        from nglview import theme
+
         button = Button(description='Default')
         def on_click(button):
-            display(Javascript('$("#nglview_style").remove()'))
-            display(Javascript(js_clean_empty_output_area))
+            theme.reset()
         button.on_click(on_click)
+
         return button
 
     def _make_reference_widget(self):
@@ -435,7 +438,7 @@ class TrajectoryPlayer(DOMWidget):
         button = Button(description='qtconsole')
 
         def on_click(button):
-            display(Javascript(js_launch_qtconsole))
+            js_launch_qtconsole()
         button.on_click(on_click)
         return button
 
@@ -702,14 +705,23 @@ class TrajectoryPlayer(DOMWidget):
         for name in excluded_names:
             rep_names.remove(name)
 
+        repr_selection = Text(value='*')
+        repr_selection.layout.width = DEFAULT_TEXT_WIDTH
+
+        button_clear = Button(description='clear')
+        def on_clear(button_clear):
+            self._view.clear()
+        button_clear.on_click(on_clear)
+
         for index, name in enumerate(rep_names):
             button = ToggleButton(description=name)
 
             def make_func():
                 def on_toggle_button_value_change(change, button=button):
+                    selection = repr_selection.value
                     new = change['new'] # True/False
                     if new:
-                        self._view.add_representation(button.description)
+                        self._view.add_representation(button.description, selection=selection)
                     else:
                         self._view._remove_representations_by_name(button.description)
                 return on_toggle_button_value_change
@@ -722,7 +734,8 @@ class TrajectoryPlayer(DOMWidget):
             box = HBox([child for child in arr])
             boxes.append(box)
         vbox.children = boxes
-        return vbox
+        return HBox([vbox,
+                     VBox([repr_selection, button_clear])])
 
     def _make_repr_name_choices(self, component_slider, repr_slider):
         repr_choices = Dropdown()

@@ -10,7 +10,6 @@ https://github.com/dunovank/jupyter-themes
 
 """
 import os
-from IPython.display import HTML
 
 style = """
 <style id='nglview_style'>
@@ -23,6 +22,7 @@ $('#nglview_style').appendTo('head');
 """
 
 def _get_theme(css_file):
+    from IPython.display import HTML
     return HTML(_get_css_content(css_file))
 
 def _get_css_content(css_file):
@@ -33,3 +33,9 @@ def _get_css_content(css_file):
 
 def oceans16():
     return _get_theme('oceans16.css')
+
+def reset():
+    from IPython.display import Javascript, display
+    from nglview.jsutils import js_clean_empty_output_area
+    display(Javascript('$("#nglview_style").remove()'))
+    js_clean_empty_output_area()

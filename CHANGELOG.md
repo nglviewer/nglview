@@ -3,6 +3,7 @@ Changelog
 
 Dev
 ---
+* MIGRATION: only support `ipywidgets >= 5.2`
 * ADD: `ngl v0.8`
 
 
