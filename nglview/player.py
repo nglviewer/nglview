@@ -11,15 +11,87 @@ from ipywidgets import (DOMWidget,
                         Dropdown,
                         Button, ToggleButton,
                         Text, Textarea, IntText, FloatText,
+                        Label,
                         interactive,
-                        Tab)
+                        Tab, Layout)
 
-from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
+from traitlets import Int, Bool, Dict, Float, CaselessStrEnum, TraitError
 from traitlets import observe, link
 
 from .ngl_params import REPR_NAMES
-from .widget_utils import get_widget_by_name, make_default_slider_width
-from .default import DEFAULT_TEXT_WIDTH, DEFAULT_SLIDER_WIDTH
+from .widget_utils import get_widget_by_name
+from . import default
+
+try:
+    form_item_layout = Layout(
+        display='flex',
+        flex_flow='row',
+        justify_content='space-between'
+    )
+except TraitError:
+    # for testing
+    form_item_layout = None
+
+def _make_box_layout(width='20%'): 
+    return Layout(
+        display='flex',
+        flex_flow='column',
+        align_items='stretch',
+        width=width)
+
+def _relayout(box, form_item_layout):
+    form_items = []
+    for kid in box.children:
+        if hasattr(kid, 'description') and not isinstance(kid, Button):
+            label_value = kid.description
+            kid.description = ''
+        else:
+            label_value = ''
+        if isinstance(kid, Button):
+            box2 = Box([kid,], layout=form_item_layout)
+        else:
+            box2 = Box([Label(value=label_value), kid], layout=form_item_layout)
+        form_items.append(box2)
+
+    return form_items
+
+def _relayout_master(box, width='20%'):
+    old_children = box.children[:]
+    form_items = _relayout(box, form_item_layout)
+    form = Box(form_items, layout=_make_box_layout(width=width))
+    form._ngl_children = old_children
+    return form
+
+def _make_delay_tab(box_factory, selected_index=0):
+    """
+
+    Parameters
+    ----------
+    box_factory : list of (func, tab_name)
+
+    Example of box_factory: [(_make_gen_box, 'General'),
+                             (_make_repr_box, 'Representation')]
+    """
+
+    tab = Tab([Box() for box, _ in box_factory])
+    [tab.set_title(i, title) for i, (_, title) in enumerate(box_factory)]
+
+    # trick
+    if not tab.children[selected_index].children:
+        tab.selected_index = -1
+
+    def on_update_selected_index(change):
+        index = change['new']
+        if not tab.children[index].children:
+            # make widget on demand
+            tab.children[index].children = [box_factory[index][0](),]
+
+    tab.observe(on_update_selected_index, names='selected_index')
+
+    # trigger
+    tab.selected_index = selected_index
+
+    return tab
 
 class TrajectoryPlayer(DOMWidget):
     # should set default values here different from desired defaults
@@ -148,90 +220,11 @@ class TrajectoryPlayer(DOMWidget):
                                  self._spin_speed)
 
     def _display(self):
-        self.picked_widget = self._make_text_picked()
-        self.repr_widget = self._make_repr_widget()
-        self._preference_widget = self._make_reference_widget()
+        def _make_preference():
+            self._preference_widget = self._make_preference_widget()
+            return self._preference_widget
 
-        step_slide = IntSlider(
-            value=self.step,
-            min=-100,
-            max=100,
-            description='step')
-        delay_text = IntSlider(
-            value=self.delay,
-            min=10,
-            max=1000,
-            description='delay')
-        checkbox_interpolate = Checkbox(
-            self.interpolate, description='interpolate')
-        checkbox_spin = Checkbox(self.spin, description='spin')
-        spin_x_slide = IntSlider(
-            self._spin_x,
-            min=-1,
-            max=1,
-            description='spin_x')
-        spin_y_slide = IntSlider(
-            self._spin_y,
-            min=-1,
-            max=1,
-            description='spin_y')
-        spin_z_slide = IntSlider(
-            self._spin_z,
-            min=-1,
-            max=1,
-            description='spin_z')
-        spin_speed_slide = FloatSlider(
-            self._spin_speed,
-            min=0,
-            max=0.2,
-            step=0.001,
-            description='spin speed')
-        bg_color = ColorPicker(value='white', description='background')
-        bg_color.width = 100.
-        # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
-        interpolation_type = Dropdown(value=self._iterpolation_type,
-                                      options=['linear', 'spline'])
 
-        camera_type = Dropdown(value=self.camera,
-                               options=['perspective', 'orthographic'], description='camera')
-
-        link((step_slide, 'value'), (self, 'step'))
-        link((delay_text, 'value'), (self, 'delay'))
-        link((checkbox_interpolate, 'value'), (self, 'interpolate'))
-        # link((t_interpolation, 'value'), (self, '_interpolation_t'))
-        link((interpolation_type, 'value'), (self, '_iterpolation_type'))
-        link((camera_type, 'value'), (self, 'camera'))
-        link((bg_color, 'value'), (self._view, 'background'))
-
-        # spin
-        link((checkbox_spin, 'value'), (self, 'spin'))
-        link((spin_x_slide, 'value'), (self, '_spin_x'))
-        link((spin_y_slide, 'value'), (self, '_spin_y'))
-        link((spin_z_slide, 'value'), (self, '_spin_z'))
-        link((spin_speed_slide, 'value'), (self, '_spin_speed'))
-
-        qtconsole_button = self._make_button_qtconsole()
-
-        ibox = HBox([checkbox_interpolate, interpolation_type])
-        center_button = self._make_button_center()
-        render_button = self._show_download_image()
-        center_render_hbox = HBox([center_button, render_button, qtconsole_button])
-
-        v0_left = VBox([step_slide,
-                   delay_text,
-                   bg_color,
-                   ibox,
-                   camera_type,
-                   center_render_hbox,
-                   ])
-
-        spin_box= VBox([checkbox_spin,
-                   spin_x_slide,
-                   spin_y_slide,
-                   spin_z_slide,
-                   spin_speed_slide])
-
-        drag_button = Button(description='widget drag: off', tooltip='dangerous')
         def on_drag(drag_button):
             if drag_button.description == 'widget drag: off':
                 self._view._set_draggable(True)
@@ -240,77 +233,169 @@ class TrajectoryPlayer(DOMWidget):
                 self._view._set_draggable(False)
                 drag_button.description = 'widget drag: off'
 
-        drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
-        def on_drag_nb(drag_button):
-            if drag_nb.description == 'notebook drag: off':
-                self._view._set_notebook_draggable(True)
-                drag_nb.description = 'notebook drag: on'
-            else:
-                self._view._set_notebook_draggable(False)
-                drag_nb.description = 'notebook drag: off'
+        def _make_gen_box():
+            step_slide = IntSlider(
+                value=self.step,
+                min=-100,
+                max=100,
+                description='step')
+            delay_text = IntSlider(
+                value=self.delay,
+                min=10,
+                max=1000,
+                description='delay')
+            checkbox_interpolate = Checkbox(self.interpolate, description='')
 
-        reset_nb = Button(description='notebook: reset', tooltip='reset?')
-        def on_reset(reset_nb):
-            self._view._reset_notebook()
+            bg_color = ColorPicker(value='white', description='background')
+            bg_color.width = 100.
+            # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
+            interpolation_type = Dropdown(value=self._iterpolation_type,
+                                          options=['linear', 'spline'])
 
-        dialog_button = Button(description='dialog', tooltip='make a dialog')
-        def on_dialog(dialog_button):
-            self._view._remote_call('setDialog', target='Widget')
+            interpolation_type.layout.max_width = '40px'
 
-        lucky_button = Button(description='lucky', tooltip='try best to make a good layout')
-        def on_being_lucky(dialog_button):
-            self._view._move_notebook_to_the_right()
-            self._view._remote_call('setDialog', target='Widget')
+            ibox = HBox([checkbox_interpolate, interpolation_type], description='interpolate')
 
-        drag_button.on_click(on_drag)
-        drag_nb.on_click(on_drag_nb)
-        reset_nb.on_click(on_reset)
-        dialog_button.on_click(on_dialog)
-        lucky_button.on_click(on_being_lucky)
-        drag_box = HBox([drag_button, drag_nb, reset_nb, dialog_button, lucky_button])
+            camera_type = Dropdown(value=self.camera,
+                                   options=['perspective', 'orthographic'], description='camera')
 
-        gen_box = HBox([v0_left, ])
-        theme_box = Box([self._make_button_theme(), self._make_button_reset_theme()])
-        hide_box = Box([])
-        help_url_box = self._show_website()
+            link((step_slide, 'value'), (self, 'step'))
+            link((delay_text, 'value'), (self, 'delay'))
+            link((checkbox_interpolate, 'value'), (self, 'interpolate'))
+            # link((t_interpolation, 'value'), (self, '_interpolation_t'))
+            link((interpolation_type, 'value'), (self, '_iterpolation_type'))
+            link((camera_type, 'value'), (self, 'camera'))
+            link((bg_color, 'value'), (self._view, 'background'))
 
-        picked_box = HBox([self.picked_widget,])
-        component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
-        repr_add_widget = self._make_add_repr_widget(component_slider)
-        repr_box= HBox([self.repr_widget,
-                        repr_add_widget])
-        repr_playground = self._make_selection_repr_buttons()
-        export_image_box = HBox([self._make_button_export_image()])
+            center_button = self._make_button_center()
+            render_button = self._show_download_image()
+            qtconsole_button = self._make_button_qtconsole()
+            center_render_hbox = HBox([center_button, render_button, qtconsole_button])
 
-        extra_list = [
-                      (drag_box, 'Drag'),
-                      (spin_box, 'spin_box'),
-                      (picked_box, 'picked atom'),
-                      (repr_playground, 'quick repr'),
-                      (export_image_box, 'Image')]
+            v0_left = VBox([step_slide,
+                       delay_text,
+                       bg_color,
+                       camera_type,
+                       ibox,
+                       center_render_hbox,
+                       ])
 
-        extra_box = Tab([w for w, _ in extra_list])
-        [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]
+            v0_left = _relayout_master(v0_left, width='50%')
+            return v0_left
 
+        def _make_repr_box():
+            self.repr_widget = self._make_repr_widget()
+            return self.repr_widget
 
-        box_couple = [(gen_box, 'General'),
-                      (repr_box, 'Representation'),
-                      (self._preference_widget, 'Preference'),
-                      (theme_box, 'Theme'),
-                      (extra_box, 'Extra'),
-                      (hide_box, 'Hide'),
-                      (help_url_box, 'Help')]
+        def _make_theme_box():
+            theme_box = Box([self._make_button_theme(), self._make_button_reset_theme()])
+            return theme_box
 
-        for box in gen_box.children:
-            make_default_slider_width(box)
-        make_default_slider_width(self._preference_widget)
+        def _make_extra_box():
+            def _make_spin_box():
+                checkbox_spin = Checkbox(self.spin, description='spin')
+                spin_x_slide = IntSlider(
+                    self._spin_x,
+                    min=-1,
+                    max=1,
+                    description='spin_x')
+                spin_y_slide = IntSlider(
+                    self._spin_y,
+                    min=-1,
+                    max=1,
+                    description='spin_y')
+                spin_z_slide = IntSlider(
+                    self._spin_z,
+                    min=-1,
+                    max=1,
+                    description='spin_z')
+                spin_speed_slide = FloatSlider(
+                    self._spin_speed,
+                    min=0,
+                    max=0.2,
+                    step=0.001,
+                    description='spin speed')
+                # spin
+                link((checkbox_spin, 'value'), (self, 'spin'))
+                link((spin_x_slide, 'value'), (self, '_spin_x'))
+                link((spin_y_slide, 'value'), (self, '_spin_y'))
+                link((spin_z_slide, 'value'), (self, '_spin_z'))
+                link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
-        tab = Tab([box for box, _ in box_couple])
-        [tab.set_title(i, title) for i, (_, title) in enumerate(box_couple)]
+                qtconsole_button = self._make_button_qtconsole()
+                center_button = self._make_button_center()
+                render_button = self._show_download_image()
 
-        # Hide
-        tab.selected_index = -1
+                center_render_hbox = HBox([center_button, render_button, qtconsole_button])
 
+                spin_box= VBox([checkbox_spin,
+                           spin_x_slide,
+                           spin_y_slide,
+                           spin_z_slide,
+                           spin_speed_slide])
+                spin_box = _relayout_master(spin_box, width='75%')
+                return spin_box
+
+            def _make_drag_wiget():
+                drag_button = Button(description='widget drag: off', tooltip='dangerous')
+                drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
+                def on_drag_nb(drag_button):
+                    if drag_nb.description == 'notebook drag: off':
+                        self._view._set_notebook_draggable(True)
+                        drag_nb.description = 'notebook drag: on'
+                    else:
+                        self._view._set_notebook_draggable(False)
+                        drag_nb.description = 'notebook drag: off'
+
+                reset_nb = Button(description='notebook: reset', tooltip='reset?')
+                def on_reset(reset_nb):
+                    self._view._reset_notebook()
+
+                dialog_button = Button(description='dialog', tooltip='make a dialog')
+                def on_dialog(dialog_button):
+                    self._view._remote_call('setDialog', target='Widget')
+
+                lucky_button = Button(description='lucky', tooltip='try best to make a good layout')
+                def on_being_lucky(dialog_button):
+                    self._view._move_notebook_to_the_right()
+                    self._view._remote_call('setDialog', target='Widget')
+
+                drag_button.on_click(on_drag)
+                drag_nb.on_click(on_drag_nb)
+                reset_nb.on_click(on_reset)
+                dialog_button.on_click(on_dialog)
+                lucky_button.on_click(on_being_lucky)
+                drag_box = HBox([drag_button, drag_nb, reset_nb, dialog_button, lucky_button])
+
+                return drag_box
+
+            def _make_export_image_widget():
+                export_image_box = HBox([self._make_button_export_image()])
+                return export_image_box
+
+            def _make_picked_widget():
+                self.picked_widget = self._make_text_picked()
+                picked_box = HBox([self.picked_widget,])
+                return picked_box
+
+            extra_list = [(_make_drag_wiget, 'Drag'),
+                          (_make_spin_box, 'spin_box'),
+                          (_make_picked_widget, 'picked atom'),
+                          (self._make_repr_playground, 'quick repr'),
+                          (_make_export_image_widget, 'Image')]
+
+            extra_box = _make_delay_tab(extra_list, selected_index=0)
+            return extra_box
+
+        box_factory = [(_make_gen_box, 'General'),
+                       (_make_repr_box, 'Representation'),
+                       (_make_preference, 'Preference'),
+                       (_make_theme_box, 'Theme'),
+                       (_make_extra_box, 'Extra'),
+                       (Box, 'Hide'),
+                       (self._show_website, 'Help')]
+
+        tab = _make_delay_tab(box_factory, selected_index=-1)
         return tab
 
     def _make_button_center(self):
@@ -340,7 +425,7 @@ class TrajectoryPlayer(DOMWidget):
 
         return button
 
-    def _make_reference_widget(self):
+    def _make_preference_widget(self, width='50%'):
         def make_func():
             parameters = self._view._full_stage_parameters
             def func(pan_speed=parameters.get('panSpeed', 0.8),
@@ -391,7 +476,7 @@ class TrajectoryPlayer(DOMWidget):
 
             for child in widget_sliders.children:
                 if isinstance(child, (IntSlider, FloatSlider)):
-                    child.width = DEFAULT_SLIDER_WIDTH
+                    child.layout.width = default.DEFAULT_SLIDER_WIDTH
             return widget_sliders
 
         widget_sliders = make_widget_box()
@@ -404,7 +489,7 @@ class TrajectoryPlayer(DOMWidget):
             widget_sliders.children = [reset_button,] + list(make_widget_box().children)
         reset_button.on_click(on_click)
 
-        return widget_sliders 
+        return _relayout_master(widget_sliders, width=width)
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
@@ -456,14 +541,11 @@ class TrajectoryPlayer(DOMWidget):
 
         bbox = HBox([button_refresh, button_center_selection, button_hide, button_remove])
 
-        repr_name_text = Text(value='', description='')
+        repr_name_text = Text(value='', description='representation')
         repr_name_text._ngl_name = 'repr_name_text'
-        repr_selection = Text(value='', description='')
+        repr_selection = Text(value='', description='selection')
         repr_selection._ngl_name = 'repr_selection'
-        repr_selection.width = repr_name_text.width = DEFAULT_TEXT_WIDTH 
-
-        repr_info_box = VBox([repr_name_text, repr_selection])
-        repr_info_box._ngl_name = 'repr_info_box'
+        # repr_selection.width = repr_name_text.width = default.DEFAULT_TEXT_WIDTH 
 
         component_slider = IntSlider(value=0, description='component')
         component_slider._ngl_name = 'component_slider'
@@ -474,14 +556,15 @@ class TrajectoryPlayer(DOMWidget):
                 description='component')
         component_dropdown._ngl_name = 'component_dropdown'
 
-        repr_slider = IntSlider(value=0, description='representation', width=DEFAULT_SLIDER_WIDTH)
+        repr_slider = IntSlider(value=0, description='representation', width=default.DEFAULT_SLIDER_WIDTH)
         repr_slider._ngl_name = 'repr_slider'
         repr_slider.visible = True
 
+        # TODO: properly hide
         repr_text_info = Textarea(value='', description='representation parameters')
-        repr_text_info.visible = False
+        repr_text_info.layout.visibility = 'hidden'
         checkbox_repr_text = Checkbox(value=False, description='show parameters')
-        checkbox_repr_text.visible = False
+        checkbox_repr_text.layout.visibility = 'hidden'
         repr_text_box = VBox([checkbox_repr_text, repr_text_info])
         repr_text_box._ngl_name = 'repr_text_box'
 
@@ -489,6 +572,8 @@ class TrajectoryPlayer(DOMWidget):
         checkbox_reprlist._ngl_name = 'checkbox_reprlist'
         reprlist_choices = self._make_repr_name_choices(component_slider, repr_slider)
         reprlist_choices._ngl_name = 'reprlist_choices'
+
+        repr_add_widget = self._make_add_repr_widget(component_slider)
 
         def on_update_checkbox_reprlist(change):
             reprlist_choices.visible= change['new']
@@ -589,18 +674,18 @@ class TrajectoryPlayer(DOMWidget):
         checkbox_repr_text.observe(on_change_checkbox_repr_text, names='value')
 
         # HC
-        repr_parameters_box = self._make_repr_parameter_slider()
-        repr_parameters_box._ngl_name = 'repr_parameters_box'
+        # repr_parameters_box = self._make_repr_parameter_slider()
+        # repr_parameters_box._ngl_name = 'repr_parameters_box'
 
         # NOTE: if you update below list, make sure to update _make_repr_parameter_slider
         # or refactor
         # try to "refresh"
-        vbox = VBox([component_dropdown, bbox, repr_info_box,
-                     component_slider, repr_slider, reprlist_choices, repr_text_box,
-                     repr_parameters_box])
+        vbox = VBox([bbox, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
+                     component_slider, repr_slider, reprlist_choices])
+
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
-        return vbox
+        return _relayout_master(vbox, width='60%')
 
 
     def _make_repr_parameter_slider(self):
@@ -634,8 +719,12 @@ class TrajectoryPlayer(DOMWidget):
         filename_text = Text(value='Screenshot', description='Filename')
         delay_text = FloatText(value=1, description='delay (s)', tooltip='hello')
 
-        start_text, stop_text, step_text = (IntText(value=0), IntText(value=self._view.count),
-                             IntText(value=1))
+        start_text, stop_text, step_text = (IntText(value=0, description='start'),
+                                            IntText(value=self._view.count, description='stop'),
+                                            IntText(value=1, description='step'))
+
+        start_text.layout.max_width = stop_text.layout.max_width = step_text.layout.max_width \
+                = filename_text.layout.max_width = delay_text.layout.max_width = default.DEFAULT_TEXT_WIDTH
 
         button_movie_images = Button(description='Export Images')
 
@@ -655,18 +744,23 @@ class TrajectoryPlayer(DOMWidget):
 
         button_movie_images.on_click(on_click_images)
 
-        box_movie_image_export = VBox(
-                [HBox([button_movie_images, start_text, stop_text, step_text,]),
-                 delay_text])
-
-        return VBox([
-            box_movie_image_export,
+        vbox = VBox([
+            button_movie_images,
+            start_text,
+            stop_text,
+            step_text,
+            delay_text,
             filename_text,
             slider_factor,
             checkbox_antialias,
             checkbox_trim,
             checkbox_transparent,
             ])
+
+        form_items = _relayout(vbox, form_item_layout)
+        form = Box(form_items, layout=_make_box_layout())
+        # form = _relayout_master(vbox)
+        return form
 
     def _make_resize_notebook_slider(self):
         resize_notebook_slider = IntSlider(min=300, max=2000, description='resize notebook')
@@ -679,24 +773,28 @@ class TrajectoryPlayer(DOMWidget):
         return resize_notebook_slider
 
     def _make_add_repr_widget(self, component_slider):
-        repr_name = Dropdown(options=REPR_NAMES, value='cartoon')
+        dropdown_repr_name = Dropdown(options=REPR_NAMES, value='cartoon')
         repr_selection = Text(value='*', description='')
         repr_button = Button(description='Add')
+        repr_button.layout = Layout(width='auto', flex='1 1 auto')
 
-        repr_selection.width = DEFAULT_TEXT_WIDTH
+        # repr_selection.layout.max_width = default.DEFAULT_TEXT_WIDTH
+        # dropdownrepr_name.layout.width = repr_name.layout.height = default.DROPDOWN_MAX_WIDTH
+        # repr_selection.layout.max_width = default.DEFAULT_TEXT_WIDTH
 
         def on_click_or_submit(button_or_text_area):
             self._view.add_representation(selection=repr_selection.value.strip(),
-                    repr_type=repr_name.value,
+                    repr_type=dropdown_repr_name.value,
                     component=component_slider.value)
 
         repr_button.on_click(on_click_or_submit)
         repr_selection.on_submit(on_click_or_submit)
-        add_repr_box = HBox([repr_button, repr_name, repr_selection])
+        add_repr_box = HBox([repr_button, dropdown_repr_name, repr_selection])
         add_repr_box._ngl_name = 'add_repr_box'
+
         return add_repr_box
 
-    def _make_selection_repr_buttons(self):
+    def _make_repr_playground(self):
         vbox = VBox()
         children = []
 
@@ -706,7 +804,9 @@ class TrajectoryPlayer(DOMWidget):
             rep_names.remove(name)
 
         repr_selection = Text(value='*')
-        repr_selection.layout.width = DEFAULT_TEXT_WIDTH
+        repr_selection.layout.width = default.DEFAULT_TEXT_WIDTH
+        repr_selection_box  = HBox([Label('selection'), repr_selection])
+        setattr(repr_selection_box, 'value', repr_selection.value)
 
         button_clear = Button(description='clear')
         def on_clear(button_clear):
@@ -734,8 +834,10 @@ class TrajectoryPlayer(DOMWidget):
             box = HBox([child for child in arr])
             boxes.append(box)
         vbox.children = boxes
-        return HBox([vbox,
-                     VBox([repr_selection, button_clear])])
+        quick_repr_buttons = HBox([vbox,
+                                   VBox([button_clear, repr_selection_box])])
+        quick_repr_buttons.layout = Layout(display='flex', flex_flow='column')
+        return quick_repr_buttons
 
     def _make_repr_name_choices(self, component_slider, repr_slider):
         repr_choices = Dropdown()
