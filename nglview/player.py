@@ -19,7 +19,7 @@ from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
 
 from .ngl_params import REPR_NAMES
-from .widget_utils import get_widget_by_name, make_default_slider_width
+from .widget_utils import get_widget_by_name
 from . import default
 
 form_item_layout = Layout(
@@ -35,24 +35,25 @@ def _make_box_layout(width='20%'):
         align_items='stretch',
         width=width)
 
-def _re_layout(box, form_item_layout):
+def _relayout(box, form_item_layout):
     form_items = []
     for kid in box.children:
         if hasattr(kid, 'description') and not isinstance(kid, Button):
             label_value = kid.description
-            # kid.description = ''
+            kid.description = ''
         else:
             label_value = ''
         if isinstance(kid, Button):
-            box = Box([kid,], layout=form_item_layout)
+            box2 = Box([kid,], layout=form_item_layout)
         else:
-            box = Box([Label(value=label_value), kid], layout=form_item_layout)
-        form_items.append(box)
+            box2 = Box([Label(value=label_value), kid], layout=form_item_layout)
+        form_items.append(box2)
+
     return form_items
 
-def _re_layout_master(box):
-    form_items = _re_layout(box, form_item_layout)
-    return Box(form_items, layout=_make_box_layout())
+def _relayout_master(box):
+    form_items = _relayout(box, form_item_layout)
+    form = Box(form_items, layout=_make_box_layout())
 
 class TrajectoryPlayer(DOMWidget):
     # should set default values here different from desired defaults
@@ -183,7 +184,6 @@ class TrajectoryPlayer(DOMWidget):
     def _display(self):
         def _make_preference():
             self._preference_widget = self._make_preference_widget()
-            make_default_slider_width(self._preference_widget)
             return self._preference_widget
 
 
@@ -243,10 +243,7 @@ class TrajectoryPlayer(DOMWidget):
 
             gen_box = HBox([v0_left, ])
 
-            for box in gen_box.children:
-                make_default_slider_width(box)
-
-            return _re_layout_master(gen_box)
+            return _relayout_master(gen_box)
 
         def _make_repr_box():
             self.repr_widget = self._make_repr_widget()
@@ -303,6 +300,7 @@ class TrajectoryPlayer(DOMWidget):
                        spin_y_slide,
                        spin_z_slide,
                        spin_speed_slide])
+            spin_box = _relayout_master(spin_box)
 
             drag_button = Button(description='widget drag: off', tooltip='dangerous')
             drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
@@ -467,7 +465,7 @@ class TrajectoryPlayer(DOMWidget):
             widget_sliders.children = [reset_button,] + list(make_widget_box().children)
         reset_button.on_click(on_click)
 
-        return widget_sliders 
+        return _relayout_master(widget_sliders)
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
@@ -735,9 +733,9 @@ class TrajectoryPlayer(DOMWidget):
             checkbox_transparent,
             ])
 
-        form_items = _re_layout(vbox, form_item_layout)
-
+        form_items = _relayout(vbox, form_item_layout)
         form = Box(form_items, layout=_make_box_layout())
+        # form = _relayout_master(vbox)
         return form
 
     def _make_resize_notebook_slider(self):
