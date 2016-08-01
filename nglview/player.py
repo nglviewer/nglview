@@ -632,7 +632,8 @@ class TrajectoryPlayer(DOMWidget):
     def _make_add_repr_widget(self, component_slider):
         dropdown_repr_name = Dropdown(options=REPR_NAMES, value='cartoon')
         repr_selection = Text(value='*', description='')
-        repr_button = Button(description='Add')
+        repr_button = Button(description='Add', tooltip="""Add representation.
+        You can also hit Enter in selection box""")
         repr_button.layout = Layout(width='auto', flex='1 1 auto')
 
         # repr_selection.layout.max_width = default.DEFAULT_TEXT_WIDTH
@@ -681,7 +682,8 @@ class TrajectoryPlayer(DOMWidget):
             button.observe(make_func(), names='value')
             children.append(button)
 
-        button_clear = Button(description='clear')
+        button_clear = Button(description='clear', button_style='info',
+                icon='fa-eraser')
         def on_clear(button_clear):
             self._view.clear()
             for kid in children:
@@ -690,7 +692,7 @@ class TrajectoryPlayer(DOMWidget):
 
         button_clear.on_click(on_clear)
 
-        vbox.children = children + [button_clear, repr_selection]
+        vbox.children = children + [repr_selection, button_clear]
         _relayout_button(vbox)
         return vbox
 
