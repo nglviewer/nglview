@@ -32,7 +32,7 @@ except TraitError:
     # for testing
     form_item_layout = None
 
-def _make_box_layout(width='20%'): 
+def _make_box_layout(width='100%'): 
     return Layout(
         display='flex',
         flex_flow='column',
@@ -242,6 +242,7 @@ class TrajectoryPlayer(DOMWidget):
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
                                  self._spin_speed)
 
+
     def _display(self):
         box_factory = [(self._make_gen_box, 'General'),
                        (self._make_repr_widget, 'Representation'),
@@ -253,6 +254,9 @@ class TrajectoryPlayer(DOMWidget):
 
         tab = _make_delay_tab(box_factory, selected_index=-1)
         tab = _make_autofit(tab)
+        tab.layout.align_self = 'center'
+        tab.layout.align_items = 'stretch'
+
         return tab
 
     def _make_button_center(self):
@@ -546,7 +550,7 @@ class TrajectoryPlayer(DOMWidget):
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
 
-        self.repr_widget = _relayout_master(vbox, width='60%')
+        self.repr_widget = _relayout_master(vbox, width='100%')
         return self.repr_widget
 
     def _make_repr_parameter_slider(self):
@@ -862,5 +866,5 @@ class TrajectoryPlayer(DOMWidget):
                    center_render_hbox,
                    ])
 
-        v0_left = _relayout_master(v0_left, width='50%')
+        v0_left = _relayout_master(v0_left, width='100%')
         return v0_left
