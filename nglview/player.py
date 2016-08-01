@@ -58,6 +58,37 @@ def _relayout_master(box, width='20%'):
     form._ngl_children = old_children
     return form
 
+def _make_delay_tab(box_factory, selected_index=0):
+    """
+
+    Parameters
+    ----------
+    box_factory : list of (func, tab_name)
+
+    Example of box_factory: [(_make_gen_box, 'General'),
+                             (_make_repr_box, 'Representation')]
+    """
+
+    tab = Tab([Box() for box, _ in box_factory])
+    [tab.set_title(i, title) for i, (_, title) in enumerate(box_factory)]
+
+    # trick
+    if not tab.children[selected_index].children:
+        tab.selected_index = -1
+
+    def on_update_selected_index(change):
+        index = change['new']
+        if not tab.children[index].children:
+            # make widget on demand
+            tab.children[index].children = [box_factory[index][0](),]
+
+    tab.observe(on_update_selected_index, names='selected_index')
+
+    # trigger
+    tab.selected_index = selected_index
+
+    return tab
+
 class TrajectoryPlayer(DOMWidget):
     # should set default values here different from desired defaults
     # so `observe` can be triggered
@@ -257,94 +288,99 @@ class TrajectoryPlayer(DOMWidget):
             return theme_box
 
         def _make_extra_box():
-            checkbox_spin = Checkbox(self.spin, description='spin')
-            spin_x_slide = IntSlider(
-                self._spin_x,
-                min=-1,
-                max=1,
-                description='spin_x')
-            spin_y_slide = IntSlider(
-                self._spin_y,
-                min=-1,
-                max=1,
-                description='spin_y')
-            spin_z_slide = IntSlider(
-                self._spin_z,
-                min=-1,
-                max=1,
-                description='spin_z')
-            spin_speed_slide = FloatSlider(
-                self._spin_speed,
-                min=0,
-                max=0.2,
-                step=0.001,
-                description='spin speed')
-            # spin
-            link((checkbox_spin, 'value'), (self, 'spin'))
-            link((spin_x_slide, 'value'), (self, '_spin_x'))
-            link((spin_y_slide, 'value'), (self, '_spin_y'))
-            link((spin_z_slide, 'value'), (self, '_spin_z'))
-            link((spin_speed_slide, 'value'), (self, '_spin_speed'))
+            def _make_spin_box():
+                checkbox_spin = Checkbox(self.spin, description='spin')
+                spin_x_slide = IntSlider(
+                    self._spin_x,
+                    min=-1,
+                    max=1,
+                    description='spin_x')
+                spin_y_slide = IntSlider(
+                    self._spin_y,
+                    min=-1,
+                    max=1,
+                    description='spin_y')
+                spin_z_slide = IntSlider(
+                    self._spin_z,
+                    min=-1,
+                    max=1,
+                    description='spin_z')
+                spin_speed_slide = FloatSlider(
+                    self._spin_speed,
+                    min=0,
+                    max=0.2,
+                    step=0.001,
+                    description='spin speed')
+                # spin
+                link((checkbox_spin, 'value'), (self, 'spin'))
+                link((spin_x_slide, 'value'), (self, '_spin_x'))
+                link((spin_y_slide, 'value'), (self, '_spin_y'))
+                link((spin_z_slide, 'value'), (self, '_spin_z'))
+                link((spin_speed_slide, 'value'), (self, '_spin_speed'))
 
-            qtconsole_button = self._make_button_qtconsole()
-            center_button = self._make_button_center()
-            render_button = self._show_download_image()
+                qtconsole_button = self._make_button_qtconsole()
+                center_button = self._make_button_center()
+                render_button = self._show_download_image()
 
-            center_render_hbox = HBox([center_button, render_button, qtconsole_button])
+                center_render_hbox = HBox([center_button, render_button, qtconsole_button])
 
-            spin_box= VBox([checkbox_spin,
-                       spin_x_slide,
-                       spin_y_slide,
-                       spin_z_slide,
-                       spin_speed_slide])
-            spin_box = _relayout_master(spin_box, width='75%')
+                spin_box= VBox([checkbox_spin,
+                           spin_x_slide,
+                           spin_y_slide,
+                           spin_z_slide,
+                           spin_speed_slide])
+                spin_box = _relayout_master(spin_box, width='75%')
+                return spin_box
 
-            drag_button = Button(description='widget drag: off', tooltip='dangerous')
-            drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
-            def on_drag_nb(drag_button):
-                if drag_nb.description == 'notebook drag: off':
-                    self._view._set_notebook_draggable(True)
-                    drag_nb.description = 'notebook drag: on'
-                else:
-                    self._view._set_notebook_draggable(False)
-                    drag_nb.description = 'notebook drag: off'
+            def _make_drag_wiget():
+                drag_button = Button(description='widget drag: off', tooltip='dangerous')
+                drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
+                def on_drag_nb(drag_button):
+                    if drag_nb.description == 'notebook drag: off':
+                        self._view._set_notebook_draggable(True)
+                        drag_nb.description = 'notebook drag: on'
+                    else:
+                        self._view._set_notebook_draggable(False)
+                        drag_nb.description = 'notebook drag: off'
 
-            reset_nb = Button(description='notebook: reset', tooltip='reset?')
-            def on_reset(reset_nb):
-                self._view._reset_notebook()
+                reset_nb = Button(description='notebook: reset', tooltip='reset?')
+                def on_reset(reset_nb):
+                    self._view._reset_notebook()
 
-            dialog_button = Button(description='dialog', tooltip='make a dialog')
-            def on_dialog(dialog_button):
-                self._view._remote_call('setDialog', target='Widget')
+                dialog_button = Button(description='dialog', tooltip='make a dialog')
+                def on_dialog(dialog_button):
+                    self._view._remote_call('setDialog', target='Widget')
 
-            lucky_button = Button(description='lucky', tooltip='try best to make a good layout')
-            def on_being_lucky(dialog_button):
-                self._view._move_notebook_to_the_right()
-                self._view._remote_call('setDialog', target='Widget')
+                lucky_button = Button(description='lucky', tooltip='try best to make a good layout')
+                def on_being_lucky(dialog_button):
+                    self._view._move_notebook_to_the_right()
+                    self._view._remote_call('setDialog', target='Widget')
 
-            drag_button.on_click(on_drag)
-            drag_nb.on_click(on_drag_nb)
-            reset_nb.on_click(on_reset)
-            dialog_button.on_click(on_dialog)
-            lucky_button.on_click(on_being_lucky)
-            drag_box = HBox([drag_button, drag_nb, reset_nb, dialog_button, lucky_button])
+                drag_button.on_click(on_drag)
+                drag_nb.on_click(on_drag_nb)
+                reset_nb.on_click(on_reset)
+                dialog_button.on_click(on_dialog)
+                lucky_button.on_click(on_being_lucky)
+                drag_box = HBox([drag_button, drag_nb, reset_nb, dialog_button, lucky_button])
 
-            repr_playground = self._make_repr_playground()
-            export_image_box = HBox([self._make_button_export_image()])
+                return drag_box
 
+            def _make_export_image_widget():
+                export_image_box = HBox([self._make_button_export_image()])
+                return export_image_box
 
-            self.picked_widget = self._make_text_picked()
+            def _make_picked_widget():
+                self.picked_widget = self._make_text_picked()
+                picked_box = HBox([self.picked_widget,])
+                return picked_box
 
-            picked_box = HBox([self.picked_widget,])
-            extra_list = [
-                          (drag_box, 'Drag'),
-                          (spin_box, 'spin_box'),
-                          (picked_box, 'picked atom'),
-                          (repr_playground, 'quick repr'),
-                          (export_image_box, 'Image')]
+            extra_list = [(_make_drag_wiget, 'Drag'),
+                          (_make_spin_box, 'spin_box'),
+                          (_make_picked_widget, 'picked atom'),
+                          (self._make_repr_playground, 'quick repr'),
+                          (_make_export_image_widget, 'Image')]
 
-            extra_box = Tab([w for w, _ in extra_list])
-            [extra_box.set_title(i, title) for i, (_, title) in enumerate(extra_list)]
+            extra_box = _make_delay_tab(extra_list, selected_index=0)
             return extra_box
 
         box_factory = [(_make_gen_box, 'General'),
@@ -355,20 +391,7 @@ class TrajectoryPlayer(DOMWidget):
                        (Box, 'Hide'),
                        (self._show_website, 'Help')]
 
-        tab = Tab([Box() for box, _ in box_factory])
-        [tab.set_title(i, title) for i, (_, title) in enumerate(box_factory)]
-
-        # Hide
-        tab.selected_index = -1
-
-        def on_update_selected_index(change):
-            index = change['new']
-            if not tab.children[index].children:
-                # make widget on demand
-                tab.children[index].children = [box_factory[index][0](),]
-
-        tab.observe(on_update_selected_index, names='selected_index')
-
+        tab = _make_delay_tab(box_factory, selected_index=-1)
         return tab
 
     def _make_button_center(self):
