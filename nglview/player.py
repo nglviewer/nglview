@@ -808,11 +808,6 @@ class TrajectoryPlayer(DOMWidget):
         repr_selection_box  = HBox([Label('selection'), repr_selection])
         setattr(repr_selection_box, 'value', repr_selection.value)
 
-        button_clear = Button(description='clear')
-        def on_clear(button_clear):
-            self._view.clear()
-        button_clear.on_click(on_clear)
-
         for index, name in enumerate(rep_names):
             button = ToggleButton(description=name)
 
@@ -828,6 +823,15 @@ class TrajectoryPlayer(DOMWidget):
 
             button.observe(make_func(), names='value')
             children.append(button)
+
+        button_clear = Button(description='clear')
+        def on_clear(button_clear):
+            self._view.clear()
+            for kid in children:
+                # unselect
+                kid.value = False
+
+        button_clear.on_click(on_clear)
 
         boxes = []
         for index, arr in enumerate(np.array_split(children, 4)):
