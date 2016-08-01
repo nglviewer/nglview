@@ -5,7 +5,13 @@ from ipywidgets import IntSlider, FloatSlider
 from .default import DEFAULT_SLIDER_WIDTH
 
 def get_widget_by_name(box, widget_name):
-    for widget in box.children:
+
+    if hasattr(box, '_ngl_children'):
+        children = box._ngl_children
+    else:
+        children = box.children
+
+    for widget in children:
         if hasattr(widget, '_ngl_name') and widget._ngl_name == widget_name:
             return widget
     raise ValueError('can not find widget with name = {}'.format(widget_name))

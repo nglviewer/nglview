@@ -720,9 +720,8 @@ class NGLWidget(DOMWidget):
                 repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
                 repr_slider.max = 0
 
-                repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-                repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
-                repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+                repr_name_text = get_widget_by_name(self.player.repr_widget, 'repr_name_text')
+                repr_selection = get_widget_by_name(self.player.repr_widget, 'repr_selection')
                 repr_name_text.value = ''
                 repr_selection.value = ''
 
@@ -733,9 +732,8 @@ class NGLWidget(DOMWidget):
             component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
             cindex = str(component_slider.value)
 
-            repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-            repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
-            repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+            repr_name_text = get_widget_by_name(self.player.repr_widget, 'repr_name_text')
+            repr_selection = get_widget_by_name(self.player.repr_widget, 'repr_selection')
 
             reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
             repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
@@ -1231,17 +1229,18 @@ class NGLWidget(DOMWidget):
                     self.frame = self.count - 1
             elif msg_type == 'repr_parameters':
                 data_dict = self._ngl_msg.get('data')
-                repr_name = data_dict.pop('name') + '\n'
-                repr_selection = data_dict.get('sele') + '\n'
+                name = data_dict.pop('name') + '\n'
+                selection = data_dict.get('sele') + '\n'
                 # json change True to true
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
 
                 if self.player.repr_widget is not None:
                     # TODO: refactor
-                    repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-                    repr_info_box.children[0].value = repr_name
-                    repr_info_box.children[1].value = repr_selection
+                    repr_name_text = get_widget_by_name(self.player.repr_widget, 'repr_name_text')
+                    repr_selection = get_widget_by_name(self.player.repr_widget, 'repr_selection')
+                    repr_name_text.value = name
+                    repr_selection.value = selection
 
                     # TODO: properly hide/show
                     # repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')

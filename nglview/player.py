@@ -51,9 +51,12 @@ def _relayout(box, form_item_layout):
 
     return form_items
 
-def _relayout_master(box):
+def _relayout_master(box, width='20%'):
+    old_children = box.children[:]
     form_items = _relayout(box, form_item_layout)
-    form = Box(form_items, layout=_make_box_layout())
+    form = Box(form_items, layout=_make_box_layout(width=width))
+    form._ngl_children = old_children
+    return form
 
 class TrajectoryPlayer(DOMWidget):
     # should set default values here different from desired defaults
@@ -206,8 +209,7 @@ class TrajectoryPlayer(DOMWidget):
                 min=10,
                 max=1000,
                 description='delay')
-            checkbox_interpolate = Checkbox(
-                self.interpolate, description='interpolate')
+            checkbox_interpolate = Checkbox(self.interpolate)
 
             bg_color = ColorPicker(value='white', description='background')
             bg_color.width = 100.
@@ -215,7 +217,7 @@ class TrajectoryPlayer(DOMWidget):
             interpolation_type = Dropdown(value=self._iterpolation_type,
                                           options=['linear', 'spline'])
 
-            ibox = HBox([checkbox_interpolate, interpolation_type])
+            ibox = HBox([checkbox_interpolate, interpolation_type], description='interpolate')
 
             camera_type = Dropdown(value=self.camera,
                                    options=['perspective', 'orthographic'], description='camera')
@@ -241,9 +243,8 @@ class TrajectoryPlayer(DOMWidget):
                        center_render_hbox,
                        ])
 
-            gen_box = HBox([v0_left, ])
-
-            return _relayout_master(gen_box)
+            v0_left = _relayout_master(v0_left, width='50%')
+            return v0_left
 
         def _make_repr_box():
             self.repr_widget = self._make_repr_widget()
@@ -401,7 +402,7 @@ class TrajectoryPlayer(DOMWidget):
 
         return button
 
-    def _make_preference_widget(self):
+    def _make_preference_widget(self, width='50%'):
         def make_func():
             parameters = self._view._full_stage_parameters
             def func(pan_speed=parameters.get('panSpeed', 0.8),
@@ -465,7 +466,7 @@ class TrajectoryPlayer(DOMWidget):
             widget_sliders.children = [reset_button,] + list(make_widget_box().children)
         reset_button.on_click(on_click)
 
-        return _relayout_master(widget_sliders)
+        return _relayout_master(widget_sliders, width=width)
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
@@ -517,14 +518,11 @@ class TrajectoryPlayer(DOMWidget):
 
         bbox = HBox([button_refresh, button_center_selection, button_hide, button_remove])
 
-        repr_name_text = Text(value='', description='')
+        repr_name_text = Text(value='', description='representation')
         repr_name_text._ngl_name = 'repr_name_text'
-        repr_selection = Text(value='', description='')
+        repr_selection = Text(value='', description='selection')
         repr_selection._ngl_name = 'repr_selection'
-        repr_selection.width = repr_name_text.width = default.DEFAULT_TEXT_WIDTH 
-
-        repr_info_box = VBox([repr_name_text, repr_selection])
-        repr_info_box._ngl_name = 'repr_info_box'
+        # repr_selection.width = repr_name_text.width = default.DEFAULT_TEXT_WIDTH 
 
         component_slider = IntSlider(value=0, description='component')
         component_slider._ngl_name = 'component_slider'
@@ -657,11 +655,12 @@ class TrajectoryPlayer(DOMWidget):
         # NOTE: if you update below list, make sure to update _make_repr_parameter_slider
         # or refactor
         # try to "refresh"
-        vbox = VBox([component_dropdown, bbox, repr_info_box,
+        vbox = VBox([component_dropdown, bbox, repr_name_text, repr_selection,
                      component_slider, repr_slider, reprlist_choices])
+
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
-        return vbox
+        return _relayout_master(vbox)
 
 
     def _make_repr_parameter_slider(self):
