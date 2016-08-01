@@ -242,7 +242,6 @@ class TrajectoryPlayer(DOMWidget):
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
                                  self._spin_speed)
 
-
     def _display(self):
         box_factory = [(self._make_gen_box, 'General'),
                        (self._make_repr_widget, 'Representation'),
@@ -642,6 +641,7 @@ class TrajectoryPlayer(DOMWidget):
         repr_selection = Text(value='*', description='')
         repr_button = Button(description='Add', tooltip="""Add representation.
         You can also hit Enter in selection box""")
+        repr_button.layout = Layout(width='auto', flex='1 1 auto')
 
         dropdown_repr_name.layout.width = repr_selection.layout.width = default.DEFAULT_TEXT_WIDTH
 
