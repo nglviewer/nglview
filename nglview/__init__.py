@@ -299,6 +299,7 @@ class FileStructure(Structure):
         self.fm = FileManager(path)
         self.ext = self.fm.ext
         self.params = {}
+        self.path = path
         if not self.fm.is_filename:
             raise IOError("Not a file: " + path)
 
@@ -703,14 +704,16 @@ class NGLWidget(DOMWidget):
     def _handle_n_components_changed(self, change):
         if self.player.repr_widget is not None:
             component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+
             if change['new'] - 1 >= component_slider.min:
                 component_slider.max = change['new'] - 1
+
             component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
             component_dropdown.options = tuple(self._ngl_component_names)
 
             if change['new'] == 0:
-                component_dropdown.options = tuple([''])
-                component_dropdown.value = ''
+                component_dropdown.options = tuple([' '])
+                component_dropdown.value = ' '
 
                 component_slider.max = 0
 
@@ -722,8 +725,8 @@ class NGLWidget(DOMWidget):
 
                 repr_name_text = get_widget_by_name(self.player.repr_widget, 'repr_name_text')
                 repr_selection = get_widget_by_name(self.player.repr_widget, 'repr_selection')
-                repr_name_text.value = ''
-                repr_selection.value = ''
+                repr_name_text.value = ' '
+                repr_selection.value = ' '
 
     @observe('_repr_dict')
     def _handle_repr_dict_changed(self, change):

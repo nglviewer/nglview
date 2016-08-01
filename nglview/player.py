@@ -67,7 +67,7 @@ def _relayout_master(box, width='20%'):
     form._ngl_children = old_children
     return form
 
-def _relayout_button(box):
+def _make_autofit(box):
     '''
 
     Parameters
@@ -252,6 +252,7 @@ class TrajectoryPlayer(DOMWidget):
                        (self._show_website, 'Help')]
 
         tab = _make_delay_tab(box_factory, selected_index=-1)
+        tab = _make_autofit(tab)
         return tab
 
     def _make_button_center(self):
@@ -345,7 +346,8 @@ class TrajectoryPlayer(DOMWidget):
             widget_sliders.children = [reset_button,] + list(make_widget_box().children)
         reset_button.on_click(on_click)
 
-        return _relayout_master(widget_sliders, width=width)
+        self._preference_widget = _relayout_master(widget_sliders, width=width)
+        return self._preference_widget
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
@@ -372,7 +374,7 @@ class TrajectoryPlayer(DOMWidget):
             ("'http://arose.github.io/ngl/api/dev/tutorial-selection-language.html'", "Selection"),
             ("'http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html'", "Representation")]
         ]
-        return HBox(buttons)
+        return _make_autofit(HBox(buttons))
 
     def _make_button_qtconsole(self):
         from nglview.jsutils import js_launch_qtconsole
@@ -396,7 +398,8 @@ class TrajectoryPlayer(DOMWidget):
         button_center_selection = Button(description='Center', tooltip='center selected atoms')
         button_center_selection._ngl_name = 'button_center_selection'
 
-        bbox = HBox([button_refresh, button_center_selection, button_hide, button_remove])
+        bbox = _make_autofit(HBox([button_refresh, button_center_selection,
+            button_hide, button_remove]))
 
         repr_name_text = Text(value='', description='representation')
         repr_name_text._ngl_name = 'repr_name_text'
@@ -404,7 +407,7 @@ class TrajectoryPlayer(DOMWidget):
         repr_selection._ngl_name = 'repr_selection'
         # repr_selection.width = repr_name_text.width = default.DEFAULT_TEXT_WIDTH 
 
-        component_slider = IntSlider(value=0, description='component')
+        component_slider = IntSlider(value=0, max=self._view.n_components-1, description='component')
         component_slider._ngl_name = 'component_slider'
         component_slider.visible = False
 
@@ -431,6 +434,7 @@ class TrajectoryPlayer(DOMWidget):
         reprlist_choices._ngl_name = 'reprlist_choices'
 
         repr_add_widget = self._make_add_repr_widget(component_slider)
+        # repr_add_widget = _make_autofit(repr_add_widget)
 
         def on_update_checkbox_reprlist(change):
             reprlist_choices.visible= change['new']
@@ -542,8 +546,9 @@ class TrajectoryPlayer(DOMWidget):
 
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
-        return _relayout_master(vbox, width='60%')
 
+        self.repr_widget = _relayout_master(vbox, width='60%')
+        return self.repr_widget
 
     def _make_repr_parameter_slider(self):
         repr_checkbox = Checkbox(value=False, description='Parameters')
@@ -634,11 +639,6 @@ class TrajectoryPlayer(DOMWidget):
         repr_selection = Text(value='*', description='')
         repr_button = Button(description='Add', tooltip="""Add representation.
         You can also hit Enter in selection box""")
-        repr_button.layout = Layout(width='auto', flex='1 1 auto')
-
-        # repr_selection.layout.max_width = default.DEFAULT_TEXT_WIDTH
-        # dropdownrepr_name.layout.width = repr_name.layout.height = default.DROPDOWN_MAX_WIDTH
-        # repr_selection.layout.max_width = default.DEFAULT_TEXT_WIDTH
 
         def on_click_or_submit(button_or_text_area):
             self._view.add_representation(selection=repr_selection.value.strip(),
@@ -693,7 +693,7 @@ class TrajectoryPlayer(DOMWidget):
         button_clear.on_click(on_clear)
 
         vbox.children = children + [repr_selection, button_clear]
-        _relayout_button(vbox)
+        _make_autofit(vbox)
         return vbox
 
     def _make_repr_name_choices(self, component_slider, repr_slider):
@@ -749,7 +749,7 @@ class TrajectoryPlayer(DOMWidget):
 
         drag_box = HBox([drag_button, drag_nb, reset_nb,
                         dialog_button, lucky_button])
-        drag_box = _relayout_button(drag_box)
+        drag_box = _make_autofit(drag_box)
         return drag_box
 
     def _make_spin_box(self):
@@ -781,12 +781,6 @@ class TrajectoryPlayer(DOMWidget):
         link((spin_y_slide, 'value'), (self, '_spin_y'))
         link((spin_z_slide, 'value'), (self, '_spin_z'))
         link((spin_speed_slide, 'value'), (self, '_spin_speed'))
-
-        qtconsole_button = self._make_button_qtconsole()
-        center_button = self._make_button_center()
-        render_button = self._show_download_image()
-
-        center_render_hbox = HBox([center_button, render_button, qtconsole_button])
 
         spin_box= VBox([checkbox_spin,
                    spin_x_slide,
@@ -857,7 +851,7 @@ class TrajectoryPlayer(DOMWidget):
         center_button = self._make_button_center()
         render_button = self._show_download_image()
         qtconsole_button = self._make_button_qtconsole()
-        center_render_hbox = HBox([center_button, render_button, qtconsole_button])
+        center_render_hbox = _make_autofit(HBox([center_button, render_button, qtconsole_button]))
 
         v0_left = VBox([step_slide,
                    delay_text,
