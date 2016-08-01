@@ -209,13 +209,15 @@ class TrajectoryPlayer(DOMWidget):
                 min=10,
                 max=1000,
                 description='delay')
-            checkbox_interpolate = Checkbox(self.interpolate)
+            checkbox_interpolate = Checkbox(self.interpolate, description='')
 
             bg_color = ColorPicker(value='white', description='background')
             bg_color.width = 100.
             # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
             interpolation_type = Dropdown(value=self._iterpolation_type,
                                           options=['linear', 'spline'])
+
+            interpolation_type.layout.max_width = '40px'
 
             ibox = HBox([checkbox_interpolate, interpolation_type], description='interpolate')
 
@@ -248,13 +250,7 @@ class TrajectoryPlayer(DOMWidget):
 
         def _make_repr_box():
             self.repr_widget = self._make_repr_widget()
-            component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
-            repr_add_widget = self._make_add_repr_widget(component_slider)
-
-            repr_box= HBox([self.repr_widget,
-                            repr_add_widget])
-            repr_box.layout = Layout(display='flex', flex_flow='column')
-            return repr_box
+            return self.repr_widget
 
         def _make_theme_box():
             theme_box = Box([self._make_button_theme(), self._make_button_reset_theme()])
@@ -301,7 +297,7 @@ class TrajectoryPlayer(DOMWidget):
                        spin_y_slide,
                        spin_z_slide,
                        spin_speed_slide])
-            spin_box = _relayout_master(spin_box)
+            spin_box = _relayout_master(spin_box, width='75%')
 
             drag_button = Button(description='widget drag: off', tooltip='dangerous')
             drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
@@ -333,7 +329,7 @@ class TrajectoryPlayer(DOMWidget):
             lucky_button.on_click(on_being_lucky)
             drag_box = HBox([drag_button, drag_nb, reset_nb, dialog_button, lucky_button])
 
-            repr_playground = self._make_selection_repr_buttons()
+            repr_playground = self._make_repr_playground()
             export_image_box = HBox([self._make_button_export_image()])
 
 
@@ -550,6 +546,8 @@ class TrajectoryPlayer(DOMWidget):
         reprlist_choices = self._make_repr_name_choices(component_slider, repr_slider)
         reprlist_choices._ngl_name = 'reprlist_choices'
 
+        repr_add_widget = self._make_add_repr_widget(component_slider)
+
         def on_update_checkbox_reprlist(change):
             reprlist_choices.visible= change['new']
         checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
@@ -655,12 +653,12 @@ class TrajectoryPlayer(DOMWidget):
         # NOTE: if you update below list, make sure to update _make_repr_parameter_slider
         # or refactor
         # try to "refresh"
-        vbox = VBox([component_dropdown, bbox, repr_name_text, repr_selection,
+        vbox = VBox([bbox, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
                      component_slider, repr_slider, reprlist_choices])
 
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
-        return _relayout_master(vbox)
+        return _relayout_master(vbox, width='60%')
 
 
     def _make_repr_parameter_slider(self):
@@ -769,7 +767,7 @@ class TrajectoryPlayer(DOMWidget):
 
         return add_repr_box
 
-    def _make_selection_repr_buttons(self):
+    def _make_repr_playground(self):
         vbox = VBox()
         children = []
 
@@ -780,6 +778,8 @@ class TrajectoryPlayer(DOMWidget):
 
         repr_selection = Text(value='*')
         repr_selection.layout.width = default.DEFAULT_TEXT_WIDTH
+        repr_selection_box  = HBox([Label('selection'), repr_selection])
+        setattr(repr_selection_box, 'value', repr_selection.value)
 
         button_clear = Button(description='clear')
         def on_clear(button_clear):
@@ -808,7 +808,7 @@ class TrajectoryPlayer(DOMWidget):
             boxes.append(box)
         vbox.children = boxes
         quick_repr_buttons = HBox([vbox,
-                                   VBox([repr_selection, button_clear])])
+                                   VBox([button_clear, repr_selection_box])])
         quick_repr_buttons.layout = Layout(display='flex', flex_flow='column')
         return quick_repr_buttons
 
