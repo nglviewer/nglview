@@ -1243,8 +1243,9 @@ class NGLWidget(DOMWidget):
                     repr_info_box.children[0].value = repr_name
                     repr_info_box.children[1].value = repr_selection
 
-                    repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
-                    repr_text_box.children[-1].value = data_dict_json
+                    # TODO: properly hide/show
+                    # repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
+                    # repr_text_box.children[-1].value = data_dict_json
             elif msg_type == 'request_loaded':
                 if not self.loaded:
                     # trick to trigger observe loaded
