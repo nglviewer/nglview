@@ -13,6 +13,7 @@ from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
 import numpy as np
 
 from ipykernel.comm import Comm
+import ipywidgets
 from ipywidgets import Widget, IntText, BoundedFloatText, HBox
 from traitlets import TraitError
 import ipywidgets as widgets
@@ -465,3 +466,12 @@ def test_theme():
     theme.oceans16()
     theme.reset()
     theme._get_theme('oceans16.css')
+
+def test_click_tab():
+    view = nv.demo()
+    gui = view.player._display()
+    nt.assert_true(isinstance(gui, ipywidgets.Tab))
+
+    for i, child in enumerate(gui.children):
+        gui.selected_index = i
+        nt.assert_true(isinstance(child, ipywidgets.Box))

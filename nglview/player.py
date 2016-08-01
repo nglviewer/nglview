@@ -56,11 +56,34 @@ def _relayout(box, form_item_layout):
     return form_items
 
 def _relayout_master(box, width='20%'):
+    """make nicer layout for box.
+
+    This method will take the `description` of each child to make corresponding Label
+    The `description` will be cleared.
+    """
     old_children = box.children[:]
     form_items = _relayout(box, form_item_layout)
     form = Box(form_items, layout=_make_box_layout(width=width))
     form._ngl_children = old_children
     return form
+
+def _relayout_button(box):
+    '''
+
+    Parameters
+    ----------
+    box : ipywidgets.Box
+        children is a list of buttons
+
+    Returns
+    -------
+    relayouted box
+    '''
+    items_layout = Layout(flex='1 1 auto',
+                          width='auto')  
+
+    box.layout = items_layout
+    return box
 
 def _make_delay_tab(box_factory, selected_index=0):
     """
@@ -220,178 +243,11 @@ class TrajectoryPlayer(DOMWidget):
                                  self._spin_speed)
 
     def _display(self):
-        def _make_preference():
-            self._preference_widget = self._make_preference_widget()
-            return self._preference_widget
-
-
-        def on_drag(drag_button):
-            if drag_button.description == 'widget drag: off':
-                self._view._set_draggable(True)
-                drag_button.description = 'widget drag: on'
-            else:
-                self._view._set_draggable(False)
-                drag_button.description = 'widget drag: off'
-
-        def _make_gen_box():
-            step_slide = IntSlider(
-                value=self.step,
-                min=-100,
-                max=100,
-                description='step')
-            delay_text = IntSlider(
-                value=self.delay,
-                min=10,
-                max=1000,
-                description='delay')
-            checkbox_interpolate = Checkbox(self.interpolate, description='')
-
-            bg_color = ColorPicker(value='white', description='background')
-            bg_color.width = 100.
-            # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
-            interpolation_type = Dropdown(value=self._iterpolation_type,
-                                          options=['linear', 'spline'])
-
-            interpolation_type.layout.max_width = '40px'
-
-            ibox = HBox([checkbox_interpolate, interpolation_type], description='interpolate')
-
-            camera_type = Dropdown(value=self.camera,
-                                   options=['perspective', 'orthographic'], description='camera')
-
-            link((step_slide, 'value'), (self, 'step'))
-            link((delay_text, 'value'), (self, 'delay'))
-            link((checkbox_interpolate, 'value'), (self, 'interpolate'))
-            # link((t_interpolation, 'value'), (self, '_interpolation_t'))
-            link((interpolation_type, 'value'), (self, '_iterpolation_type'))
-            link((camera_type, 'value'), (self, 'camera'))
-            link((bg_color, 'value'), (self._view, 'background'))
-
-            center_button = self._make_button_center()
-            render_button = self._show_download_image()
-            qtconsole_button = self._make_button_qtconsole()
-            center_render_hbox = HBox([center_button, render_button, qtconsole_button])
-
-            v0_left = VBox([step_slide,
-                       delay_text,
-                       bg_color,
-                       camera_type,
-                       ibox,
-                       center_render_hbox,
-                       ])
-
-            v0_left = _relayout_master(v0_left, width='50%')
-            return v0_left
-
-        def _make_repr_box():
-            self.repr_widget = self._make_repr_widget()
-            return self.repr_widget
-
-        def _make_theme_box():
-            theme_box = Box([self._make_button_theme(), self._make_button_reset_theme()])
-            return theme_box
-
-        def _make_extra_box():
-            def _make_spin_box():
-                checkbox_spin = Checkbox(self.spin, description='spin')
-                spin_x_slide = IntSlider(
-                    self._spin_x,
-                    min=-1,
-                    max=1,
-                    description='spin_x')
-                spin_y_slide = IntSlider(
-                    self._spin_y,
-                    min=-1,
-                    max=1,
-                    description='spin_y')
-                spin_z_slide = IntSlider(
-                    self._spin_z,
-                    min=-1,
-                    max=1,
-                    description='spin_z')
-                spin_speed_slide = FloatSlider(
-                    self._spin_speed,
-                    min=0,
-                    max=0.2,
-                    step=0.001,
-                    description='spin speed')
-                # spin
-                link((checkbox_spin, 'value'), (self, 'spin'))
-                link((spin_x_slide, 'value'), (self, '_spin_x'))
-                link((spin_y_slide, 'value'), (self, '_spin_y'))
-                link((spin_z_slide, 'value'), (self, '_spin_z'))
-                link((spin_speed_slide, 'value'), (self, '_spin_speed'))
-
-                qtconsole_button = self._make_button_qtconsole()
-                center_button = self._make_button_center()
-                render_button = self._show_download_image()
-
-                center_render_hbox = HBox([center_button, render_button, qtconsole_button])
-
-                spin_box= VBox([checkbox_spin,
-                           spin_x_slide,
-                           spin_y_slide,
-                           spin_z_slide,
-                           spin_speed_slide])
-                spin_box = _relayout_master(spin_box, width='75%')
-                return spin_box
-
-            def _make_drag_wiget():
-                drag_button = Button(description='widget drag: off', tooltip='dangerous')
-                drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
-                def on_drag_nb(drag_button):
-                    if drag_nb.description == 'notebook drag: off':
-                        self._view._set_notebook_draggable(True)
-                        drag_nb.description = 'notebook drag: on'
-                    else:
-                        self._view._set_notebook_draggable(False)
-                        drag_nb.description = 'notebook drag: off'
-
-                reset_nb = Button(description='notebook: reset', tooltip='reset?')
-                def on_reset(reset_nb):
-                    self._view._reset_notebook()
-
-                dialog_button = Button(description='dialog', tooltip='make a dialog')
-                def on_dialog(dialog_button):
-                    self._view._remote_call('setDialog', target='Widget')
-
-                lucky_button = Button(description='lucky', tooltip='try best to make a good layout')
-                def on_being_lucky(dialog_button):
-                    self._view._move_notebook_to_the_right()
-                    self._view._remote_call('setDialog', target='Widget')
-
-                drag_button.on_click(on_drag)
-                drag_nb.on_click(on_drag_nb)
-                reset_nb.on_click(on_reset)
-                dialog_button.on_click(on_dialog)
-                lucky_button.on_click(on_being_lucky)
-                drag_box = HBox([drag_button, drag_nb, reset_nb, dialog_button, lucky_button])
-
-                return drag_box
-
-            def _make_export_image_widget():
-                export_image_box = HBox([self._make_button_export_image()])
-                return export_image_box
-
-            def _make_picked_widget():
-                self.picked_widget = self._make_text_picked()
-                picked_box = HBox([self.picked_widget,])
-                return picked_box
-
-            extra_list = [(_make_drag_wiget, 'Drag'),
-                          (_make_spin_box, 'spin_box'),
-                          (_make_picked_widget, 'picked atom'),
-                          (self._make_repr_playground, 'quick repr'),
-                          (_make_export_image_widget, 'Image')]
-
-            extra_box = _make_delay_tab(extra_list, selected_index=0)
-            return extra_box
-
-        box_factory = [(_make_gen_box, 'General'),
-                       (_make_repr_box, 'Representation'),
-                       (_make_preference, 'Preference'),
-                       (_make_theme_box, 'Theme'),
-                       (_make_extra_box, 'Extra'),
+        box_factory = [(self._make_gen_box, 'General'),
+                       (self._make_repr_widget, 'Representation'),
+                       (self._make_preference_widget, 'Preference'),
+                       (self._make_theme_box, 'Theme'),
+                       (self._make_extra_box, 'Extra'),
                        (Box, 'Hide'),
                        (self._show_website, 'Help')]
 
@@ -529,6 +385,7 @@ class TrajectoryPlayer(DOMWidget):
 
     def _make_text_picked(self):
         ta = Textarea(value=json.dumps(self._view.picked), description='Picked atom')
+        ta.layout.width = '300px'
         return ta
 
     def _make_repr_widget(self):
@@ -775,7 +632,8 @@ class TrajectoryPlayer(DOMWidget):
     def _make_add_repr_widget(self, component_slider):
         dropdown_repr_name = Dropdown(options=REPR_NAMES, value='cartoon')
         repr_selection = Text(value='*', description='')
-        repr_button = Button(description='Add')
+        repr_button = Button(description='Add', tooltip="""Add representation.
+        You can also hit Enter in selection box""")
         repr_button.layout = Layout(width='auto', flex='1 1 auto')
 
         # repr_selection.layout.max_width = default.DEFAULT_TEXT_WIDTH
@@ -808,11 +666,6 @@ class TrajectoryPlayer(DOMWidget):
         repr_selection_box  = HBox([Label('selection'), repr_selection])
         setattr(repr_selection_box, 'value', repr_selection.value)
 
-        button_clear = Button(description='clear')
-        def on_clear(button_clear):
-            self._view.clear()
-        button_clear.on_click(on_clear)
-
         for index, name in enumerate(rep_names):
             button = ToggleButton(description=name)
 
@@ -829,15 +682,19 @@ class TrajectoryPlayer(DOMWidget):
             button.observe(make_func(), names='value')
             children.append(button)
 
-        boxes = []
-        for index, arr in enumerate(np.array_split(children, 4)):
-            box = HBox([child for child in arr])
-            boxes.append(box)
-        vbox.children = boxes
-        quick_repr_buttons = HBox([vbox,
-                                   VBox([button_clear, repr_selection_box])])
-        quick_repr_buttons.layout = Layout(display='flex', flex_flow='column')
-        return quick_repr_buttons
+        button_clear = Button(description='clear', button_style='info',
+                icon='fa-eraser')
+        def on_clear(button_clear):
+            self._view.clear()
+            for kid in children:
+                # unselect
+                kid.value = False
+
+        button_clear.on_click(on_clear)
+
+        vbox.children = children + [repr_selection, button_clear]
+        _relayout_button(vbox)
+        return vbox
 
     def _make_repr_name_choices(self, component_slider, repr_slider):
         repr_choices = Dropdown()
@@ -850,3 +707,165 @@ class TrajectoryPlayer(DOMWidget):
         repr_choices.observe(on_chose, names='value')
 
         return repr_choices
+
+    def _make_drag_widget(self):
+        drag_button = Button(description='widget drag: off', tooltip='dangerous')
+        drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
+        reset_nb = Button(description='notebook: reset', tooltip='reset?')
+        dialog_button = Button(description='dialog', tooltip='make a dialog')
+        lucky_button = Button(description='lucky', tooltip='try best to make a good layout')
+
+        def on_drag(drag_button):
+            if drag_button.description == 'widget drag: off':
+                self._view._set_draggable(True)
+                drag_button.description = 'widget drag: on'
+            else:
+                self._view._set_draggable(False)
+                drag_button.description = 'widget drag: off'
+
+        def on_drag_nb(drag_button):
+            if drag_nb.description == 'notebook drag: off':
+                self._view._set_notebook_draggable(True)
+                drag_nb.description = 'notebook drag: on'
+            else:
+                self._view._set_notebook_draggable(False)
+                drag_nb.description = 'notebook drag: off'
+
+        def on_reset(reset_nb):
+            self._view._reset_notebook()
+
+        def on_dialog(dialog_button):
+            self._view._remote_call('setDialog', target='Widget')
+
+        def on_being_lucky(dialog_button):
+            self._view._move_notebook_to_the_right()
+            self._view._remote_call('setDialog', target='Widget')
+
+        drag_button.on_click(on_drag)
+        drag_nb.on_click(on_drag_nb)
+        reset_nb.on_click(on_reset)
+        dialog_button.on_click(on_dialog)
+        lucky_button.on_click(on_being_lucky)
+
+        drag_box = HBox([drag_button, drag_nb, reset_nb,
+                        dialog_button, lucky_button])
+        drag_box = _relayout_button(drag_box)
+        return drag_box
+
+    def _make_spin_box(self):
+        checkbox_spin = Checkbox(self.spin, description='spin')
+        spin_x_slide = IntSlider(
+            self._spin_x,
+            min=-1,
+            max=1,
+            description='spin_x')
+        spin_y_slide = IntSlider(
+            self._spin_y,
+            min=-1,
+            max=1,
+            description='spin_y')
+        spin_z_slide = IntSlider(
+            self._spin_z,
+            min=-1,
+            max=1,
+            description='spin_z')
+        spin_speed_slide = FloatSlider(
+            self._spin_speed,
+            min=0,
+            max=0.2,
+            step=0.001,
+            description='spin speed')
+        # spin
+        link((checkbox_spin, 'value'), (self, 'spin'))
+        link((spin_x_slide, 'value'), (self, '_spin_x'))
+        link((spin_y_slide, 'value'), (self, '_spin_y'))
+        link((spin_z_slide, 'value'), (self, '_spin_z'))
+        link((spin_speed_slide, 'value'), (self, '_spin_speed'))
+
+        qtconsole_button = self._make_button_qtconsole()
+        center_button = self._make_button_center()
+        render_button = self._show_download_image()
+
+        center_render_hbox = HBox([center_button, render_button, qtconsole_button])
+
+        spin_box= VBox([checkbox_spin,
+                   spin_x_slide,
+                   spin_y_slide,
+                   spin_z_slide,
+                   spin_speed_slide])
+        spin_box = _relayout_master(spin_box, width='75%')
+        return spin_box
+
+    def _make_picked_widget(self):
+        self.picked_widget = self._make_text_picked()
+        picked_box = HBox([self.picked_widget,])
+        return _relayout_master(picked_box, width='75%')
+
+    def _make_export_image_widget(self):
+        export_image_box = HBox([self._make_button_export_image()])
+        return export_image_box
+
+    def _make_extra_box(self):
+
+        extra_list = [(self._make_drag_widget, 'Drag'),
+                      (self._make_spin_box, 'spin_box'),
+                      (self._make_picked_widget, 'picked atom'),
+                      (self._make_repr_playground, 'quick repr'),
+                      (self._make_export_image_widget, 'Image')]
+
+        extra_box = _make_delay_tab(extra_list, selected_index=0)
+        return extra_box
+
+    def _make_theme_box(self):
+        theme_box = Box([self._make_button_theme(), self._make_button_reset_theme()])
+        return theme_box
+
+    def _make_gen_box(self):
+        step_slide = IntSlider(
+            value=self.step,
+            min=-100,
+            max=100,
+            description='step')
+        delay_text = IntSlider(
+            value=self.delay,
+            min=10,
+            max=1000,
+            description='delay')
+        checkbox_interpolate = Checkbox(self.interpolate, description='')
+
+        bg_color = ColorPicker(value='white', description='background')
+        bg_color.width = 100.
+        # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
+        interpolation_type = Dropdown(value=self._iterpolation_type,
+                                      options=['linear', 'spline'])
+
+        interpolation_type.layout.max_width = '40px'
+
+        ibox = HBox([checkbox_interpolate, interpolation_type], description='interpolate')
+
+        camera_type = Dropdown(value=self.camera,
+                               options=['perspective', 'orthographic'], description='camera')
+
+        link((step_slide, 'value'), (self, 'step'))
+        link((delay_text, 'value'), (self, 'delay'))
+        link((checkbox_interpolate, 'value'), (self, 'interpolate'))
+        # link((t_interpolation, 'value'), (self, '_interpolation_t'))
+        link((interpolation_type, 'value'), (self, '_iterpolation_type'))
+        link((camera_type, 'value'), (self, 'camera'))
+        link((bg_color, 'value'), (self._view, 'background'))
+
+        center_button = self._make_button_center()
+        render_button = self._show_download_image()
+        qtconsole_button = self._make_button_qtconsole()
+        center_render_hbox = HBox([center_button, render_button, qtconsole_button])
+
+        v0_left = VBox([step_slide,
+                   delay_text,
+                   bg_color,
+                   camera_type,
+                   ibox,
+                   center_render_hbox,
+                   ])
+
+        v0_left = _relayout_master(v0_left, width='50%')
+        return v0_left
