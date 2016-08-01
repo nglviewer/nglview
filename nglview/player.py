@@ -390,7 +390,7 @@ class TrajectoryPlayer(DOMWidget):
         ta.layout.width = '300px'
         return ta
 
-    def _make_repr_widget(self):
+    def _make_button_repr_control(self, component_slider, repr_slider, repr_selection):
         button_refresh = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
         button_remove = Button(description='Remove', tooltip='Remove current representation')
@@ -398,9 +398,59 @@ class TrajectoryPlayer(DOMWidget):
         button_center_selection = Button(description='Center', tooltip='center selected atoms')
         button_center_selection._ngl_name = 'button_center_selection'
 
+        def on_click_refresh(button):
+            self._view._request_repr_parameters(component=component_slider.value,
+                                                repr_index=repr_slider.value)
+            self._view._remote_call('requestReprInfo', target='Widget')
+            self._view._handle_repr_dict_changed(change=dict(new=self._view._repr_dict))
+
+        def on_click_update(button):
+            parameters = json.loads(repr_text_info.value.replace("False", "false").replace("True", "true"))
+            self._view.update_representation(component=component_slider.value,
+                                             repr_index=repr_slider.value,
+                                             **parameters)
+            self._view._set_selection(repr_selection.value,
+                                      component=component_slider.value,
+                                      repr_index=repr_slider.value)
+        def on_click_remove(button_remove):
+            self._view._remove_representation(component=component_slider.value,
+                                              repr_index=repr_slider.value)
+            self._view._request_repr_parameters(component=component_slider.value,
+                                                repr_index=repr_slider.value)
+        def on_click_hide(button_hide):
+            component=component_slider.value
+            repr_index=repr_slider.value
+
+            if button_hide.description == 'Hide':
+                hide = True
+                button_hide.description = 'Show'
+            elif button_hide.description == 'Show':
+                hide = False
+                button_hide.description = 'Hide'
+            else:
+                raise ValueError("must be Hide or Show")
+
+            self._view._remote_call('setVisibilityForRepr',
+                                    target='Widget',
+                                    args=[component, repr_index, not hide])
+
+        button_refresh.on_click(on_click_refresh)
+        button_update.on_click(on_click_update)
+        button_hide.on_click(on_click_hide)
+        button_remove.on_click(on_click_remove)
+
+        def on_click_center(center_selection):
+            self._view.center_view(selection=repr_selection.value,
+                                   component=component_slider.value)
+        button_center_selection.on_click(on_click_center)
+
+
+
         bbox = _make_autofit(HBox([button_refresh, button_center_selection,
             button_hide, button_remove]))
+        return Box([Label(""), bbox])
 
+    def _make_repr_widget(self):
         repr_name_text = Text(value='', description='representation')
         repr_name_text._ngl_name = 'repr_name_text'
         repr_selection = Text(value='', description='selection')
@@ -439,54 +489,6 @@ class TrajectoryPlayer(DOMWidget):
         def on_update_checkbox_reprlist(change):
             reprlist_choices.visible= change['new']
         checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
-
-        def on_click_refresh(button):
-            self._view._request_repr_parameters(component=component_slider.value,
-                                                repr_index=repr_slider.value)
-            self._view._remote_call('requestReprInfo', target='Widget')
-            self._view._handle_repr_dict_changed(change=dict(new=self._view._repr_dict))
-        button_refresh.on_click(on_click_refresh)
-
-        def on_click_update(button):
-            parameters = json.loads(repr_text_info.value.replace("False", "false").replace("True", "true"))
-            self._view.update_representation(component=component_slider.value,
-                                             repr_index=repr_slider.value,
-                                             **parameters)
-            self._view._set_selection(repr_selection.value,
-                                      component=component_slider.value,
-                                      repr_index=repr_slider.value)
-        button_update.on_click(on_click_update)
-
-        def on_click_remove(button_remove):
-            self._view._remove_representation(component=component_slider.value,
-                                              repr_index=repr_slider.value)
-            self._view._request_repr_parameters(component=component_slider.value,
-                                                repr_index=repr_slider.value)
-        button_remove.on_click(on_click_remove)
-
-        def on_click_hide(button_hide):
-            component=component_slider.value
-            repr_index=repr_slider.value
-
-            if button_hide.description == 'Hide':
-                hide = True
-                button_hide.description = 'Show'
-            elif button_hide.description == 'Show':
-                hide = False
-                button_hide.description = 'Hide'
-            else:
-                raise ValueError("must be Hide or Show")
-
-            self._view._remote_call('setVisibilityForRepr',
-                                    target='Widget',
-                                    args=[component, repr_index, not hide])
-
-        button_hide.on_click(on_click_hide)
-
-        def on_click_center(center_selection):
-            self._view.center_view(selection=repr_selection.value,
-                                   component=component_slider.value)
-        button_center_selection.on_click(on_click_center)
 
         def on_change_repr_name(change):
             name = change['new'].strip()
@@ -534,14 +536,11 @@ class TrajectoryPlayer(DOMWidget):
         repr_selection.observe(on_change_selection, names='value')
         checkbox_repr_text.observe(on_change_checkbox_repr_text, names='value')
 
-        # HC
-        # repr_parameters_box = self._make_repr_parameter_slider()
-        # repr_parameters_box._ngl_name = 'repr_parameters_box'
+        bbox = self._make_button_repr_control(component_slider, repr_slider,
+                repr_selection)
 
-        # NOTE: if you update below list, make sure to update _make_repr_parameter_slider
-        # or refactor
-        # try to "refresh"
-        vbox = VBox([bbox, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
+        blank_box = Box([Label("")])
+        vbox = VBox([bbox, blank_box, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
                      component_slider, repr_slider, reprlist_choices])
 
         self._view._request_repr_parameters(component=component_slider.value,
@@ -640,6 +639,8 @@ class TrajectoryPlayer(DOMWidget):
         repr_button = Button(description='Add', tooltip="""Add representation.
         You can also hit Enter in selection box""")
 
+        dropdown_repr_name.layout.width = repr_selection.layout.width = default.DEFAULT_TEXT_WIDTH
+
         def on_click_or_submit(button_or_text_area):
             self._view.add_representation(selection=repr_selection.value.strip(),
                     repr_type=dropdown_repr_name.value,
@@ -713,7 +714,7 @@ class TrajectoryPlayer(DOMWidget):
         drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
         reset_nb = Button(description='notebook: reset', tooltip='reset?')
         dialog_button = Button(description='dialog', tooltip='make a dialog')
-        lucky_button = Button(description='lucky', tooltip='try best to make a good layout')
+        split_half_buttong = Button(description='split half', tooltip='try best to make a good layout')
 
         def on_drag(drag_button):
             if drag_button.description == 'widget drag: off':
@@ -737,7 +738,7 @@ class TrajectoryPlayer(DOMWidget):
         def on_dialog(dialog_button):
             self._view._remote_call('setDialog', target='Widget')
 
-        def on_being_lucky(dialog_button):
+        def on_split_half(dialog_button):
             self._view._move_notebook_to_the_right()
             self._view._remote_call('setDialog', target='Widget')
 
@@ -745,10 +746,10 @@ class TrajectoryPlayer(DOMWidget):
         drag_nb.on_click(on_drag_nb)
         reset_nb.on_click(on_reset)
         dialog_button.on_click(on_dialog)
-        lucky_button.on_click(on_being_lucky)
+        split_half_buttong.on_click(on_split_half)
 
         drag_box = HBox([drag_button, drag_nb, reset_nb,
-                        dialog_button, lucky_button])
+                        dialog_button, split_half_buttong])
         drag_box = _make_autofit(drag_box)
         return drag_box
 
