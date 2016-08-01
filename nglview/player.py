@@ -15,18 +15,22 @@ from ipywidgets import (DOMWidget,
                         interactive,
                         Tab, Layout)
 
-from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
+from traitlets import Int, Bool, Dict, Float, CaselessStrEnum, TraitError
 from traitlets import observe, link
 
 from .ngl_params import REPR_NAMES
 from .widget_utils import get_widget_by_name
 from . import default
 
-form_item_layout = Layout(
-    display='flex',
-    flex_flow='row',
-    justify_content='space-between'
-)
+try:
+    form_item_layout = Layout(
+        display='flex',
+        flex_flow='row',
+        justify_content='space-between'
+    )
+except TraitError:
+    # for testing
+    form_item_layout = None
 
 def _make_box_layout(width='20%'): 
     return Layout(
