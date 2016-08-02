@@ -13,6 +13,7 @@ from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
 import numpy as np
 
 from ipykernel.comm import Comm
+import ipywidgets
 from ipywidgets import Widget, IntText, BoundedFloatText, HBox
 from traitlets import TraitError
 import ipywidgets as widgets
@@ -441,21 +442,22 @@ def test_widget_utils():
     assert i0 is widget_utils.get_widget_by_name(box, 'i0')
     assert i1 is widget_utils.get_widget_by_name(box, 'i1')
 
-    def test_raise():
-        widget_utils.get_widget_by_name(box, 'i100')
-
-    nt.assert_raises(ValueError, test_raise)
+    nt.assert_equal(widget_utils.get_widget_by_name(box, 'i100'), None)
 
 def test_make_methods_of_player():
     """test_make_methods_of_player: just to make sure there is no error
     """
     view = nv.demo()
 
-    excluded = ['_make_button_url', '_make_repr_name_choices', '_make_add_repr_widget']
+    excluded = ['_make_button_repr_control', '_make_button_url',
+                '_make_repr_name_choices', '_make_add_repr_widget']
     for method in dir(view.player):
         if method.startswith('_make') and method not in excluded:
             func = getattr(view.player, method)
-            func()
+            try:
+                func()
+            except TraitError:
+                print('TraitError for', func)
 
     # run excluded
     view.player._make_repr_name_choices({}, 0)
@@ -465,3 +467,15 @@ def test_theme():
     theme.oceans16()
     theme.reset()
     theme._get_theme('oceans16.css')
+
+def test_click_tab():
+    view = nv.demo()
+    gui = view.player._display()
+    nt.assert_true(isinstance(gui, ipywidgets.Tab))
+
+    for i, child in enumerate(gui.children):
+        try:
+            gui.selected_index = i
+            nt.assert_true(isinstance(child, ipywidgets.Box))
+        except TraitError:
+            pass

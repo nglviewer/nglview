@@ -299,6 +299,7 @@ class FileStructure(Structure):
         self.fm = FileManager(path)
         self.ext = self.fm.ext
         self.params = {}
+        self.path = path
         if not self.fm.is_filename:
             raise IOError("Not a file: " + path)
 
@@ -703,14 +704,16 @@ class NGLWidget(DOMWidget):
     def _handle_n_components_changed(self, change):
         if self.player.repr_widget is not None:
             component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+
             if change['new'] - 1 >= component_slider.min:
                 component_slider.max = change['new'] - 1
+
             component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
             component_dropdown.options = tuple(self._ngl_component_names)
 
             if change['new'] == 0:
-                component_dropdown.options = tuple([''])
-                component_dropdown.value = ''
+                component_dropdown.options = tuple([' '])
+                component_dropdown.value = ' '
 
                 component_slider.max = 0
 
@@ -720,11 +723,10 @@ class NGLWidget(DOMWidget):
                 repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
                 repr_slider.max = 0
 
-                repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-                repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
-                repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
-                repr_name_text.value = ''
-                repr_selection.value = ''
+                repr_name_text = get_widget_by_name(self.player.repr_widget, 'repr_name_text')
+                repr_selection = get_widget_by_name(self.player.repr_widget, 'repr_selection')
+                repr_name_text.value = ' '
+                repr_selection.value = ' '
 
     @observe('_repr_dict')
     def _handle_repr_dict_changed(self, change):
@@ -733,9 +735,8 @@ class NGLWidget(DOMWidget):
             component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
             cindex = str(component_slider.value)
 
-            repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-            repr_name_text = get_widget_by_name(repr_info_box, 'repr_name_text')
-            repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
+            repr_name_text = get_widget_by_name(self.player.repr_widget, 'repr_name_text')
+            repr_selection = get_widget_by_name(self.player.repr_widget, 'repr_selection')
 
             reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
             repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
@@ -1231,20 +1232,22 @@ class NGLWidget(DOMWidget):
                     self.frame = self.count - 1
             elif msg_type == 'repr_parameters':
                 data_dict = self._ngl_msg.get('data')
-                repr_name = data_dict.pop('name') + '\n'
-                repr_selection = data_dict.get('sele') + '\n'
+                name = data_dict.pop('name') + '\n'
+                selection = data_dict.get('sele') + '\n'
                 # json change True to true
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
 
                 if self.player.repr_widget is not None:
                     # TODO: refactor
-                    repr_info_box = get_widget_by_name(self.player.repr_widget, 'repr_info_box')
-                    repr_info_box.children[0].value = repr_name
-                    repr_info_box.children[1].value = repr_selection
+                    repr_name_text = get_widget_by_name(self.player.repr_widget, 'repr_name_text')
+                    repr_selection = get_widget_by_name(self.player.repr_widget, 'repr_selection')
+                    repr_name_text.value = name
+                    repr_selection.value = selection
 
-                    repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
-                    repr_text_box.children[-1].value = data_dict_json
+                    # TODO: properly hide/show
+                    # repr_text_box = get_widget_by_name(self.player.repr_widget, 'repr_text_box')
+                    # repr_text_box.children[-1].value = data_dict_json
             elif msg_type == 'request_loaded':
                 if not self.loaded:
                     # trick to trigger observe loaded

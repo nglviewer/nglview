@@ -145,3 +145,4 @@ def test_jsutils():
     jsutils.js_launch_qtconsole()
     jsutils.js_clean_empty_output_area()
     jsutils.js_clean_error_output()
+
