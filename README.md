@@ -42,7 +42,7 @@ Released version
 Development version
 -------------------
 
-Note: We drop supporting `ipywidgets < 5.0`
+Requirement: `ipywidgets >= 5.1`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
 
