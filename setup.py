@@ -11,11 +11,6 @@ import platform
 
 import versioneer
 
-sys.path.append('./nglview/')
-from install import install, enable_nglview_js
-install()
-enable_nglview_js()
-
 here = os.path.dirname(os.path.abspath(__file__))
 node_root = os.path.join(here, 'js')
 is_repo = os.path.exists(os.path.join(here, '.git'))

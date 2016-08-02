@@ -1,18 +1,17 @@
 import argparse
 from os.path import dirname, abspath, join
-from notebook.nbextensions import (install_nbextension, install_nbextension_python,
-                                   enable_nbextension, enable_nbextension_python)
+from notebook.nbextensions import install_nbextension, enable_nbextension
 
 def install(user=True, symlink=False, overwrite=True, **kwargs):
-    """Install the bqplot nbextension.
+    """Install nglview nbextension.
     
     Parameters
     ----------
-    user: bool
+    user: bool, default True
         Install for current user instead of system-wide.
-    symlink: bool
+    symlink: bool, default False
         Symlink instead of copy (for development).
-    overwrite: bool
+    overwrite: bool, default True
         Overwrite previously-installed files for this extension
     **kwargs: keyword arguments
         Other keyword arguments passed to the install_nbextension command
@@ -21,18 +20,10 @@ def install(user=True, symlink=False, overwrite=True, **kwargs):
     install_nbextension(directory, destination='nglview',
                         symlink=symlink, user=user, overwrite=overwrite,
                         **kwargs)
-    # don't need below yet. Why?
-    # install_nbextension_python('nglview', user=user, symlink=symlink, overwrite=overwrite,
-    #         **kwargs)
 
 def enable_nglview_js(user=True):
-    # seriously I don't know what I shoule type here
     enable_nbextension('nglview', '', user=user)
 
-    # do we need this?
-    # enable_nbextension_python('nglview', user=user)
-
-    
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="nglview")
     parser.add_argument("-u", "--user",
