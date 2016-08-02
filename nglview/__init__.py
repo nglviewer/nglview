@@ -790,7 +790,8 @@ class NGLWidget(DOMWidget):
         else:
             self.sync_view()
         if self._init_gui:
-            self._gui = self.player._display()
+            if self._gui is None:
+                self._gui = self.player._display()
             display(self._gui)
 
         if self._theme in ['dark', 'oceans16']:
