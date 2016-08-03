@@ -46,6 +46,7 @@ Requirement: `ipywidgets >= 5.1`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
 
+```bash
     git clone https://github.com/arose/nglview
     cd nglview
     python setup.py install
@@ -58,6 +59,7 @@ The development version can be installed directly from github:
     # jupyter nbextension enable --py --user nglview
     
     # tested with ipywidgets 5.2.2, notebook 4.2.1
+```
 
 Example
 =======
