@@ -1261,7 +1261,7 @@ class NGLWidget(DOMWidget):
             elif msg_type == 'repr_parameters':
                 data_dict = self._ngl_msg.get('data')
                 name = data_dict.pop('name') + '\n'
-                selection = data_dict.get('sele') + '\n'
+                selection = data_dict.get('sele', '') + '\n'
                 # json change True to true
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')

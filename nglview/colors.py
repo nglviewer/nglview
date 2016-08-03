@@ -1,5 +1,5 @@
-color_schemes = [
-    "",
+COLOR_SCHEMES = [
+    " ",
     "picking",
     "random",
     "uniform",
