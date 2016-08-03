@@ -563,7 +563,6 @@ class TrajectoryPlayer(DOMWidget):
         if self.repr_widget is None:
             self._make_repr_widget()
 
-        repr_info_box = get_widget_by_name(self.repr_widget, 'repr_info_box')
         repr_selection = get_widget_by_name(self.repr_widget, 'repr_selection')
         component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
         repr_slider = get_widget_by_name(self.repr_widget, 'repr_slider')
