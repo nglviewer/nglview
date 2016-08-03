@@ -833,6 +833,33 @@ class NGLWidget(DOMWidget):
                          kwargs=dict(component_index=component,
                                      repr_index=repr_index))
         
+    def color_by(self, color_scheme, component=0):
+        '''update color for all representations of givne component
+
+        Notes
+        -----
+        Unstable feature
+
+        Parameters
+        ----------
+        color_scheme : str
+        component : int, default 0
+            component index
+
+        Examples
+        --------
+        >>> # component 0
+        >>> view.color_by('atomindex')
+
+        >>> # component 1
+        >>> view.color_by('atomindex', component=1)
+        '''
+        repr_names = get_repr_names_from_dict(self._repr_dict, component)
+
+        for index, _ in enumerate(repr_names):
+            self.update_representation(component=component,
+                    repr_index=index, color_scheme=color_scheme)
+
     @property
     def representations(self):
         return self._representations
