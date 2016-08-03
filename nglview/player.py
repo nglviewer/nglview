@@ -393,6 +393,14 @@ class TrajectoryPlayer(DOMWidget):
         ta.layout.width = '300px'
         return ta
 
+    def _refresh(self, component_slider, repr_slider):
+        """update representation and component information
+        """
+        self._view._request_repr_parameters(component=component_slider.value,
+                                            repr_index=repr_slider.value)
+        self._view._remote_call('requestReprInfo', target='Widget')
+        self._view._handle_repr_dict_changed(change=dict(new=self._view._repr_dict))
+
     def _make_button_repr_control(self, component_slider, repr_slider, repr_selection):
         button_refresh = Button(description='Refresh', tooltip='Get representation info')
         button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
@@ -402,10 +410,7 @@ class TrajectoryPlayer(DOMWidget):
         button_center_selection._ngl_name = 'button_center_selection'
 
         def on_click_refresh(button):
-            self._view._request_repr_parameters(component=component_slider.value,
-                                                repr_index=repr_slider.value)
-            self._view._remote_call('requestReprInfo', target='Widget')
-            self._view._handle_repr_dict_changed(change=dict(new=self._view._repr_dict))
+            self._refresh(component_slider, repr_slider)
 
         def on_click_update(button):
             parameters = json.loads(repr_text_info.value.replace("False", "false").replace("True", "true"))
@@ -550,30 +555,24 @@ class TrajectoryPlayer(DOMWidget):
             repr_index=repr_slider.value)
 
         self.repr_widget = _relayout_master(vbox, width='100%')
+
+        self._refresh(component_slider, repr_slider)
         return self.repr_widget
 
     def _make_repr_parameter_slider(self):
-        repr_checkbox = Checkbox(value=False, description='Parameters')
+        if self.repr_widget is None:
+            self._make_repr_widget()
 
-        vbox = VBox([repr_checkbox])
+        repr_selection = get_widget_by_name(self.repr_widget, 'repr_selection')
+        component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
+        repr_slider = get_widget_by_name(self.repr_widget, 'repr_slider')
+        widget = self._view._display_repr(component=component_slider.value,
+                                 repr_index=repr_slider.value,
+                                 name=repr_selection.value)
+        widget._ngl_name = 'repr_parameters'
+        widget._ngl_name = 'repr_parameters_box'
 
-        def create_widget(change):
-            if change['new']:
-                # repr_name
-                repr_info_box = get_widget_by_name(self.repr_widget, 'repr_info_box')
-                repr_selection = get_widget_by_name(repr_info_box, 'repr_selection')
-                component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
-                repr_slider = get_widget_by_name(self.repr_widget, 'repr_slider')
-                widget = self._view._display_repr(component=component_slider.value,
-                                         repr_index=repr_slider.value,
-                                         name=repr_selection.value)
-                widget._ngl_name = 'repr_parameters'
-                vbox.children = [repr_checkbox, widget]
-            else:
-                vbox.children = [repr_checkbox, ]
-        repr_checkbox.observe(create_widget, names='value')
-        vbox._ngl_name = 'repr_parameters_box'
-        return vbox
+        return _relayout_master(widget)
 
     def _make_button_export_image(self):
         slider_factor = IntSlider(value=4, min=1, max=10, description='scale')

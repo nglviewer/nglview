@@ -4,7 +4,7 @@ from ipywidgets import DOMWidget, interactive
 from ipywidgets import VBox
 
 # local
-from .colors import color_schemes as COLOR_SCHEMES
+from .colors import COLOR_SCHEMES
 from .widget_utils import make_default_slider_width
 
 class Representation(DOMWidget):
@@ -35,7 +35,7 @@ class Representation(DOMWidget):
 
         def func(opacity=_repr_dict.get('opacity', 1.),
                  assembly=_repr_dict.get('assembly', 'default'),
-                 color_scheme=_repr_dict.get('colorScheme', ""),
+                 color_scheme=_repr_dict.get('colorScheme', " "),
                  wireframe=_repr_dict.get('wireframe', False)):
             parameters = dict(opacity=opacity,
                     assembly=assembly,
