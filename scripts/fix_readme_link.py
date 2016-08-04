@@ -1,6 +1,13 @@
 #!/usr/bin/env python
+import os
 import sys
 import subprocess
+
+readme_file = sys.argv[1]
+
+if os.path.abspath(readme_file) == os.path.abspath('./README'):
+    print("wrong README file {}".format(readme_file))
+    sys.exit(1)
 
 readme = open(sys.argv[1]).read()
 

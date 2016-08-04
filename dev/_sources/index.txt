@@ -50,30 +50,32 @@ Released version
 Development version
 -------------------
 
-Note: We drop supporting ``ipywidgets < 5.0``
+Requirement: ``ipywidgets >= 5.1``, ``notebook >= 4.2``
 
 The development version can be installed directly from github:
 
-::
+.. code:: bash
 
-    git clone https://github.com/arose/nglview
-    cd nglview
-    python setup.py install
+        git clone https://github.com/arose/nglview
+        cd nglview
+        python setup.py install
+        
+        # if you edit files in ./js folder, make sure to add --npm flag (require npm)
+        python setup.py install --npm
 
-    # if you edit files in ./js folder, make sure to add --npm flag (require npm)
-    python setup.py install --npm
-
-    # probably need to activate widgetsnbextension
-    # jupyter nbextension enable --py --user widgetsnbextension
-    # jupyter nbextension enable --py --user nglview
-
-    # tested with ipywidgets 5.2.2, notebook 4.2.1
+        # probably need to activate widgetsnbextension
+        # jupyter nbextension enable --py --user widgetsnbextension
+        # jupyter nbextension enable --py --user nglview
+        
+        # tested with ipywidgets 5.2.2, notebook 4.2.1
 
 Example
 =======
 
-Please see our `Jupyter notebook
-examples <https://github.com/arose/nglview/blob/master/examples/README.md>`__
+-  Notebooks: please see our `Jupyter notebook
+   examples <https://github.com/arose/nglview/blob/master/examples/README.md>`__
+-  Simple demo for trajectory (take time to load):
+   `biomembrane <http://amber-md.github.io/pytraj/latest/ngl_player.html>`__
 
 Usage
 =====
