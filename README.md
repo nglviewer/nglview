@@ -65,7 +65,7 @@ Example
 =======
 
 - Notebooks: please see our [Jupyter notebook examples](./examples/README.md)
-- Simple demo for trajectory (live): [biomembrane](http://amber-md.github.io/pytraj/latest/ngl_player.html)
+- Simple demo for trajectory (take time to load): [biomembrane](http://amber-md.github.io/pytraj/latest/ngl_player.html)
 
 Usage
 =====
