@@ -790,7 +790,8 @@ class NGLWidget(DOMWidget):
         else:
             self.sync_view()
         if self._init_gui:
-            self._gui = self.player._display()
+            if self._gui is None:
+                self._gui = self.player._display()
             display(self._gui)
 
         if self._theme in ['dark', 'oceans16']:
@@ -832,6 +833,33 @@ class NGLWidget(DOMWidget):
                          kwargs=dict(component_index=component,
                                      repr_index=repr_index))
         
+    def color_by(self, color_scheme, component=0):
+        '''update color for all representations of givne component
+
+        Notes
+        -----
+        Unstable feature
+
+        Parameters
+        ----------
+        color_scheme : str
+        component : int, default 0
+            component index
+
+        Examples
+        --------
+        >>> # component 0
+        >>> view.color_by('atomindex')
+
+        >>> # component 1
+        >>> view.color_by('atomindex', component=1)
+        '''
+        repr_names = get_repr_names_from_dict(self._repr_dict, component)
+
+        for index, _ in enumerate(repr_names):
+            self.update_representation(component=component,
+                    repr_index=index, color_scheme=color_scheme)
+
     @property
     def representations(self):
         return self._representations
@@ -1233,7 +1261,7 @@ class NGLWidget(DOMWidget):
             elif msg_type == 'repr_parameters':
                 data_dict = self._ngl_msg.get('data')
                 name = data_dict.pop('name') + '\n'
-                selection = data_dict.get('sele') + '\n'
+                selection = data_dict.get('sele', '') + '\n'
                 # json change True to true
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
