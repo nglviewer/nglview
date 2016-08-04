@@ -64,7 +64,8 @@ The development version can be installed directly from github:
 Example
 =======
 
-Please see our [Jupyter notebook examples](./examples/README.md)
+- Notebooks: please see our [Jupyter notebook examples](./examples/README.md)
+- Simple demo for trajectory (live): [biomembrane](http://amber-md.github.io/pytraj/latest/ngl_player.html)
 
 Usage
 =====
