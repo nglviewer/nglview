@@ -773,6 +773,18 @@ class NGLWidget(DOMWidget):
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
 
+    def _refresh_render(self):
+        """useful when you update coordinates for a single structure.
+
+        Notes
+        -----
+        If you are visualizing a trajectory with more than 1 frame, you can use the
+        player slider to trigger the refreshing.
+        """
+        current_frame = self.frame 
+        self.frame = int(1E6)
+        self.frame = current_frame
+
     def sync_view(self):
         """call this if you want to sync multiple views of a single viewer
 
