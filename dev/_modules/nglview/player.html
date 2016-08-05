@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.player &mdash; NGLView 0+unknown documentation</title>
+    <title>nglview.player &mdash; NGLView 0.5.2a+259.gcbbb389 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0+unknown',
+        VERSION:     '0.5.2a+259.gcbbb389',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0+unknown documentation" href="../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+259.gcbbb389 documentation" href="../../index.html" />
     <link rel="up" title="nglview" href="../nglview.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0+unknown documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+259.gcbbb389 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="../nglview.html" accesskey="U">nglview</a> &raquo;</li> 
       </ul>
@@ -444,19 +444,29 @@
         <span class="n">ta</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="s1">&#39;300px&#39;</span>
         <span class="k">return</span> <span class="n">ta</span>
 
+    <span class="k">def</span> <span class="nf">_refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_slider</span><span class="p">,</span> <span class="n">repr_slider</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;update representation and component information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_request_repr_parameters</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                            <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;requestReprInfo&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_handle_repr_dict_changed</span><span class="p">(</span><span class="n">change</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">new</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_repr_dict</span><span class="p">))</span>
+
     <span class="k">def</span> <span class="nf">_make_button_repr_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_slider</span><span class="p">,</span> <span class="n">repr_slider</span><span class="p">,</span> <span class="n">repr_selection</span><span class="p">):</span>
-        <span class="n">button_refresh</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Refresh&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Get representation info&#39;</span><span class="p">)</span>
-        <span class="n">button_update</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Update&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Update representation by updating rinfo box&#39;</span><span class="p">)</span>
-        <span class="n">button_remove</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Remove&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Remove current representation&#39;</span><span class="p">)</span>
-        <span class="n">button_hide</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Hide&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Hide/Show current representation&#39;</span><span class="p">)</span>
+        <span class="n">button_refresh</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Refresh&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Get representation info&#39;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s1">&#39;fa-refresh&#39;</span><span class="p">)</span>
+        <span class="n">button_update</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Update&#39;</span><span class="p">,</span> 
+                               <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Update representation by updating rinfo box&#39;</span><span class="p">)</span>
+        <span class="n">button_remove</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Remove&#39;</span><span class="p">,</span>
+                <span class="n">icon</span><span class="o">=</span><span class="s1">&#39;fa-trash&#39;</span><span class="p">,</span>
+                <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Remove current representation&#39;</span><span class="p">)</span>
+        <span class="n">button_hide</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Hide&#39;</span><span class="p">,</span>
+                <span class="n">icon</span><span class="o">=</span><span class="s1">&#39;fa-eye-slash&#39;</span><span class="p">,</span>
+                <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Hide/Show current representation&#39;</span><span class="p">)</span>
         <span class="n">button_center_selection</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Center&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;center selected atoms&#39;</span><span class="p">)</span>
         <span class="n">button_center_selection</span><span class="o">.</span><span class="n">_ngl_name</span> <span class="o">=</span> <span class="s1">&#39;button_center_selection&#39;</span>
 
         <span class="k">def</span> <span class="nf">on_click_refresh</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_request_repr_parameters</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                                                <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;requestReprInfo&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_handle_repr_dict_changed</span><span class="p">(</span><span class="n">change</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">new</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_repr_dict</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_refresh</span><span class="p">(</span><span class="n">component_slider</span><span class="p">,</span> <span class="n">repr_slider</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">on_click_update</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
             <span class="n">parameters</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">repr_text_info</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">))</span>
@@ -601,30 +611,24 @@
             <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span> <span class="o">=</span> <span class="n">_relayout_master</span><span class="p">(</span><span class="n">vbox</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh</span><span class="p">(</span><span class="n">component_slider</span><span class="p">,</span> <span class="n">repr_slider</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span>
 
     <span class="k">def</span> <span class="nf">_make_repr_parameter_slider</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">repr_checkbox</span> <span class="o">=</span> <span class="n">Checkbox</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Parameters&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_make_repr_widget</span><span class="p">()</span>
 
-        <span class="n">vbox</span> <span class="o">=</span> <span class="n">VBox</span><span class="p">([</span><span class="n">repr_checkbox</span><span class="p">])</span>
+        <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_selection&#39;</span><span class="p">)</span>
+        <span class="n">component_slider</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;component_slider&#39;</span><span class="p">)</span>
+        <span class="n">repr_slider</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_slider&#39;</span><span class="p">)</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_display_repr</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                 <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                 <span class="n">name</span><span class="o">=</span><span class="n">repr_selection</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">_ngl_name</span> <span class="o">=</span> <span class="s1">&#39;repr_parameters&#39;</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">_ngl_name</span> <span class="o">=</span> <span class="s1">&#39;repr_parameters_box&#39;</span>
 
-        <span class="k">def</span> <span class="nf">create_widget</span><span class="p">(</span><span class="n">change</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]:</span>
-                <span class="c1"># repr_name</span>
-                <span class="n">repr_info_box</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_info_box&#39;</span><span class="p">)</span>
-                <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="n">repr_info_box</span><span class="p">,</span> <span class="s1">&#39;repr_selection&#39;</span><span class="p">)</span>
-                <span class="n">component_slider</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;component_slider&#39;</span><span class="p">)</span>
-                <span class="n">repr_slider</span> <span class="o">=</span> <span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_slider&#39;</span><span class="p">)</span>
-                <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_display_repr</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                                         <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                                         <span class="n">name</span><span class="o">=</span><span class="n">repr_selection</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-                <span class="n">widget</span><span class="o">.</span><span class="n">_ngl_name</span> <span class="o">=</span> <span class="s1">&#39;repr_parameters&#39;</span>
-                <span class="n">vbox</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">repr_checkbox</span><span class="p">,</span> <span class="n">widget</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">vbox</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">repr_checkbox</span><span class="p">,</span> <span class="p">]</span>
-        <span class="n">repr_checkbox</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">create_widget</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
-        <span class="n">vbox</span><span class="o">.</span><span class="n">_ngl_name</span> <span class="o">=</span> <span class="s1">&#39;repr_parameters_box&#39;</span>
-        <span class="k">return</span> <span class="n">vbox</span>
+        <span class="k">return</span> <span class="n">_relayout_master</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_make_button_export_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">slider_factor</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;scale&#39;</span><span class="p">)</span>
@@ -949,13 +953,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0+unknown documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+259.gcbbb389 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="../nglview.html" >nglview</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
+      Last updated on Aug 04, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
