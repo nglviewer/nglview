@@ -1656,7 +1656,7 @@ class NGLWidget(DOMWidget):
         # width of the dialog will be calculated based on notebook container offset
         if split:
             # rename
-            self._move_notebook_to_the_right()
+            jsutils._move_notebook_to_the_right()
         self._remote_call('setDialog', target='Widget')
 
     def _play(self, start=0, stop=-1, step=1, delay=0.08, n_times=1):
