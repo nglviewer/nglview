@@ -13,7 +13,7 @@ from ipywidgets import (DOMWidget,
                         Text, Textarea, IntText, FloatText,
                         Label,
                         interactive,
-                        Tab, Layout)
+                        Tab, Layout, jsdlink)
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum, TraitError
 from traitlets import observe, link
@@ -42,7 +42,7 @@ def _make_box_layout(width='100%'):
 def _relayout(box, form_item_layout):
     form_items = []
     for kid in box.children:
-        if hasattr(kid, 'description') and not isinstance(kid, Button):
+        if hasattr(kid, 'description') and not isinstance(kid, (Button, ToggleButton)):
             label_value = kid.description
             kid.description = ''
         else:
@@ -135,7 +135,7 @@ class TrajectoryPlayer(DOMWidget):
     camera = CaselessStrEnum(['perspective', 'orthographic'],
         default_value='perspective').tag(sync=False)
     _render_params = Dict().tag(sync=False)
-    _real_time_update = Bool(True).tag(sync=False)
+    _real_time_update = Bool(False).tag(sync=False)
 
     def __init__(self, view, step=1, delay=100,
                  sync_frame=False, min_delay=40):
@@ -157,6 +157,7 @@ class TrajectoryPlayer(DOMWidget):
         self.picked_widget = None
         self.repr_widget = None
         self._preference_widget = None
+        self._repr_parameter_widget = None
 
     def smooth(self):
         self.interpolate = True
@@ -403,8 +404,6 @@ class TrajectoryPlayer(DOMWidget):
 
     def _make_button_repr_control(self, component_slider, repr_slider, repr_selection):
         button_refresh = Button(description='Refresh', tooltip='Get representation info', icon='fa-refresh')
-        button_update = Button(description='Update', 
-                               tooltip='Update representation by updating rinfo box')
         button_remove = Button(description='Remove',
                 icon='fa-trash',
                 tooltip='Remove current representation')
@@ -448,7 +447,6 @@ class TrajectoryPlayer(DOMWidget):
                                     args=[component, repr_index, not hide])
 
         button_refresh.on_click(on_click_refresh)
-        button_update.on_click(on_click_update)
         button_hide.on_click(on_click_hide)
         button_remove.on_click(on_click_remove)
 
@@ -466,11 +464,12 @@ class TrajectoryPlayer(DOMWidget):
     def _make_repr_widget(self):
         repr_name_text = Text(value='', description='representation')
         repr_name_text._ngl_name = 'repr_name_text'
-        repr_selection = Text(value='', description='selection')
+        repr_selection = Text(value=' ', description='selection')
         repr_selection._ngl_name = 'repr_selection'
         # repr_selection.width = repr_name_text.width = default.DEFAULT_TEXT_WIDTH 
 
-        component_slider = IntSlider(value=0, max=self._view.n_components-1, description='component')
+        max_n_components = max(self._view.n_components-1, 0)
+        component_slider = IntSlider(value=0, max=max_n_components, min=0, description='component')
         component_slider._ngl_name = 'component_slider'
         component_slider.visible = False
 
@@ -484,26 +483,22 @@ class TrajectoryPlayer(DOMWidget):
         repr_slider.visible = True
 
         # TODO: properly hide
-        repr_text_info = Textarea(value='', description='representation parameters')
-        repr_text_info.layout.visibility = 'hidden'
-        checkbox_repr_text = Checkbox(value=False, description='show parameters')
-        checkbox_repr_text.layout.visibility = 'hidden'
-        repr_text_box = VBox([checkbox_repr_text, repr_text_info])
-        repr_text_box._ngl_name = 'repr_text_box'
-
+        toggle_button_repr_parameters_shown = ToggleButton(value=False, description='show parameters')
+        repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
+        jsdlink((toggle_button_repr_parameters_shown, 'value'), (repr_slider_parameters, 'visible'))
+        
         checkbox_reprlist = Checkbox(value=False, description='reprlist')
         checkbox_reprlist._ngl_name = 'checkbox_reprlist'
         reprlist_choices = self._make_repr_name_choices(component_slider, repr_slider)
         reprlist_choices._ngl_name = 'reprlist_choices'
 
         repr_add_widget = self._make_add_repr_widget(component_slider)
-        # repr_add_widget = _make_autofit(repr_add_widget)
 
         def on_update_checkbox_reprlist(change):
             reprlist_choices.visible= change['new']
         checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
 
-        def on_change_repr_name(change):
+        def on_repr_name_text_value_changed(change):
             name = change['new'].strip()
             old = change['old'].strip()
 
@@ -520,12 +515,16 @@ class TrajectoryPlayer(DOMWidget):
                                  args=[change['new'], {}, component, repr_index])
                 self._view._request_repr_parameters(component, repr_index)
 
-        def update_slider_info(change):
+        def on_component_or_repr_slider_value_changed(change):
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
             component_dropdown.options = tuple(self._view._ngl_component_names)
 
-        def on_change_selection(change):
+            if repr_slider_parameters.visible:
+                kids = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text).children
+                repr_slider_parameters.children = kids
+
+        def on_repr_selection_value_changed(change):
             if self._real_time_update:
                 component=component_slider.value
                 repr_index=repr_slider.value
@@ -538,23 +537,30 @@ class TrajectoryPlayer(DOMWidget):
             if choice:
                  component_slider.value = self._view._ngl_component_names.index(choice)
 
+        def on_toggle_button_repr_parameters_shown_value_changed(change):
+            # repr_slider_parameters.visible = change['new']
+            if repr_slider_parameters.visible:
+                kids = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text).children
+                repr_slider_parameters.children = kids
+
         component_dropdown.observe(on_change_component_dropdown, names='value')
 
-        def on_change_checkbox_repr_text(change):
-            repr_text_info.visible = change['new']
-
-        repr_slider.observe(update_slider_info, names='value')
-        component_slider.observe(update_slider_info, names='value')
-        repr_name_text.observe(on_change_repr_name, names='value')
-        repr_selection.observe(on_change_selection, names='value')
-        checkbox_repr_text.observe(on_change_checkbox_repr_text, names='value')
+        repr_slider.observe(on_component_or_repr_slider_value_changed, names='value')
+        component_slider.observe(on_component_or_repr_slider_value_changed, names='value')
+        repr_name_text.observe(on_repr_name_text_value_changed, names='value')
+        repr_selection.observe(on_repr_selection_value_changed, names='value')
+        toggle_button_repr_parameters_shown.observe(on_toggle_button_repr_parameters_shown_value_changed, names='value')
 
         bbox = self._make_button_repr_control(component_slider, repr_slider,
                 repr_selection)
 
         blank_box = Box([Label("")])
-        vbox = VBox([bbox, blank_box, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
-                     component_slider, repr_slider, reprlist_choices])
+
+        all_kids = [bbox, blank_box, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
+                   component_slider, repr_slider, reprlist_choices, toggle_button_repr_parameters_shown,
+                   repr_slider_parameters]
+
+        vbox = VBox(all_kids)
 
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
@@ -564,20 +570,20 @@ class TrajectoryPlayer(DOMWidget):
         self._refresh(component_slider, repr_slider)
         return self.repr_widget
 
-    def _make_repr_parameter_slider(self):
-        if self.repr_widget is None:
-            self._make_repr_widget()
-
-        repr_selection = get_widget_by_name(self.repr_widget, 'repr_selection')
-        component_slider = get_widget_by_name(self.repr_widget, 'component_slider')
-        repr_slider = get_widget_by_name(self.repr_widget, 'repr_slider')
+    def _make_slider_repr_parameters(self, component_slider, repr_slider, repr_name_text=None):
+        name = repr_name_text.value if repr_name_text is not None else ' '
         widget = self._view._display_repr(component=component_slider.value,
-                                 repr_index=repr_slider.value,
-                                 name=repr_selection.value)
+                                          repr_index=repr_slider.value,
+                                          name=name)
         widget._ngl_name = 'repr_parameters'
         widget._ngl_name = 'repr_parameters_box'
 
-        return _relayout_master(widget)
+        if self._repr_parameter_widget is None:
+            self._repr_parameter_widget = widget
+        else:
+            self._repr_parameter_widget.children = widget.children
+
+        return self._repr_parameter_widget
 
     def _make_button_export_image(self):
         slider_factor = IntSlider(value=4, min=1, max=10, description='scale')
@@ -747,7 +753,8 @@ class TrajectoryPlayer(DOMWidget):
             self._view._remote_call('setDialog', target='Widget')
 
         def on_split_half(dialog_button):
-            self._view._move_notebook_to_the_right()
+            from nglview import jsutils
+            jsutils._move_notebook_to_the_right()
             self._view._remote_call('setDialog', target='Widget')
 
         drag_button.on_click(on_drag)
