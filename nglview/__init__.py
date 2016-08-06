@@ -45,7 +45,8 @@ except ImportError:
     from urllib2 import urlopen
 
 from . import datafiles
-from . import utils
+# TODO: make a single file for utilities
+from . import utils, jsutils
 from .utils import seq_to_string, string_types, _camelize_dict
 from .utils import FileManager, get_repr_names_from_dict
 from .widget_utils import get_widget_by_name
@@ -1490,41 +1491,6 @@ class NGLWidget(DOMWidget):
             self._remote_call('setDraggable',
                              target='Widget',
                              args=['destroy',])
-
-    def _set_notebook_draggable(self, yes=True, width='20%'):
-        script_template = """
-        var x = $('#notebook-container');
-        x.draggable({args});
-        """
-        if yes:
-            display(Javascript(script_template.replace('{args}', '')))
-        else:
-            display(Javascript(script_template.replace('{args}', '"destroy"')))
-
-    def _move_notebook_to_the_right(self):
-        script_template = """
-        var x = $('#notebook-container');
-        x.width('20%');
-        x.css({position: "relative", left: "20%"});
-        """
-        display(Javascript(script_template))
-
-    def _move_notebook_to_the_left(self):
-        script_template = """
-        var cb = Jupyter.notebook.container;
-
-        cb.width('20%');
-        cb.offset({'left': 0})
-        """
-        display(Javascript(script_template))
-
-    def _reset_notebook(self, yes=True):
-        script_template = """
-        var x = $('#notebook-container');
-        x.width('40%');
-        x.css({position: "relative", left: "0%"});
-        """
-        display(Javascript(script_template))
 
     def _remote_call(self, method_name, target='Widget', args=None, kwargs=None):
         """call NGL's methods from Python.
