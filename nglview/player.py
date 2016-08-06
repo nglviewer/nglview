@@ -518,7 +518,8 @@ class TrajectoryPlayer(DOMWidget):
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
             component_dropdown.options = tuple(self._view._ngl_component_names)
-            self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
+            repr_slider_parameters.children = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text).children
+            print(repr_slider_parameters.children)
 
         def on_repr_selection_value_changed(change):
             if self._real_time_update:
