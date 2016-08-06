@@ -13,7 +13,7 @@ from ipywidgets import (DOMWidget,
                         Text, Textarea, IntText, FloatText,
                         Label,
                         interactive,
-                        Tab, Layout)
+                        Tab, Layout, jsdlink)
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum, TraitError
 from traitlets import observe, link
@@ -485,6 +485,7 @@ class TrajectoryPlayer(DOMWidget):
         # TODO: properly hide
         toggle_button_repr_parameters_shown = ToggleButton(value=False, description='show parameters')
         repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
+        jsdlink((toggle_button_repr_parameters_shown, 'value'), (repr_slider_parameters, 'visible'))
         
         checkbox_reprlist = Checkbox(value=False, description='reprlist')
         checkbox_reprlist._ngl_name = 'checkbox_reprlist'
@@ -518,8 +519,10 @@ class TrajectoryPlayer(DOMWidget):
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
             component_dropdown.options = tuple(self._view._ngl_component_names)
-            repr_slider_parameters.children = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text).children
-            print(repr_slider_parameters.children)
+
+            if repr_slider_parameters.visible:
+                kids = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text).children
+                repr_slider_parameters.children = kids
 
         def on_repr_selection_value_changed(change):
             if self._real_time_update:
@@ -535,7 +538,10 @@ class TrajectoryPlayer(DOMWidget):
                  component_slider.value = self._view._ngl_component_names.index(choice)
 
         def on_toggle_button_repr_parameters_shown_value_changed(change):
-            repr_slider_parameters.visible = change['new']
+            # repr_slider_parameters.visible = change['new']
+            if repr_slider_parameters.visible:
+                kids = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text).children
+                repr_slider_parameters.children = kids
 
         component_dropdown.observe(on_change_component_dropdown, names='value')
 
@@ -551,9 +557,8 @@ class TrajectoryPlayer(DOMWidget):
         blank_box = Box([Label("")])
 
         all_kids = [bbox, blank_box, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
-                   component_slider, repr_slider, reprlist_choices, toggle_button_repr_parameters_shown]
-
-        all_kids += list(_relayout_master(repr_slider_parameters).children)
+                   component_slider, repr_slider, reprlist_choices, toggle_button_repr_parameters_shown,
+                   repr_slider_parameters]
 
         vbox = VBox(all_kids)
 
@@ -748,7 +753,8 @@ class TrajectoryPlayer(DOMWidget):
             self._view._remote_call('setDialog', target='Widget')
 
         def on_split_half(dialog_button):
-            self._view._move_notebook_to_the_right()
+            from nglview import jsutils
+            jsutils._move_notebook_to_the_right()
             self._view._remote_call('setDialog', target='Widget')
 
         drag_button.on_click(on_drag)
