@@ -42,7 +42,7 @@ def _make_box_layout(width='100%'):
 def _relayout(box, form_item_layout):
     form_items = []
     for kid in box.children:
-        if hasattr(kid, 'description') and not isinstance(kid, Button):
+        if hasattr(kid, 'description') and not isinstance(kid, (Button, ToggleButton)):
             label_value = kid.description
             kid.description = ''
         else:
