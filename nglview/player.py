@@ -404,8 +404,6 @@ class TrajectoryPlayer(DOMWidget):
 
     def _make_button_repr_control(self, component_slider, repr_slider, repr_selection):
         button_refresh = Button(description='Refresh', tooltip='Get representation info', icon='fa-refresh')
-        button_update = Button(description='Update', 
-                               tooltip='Update representation by updating rinfo box')
         button_remove = Button(description='Remove',
                 icon='fa-trash',
                 tooltip='Remove current representation')
@@ -449,7 +447,6 @@ class TrajectoryPlayer(DOMWidget):
                                     args=[component, repr_index, not hide])
 
         button_refresh.on_click(on_click_refresh)
-        button_update.on_click(on_click_update)
         button_hide.on_click(on_click_hide)
         button_remove.on_click(on_click_remove)
 
@@ -467,7 +464,7 @@ class TrajectoryPlayer(DOMWidget):
     def _make_repr_widget(self):
         repr_name_text = Text(value='', description='representation')
         repr_name_text._ngl_name = 'repr_name_text'
-        repr_selection = Text(value='', description='selection')
+        repr_selection = Text(value=' ', description='selection')
         repr_selection._ngl_name = 'repr_selection'
         # repr_selection.width = repr_name_text.width = default.DEFAULT_TEXT_WIDTH 
 
@@ -486,14 +483,9 @@ class TrajectoryPlayer(DOMWidget):
         repr_slider.visible = True
 
         # TODO: properly hide
-        repr_text_info = Textarea(value=' ')
-        repr_text_info.layout.visibility = 'hidden'
-        checkbox_repr_text = ToggleButton(value=False, description='show parameters')
-        # repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider)
-        # repr_slider_parameters.layout.visibility = 'hidden'
-        repr_text_box = VBox([checkbox_repr_text, repr_text_info])
-        repr_text_box._ngl_name = 'repr_text_box'
-
+        toggle_button_repr_parameters_shown = ToggleButton(value=False, description='show parameters')
+        repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
+        
         checkbox_reprlist = Checkbox(value=False, description='reprlist')
         checkbox_reprlist._ngl_name = 'checkbox_reprlist'
         reprlist_choices = self._make_repr_name_choices(component_slider, repr_slider)
@@ -526,7 +518,7 @@ class TrajectoryPlayer(DOMWidget):
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
             component_dropdown.options = tuple(self._view._ngl_component_names)
-            self._update_slider_repr_parameters()
+            self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
 
         def on_repr_selection_value_changed(change):
             if self._real_time_update:
@@ -541,23 +533,28 @@ class TrajectoryPlayer(DOMWidget):
             if choice:
                  component_slider.value = self._view._ngl_component_names.index(choice)
 
-        component_dropdown.observe(on_change_component_dropdown, names='value')
+        def on_toggle_button_repr_parameters_shown_value_changed(change):
+            repr_slider_parameters.visible = change['new']
 
-        def on_checkbox_repr_text_value_changed(change):
-            repr_text_info.visible = change['new']
+        component_dropdown.observe(on_change_component_dropdown, names='value')
 
         repr_slider.observe(on_component_or_repr_slider_value_changed, names='value')
         component_slider.observe(on_component_or_repr_slider_value_changed, names='value')
         repr_name_text.observe(on_repr_name_text_value_changed, names='value')
         repr_selection.observe(on_repr_selection_value_changed, names='value')
-        checkbox_repr_text.observe(on_checkbox_repr_text_value_changed, names='value')
+        toggle_button_repr_parameters_shown.observe(on_toggle_button_repr_parameters_shown_value_changed, names='value')
 
         bbox = self._make_button_repr_control(component_slider, repr_slider,
                 repr_selection)
 
         blank_box = Box([Label("")])
-        vbox = VBox([bbox, blank_box, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
-                     component_slider, repr_slider, reprlist_choices, checkbox_repr_text, repr_text_info])
+
+        all_kids = [bbox, blank_box, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
+                   component_slider, repr_slider, reprlist_choices, toggle_button_repr_parameters_shown]
+
+        all_kids += list(_relayout_master(repr_slider_parameters).children)
+
+        vbox = VBox(all_kids)
 
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
@@ -567,22 +564,18 @@ class TrajectoryPlayer(DOMWidget):
         self._refresh(component_slider, repr_slider)
         return self.repr_widget
 
-    def _update_slider_repr_parameters(self):
-        if self._repr_parameter_widget is not None:
-            self._repr_parameter_widget.children = self._make_slider_repr_parameters().children
-
-    def _make_slider_repr_parameters(self, component_slider, repr_slider, repr_selection=None):
-        if self.repr_widget is None:
-            self._make_repr_widget()
-
-        name = repr_selection.value if repr_selection is not None else ' '
+    def _make_slider_repr_parameters(self, component_slider, repr_slider, repr_name_text=None):
+        name = repr_name_text.value if repr_name_text is not None else ' '
         widget = self._view._display_repr(component=component_slider.value,
                                           repr_index=repr_slider.value,
-                                          name=repr_selection.value)
+                                          name=name)
         widget._ngl_name = 'repr_parameters'
         widget._ngl_name = 'repr_parameters_box'
 
-        self._repr_parameter_widget = _relayout_master(widget)
+        if self._repr_parameter_widget is None:
+            self._repr_parameter_widget = widget
+        else:
+            self._repr_parameter_widget.children = widget.children
 
         return self._repr_parameter_widget
 
