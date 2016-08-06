@@ -1526,7 +1526,7 @@ class NGLWidget(DOMWidget):
         """
         display(Javascript(script_template))
 
-    def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
+    def _remote_call(self, method_name, target='Widget', args=None, kwargs=None):
         """call NGL's methods from Python.
         
         Parameters
