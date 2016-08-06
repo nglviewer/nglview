@@ -45,7 +45,8 @@ except ImportError:
     from urllib2 import urlopen
 
 from . import datafiles
-from . import utils
+# TODO: make a single file for utilities
+from . import utils, jsutils
 from .utils import seq_to_string, string_types, _camelize_dict
 from .utils import FileManager, get_repr_names_from_dict
 from .widget_utils import get_widget_by_name
@@ -773,6 +774,18 @@ class NGLWidget(DOMWidget):
         if change['new']:
             [callback(self) for callback in self._ngl_displayed_callbacks]
 
+    def _refresh_render(self):
+        """useful when you update coordinates for a single structure.
+
+        Notes
+        -----
+        If you are visualizing a trajectory with more than 1 frame, you can use the
+        player slider to trigger the refreshing.
+        """
+        current_frame = self.frame 
+        self.frame = int(1E6)
+        self.frame = current_frame
+
     def sync_view(self):
         """call this if you want to sync multiple views of a single viewer
 
@@ -1479,42 +1492,7 @@ class NGLWidget(DOMWidget):
                              target='Widget',
                              args=['destroy',])
 
-    def _set_notebook_draggable(self, yes=True, width='20%'):
-        script_template = """
-        var x = $('#notebook-container');
-        x.draggable({args});
-        """
-        if yes:
-            display(Javascript(script_template.replace('{args}', '')))
-        else:
-            display(Javascript(script_template.replace('{args}', '"destroy"')))
-
-    def _move_notebook_to_the_right(self):
-        script_template = """
-        var x = $('#notebook-container');
-        x.width('20%');
-        x.css({position: "relative", left: "20%"});
-        """
-        display(Javascript(script_template))
-
-    def _move_notebook_to_the_left(self):
-        script_template = """
-        var cb = Jupyter.notebook.container;
-
-        cb.width('20%');
-        cb.offset({'left': 0})
-        """
-        display(Javascript(script_template))
-
-    def _reset_notebook(self, yes=True):
-        script_template = """
-        var x = $('#notebook-container');
-        x.width('40%');
-        x.css({position: "relative", left: "0%"});
-        """
-        display(Javascript(script_template))
-
-    def _remote_call(self, method_name, target='Stage', args=None, kwargs=None):
+    def _remote_call(self, method_name, target='Widget', args=None, kwargs=None):
         """call NGL's methods from Python.
         
         Parameters
@@ -1678,7 +1656,7 @@ class NGLWidget(DOMWidget):
         # width of the dialog will be calculated based on notebook container offset
         if split:
             # rename
-            self._move_notebook_to_the_right()
+            jsutils._move_notebook_to_the_right()
         self._remote_call('setDialog', target='Widget')
 
     def _play(self, start=0, stop=-1, step=1, delay=0.08, n_times=1):

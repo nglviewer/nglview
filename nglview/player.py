@@ -402,10 +402,15 @@ class TrajectoryPlayer(DOMWidget):
         self._view._handle_repr_dict_changed(change=dict(new=self._view._repr_dict))
 
     def _make_button_repr_control(self, component_slider, repr_slider, repr_selection):
-        button_refresh = Button(description='Refresh', tooltip='Get representation info')
-        button_update = Button(description='Update', tooltip='Update representation by updating rinfo box')
-        button_remove = Button(description='Remove', tooltip='Remove current representation')
-        button_hide = Button(description='Hide', tooltip='Hide/Show current representation')
+        button_refresh = Button(description='Refresh', tooltip='Get representation info', icon='fa-refresh')
+        button_update = Button(description='Update', 
+                               tooltip='Update representation by updating rinfo box')
+        button_remove = Button(description='Remove',
+                icon='fa-trash',
+                tooltip='Remove current representation')
+        button_hide = Button(description='Hide',
+                icon='fa-eye-slash',
+                tooltip='Hide/Show current representation')
         button_center_selection = Button(description='Center', tooltip='center selected atoms')
         button_center_selection._ngl_name = 'button_center_selection'
 

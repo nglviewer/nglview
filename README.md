@@ -55,6 +55,7 @@ The development version can be installed directly from github:
     python setup.py install --npm
 
     # probably need to activate widgetsnbextension
+    # python -m ipykernel install --user
     # jupyter nbextension enable --py --user widgetsnbextension
     # jupyter nbextension enable --py --user nglview
     
@@ -64,7 +65,8 @@ The development version can be installed directly from github:
 Example
 =======
 
-Please see our [Jupyter notebook examples](./examples/README.md)
+- Notebooks: please see our [Jupyter notebook examples](./examples/README.md)
+- Simple demo for trajectory (take time to load): [biomembrane](http://amber-md.github.io/pytraj/latest/ngl_player.html)
 
 Usage
 =====
