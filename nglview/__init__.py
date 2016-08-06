@@ -940,12 +940,14 @@ class NGLWidget(DOMWidget):
                           kwargs=kwargs)
 
     def _display_repr(self, component=0, repr_index=0, name=None):
+        c = 'c' + str(component)
+        r = str(repr_index)
+
         try:
-            c = 'c' + str(component)
-            r = str(repr_index)
             name = self._repr_dict[c][r]['name']
         except KeyError:
             name = ''
+
         return Representation(self, component, repr_index, name=name)._display()
 
     def _set_initial_structure(self, structures):
