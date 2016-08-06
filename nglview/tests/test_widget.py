@@ -444,24 +444,6 @@ def test_widget_utils():
 
     nt.assert_equal(widget_utils.get_widget_by_name(box, 'i100'), None)
 
-def test_make_methods_of_player():
-    """test_make_methods_of_player: just to make sure there is no error
-    """
-    view = nv.demo()
-
-    excluded = ['_make_button_repr_control', '_make_button_url',
-                '_make_repr_name_choices', '_make_add_repr_widget']
-    for method in dir(view.player):
-        if method.startswith('_make') and method not in excluded:
-            func = getattr(view.player, method)
-            try:
-                func()
-            except TraitError:
-                print('TraitError for', func)
-
-    # run excluded
-    view.player._make_repr_name_choices({}, 0)
-
 def test_theme():
     from nglview import theme
     theme.oceans16()
