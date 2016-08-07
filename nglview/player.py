@@ -387,6 +387,7 @@ class TrajectoryPlayer(DOMWidget):
         repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
         repr_params_accordion.children = [repr_slider_parameters]
         repr_params_accordion.set_title(0, 'show parameters')
+        repr_params_accordion.selected_index = -1
         
         checkbox_reprlist = Checkbox(value=False, description='reprlist')
         checkbox_reprlist._ngl_name = 'checkbox_reprlist'
@@ -477,6 +478,7 @@ class TrajectoryPlayer(DOMWidget):
         else:
             self._repr_parameter_widget.children = widget.children
 
+        self._repr_parameter_widget.visible = False
         return self._repr_parameter_widget
 
     def _make_button_export_image(self):

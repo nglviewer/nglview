@@ -6,6 +6,7 @@ from ipywidgets import VBox
 # local
 from .colors import COLOR_SCHEMES
 from .widget_utils import make_default_slider_width
+from .layout import _relayout_master
 
 class Representation(DOMWidget):
     parameters = Dict().tag(sync=False)
@@ -51,7 +52,7 @@ class Representation(DOMWidget):
                                  color_scheme=COLOR_SCHEMES,
                                  assembly=assembly_list)
         make_default_slider_width(iwidget)
-        wbox = VBox([iwidget,])
+        wbox = VBox([_relayout_master(iwidget, '100%'),])
         if self.name == 'surface':
             def func_extra(probe_radius=1.4,
                     isolevel=2.,
@@ -77,5 +78,6 @@ class Representation(DOMWidget):
                     continuous_update=False)
 
             make_default_slider_width(widget_extra)
-            wbox.children = [iwidget, widget_extra]
+            wbox.children = [_relayout_master(iwidget, '100%'),
+                             _relayout_master(widget_extra, '100%')]
         return wbox
