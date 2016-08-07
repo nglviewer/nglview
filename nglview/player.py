@@ -290,7 +290,8 @@ class TrajectoryPlayer(DOMWidget):
 
     def _make_button_qtconsole(self):
         from nglview.jsutils import js_launch_qtconsole
-        button = Button(description='qtconsole')
+        button = Button(description='qtconsole',
+                tooltip='pop up qtconsole')
 
         def on_click(button):
             js_launch_qtconsole()
@@ -624,7 +625,7 @@ class TrajectoryPlayer(DOMWidget):
         drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
         reset_nb = Button(description='notebook: reset', tooltip='reset?')
         dialog_button = Button(description='dialog', tooltip='make a dialog')
-        split_half_buttong = Button(description='split half', tooltip='try best to make a good layout')
+        split_half_button = Button(description='split screen', tooltip='try best to make a good layout')
 
         def on_drag(drag_button):
             if drag_button.description == 'widget drag: off':
@@ -650,17 +651,20 @@ class TrajectoryPlayer(DOMWidget):
 
         def on_split_half(dialog_button):
             from nglview import jsutils
-            jsutils._move_notebook_to_the_right()
+            import time
+            jsutils._move_notebook_to_the_left()
+            jsutils._set_notebook_width('5%')
+            time.sleep(0.1)
             self._view._remote_call('setDialog', target='Widget')
 
         drag_button.on_click(on_drag)
         drag_nb.on_click(on_drag_nb)
         reset_nb.on_click(on_reset)
         dialog_button.on_click(on_dialog)
-        split_half_buttong.on_click(on_split_half)
+        split_half_button.on_click(on_split_half)
 
         drag_box = HBox([drag_button, drag_nb, reset_nb,
-                        dialog_button, split_half_buttong])
+                        dialog_button, split_half_button])
         drag_box = _make_autofit(drag_box)
         return drag_box
 
@@ -737,39 +741,31 @@ class TrajectoryPlayer(DOMWidget):
             min=10,
             max=1000,
             description='delay')
-        checkbox_interpolate = Checkbox(self.interpolate, description='')
+        toggle_button_interpolate = ToggleButton(self.interpolate, description='Smoothing',
+                                                 tooltip='smoothing trajectory')
+        link((toggle_button_interpolate, 'value'), (self, 'interpolate'))
 
         bg_color = ColorPicker(value='white', description='background')
         bg_color.width = 100.
-        # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
-        interpolation_type = Dropdown(value=self._iterpolation_type,
-                                      options=['linear', 'spline'])
-
-        interpolation_type.layout.max_width = '40px'
-
-        ibox = HBox([checkbox_interpolate, interpolation_type], description='interpolate')
-
         camera_type = Dropdown(value=self.camera,
                                options=['perspective', 'orthographic'], description='camera')
 
         link((step_slide, 'value'), (self, 'step'))
         link((delay_text, 'value'), (self, 'delay'))
-        link((checkbox_interpolate, 'value'), (self, 'interpolate'))
-        # link((t_interpolation, 'value'), (self, '_interpolation_t'))
-        link((interpolation_type, 'value'), (self, '_iterpolation_type'))
+        link((toggle_button_interpolate, 'value'), (self, 'interpolate'))
         link((camera_type, 'value'), (self, 'camera'))
         link((bg_color, 'value'), (self._view, 'background'))
 
         center_button = self._make_button_center()
         render_button = self._show_download_image()
         qtconsole_button = self._make_button_qtconsole()
-        center_render_hbox = _make_autofit(HBox([center_button, render_button, qtconsole_button]))
+        center_render_hbox = _make_autofit(HBox([toggle_button_interpolate, center_button,
+                                                 render_button, qtconsole_button]))
 
         v0_left = VBox([step_slide,
                    delay_text,
                    bg_color,
                    camera_type,
-                   ibox,
                    center_render_hbox,
                    ])
 
