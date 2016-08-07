@@ -194,7 +194,7 @@ class TrajectoryPlayer(DOMWidget):
 
         return button
 
-    def _make_preference_widget(self, width='50%'):
+    def _make_preference_widget(self, width='100%'):
         def make_func():
             parameters = self._view._full_stage_parameters
             def func(pan_speed=parameters.get('panSpeed', 0.8),
