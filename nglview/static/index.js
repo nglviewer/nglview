@@ -672,9 +672,9 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	            draggable: true,
 	            resizable: true,
 	            modal: false,
-	            width: $nb_container.offset().right,
+	            width: window.innerWidth - $nb_container.width() - $nb_container.css("marginLeft"),
 	            height:"auto",
-	            position: {my: 'left', at: 'left', of: window},
+	            position: {my: 'right', at: 'right', of: window},
 	            show: { effect: "blind", duration: 150 },
 	            close: function (event, ui) {
 	                that.$el.append(that.$container);
