@@ -625,7 +625,7 @@ class TrajectoryPlayer(DOMWidget):
         drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
         reset_nb = Button(description='notebook: reset', tooltip='reset?')
         dialog_button = Button(description='dialog', tooltip='make a dialog')
-        split_half_buttong = Button(description='split half', tooltip='try best to make a good layout')
+        split_half_button = Button(description='split screen', tooltip='try best to make a good layout')
 
         def on_drag(drag_button):
             if drag_button.description == 'widget drag: off':
@@ -651,17 +651,18 @@ class TrajectoryPlayer(DOMWidget):
 
         def on_split_half(dialog_button):
             from nglview import jsutils
-            jsutils._move_notebook_to_the_right()
+            jsutils._move_notebook_to_the_left()
+            jsutils._set_notebook_width('5%')
             self._view._remote_call('setDialog', target='Widget')
 
         drag_button.on_click(on_drag)
         drag_nb.on_click(on_drag_nb)
         reset_nb.on_click(on_reset)
         dialog_button.on_click(on_dialog)
-        split_half_buttong.on_click(on_split_half)
+        split_half_button.on_click(on_split_half)
 
         drag_box = HBox([drag_button, drag_nb, reset_nb,
-                        dialog_button, split_half_buttong])
+                        dialog_button, split_half_button])
         drag_box = _make_autofit(drag_box)
         return drag_box
 

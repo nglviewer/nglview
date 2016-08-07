@@ -588,7 +588,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             draggable: true,
             resizable: true,
             modal: false,
-            width: $nb_container.offset().left,
+            width: $nb_container.offset().right,
             height:"auto",
             position: {my: 'left', at: 'left', of: window},
             show: { effect: "blind", duration: 150 },
