@@ -651,8 +651,10 @@ class TrajectoryPlayer(DOMWidget):
 
         def on_split_half(dialog_button):
             from nglview import jsutils
+            import time
             jsutils._move_notebook_to_the_left()
             jsutils._set_notebook_width('5%')
+            time.sleep(0.1)
             self._view._remote_call('setDialog', target='Widget')
 
         drag_button.on_click(on_drag)

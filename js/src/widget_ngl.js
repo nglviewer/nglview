@@ -589,7 +589,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             resizable: true,
             modal: false,
 	        width: window.innerWidth - $nb_container.width() - $nb_container.css("marginLeft"),
-            height:"auto",
+            height: window.innerHeight - $nb_container.css("marginTop"),
             position: {my: 'right', at: 'right', of: window},
             show: { effect: "blind", duration: 150 },
             close: function (event, ui) {
