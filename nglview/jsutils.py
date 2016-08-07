@@ -33,7 +33,6 @@ def _set_notebook_draggable(yes=True):
 def _move_notebook_to_the_right():
     script_template = """
     var x = $('#notebook-container');
-    x.width('20%');
     x.css({position: "relative", left: "20%"});
     """
     display(Javascript(script_template))
@@ -42,7 +41,6 @@ def _move_notebook_to_the_left():
     script_template = """
     var cb = Jupyter.notebook.container;
 
-    cb.width('20%');
     cb.offset({'left': 0})
     """
     display(Javascript(script_template))

@@ -13,7 +13,7 @@ from ipywidgets import (DOMWidget,
                         Text, Textarea, IntText, FloatText,
                         Label,
                         interactive,
-                        Tab, Layout, jsdlink)
+                        Tab, Layout, Accordion)
 
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum, TraitError
 from traitlets import observe, link
@@ -21,6 +21,7 @@ from traitlets import observe, link
 from .ngl_params import REPR_NAMES
 from .widget_utils import get_widget_by_name
 from . import default
+from . import jsutils
 
 try:
     form_item_layout = Layout(
@@ -483,9 +484,10 @@ class TrajectoryPlayer(DOMWidget):
         repr_slider.visible = True
 
         # TODO: properly hide
-        toggle_button_repr_parameters_shown = ToggleButton(value=False, description='show parameters')
+        repr_params_accordion = Accordion()
         repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
-        jsdlink((toggle_button_repr_parameters_shown, 'value'), (repr_slider_parameters, 'visible'))
+        repr_params_accordion.children = [repr_slider_parameters]
+        repr_params_accordion.set_title(0, 'show parameters')
         
         checkbox_reprlist = Checkbox(value=False, description='reprlist')
         checkbox_reprlist._ngl_name = 'checkbox_reprlist'
@@ -537,19 +539,12 @@ class TrajectoryPlayer(DOMWidget):
             if choice:
                  component_slider.value = self._view._ngl_component_names.index(choice)
 
-        def on_toggle_button_repr_parameters_shown_value_changed(change):
-            # repr_slider_parameters.visible = change['new']
-            if repr_slider_parameters.visible:
-                kids = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text).children
-                repr_slider_parameters.children = kids
-
         component_dropdown.observe(on_change_component_dropdown, names='value')
 
         repr_slider.observe(on_component_or_repr_slider_value_changed, names='value')
         component_slider.observe(on_component_or_repr_slider_value_changed, names='value')
         repr_name_text.observe(on_repr_name_text_value_changed, names='value')
         repr_selection.observe(on_repr_selection_value_changed, names='value')
-        toggle_button_repr_parameters_shown.observe(on_toggle_button_repr_parameters_shown_value_changed, names='value')
 
         bbox = self._make_button_repr_control(component_slider, repr_slider,
                 repr_selection)
@@ -557,8 +552,8 @@ class TrajectoryPlayer(DOMWidget):
         blank_box = Box([Label("")])
 
         all_kids = [bbox, blank_box, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
-                   component_slider, repr_slider, reprlist_choices, toggle_button_repr_parameters_shown,
-                   repr_slider_parameters]
+                   component_slider, repr_slider, reprlist_choices,
+                   repr_params_accordion]
 
         vbox = VBox(all_kids)
 
@@ -740,14 +735,14 @@ class TrajectoryPlayer(DOMWidget):
 
         def on_drag_nb(drag_button):
             if drag_nb.description == 'notebook drag: off':
-                self._view._set_notebook_draggable(True)
+                jsutils._set_notebook_draggable(True)
                 drag_nb.description = 'notebook drag: on'
             else:
-                self._view._set_notebook_draggable(False)
+                jsutils._set_notebook_draggable(False)
                 drag_nb.description = 'notebook drag: off'
 
         def on_reset(reset_nb):
-            self._view._reset_notebook()
+            jsutils._reset_notebook()
 
         def on_dialog(dialog_button):
             self._view._remote_call('setDialog', target='Widget')
