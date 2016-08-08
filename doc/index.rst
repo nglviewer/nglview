@@ -27,7 +27,7 @@ Table of contents
 -  `Command line <#command-line>`__
 -  `API doc <#api-doc>`__
 -  `Interface classes <interface_classes.html>`__
--  `Changelog <https://github.com/arose/nglview/blob/master/CHANGELOG.html>`__
+-  `Changelog <CHANGELOG.html>`__
 -  `FAQ <#faq>`__
 -  `Website <#website>`__
 -  `Acknowledgment <#acknowledgment>`__

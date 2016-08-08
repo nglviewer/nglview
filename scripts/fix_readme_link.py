@@ -13,8 +13,6 @@ readme = open(sys.argv[1]).read()
 
 words = ["(nglview.gif)",
          "(examples/images/membrane.gif)",
-         "(./doc/interface_classes.md)",
-         "(CHANGELOG.md)",
          "(examples/README.md)",
          "(./examples/README.md)",
          ]
