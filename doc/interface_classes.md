@@ -1,7 +1,8 @@
+
+Extend NGLView classes
+
 Structures
 ==========
-
-The above convenience functions first create an `adaptor` that implements an interface for communication with the IPython/Jupyter widget.
 
 ```python
 import nglview
