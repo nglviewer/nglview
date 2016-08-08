@@ -223,7 +223,7 @@ step : int, default=1</p>
 <dl class="function">
 <dt id="nglview.utils.get_colors_from_b64">
 <code class="descclassname">nglview.utils.</code><code class="descname">get_colors_from_b64</code><span class="sig-paren">(</span><em>b64_image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/utils.html#get_colors_from_b64"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.utils.get_colors_from_b64" title="Permalink to this definition">¶</a></dt>
-<dd><div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">render_image</span><span class="p">()</span>
+<dd><div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">render_image</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_colors_from_b64</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">_image_data</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -236,9 +236,9 @@ step : int, default=1</p>
 <dl class="class">
 <dt id="nglview.ComponentViewer">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">ComponentViewer</code><span class="sig-paren">(</span><em>view</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#ComponentViewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ComponentViewer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <p>Convenient attribute for NGLWidget. See example below.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">()</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="c1"># traj is a component 0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="c1"># component 1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">component_0</span><span class="o">.</span><span class="n">clear_representations</span><span class="p">()</span>
@@ -274,7 +274,7 @@ step : int, default=1</p>
 <dl class="class">
 <dt id="nglview.FileStructure">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">FileStructure</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#FileStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.FileStructure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../api.html#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
 <dl class="method">
 <dt id="nglview.FileStructure.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#FileStructure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.FileStructure.get_structure_string" title="Permalink to this definition">¶</a></dt>
@@ -285,11 +285,11 @@ step : int, default=1</p>
 <dl class="class">
 <dt id="nglview.MDAnalysisTrajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">MDAnalysisTrajectory</code><span class="sig-paren">(</span><em>atomgroup</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#MDAnalysisTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDAnalysisTrajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../api.html#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="../api.html#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
 <p>MDAnalysis adaptor.</p>
 <p>Can take either a Universe or AtomGroup.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="kn">as</span> <span class="nn">mda</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="k">as</span> <span class="nn">mda</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">prot</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s1">&#39;protein&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">MDAnalysisTrajectory</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span>
@@ -317,10 +317,10 @@ step : int, default=1</p>
 <dl class="class">
 <dt id="nglview.MDTrajTrajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">MDTrajTrajectory</code><span class="sig-paren">(</span><em>trajectory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#MDTrajTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDTrajTrajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../api.html#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="../api.html#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
 <p>mdtraj adaptor.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mdtraj</span> <span class="kn">as</span> <span class="nn">md</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mdtraj</span> <span class="k">as</span> <span class="nn">md</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">traj</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">MDTrajTrajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -353,11 +353,11 @@ step : int, default=1</p>
 <code class="descname">add_component</code><span class="sig-paren">(</span><em>filename</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#NGLWidget.add_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.add_component" title="Permalink to this definition">¶</a></dt>
 <dd><p>add component from file/trajectory/struture</p>
 <dl class="docutils">
-<dt>filename <span class="classifier-delimiter">:</span> <span class="classifier">str or Trajectory or Structure or their derived class or url</span></dt>
-<dd>if you specify url, you must specify <cite>url=True</cite> in kwargs</dd>
+<dt>filename</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str or Trajectory or Structure or their derived class or url</span><dd>if you specify url, you must specify <cite>url=True</cite> in kwargs</dd>
 </dl>
 <p><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs : additional arguments, optional</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">Widget</span><span class="p">()</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">Widget</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 </pre></div>
@@ -369,15 +369,15 @@ step : int, default=1</p>
 <code class="descname">add_representation</code><span class="sig-paren">(</span><em>repr_type</em>, <em>selection='all'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#NGLWidget.add_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.add_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add structure representation (cartoon, licorice, ...) for given atom selection.</p>
 <dl class="docutils">
-<dt>repr_type <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd>type of representation. Please see:
+<dt>repr_type</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd>type of representation. Please see:
 <a class="reference external" href="http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations">http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations</a></dd>
-<dt>selection <span class="classifier-delimiter">:</span> <span class="classifier">str or 1D array (atom indices) or any iterator that returns integer, default &#8216;all&#8217;</span></dt>
-<dd>atom selection</dd>
+<dt>selection</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str or 1D array (atom indices) or any iterator that returns integer, default &#8216;all&#8217;</span><dd>atom selection</dd>
 </dl>
 <p><a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: additional arguments for representation</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="kn">as</span> <span class="nn">pt</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="k">as</span> <span class="nn">pt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">load_dpdp</span><span class="p">()[:]</span><span class="o">.</span><span class="n">superpose</span><span class="p">(</span><span class="s1">&#39;@CA&#39;</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pytraj</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
@@ -392,7 +392,7 @@ step : int, default=1</p>
 <code class="descname">add_structure</code><span class="sig-paren">(</span><em>structure</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#NGLWidget.add_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.add_structure" title="Permalink to this definition">¶</a></dt>
 <dd><p>add structure to view</p>
 <p>structure : nglview.Structure object</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj0</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># then add Structure</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_structure</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -410,7 +410,7 @@ step : int, default=1</p>
 <dd>pytraj.Trajectory-like, mdtraj.Trajectory or MDAnalysis objects</dd>
 </dl>
 <p>nglview.NGLWidget.add_component</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span><span class="o">,</span> <span class="nn">pytraj</span> <span class="kn">as</span> <span class="nn">pt</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span><span class="o">,</span> <span class="nn">pytraj</span> <span class="k">as</span> <span class="nn">pt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">traj</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">TRR</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pytraj</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># show view first</span>
@@ -457,8 +457,8 @@ step : int, default=1</p>
 <code class="descname">clear_representations</code><span class="sig-paren">(</span><em>component=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#NGLWidget.clear_representations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.clear_representations" title="Permalink to this definition">¶</a></dt>
 <dd><p>clear all representations for given component</p>
 <dl class="docutils">
-<dt>component <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0 (first model)</span></dt>
-<dd>You need to keep track how many components you added.</dd>
+<dt>component</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0 (first model)</span><dd>You need to keep track how many components you added.</dd>
 </dl>
 </dd></dl>
 
@@ -471,11 +471,11 @@ step : int, default=1</p>
 component : int, default 0</p>
 <blockquote>
 <div>component index</div></blockquote>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># component 0</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># component 0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">color_by</span><span class="p">(</span><span class="s1">&#39;atomindex&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># component 1</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># component 1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">color_by</span><span class="p">(</span><span class="s1">&#39;atomindex&#39;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -485,8 +485,8 @@ component : int, default 0</p>
 <dt id="nglview.NGLWidget.coordinates_dict">
 <code class="descname">coordinates_dict</code><a class="headerlink" href="#nglview.NGLWidget.coordinates_dict" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>out <span class="classifier-delimiter">:</span> <span class="classifier">dict of numpy 3D-array, dtype=&#8217;f4&#8217;</span></dt>
-<dd>coordinates of trajectories at current frame</dd>
+<dt>out</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dict of numpy 3D-array, dtype=&#8217;f4&#8217;</span><dd>coordinates of trajectories at current frame</dd>
 </dl>
 </dd></dl>
 
@@ -501,8 +501,8 @@ component : int, default 0</p>
 <code class="descname">detach</code><span class="sig-paren">(</span><em>split=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#NGLWidget.detach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.detach" title="Permalink to this definition">¶</a></dt>
 <dd><p>detach player from its original container.</p>
 <dl class="docutils">
-<dt>split <span class="classifier-delimiter">:</span> <span class="classifier">bool, default False</span></dt>
-<dd>if True, resize notebook then move it to the right of its container</dd>
+<dt>split</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">bool, default False</span><dd>if True, resize notebook then move it to the right of its container</dd>
 </dl>
 </dd></dl>
 
@@ -589,7 +589,7 @@ transparent : bool, default False</p>
 <dt id="nglview.NGLWidget.remove_component">
 <code class="descname">remove_component</code><span class="sig-paren">(</span><em>component_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#NGLWidget.remove_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.remove_component" title="Permalink to this definition">¶</a></dt>
 <dd><p>remove component by its uuid</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj0</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_struture</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove last component</span>
@@ -603,11 +603,11 @@ transparent : bool, default False</p>
 <code class="descname">render_image</code><span class="sig-paren">(</span><em>frame=None</em>, <em>factor=4</em>, <em>antialias=True</em>, <em>trim=False</em>, <em>transparent=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#NGLWidget.render_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.render_image" title="Permalink to this definition">¶</a></dt>
 <dd><p>render and get image as ipywidgets.widget_image.Image</p>
 <dl class="docutils">
-<dt>frame <span class="classifier-delimiter">:</span> <span class="classifier">int or None, default None</span></dt>
-<dd>if None, use current frame
+<dt>frame</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int or None, default None</span><dd>if None, use current frame
 if specified, use this number.</dd>
-<dt>factor <span class="classifier-delimiter">:</span> <span class="classifier">int, default 4</span></dt>
-<dd>quality of the image, higher is better</dd>
+<dt>factor</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int, default 4</span><dd>quality of the image, higher is better</dd>
 </dl>
 <p>antialias : bool, default True
 trim : bool, default False
@@ -659,10 +659,10 @@ If you are viewing trajectory, it&#8217;s better to use your engine (ptraj, mdtr
 MDAnalysis, ...)</p>
 <p>Note: unstable feature</p>
 <dl class="docutils">
-<dt>components <span class="classifier-delimiter">:</span> <span class="classifier">1D int array-like, default [1,]</span></dt>
-<dd>component index</dd>
-<dt>ref <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0</span></dt>
-<dd>reference index</dd>
+<dt>components</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">1D int array-like, default [1,]</span><dd>component index</dd>
+<dt>ref</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0</span><dd>reference index</dd>
 </dl>
 </dd></dl>
 
@@ -677,10 +677,10 @@ MDAnalysis, ...)</p>
 <dt id="nglview.NGLWidget.update_representation">
 <code class="descname">update_representation</code><span class="sig-paren">(</span><em>component=0</em>, <em>repr_index=0</em>, <em>**parameters</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#NGLWidget.update_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.update_representation" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>component <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0</span></dt>
-<dd>component index</dd>
-<dt>repr_index <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0</span></dt>
-<dd>representation index for given component</dd>
+<dt>component</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0</span><dd>component index</dd>
+<dt>repr_index</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0</span><dd>representation index for given component</dd>
 </dl>
 <p>parameters : dict</p>
 </dd></dl>
@@ -690,7 +690,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.ParmEdTrajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">ParmEdTrajectory</code><span class="sig-paren">(</span><em>trajectory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#ParmEdTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ParmEdTrajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../api.html#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="../api.html#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
 <p>ParmEd adaptor.</p>
 <dl class="method">
 <dt id="nglview.ParmEdTrajectory.get_coordinates">
@@ -712,7 +712,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.PdbIdStructure">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">PdbIdStructure</code><span class="sig-paren">(</span><em>pdbid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#PdbIdStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PdbIdStructure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../api.html#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
 <dl class="method">
 <dt id="nglview.PdbIdStructure.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#PdbIdStructure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PdbIdStructure.get_structure_string" title="Permalink to this definition">¶</a></dt>
@@ -723,10 +723,10 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.PyTrajTrajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">PyTrajTrajectory</code><span class="sig-paren">(</span><em>trajectory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#PyTrajTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PyTrajTrajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../api.html#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="../api.html#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
 <p>PyTraj adaptor.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="kn">as</span> <span class="nn">pt</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="k">as</span> <span class="nn">pt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">traj</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">TRR</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">PyTrajTrajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -753,7 +753,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.RdkitStructure">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">RdkitStructure</code><span class="sig-paren">(</span><em>rdkit_mol</em>, <em>ext='pdb'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#RdkitStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.RdkitStructure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../api.html#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
 <dl class="method">
 <dt id="nglview.RdkitStructure.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#RdkitStructure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.RdkitStructure.get_structure_string" title="Permalink to this definition">¶</a></dt>
@@ -764,9 +764,9 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.SimpletrajTrajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">SimpletrajTrajectory</code><span class="sig-paren">(</span><em>path</em>, <em>structure_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#SimpletrajTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.SimpletrajTrajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../api.html#nglview.Trajectory" title="nglview.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.Trajectory</span></code></a>, <a class="reference internal" href="../api.html#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
 <p>simpletraj adaptor.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">SimpletrajTrajectory</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
@@ -792,7 +792,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.Structure">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">Structure</code><a class="reference internal" href="../_modules/nglview.html#Structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Structure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="nglview.Structure.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#Structure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Structure.get_structure_string" title="Permalink to this definition">¶</a></dt>
@@ -803,7 +803,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.TextStructure">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">TextStructure</code><span class="sig-paren">(</span><em>text</em>, <em>ext='pdb'</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#TextStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.TextStructure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../api.html#nglview.Structure" title="nglview.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.Structure</span></code></a></p>
 <dl class="method">
 <dt id="nglview.TextStructure.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#TextStructure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.TextStructure.get_structure_string" title="Permalink to this definition">¶</a></dt>
@@ -814,7 +814,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.Trajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">Trajectory</code><a class="reference internal" href="../_modules/nglview.html#Trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Trajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="nglview.Trajectory.get_coordinates">
 <code class="descname">get_coordinates</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#Trajectory.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Trajectory.get_coordinates" title="Permalink to this definition">¶</a></dt>
@@ -847,8 +847,8 @@ MDAnalysis, ...)</p>
 <code class="descclassname">nglview.</code><code class="descname">show_mdanalysis</code><span class="sig-paren">(</span><em>atomgroup</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#show_mdanalysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_mdanalysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show NGL widget with MDAnalysis AtomGroup.</p>
 <p>Can take either a Universe or AtomGroup as its data input.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="kn">as</span> <span class="nn">mda</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="k">as</span> <span class="nn">mda</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">prot</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s1">&#39;protein&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_mdanalysis</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span>
@@ -861,8 +861,8 @@ MDAnalysis, ...)</p>
 <dt id="nglview.show_mdtraj">
 <code class="descclassname">nglview.</code><code class="descname">show_mdtraj</code><span class="sig-paren">(</span><em>mdtraj_trajectory</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#show_mdtraj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_mdtraj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show mdtraj trajectory.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mdtraj</span> <span class="kn">as</span> <span class="nn">md</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mdtraj</span> <span class="k">as</span> <span class="nn">md</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_mdtraj</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
@@ -874,8 +874,8 @@ MDAnalysis, ...)</p>
 <dt id="nglview.show_parmed">
 <code class="descclassname">nglview.</code><code class="descname">show_parmed</code><span class="sig-paren">(</span><em>parmed_structure</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#show_parmed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_parmed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show pytraj trajectory.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">parmed</span> <span class="kn">as</span> <span class="nn">pmd</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">parmed</span> <span class="k">as</span> <span class="nn">pmd</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_parmed</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
@@ -887,7 +887,7 @@ MDAnalysis, ...)</p>
 <dt id="nglview.show_pdbid">
 <code class="descclassname">nglview.</code><code class="descname">show_pdbid</code><span class="sig-paren">(</span><em>pdbid</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#show_pdbid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_pdbid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show PDB entry.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pdbid</span><span class="p">(</span><span class="s2">&quot;3pqr&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
 </pre></div>
@@ -898,8 +898,8 @@ MDAnalysis, ...)</p>
 <dt id="nglview.show_pytraj">
 <code class="descclassname">nglview.</code><code class="descname">show_pytraj</code><span class="sig-paren">(</span><em>pytraj_trajectory</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#show_pytraj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_pytraj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show pytraj trajectory.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="kn">as</span> <span class="nn">pt</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="k">as</span> <span class="nn">pt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">TRR</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pytraj</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
@@ -913,23 +913,23 @@ MDAnalysis, ...)</p>
 <dd><p>Show rdkit&#8217;s Mol.</p>
 <p>rdkit_mol : rdkit.Chem.rdchem.Mol
 kwargs : additional keyword argument</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">AllChem</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rdkit</span> <span class="k">import</span> <span class="n">Chem</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="k">import</span> <span class="n">AllChem</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">AddHs</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="s1">&#39;COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4&#39;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">AllChem</span><span class="o">.</span><span class="n">EmbedMultipleConfs</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">useExpTorsionAnglePrefs</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">useBasicKnowledge</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">AllChem</span><span class="o">.</span><span class="n">EmbedMultipleConfs</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">useExpTorsionAnglePrefs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">useBasicKnowledge</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_rdkit</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># add component m2</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># add component m2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># create file-like object</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fh</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolToPDBBlock</span><span class="p">(</span><span class="n">m2</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># load as trajectory, need to have ParmEd</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_rdkit</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">parmed</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># load as trajectory, need to have ParmEd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_rdkit</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">parmed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -938,7 +938,7 @@ kwargs : additional keyword argument</p>
 <dt id="nglview.show_simpletraj">
 <code class="descclassname">nglview.</code><code class="descname">show_simpletraj</code><span class="sig-paren">(</span><em>traj</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview.html#show_simpletraj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.show_simpletraj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show simpletraj trajectory and structure file.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_simpletraj</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
 </pre></div>
@@ -951,7 +951,7 @@ kwargs : additional keyword argument</p>
 <dd><p>Show structure file. Allowed are text-based structure
 file formats that are by supported by NGL, including pdb,
 gro, mol2, sdf.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="kn">as</span> <span class="nn">nv</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_structure_file</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
 </pre></div>
@@ -1001,14 +1001,11 @@ gro, mol2, sdf.</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -1030,7 +1027,7 @@ gro, mol2, sdf.</p>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
       Last updated on Aug 07, 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
     </div>
   </body>
 </html>
