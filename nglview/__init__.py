@@ -1491,7 +1491,7 @@ class NGLWidget(DOMWidget):
 
         self._remote_call('removeComponent',
                 target='Stage',
-                args=[component,])
+                args=[component_index,])
         
         self._update_component_auto_completion()
 
