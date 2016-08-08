@@ -318,6 +318,22 @@ Website
 -  http://arose.github.io/nglview/latest
 -  http://arose.github.io/nglview/dev
 
+Projects using NGLView
+======================
+
+(Feel free to make a PR to add/remove your project here)
+
+-  `AMBER <http://ambermd.org/>`__ - A package of programs for molecular
+   dynamics simulations of proteins and nucleic acids
+-  `mbuild <https://github.com/iModels/mbuild>`__ - A hierarchical,
+   component based molecule builder
+-  `deepchem <https://github.com/deepchem/deepchem>`__ - Deep-learning
+   models for Drug Discovery and Quantum Chemistry
+-  `pychimera <https://github.com/insilichem/pychimera>`__ - Use UCSF
+   Chimera Python API in a standard interpreter
+-  `htmd <https://github.com/Acellera/htmd>`__ - High throughput
+   molecular dynamics simulations
+
 Acknowledgment
 ==============
 
