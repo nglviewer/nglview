@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Table of contents &mdash; NGLView 0.5.2a+160.gc514333 documentation</title>
+    <title>Table of contents &mdash; NGLView 0.5.2a+277.g2083f3b documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.2a+160.gc514333',
+        VERSION:     '0.5.2a+277.g2083f3b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+160.gc514333 documentation" href="#" /> 
+    <link rel="top" title="NGLView 0.5.2a+277.g2083f3b documentation" href="#" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+277.g2083f3b documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -69,6 +69,7 @@ an <a class="reference external" href="https://github.com/arose/nglview/issues">
 <li><a class="reference external" href="#example">Example</a></li>
 <li><a class="reference external" href="#usage">Usage</a></li>
 <li><a class="reference external" href="#command-line">Command line</a></li>
+<li><a class="reference external" href="#api-doc">API doc</a></li>
 <li><a class="reference external" href="https://github.com/arose/nglview/blob/master/doc/interface_classes.md">Interface
 classes</a></li>
 <li><a class="reference external" href="https://github.com/arose/nglview/blob/master/CHANGELOG.md">Changelog</a></li>
@@ -128,7 +129,7 @@ examples</a></li>
 </pre></div>
 </div>
 <p>and issue</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
 <span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">show_pdbid</span><span class="p">(</span><span class="s2">&quot;3pqr&quot;</span><span class="p">)</span>  <span class="c1"># load &quot;3pqr&quot; from RCSB PDB and display viewer widget</span>
 <span class="n">view</span>
 </pre></div>
@@ -211,7 +212,7 @@ language</a></p>
 <code class="docutils literal"><span class="pre">representations</span></code> property of the widget instance <code class="docutils literal"><span class="pre">view</span></code>. The
 available <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">params</span></code> are described in the NGL Viewer
 <a class="reference external" href="http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html">documentation</a>.</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;residueindex&quot;</span>
     <span class="p">}},</span>
@@ -222,7 +223,7 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </pre></div>
 </div>
 <p>The widget constructor also accepts a <code class="docutils literal"><span class="pre">representation</span></code> argument:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;sstruc&quot;</span>
     <span class="p">}}</span>
@@ -235,11 +236,11 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 <div class="section" id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
 <span class="n">view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="mi">100</span>
 </pre></div>
 </div>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
+<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
 <span class="n">view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># &quot;percentages, &quot;dist&quot; is distance too camera in Angstrom</span>
     <span class="s2">&quot;clipNear&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;clipFar&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;clipDist&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -302,13 +303,13 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </pre></div>
 </div>
 </div>
+</div>
 <div class="section" id="api-doc">
-<h2>API doc<a class="headerlink" href="#api-doc" title="Permalink to this headline">¶</a></h2>
+<h1>API doc<a class="headerlink" href="#api-doc" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><a class="reference external" href="http://arose.github.io/nglview/latest/api.html">Latest version</a></li>
 <li><a class="reference external" href="http://arose.github.io/nglview/dev/api.html">Development version</a></li>
 </ul>
-</div>
 </div>
 <div class="section" id="command-line">
 <h1>Command line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h1>
@@ -393,9 +394,9 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
 <li><a class="reference internal" href="#trajectory">Trajectory</a></li>
 <li><a class="reference internal" href="#add-extra-component">Add extra component</a></li>
 <li><a class="reference internal" href="#display-more-than-two-widgets">Display more than two widgets</a></li>
-<li><a class="reference internal" href="#api-doc">API doc</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#api-doc">API doc</a></li>
 <li><a class="reference internal" href="#command-line">Command line</a></li>
 <li><a class="reference internal" href="#faq">FAQ</a></li>
 <li><a class="reference internal" href="#website">Website</a></li>
@@ -413,8 +414,8 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -433,13 +434,13 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+277.g2083f3b documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 07, 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+      Last updated on Aug 08, 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

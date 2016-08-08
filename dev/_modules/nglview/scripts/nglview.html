@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.scripts.nglview &mdash; NGLView 0.5.2a+160.gc514333 documentation</title>
+    <title>nglview.scripts.nglview &mdash; NGLView 0.5.2a+277.g2083f3b documentation</title>
     
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.5.2a+160.gc514333',
+        VERSION:     '0.5.2a+277.g2083f3b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+160.gc514333 documentation" href="../../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+277.g2083f3b documentation" href="../../../index.html" />
     <link rel="up" title="nglview" href="../../nglview.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+277.g2083f3b documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="../../nglview.html" accesskey="U">nglview</a> &raquo;</li> 
       </ul>
@@ -50,11 +50,11 @@
             
   <h1>Source code for nglview.scripts.nglview</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">argparse</span><span class="o">,</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">CalledProcessError</span>
-<span class="kn">from</span> <span class="nn">.cmd_example</span> <span class="k">import</span> <span class="n">CMD_EXAMPLE</span> 
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">CalledProcessError</span>
+<span class="kn">from</span> <span class="nn">.cmd_example</span> <span class="kn">import</span> <span class="n">CMD_EXAMPLE</span> 
 
 <span class="n">bin_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;/bin/&#39;</span>
 
@@ -71,7 +71,7 @@
    <span class="s2">&quot;cell_type&quot;</span><span class="p">:</span> <span class="s2">&quot;code&quot;</span><span class="p">,</span>
    <span class="s2">&quot;execution_count&quot;</span><span class="p">:</span> <span class="s1">&#39;null&#39;</span><span class="p">,</span>
    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;collapsed&quot;</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="s2">&quot;collapsed&quot;</span><span class="p">:</span> <span class="bp">True</span>
    <span class="p">},</span>
    <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="p">[],</span>
    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -107,15 +107,15 @@
  <span class="s2">&quot;nbformat_minor&quot;</span><span class="p">:</span> <span class="mi">0</span>
 <span class="p">}</span>
 
-<div class="viewcode-block" id="install_nbextension"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.install_nbextension">[docs]</a><span class="k">def</span> <span class="nf">install_nbextension</span><span class="p">(</span><span class="n">jupyter</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="install_nbextension"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.install_nbextension">[docs]</a><span class="k">def</span> <span class="nf">install_nbextension</span><span class="p">(</span><span class="n">jupyter</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
     <span class="n">nglview_main</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;nglview_main.js&#39;</span><span class="p">)</span>
 
     <span class="n">local</span> <span class="o">=</span> <span class="s1">&#39;--user&#39;</span> <span class="k">if</span> <span class="n">user</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
-    <span class="n">cm_install</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{jupyter}</span><span class="s1"> nbextension install </span><span class="si">{nglview_main}</span><span class="s1"> </span><span class="si">{local}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">jupyter</span><span class="p">,</span>
+    <span class="n">cm_install</span> <span class="o">=</span> <span class="s1">&#39;{jupyter} nbextension install {nglview_main} {local}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">jupyter</span><span class="p">,</span>
             <span class="n">nglview_main</span><span class="o">=</span><span class="n">nglview_main</span><span class="p">,</span>
             <span class="n">local</span><span class="o">=</span><span class="n">local</span><span class="p">)</span>
-    <span class="n">cm_activate</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{jupyter}</span><span class="s1"> nbextension enable nglview_main&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">jupyter</span><span class="p">)</span> 
+    <span class="n">cm_activate</span> <span class="o">=</span> <span class="s1">&#39;{jupyter} nbextension enable nglview_main&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">jupyter</span><span class="p">)</span> 
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">devnull</span><span class="p">:</span>
         <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">cm_install</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span>
@@ -126,35 +126,35 @@
             <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="disable_extension"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.disable_extension">[docs]</a><span class="k">def</span> <span class="nf">disable_extension</span><span class="p">(</span><span class="n">jupyter</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;disable nglview_main extension&quot;</span><span class="p">)</span>
-    <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{jupyter}</span><span class="s1"> nbextension disable nglview_main&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">jupyter</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;disable nglview_main extension&quot;</span><span class="p">)</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;{jupyter} nbextension disable nglview_main&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">jupyter</span><span class="p">)</span>
     <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">split</span><span class="p">())</span></div>
 
 
 <span class="n">remote_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Try to use port = </span><span class="si">{port}</span><span class="s2"></span>
+<span class="s2">Try to use port = {port}</span>
 
 <span class="se">\033</span><span class="s2">[32m In your local machine, run: </span><span class="se">\033</span><span class="s2">[0m</span>
 
-<span class="s2">    </span><span class="si">{client_cm}</span><span class="s2"></span>
+<span class="s2">    {client_cm}</span>
 
-<span class="se">\033</span><span class="s2">[32m NOTE: you might want to replace </span><span class="si">{hostname}</span><span class="s2"> by full hostname with domain name </span><span class="se">\033</span><span class="s2">[0m</span>
+<span class="se">\033</span><span class="s2">[32m NOTE: you might want to replace {hostname} by full hostname with domain name </span><span class="se">\033</span><span class="s2">[0m</span>
 
 <span class="se">\033</span><span class="s2">[32m Then open your web browser, copy and paste: </span><span class="se">\033</span><span class="s2">[0m</span>
-<span class="s2">    http://localhost:</span><span class="si">{port}</span><span class="s2"></span>
+<span class="s2">    http://localhost:{port}</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="get_remote_port"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.get_remote_port">[docs]</a><span class="k">def</span> <span class="nf">get_remote_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_remote_port"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.get_remote_port">[docs]</a><span class="k">def</span> <span class="nf">get_remote_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">socket</span>
-    <span class="kn">from</span> <span class="nn">nglview.scripts.app</span> <span class="k">import</span> <span class="n">NGLViewApp</span>
+    <span class="kn">from</span> <span class="nn">nglview.scripts.app</span> <span class="kn">import</span> <span class="n">NGLViewApp</span>
     <span class="n">port</span> <span class="o">=</span> <span class="n">NGLViewApp</span><span class="p">()</span><span class="o">.</span><span class="n">get_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
 
     <span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getlogin</span><span class="p">()</span>
     <span class="n">hostname</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span>
-    <span class="n">client_cm</span> <span class="o">=</span> <span class="s2">&quot;ssh -NL localhost:</span><span class="si">{port}</span><span class="s2">:localhost:</span><span class="si">{port}</span><span class="s2"> </span><span class="si">{username}</span><span class="s2">@</span><span class="si">{hostname}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+    <span class="n">client_cm</span> <span class="o">=</span> <span class="s2">&quot;ssh -NL localhost:{port}:localhost:{port} {username}@{hostname}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
             <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">,</span>
             <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">remote_msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">client_cm</span><span class="o">=</span><span class="n">client_cm</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">remote_msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">client_cm</span><span class="o">=</span><span class="n">client_cm</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">port</span></div>
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">notebook_dict</span><span class="o">=</span><span class="n">notebook_dict</span><span class="p">):</span>
@@ -183,13 +183,13 @@
 
     <span class="n">command</span> <span class="o">=</span> <span class="n">parm</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span>
 
-    <span class="n">crd</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">traj</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">crd</span>
-    <span class="k">if</span> <span class="n">crd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">crd</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">traj</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">crd</span>
+    <span class="k">if</span> <span class="n">crd</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">crd</span> <span class="o">=</span> <span class="n">parm</span>
 
     <span class="n">browser</span> <span class="o">=</span> <span class="s1">&#39;--browser &#39;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">browser</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">browser</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="n">create_new_nb</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">create_new_nb</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">if</span> <span class="n">parm</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.ipynb&#39;</span><span class="p">):</span>
         <span class="n">notebook_name</span> <span class="o">=</span> <span class="n">parm</span>
@@ -216,18 +216,18 @@
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
             <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">nb_json</span><span class="p">)</span>
-            <span class="n">create_new_nb</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">create_new_nb</span> <span class="o">=</span> <span class="bp">True</span>
     
     
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">remote</span><span class="p">:</span>
-        <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{jupyter}</span><span class="s1"> notebook </span><span class="si">{notebook_name}</span><span class="s1"> </span><span class="si">{browser}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">,</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;{jupyter} notebook {notebook_name} {browser}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">,</span>
                                                                    <span class="n">notebook_name</span><span class="o">=</span><span class="n">notebook_name</span><span class="p">,</span>
                                                                <span class="n">browser</span><span class="o">=</span><span class="n">browser</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">get_remote_port</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-        <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{jupyter}</span><span class="s1"> notebook --no-browser --port </span><span class="si">{port}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">,</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;{jupyter} notebook --no-browser --port {port}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">,</span>
                                                                     <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NOTE: make sure to open </span><span class="si">{0}</span><span class="s1"> in your local machine</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;NOTE: make sure to open {0} in your local machine</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">disable_autorun</span><span class="p">:</span>
         <span class="n">install_nbextension</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">)</span>
@@ -241,7 +241,7 @@
         <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
     <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">clean_cache</span> <span class="ow">and</span> <span class="n">create_new_nb</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;deleting </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">))</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;deleting {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">))</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">disable_autorun</span><span class="p">:</span>
             <span class="n">disable_extension</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">)</span></div>
@@ -258,8 +258,8 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -278,15 +278,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+277.g2083f3b documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="../../nglview.html" >nglview</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 07, 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+      Last updated on Aug 08, 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

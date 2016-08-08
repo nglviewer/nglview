@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>traitlets.traitlets &mdash; NGLView 0.5.2a+160.gc514333 documentation</title>
+    <title>traitlets.traitlets &mdash; NGLView 0.5.2a+277.g2083f3b documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.5.2a+160.gc514333',
+        VERSION:     '0.5.2a+277.g2083f3b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+160.gc514333 documentation" href="../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+277.g2083f3b documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+277.g2083f3b documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -96,18 +96,18 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">types</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">types</span> <span class="k">import</span> <span class="n">ClassType</span><span class="p">,</span> <span class="n">InstanceType</span>
+    <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ClassType</span><span class="p">,</span> <span class="n">InstanceType</span>
     <span class="n">ClassTypes</span> <span class="o">=</span> <span class="p">(</span><span class="n">ClassType</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="n">ClassTypes</span> <span class="o">=</span> <span class="p">(</span><span class="nb">type</span><span class="p">,)</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">warn_explicit</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">warn_explicit</span>
 
-<span class="kn">from</span> <span class="nn">ipython_genutils</span> <span class="k">import</span> <span class="n">py3compat</span>
-<span class="kn">from</span> <span class="nn">ipython_genutils.py3compat</span> <span class="k">import</span> <span class="n">iteritems</span><span class="p">,</span> <span class="n">string_types</span>
+<span class="kn">from</span> <span class="nn">ipython_genutils</span> <span class="kn">import</span> <span class="n">py3compat</span>
+<span class="kn">from</span> <span class="nn">ipython_genutils.py3compat</span> <span class="kn">import</span> <span class="n">iteritems</span><span class="p">,</span> <span class="n">string_types</span>
 
-<span class="kn">from</span> <span class="nn">.utils.getargspec</span> <span class="k">import</span> <span class="n">getargspec</span>
-<span class="kn">from</span> <span class="nn">.utils.importstring</span> <span class="k">import</span> <span class="n">import_item</span>
-<span class="kn">from</span> <span class="nn">.utils.sentinel</span> <span class="k">import</span> <span class="n">Sentinel</span>
+<span class="kn">from</span> <span class="nn">.utils.getargspec</span> <span class="kn">import</span> <span class="n">getargspec</span>
+<span class="kn">from</span> <span class="nn">.utils.importstring</span> <span class="kn">import</span> <span class="n">import_item</span>
+<span class="kn">from</span> <span class="nn">.utils.sentinel</span> <span class="kn">import</span> <span class="n">Sentinel</span>
 
 <span class="n">SequenceTypes</span> <span class="o">=</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">)</span>
 
@@ -146,7 +146,7 @@
 <span class="sd">    Uses warn_explicit to bind warning to method definition instead of triggering code,</span>
 <span class="sd">    which isn&#39;t relevant.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warn_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{classname}</span><span class="s2">.</span><span class="si">{method_name}</span><span class="s2"> is deprecated: </span><span class="si">{msg}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">warn_msg</span> <span class="o">=</span> <span class="s2">&quot;{classname}.{method_name} is deprecated: {msg}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">classname</span><span class="o">=</span><span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="n">method_name</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span>
     <span class="p">)</span>
 
@@ -238,7 +238,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__repr__</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">getmembers</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">getmembers</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A safe version of inspect.getmembers that handles missing attributes.</span>
 
 <span class="sd">    This is useful when there are descriptor based attributes that for</span>
@@ -283,7 +283,7 @@
 <span class="sd">    &gt;&gt;&gt; c = link((src, &#39;value&#39;), (tgt, &#39;value&#39;))</span>
 <span class="sd">    &gt;&gt;&gt; src.value = 5  # updates other objects as well</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">updating</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">updating</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
         <span class="n">_validate_link</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
@@ -294,13 +294,13 @@
             <span class="n">source</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_target</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">source</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_source</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">target</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="nd">@contextlib.contextmanager</span>
     <span class="k">def</span> <span class="nf">_busy_updating</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">updating</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updating</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">yield</span>
         <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">updating</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">updating</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">_update_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">updating</span><span class="p">:</span>
@@ -317,7 +317,7 @@
     <span class="k">def</span> <span class="nf">unlink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unobserve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_target</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unobserve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_source</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
 
 
 <span class="k">class</span> <span class="nc">directional_link</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -337,9 +337,9 @@
 <span class="sd">    &gt;&gt;&gt; src.value = 5  # updates target objects</span>
 <span class="sd">    &gt;&gt;&gt; tgt.value = 6  # does not update source object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">updating</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">updating</span> <span class="o">=</span> <span class="bp">False</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span> <span class="o">=</span> <span class="n">transform</span> <span class="k">if</span> <span class="n">transform</span> <span class="k">else</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
         <span class="n">_validate_link</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span>
@@ -349,13 +349,13 @@
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="nd">@contextlib.contextmanager</span>
     <span class="k">def</span> <span class="nf">_busy_updating</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">updating</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updating</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">yield</span>
         <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">updating</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">updating</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">updating</span><span class="p">:</span>
@@ -366,7 +366,7 @@
 
     <span class="k">def</span> <span class="nf">unlink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unobserve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
 
 <span class="n">dlink</span> <span class="o">=</span> <span class="n">directional_link</span>
 
@@ -395,8 +395,8 @@
 <span class="sd">       accept superclasses for :class:`This` values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">this_class</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">this_class</span> <span class="o">=</span> <span class="bp">None</span>
 
     <span class="k">def</span> <span class="nf">class_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Part of the initialization which may depend on the underlying</span>
@@ -430,11 +430,11 @@
 
     <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">default_value</span> <span class="o">=</span> <span class="n">Undefined</span>
-    <span class="n">allow_none</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">read_only</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">allow_none</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">read_only</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;any value&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Declare a traitlet.</span>
 
 <span class="sd">        If *allow_none* is True, None is a valid value in addition to any</span>
@@ -446,11 +446,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Undefined</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span> <span class="o">=</span> <span class="n">default_value</span>
-        <span class="k">if</span> <span class="n">allow_none</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">allow_none</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">allow_none</span> <span class="o">=</span> <span class="n">allow_none</span>
-        <span class="k">if</span> <span class="n">read_only</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">read_only</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span> <span class="o">=</span> <span class="n">read_only</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="n">help</span> <span class="k">if</span> <span class="n">help</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="n">help</span> <span class="k">if</span> <span class="n">help</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
 
         <span class="k">if</span> <span class="s1">&#39;default&#39;</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
             <span class="c1"># Warn the user that they probably meant default_value.</span>
@@ -479,7 +479,7 @@
 
         <span class="c1"># We add help to the metadata during a deprecation period so that</span>
         <span class="c1"># code that looks for the help string there can find it.</span>
-        <span class="k">if</span> <span class="n">help</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">help</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;help&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">help</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
@@ -526,7 +526,7 @@
             <span class="k">for</span> <span class="n">cls</span> <span class="ow">in</span> <span class="n">mro</span><span class="p">[:</span><span class="n">mro</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">this_class</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="s1">&#39;_trait_default_generators&#39;</span><span class="p">):</span>
                     <span class="n">default_handler</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_trait_default_generators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">default_handler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">default_handler</span><span class="o">.</span><span class="n">this_class</span> <span class="o">==</span> <span class="n">cls</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">default_handler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">default_handler</span><span class="o">.</span><span class="n">this_class</span> <span class="o">==</span> <span class="n">cls</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">default_handler</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">meth_name</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">__dict__</span><span class="p">:</span>
@@ -534,25 +534,25 @@
                     <span class="n">_deprecated_method</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">cls</span><span class="p">,</span> <span class="n">meth_name</span><span class="p">,</span> <span class="s2">&quot;use @default decorator instead.&quot;</span><span class="p">)</span>
                     <span class="k">return</span> <span class="n">method</span>
 
-        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;make_dynamic_default&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;make_dynamic_default&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">instance_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="c1"># If no dynamic initialiser is present, and the trait implementation or</span>
         <span class="c1"># use provides a static default, transfer that to obj._trait_values.</span>
         <span class="k">with</span> <span class="n">obj</span><span class="o">.</span><span class="n">cross_validation_lock</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_default_callable</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> \
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_default_callable</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> \
                     <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Undefined</span><span class="p">):</span>
                 <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                     <span class="n">obj</span><span class="o">.</span><span class="n">_trait_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_trait_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="c1"># Check for a dynamic initializer.</span>
             <span class="n">dynamic_default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_default_callable</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">dynamic_default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dynamic_default</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">TraitError</span><span class="p">(</span><span class="s2">&quot;No default value found for </span><span class="si">%s</span><span class="s2"> trait of </span><span class="si">%r</span><span class="s2">&quot;</span>
                                  <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dynamic_default</span><span class="p">())</span>
@@ -565,7 +565,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the value of the trait by self.name for the instance.</span>
 
 <span class="sd">        Default values are instantiated when :meth:`HasTraits.__new__`</span>
@@ -573,7 +573,7 @@
 <span class="sd">        default value or a user defined value (they called :meth:`__set__`)</span>
 <span class="sd">        is in the :class:`HasTraits` instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
@@ -590,8 +590,8 @@
             <span class="n">silent</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">old_value</span> <span class="o">==</span> <span class="n">new_value</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="c1"># if there is an error in comparing, default to notify</span>
-            <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">silent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">silent</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">silent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">True</span><span class="p">:</span>
             <span class="c1"># we explicitly compare silent to True just in case the equality</span>
             <span class="c1"># comparison above returns something other than True/False</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">_notify_trait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">old_value</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
@@ -608,11 +608,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_none</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_none</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;validate&#39;</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
 
@@ -638,7 +638,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_text</span>
 
     <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">e</span> <span class="o">=</span> <span class="s2">&quot;The &#39;</span><span class="si">%s</span><span class="s2">&#39; trait of </span><span class="si">%s</span><span class="s2"> instance must be </span><span class="si">%s</span><span class="s2">, but a value of </span><span class="si">%s</span><span class="s2"> was specified.&quot;</span> \
                 <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">class_of</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
                    <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(),</span> <span class="n">repr_type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
@@ -647,7 +647,7 @@
                 <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(),</span> <span class="n">repr_type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="k">raise</span> <span class="n">TraitError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;DEPRECATED: Get a metadata value.</span>
 
 <span class="sd">        Use .metadata[key] or .metadata.get(key, default) instead.</span>
@@ -910,8 +910,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">inst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">cls</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">inst</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">return</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">inst</span><span class="p">)</span>
 
@@ -964,7 +964,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called **before** self.__init__ is called.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="n">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
             <span class="c1"># Some descriptors raise AttributeError like zope.interface&#39;s</span>
@@ -1008,8 +1008,8 @@
                 <span class="n">arg_s_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">=</span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
             <span class="n">arg_s</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arg_s_list</span><span class="p">)</span>
             <span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Passing unrecoginized arguments to super(</span><span class="si">{classname}</span><span class="s2">).__init__(</span><span class="si">{arg_s}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;</span><span class="si">{error}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Passing unrecoginized arguments to super({classname}).__init__({arg_s}).</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;{error}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;This error will be raised in a future release of traitlets.&quot;</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">arg_s</span><span class="o">=</span><span class="n">arg_s</span><span class="p">,</span> <span class="n">classname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
@@ -1046,7 +1046,7 @@
                     <span class="n">value</span><span class="o">.</span><span class="n">instance_init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="nd">@contextlib.contextmanager</span>
     <span class="k">def</span> <span class="nf">cross_validation_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A contextmanager for running a block with our cross validation lock set</span>
@@ -1057,12 +1057,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">original_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="o">=</span> <span class="bp">True</span>
             <span class="k">yield</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="o">=</span> <span class="n">original_value</span>
 
-    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="nd">@contextlib.contextmanager</span>
     <span class="k">def</span> <span class="nf">hold_trait_notifications</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Context manager for bundling trait change notifications and cross</span>
 <span class="sd">        validation.</span>
@@ -1071,7 +1071,7 @@
 <span class="sd">        race conditions in trait notifiers requesting other trait values.</span>
 <span class="sd">        All trait notifications will fire after all values have been assigned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
             <span class="k">yield</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1080,7 +1080,7 @@
 
             <span class="k">def</span> <span class="nf">compress</span><span class="p">(</span><span class="n">past_changes</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
                 <span class="sd">&quot;&quot;&quot;Merges the provided change with the last if possible.&quot;&quot;&quot;</span>
-                <span class="k">if</span> <span class="n">past_changes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">past_changes</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                     <span class="k">return</span> <span class="p">[</span><span class="n">change</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">past_changes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;change&#39;</span> <span class="ow">and</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;change&#39;</span><span class="p">:</span>
@@ -1098,7 +1098,7 @@
                 <span class="c1"># Replace notify_change with `hold`, caching and compressing</span>
                 <span class="c1"># notifications, disable cross validation and yield.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">notify_change</span> <span class="o">=</span> <span class="n">hold</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="o">=</span> <span class="bp">True</span>
                 <span class="k">yield</span>
                 <span class="c1"># Cross validate final values when context is released.</span>
                 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">cache</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
@@ -1107,7 +1107,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">set_trait</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">TraitError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="c1"># Roll back in case of TraitError during final cross validation.</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">notify_change</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">notify_change</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">None</span>
                 <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">changes</span> <span class="ow">in</span> <span class="n">cache</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="k">for</span> <span class="n">change</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
                         <span class="c1"># TODO: Separate in a rollback function per notification type.</span>
@@ -1122,7 +1122,7 @@
                 <span class="c1"># Reset the notify_change to original value, enable cross-validation</span>
                 <span class="c1"># and fire resulting change notifications.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">notify_change</span> <span class="o">=</span> <span class="n">notify_change</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cross_validation_lock</span> <span class="o">=</span> <span class="bp">False</span>
 
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">notify_change</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">):</span>
                     <span class="c1"># Presence of the notify_change method</span>
@@ -1171,7 +1171,7 @@
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">_CallbackWrapper</span><span class="p">):</span>
                 <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">__call__</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">EventHandler</span><span class="p">)</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">EventHandler</span><span class="p">)</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="n">c</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             
             <span class="n">c</span><span class="p">(</span><span class="n">change</span><span class="p">)</span>
@@ -1191,14 +1191,14 @@
 
     <span class="k">def</span> <span class="nf">_remove_notifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">handler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">handler</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trait_notifiers</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="nb">type</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_trait_notifiers</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="nb">type</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">on_trait_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_trait_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;DEPRECATED: Setup a handler to be called when a trait changes.</span>
 
 <span class="sd">        This is used to setup dynamic notifications of trait changes.</span>
@@ -1228,7 +1228,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;on_trait_change is deprecated: use observe instead&quot;</span><span class="p">,</span>
              <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">All</span>
         <span class="k">if</span> <span class="n">remove</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unobserve</span><span class="p">(</span><span class="n">_callback_wrapper</span><span class="p">(</span><span class="n">handler</span><span class="p">),</span> <span class="n">names</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
@@ -1364,7 +1364,7 @@
             <span class="k">for</span> <span class="n">meta_name</span><span class="p">,</span> <span class="n">meta_eval</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">meta_eval</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">:</span>
                     <span class="n">meta_eval</span> <span class="o">=</span> <span class="n">_SimpleTest</span><span class="p">(</span><span class="n">meta_eval</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">meta_eval</span><span class="p">(</span><span class="n">trait</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">meta_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">meta_eval</span><span class="p">(</span><span class="n">trait</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">meta_name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)):</span>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait</span>
@@ -1379,11 +1379,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sup</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">t</span> <span class="k">for</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">class_traits</span><span class="p">(</span><span class="o">**</span><span class="n">metadata</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sup</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">t</span><span class="p">}</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sup</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">t</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">has_trait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns True if the object has a trait with the specified name.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">TraitType</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span> <span class="n">TraitType</span><span class="p">)</span>
         
     <span class="k">def</span> <span class="nf">trait_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a list of all the names of this class&#39; traits.&quot;&quot;&quot;</span>
@@ -1414,14 +1414,14 @@
             <span class="k">for</span> <span class="n">meta_name</span><span class="p">,</span> <span class="n">meta_eval</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">meta_eval</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">:</span>
                     <span class="n">meta_eval</span> <span class="o">=</span> <span class="n">_SimpleTest</span><span class="p">(</span><span class="n">meta_eval</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">meta_eval</span><span class="p">(</span><span class="n">trait</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">meta_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">meta_eval</span><span class="p">(</span><span class="n">trait</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">meta_name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)):</span>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">trait</span>
 
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span> <span class="nf">trait_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traitname</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">trait_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traitname</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get metadata values for trait by key.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">trait</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">traitname</span><span class="p">)</span>
@@ -1475,7 +1475,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> (i.e. </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span> <span class="nb">str</span><span class="p">(</span> <span class="n">kind</span> <span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">repr</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span> <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">e</span> <span class="o">=</span> <span class="s2">&quot;The &#39;</span><span class="si">%s</span><span class="s2">&#39; trait of </span><span class="si">%s</span><span class="s2"> instance must be </span><span class="si">%s</span><span class="s2">, but a value of </span><span class="si">%s</span><span class="s2"> was specified.&quot;</span> \
                 <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">class_of</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
                    <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(),</span> <span class="n">msg</span><span class="p">)</span>
@@ -1489,7 +1489,7 @@
 <span class="k">class</span> <span class="nc">Type</span><span class="p">(</span><span class="n">ClassBasedTraitType</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A trait whose value must be a subclass of a specified class.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">klass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span> <span class="n">klass</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Construct a Type trait</span>
 
 <span class="sd">        A Type trait specifies that its values must be subclasses of</span>
@@ -1514,12 +1514,12 @@
 <span class="sd">            Indicates whether None is allowed as an assignable value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="n">Undefined</span><span class="p">:</span>
-            <span class="n">new_default_value</span> <span class="o">=</span> <span class="nb">object</span> <span class="k">if</span> <span class="p">(</span><span class="n">klass</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="n">klass</span>
+            <span class="n">new_default_value</span> <span class="o">=</span> <span class="nb">object</span> <span class="k">if</span> <span class="p">(</span><span class="n">klass</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="k">else</span> <span class="n">klass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_default_value</span> <span class="o">=</span> <span class="n">default_value</span>
 
-        <span class="k">if</span> <span class="n">klass</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">default_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">default_value</span> <span class="ow">is</span> <span class="n">Undefined</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">klass</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">default_value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">default_value</span> <span class="ow">is</span> <span class="n">Undefined</span><span class="p">):</span>
                 <span class="n">klass</span> <span class="o">=</span> <span class="nb">object</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">klass</span> <span class="o">=</span> <span class="n">default_value</span>
@@ -1573,7 +1573,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">py3compat</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+            <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="s1">&#39;{}.{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
 
 
 <span class="k">class</span> <span class="nc">Instance</span><span class="p">(</span><span class="n">ClassBasedTraitType</span><span class="p">):</span>
@@ -1584,9 +1584,9 @@
 <span class="sd">    Subclasses can declare default classes by overriding the klass attribute</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">klass</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">klass</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">klass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">klass</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">kw</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Construct an Instance trait.</span>
 
 <span class="sd">        This trait allows values that are instances of a particular</span>
@@ -1613,18 +1613,18 @@
 <span class="sd">        created as ``klass(*args, **kw)``.  If exactly one of ``args`` or ``kw`` is</span>
 <span class="sd">        None, the None is replaced by ``()`` or ``{}``, respectively.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">klass</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">klass</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">klass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">klass</span>
         
-        <span class="k">if</span> <span class="p">(</span><span class="n">klass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">py3compat</span><span class="o">.</span><span class="n">string_types</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">klass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">py3compat</span><span class="o">.</span><span class="n">string_types</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">klass</span> <span class="o">=</span> <span class="n">klass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">TraitError</span><span class="p">(</span><span class="s1">&#39;The klass attribute must be a class&#39;</span>
                                 <span class="s1">&#39; not: </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">klass</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">kw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">kw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">TraitError</span><span class="p">(</span><span class="s2">&quot;The &#39;kw&#39; argument must be a dict or None.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">TraitError</span><span class="p">(</span><span class="s2">&quot;The &#39;args&#39; argument must be a tuple or None.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">default_args</span> <span class="o">=</span> <span class="n">args</span>
@@ -1658,8 +1658,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">klass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">klass</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">make_dynamic_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_args</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_kwargs</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">klass</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_args</span> <span class="ow">or</span> <span class="p">()),</span>
                           <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_kwargs</span> <span class="ow">or</span> <span class="p">{}))</span>
 
@@ -1705,13 +1705,13 @@
     <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;an instance of the same type as the receiver or None&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">This</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">This</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="c1"># What if value is a superclass of obj.__class__?  This is</span>
         <span class="c1"># complicated if it was the superclass that defined the This</span>
         <span class="c1"># trait.</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">this_class</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">this_class</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -1744,7 +1744,7 @@
 
     <span class="k">def</span> <span class="nf">class_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">trait_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait_types</span><span class="p">:</span>
-            <span class="n">trait_type</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">trait_type</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Union</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">instance_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -1784,7 +1784,7 @@
 
 <span class="k">class</span> <span class="nc">Any</span><span class="p">(</span><span class="n">TraitType</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A trait which allows any value.&quot;&quot;&quot;</span>
-    <span class="n">default_value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">default_value</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;any value&#39;</span>
 
 
@@ -1795,21 +1795,21 @@
     <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;an int&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span>
-                 <span class="n">allow_none</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                 <span class="n">allow_none</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Int</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">default_value</span><span class="o">=</span><span class="n">default_value</span><span class="p">,</span>
                                   <span class="n">allow_none</span><span class="o">=</span><span class="n">allow_none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>        
             <span class="k">raise</span> <span class="n">TraitError</span><span class="p">(</span><span class="s2">&quot;The value of the &#39;</span><span class="si">%s</span><span class="s2">&#39; trait of </span><span class="si">%s</span><span class="s2"> instance should &quot;</span>
                              <span class="s2">&quot;not be greater than </span><span class="si">%s</span><span class="s2">, but a value of </span><span class="si">%s</span><span class="s2"> was &quot;</span>
                              <span class="s2">&quot;specified&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">class_of</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
                                             <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">TraitError</span><span class="p">(</span><span class="s2">&quot;The value of the &#39;</span><span class="si">%s</span><span class="s2">&#39; trait of </span><span class="si">%s</span><span class="s2"> instance should &quot;</span>
                              <span class="s2">&quot;not be less than </span><span class="si">%s</span><span class="s2">, but a value of </span><span class="si">%s</span><span class="s2"> was &quot;</span>
                              <span class="s2">&quot;specified&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">class_of</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> 
@@ -1837,10 +1837,10 @@
         <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;a long&#39;</span>
 
         <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">long</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">long</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">value</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">long</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 
@@ -1849,7 +1849,7 @@
 
         <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">long</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
@@ -1864,13 +1864,13 @@
         <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">value</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">long</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">long</span><span class="p">):</span>
                 <span class="c1"># downcast longs that fit in int:</span>
                 <span class="c1"># note that int(n &gt; sys.maxint) returns a long, so</span>
                 <span class="c1"># we don&#39;t need a condition on this cast</span>
                 <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;cli&quot;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">System</span> <span class="k">import</span> <span class="n">Int64</span>
+                <span class="kn">from</span> <span class="nn">System</span> <span class="kn">import</span> <span class="n">Int64</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Int64</span><span class="p">):</span>
                     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -1883,7 +1883,7 @@
     <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;a float&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span>
-                 <span class="n">allow_none</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                 <span class="n">allow_none</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">))</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Float</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">default_value</span><span class="o">=</span><span class="n">default_value</span><span class="p">,</span> 
@@ -1914,7 +1914,7 @@
 <span class="k">class</span> <span class="nc">Complex</span><span class="p">(</span><span class="n">TraitType</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A trait for complex numbers.&quot;&quot;&quot;</span>
 
-    <span class="n">default_value</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">+</span> <span class="mf">0.0</span><span class="n">j</span>
+    <span class="n">default_value</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">+</span> <span class="mf">0.0j</span>
     <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;a complex number&#39;</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -1972,7 +1972,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">,</span> <span class="s1">&#39;strict&#39;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Could not decode </span><span class="si">{!r}</span><span class="s2"> for unicode trait &#39;</span><span class="si">{}</span><span class="s2">&#39; of </span><span class="si">{}</span><span class="s2"> instance.&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Could not decode {!r} for unicode trait &#39;{}&#39; of {} instance.&quot;</span>
                 <span class="k">raise</span> <span class="n">TraitError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">class_of</span><span class="p">(</span><span class="n">obj</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
@@ -2001,7 +2001,7 @@
         <span class="c1"># Python 2:</span>
         <span class="k">def</span> <span class="nf">coerce_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
             <span class="s2">&quot;In Python 2, coerce ascii-only unicode to str&quot;</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">unicode</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">UnicodeEncodeError</span><span class="p">:</span>
@@ -2020,7 +2020,7 @@
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coerce_str</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">string_types</span><span class="p">)</span> <span class="ow">and</span> <span class="n">py3compat</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dotted</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">string_types</span><span class="p">)</span> <span class="ow">and</span> <span class="n">py3compat</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dotted</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
@@ -2028,7 +2028,7 @@
 <span class="k">class</span> <span class="nc">Bool</span><span class="p">(</span><span class="n">TraitType</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A boolean (True, False) trait.&quot;&quot;&quot;</span>
 
-    <span class="n">default_value</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">default_value</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="n">info_text</span> <span class="o">=</span> <span class="s1">&#39;a boolean&#39;</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -2052,8 +2052,8 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">values</span>
-        <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;allow_none&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="n">Undefined</span><span class="p">:</span>
-            <span class="n">default_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;allow_none&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="n">Undefined</span><span class="p">:</span>
+            <span class="n">default_value</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Enum</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -2091,12 +2091,12 @@
 
 <span class="sd">    To be subclassed by overriding klass.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">klass</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">klass</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="n">_cast_types</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">_valid_defaults</span> <span class="o">=</span> <span class="n">SequenceTypes</span>
-    <span class="n">_trait</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_trait</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a container trait type from a list, set, or tuple.</span>
 
 <span class="sd">        The default value is created by doing ``List(default_value)``,</span>
@@ -2129,11 +2129,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># allow List([values]):</span>
-        <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_trait</span><span class="p">(</span><span class="n">trait</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_trait</span><span class="p">(</span><span class="n">trait</span><span class="p">):</span>
             <span class="n">default_value</span> <span class="o">=</span> <span class="n">trait</span>
-            <span class="n">trait</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">trait</span> <span class="o">=</span> <span class="bp">None</span>
 
-        <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_defaults</span><span class="p">):</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">default_value</span><span class="p">,)</span>
@@ -2145,7 +2145,7 @@
                 <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Traits should be given as instances, not types (for example, `Int()`, not `Int`)&quot;</span><span class="p">,</span>
                      <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_trait</span> <span class="o">=</span> <span class="n">trait</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trait</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="k">else</span> <span class="n">trait</span>
-        <span class="k">elif</span> <span class="n">trait</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">trait</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`trait` must be a Trait or None, got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repr_type</span><span class="p">(</span><span class="n">trait</span><span class="p">))</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">Container</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">klass</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">klass</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
@@ -2159,7 +2159,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cast_types</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">klass</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Container</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_elements</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -2168,7 +2168,7 @@
 
     <span class="k">def</span> <span class="nf">validate_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">validated</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trait</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="p">,</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trait</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="p">,</span> <span class="n">Any</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">value</span>
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -2181,7 +2181,7 @@
 
     <span class="k">def</span> <span class="nf">class_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="p">,</span> <span class="n">TraitType</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Container</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">instance_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -2195,7 +2195,7 @@
     <span class="n">klass</span> <span class="o">=</span> <span class="nb">list</span>
     <span class="n">_cast_types</span> <span class="o">=</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,)</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minlen</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">minlen</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a List trait type from a list, set, or tuple.</span>
 
 <span class="sd">        The default value is created by doing ``list(default_value)``,</span>
@@ -2255,7 +2255,7 @@
     <span class="n">_cast_types</span> <span class="o">=</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
 
     <span class="c1"># Redefine __init__ just to make the docstring more accurate.</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minlen</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">minlen</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a Set trait type from a list, set, or tuple.</span>
 
@@ -2346,9 +2346,9 @@
             <span class="n">t</span> <span class="o">=</span> <span class="n">trait</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trait</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="k">else</span> <span class="n">trait</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">and</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">and</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="c1"># don&#39;t allow default to be an empty container if length is specified</span>
-            <span class="n">args</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Container</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">klass</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">klass</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">validate_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -2373,7 +2373,7 @@
     <span class="k">def</span> <span class="nf">class_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">trait</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trait</span><span class="p">,</span> <span class="n">TraitType</span><span class="p">):</span>
-                <span class="n">trait</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">trait</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Container</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">instance_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -2385,9 +2385,9 @@
 
 <span class="k">class</span> <span class="nc">Dict</span><span class="p">(</span><span class="n">Instance</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;An instance of a Python dict.&quot;&quot;&quot;</span>
-    <span class="n">_trait</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_trait</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">traits</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">Undefined</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a dict trait type from a dict.</span>
 
@@ -2408,16 +2408,16 @@
 <span class="sd">            `default_value` must conform to the constraints it specifies.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Handling positional arguments</span>
-        <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="n">Undefined</span> <span class="ow">and</span> <span class="n">trait</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="n">Undefined</span> <span class="ow">and</span> <span class="n">trait</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">is_trait</span><span class="p">(</span><span class="n">trait</span><span class="p">):</span>
                 <span class="n">default_value</span> <span class="o">=</span> <span class="n">trait</span>
-                <span class="n">trait</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">trait</span> <span class="o">=</span> <span class="bp">None</span>
 
         <span class="c1"># Handling default value</span>
         <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="n">Undefined</span><span class="p">:</span>
             <span class="n">default_value</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">args</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">default_value</span><span class="p">,)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="n">SequenceTypes</span><span class="p">):</span>
@@ -2431,7 +2431,7 @@
                 <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Traits should be given as instances, not types (for example, `Int()`, not `Int`)&quot;</span><span class="p">,</span>
                      <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_trait</span> <span class="o">=</span> <span class="n">trait</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trait</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="k">else</span> <span class="n">trait</span>
-        <span class="k">elif</span> <span class="n">trait</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">trait</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`trait` must be a Trait or None, got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repr_type</span><span class="p">(</span><span class="n">trait</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="o">=</span> <span class="n">traits</span>
@@ -2445,25 +2445,25 @@
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Dict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_elements</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">validate_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">TraitError</span><span class="p">(</span><span class="s2">&quot;Missing required &#39;</span><span class="si">%s</span><span class="s2">&#39; key for the &#39;</span><span class="si">%s</span><span class="s2">&#39; trait of </span><span class="si">%s</span><span class="s2"> instance&quot;</span>
                                      <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">class_of</span><span class="p">(</span><span class="n">obj</span><span class="p">)))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span>
                                      <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="p">,</span> <span class="n">Any</span><span class="p">)):</span>
             <span class="k">return</span> <span class="n">value</span>
         <span class="n">validated</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span><span class="p">:</span>
                     <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
@@ -2475,16 +2475,16 @@
 
     <span class="k">def</span> <span class="nf">class_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="p">,</span> <span class="n">TraitType</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">trait</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="n">trait</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">trait</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Dict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">class_init</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">instance_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="p">,</span> <span class="n">TraitType</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_trait</span><span class="o">.</span><span class="n">instance_init</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">trait</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traits</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">trait</span><span class="o">.</span><span class="n">instance_init</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Dict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">instance_init</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -2531,8 +2531,8 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -2551,14 +2551,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+277.g2083f3b documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 07, 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+      Last updated on Aug 08, 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

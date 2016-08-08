@@ -18,7 +18,6 @@ an `issue <https://github.com/arose/nglview/issues>`__.
    :alt: membrane
 
    membrane
-
 Table of contents
 =================
 
@@ -26,6 +25,7 @@ Table of contents
 -  `Example <#example>`__
 -  `Usage <#usage>`__
 -  `Command line <#command-line>`__
+-  `API doc <#api-doc>`__
 -  `Interface
    classes <https://github.com/arose/nglview/blob/master/doc/interface_classes.md>`__
 -  `Changelog <https://github.com/arose/nglview/blob/master/CHANGELOG.md>`__
@@ -90,7 +90,7 @@ Open a notebook
 
 and issue
 
-.. code:: python
+.. code:: Python
 
     import nglview
     view = nglview.show_pdbid("3pqr")  # load "3pqr" from RCSB PDB and display viewer widget
@@ -105,25 +105,25 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `ParmEd <http://parmed.github.io/ParmEd/>`__,
 `rdkit <https://github.com/rdkit/rdkit>`__.
 
-+---------------------------------------------+----------------------------------------------------------+
-| Function                                    | Description                                              |
-+=============================================+==========================================================+
-| ``show_structure_file(path)``               | Shows structure (pdb, gro, mol2, sdf) in ``path``        |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_pdbid(pdbid)``                       | Shows ``pdbid`` fetched from RCSB PDB                    |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_simpletraj(struc_path, traj_path)``  | Shows structure & trajectory loaded with ``simpletraj``  |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_mdtraj(traj)``                       | Shows ``MDTraj`` trajectory ``traj``                     |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_pytraj(traj)``                       | Shows ``PyTraj`` trajectory ``traj``                     |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_parmed(structure)``                  | Shows ``ParmEd`` structure                               |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_mdanalysis(univ)``                   | Shows ``MDAnalysis`` Universe or AtomGroup ``univ``      |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_rdkit(mol)``                         | Shows ``rdkit`` rdkit.Chem.rdchem.Mol                    |
-+---------------------------------------------+----------------------------------------------------------+
++----------------------------------------------+-----------------------------------------------------------+
+| Function                                     | Description                                               |
++==============================================+===========================================================+
+| ``show_structure_file(path)``                | Shows structure (pdb, gro, mol2, sdf) in ``path``         |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_pdbid(pdbid)``                        | Shows ``pdbid`` fetched from RCSB PDB                     |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_simpletraj(struc_path, traj_path)``   | Shows structure & trajectory loaded with ``simpletraj``   |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_mdtraj(traj)``                        | Shows ``MDTraj`` trajectory ``traj``                      |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_pytraj(traj)``                        | Shows ``PyTraj`` trajectory ``traj``                      |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_parmed(structure)``                   | Shows ``ParmEd`` structure                                |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_mdanalysis(univ)``                    | Shows ``MDAnalysis`` Universe or AtomGroup ``univ``       |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_rdkit(mol)``                          | Shows ``rdkit`` rdkit.Chem.rdchem.Mol                     |
++----------------------------------------------+-----------------------------------------------------------+
 
 API
 ===
@@ -162,7 +162,7 @@ Representations can also be changed by overwriting the
 available ``type`` and ``params`` are described in the NGL Viewer
 `documentation <http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html>`__.
 
-.. code:: python
+.. code:: Python
 
     view.representations = [
         {"type": "cartoon", "params": {
@@ -175,7 +175,7 @@ available ``type`` and ``params`` are described in the NGL Viewer
 
 The widget constructor also accepts a ``representation`` argument:
 
-.. code:: python
+.. code:: Python
 
     initial_repr = [
         {"type": "cartoon", "params": {
@@ -189,12 +189,12 @@ The widget constructor also accepts a ``representation`` argument:
 Properties
 ----------
 
-.. code:: python
+.. code:: Python
 
     # set the frame number
     view.frame = 100
 
-.. code:: python
+.. code:: Python
 
     # parameters for the NGL stage object
     view.parameters = {
@@ -264,7 +264,7 @@ Display more than two widgets
     view2.sync_view()
 
 API doc
--------
+=======
 
 -  `Latest version <http://arose.github.io/nglview/latest/api.html>`__
 -  `Development version <http://arose.github.io/nglview/dev/api.html>`__

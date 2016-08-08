@@ -34,3 +34,4 @@ with open('doc/index.md', 'w') as fh:
     fh.write(readme)
 
 subprocess.check_call('pandoc doc/index.md -o doc/index.rst', shell=True)
+subprocess.check_call('pandoc ../nglview/doc/interface_classes.md  -o doc/interface_classes.rst', shell=True)

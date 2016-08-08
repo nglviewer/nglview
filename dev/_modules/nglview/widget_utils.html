@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.widget_utils &mdash; NGLView 0.5.2a+160.gc514333 documentation</title>
+    <title>nglview.widget_utils &mdash; NGLView 0.5.2a+277.g2083f3b documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.5.2a+160.gc514333',
+        VERSION:     '0.5.2a+277.g2083f3b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+160.gc514333 documentation" href="../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+277.g2083f3b documentation" href="../../index.html" />
     <link rel="up" title="nglview" href="../nglview.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+277.g2083f3b documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="../nglview.html" accesskey="U">nglview</a> &raquo;</li> 
       </ul>
@@ -50,10 +50,10 @@
             
   <h1>Source code for nglview.widget_utils</h1><div class="highlight"><pre>
 <span></span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">IntSlider</span><span class="p">,</span> <span class="n">FloatSlider</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">IntSlider</span><span class="p">,</span> <span class="n">FloatSlider</span>
 
-<span class="kn">from</span> <span class="nn">.default</span> <span class="k">import</span> <span class="n">DEFAULT_SLIDER_WIDTH</span>
+<span class="kn">from</span> <span class="nn">.default</span> <span class="kn">import</span> <span class="n">DEFAULT_SLIDER_WIDTH</span>
 
 <div class="viewcode-block" id="get_widget_by_name"><a class="viewcode-back" href="../../_api/nglview.widget_utils.html#nglview.widget_utils.get_widget_by_name">[docs]</a><span class="k">def</span> <span class="nf">get_widget_by_name</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">):</span>
 
@@ -62,13 +62,13 @@
     <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">):</span>
         <span class="n">children</span> <span class="o">=</span> <span class="n">box</span><span class="o">.</span><span class="n">children</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">children</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="k">if</span> <span class="n">children</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">children</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="n">children</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s1">&#39;_ngl_name&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">widget</span><span class="o">.</span><span class="n">_ngl_name</span> <span class="o">==</span> <span class="n">widget_name</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">widget</span>
-    <span class="k">return</span> <span class="kc">None</span></div>
+    <span class="k">return</span> <span class="bp">None</span></div>
 
 <div class="viewcode-block" id="make_default_slider_width"><a class="viewcode-back" href="../../_api/nglview.widget_utils.html#nglview.widget_utils.make_default_slider_width">[docs]</a><span class="k">def</span> <span class="nf">make_default_slider_width</span><span class="p">(</span><span class="n">box</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">kid</span> <span class="ow">in</span> <span class="n">box</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
@@ -84,8 +84,8 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -104,15 +104,15 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+277.g2083f3b documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="../nglview.html" >nglview</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 07, 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+      Last updated on Aug 08, 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

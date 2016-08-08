@@ -17,6 +17,7 @@ Table of contents
 * [Example](#example)
 * [Usage](#usage)
 * [Command line](#command-line)
+* [API doc](#api-doc)
 * [Interface classes](https://github.com/arose/nglview/blob/master/doc/interface_classes.md)
 * [Changelog](https://github.com/arose/nglview/blob/master/CHANGELOG.md)
 * [FAQ](#faq)
@@ -235,7 +236,7 @@ view2.sync_view()
 ```
 
 API doc
--------
+=======
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
 - [Development version](http://arose.github.io/nglview/dev/api.html)
 

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.jsutils &mdash; NGLView 0.5.2a+160.gc514333 documentation</title>
+    <title>nglview.jsutils &mdash; NGLView 0.5.2a+277.g2083f3b documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.5.2a+160.gc514333',
+        VERSION:     '0.5.2a+277.g2083f3b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+160.gc514333 documentation" href="../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+277.g2083f3b documentation" href="../../index.html" />
     <link rel="up" title="nglview" href="../nglview.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+277.g2083f3b documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="../nglview.html" accesskey="U">nglview</a> &raquo;</li> 
       </ul>
@@ -49,8 +49,8 @@
           <div class="body" role="main">
             
   <h1>Source code for nglview.jsutils</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span>
 
 <span class="n">__alll__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;js_clean_error_output&#39;</span><span class="p">,</span> <span class="s1">&#39;js_launch_qtconsole&#39;</span><span class="p">,</span>
             <span class="s1">&#39;js_clean_empty_output_area&#39;</span><span class="p">,</span> <span class="s1">&#39;js_open_url_template&#39;</span><span class="p">,</span>
@@ -66,20 +66,20 @@
     <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    var cb = Jupyter.notebook.container;</span>
 
-<span class="s2">    cb.width(&#39;</span><span class="si">{width}</span><span class="s2">&#39;);</span>
+<span class="s2">    cb.width(&#39;{width}&#39;);</span>
 <span class="s2">    cb.offset({{&#39;left&#39;: 0}})</span>
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)))</span>
 
-<span class="k">def</span> <span class="nf">_set_notebook_draggable</span><span class="p">(</span><span class="n">yes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_set_notebook_draggable</span><span class="p">(</span><span class="n">yes</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    var x = $(&#39;#notebook-container&#39;);</span>
-<span class="s2">    x.draggable(</span><span class="si">{args}</span><span class="s2">);</span>
+<span class="s2">    x.draggable({args});</span>
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">yes</span><span class="p">:</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{args}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{args}&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{args}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&quot;destroy&quot;&#39;</span><span class="p">)))</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">script_template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{args}&#39;</span><span class="p">,</span> <span class="s1">&#39;&quot;destroy&quot;&#39;</span><span class="p">)))</span>
 
 <span class="k">def</span> <span class="nf">_move_notebook_to_the_right</span><span class="p">():</span>
     <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -120,7 +120,7 @@
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
 <span class="n">js_open_url_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">window.open(</span><span class="si">{url}</span><span class="s2">);</span>
+<span class="s2">window.open({url});</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">js_clean_error_output</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
@@ -171,14 +171,14 @@
 <span class="s2">    var cell = Jupyter.notebook.get_selected_cell();</span>
 <span class="s2">    cell.element.draggable().resizable();</span>
 <span class="s2">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span>
+    <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span>
     <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">cm</span><span class="p">))</span>
     <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">cm2</span><span class="p">))</span>
 
 <div class="viewcode-block" id="ngl_demo"><a class="viewcode-back" href="../../_api/nglview.jsutils.html#nglview.jsutils.ngl_demo">[docs]</a><span class="k">def</span> <span class="nf">ngl_demo</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;make a viewport, create stage object and populate NGL namespace</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">HTML</span>
+    <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">HTML</span>
 
     <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    &lt;div id=&#39;viewport&#39;&gt;&lt;/div&gt;</span>
@@ -200,7 +200,7 @@
 <div class="viewcode-block" id="init_js_funcs"><a class="viewcode-back" href="../../_api/nglview.jsutils.html#nglview.jsutils.init_js_funcs">[docs]</a><span class="k">def</span> <span class="nf">init_js_funcs</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;print</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">HTML</span>
+    <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">HTML</span>
 
     <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    &lt;script&gt;</span>
@@ -222,8 +222,8 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -242,15 +242,15 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+277.g2083f3b documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="../nglview.html" >nglview</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 07, 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.5.
+      Last updated on Aug 08, 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>
