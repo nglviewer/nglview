@@ -18,7 +18,7 @@ Table of contents
 * [Usage](#usage)
 * [Command line](#command-line)
 * [API doc](#api-doc)
-* [Interface classes](https://github.com/arose/nglview/blob/master/doc/interface_classes.md)
+* [Interface classes](interface_classes.html)
 * [Changelog](https://github.com/arose/nglview/blob/master/CHANGELOG.md)
 * [FAQ](#faq)
 * [Website](#website)

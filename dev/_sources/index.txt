@@ -26,8 +26,7 @@ Table of contents
 -  `Usage <#usage>`__
 -  `Command line <#command-line>`__
 -  `API doc <#api-doc>`__
--  `Interface
-   classes <https://github.com/arose/nglview/blob/master/doc/interface_classes.md>`__
+-  `Interface classes <interface_classes.html>`__
 -  `Changelog <https://github.com/arose/nglview/blob/master/CHANGELOG.md>`__
 -  `FAQ <#faq>`__
 -  `Website <#website>`__

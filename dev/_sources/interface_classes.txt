@@ -1,11 +1,9 @@
+Extend NGLView classes
+
 Structures
 ==========
 
-The above convenience functions first create an ``adaptor`` that
-implements an interface for communication with the IPython/Jupyter
-widget.
-
-.. code:: Python
+.. code:: python
 
     import nglview
     struc = nglview.PdbIdStructure("3pqr")     # load file from RCSB PDB
@@ -23,7 +21,7 @@ Seperate ``Structure`` and ``Trajectory`` objects using
 ``FileStructure`` and ``SimpletrajStructure`` (requires the
 ```simpletraj`` <https://github.com/arose/simpletraj>`__ package):
 
-.. code:: Python
+.. code:: python
 
     import nglview
     struc = nglview.FileStructure(nglview.datafiles.GRO)
@@ -34,7 +32,7 @@ Combined ``Structure``/``Trajectory`` object utilizing
 ``MDTrajTrajectory`` which wraps a trajectory loaded with
 `MDTraj <http://mdtraj.org/>`__:
 
-.. code:: Python
+.. code:: python
 
     import nglview
     import mdtraj
@@ -45,7 +43,7 @@ Combined ``Structure``/``Trajectory`` object utilizing
 The displayed frame can be changed by setting the ``frame`` property of
 the widget instance ``w``:
 
-.. code:: Python
+.. code:: python
 
     view.frame = 100  # set to frame no 100
 
@@ -59,7 +57,7 @@ single class.
 Structure
 ---------
 
-.. code:: Python
+.. code:: python
 
     class MyStructure(nglview.Structure):
         ext = "pdb"  # or gro, cif, mol2, sdf
@@ -70,7 +68,7 @@ Structure
 Trajectory
 ----------
 
-.. code:: Python
+.. code:: python
 
     class MyTrajectory(nglview.Trajectory):
         def get_coordinates(self, index):
@@ -83,18 +81,18 @@ Trajectory
 Combined
 --------
 
-\`\`\`Python class MyStructureTrajectory(nglview.Structure,
-nglview.Trajectory): ext = "pdb" # or gro, cif, mol2, sdf params = {} #
-loading options passed to NGL
+.. code:: python
 
-::
+    class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
+        ext = "pdb"  # or gro, cif, mol2, sdf
+        params = {}  # loading options passed to NGL
 
-    def get_structure_string(self):
-        return "structure in the self.ext format"
+        def get_structure_string(self):
+            return "structure in the self.ext format"
 
-    def get_coordinates(self, index):
-        # return 2D numpy array, shape=(n_atoms, 3)
-        
-    def n_frames(self):
-        # return total frames
+        def get_coordinates(self, index):
+            # return 2D numpy array, shape=(n_atoms, 3)
+            
+        def n_frames(self):
+            # return total frames
 

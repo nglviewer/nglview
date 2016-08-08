@@ -13,7 +13,6 @@ readme = open(sys.argv[1]).read()
 
 words = ["(nglview.gif)",
          "(examples/images/membrane.gif)",
-         "(doc/interface_classes.md)",
          "(./doc/interface_classes.md)",
          "(CHANGELOG.md)",
          "(examples/README.md)",
@@ -29,6 +28,8 @@ for word in words:
         new_word = new_word.replace('./', '')
     print(new_word)
     readme = readme.replace(word, new_word)
+    if 'interface_classes' in word:
+        readme = readme.replace('doc/interface_classes.md', 'interface_classes.html')
 
 with open('doc/index.md', 'w') as fh:
     fh.write(readme)
