@@ -3,9 +3,11 @@
     make
     ```
 
-- Require: pandoc
+- Require: sphinx, pandoc
 
     ```bash
+    conda install sphinx -c conda-forge
+
     # osx
     conda install pandoc
 
