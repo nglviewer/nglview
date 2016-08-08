@@ -55,6 +55,7 @@ The development version can be installed directly from github:
     python setup.py install --npm
 
     # probably need to activate widgetsnbextension
+    # python -m ipykernel install --user
     # jupyter nbextension enable --py --user widgetsnbextension
     # jupyter nbextension enable --py --user nglview
     

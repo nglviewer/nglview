@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Table of contents &mdash; NGLView 0.5.2a+259.gcbbb389 documentation</title>
+    <title>Table of contents &mdash; NGLView 0.5.2a+160.gc514333 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.2a+259.gcbbb389',
+        VERSION:     '0.5.2a+160.gc514333',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+259.gcbbb389 documentation" href="#" /> 
+    <link rel="top" title="NGLView 0.5.2a+160.gc514333 documentation" href="#" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+259.gcbbb389 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -95,18 +95,19 @@ classes</a></li>
 <h2>Development version<a class="headerlink" href="#development-version" title="Permalink to this headline">¶</a></h2>
 <p>Requirement: <code class="docutils literal"><span class="pre">ipywidgets</span> <span class="pre">&gt;=</span> <span class="pre">5.1</span></code>, <code class="docutils literal"><span class="pre">notebook</span> <span class="pre">&gt;=</span> <span class="pre">4.2</span></code></p>
 <p>The development version can be installed directly from github:</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">arose</span><span class="o">/</span><span class="n">nglview</span>
-<span class="n">cd</span> <span class="n">nglview</span>
-<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+<div class="code bash highlight-python"><div class="highlight"><pre><span></span>git clone https://github.com/arose/nglview
+cd nglview
+python setup.py install
 
-<span class="c1"># if you edit files in ./js folder, make sure to add --npm flag (require npm)</span>
-<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span> <span class="o">--</span><span class="n">npm</span>
+# if you edit files in ./js folder, make sure to add --npm flag (require npm)
+python setup.py install --npm
 
-<span class="c1"># probably need to activate widgetsnbextension</span>
-<span class="c1"># jupyter nbextension enable --py --user widgetsnbextension</span>
-<span class="c1"># jupyter nbextension enable --py --user nglview</span>
+# probably need to activate widgetsnbextension
+# python -m ipykernel install --user
+# jupyter nbextension enable --py --user widgetsnbextension
+# jupyter nbextension enable --py --user nglview
 
-<span class="c1"># tested with ipywidgets 5.2.2, notebook 4.2.1</span>
+# tested with ipywidgets 5.2.2, notebook 4.2.1
 </pre></div>
 </div>
 </div>
@@ -123,11 +124,11 @@ examples</a></li>
 <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
 <p>Open a notebook</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">jupyter</span> <span class="n">notebook</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span>jupyter notebook
 </pre></div>
 </div>
 <p>and issue</p>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
 <span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">show_pdbid</span><span class="p">(</span><span class="s2">&quot;3pqr&quot;</span><span class="p">)</span>  <span class="c1"># load &quot;3pqr&quot; from RCSB PDB and display viewer widget</span>
 <span class="n">view</span>
 </pre></div>
@@ -182,7 +183,7 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="representations">
 <h2>Representations<a class="headerlink" href="#representations" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">repr_type</span><span class="o">=</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">)</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">repr_type</span><span class="o">=</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">)</span>
 
 <span class="c1"># or shorter</span>
 <span class="n">view</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="n">selection</span><span class="o">=</span><span class="s2">&quot;protein&quot;</span><span class="p">)</span>
@@ -210,7 +211,7 @@ language</a></p>
 <code class="docutils literal"><span class="pre">representations</span></code> property of the widget instance <code class="docutils literal"><span class="pre">view</span></code>. The
 available <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">params</span></code> are described in the NGL Viewer
 <a class="reference external" href="http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html">documentation</a>.</p>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;residueindex&quot;</span>
     <span class="p">}},</span>
@@ -221,7 +222,7 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </pre></div>
 </div>
 <p>The widget constructor also accepts a <code class="docutils literal"><span class="pre">representation</span></code> argument:</p>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;sstruc&quot;</span>
     <span class="p">}}</span>
@@ -234,11 +235,11 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 <div class="section" id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
 <span class="n">view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="mi">100</span>
 </pre></div>
 </div>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
 <span class="n">view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># &quot;percentages, &quot;dist&quot; is distance too camera in Angstrom</span>
     <span class="s2">&quot;clipNear&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;clipFar&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;clipDist&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -252,24 +253,24 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 <span class="c1"># and snake keywords (e.g &quot;clip_near&quot;)</span>
 </pre></div>
 </div>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># parameters to control the `delay` between snapshots</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="c1"># parameters to control the `delay` between snapshots</span>
 <span class="c1"># change `step` to play forward (positive value) or backward (negative value)</span>
 <span class="c1"># note: experimental code</span>
 <span class="n">view</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># update camera type</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="c1"># update camera type</span>
 <span class="n">view</span><span class="o">.</span><span class="n">camera</span> <span class="o">=</span> <span class="s1">&#39;orthographic&#39;</span>
 </pre></div>
 </div>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># change background color</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="c1"># change background color</span>
 <span class="n">view</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="trajectory">
 <h2>Trajectory<a class="headerlink" href="#trajectory" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># adding new one</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="c1"># adding new one</span>
 <span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
 
 <span class="c1"># traj could be `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`</span>
@@ -281,7 +282,7 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 <div class="section" id="add-extra-component">
 <h2>Add extra component<a class="headerlink" href="#add-extra-component" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)</span>
 <span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="s1">&#39;my.ccp4&#39;</span><span class="p">)</span>
 
 <span class="c1"># NOTE: Trajectory is a special case of component.</span>
@@ -290,7 +291,7 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 <div class="section" id="display-more-than-two-widgets">
 <h2>Display more than two widgets<a class="headerlink" href="#display-more-than-two-widgets" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># 1st cell</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span></span><span class="c1"># 1st cell</span>
 <span class="kn">import</span> <span class="nn">ipywidgets</span>
 <span class="n">vbox</span> <span class="o">=</span> <span class="n">ipywidgets</span><span class="o">.</span><span class="n">VBox</span><span class="p">([</span><span class="n">view1</span><span class="p">,</span> <span class="n">view2</span><span class="p">])</span>
 <span class="n">vbox</span> <span class="c1"># display</span>
@@ -311,39 +312,39 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 <div class="section" id="command-line">
 <h1>Command line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h1>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Require installing pytraj (PR for other backends is welcome)</span>
+<div class="code bash highlight-python"><div class="highlight"><pre><span></span># Require installing pytraj (PR for other backends is welcome)
 
-<span class="c1"># open notebook, load `my.pdb` to pytraj&#39;s trajectory then display `view`</span>
-<span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">pdb</span>
+# open notebook, load `my.pdb` to pytraj&#39;s trajectory then display `view`
+nglview my.pdb
 
-<span class="c1"># open notebook, create trajectory with given topology `my.parm7` and trajecotry file `traj.nc`,</span>
-<span class="c1"># then display `view`</span>
-<span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">parm7</span> <span class="o">-</span><span class="n">c</span> <span class="n">traj</span><span class="o">.</span><span class="n">nc</span>
+# open notebook, create trajectory with given topology `my.parm7` and trajecotry file `traj.nc`,
+# then display `view`
+nglview my.parm7 -c traj.nc
 
-<span class="c1"># load all trajectories with filename ending with &#39;nc&#39;</span>
-<span class="c1"># make sure to use quote &quot; &quot;</span>
-<span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">parm7</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;*.nc&quot;</span>
+# load all trajectories with filename ending with &#39;nc&#39;
+# make sure to use quote &quot; &quot;
+nglview my.parm7 -c &quot;*.nc&quot;
 
-<span class="c1"># open notebook, copy content from `myscript.py` then execute it</span>
-<span class="n">nglview</span> <span class="n">myscript</span><span class="o">.</span><span class="n">py</span>
+# open notebook, copy content from `myscript.py` then execute it
+nglview myscript.py
 
-<span class="c1"># open notebook and execute 1st cell</span>
-<span class="n">nglview</span> <span class="n">mynotebook</span><span class="o">.</span><span class="n">ipynb</span>
+# open notebook and execute 1st cell
+nglview mynotebook.ipynb
 
-<span class="c1"># create a remote notebook</span>
-<span class="c1"># just follow its instruction</span>
-<span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">pdb</span> <span class="o">--</span><span class="n">remote</span>
-<span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">parm7</span> <span class="o">-</span><span class="n">c</span> <span class="n">traj</span><span class="o">.</span><span class="n">nc</span> <span class="o">--</span><span class="n">remote</span>
-<span class="n">nglview</span> <span class="n">mynotebook</span><span class="o">.</span><span class="n">ipynb</span> <span class="o">--</span><span class="n">remote</span>
+# create a remote notebook
+# just follow its instruction
+nglview my.pdb --remote
+nglview my.parm7 -c traj.nc --remote
+nglview mynotebook.ipynb --remote
 
-<span class="c1"># demo (don&#39;t need pytraj)</span>
-<span class="n">nglview</span> <span class="n">demo</span>
+# demo (don&#39;t need pytraj)
+nglview demo
 
-<span class="c1"># disable autorun the 1st cell of the notebook</span>
-<span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">pdb</span> <span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">autorun</span>
+# disable autorun the 1st cell of the notebook
+nglview my.pdb --disable-autorun
 
-<span class="c1"># specify web browser</span>
-<span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">pdb</span> <span class="o">--</span><span class="n">browser</span><span class="o">=</span><span class="n">google</span><span class="o">-</span><span class="n">chrome</span>
+# specify web browser
+nglview my.pdb --browser=google-chrome
 </pre></div>
 </div>
 </div>
@@ -417,6 +418,9 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -432,13 +436,13 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+259.gcbbb389 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 04, 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+      Last updated on Aug 07, 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
     </div>
   </body>
 </html>

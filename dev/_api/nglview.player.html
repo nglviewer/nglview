@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nglview.player &mdash; NGLView 0.5.2a+160.gc514333 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.5.2a+160.gc514333',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="NGLView 0.5.2a+160.gc514333 documentation" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="nglview-player">
+<h1>nglview.player<a class="headerlink" href="#nglview-player" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-nglview.player">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nglview.player" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nglview.player.TrajectoryPlayer">
+<em class="property">class </em><code class="descclassname">nglview.player.</code><code class="descname">TrajectoryPlayer</code><span class="sig-paren">(</span><em>view</em>, <em>step=1</em>, <em>delay=100</em>, <em>sync_frame=False</em>, <em>min_delay=40</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/player.html#TrajectoryPlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.player.TrajectoryPlayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">ipywidgets.widgets.domwidget.DOMWidget</span></code></p>
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.camera">
+<code class="descname">camera</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enum of strings where the case should be ignored.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.count">
+<code class="descname">count</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.delay">
+<code class="descname">delay</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.delay" title="Permalink to this definition">¶</a></dt>
+<dd><p>A float trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.frame">
+<code class="descname">frame</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.frame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.interpolate">
+<code class="descname">interpolate</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.interpolate" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean (True, False) trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.iparams">
+<code class="descname">iparams</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.iparams" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of a Python dict.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.on_camera_changed">
+<code class="descname">on_camera_changed</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.on_camera_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.on_spin_changed">
+<code class="descname">on_spin_changed</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.on_spin_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.on_spin_speed_changed">
+<code class="descname">on_spin_speed_changed</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.on_spin_speed_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.on_spin_x_changed">
+<code class="descname">on_spin_x_changed</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.on_spin_x_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.on_spin_y_changed">
+<code class="descname">on_spin_y_changed</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.on_spin_y_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.on_spin_z_changed">
+<code class="descname">on_spin_z_changed</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.on_spin_z_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.parameters">
+<code class="descname">parameters</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of a Python dict.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.player.TrajectoryPlayer.smooth">
+<code class="descname">smooth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/player.html#TrajectoryPlayer.smooth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.player.TrajectoryPlayer.smooth" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.spin">
+<code class="descname">spin</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.spin" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean (True, False) trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.step">
+<code class="descname">step</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>An int trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.sync_frame">
+<code class="descname">sync_frame</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.sync_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean (True, False) trait.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.update_delay">
+<code class="descname">update_delay</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.update_delay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.update_parameters">
+<code class="descname">update_parameters</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.update_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nglview.player.TrajectoryPlayer.update_sync_frame">
+<code class="descname">update_sync_frame</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.update_sync_frame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">nglview.player</a><ul>
+<li><a class="reference internal" href="#module-nglview.player">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/_api/nglview.player.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.5.2a+160.gc514333 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
+      Last updated on Aug 07, 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+    </div>
+  </body>
+</html>

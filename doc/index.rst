@@ -18,6 +18,7 @@ an `issue <https://github.com/arose/nglview/issues>`__.
    :alt: membrane
 
    membrane
+
 Table of contents
 =================
 
@@ -64,6 +65,7 @@ The development version can be installed directly from github:
         python setup.py install --npm
 
         # probably need to activate widgetsnbextension
+        # python -m ipykernel install --user
         # jupyter nbextension enable --py --user widgetsnbextension
         # jupyter nbextension enable --py --user nglview
         
@@ -88,7 +90,7 @@ Open a notebook
 
 and issue
 
-.. code:: Python
+.. code:: python
 
     import nglview
     view = nglview.show_pdbid("3pqr")  # load "3pqr" from RCSB PDB and display viewer widget
@@ -103,25 +105,25 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `ParmEd <http://parmed.github.io/ParmEd/>`__,
 `rdkit <https://github.com/rdkit/rdkit>`__.
 
-+----------------------------------------------+-----------------------------------------------------------+
-| Function                                     | Description                                               |
-+==============================================+===========================================================+
-| ``show_structure_file(path)``                | Shows structure (pdb, gro, mol2, sdf) in ``path``         |
-+----------------------------------------------+-----------------------------------------------------------+
-| ``show_pdbid(pdbid)``                        | Shows ``pdbid`` fetched from RCSB PDB                     |
-+----------------------------------------------+-----------------------------------------------------------+
-| ``show_simpletraj(struc_path, traj_path)``   | Shows structure & trajectory loaded with ``simpletraj``   |
-+----------------------------------------------+-----------------------------------------------------------+
-| ``show_mdtraj(traj)``                        | Shows ``MDTraj`` trajectory ``traj``                      |
-+----------------------------------------------+-----------------------------------------------------------+
-| ``show_pytraj(traj)``                        | Shows ``PyTraj`` trajectory ``traj``                      |
-+----------------------------------------------+-----------------------------------------------------------+
-| ``show_parmed(structure)``                   | Shows ``ParmEd`` structure                                |
-+----------------------------------------------+-----------------------------------------------------------+
-| ``show_mdanalysis(univ)``                    | Shows ``MDAnalysis`` Universe or AtomGroup ``univ``       |
-+----------------------------------------------+-----------------------------------------------------------+
-| ``show_rdkit(mol)``                          | Shows ``rdkit`` rdkit.Chem.rdchem.Mol                     |
-+----------------------------------------------+-----------------------------------------------------------+
++---------------------------------------------+----------------------------------------------------------+
+| Function                                    | Description                                              |
++=============================================+==========================================================+
+| ``show_structure_file(path)``               | Shows structure (pdb, gro, mol2, sdf) in ``path``        |
++---------------------------------------------+----------------------------------------------------------+
+| ``show_pdbid(pdbid)``                       | Shows ``pdbid`` fetched from RCSB PDB                    |
++---------------------------------------------+----------------------------------------------------------+
+| ``show_simpletraj(struc_path, traj_path)``  | Shows structure & trajectory loaded with ``simpletraj``  |
++---------------------------------------------+----------------------------------------------------------+
+| ``show_mdtraj(traj)``                       | Shows ``MDTraj`` trajectory ``traj``                     |
++---------------------------------------------+----------------------------------------------------------+
+| ``show_pytraj(traj)``                       | Shows ``PyTraj`` trajectory ``traj``                     |
++---------------------------------------------+----------------------------------------------------------+
+| ``show_parmed(structure)``                  | Shows ``ParmEd`` structure                               |
++---------------------------------------------+----------------------------------------------------------+
+| ``show_mdanalysis(univ)``                   | Shows ``MDAnalysis`` Universe or AtomGroup ``univ``      |
++---------------------------------------------+----------------------------------------------------------+
+| ``show_rdkit(mol)``                         | Shows ``rdkit`` rdkit.Chem.rdchem.Mol                    |
++---------------------------------------------+----------------------------------------------------------+
 
 API
 ===
@@ -160,7 +162,7 @@ Representations can also be changed by overwriting the
 available ``type`` and ``params`` are described in the NGL Viewer
 `documentation <http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html>`__.
 
-.. code:: Python
+.. code:: python
 
     view.representations = [
         {"type": "cartoon", "params": {
@@ -173,7 +175,7 @@ available ``type`` and ``params`` are described in the NGL Viewer
 
 The widget constructor also accepts a ``representation`` argument:
 
-.. code:: Python
+.. code:: python
 
     initial_repr = [
         {"type": "cartoon", "params": {
@@ -187,12 +189,12 @@ The widget constructor also accepts a ``representation`` argument:
 Properties
 ----------
 
-.. code:: Python
+.. code:: python
 
     # set the frame number
     view.frame = 100
 
-.. code:: Python
+.. code:: python
 
     # parameters for the NGL stage object
     view.parameters = {
