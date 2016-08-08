@@ -1,11 +1,11 @@
 Structures
 ==========
 
-The above convenience functions first create an `adaptor` that implements an [interface](#interface classes) for communication with the IPython/Jupyter widget.
+The above convenience functions first create an `adaptor` that implements an interface for communication with the IPython/Jupyter widget.
 
 ```Python
 import nglview
-struc = nglview.PdbIdStructure("3pqr")  # load file from RCSB PDB
+struc = nglview.PdbIdStructure("3pqr")     # load file from RCSB PDB
 view = nglview.NGLWidget(struc)            # create widget
 view                                       # display widget
 ```
