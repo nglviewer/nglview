@@ -52,6 +52,7 @@ from .utils import FileManager, get_repr_names_from_dict
 from .widget_utils import get_widget_by_name
 from .player import TrajectoryPlayer
 from . import interpolate
+from .shape import Shape
 from .representation import Representation
 from .ngl_params import REPR_NAME_PAIRS
 
@@ -818,6 +819,17 @@ class NGLWidget(DOMWidget):
         if gui:
             display(self.player._display())
 
+    def _set_draggable(self, yes=True):
+        if yes:
+            self._remote_call('setDraggable',
+                             target='Widget',
+                             args=['',])
+
+        else:
+            self._remote_call('setDraggable',
+                             target='Widget',
+                             args=['destroy',])
+
     def _set_sync_frame(self):
         self._remote_call("setSyncFrame", target="Widget")
 
@@ -1033,12 +1045,15 @@ class NGLWidget(DOMWidget):
                 'mytime': mytime}, buffers=buffers)
 
     @observe('frame')
-    def on_frame(self, change):
+    def on_frame_changed(self, change):
         """set and send coordinates at current frame
         """
         self._set_coordinates(self.frame)
 
     def clear(self, *args, **kwargs):
+        '''shortcut of `clear_representations`
+        '''
+
         self.clear_representations(*args, **kwargs)
 
     def clear_representations(self, component=0):
@@ -1049,9 +1064,6 @@ class NGLWidget(DOMWidget):
         component : int, default 0 (first model)
             You need to keep track how many components you added.
         '''
-        self._clear_repr(component=component)
-
-    def _clear_repr(self, component=0):
         self._remote_call("clearRepresentations",
                 target='compList',
                 kwargs={'component_index': component})
@@ -1085,7 +1097,7 @@ class NGLWidget(DOMWidget):
                 args=[name, shapes])
 
     def add_representation(self, repr_type, selection='all', **kwargs):
-        '''Add representation.
+        '''Add structure representation (cartoon, licorice, ...) for given atom selection.
 
         Parameters
         ----------
@@ -1106,7 +1118,6 @@ class NGLWidget(DOMWidget):
         >>> w.add_representation('licorice', selection=[3, 8, 9, 11], color='red')
         >>> w
         '''
-
         if repr_type == 'surface':
             if 'useWorker' not in kwargs:
                 kwargs['useWorker'] = False
@@ -1149,7 +1160,7 @@ class NGLWidget(DOMWidget):
         self.center_view(*args, **kwargs)
 
     def center_view(self, zoom=True, selection='*', component=0):
-        """center view
+        """center view for given atom selection
 
         Examples
         --------
@@ -1306,21 +1317,22 @@ class NGLWidget(DOMWidget):
                       repr_index])
 
     def add_structure(self, structure, **kwargs):
-        '''
+        '''add structure to view
 
         Parameters
         ----------
         structure : nglview.Structure object
 
-        Notes
-        -----
-        If you combine both Structure and Trajectory, make sure
-        to load all trajectories first.
-
+        Examples
+        --------
         >>> view.add_trajectory(traj0)
         >>> view.add_trajectory(traj1)
         >>> # then add Structure
         >>> view.add_structure(...)
+
+        See Also
+        --------
+        nglview.NGLWidget.add_component
         '''
         if self.loaded:
             self._load_data(structure, **kwargs)
@@ -1334,16 +1346,27 @@ class NGLWidget(DOMWidget):
         self._update_component_auto_completion()
 
     def add_trajectory(self, trajectory, **kwargs):
-        '''
+        '''add new trajectory to `view`
 
         Parameters
         ----------
         trajectory: nglview.Trajectory or its derived class or 
             pytraj.Trajectory-like, mdtraj.Trajectory or MDAnalysis objects
 
-        Notes
-        -----
-        `add_trajectory` is just a special case of `add_component`
+        See Also
+        --------
+        nglview.NGLWidget.add_component
+
+        Examples
+        --------
+        >>> import nglview as nv, pytraj as pt
+        >>> traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
+        >>> view = nv.show_pytraj(view)
+        >>> # show view first
+        >>> view
+        >>> # add new Trajectory
+        >>> traj2 = pt.datafiles.load_tz2()
+        >>> view.add_trajectory(traj2)
         '''
         backends = dict(pytraj=PyTrajTrajectory,
                         mdtraj=MDTrajTrajectory,
@@ -1378,10 +1401,6 @@ class NGLWidget(DOMWidget):
         filename : str or Trajectory or Structure or their derived class or url
             if you specify url, you must specify `url=True` in kwargs
         **kwargs : additional arguments, optional
-
-        Notes
-        -----
-        `add_component` should be always called after Widget is loaded
 
         Examples
         --------
@@ -1470,26 +1489,11 @@ class NGLWidget(DOMWidget):
         self._ngl_component_ids.remove(component_id)
         self._ngl_component_names.pop(component_index)
 
-        self._remove_component(component=component_index)
-        self._update_component_auto_completion()
-
-    def _remove_component(self, component):
-        """tell NGL.Stage to remove component from Stage.compList
-        """
         self._remote_call('removeComponent',
                 target='Stage',
                 args=[component,])
         
-    def _set_draggable(self, yes=True):
-        if yes:
-            self._remote_call('setDraggable',
-                             target='Widget',
-                             args=['',])
-
-        else:
-            self._remote_call('setDraggable',
-                             target='Widget',
-                             args=['destroy',])
+        self._update_component_auto_completion()
 
     def _remote_call(self, method_name, target='Widget', args=None, kwargs=None):
         """call NGL's methods from Python.
@@ -1553,7 +1557,7 @@ class NGLWidget(DOMWidget):
         return None
 
     def hide(self, indices):
-        """set invisibility for given components (by their indices)
+        """set invisibility for given component/struture/trajectory (by their indices)
         """
         traj_ids = set(traj.id for traj in self._trajlist)
 
@@ -1568,6 +1572,8 @@ class NGLWidget(DOMWidget):
                     kwargs={'component_index': index})
 
     def show(self, *args):
+        """shortcut of `show_only`
+        """
         self.show_only(*args)
 
     def show_only(self, indices='all'):
@@ -1633,10 +1639,14 @@ class NGLWidget(DOMWidget):
                 setattr(self, traj_name, comp)
 
     def __getitem__(self, index):
+        """return ComponentViewer
+        """
         assert index < len(self._ngl_component_ids)
         return ComponentViewer(self, index) 
 
     def __iter__(self):
+        """return ComponentViewer
+        """
         for i, _ in enumerate(self._ngl_component_ids):
             yield self[i]
 
@@ -1675,60 +1685,6 @@ class NGLWidget(DOMWidget):
             for frame in indices:
                 self.frame = frame
                 sleep(delay)
-
-class Shape(object):
-    """TODO: doc
-
-    Notes
-    -----
-    Unstable feature
-
-    Examples
-    --------
-    >>> import nglview as nv
-    >>> view = nv.NGLWidget()
-    >>> view
-    >>> shape = nv.Shape(view=view)
-    >>> shape.add_sphere(from=[0, 0, 0], to=[10, 10, 10], color=[1, 0, 0], radius=1.5])
-
-    See also
-    --------
-    http://arose.github.io/ngl/api/dev/Shape.html
-    """
-
-    def __init__(self, view):
-        self.view = view
-        names = ['mesh', 'sphere', 'ellipsoid', 'cylinder', 'cone', 'arrow']
-        self._make_func(names)
-
-    def _make_func(self, names):
-        from types import MethodType
-
-        def make_func(name):
-            def func(this, *args):
-                args_with_name = [name, ] + list(args)
-                self.add(*args_with_name)
-            func.__doc__ = 'check `add` method'
-            return func
-
-        for name in names:
-            func_name = 'add_' + name
-            func = make_func(name)
-            setattr(self, func_name, MethodType(func, self))
-
-    def add(self, *args):
-        """
-
-        Examples
-        --------
-        >>> shape = nv.Shape(view)
-        >>> shape.add('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
-
-        See also
-        --------
-        http://arose.github.io/ngl/api/dev/Shape.html
-        """
-        self.view._add_shape([args,])
 
 class ComponentViewer(object):
     """Convenient attribute for NGLWidget. See example below.
