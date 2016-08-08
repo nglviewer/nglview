@@ -19,7 +19,7 @@ Table of contents
 * [Command line](#command-line)
 * [API doc](#api-doc)
 * [Interface classes](interface_classes.html)
-* [Changelog](https://github.com/arose/nglview/blob/master/CHANGELOG.md)
+* [Changelog](https://github.com/arose/nglview/blob/master/CHANGELOG.html)
 * [FAQ](#faq)
 * [Website](#website)
 * [Acknowledgment](#acknowledgment)
