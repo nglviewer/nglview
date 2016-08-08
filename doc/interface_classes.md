@@ -74,9 +74,6 @@ class MyTrajectory(nglview.Trajectory):
     def get_coordinates(self, index):
         # return 2D numpy array, shape=(n_atoms, 3)
 
-    def get_coordinates_dict(self):
-        # return a dict of encoded 2D numpy array
-
     @property
     def n_frames(self):
         return 2  # return number of frames
@@ -96,5 +93,6 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
 
     def get_coordinates(self, index):
         # return 2D numpy array, shape=(n_atoms, 3)
-
-    def get_coordinates_dict(self):
+        
+    def n_frames(self):
+        # return total frames
