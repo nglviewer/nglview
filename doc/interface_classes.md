@@ -3,7 +3,7 @@ Structures
 
 The above convenience functions first create an `adaptor` that implements an interface for communication with the IPython/Jupyter widget.
 
-```Python
+```python
 import nglview
 struc = nglview.PdbIdStructure("3pqr")     # load file from RCSB PDB
 view = nglview.NGLWidget(struc)            # create widget
@@ -22,7 +22,7 @@ Seperate `Structure` and `Trajectory` objects using `FileStructure` and
 `SimpletrajStructure` (requires the [`simpletraj`](https://github.com/arose/simpletraj)
 package):
 
-```Python
+```python
 import nglview
 struc = nglview.FileStructure(nglview.datafiles.GRO)
 traj = nglview.SimpletrajStructure(nglview.datafiles.XTC)
@@ -32,7 +32,7 @@ nglview.NGLWidget(struc, traj)
 Combined `Structure`/`Trajectory` object utilizing `MDTrajTrajectory` which
 wraps a trajectory loaded with [MDTraj](http://mdtraj.org/):
 
-```Python
+```python
 import nglview
 import mdtraj
 traj = mdtraj.load(nglview.datafiles.XTC, top=nglview.datafiles.GRO)
@@ -43,7 +43,7 @@ nglview.NGLWidget(strucTraj)
 The displayed frame can be changed by setting the `frame` property of the
 widget instance `w`:
 
-```Python
+```python
 view.frame = 100  # set to frame no 100
 ```
 
@@ -57,7 +57,7 @@ You can create your own adaptors simply by following the interfaces for `Structu
 Structure
 ---------
 
-```Python
+```python
 class MyStructure(nglview.Structure):
     ext = "pdb"  # or gro, cif, mol2, sdf
     params = {}  # loading options passed to NGL
@@ -69,7 +69,7 @@ class MyStructure(nglview.Structure):
 Trajectory
 ----------
 
-```Python
+```python
 class MyTrajectory(nglview.Trajectory):
     def get_coordinates(self, index):
         # return 2D numpy array, shape=(n_atoms, 3)
@@ -83,7 +83,7 @@ class MyTrajectory(nglview.Trajectory):
 Combined
 --------
 
-```Python
+```python
 class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
     ext = "pdb"  # or gro, cif, mol2, sdf
     params = {}  # loading options passed to NGL
@@ -96,3 +96,4 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
         
     def n_frames(self):
         # return total frames
+```
