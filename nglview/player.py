@@ -19,7 +19,7 @@ from traitlets import observe, link
 
 from .ngl_params import REPR_NAMES
 from . import default
-from . import jsutils
+from . import js_utils
 from .layout import (form_item_layout, _relayout, _make_autofit, _relayout_master, _make_delay_tab,
         _make_box_layout)
 
@@ -270,11 +270,11 @@ class TrajectoryPlayer(DOMWidget):
         return button
 
     def _make_button_url(self, url, description):
-        from nglview.jsutils import js_open_url_template
+        from nglview import js_utils
         button = Button(description=description)
 
         def on_click(button):
-            display(Javascript(js_open_url_template.format(url=url)))
+            display(Javascript(js_utils.js_open_url_template.format(url=url)))
 
         button.on_click(on_click)
         return button
@@ -289,12 +289,12 @@ class TrajectoryPlayer(DOMWidget):
         return _make_autofit(HBox(buttons))
 
     def _make_button_qtconsole(self):
-        from nglview.jsutils import js_launch_qtconsole
+        from nglview import js_utils
         button = Button(description='qtconsole',
                 tooltip='pop up qtconsole')
 
         def on_click(button):
-            js_launch_qtconsole()
+            js_utils.js_launch_qtconsole()
         button.on_click(on_click)
         return button
 
@@ -637,23 +637,23 @@ class TrajectoryPlayer(DOMWidget):
 
         def on_drag_nb(drag_button):
             if drag_nb.description == 'notebook drag: off':
-                jsutils._set_notebook_draggable(True)
+                js_utils._set_notebook_draggable(True)
                 drag_nb.description = 'notebook drag: on'
             else:
-                jsutils._set_notebook_draggable(False)
+                js_utils._set_notebook_draggable(False)
                 drag_nb.description = 'notebook drag: off'
 
         def on_reset(reset_nb):
-            jsutils._reset_notebook()
+            js_utils._reset_notebook()
 
         def on_dialog(dialog_button):
             self._view._remote_call('setDialog', target='Widget')
 
         def on_split_half(dialog_button):
-            from nglview import jsutils
+            from nglview import js_utils
             import time
-            jsutils._move_notebook_to_the_left()
-            jsutils._set_notebook_width('5%')
+            js_utils._move_notebook_to_the_left()
+            js_utils._set_notebook_width('5%')
             time.sleep(0.1)
             self._view._remote_call('setDialog', target='Widget')
 

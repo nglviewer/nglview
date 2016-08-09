@@ -26,8 +26,8 @@ from nglview import NGLWidget
 from nglview import widget_utils
 import mdtraj as md
 import parmed as pmd
-from nglview.utils import PY2, PY3
-from nglview import jsutils
+from nglview.utils.py_utils import PY2, PY3
+from nglview import js_utils
 from nglview.representation import Representation
 
 def default_view():
@@ -109,7 +109,7 @@ def test_API_promise_to_have():
     nv._get_notebook_info()
 
     # display
-    jsutils.js_clean_error_output()
+    js_utils.clean_error_output()
     display.display(view.player.repr_widget)
     view.player._display()
 
