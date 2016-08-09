@@ -294,7 +294,7 @@ class TrajectoryPlayer(DOMWidget):
                 tooltip='pop up qtconsole')
 
         def on_click(button):
-            js_utils.js_launch_qtconsole()
+            js_utils.launch_qtconsole()
         button.on_click(on_click)
         return button
 
