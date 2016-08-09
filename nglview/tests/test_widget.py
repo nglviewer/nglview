@@ -380,7 +380,15 @@ def test_existing_js_files():
     nt.assert_equal(len(jsfiles), 2)
     nt.assert_equal(len(mapfiles), 1)
 
-def test_player():
+def test_add_struture_then_trajectory():
+    view = nv.show_structure_file('data/tz2.pdb')
+    traj = pt.datafiles.load_trpcage()
+    view.add_trajectory(traj)
+    view.frame = 3
+    coords = view.coordinates_dict[1].copy()
+    aa_eq(coords, traj[3].xyz)
+
+def test_player_simple():
     traj = pt.datafiles.load_tz2()
     view = nv.show_pytraj(traj)
     nt.assert_false(view.player.sync_frame)
@@ -405,15 +413,7 @@ def test_player_link_to_ipywidgets():
     # we set min=10
     nt.assert_equal(view.player.delay, 10)
 
-def test_add_struture_then_trajectory():
-    view = nv.show_structure_file('data/tz2.pdb')
-    traj = pt.datafiles.load_trpcage()
-    view.add_trajectory(traj)
-    view.frame = 3
-    coords = view.coordinates_dict[1].copy()
-    aa_eq(coords, traj[3].xyz)
-
-def test_interpolation():
+def test_player_interpolation():
     view = default_view()
 
     view.player.interpolate = True
@@ -450,7 +450,7 @@ def test_theme():
     theme.reset()
     theme._get_theme('oceans16.css')
 
-def test_click_tab():
+def test_player_click_tab():
     view = nv.demo()
     gui = view.player._display()
     nt.assert_true(isinstance(gui, ipywidgets.Tab))
