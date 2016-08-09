@@ -45,11 +45,10 @@ except ImportError:
     from urllib2 import urlopen
 
 from . import datafiles
-# TODO: make a single file for utilities
-from . import utils, jsutils
-from .utils import seq_to_string, string_types, _camelize_dict
-from .utils import FileManager, get_repr_names_from_dict
-from .widget_utils import get_widget_by_name
+from .utils import py_utils, js_utils, widget_utils
+from .utils.py_utils import (seq_to_string, string_types, _camelize_dict,
+                             FileManager, get_repr_names_from_dict)
+from .utils import widget_utils
 from .player import TrajectoryPlayer
 from . import interpolate
 from .shape import Shape
@@ -613,12 +612,12 @@ class NGLWidget(DOMWidget):
             self.parameters = parameters
 
         if isinstance(structure, Trajectory):
-            name = utils.get_name(structure, kwargs)
+            name = py_utils.get_name(structure, kwargs)
             self.add_trajectory(structure, name=name)
         elif isinstance(structure, (list, tuple)):
             trajectories = structure
             for trajectory in trajectories:
-                name = utils.get_name(trajectory, kwargs)
+                name = py_utils.get_name(trajectory, kwargs)
                 self.add_trajectory(trajectory, name=name)
         else:
             if structure is not None:
@@ -705,12 +704,12 @@ class NGLWidget(DOMWidget):
     @observe('n_components')
     def _handle_n_components_changed(self, change):
         if self.player.repr_widget is not None:
-            component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+            component_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'component_slider')
 
             if change['new'] - 1 >= component_slider.min:
                 component_slider.max = change['new'] - 1
 
-            component_dropdown = get_widget_by_name(self.player.repr_widget, 'component_dropdown')
+            component_dropdown = widget_utils.get_widget_by_name(self.player.repr_widget, 'component_dropdown')
             component_dropdown.options = tuple(self._ngl_component_names)
 
             if change['new'] == 0:
@@ -719,28 +718,28 @@ class NGLWidget(DOMWidget):
 
                 component_slider.max = 0
 
-                reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+                reprlist_choices = widget_utils.get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
                 reprlist_choices.options = tuple([''])
 
-                repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
+                repr_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_slider')
                 repr_slider.max = 0
 
-                repr_name_text = get_widget_by_name(self.player.repr_widget, 'repr_name_text')
-                repr_selection = get_widget_by_name(self.player.repr_widget, 'repr_selection')
+                repr_name_text = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_name_text')
+                repr_selection = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_selection')
                 repr_name_text.value = ' '
                 repr_selection.value = ' '
 
     @observe('_repr_dict')
     def _handle_repr_dict_changed(self, change):
         if self.player.repr_widget is not None:
-            repr_slider = get_widget_by_name(self.player.repr_widget, 'repr_slider')
-            component_slider = get_widget_by_name(self.player.repr_widget, 'component_slider')
+            repr_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_slider')
+            component_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'component_slider')
             cindex = str(component_slider.value)
 
-            repr_name_text = get_widget_by_name(self.player.repr_widget, 'repr_name_text')
-            repr_selection = get_widget_by_name(self.player.repr_widget, 'repr_selection')
+            repr_name_text = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_name_text')
+            repr_selection = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_selection')
 
-            reprlist_choices = get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+            reprlist_choices = widget_utils.get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
             repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
 
             if change['new'] == {'c0': {}}:
@@ -1294,8 +1293,8 @@ class NGLWidget(DOMWidget):
 
                 if self.player.repr_widget is not None:
                     # TODO: refactor
-                    repr_name_text = get_widget_by_name(self.player.repr_widget, 'repr_name_text')
-                    repr_selection = get_widget_by_name(self.player.repr_widget, 'repr_selection')
+                    repr_name_text = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_name_text')
+                    repr_selection = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_selection')
                     repr_name_text.value = name
                     repr_selection.value = selection
 
@@ -1339,7 +1338,7 @@ class NGLWidget(DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(structure)
-            name = utils.get_name(structure, kwargs)
+            name = py_utils.get_name(structure, kwargs)
             self._ngl_component_names.append(name)
         self._ngl_component_ids.append(structure.id)
         self.center_view(component=len(self._ngl_component_ids)-1)
@@ -1385,7 +1384,7 @@ class NGLWidget(DOMWidget):
         else:
             # update via structure_list
             self._init_structures.append(trajectory)
-            name = utils.get_name(trajectory, kwargs)
+            name = py_utils.get_name(trajectory, kwargs)
             self._ngl_component_names.append(name)
         setattr(trajectory, 'shown', True)
         self._trajlist.append(trajectory)
@@ -1462,7 +1461,7 @@ class NGLWidget(DOMWidget):
             url = obj
             args=[{'type': blob_type, 'data': url, 'binary': False}]
 
-        name = utils.get_name(obj, kwargs2)
+        name = py_utils.get_name(obj, kwargs2)
         self._ngl_component_names.append(name)
         self._remote_call("loadFile",
                 target='Stage',
@@ -1665,7 +1664,7 @@ class NGLWidget(DOMWidget):
         # width of the dialog will be calculated based on notebook container offset
         if split:
             # rename
-            jsutils._move_notebook_to_the_right()
+            js_utils._move_notebook_to_the_right()
         self._remote_call('setDialog', target='Widget')
 
     def _play(self, start=0, stop=-1, step=1, delay=0.08, n_times=1):

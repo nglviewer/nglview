@@ -36,6 +36,6 @@ def oceans16():
 
 def reset():
     from IPython.display import Javascript, display
-    from nglview.jsutils import js_clean_empty_output_area
+    from nglview import js_utils
     display(Javascript('$("#nglview_style").remove()'))
-    js_clean_empty_output_area()
+    js_utils.clean_empty_output_area()
