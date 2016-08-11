@@ -12,6 +12,7 @@ export PATH=$HOME/miniconda/bin:$PATH
 # install stable version
 pip install conda
 
+conda update -n root conda-build --yes
 conda install --yes conda-build jinja2 anaconda-client pip
 
 # create myenv

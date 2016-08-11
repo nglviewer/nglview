@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 import time
 import json
-import numpy as np
 from IPython.display import display, Javascript
 from ipywidgets import (DOMWidget,
                         Box, HBox, VBox, Checkbox,
@@ -13,108 +12,17 @@ from ipywidgets import (DOMWidget,
                         Text, Textarea, IntText, FloatText,
                         Label,
                         interactive,
-                        Tab, Layout, jsdlink)
+                        Layout, Accordion)
 
-from traitlets import Int, Bool, Dict, Float, CaselessStrEnum, TraitError
+from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
 
 from .ngl_params import REPR_NAMES
-from .widget_utils import get_widget_by_name
 from . import default
+from . import js_utils
+from .layout import (form_item_layout, _relayout, _make_autofit, _relayout_master, _make_delay_tab,
+        _make_box_layout)
 
-try:
-    form_item_layout = Layout(
-        display='flex',
-        flex_flow='row',
-        justify_content='space-between'
-    )
-except TraitError:
-    # for testing
-    form_item_layout = None
-
-def _make_box_layout(width='100%'): 
-    return Layout(
-        display='flex',
-        flex_flow='column',
-        align_items='stretch',
-        width=width)
-
-def _relayout(box, form_item_layout):
-    form_items = []
-    for kid in box.children:
-        if hasattr(kid, 'description') and not isinstance(kid, (Button, ToggleButton)):
-            label_value = kid.description
-            kid.description = ''
-        else:
-            label_value = ''
-        if isinstance(kid, Button):
-            box2 = Box([kid,], layout=form_item_layout)
-        else:
-            box2 = Box([Label(value=label_value), kid], layout=form_item_layout)
-        form_items.append(box2)
-
-    return form_items
-
-def _relayout_master(box, width='20%'):
-    """make nicer layout for box.
-
-    This method will take the `description` of each child to make corresponding Label
-    The `description` will be cleared.
-    """
-    old_children = box.children[:]
-    form_items = _relayout(box, form_item_layout)
-    form = Box(form_items, layout=_make_box_layout(width=width))
-    form._ngl_children = old_children
-    return form
-
-def _make_autofit(box):
-    '''
-
-    Parameters
-    ----------
-    box : ipywidgets.Box
-        children is a list of buttons
-
-    Returns
-    -------
-    relayouted box
-    '''
-    items_layout = Layout(flex='1 1 auto',
-                          width='auto')  
-
-    box.layout = items_layout
-    return box
-
-def _make_delay_tab(box_factory, selected_index=0):
-    """
-
-    Parameters
-    ----------
-    box_factory : list of (func, tab_name)
-
-    Example of box_factory: [(_make_gen_box, 'General'),
-                             (_make_repr_box, 'Representation')]
-    """
-
-    tab = Tab([Box() for box, _ in box_factory])
-    [tab.set_title(i, title) for i, (_, title) in enumerate(box_factory)]
-
-    # trick
-    if not tab.children[selected_index].children:
-        tab.selected_index = -1
-
-    def on_update_selected_index(change):
-        index = change['new']
-        if not tab.children[index].children:
-            # make widget on demand
-            tab.children[index].children = [box_factory[index][0](),]
-
-    tab.observe(on_update_selected_index, names='selected_index')
-
-    # trigger
-    tab.selected_index = selected_index
-
-    return tab
 
 class TrajectoryPlayer(DOMWidget):
     # should set default values here different from desired defaults
@@ -286,7 +194,7 @@ class TrajectoryPlayer(DOMWidget):
 
         return button
 
-    def _make_preference_widget(self, width='50%'):
+    def _make_preference_widget(self, width='100%'):
         def make_func():
             parameters = self._view._full_stage_parameters
             def func(pan_speed=parameters.get('panSpeed', 0.8),
@@ -362,11 +270,11 @@ class TrajectoryPlayer(DOMWidget):
         return button
 
     def _make_button_url(self, url, description):
-        from nglview.jsutils import js_open_url_template
+        from nglview import js_utils
         button = Button(description=description)
 
         def on_click(button):
-            display(Javascript(js_open_url_template.format(url=url)))
+            display(Javascript(js_utils.js_open_url_template.format(url=url)))
 
         button.on_click(on_click)
         return button
@@ -381,11 +289,12 @@ class TrajectoryPlayer(DOMWidget):
         return _make_autofit(HBox(buttons))
 
     def _make_button_qtconsole(self):
-        from nglview.jsutils import js_launch_qtconsole
-        button = Button(description='qtconsole')
+        from nglview import js_utils
+        button = Button(description='qtconsole',
+                tooltip='pop up qtconsole')
 
         def on_click(button):
-            js_launch_qtconsole()
+            js_utils.launch_qtconsole()
         button.on_click(on_click)
         return button
 
@@ -416,14 +325,6 @@ class TrajectoryPlayer(DOMWidget):
         def on_click_refresh(button):
             self._refresh(component_slider, repr_slider)
 
-        def on_click_update(button):
-            parameters = json.loads(repr_text_info.value.replace("False", "false").replace("True", "true"))
-            self._view.update_representation(component=component_slider.value,
-                                             repr_index=repr_slider.value,
-                                             **parameters)
-            self._view._set_selection(repr_selection.value,
-                                      component=component_slider.value,
-                                      repr_index=repr_slider.value)
         def on_click_remove(button_remove):
             self._view._remove_representation(component=component_slider.value,
                                               repr_index=repr_slider.value)
@@ -483,9 +384,11 @@ class TrajectoryPlayer(DOMWidget):
         repr_slider.visible = True
 
         # TODO: properly hide
-        toggle_button_repr_parameters_shown = ToggleButton(value=False, description='show parameters')
+        repr_params_accordion = Accordion()
         repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
-        jsdlink((toggle_button_repr_parameters_shown, 'value'), (repr_slider_parameters, 'visible'))
+        repr_params_accordion.children = [repr_slider_parameters]
+        repr_params_accordion.set_title(0, 'show parameters')
+        repr_params_accordion.selected_index = -1
         
         checkbox_reprlist = Checkbox(value=False, description='reprlist')
         checkbox_reprlist._ngl_name = 'checkbox_reprlist'
@@ -520,9 +423,9 @@ class TrajectoryPlayer(DOMWidget):
                                                 repr_index=repr_slider.value)
             component_dropdown.options = tuple(self._view._ngl_component_names)
 
-            if repr_slider_parameters.visible:
-                kids = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text).children
-                repr_slider_parameters.children = kids
+            if repr_params_accordion.selected_index >= 0:
+                repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
+                repr_params_accordion.children = [repr_slider_parameters,]
 
         def on_repr_selection_value_changed(change):
             if self._real_time_update:
@@ -537,19 +440,12 @@ class TrajectoryPlayer(DOMWidget):
             if choice:
                  component_slider.value = self._view._ngl_component_names.index(choice)
 
-        def on_toggle_button_repr_parameters_shown_value_changed(change):
-            # repr_slider_parameters.visible = change['new']
-            if repr_slider_parameters.visible:
-                kids = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text).children
-                repr_slider_parameters.children = kids
-
         component_dropdown.observe(on_change_component_dropdown, names='value')
 
         repr_slider.observe(on_component_or_repr_slider_value_changed, names='value')
         component_slider.observe(on_component_or_repr_slider_value_changed, names='value')
         repr_name_text.observe(on_repr_name_text_value_changed, names='value')
         repr_selection.observe(on_repr_selection_value_changed, names='value')
-        toggle_button_repr_parameters_shown.observe(on_toggle_button_repr_parameters_shown_value_changed, names='value')
 
         bbox = self._make_button_repr_control(component_slider, repr_slider,
                 repr_selection)
@@ -557,8 +453,8 @@ class TrajectoryPlayer(DOMWidget):
         blank_box = Box([Label("")])
 
         all_kids = [bbox, blank_box, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
-                   component_slider, repr_slider, reprlist_choices, toggle_button_repr_parameters_shown,
-                   repr_slider_parameters]
+                   component_slider, repr_slider, reprlist_choices,
+                   repr_params_accordion]
 
         vbox = VBox(all_kids)
 
@@ -583,6 +479,7 @@ class TrajectoryPlayer(DOMWidget):
         else:
             self._repr_parameter_widget.children = widget.children
 
+        self._repr_parameter_widget.visible = False
         return self._repr_parameter_widget
 
     def _make_button_export_image(self):
@@ -728,7 +625,7 @@ class TrajectoryPlayer(DOMWidget):
         drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
         reset_nb = Button(description='notebook: reset', tooltip='reset?')
         dialog_button = Button(description='dialog', tooltip='make a dialog')
-        split_half_buttong = Button(description='split half', tooltip='try best to make a good layout')
+        split_half_button = Button(description='split screen', tooltip='try best to make a good layout')
 
         def on_drag(drag_button):
             if drag_button.description == 'widget drag: off':
@@ -740,31 +637,34 @@ class TrajectoryPlayer(DOMWidget):
 
         def on_drag_nb(drag_button):
             if drag_nb.description == 'notebook drag: off':
-                self._view._set_notebook_draggable(True)
+                js_utils._set_notebook_draggable(True)
                 drag_nb.description = 'notebook drag: on'
             else:
-                self._view._set_notebook_draggable(False)
+                js_utils._set_notebook_draggable(False)
                 drag_nb.description = 'notebook drag: off'
 
         def on_reset(reset_nb):
-            self._view._reset_notebook()
+            js_utils._reset_notebook()
 
         def on_dialog(dialog_button):
             self._view._remote_call('setDialog', target='Widget')
 
         def on_split_half(dialog_button):
-            from nglview import jsutils
-            jsutils._move_notebook_to_the_right()
+            from nglview import js_utils
+            import time
+            js_utils._move_notebook_to_the_left()
+            js_utils._set_notebook_width('5%')
+            time.sleep(0.1)
             self._view._remote_call('setDialog', target='Widget')
 
         drag_button.on_click(on_drag)
         drag_nb.on_click(on_drag_nb)
         reset_nb.on_click(on_reset)
         dialog_button.on_click(on_dialog)
-        split_half_buttong.on_click(on_split_half)
+        split_half_button.on_click(on_split_half)
 
         drag_box = HBox([drag_button, drag_nb, reset_nb,
-                        dialog_button, split_half_buttong])
+                        dialog_button, split_half_button])
         drag_box = _make_autofit(drag_box)
         return drag_box
 
@@ -841,39 +741,31 @@ class TrajectoryPlayer(DOMWidget):
             min=10,
             max=1000,
             description='delay')
-        checkbox_interpolate = Checkbox(self.interpolate, description='')
+        toggle_button_interpolate = ToggleButton(self.interpolate, description='Smoothing',
+                                                 tooltip='smoothing trajectory')
+        link((toggle_button_interpolate, 'value'), (self, 'interpolate'))
 
         bg_color = ColorPicker(value='white', description='background')
         bg_color.width = 100.
-        # t_interpolation = FloatSlider(value=0.5, min=0, max=1.0, step=0.1)
-        interpolation_type = Dropdown(value=self._iterpolation_type,
-                                      options=['linear', 'spline'])
-
-        interpolation_type.layout.max_width = '40px'
-
-        ibox = HBox([checkbox_interpolate, interpolation_type], description='interpolate')
-
         camera_type = Dropdown(value=self.camera,
                                options=['perspective', 'orthographic'], description='camera')
 
         link((step_slide, 'value'), (self, 'step'))
         link((delay_text, 'value'), (self, 'delay'))
-        link((checkbox_interpolate, 'value'), (self, 'interpolate'))
-        # link((t_interpolation, 'value'), (self, '_interpolation_t'))
-        link((interpolation_type, 'value'), (self, '_iterpolation_type'))
+        link((toggle_button_interpolate, 'value'), (self, 'interpolate'))
         link((camera_type, 'value'), (self, 'camera'))
         link((bg_color, 'value'), (self._view, 'background'))
 
         center_button = self._make_button_center()
         render_button = self._show_download_image()
         qtconsole_button = self._make_button_qtconsole()
-        center_render_hbox = _make_autofit(HBox([center_button, render_button, qtconsole_button]))
+        center_render_hbox = _make_autofit(HBox([toggle_button_interpolate, center_button,
+                                                 render_button, qtconsole_button]))
 
         v0_left = VBox([step_slide,
                    delay_text,
                    bg_color,
                    camera_type,
-                   ibox,
                    center_render_hbox,
                    ])
 

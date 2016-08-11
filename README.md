@@ -17,6 +17,7 @@ Table of contents
 * [Example](#example)
 * [Usage](#usage)
 * [Command line](#command-line)
+* [API doc](#api-doc)
 * [Interface classes](doc/interface_classes.md)
 * [Changelog](CHANGELOG.md)
 * [FAQ](#faq)
@@ -235,7 +236,7 @@ view2.sync_view()
 ```
 
 API doc
--------
+=======
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
 - [Development version](http://arose.github.io/nglview/dev/api.html)
 
@@ -288,6 +289,17 @@ Website
 
 - http://arose.github.io/nglview/latest
 - http://arose.github.io/nglview/dev
+
+Projects using NGLView
+======================
+
+(Feel free to make a PR to add/remove your project here)
+
+- [AMBER](http://ambermd.org/) -  A package of programs for molecular dynamics simulations of proteins and nucleic acids
+- [mbuild](https://github.com/iModels/mbuild) - A hierarchical, component based molecule builder
+- [deepchem](https://github.com/deepchem/deepchem) - Deep-learning models for Drug Discovery and Quantum Chemistry
+- [pychimera](https://github.com/insilichem/pychimera) - Use UCSF Chimera Python API in a standard interpreter
+- [htmd](https://github.com/Acellera/htmd) - High throughput molecular dynamics simulations
 
 Acknowledgment
 ==============

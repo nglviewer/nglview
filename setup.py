@@ -159,6 +159,7 @@ setup_args = {
                  'nglview.static',
                  'nglview.theme',
                  'nglview.datafiles',
+                 'nglview.utils',
                  'nglview.tests',
                  'nglview.scripts']),
     'zip_safe': False,

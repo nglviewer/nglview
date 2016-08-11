@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 from ipywidgets import IntSlider, FloatSlider
 
-from .default import DEFAULT_SLIDER_WIDTH
+from nglview import default
 
 def get_widget_by_name(box, widget_name):
 
@@ -22,4 +22,4 @@ def get_widget_by_name(box, widget_name):
 def make_default_slider_width(box):
     for kid in box.children:
         if isinstance(kid, (IntSlider, FloatSlider)):
-            kid.width = DEFAULT_SLIDER_WIDTH
+            kid.width = default.DEFAULT_SLIDER_WIDTH
