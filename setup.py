@@ -34,6 +34,8 @@ except ValueError:
 def enable_extentions():
     print("Trying to enable extensions")
     if not rebuild_nglview_js:
+        # this is for normal users
+        # for developers, you should know what to do. :D
         try:
             # enable_nbextension_python does not exist in older notebook
             # use try ... except in case users do not have notebook yet
