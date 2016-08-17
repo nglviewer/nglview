@@ -31,6 +31,18 @@ try:
 except ValueError:
     rebuild_nglview_js = False
 
+def enable_extentions():
+    print("Trying to enable extensions")
+    if not rebuild_nglview_js:
+        try:
+            # enable_nbextension_python does not exist in older notebook
+            # use try ... except in case users do not have notebook yet
+            from notebook.nbextensions import enable_nbextension_python
+            enable_nbextension_python('widgetsnbextension')
+            enable_nbextension_python('nglview')
+        except Exception as e:
+            print('Failed to enable extensions {}'.format(e))
+
 def js_prerelease(command, strict=False):
     """decorator for building minified js/css prior to another command"""
     class DecoratedCommand(command):
@@ -200,3 +212,4 @@ setup_args = {
 }
 
 setup(**setup_args)
+enable_extentions()
