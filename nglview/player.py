@@ -270,11 +270,10 @@ class TrajectoryPlayer(DOMWidget):
         return button
 
     def _make_button_url(self, url, description):
-        from nglview import js_utils
         button = Button(description=description)
 
         def on_click(button):
-            display(Javascript(js_utils.js_open_url_template.format(url=url)))
+            display(Javascript(js_utils.open_url_template.format(url=url)))
 
         button.on_click(on_click)
         return button
