@@ -169,29 +169,28 @@ class TrajectoryPlayer(DOMWidget):
 
     def _make_button_center(self):
         button = Button(description='Center')
+        @button.on_click
         def on_click(button):
             self._view.center()
-        button.on_click(on_click)
         return button
 
     def _make_button_theme(self):
         button = Button(description='Oceans16')
+        @button.on_click
         def on_click(button):
             from nglview import theme
             display(theme.oceans16())
             self._view._remote_call('cleanOutput',
                                     target='Widget')
-        button.on_click(on_click)
         return button
 
     def _make_button_reset_theme(self):
         from nglview import theme
 
         button = Button(description='Default')
+        @button.on_click
         def on_click(button):
             theme.reset()
-        button.on_click(on_click)
-
         return button
 
     def _make_preference_widget(self, width='100%'):
@@ -252,11 +251,11 @@ class TrajectoryPlayer(DOMWidget):
         reset_button = Button(description='Reset')
         widget_sliders.children = [reset_button,] + list(widget_sliders.children)
 
+        @reset_button.on_click
         def on_click(reset_button):
             self._view.parameters = self._view._original_stage_parameters
             self._view._full_stage_parameters = self._view._original_stage_parameters
             widget_sliders.children = [reset_button,] + list(make_widget_box().children)
-        reset_button.on_click(on_click)
 
         self._preference_widget = _relayout_master(widget_sliders, width=width)
         return self._preference_widget
@@ -264,19 +263,17 @@ class TrajectoryPlayer(DOMWidget):
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
         button = Button(description='Screenshot')
+        @button.on_click
         def on_click(button):
             self._view.download_image()
-        button.on_click(on_click)
         return button
 
     def _make_button_url(self, url, description):
-        from nglview import js_utils
         button = Button(description=description)
 
+        @button.on_click
         def on_click(button):
-            display(Javascript(js_utils.js_open_url_template.format(url=url)))
-
-        button.on_click(on_click)
+            display(Javascript(js_utils.open_url_template.format(url=url)))
         return button
 
     def _show_website(self):
@@ -293,9 +290,9 @@ class TrajectoryPlayer(DOMWidget):
         button = Button(description='qtconsole',
                 tooltip='pop up qtconsole')
 
+        @button.on_click
         def on_click(button):
             js_utils.launch_qtconsole()
-        button.on_click(on_click)
         return button
 
     def _make_text_picked(self):
@@ -322,14 +319,17 @@ class TrajectoryPlayer(DOMWidget):
         button_center_selection = Button(description='Center', tooltip='center selected atoms')
         button_center_selection._ngl_name = 'button_center_selection'
 
+        @button_refresh.on_click
         def on_click_refresh(button):
             self._refresh(component_slider, repr_slider)
 
+        @button_remove.on_click
         def on_click_remove(button_remove):
             self._view._remove_representation(component=component_slider.value,
                                               repr_index=repr_slider.value)
             self._view._request_repr_parameters(component=component_slider.value,
                                                 repr_index=repr_slider.value)
+        @button_hide.on_click
         def on_click_hide(button_hide):
             component=component_slider.value
             repr_index=repr_slider.value
@@ -347,16 +347,10 @@ class TrajectoryPlayer(DOMWidget):
                                     target='Widget',
                                     args=[component, repr_index, not hide])
 
-        button_refresh.on_click(on_click_refresh)
-        button_hide.on_click(on_click_hide)
-        button_remove.on_click(on_click_remove)
-
+        @button_center_selection.on_click
         def on_click_center(center_selection):
             self._view.center_view(selection=repr_selection.value,
                                    component=component_slider.value)
-        button_center_selection.on_click(on_click_center)
-
-
 
         bbox = _make_autofit(HBox([button_refresh, button_center_selection,
             button_hide, button_remove]))
@@ -506,14 +500,13 @@ class TrajectoryPlayer(DOMWidget):
                     transparent=checkbox_transparent.value,
                     filename=filename)
 
+        @button_movie_images.on_click
         def on_click_images(button_movie_images):
             for i in range(start_text.value, stop_text.value, step_text.value):
                 self._view.frame = i
                 time.sleep(delay_text.value)
                 download_image(filename=filename_text.value + str(i))
                 time.sleep(delay_text.value)
-
-        button_movie_images.on_click(on_click_images)
 
         vbox = VBox([
             button_movie_images,
@@ -596,13 +589,13 @@ class TrajectoryPlayer(DOMWidget):
 
         button_clear = Button(description='clear', button_style='info',
                 icon='fa-eraser')
+
+        @button_clear.on_click
         def on_clear(button_clear):
             self._view.clear()
             for kid in children:
                 # unselect
                 kid.value = False
-
-        button_clear.on_click(on_clear)
 
         vbox.children = children + [repr_selection, button_clear]
         _make_autofit(vbox)
@@ -621,21 +614,23 @@ class TrajectoryPlayer(DOMWidget):
         return repr_choices
 
     def _make_drag_widget(self):
-        drag_button = Button(description='widget drag: off', tooltip='dangerous')
+        button_drag = Button(description='widget drag: off', tooltip='dangerous')
         drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
-        reset_nb = Button(description='notebook: reset', tooltip='reset?')
-        dialog_button = Button(description='dialog', tooltip='make a dialog')
-        split_half_button = Button(description='split screen', tooltip='try best to make a good layout')
+        button_reset_notebook = Button(description='notebook: reset', tooltip='reset?')
+        button_dialog = Button(description='dialog', tooltip='make a dialog')
+        button_split_half = Button(description='split screen', tooltip='try best to make a good layout')
 
-        def on_drag(drag_button):
-            if drag_button.description == 'widget drag: off':
+        @button_drag.on_click
+        def on_drag(button_drag):
+            if button_drag.description == 'widget drag: off':
                 self._view._set_draggable(True)
-                drag_button.description = 'widget drag: on'
+                button_drag.description = 'widget drag: on'
             else:
                 self._view._set_draggable(False)
-                drag_button.description = 'widget drag: off'
+                button_drag.description = 'widget drag: off'
 
-        def on_drag_nb(drag_button):
+        @drag_nb.on_click
+        def on_drag_nb(button_drag):
             if drag_nb.description == 'notebook drag: off':
                 js_utils._set_notebook_draggable(True)
                 drag_nb.description = 'notebook drag: on'
@@ -643,13 +638,16 @@ class TrajectoryPlayer(DOMWidget):
                 js_utils._set_notebook_draggable(False)
                 drag_nb.description = 'notebook drag: off'
 
-        def on_reset(reset_nb):
+        @button_reset_notebook.on_click
+        def on_reset(button_reset_notebook):
             js_utils._reset_notebook()
 
-        def on_dialog(dialog_button):
+        @button_dialog.on_click
+        def on_dialog(button_dialog):
             self._view._remote_call('setDialog', target='Widget')
 
-        def on_split_half(dialog_button):
+        @button_split_half.on_click
+        def on_split_half(button_dialog):
             from nglview import js_utils
             import time
             js_utils._move_notebook_to_the_left()
@@ -657,14 +655,8 @@ class TrajectoryPlayer(DOMWidget):
             time.sleep(0.1)
             self._view._remote_call('setDialog', target='Widget')
 
-        drag_button.on_click(on_drag)
-        drag_nb.on_click(on_drag_nb)
-        reset_nb.on_click(on_reset)
-        dialog_button.on_click(on_dialog)
-        split_half_button.on_click(on_split_half)
-
-        drag_box = HBox([drag_button, drag_nb, reset_nb,
-                        dialog_button, split_half_button])
+        drag_box = HBox([button_drag, drag_nb, button_reset_notebook,
+                        button_dialog, button_split_half])
         drag_box = _make_autofit(drag_box)
         return drag_box
 
