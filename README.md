@@ -238,6 +238,8 @@ view2.sync_view()
 Show GUI
 --------
 
+Notes: Unstable feature
+
 ![](./examples/images/nglview_gui.png)
 
 API doc
