@@ -614,23 +614,23 @@ class TrajectoryPlayer(DOMWidget):
         return repr_choices
 
     def _make_drag_widget(self):
-        drag_button = Button(description='widget drag: off', tooltip='dangerous')
+        button_drag = Button(description='widget drag: off', tooltip='dangerous')
         drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
-        reset_nb = Button(description='notebook: reset', tooltip='reset?')
-        dialog_button = Button(description='dialog', tooltip='make a dialog')
-        split_half_button = Button(description='split screen', tooltip='try best to make a good layout')
+        button_reset_notebook = Button(description='notebook: reset', tooltip='reset?')
+        button_dialog = Button(description='dialog', tooltip='make a dialog')
+        button_split_half = Button(description='split screen', tooltip='try best to make a good layout')
 
-        @drag_button.on_click
-        def on_drag(drag_button):
-            if drag_button.description == 'widget drag: off':
+        @button_drag.on_click
+        def on_drag(button_drag):
+            if button_drag.description == 'widget drag: off':
                 self._view._set_draggable(True)
-                drag_button.description = 'widget drag: on'
+                button_drag.description = 'widget drag: on'
             else:
                 self._view._set_draggable(False)
-                drag_button.description = 'widget drag: off'
+                button_drag.description = 'widget drag: off'
 
         @drag_nb.on_click
-        def on_drag_nb(drag_button):
+        def on_drag_nb(button_drag):
             if drag_nb.description == 'notebook drag: off':
                 js_utils._set_notebook_draggable(True)
                 drag_nb.description = 'notebook drag: on'
@@ -638,16 +638,16 @@ class TrajectoryPlayer(DOMWidget):
                 js_utils._set_notebook_draggable(False)
                 drag_nb.description = 'notebook drag: off'
 
-        @reset_nb.on_click
-        def on_reset(reset_nb):
+        @button_reset_notebook.on_click
+        def on_reset(button_reset_notebook):
             js_utils._reset_notebook()
 
-        @dialog_button.on_click
-        def on_dialog(dialog_button):
+        @button_dialog.on_click
+        def on_dialog(button_dialog):
             self._view._remote_call('setDialog', target='Widget')
 
-        @split_half_button.on_click
-        def on_split_half(dialog_button):
+        @button_split_half.on_click
+        def on_split_half(button_dialog):
             from nglview import js_utils
             import time
             js_utils._move_notebook_to_the_left()
@@ -655,8 +655,8 @@ class TrajectoryPlayer(DOMWidget):
             time.sleep(0.1)
             self._view._remote_call('setDialog', target='Widget')
 
-        drag_box = HBox([drag_button, drag_nb, reset_nb,
-                        dialog_button, split_half_button])
+        drag_box = HBox([button_drag, drag_nb, button_reset_notebook,
+                        button_dialog, button_split_half])
         drag_box = _make_autofit(drag_box)
         return drag_box
 
