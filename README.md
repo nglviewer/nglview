@@ -235,6 +235,11 @@ view1.sync_view()
 view2.sync_view()
 ```
 
+Show GUI
+--------
+
+![](./examples/images/nglview_gui.png)
+
 API doc
 =======
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
