@@ -17,9 +17,9 @@ from ipywidgets import (DOMWidget,
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
 
-from .ngl_params import REPR_NAMES
+from .parameters import REPRESENTATION_NAMES
 from . import default
-from . import js_utils
+from .utils import js_utils
 from .layout import (form_item_layout, _relayout, _make_autofit, _relayout_master, _make_delay_tab,
         _make_box_layout)
 
@@ -401,7 +401,7 @@ class TrajectoryPlayer(DOMWidget):
 
             should_update = (self._real_time_update
                              and old and name
-                             and name in REPR_NAMES
+                             and name in REPRESENTATION_NAMES
                              and name != change['old'].strip())
 
             if should_update:
@@ -537,7 +537,7 @@ class TrajectoryPlayer(DOMWidget):
         return resize_notebook_slider
 
     def _make_add_repr_widget(self, component_slider):
-        dropdown_repr_name = Dropdown(options=REPR_NAMES, value='cartoon')
+        dropdown_repr_name = Dropdown(options=REPRESENTATION_NAMES, value='cartoon')
         repr_selection = Text(value='*', description='')
         repr_button = Button(description='Add', tooltip="""Add representation.
         You can also hit Enter in selection box""")
@@ -561,7 +561,7 @@ class TrajectoryPlayer(DOMWidget):
         vbox = VBox()
         children = []
 
-        rep_names = REPR_NAMES[:]
+        rep_names = REPRESENTATION_NAMES[:]
         excluded_names = ['ball+stick', 'distance']
         for name in excluded_names:
             rep_names.remove(name)
