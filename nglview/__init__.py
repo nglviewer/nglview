@@ -12,6 +12,8 @@ with warnings.catch_warnings():
 install()
 
 # Register nbextension
+
+
 def _jupyter_nbextension_paths():
     return [{
         'section': 'notebook',
