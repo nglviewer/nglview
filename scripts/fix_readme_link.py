@@ -14,7 +14,8 @@ readme = open(sys.argv[1]).read()
 words = ["(nglview.gif)",
          "(examples/images/membrane.gif)",
          "(examples/README.md)",
-         "(./examples/README.md)",
+         "(examples/README.md)",
+         "(examples/images/nglview_gui.png)",
          ]
 
 for word in words:

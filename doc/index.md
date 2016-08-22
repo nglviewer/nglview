@@ -240,7 +240,7 @@ Show GUI
 
 Notes: Unstable feature
 
-![](./examples/images/nglview_gui.png)
+![](https://github.com/arose/nglview/blob/master/examples/images/nglview_gui.png)
 
 API doc
 =======
