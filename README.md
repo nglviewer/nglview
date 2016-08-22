@@ -66,7 +66,7 @@ The development version can be installed directly from github:
 Example
 =======
 
-- Notebooks: please see our [Jupyter notebook examples](./examples/README.md)
+- Notebooks: please see our [Jupyter notebook examples](examples/README.md)
 - Simple demo for trajectory (take time to load): [biomembrane](http://amber-md.github.io/pytraj/latest/ngl_player.html)
 
 Usage
@@ -240,7 +240,7 @@ Show GUI
 
 Notes: Unstable feature
 
-![](./examples/images/nglview_gui.png)
+![](examples/images/nglview_gui.png)
 
 API doc
 =======
