@@ -29,6 +29,7 @@ __all__ = [
     'ParmEdTrajectory',
     'MDAnalysisTrajectory']
 
+
 class FileStructure(Structure):
 
     def __init__(self, path):
@@ -43,6 +44,7 @@ class FileStructure(Structure):
     def get_structure_string(self):
         return self.fm.read(force_buffer=True)
 
+
 class TextStructure(Structure):
 
     def __init__(self, text, ext='pdb', params={}):
@@ -54,6 +56,7 @@ class TextStructure(Structure):
 
     def get_structure_string(self):
         return self._text
+
 
 class RdkitStructure(Structure):
 
@@ -68,6 +71,7 @@ class RdkitStructure(Structure):
         from rdkit import Chem
         fh = StringIO(Chem.MolToPDBBlock(self._rdkit_mol))
         return fh.read()
+
 
 class PdbIdStructure(Structure):
 
@@ -92,6 +96,7 @@ class SimpletrajTrajectory(Trajectory, Structure):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
+
     def __init__(self, path, structure_path):
         try:
             import simpletraj
@@ -137,6 +142,7 @@ class MDTrajTrajectory(Trajectory, Structure):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
+
     def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
@@ -144,7 +150,7 @@ class MDTrajTrajectory(Trajectory, Structure):
         self.id = str(uuid.uuid4())
 
     def get_coordinates(self, index):
-        return 10*self.trajectory.xyz[index]
+        return 10 * self.trajectory.xyz[index]
 
     @property
     def n_frames(self):
@@ -170,6 +176,7 @@ class PyTrajTrajectory(Trajectory, Structure):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
+
     def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
@@ -190,9 +197,11 @@ class PyTrajTrajectory(Trajectory, Structure):
         # os.close( fd )
         return pdb_string
 
+
 class ParmEdTrajectory(Trajectory, Structure):
     '''ParmEd adaptor.
     '''
+
     def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
@@ -238,6 +247,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
+
     def __init__(self, atomgroup):
         self.atomgroup = atomgroup
         self.ext = "pdb"
