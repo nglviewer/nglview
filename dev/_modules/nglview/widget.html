@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.widget &mdash; NGLView 0.5.2a+181.g2ed88da documentation</title>
+    <title>nglview.widget &mdash; NGLView 0.5.2a+181.g2ed88da.dirty documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.5.2a+181.g2ed88da',
+        VERSION:     '0.5.2a+181.g2ed88da.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+181.g2ed88da documentation" href="../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+181.g2ed88da.dirty documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+181.g2ed88da documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+181.g2ed88da.dirty documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -121,7 +121,7 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">other</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="NGLWidget"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget">[docs]</a><span class="k">class</span> <span class="nc">NGLWidget</span><span class="p">(</span><span class="n">DOMWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget">[docs]</a><span class="k">class</span> <span class="nc">NGLWidget</span><span class="p">(</span><span class="n">DOMWidget</span><span class="p">):</span>
     <span class="n">_view_name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;NGLView&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">_view_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;nglview-js&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">selection</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -352,7 +352,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1E6</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">current_frame</span>
 
-<div class="viewcode-block" id="NGLWidget.sync_view"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.sync_view">[docs]</a>    <span class="k">def</span> <span class="nf">sync_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.sync_view"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.sync_view">[docs]</a>    <span class="k">def</span> <span class="nf">sync_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;call this if you want to sync multiple views of a single viewer</span>
 
 <span class="sd">        Note: unstable feature</span>
@@ -379,7 +379,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;cleanOutput&#39;</span><span class="p">,</span>
                               <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NGLWidget.display"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gui</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.display"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gui</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">gui</span><span class="p">:</span>
             <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">_display</span><span class="p">())</span></div>
@@ -423,7 +423,7 @@
                          <span class="n">kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">component_index</span><span class="o">=</span><span class="n">component</span><span class="p">,</span>
                                      <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_index</span><span class="p">))</span>
         
-<div class="viewcode-block" id="NGLWidget.color_by"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.color_by">[docs]</a>    <span class="k">def</span> <span class="nf">color_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_scheme</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.color_by"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.color_by">[docs]</a>    <span class="k">def</span> <span class="nf">color_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_scheme</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;update color for all representations of givne component</span>
 
 <span class="sd">        Notes</span>
@@ -460,7 +460,7 @@
         <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_representations</span><span class="p">(</span><span class="n">reps</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NGLWidget.update_representation"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.update_representation">[docs]</a>    <span class="k">def</span> <span class="nf">update_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">repr_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.update_representation"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.update_representation">[docs]</a>    <span class="k">def</span> <span class="nf">update_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">repr_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Parameters</span>
@@ -480,7 +480,7 @@
                  <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Representation&#39;</span><span class="p">,</span>
                  <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NGLWidget.set_representations"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.set_representations">[docs]</a>    <span class="k">def</span> <span class="nf">set_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representations</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.set_representations"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.set_representations">[docs]</a>    <span class="k">def</span> <span class="nf">set_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representations</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -615,13 +615,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NGLWidget.clear"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.clear"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;shortcut of `clear_representations`</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_representations</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NGLWidget.clear_representations"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.clear_representations">[docs]</a>    <span class="k">def</span> <span class="nf">clear_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.clear_representations"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.clear_representations">[docs]</a>    <span class="k">def</span> <span class="nf">clear_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;clear all representations for given component</span>
 
 <span class="sd">        Parameters</span>
@@ -661,7 +661,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;addShape&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="n">shapes</span><span class="p">])</span>
 
-<div class="viewcode-block" id="NGLWidget.add_representation"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.add_representation">[docs]</a>    <span class="k">def</span> <span class="nf">add_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repr_type</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.add_representation"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.add_representation">[docs]</a>    <span class="k">def</span> <span class="nf">add_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repr_type</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Add structure representation (cartoon, licorice, ...) for given atom selection.</span>
 
 <span class="sd">        Parameters</span>
@@ -724,12 +724,12 @@
                           <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="NGLWidget.center"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.center">[docs]</a>    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.center"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.center">[docs]</a>    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;alias of `center_view`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NGLWidget.center_view"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.center_view">[docs]</a>    <span class="k">def</span> <span class="nf">center_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.center_view"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.center_view">[docs]</a>    <span class="k">def</span> <span class="nf">center_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;center view for given atom selection</span>
 
 <span class="sd">        Examples</span>
@@ -752,7 +752,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hold_image</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="NGLWidget.render_image"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.render_image">[docs]</a>    <span class="k">def</span> <span class="nf">render_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+<div class="viewcode-block" id="NGLWidget.render_image"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.render_image">[docs]</a>    <span class="k">def</span> <span class="nf">render_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                      <span class="n">factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                      <span class="n">antialias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                      <span class="n">trim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
@@ -792,7 +792,7 @@
                           <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
                           <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NGLWidget.download_image"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.download_image">[docs]</a>    <span class="k">def</span> <span class="nf">download_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;screenshot.png&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="NGLWidget.download_image"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.download_image">[docs]</a>    <span class="k">def</span> <span class="nf">download_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;screenshot.png&#39;</span><span class="p">,</span>
                        <span class="n">factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                        <span class="n">antialias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                        <span class="n">trim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
@@ -817,7 +817,7 @@
                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">filename</span><span class="p">,],</span>
                           <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NGLWidget.superpose"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.superpose">[docs]</a>    <span class="k">def</span> <span class="nf">superpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,],</span> <span class="n">ref</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">selection_0</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">selection_1</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.superpose"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.superpose">[docs]</a>    <span class="k">def</span> <span class="nf">superpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,],</span> <span class="n">ref</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">selection_0</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">selection_1</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;port superpose method from NGL. Good for single structures.</span>
 <span class="sd">        If you are viewing trajectory, it&#39;s better to use your engine (ptraj, mdtraj,</span>
 <span class="sd">        MDAnalysis, ...)</span>
@@ -886,7 +886,7 @@
                 <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">component</span><span class="p">,</span>
                       <span class="n">repr_index</span><span class="p">])</span>
 
-<div class="viewcode-block" id="NGLWidget.add_structure"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.add_structure">[docs]</a>    <span class="k">def</span> <span class="nf">add_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.add_structure"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.add_structure">[docs]</a>    <span class="k">def</span> <span class="nf">add_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;add structure to view</span>
 
 <span class="sd">        Parameters</span>
@@ -915,7 +915,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_auto_completion</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="NGLWidget.add_trajectory"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.add_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">add_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.add_trajectory"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.add_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">add_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;add new trajectory to `view`</span>
 
 <span class="sd">        Parameters</span>
@@ -963,7 +963,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_auto_completion</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="NGLWidget.add_component"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.add_component">[docs]</a>    <span class="k">def</span> <span class="nf">add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.add_component"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.add_component">[docs]</a>    <span class="k">def</span> <span class="nf">add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;add component from file/trajectory/struture</span>
 
 <span class="sd">        Parameters</span>
@@ -1039,7 +1039,7 @@
                 <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs2</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NGLWidget.remove_component"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.remove_component">[docs]</a>    <span class="k">def</span> <span class="nf">remove_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_id</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.remove_component"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.remove_component">[docs]</a>    <span class="k">def</span> <span class="nf">remove_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;remove component by its uuid</span>
 
 <span class="sd">        Examples</span>
@@ -1126,7 +1126,7 @@
                 <span class="k">return</span> <span class="n">traj</span>
         <span class="k">return</span> <span class="bp">None</span>
 
-<div class="viewcode-block" id="NGLWidget.hide"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.hide"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;set invisibility for given component/struture/trajectory (by their indices)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">traj_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">)</span>
@@ -1141,12 +1141,12 @@
                     <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">False</span><span class="p">,],</span>
                     <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="NGLWidget.show"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.show"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;shortcut of `show_only`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_only</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NGLWidget.show_only"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.show_only">[docs]</a>    <span class="k">def</span> <span class="nf">show_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.show_only"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.show_only">[docs]</a>    <span class="k">def</span> <span class="nf">show_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;set visibility for given components (by their indices)</span>
 
 <span class="sd">        Parameters</span>
@@ -1220,7 +1220,7 @@
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">):</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-<div class="viewcode-block" id="NGLWidget.detach"><a class="viewcode-back" href="../../_api/nglview.widget.html#nglview.widget.NGLWidget.detach">[docs]</a>    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="NGLWidget.detach"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.detach">[docs]</a>    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;detach player from its original container.</span>
 
 <span class="sd">        Parameters</span>
@@ -1363,7 +1363,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+181.g2ed88da documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+181.g2ed88da.dirty documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
