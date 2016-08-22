@@ -6,9 +6,11 @@ import uuid
 
 __all__ = ['Structure', 'Trajectory']
 
+
 class Structure(object):
     """abstract base class
     """
+
     def __init__(self):
         self.ext = "pdb"
         self.params = {}
@@ -21,6 +23,7 @@ class Structure(object):
 class Trajectory(object):
     """abstract base class
     """
+
     def __init__(self):
         self.id = str(uuid.uuid4())
         self.shown = True
@@ -129,7 +132,7 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
 
     def get_coordinates(self, index):
         # return 2D numpy array, shape=(n_atoms, 3)
-        
+
     def n_frames(self):
         # return total frames
 ```
