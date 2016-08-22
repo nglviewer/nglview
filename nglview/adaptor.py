@@ -15,30 +15,19 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
+from .base_adaptor import Structure, Trajectory
 from .utils.py_utils import FileManager
 
 __all__ = [
-    'Structure',
     'FileStructure',
     'TextStructure',
     'RdkitStructure',
     'PdbIdStructure',
-    'Trajectory', 
     'SimpletrajTrajectory',
     'MDTrajTrajectory',
     'PyTrajTrajectory',
     'ParmEdTrajectory',
     'MDAnalysisTrajectory']
-
-class Structure(object):
-
-    def __init__(self):
-        self.ext = "pdb"
-        self.params = {}
-        self.id = str(uuid.uuid4())
-
-    def get_structure_string(self):
-        raise NotImplementedError()
 
 
 class FileStructure(Structure):
@@ -55,6 +44,7 @@ class FileStructure(Structure):
     def get_structure_string(self):
         return self.fm.read(force_buffer=True)
 
+
 class TextStructure(Structure):
 
     def __init__(self, text, ext='pdb', params={}):
@@ -66,6 +56,7 @@ class TextStructure(Structure):
 
     def get_structure_string(self):
         return self._text
+
 
 class RdkitStructure(Structure):
 
@@ -81,6 +72,7 @@ class RdkitStructure(Structure):
         fh = StringIO(Chem.MolToPDBBlock(self._rdkit_mol))
         return fh.read()
 
+
 class PdbIdStructure(Structure):
 
     def __init__(self, pdbid):
@@ -94,21 +86,6 @@ class PdbIdStructure(Structure):
         return urlopen(url).read()
 
 
-class Trajectory(object):
-    """abstract base class
-    """
-    def __init__(self):
-        self.id = str(uuid.uuid4())
-        self.shown = True
-
-    def get_coordinates(self, index):
-        raise NotImplementedError()
-
-    @property
-    def n_frames(self):
-        raise NotImplementedError()
-
-
 class SimpletrajTrajectory(Trajectory, Structure):
     '''simpletraj adaptor.
 
@@ -119,6 +96,7 @@ class SimpletrajTrajectory(Trajectory, Structure):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
+
     def __init__(self, path, structure_path):
         try:
             import simpletraj
@@ -164,6 +142,7 @@ class MDTrajTrajectory(Trajectory, Structure):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
+
     def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
@@ -171,7 +150,7 @@ class MDTrajTrajectory(Trajectory, Structure):
         self.id = str(uuid.uuid4())
 
     def get_coordinates(self, index):
-        return 10*self.trajectory.xyz[index]
+        return 10 * self.trajectory.xyz[index]
 
     @property
     def n_frames(self):
@@ -197,6 +176,7 @@ class PyTrajTrajectory(Trajectory, Structure):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
+
     def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
@@ -217,9 +197,11 @@ class PyTrajTrajectory(Trajectory, Structure):
         # os.close( fd )
         return pdb_string
 
+
 class ParmEdTrajectory(Trajectory, Structure):
     '''ParmEd adaptor.
     '''
+
     def __init__(self, trajectory):
         self.trajectory = trajectory
         self.ext = "pdb"
@@ -265,6 +247,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
+
     def __init__(self, atomgroup):
         self.atomgroup = atomgroup
         self.ext = "pdb"

@@ -12,6 +12,8 @@ with warnings.catch_warnings():
 install()
 
 # Register nbextension
+
+
 def _jupyter_nbextension_paths():
     return [{
         'section': 'notebook',
@@ -25,6 +27,7 @@ enable_nglview_js()
 # TODO: do not use import *
 # interface
 from .widget import NGLWidget
+from .base_adaptor import *
 from .adaptor import *
 from .show import *
 from . import datafiles
