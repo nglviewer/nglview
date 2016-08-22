@@ -34,6 +34,7 @@ def _add_repr_method_shortcut(self, other):
             """
             """
             self.add_representation(repr_type=rep[1], selection=selection, **kwargs)
+        func.__doc__ = 'Please see add_representation method'
         return func
 
     def make_func_remove(rep):
@@ -624,6 +625,11 @@ class NGLWidget(DOMWidget):
         >>> w.add_representation('cartoon', selection='protein', color='blue')
         >>> w.add_representation('licorice', selection=[3, 8, 9, 11], color='red')
         >>> w
+
+        Notes
+        -----
+        User can also use shortcut
+        >>> w.add_cartoon(selection) # w.add_representation('cartoon', selection)
         '''
         if repr_type == 'surface':
             if 'useWorker' not in kwargs:
