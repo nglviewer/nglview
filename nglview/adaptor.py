@@ -15,31 +15,19 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
+from .base_adaptor import Structure, Trajectory
 from .utils.py_utils import FileManager
 
 __all__ = [
-    'Structure',
     'FileStructure',
     'TextStructure',
     'RdkitStructure',
     'PdbIdStructure',
-    'Trajectory', 
     'SimpletrajTrajectory',
     'MDTrajTrajectory',
     'PyTrajTrajectory',
     'ParmEdTrajectory',
     'MDAnalysisTrajectory']
-
-class Structure(object):
-
-    def __init__(self):
-        self.ext = "pdb"
-        self.params = {}
-        self.id = str(uuid.uuid4())
-
-    def get_structure_string(self):
-        raise NotImplementedError()
-
 
 class FileStructure(Structure):
 
@@ -92,21 +80,6 @@ class PdbIdStructure(Structure):
     def get_structure_string(self):
         url = "http://www.rcsb.org/pdb/files/" + self.pdbid + ".cif"
         return urlopen(url).read()
-
-
-class Trajectory(object):
-    """abstract base class
-    """
-    def __init__(self):
-        self.id = str(uuid.uuid4())
-        self.shown = True
-
-    def get_coordinates(self, index):
-        raise NotImplementedError()
-
-    @property
-    def n_frames(self):
-        raise NotImplementedError()
 
 
 class SimpletrajTrajectory(Trajectory, Structure):
