@@ -374,7 +374,7 @@ class NGLWidget(DOMWidget):
                                      repr_index=repr_index))
         
     def color_by(self, color_scheme, component=0):
-        '''update color for all representations of givne component
+        '''update color for all representations of given component
 
         Notes
         -----
