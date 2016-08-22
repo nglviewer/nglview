@@ -34,7 +34,14 @@ def _add_repr_method_shortcut(self, other):
             """
             """
             self.add_representation(repr_type=rep[1], selection=selection, **kwargs)
-        func.__doc__ = 'Please see add_representation method'
+        func.__doc__ = """Shortcut for `add_representation` method
+
+        Examples
+        --------
+        >>> view.add_{name}()
+        >>> # is equal to
+        >>> view.add_representation('{name}')
+        """.format(name=rep[0])
         return func
 
     def make_func_remove(rep):
