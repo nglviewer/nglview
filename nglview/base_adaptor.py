@@ -1,10 +1,14 @@
 from __future__ import print_function, absolute_import
 import uuid
 
+"""abstract base class.
+"""
+
 __all__ = ['Structure', 'Trajectory']
 
 class Structure(object):
-
+    """abstract base class
+    """
     def __init__(self):
         self.ext = "pdb"
         self.params = {}
@@ -12,6 +16,7 @@ class Structure(object):
 
     def get_structure_string(self):
         raise NotImplementedError()
+
 
 class Trajectory(object):
     """abstract base class
