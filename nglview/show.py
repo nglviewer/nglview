@@ -1,32 +1,18 @@
 from __future__ import print_function, absolute_import
 
-import os
-import os.path
-import uuid
-import tempfile
-
 try:
     from cStringIO import StringIO
 except ImportError:
     from io import StringIO
 
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
-
 from .widget import NGLWidget
 from . import datafiles
-from .utils.py_utils import FileManager
 
 from .adaptor import (
     Structure,
     FileStructure,
     TextStructure,
-    RdkitStructure,
     PdbIdStructure,
-    Trajectory, 
-    SimpletrajTrajectory,
     MDTrajTrajectory,
     PyTrajTrajectory,
     ParmEdTrajectory,

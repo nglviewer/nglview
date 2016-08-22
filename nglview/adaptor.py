@@ -15,7 +15,6 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
-from . import datafiles
 from .utils.py_utils import FileManager
 
 __all__ = [
