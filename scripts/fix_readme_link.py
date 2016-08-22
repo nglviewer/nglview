@@ -19,7 +19,7 @@ words = ["(nglview.gif)",
          ]
 
 for word in words:
-    if '.gif' in word:
+    if '.gif' in word or '.png' in word:
         new_word = "(" + 'https://github.com/arose/nglview/blob/master/' + word.strip('(').strip(')') + "?raw=true)"
     else:
         new_word = "(" + 'https://github.com/arose/nglview/blob/master/' + word.strip('(')

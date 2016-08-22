@@ -267,7 +267,7 @@ Show GUI
 
 Notes: Unstable feature
 
-.. figure:: https://github.com/arose/nglview/blob/master/examples/images/nglview_gui.png
+.. figure:: https://github.com/arose/nglview/blob/master/examples/images/nglview_gui.png?raw=true
    :alt: 
 
 API doc
