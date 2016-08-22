@@ -22,6 +22,7 @@ def _jupyter_nbextension_paths():
 
 enable_nglview_js()
 
+# TODO: do not use import *
 # interface
 from .widget import NGLWidget
 from .adaptor import *

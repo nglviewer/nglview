@@ -9,7 +9,6 @@ from .widget import NGLWidget
 from . import datafiles
 
 from .adaptor import (
-    Structure,
     FileStructure,
     TextStructure,
     PdbIdStructure,
