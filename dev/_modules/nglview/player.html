@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.player &mdash; NGLView 0.5.2a+284.gd966a0b documentation</title>
+    <title>nglview.player &mdash; NGLView 0.5.2a+180.ga23a187 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.5.2a+284.gd966a0b',
+        VERSION:     '0.5.2a+180.ga23a187',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+284.gd966a0b documentation" href="../../index.html" />
-    <link rel="up" title="nglview" href="../nglview.html" /> 
+    <link rel="top" title="NGLView 0.5.2a+180.ga23a187 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -37,9 +37,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+284.gd966a0b documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="../nglview.html" accesskey="U">nglview</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+180.ga23a187 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -68,9 +67,9 @@
 <span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">CaselessStrEnum</span>
 <span class="kn">from</span> <span class="nn">traitlets</span> <span class="kn">import</span> <span class="n">observe</span><span class="p">,</span> <span class="n">link</span>
 
-<span class="kn">from</span> <span class="nn">.ngl_params</span> <span class="kn">import</span> <span class="n">REPR_NAMES</span>
+<span class="kn">from</span> <span class="nn">.parameters</span> <span class="kn">import</span> <span class="n">REPRESENTATION_NAMES</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">default</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">jsutils</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">js_utils</span>
 <span class="kn">from</span> <span class="nn">.layout</span> <span class="kn">import</span> <span class="p">(</span><span class="n">form_item_layout</span><span class="p">,</span> <span class="n">_relayout</span><span class="p">,</span> <span class="n">_make_autofit</span><span class="p">,</span> <span class="n">_relayout_master</span><span class="p">,</span> <span class="n">_make_delay_tab</span><span class="p">,</span>
         <span class="n">_make_box_layout</span><span class="p">)</span>
 
@@ -220,29 +219,28 @@
 
     <span class="k">def</span> <span class="nf">_make_button_center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Center&#39;</span><span class="p">)</span>
+        <span class="nd">@button.on_click</span>
         <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">center</span><span class="p">()</span>
-        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">button</span>
 
     <span class="k">def</span> <span class="nf">_make_button_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Oceans16&#39;</span><span class="p">)</span>
+        <span class="nd">@button.on_click</span>
         <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
             <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">theme</span>
             <span class="n">display</span><span class="p">(</span><span class="n">theme</span><span class="o">.</span><span class="n">oceans16</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;cleanOutput&#39;</span><span class="p">,</span>
                                     <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
-        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">button</span>
 
     <span class="k">def</span> <span class="nf">_make_button_reset_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">theme</span>
 
         <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Default&#39;</span><span class="p">)</span>
+        <span class="nd">@button.on_click</span>
         <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
             <span class="n">theme</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="n">button</span>
 
     <span class="k">def</span> <span class="nf">_make_preference_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">):</span>
@@ -303,11 +301,11 @@
         <span class="n">reset_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Reset&#39;</span><span class="p">)</span>
         <span class="n">widget_sliders</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">reset_button</span><span class="p">,]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">widget_sliders</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
 
+        <span class="nd">@reset_button.on_click</span>
         <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">reset_button</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_original_stage_parameters</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_full_stage_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_original_stage_parameters</span>
             <span class="n">widget_sliders</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">reset_button</span><span class="p">,]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">make_widget_box</span><span class="p">()</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
-        <span class="n">reset_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_preference_widget</span> <span class="o">=</span> <span class="n">_relayout_master</span><span class="p">(</span><span class="n">widget_sliders</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preference_widget</span>
@@ -315,19 +313,17 @@
     <span class="k">def</span> <span class="nf">_show_download_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># &quot;interactive&quot; does not work for True/False in ipywidgets 4 yet.</span>
         <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Screenshot&#39;</span><span class="p">)</span>
+        <span class="nd">@button.on_click</span>
         <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">download_image</span><span class="p">()</span>
-        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">button</span>
 
     <span class="k">def</span> <span class="nf">_make_button_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">nglview.jsutils</span> <span class="kn">import</span> <span class="n">js_open_url_template</span>
         <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
 
+        <span class="nd">@button.on_click</span>
         <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
-            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">js_open_url_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)))</span>
-
-        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">js_utils</span><span class="o">.</span><span class="n">open_url_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)))</span>
         <span class="k">return</span> <span class="n">button</span>
 
     <span class="k">def</span> <span class="nf">_show_website</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -340,13 +336,13 @@
         <span class="k">return</span> <span class="n">_make_autofit</span><span class="p">(</span><span class="n">HBox</span><span class="p">(</span><span class="n">buttons</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_make_button_qtconsole</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">nglview.jsutils</span> <span class="kn">import</span> <span class="n">js_launch_qtconsole</span>
+        <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">js_utils</span>
         <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;qtconsole&#39;</span><span class="p">,</span>
                 <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;pop up qtconsole&#39;</span><span class="p">)</span>
 
+        <span class="nd">@button.on_click</span>
         <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
-            <span class="n">js_launch_qtconsole</span><span class="p">()</span>
-        <span class="n">button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click</span><span class="p">)</span>
+            <span class="n">js_utils</span><span class="o">.</span><span class="n">launch_qtconsole</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">button</span>
 
     <span class="k">def</span> <span class="nf">_make_text_picked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -373,14 +369,17 @@
         <span class="n">button_center_selection</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Center&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;center selected atoms&#39;</span><span class="p">)</span>
         <span class="n">button_center_selection</span><span class="o">.</span><span class="n">_ngl_name</span> <span class="o">=</span> <span class="s1">&#39;button_center_selection&#39;</span>
 
+        <span class="nd">@button_refresh.on_click</span>
         <span class="k">def</span> <span class="nf">on_click_refresh</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_refresh</span><span class="p">(</span><span class="n">component_slider</span><span class="p">,</span> <span class="n">repr_slider</span><span class="p">)</span>
 
+        <span class="nd">@button_remove.on_click</span>
         <span class="k">def</span> <span class="nf">on_click_remove</span><span class="p">(</span><span class="n">button_remove</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remove_representation</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                                               <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_request_repr_parameters</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                                                 <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="nd">@button_hide.on_click</span>
         <span class="k">def</span> <span class="nf">on_click_hide</span><span class="p">(</span><span class="n">button_hide</span><span class="p">):</span>
             <span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span>
             <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span>
@@ -398,16 +397,10 @@
                                     <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
                                     <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">component</span><span class="p">,</span> <span class="n">repr_index</span><span class="p">,</span> <span class="ow">not</span> <span class="n">hide</span><span class="p">])</span>
 
-        <span class="n">button_refresh</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click_refresh</span><span class="p">)</span>
-        <span class="n">button_hide</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click_hide</span><span class="p">)</span>
-        <span class="n">button_remove</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click_remove</span><span class="p">)</span>
-
+        <span class="nd">@button_center_selection.on_click</span>
         <span class="k">def</span> <span class="nf">on_click_center</span><span class="p">(</span><span class="n">center_selection</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span><span class="n">selection</span><span class="o">=</span><span class="n">repr_selection</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                                    <span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">button_center_selection</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click_center</span><span class="p">)</span>
-
-
 
         <span class="n">bbox</span> <span class="o">=</span> <span class="n">_make_autofit</span><span class="p">(</span><span class="n">HBox</span><span class="p">([</span><span class="n">button_refresh</span><span class="p">,</span> <span class="n">button_center_selection</span><span class="p">,</span>
             <span class="n">button_hide</span><span class="p">,</span> <span class="n">button_remove</span><span class="p">]))</span>
@@ -458,7 +451,7 @@
 
             <span class="n">should_update</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_real_time_update</span>
                              <span class="ow">and</span> <span class="n">old</span> <span class="ow">and</span> <span class="n">name</span>
-                             <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">REPR_NAMES</span>
+                             <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">REPRESENTATION_NAMES</span>
                              <span class="ow">and</span> <span class="n">name</span> <span class="o">!=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;old&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
 
             <span class="k">if</span> <span class="n">should_update</span><span class="p">:</span>
@@ -557,14 +550,13 @@
                     <span class="n">transparent</span><span class="o">=</span><span class="n">checkbox_transparent</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                     <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
 
+        <span class="nd">@button_movie_images.on_click</span>
         <span class="k">def</span> <span class="nf">on_click_images</span><span class="p">(</span><span class="n">button_movie_images</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_text</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">stop_text</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">step_text</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">i</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay_text</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                 <span class="n">download_image</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename_text</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay_text</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-
-        <span class="n">button_movie_images</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_click_images</span><span class="p">)</span>
 
         <span class="n">vbox</span> <span class="o">=</span> <span class="n">VBox</span><span class="p">([</span>
             <span class="n">button_movie_images</span><span class="p">,</span>
@@ -595,7 +587,7 @@
         <span class="k">return</span> <span class="n">resize_notebook_slider</span>
 
     <span class="k">def</span> <span class="nf">_make_add_repr_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_slider</span><span class="p">):</span>
-        <span class="n">dropdown_repr_name</span> <span class="o">=</span> <span class="n">Dropdown</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">REPR_NAMES</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;cartoon&#39;</span><span class="p">)</span>
+        <span class="n">dropdown_repr_name</span> <span class="o">=</span> <span class="n">Dropdown</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">REPRESENTATION_NAMES</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;cartoon&#39;</span><span class="p">)</span>
         <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="n">repr_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Add&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Add representation.</span>
 <span class="s2">        You can also hit Enter in selection box&quot;&quot;&quot;</span><span class="p">)</span>
@@ -619,7 +611,7 @@
         <span class="n">vbox</span> <span class="o">=</span> <span class="n">VBox</span><span class="p">()</span>
         <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">rep_names</span> <span class="o">=</span> <span class="n">REPR_NAMES</span><span class="p">[:]</span>
+        <span class="n">rep_names</span> <span class="o">=</span> <span class="n">REPRESENTATION_NAMES</span><span class="p">[:]</span>
         <span class="n">excluded_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ball+stick&#39;</span><span class="p">,</span> <span class="s1">&#39;distance&#39;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">excluded_names</span><span class="p">:</span>
             <span class="n">rep_names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -647,13 +639,13 @@
 
         <span class="n">button_clear</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;clear&#39;</span><span class="p">,</span> <span class="n">button_style</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">,</span>
                 <span class="n">icon</span><span class="o">=</span><span class="s1">&#39;fa-eraser&#39;</span><span class="p">)</span>
+
+        <span class="nd">@button_clear.on_click</span>
         <span class="k">def</span> <span class="nf">on_clear</span><span class="p">(</span><span class="n">button_clear</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">kid</span> <span class="ow">in</span> <span class="n">children</span><span class="p">:</span>
                 <span class="c1"># unselect</span>
                 <span class="n">kid</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">False</span>
-
-        <span class="n">button_clear</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_clear</span><span class="p">)</span>
 
         <span class="n">vbox</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="n">children</span> <span class="o">+</span> <span class="p">[</span><span class="n">repr_selection</span><span class="p">,</span> <span class="n">button_clear</span><span class="p">]</span>
         <span class="n">_make_autofit</span><span class="p">(</span><span class="n">vbox</span><span class="p">)</span>
@@ -672,50 +664,49 @@
         <span class="k">return</span> <span class="n">repr_choices</span>
 
     <span class="k">def</span> <span class="nf">_make_drag_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">drag_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;widget drag: off&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;dangerous&#39;</span><span class="p">)</span>
+        <span class="n">button_drag</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;widget drag: off&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;dangerous&#39;</span><span class="p">)</span>
         <span class="n">drag_nb</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;notebook drag: off&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;dangerous&#39;</span><span class="p">)</span>
-        <span class="n">reset_nb</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;notebook: reset&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;reset?&#39;</span><span class="p">)</span>
-        <span class="n">dialog_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;dialog&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;make a dialog&#39;</span><span class="p">)</span>
-        <span class="n">split_half_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;split screen&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;try best to make a good layout&#39;</span><span class="p">)</span>
+        <span class="n">button_reset_notebook</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;notebook: reset&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;reset?&#39;</span><span class="p">)</span>
+        <span class="n">button_dialog</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;dialog&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;make a dialog&#39;</span><span class="p">)</span>
+        <span class="n">button_split_half</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;split screen&#39;</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;try best to make a good layout&#39;</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">on_drag</span><span class="p">(</span><span class="n">drag_button</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">drag_button</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s1">&#39;widget drag: off&#39;</span><span class="p">:</span>
+        <span class="nd">@button_drag.on_click</span>
+        <span class="k">def</span> <span class="nf">on_drag</span><span class="p">(</span><span class="n">button_drag</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">button_drag</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s1">&#39;widget drag: off&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_draggable</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
-                <span class="n">drag_button</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;widget drag: on&#39;</span>
+                <span class="n">button_drag</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;widget drag: on&#39;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_draggable</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-                <span class="n">drag_button</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;widget drag: off&#39;</span>
+                <span class="n">button_drag</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;widget drag: off&#39;</span>
 
-        <span class="k">def</span> <span class="nf">on_drag_nb</span><span class="p">(</span><span class="n">drag_button</span><span class="p">):</span>
+        <span class="nd">@drag_nb.on_click</span>
+        <span class="k">def</span> <span class="nf">on_drag_nb</span><span class="p">(</span><span class="n">button_drag</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">drag_nb</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s1">&#39;notebook drag: off&#39;</span><span class="p">:</span>
-                <span class="n">jsutils</span><span class="o">.</span><span class="n">_set_notebook_draggable</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">js_utils</span><span class="o">.</span><span class="n">_set_notebook_draggable</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
                 <span class="n">drag_nb</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;notebook drag: on&#39;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">jsutils</span><span class="o">.</span><span class="n">_set_notebook_draggable</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">js_utils</span><span class="o">.</span><span class="n">_set_notebook_draggable</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
                 <span class="n">drag_nb</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;notebook drag: off&#39;</span>
 
-        <span class="k">def</span> <span class="nf">on_reset</span><span class="p">(</span><span class="n">reset_nb</span><span class="p">):</span>
-            <span class="n">jsutils</span><span class="o">.</span><span class="n">_reset_notebook</span><span class="p">()</span>
+        <span class="nd">@button_reset_notebook.on_click</span>
+        <span class="k">def</span> <span class="nf">on_reset</span><span class="p">(</span><span class="n">button_reset_notebook</span><span class="p">):</span>
+            <span class="n">js_utils</span><span class="o">.</span><span class="n">_reset_notebook</span><span class="p">()</span>
 
-        <span class="k">def</span> <span class="nf">on_dialog</span><span class="p">(</span><span class="n">dialog_button</span><span class="p">):</span>
+        <span class="nd">@button_dialog.on_click</span>
+        <span class="k">def</span> <span class="nf">on_dialog</span><span class="p">(</span><span class="n">button_dialog</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setDialog&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">on_split_half</span><span class="p">(</span><span class="n">dialog_button</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">jsutils</span>
+        <span class="nd">@button_split_half.on_click</span>
+        <span class="k">def</span> <span class="nf">on_split_half</span><span class="p">(</span><span class="n">button_dialog</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">js_utils</span>
             <span class="kn">import</span> <span class="nn">time</span>
-            <span class="n">jsutils</span><span class="o">.</span><span class="n">_move_notebook_to_the_left</span><span class="p">()</span>
-            <span class="n">jsutils</span><span class="o">.</span><span class="n">_set_notebook_width</span><span class="p">(</span><span class="s1">&#39;5%&#39;</span><span class="p">)</span>
+            <span class="n">js_utils</span><span class="o">.</span><span class="n">_move_notebook_to_the_left</span><span class="p">()</span>
+            <span class="n">js_utils</span><span class="o">.</span><span class="n">_set_notebook_width</span><span class="p">(</span><span class="s1">&#39;5%&#39;</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setDialog&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
 
-        <span class="n">drag_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_drag</span><span class="p">)</span>
-        <span class="n">drag_nb</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_drag_nb</span><span class="p">)</span>
-        <span class="n">reset_nb</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_reset</span><span class="p">)</span>
-        <span class="n">dialog_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_dialog</span><span class="p">)</span>
-        <span class="n">split_half_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">on_split_half</span><span class="p">)</span>
-
-        <span class="n">drag_box</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">drag_button</span><span class="p">,</span> <span class="n">drag_nb</span><span class="p">,</span> <span class="n">reset_nb</span><span class="p">,</span>
-                        <span class="n">dialog_button</span><span class="p">,</span> <span class="n">split_half_button</span><span class="p">])</span>
+        <span class="n">drag_box</span> <span class="o">=</span> <span class="n">HBox</span><span class="p">([</span><span class="n">button_drag</span><span class="p">,</span> <span class="n">drag_nb</span><span class="p">,</span> <span class="n">button_reset_notebook</span><span class="p">,</span>
+                        <span class="n">button_dialog</span><span class="p">,</span> <span class="n">button_split_half</span><span class="p">])</span>
         <span class="n">drag_box</span> <span class="o">=</span> <span class="n">_make_autofit</span><span class="p">(</span><span class="n">drag_box</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">drag_box</span>
 
@@ -852,14 +843,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+284.gd966a0b documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="../nglview.html" >nglview</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+180.ga23a187 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 08, 2016.
+      Last updated on Aug 22, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

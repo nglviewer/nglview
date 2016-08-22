@@ -262,6 +262,14 @@ Display more than two widgets
     view1.sync_view()
     view2.sync_view()
 
+Show GUI
+--------
+
+Notes: Unstable feature
+
+.. figure:: ./examples/images/nglview_gui.png
+   :alt: 
+
 API doc
 =======
 
