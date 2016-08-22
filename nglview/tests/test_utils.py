@@ -9,7 +9,8 @@ import gzip
 def test_get_name():
     fn = nglview.datafiles.PDB
     nt.assert_equal(py_utils.get_name(object, dict(name='hello')), 'hello')
-    nt.assert_equal(py_utils.get_name(nglview.FileStructure(fn), dict()), 'nglview.FileStructure')
+    nt.assert_equal(py_utils.get_name(nglview.FileStructure(fn), dict()),
+            'nglview.adaptor.FileStructure')
 
 def test_seq_to_string():
     nt.assert_equal(seq_to_string([1, 2, 3]), '@1,2,3')

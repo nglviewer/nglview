@@ -29,6 +29,7 @@ import parmed as pmd
 from nglview.utils.py_utils import PY2, PY3
 from nglview import js_utils
 from nglview.representation import Representation
+from nglview.utils.py_utils import encode_base64, decode_base64
 
 def default_view():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -105,8 +106,6 @@ def test_API_promise_to_have():
     nv.NGLWidget.set_representations
     nv.NGLWidget.clear
     nv.NGLWidget.center
-
-    nv._get_notebook_info()
 
     # display
     js_utils.clean_error_output()
@@ -239,8 +238,8 @@ def test_encode_and_decode():
     xyz = np.arange(100).astype('f4')
     shape = xyz.shape
 
-    b64_str = nv.encode_base64(xyz)
-    new_xyz = nv.decode_base64(b64_str, dtype='f4', shape=shape)
+    b64_str = encode_base64(xyz)
+    new_xyz = decode_base64(b64_str, dtype='f4', shape=shape)
     aa_eq(xyz, new_xyz) 
 
 def test_coordinates_meta():

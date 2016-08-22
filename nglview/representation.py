@@ -4,7 +4,7 @@ from ipywidgets import DOMWidget, interactive
 from ipywidgets import VBox
 
 # local
-from .colors import COLOR_SCHEMES
+from .color import COLOR_SCHEMES
 from .utils import widget_utils
 from .layout import _relayout_master
 
