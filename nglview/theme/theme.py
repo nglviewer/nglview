@@ -1,7 +1,7 @@
 """highly experimental. Use with your own risk
 
-    from nglview import theme
-    theme.oceans16() # oceans16 https://github.com/dunovank/jupyter-themes
+    >>> from nglview import theme
+    >>> theme.oceans16() # oceans16 https://github.com/dunovank/jupyter-themes
 
 Retart your notebook to reset to default Jupyter theme
 
