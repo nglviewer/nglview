@@ -37,17 +37,16 @@ wraps a trajectory loaded with [MDTraj](http://mdtraj.org/):
 import nglview
 import mdtraj
 traj = mdtraj.load(nglview.datafiles.XTC, top=nglview.datafiles.GRO)
-strucTraj = nglview.MDTrajTrajectory(traj)
-nglview.NGLWidget(strucTraj)
+ngl_traj = nglview.MDTrajTrajectory(traj)
+view = nglview.NGLWidget(ngl_traj)
+view
 ```
 
-The displayed frame can be changed by setting the `frame` property of the
-widget instance `w`:
-
+You can also add more trajectories to the widget
 ```python
-view.frame = 100  # set to frame no 100
+ngl_traj2 = nglview.MDTrajTrajectory(traj2)
+view.add_trajectory(ngl_traj2)
 ```
-
 
 Interface classes
 =================
