@@ -35,6 +35,7 @@ BACKENDS = dict()
 
 class register_backend(object):
     def __init__(self, package_name):
+        # package_name must match exactly to your Python package
         self.package_name = package_name
 
     def __call__(self, cls):
