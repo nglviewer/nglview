@@ -27,8 +27,20 @@ __all__ = [
     'MDTrajTrajectory',
     'PyTrajTrajectory',
     'ParmEdTrajectory',
-    'MDAnalysisTrajectory']
+    'MDAnalysisTrajectory',
+    'register_backend',
+    'BACKENDS']
 
+BACKENDS = dict()
+
+class register_backend(object):
+    def __init__(self, package_name):
+        # package_name must match exactly to your Python package
+        self.package_name = package_name
+
+    def __call__(self, cls):
+        BACKENDS[self.package_name] = cls
+        return cls
 
 class FileStructure(Structure):
 
@@ -86,6 +98,7 @@ class PdbIdStructure(Structure):
         return urlopen(url).read()
 
 
+@register_backend('simpletraj')
 class SimpletrajTrajectory(Trajectory, Structure):
     '''simpletraj adaptor.
 
@@ -130,6 +143,7 @@ class SimpletrajTrajectory(Trajectory, Structure):
         return traj.numframes
 
 
+@register_backend('mdtraj')
 class MDTrajTrajectory(Trajectory, Structure):
     '''mdtraj adaptor.
 
@@ -164,6 +178,7 @@ class MDTrajTrajectory(Trajectory, Structure):
         return pdb_string
 
 
+@register_backend('pytraj')
 class PyTrajTrajectory(Trajectory, Structure):
     '''PyTraj adaptor.
 
@@ -198,6 +213,7 @@ class PyTrajTrajectory(Trajectory, Structure):
         return pdb_string
 
 
+@register_backend('parmed')
 class ParmEdTrajectory(Trajectory, Structure):
     '''ParmEd adaptor.
     '''
@@ -232,6 +248,7 @@ class ParmEdTrajectory(Trajectory, Structure):
         return pdb_string
 
 
+@register_backend('MDAnalysis')
 class MDAnalysisTrajectory(Trajectory, Structure):
     '''MDAnalysis adaptor.
 

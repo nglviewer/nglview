@@ -20,9 +20,11 @@ from .representation import Representation
 
 from .adaptor import (Trajectory, PyTrajTrajectory,
         MDTrajTrajectory, MDAnalysisTrajectory, ParmEdTrajectory)
+from .adaptor import BACKENDS
 from .parameters import REPRESENTATION_NAME_PAIRS
 
 __all__ = ['NGLWidget', 'ComponentViewer']
+
 
 def _add_repr_method_shortcut(self, other):
     from types import MethodType
@@ -69,7 +71,6 @@ def _add_repr_method_shortcut(self, other):
             func= make_func(rep)
             fn = '_'.join((root_fn, rep[0]))
             setattr(self, fn, MethodType(func, other))
-
 
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
@@ -888,10 +889,7 @@ class NGLWidget(DOMWidget):
         >>> traj2 = pt.datafiles.load_tz2()
         >>> view.add_trajectory(traj2)
         '''
-        backends = dict(pytraj=PyTrajTrajectory,
-                        mdtraj=MDTrajTrajectory,
-                        MDAnalysis=MDAnalysisTrajectory,
-                        parmed=ParmEdTrajectory)
+        backends = BACKENDS
 
         package_name = trajectory.__module__.split('.')[0]
 
