@@ -209,8 +209,8 @@ view.add_trajectory(traj)
 # or derived class of `nglview.Trajectory`
 
 # change representation
-view.trajectory_0.add_cartoon(...)
-view.trajectory_1.add_licorice(...)
+view.trajectory_0.add_cartoon(...) # equal to view.add_cartoon(component=0)
+view.trajectory_1.add_licorice(...) # equal to view.add_licorice(component=1)
 ```
 
 Add extra component
