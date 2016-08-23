@@ -9,6 +9,7 @@ import os
 import nose.tools as nt
 import gzip
 import unittest
+import pytest
 from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
 import numpy as np
 
@@ -201,6 +202,18 @@ def test_API_promise_to_have():
     view.detach(split=False)
     view.detach(split=True)
 
+def test_base_adaptor():
+    # abstract base class
+    def func_0():
+        nv.Structure().get_structure_string()
+
+    def func_1():
+        nv.Trajectory().get_coordinates(1)
+        nv.Trajectory().n_frames
+
+    pytest.raises(NotImplementedError, func_0)
+    pytest.raises(NotImplementedError, func_1)
+
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     view = nv.show_pytraj(traj)
@@ -247,12 +260,10 @@ def test_representations():
         # in real application, we are not allowed to assign values
         pass
 
+    view._repr_dict = REPR_DICT
     representation_widget = Representation(view, 0, 0)
-    try:
-        representation_widget._display()
-    except TraitError as e:
-        print("TraitError")
-        print(e)
+    representation_widget._display()
+    representation_widget._on_parameters_changed(change=dict(new=dict()))
                     
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -305,6 +316,7 @@ def test_show_simpletraj():
     traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
     view = nv.show_simpletraj(traj)
     view
+    view.frame = 3
 
 def test_show_mdtraj():
     import mdtraj as md
@@ -324,6 +336,10 @@ def test_show_parmed():
     fn = nv.datafiles.PDB 
     parm = pmd.load_file(fn)
     view = nv.show_parmed(parm)
+
+    ngl_traj = nv.ParmEdTrajectory(parm)
+    ngl_traj.only_save_1st_model = False
+    ngl_traj.get_structure_string()
 
 def test_encode_and_decode():
     xyz = np.arange(100).astype('f4')
@@ -597,3 +613,6 @@ def test_interpolate():
     traj = pt.datafiles.load_tz2()
     ngl_traj = nv.PyTrajTrajectory(traj)
     interpolate.linear(0, 0.4, ngl_traj, step=1)
+
+def dummy_test_to_increase_coverage():
+    nv.__version__
