@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.5.2a+184.g7991b99 documentation</title>
+    <title>Welcome to NGLView’s documentation! &mdash; NGLView 0.5.2a+366.g8d5d3f4 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.2a+184.g7991b99',
+        VERSION:     '0.5.2a+366.g8d5d3f4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+184.g7991b99 documentation" href="index.html" /> 
+    <link rel="top" title="NGLView 0.5.2a+366.g8d5d3f4 documentation" href="index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 0.5.2a+184.g7991b99 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 0.5.2a+366.g8d5d3f4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -294,7 +294,7 @@ document.addEventListener( "DOMContentLoaded", function(){
 <dl class="method">
 <dt id="nglview.NGLWidget.color_by">
 <code class="descname">color_by</code><span class="sig-paren">(</span><em>color_scheme</em>, <em>component=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/widget.html#NGLWidget.color_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.NGLWidget.color_by" title="Permalink to this definition">¶</a></dt>
-<dd><p>update color for all representations of givne component</p>
+<dd><p>update color for all representations of given component</p>
 <p>Unstable feature</p>
 <p>color_scheme : str
 component : int, default 0</p>
@@ -639,7 +639,7 @@ MDAnalysis, ...)</p>
 <dl class="method">
 <dt>
 <code class="descname">color_by</code><span class="sig-paren">(</span><em>color_scheme</em>, <em>component=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/widget.html#NGLWidget.color_by"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>update color for all representations of givne component</p>
+<dd><p>update color for all representations of given component</p>
 <p>Unstable feature</p>
 <p>color_scheme : str
 component : int, default 0</p>
@@ -862,20 +862,9 @@ MDAnalysis, ...)</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="nglview.Structure">
-<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">Structure</code><a class="reference internal" href="_modules/nglview/adaptor.html#Structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Structure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<dl class="method">
-<dt id="nglview.Structure.get_structure_string">
-<code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#Structure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Structure.get_structure_string" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="nglview.FileStructure">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">FileStructure</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#FileStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.FileStructure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Structure" title="nglview.adaptor.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Structure</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Structure</span></code></p>
 <dl class="method">
 <dt id="nglview.FileStructure.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#FileStructure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.FileStructure.get_structure_string" title="Permalink to this definition">¶</a></dt>
@@ -886,7 +875,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.TextStructure">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">TextStructure</code><span class="sig-paren">(</span><em>text</em>, <em>ext='pdb'</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#TextStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.TextStructure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Structure" title="nglview.adaptor.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Structure</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Structure</span></code></p>
 <dl class="method">
 <dt id="nglview.TextStructure.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#TextStructure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.TextStructure.get_structure_string" title="Permalink to this definition">¶</a></dt>
@@ -897,7 +886,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.RdkitStructure">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">RdkitStructure</code><span class="sig-paren">(</span><em>rdkit_mol</em>, <em>ext='pdb'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#RdkitStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.RdkitStructure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Structure" title="nglview.adaptor.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Structure</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Structure</span></code></p>
 <dl class="method">
 <dt id="nglview.RdkitStructure.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#RdkitStructure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.RdkitStructure.get_structure_string" title="Permalink to this definition">¶</a></dt>
@@ -908,7 +897,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.PdbIdStructure">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">PdbIdStructure</code><span class="sig-paren">(</span><em>pdbid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#PdbIdStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PdbIdStructure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Structure" title="nglview.adaptor.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Structure</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Structure</span></code></p>
 <dl class="method">
 <dt id="nglview.PdbIdStructure.get_structure_string">
 <code class="descname">get_structure_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#PdbIdStructure.get_structure_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PdbIdStructure.get_structure_string" title="Permalink to this definition">¶</a></dt>
@@ -917,25 +906,9 @@ MDAnalysis, ...)</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="nglview.Trajectory">
-<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">Trajectory</code><a class="reference internal" href="_modules/nglview/adaptor.html#Trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Trajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<dl class="method">
-<dt id="nglview.Trajectory.get_coordinates">
-<code class="descname">get_coordinates</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#Trajectory.get_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.Trajectory.get_coordinates" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="nglview.Trajectory.n_frames">
-<code class="descname">n_frames</code><a class="headerlink" href="#nglview.Trajectory.n_frames" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="nglview.SimpletrajTrajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">SimpletrajTrajectory</code><span class="sig-paren">(</span><em>path</em>, <em>structure_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#SimpletrajTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.SimpletrajTrajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Trajectory" title="nglview.adaptor.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Trajectory</span></code></a>, <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Structure" title="nglview.adaptor.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Structure</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Trajectory</span></code>, <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Structure</span></code></p>
 <p>simpletraj adaptor.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">SimpletrajTrajectory</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">)</span>
@@ -963,7 +936,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.MDTrajTrajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">MDTrajTrajectory</code><span class="sig-paren">(</span><em>trajectory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#MDTrajTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDTrajTrajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Trajectory" title="nglview.adaptor.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Trajectory</span></code></a>, <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Structure" title="nglview.adaptor.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Structure</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Trajectory</span></code>, <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Structure</span></code></p>
 <p>mdtraj adaptor.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mdtraj</span> <span class="k">as</span> <span class="nn">md</span>
@@ -993,7 +966,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.PyTrajTrajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">PyTrajTrajectory</code><span class="sig-paren">(</span><em>trajectory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#PyTrajTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.PyTrajTrajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Trajectory" title="nglview.adaptor.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Trajectory</span></code></a>, <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Structure" title="nglview.adaptor.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Structure</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Trajectory</span></code>, <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Structure</span></code></p>
 <p>PyTraj adaptor.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="k">as</span> <span class="nn">pt</span>
@@ -1023,7 +996,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.ParmEdTrajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">ParmEdTrajectory</code><span class="sig-paren">(</span><em>trajectory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#ParmEdTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.ParmEdTrajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Trajectory" title="nglview.adaptor.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Trajectory</span></code></a>, <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Structure" title="nglview.adaptor.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Structure</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Trajectory</span></code>, <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Structure</span></code></p>
 <p>ParmEd adaptor.</p>
 <dl class="method">
 <dt id="nglview.ParmEdTrajectory.get_coordinates">
@@ -1045,7 +1018,7 @@ MDAnalysis, ...)</p>
 <dl class="class">
 <dt id="nglview.MDAnalysisTrajectory">
 <em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">MDAnalysisTrajectory</code><span class="sig-paren">(</span><em>atomgroup</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#MDAnalysisTrajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.MDAnalysisTrajectory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Trajectory" title="nglview.adaptor.Trajectory"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Trajectory</span></code></a>, <a class="reference internal" href="_api/nglview.adaptor.html#nglview.adaptor.Structure" title="nglview.adaptor.Structure"><code class="xref py py-class docutils literal"><span class="pre">nglview.adaptor.Structure</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Trajectory</span></code>, <code class="xref py py-class docutils literal"><span class="pre">nglview.base_adaptor.Structure</span></code></p>
 <p>MDAnalysis adaptor.</p>
 <p>Can take either a Universe or AtomGroup.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
@@ -1072,6 +1045,12 @@ MDAnalysis, ...)</p>
 <code class="descname">n_frames</code><a class="headerlink" href="#nglview.MDAnalysisTrajectory.n_frames" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="nglview.register_backend">
+<em class="property">class </em><code class="descclassname">nglview.</code><code class="descname">register_backend</code><span class="sig-paren">(</span><em>package_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/adaptor.html#register_backend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.register_backend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1258,12 +1237,12 @@ gro, mol2, sdf.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 0.5.2a+184.g7991b99 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 0.5.2a+366.g8d5d3f4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 22, 2016.
+      Last updated on Aug 23, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

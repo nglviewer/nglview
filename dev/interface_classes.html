@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Structures &mdash; NGLView 0.5.2a+184.g7991b99 documentation</title>
+    <title>Extend NGLView classes &mdash; NGLView 0.5.2a+366.g8d5d3f4 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.2a+184.g7991b99',
+        VERSION:     '0.5.2a+366.g8d5d3f4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+184.g7991b99 documentation" href="index.html" /> 
+    <link rel="top" title="NGLView 0.5.2a+366.g8d5d3f4 documentation" href="index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 0.5.2a+184.g7991b99 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 0.5.2a+366.g8d5d3f4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -45,9 +45,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <p>Extend NGLView classes</p>
-<div class="section" id="structures">
-<h1>Structures<a class="headerlink" href="#structures" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="extend-nglview-classes">
+<h1>Extend NGLView classes<a class="headerlink" href="#extend-nglview-classes" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="#structures">Structures</a> | <a class="reference external" href="#trajectories">Trajectories</a> |
+<a class="reference external" href="#interface-classes">Interface class</a> | <a class="reference external" href="#register-your-backend">Register your
+backend</a> Structures ==========</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
 <span class="n">struc</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">PdbIdStructure</span><span class="p">(</span><span class="s2">&quot;3pqr&quot;</span><span class="p">)</span>     <span class="c1"># load file from RCSB PDB</span>
 <span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">struc</span><span class="p">)</span>            <span class="c1"># create widget</span>
@@ -75,13 +77,14 @@ object as the first argument.</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
 <span class="kn">import</span> <span class="nn">mdtraj</span>
 <span class="n">traj</span> <span class="o">=</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nglview</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">nglview</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">GRO</span><span class="p">)</span>
-<span class="n">strucTraj</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">MDTrajTrajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
-<span class="n">nglview</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">strucTraj</span><span class="p">)</span>
+<span class="n">ngl_traj</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">MDTrajTrajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+<span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">(</span><span class="n">ngl_traj</span><span class="p">)</span>
+<span class="n">view</span>
 </pre></div>
 </div>
-<p>The displayed frame can be changed by setting the <code class="docutils literal"><span class="pre">frame</span></code> property of
-the widget instance <code class="docutils literal"><span class="pre">w</span></code>:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># set to frame no 100</span>
+<p>You can also add more trajectories to the widget</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">ngl_traj2</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">MDTrajTrajectory</span><span class="p">(</span><span class="n">traj2</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">ngl_traj2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -130,6 +133,24 @@ single class.</p>
 </div>
 </div>
 </div>
+<div class="section" id="register-your-backend">
+<h1>Register your backend<a class="headerlink" href="#register-your-backend" title="Permalink to this headline">¶</a></h1>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nglview</span> <span class="k">import</span> <span class="n">register_backend</span>
+
+<span class="nd">@register_backend</span><span class="p">(</span><span class="n">your_package_name</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">NewTrajectoryClass</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">your_traj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># define your own implementation here</span>
+    <span class="o">...</span>
+
+<span class="c1"># if you already register your class, you can add `your_traj` directly to `view`</span>
+<span class="c1"># without creating `NewTrajectoryClass` instance.</span>
+<span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">your_traj</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Further reading:
+<a class="reference external" href="https://github.com/arose/nglview/blob/master/nglview/adaptor.py">nglview/adaptor.py</a></p>
+</div>
 
 
           </div>
@@ -139,7 +160,7 @@ single class.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Structures</a></li>
+<li><a class="reference internal" href="#">Extend NGLView classes</a></li>
 <li><a class="reference internal" href="#trajectories">Trajectories</a></li>
 <li><a class="reference internal" href="#interface-classes">Interface classes</a><ul>
 <li><a class="reference internal" href="#structure">Structure</a></li>
@@ -147,6 +168,7 @@ single class.</p>
 <li><a class="reference internal" href="#combined">Combined</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#register-your-backend">Register your backend</a></li>
 </ul>
 
   <div role="note" aria-label="source link">
@@ -179,12 +201,12 @@ single class.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 0.5.2a+184.g7991b99 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 0.5.2a+366.g8d5d3f4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 22, 2016.
+      Last updated on Aug 23, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

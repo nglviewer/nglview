@@ -1,7 +1,9 @@
 Extend NGLView classes
+======================
 
-Structures
-==========
+`Structures <#structures>`__ \| `Trajectories <#trajectories>`__ \|
+`Interface class <#interface-classes>`__ \| `Register your
+backend <#register-your-backend>`__ Structures ==========
 
 .. code:: python
 
@@ -37,15 +39,16 @@ Combined ``Structure``/``Trajectory`` object utilizing
     import nglview
     import mdtraj
     traj = mdtraj.load(nglview.datafiles.XTC, top=nglview.datafiles.GRO)
-    strucTraj = nglview.MDTrajTrajectory(traj)
-    nglview.NGLWidget(strucTraj)
+    ngl_traj = nglview.MDTrajTrajectory(traj)
+    view = nglview.NGLWidget(ngl_traj)
+    view
 
-The displayed frame can be changed by setting the ``frame`` property of
-the widget instance ``w``:
+You can also add more trajectories to the widget
 
 .. code:: python
 
-    view.frame = 100  # set to frame no 100
+    ngl_traj2 = nglview.MDTrajTrajectory(traj2)
+    view.add_trajectory(ngl_traj2)
 
 Interface classes
 =================
@@ -96,3 +99,22 @@ Combined
         def n_frames(self):
             # return total frames
 
+Register your backend
+=====================
+
+.. code:: python
+
+    from nglview import register_backend
+
+    @register_backend(your_package_name)
+    class NewTrajectoryClass:
+        def __init__(your_traj, *args, **kwargs):
+            # define your own implementation here
+        ...
+
+    # if you already register your class, you can add `your_traj` directly to `view`
+    # without creating `NewTrajectoryClass` instance.
+    view.add_trajectory(your_traj)
+
+Further reading:
+`nglview/adaptor.py <https://github.com/arose/nglview/blob/master/nglview/adaptor.py>`__

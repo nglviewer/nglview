@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Table of contents &mdash; NGLView 0.5.2a+184.g7991b99 documentation</title>
+    <title>Table of contents &mdash; NGLView 0.5.2a+366.g8d5d3f4 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.2a+184.g7991b99',
+        VERSION:     '0.5.2a+366.g8d5d3f4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+184.g7991b99 documentation" href="#" /> 
+    <link rel="top" title="NGLView 0.5.2a+366.g8d5d3f4 documentation" href="#" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+184.g7991b99 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+366.g8d5d3f4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -45,7 +45,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <p><a class="reference external" href="http://mybinder.org/repo/hainm/nglview-notebooks"><img alt="Binder" src="http://mybinder.org/assets/images/logo.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="http://bioconda.github.io"><img alt="bioconda-badge" src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square" /></a></p>
+  <p><a class="reference external" href="#installation">Installation</a> | <a class="reference external" href="#example">Example</a> |
+<a class="reference external" href="#usage">Usage</a> | <a class="reference external" href="#command-line">Command line</a> | <a class="reference external" href="#api-doc">API
+doc</a> | <a class="reference external" href="interface_classes.html">Interface classes</a> |
+<a class="reference external" href="#website">Website</a></p>
+<p><a class="reference external" href="http://mybinder.org/repo/hainm/nglview-notebooks"><img alt="Binder" src="http://mybinder.org/assets/images/logo.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="http://bioconda.github.io"><img alt="bioconda-badge" src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square" /></a></p>
 <p>An <a class="reference external" href="http://jupyter.org/">IPython/Jupyter</a> widget to interactively
 view molecular structures and trajectories. Utilizes the embeddable <a class="reference external" href="https://github.com/arose/ngl">NGL
 Viewer</a> for rendering. Support for
@@ -270,19 +274,21 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 <div class="section" id="trajectory">
 <h2>Trajectory<a class="headerlink" href="#trajectory" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># adding new one</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># adding new trajectory</span>
 <span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+<span class="c1"># traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`</span>
+<span class="c1"># or derived class of `nglview.Trajectory`</span>
 
-<span class="c1"># traj could be `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`</span>
 <span class="c1"># change representation</span>
-<span class="n">view</span><span class="o">.</span><span class="n">trajectory_0</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">view</span><span class="o">.</span><span class="n">trajectory_1</span><span class="o">.</span><span class="n">add_licorice</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">trajectory_0</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1"># equal to view.add_cartoon(component=0)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">trajectory_1</span><span class="o">.</span><span class="n">add_licorice</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1"># equal to view.add_licorice(component=1)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="add-extra-component">
 <h2>Add extra component<a class="headerlink" href="#add-extra-component" title="Permalink to this headline">¶</a></h2>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)</span>
+<span class="c1"># Or adding derived class of `nglview.Structure`</span>
 <span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="s1">&#39;my.ccp4&#39;</span><span class="p">)</span>
 
 <span class="c1"># NOTE: Trajectory is a special case of component.</span>
@@ -304,7 +310,8 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 <div class="section" id="show-gui">
 <h2>Show GUI<a class="headerlink" href="#show-gui" title="Permalink to this headline">¶</a></h2>
-<p>Notes: Unstable feature</p>
+<p>Notes: Unstable feature. <a class="reference external" href="https://github.com/arose/nglview/blob/master/examples/README.md#unstable-features">See
+also</a></p>
 <div class="figure">
 <img alt="" src="https://github.com/arose/nglview/blob/master/examples/images/nglview_gui.png?raw=true" />
 </div>
@@ -323,6 +330,9 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 
 <span class="c1"># open notebook, load `my.pdb` to pytraj&#39;s trajectory then display `view`</span>
 <span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">pdb</span>
+
+<span class="c1"># load density data</span>
+<span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">ccp4</span>
 
 <span class="c1"># open notebook, create trajectory with given topology `my.parm7` and trajecotry file `traj.nc`,</span>
 <span class="c1"># then display `view`</span>
@@ -458,12 +468,12 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+184.g7991b99 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+366.g8d5d3f4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 22, 2016.
+      Last updated on Aug 23, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

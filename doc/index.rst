@@ -1,3 +1,8 @@
+`Installation <#installation>`__ \| `Example <#example>`__ \|
+`Usage <#usage>`__ \| `Command line <#command-line>`__ \| `API
+doc <#api-doc>`__ \| `Interface classes <interface_classes.html>`__ \|
+`Website <#website>`__
+
 |Binder| |DOI| |Build Status| |bioconda-badge|
 
 An `IPython/Jupyter <http://jupyter.org/>`__ widget to interactively
@@ -230,13 +235,14 @@ Trajectory
 
 .. code:: python
 
-    # adding new one
+    # adding new trajectory
     view.add_trajectory(traj)
+    # traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
+    # or derived class of `nglview.Trajectory`
 
-    # traj could be `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
     # change representation
-    view.trajectory_0.add_cartoon(...)
-    view.trajectory_1.add_licorice(...)
+    view.trajectory_0.add_cartoon(...) # equal to view.add_cartoon(component=0)
+    view.trajectory_1.add_licorice(...) # equal to view.add_licorice(component=1)
 
 Add extra component
 -------------------
@@ -244,6 +250,7 @@ Add extra component
 .. code:: python
 
     # Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)
+    # Or adding derived class of `nglview.Structure`
     view.add_component('my.ccp4')
 
     # NOTE: Trajectory is a special case of component.
@@ -265,7 +272,8 @@ Display more than two widgets
 Show GUI
 --------
 
-Notes: Unstable feature
+Notes: Unstable feature. `See
+also <https://github.com/arose/nglview/blob/master/examples/README.md#unstable-features>`__
 
 .. figure:: https://github.com/arose/nglview/blob/master/examples/images/nglview_gui.png?raw=true
    :alt: 
@@ -285,6 +293,9 @@ Command line
 
     # open notebook, load `my.pdb` to pytraj's trajectory then display `view`
     nglview my.pdb
+
+    # load density data
+    nglview my.ccp4
 
     # open notebook, create trajectory with given topology `my.parm7` and trajecotry file `traj.nc`,
     # then display `view`

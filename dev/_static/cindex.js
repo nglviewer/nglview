@@ -39,7 +39,7 @@ $(function (){
     var x = [];
     x.push(['Classes','dl.class > dt']);
     x.push(['Functions','dl.function > dt']);
-    x.push(['Variables','dl.data > dt']);
+    //x.push(['Variables','dl.data > dt']);
     
     x.forEach(function (e){
         var l = createList(e[1]);
