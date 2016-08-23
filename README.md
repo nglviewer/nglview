@@ -203,10 +203,11 @@ Trajectory
 ----------
 
 ```python
-# adding new one
+# adding new trajectory
 view.add_trajectory(traj)
+# traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
+# or derived class of `nglview.Trajectory`
 
-# traj could be `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
 # change representation
 view.trajectory_0.add_cartoon(...)
 view.trajectory_1.add_licorice(...)
@@ -217,6 +218,7 @@ Add extra component
 
 ```python
 # Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)
+# Or adding derived class of `nglview.Structure`
 view.add_component('my.ccp4')
 
 # NOTE: Trajectory is a special case of component.
