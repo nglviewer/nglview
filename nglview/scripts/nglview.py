@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 from __future__ import absolute_import
 import os, sys, argparse, json
 import subprocess
@@ -23,14 +24,11 @@ view
 """.strip()
 
 def _is_density_data(filename):
-    filename = filename.lower()
-    return (filename.endswith('.dx') or
-            filename.endswith('.ccp4') or
-            filename.endswith('.mrc') or
-            filename.endswith('.map') or
-            filename.endswith('.dxbin') or
-            filename.endswith('.cube'))
+    from nglview.utils import FileManager
 
+    fm = FileManager(filename)
+
+    return fm.ext.lower() in ['dx', 'ccp4', 'mrc', 'map', 'dxbin', 'cube']
 
 notebook_dict = {
  "cells": [
