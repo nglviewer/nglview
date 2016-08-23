@@ -1,6 +1,6 @@
 
-Extend NGLView classes
-
+# Extend NGLView classes
+[Structures](#structures) | [Trajectories](#trajectories) | [Interface class](#interface-classes) | [Register your backend](#register-your-backend)
 Structures
 ==========
 
