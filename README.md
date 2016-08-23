@@ -259,6 +259,9 @@ Command line
 # open notebook, load `my.pdb` to pytraj's trajectory then display `view`
 nglview my.pdb
 
+# load density data
+nglview my.ccp4
+
 # open notebook, create trajectory with given topology `my.parm7` and trajecotry file `traj.nc`,
 # then display `view`
 nglview my.parm7 -c traj.nc
