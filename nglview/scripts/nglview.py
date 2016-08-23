@@ -172,14 +172,16 @@ def main(notebook_dict=notebook_dict):
             pycontent = open(parm).read().strip()
             notebook_dict['cells'][0]['source'] = pycontent
             nb_json = json.dumps(notebook_dict)
+        elif parm == 'demo':
+            notebook_dict['cells'][0]['source'] = demo_source
+            nb_json = json.dumps(notebook_dict)
+            nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
         elif _is_density_data(parm):
             notebook_dict['cells'][0]['source'] = density_source.replace('filename', parm)
             nb_json = json.dumps(notebook_dict)
         else:
-            if parm == 'demo':
-                notebook_dict['cells'][0]['source'] = demo_source
-            nb_json = json.dumps(notebook_dict)
-            nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
+            pass
+
         nb_json = nb_json.replace('"null"', 'null')
 
         with open(notebook_name, 'w') as fh:
