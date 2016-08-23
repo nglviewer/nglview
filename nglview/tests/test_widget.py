@@ -30,6 +30,7 @@ from nglview.utils.py_utils import PY2, PY3
 from nglview import js_utils
 from nglview.representation import Representation
 from nglview.utils.py_utils import encode_base64, decode_base64
+from nglview import interpolate
 
 # local
 from utils import get_fn
@@ -114,6 +115,33 @@ def test_API_promise_to_have():
     js_utils.clean_error_output()
     display.display(view.player.repr_widget)
     view.player._display()
+
+    # show
+    nv.show_pdbid('1tsu')
+    nv.show_url('https://dummy.pdb')
+    # other backends will be tested in other sections
+
+    # constructor
+    ngl_traj = nv.PyTrajTrajectory(pt.datafiles.load_ala3())
+    nv.NGLWidget(ngl_traj, parameters=dict(background_color='black'))
+    nv.NGLWidget(ngl_traj, representations=[dict(type='cartoon')])
+
+    view.parameters
+    view.camera
+    view.camera = 'perspective'
+    view._request_stage_parameters()
+    # dummy
+    class DummWidget():
+        value = ''
+
+    view.player.picked_widget = DummWidget()
+    view._on_picked(change=dict(new=''))
+
+    view._update_background_color(change=dict(new='blue'))
+    view.on_update_dragged_file(change=dict(new=2, old=1))
+    view.on_update_dragged_file(change=dict(new=1, old=1))
+    view._handle_n_components_changed(change=dict(new=2, old=1))
+    view._handle_n_components_changed(change=dict(new=1, old=1))
 
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -393,6 +421,42 @@ def test_player_simple():
     view = nv.show_pytraj(traj)
     nt.assert_false(view.player.sync_frame)
 
+    # dummy
+    component_slider = ipywidgets.IntSlider()
+    repr_slider = ipywidgets.IntSlider()
+
+    # dummy test
+    player = nv.player.TrajectoryPlayer(view)
+    player.smooth()
+    player.camera = 'perspective'
+    player.camera = 'orthographic'
+    player.frame
+    player.frame = 10 
+    player.count
+    player.sync_frame = False
+    player.parameters = dict(step=2)
+    player._display()
+    player._make_button_center()
+    player._make_button_theme()
+    player._make_button_reset_theme()
+    player._make_preference_widget()
+    player._show_download_image()
+    player._make_button_url('dummy_url', description='dummy_url')
+    player._show_website()
+    player._make_button_qtconsole()
+    player._make_text_picked()
+    player._refresh(component_slider, repr_slider)
+    player._make_repr_widget()
+    player._make_resize_notebook_slider()
+    player._make_button_export_image()
+    player._make_repr_playground()
+    player._make_drag_widget()
+    player._make_spin_box()
+    player._make_picked_widget()
+    player._make_export_image_widget()
+    player._make_theme_box()
+    player._make_gen_box()
+
 def test_player_link_to_ipywidgets():
     traj = pt.datafiles.load_tz2()
     view = nv.show_pytraj(traj)
@@ -461,3 +525,9 @@ def test_player_click_tab():
             nt.assert_true(isinstance(child, ipywidgets.Box))
         except TraitError:
             pass
+
+def test_interpolate():
+    # dummy test
+    traj = pt.datafiles.load_tz2()
+    ngl_traj = nv.PyTrajTrajectory(traj)
+    interpolate.linear(0, 0.4, ngl_traj, step=1)

@@ -149,4 +149,11 @@ def test_js_utils():
     js_utils.launch_qtconsole()
     js_utils.clean_empty_output_area()
     js_utils.clean_error_output()
-
+    js_utils._set_notebook_width()
+    js_utils._set_notebook_draggable()
+    js_utils._set_ipython_cell()
+    js_utils.ngl_demo()
+    js_utils.init_funcs()
+    js_utils._move_notebook_to_the_right()
+    js_utils._move_notebook_to_the_left()
+    js_utils._reset_notebook()
