@@ -103,7 +103,7 @@ Register your backend
 ```python
 from nglview import register_backend
 
-@register_backend
+@register_backend(your_package_name)
 class NewTrajectoryClass:
     def __init__(your_traj, *args, **kwargs):
         # define your own implementation here
