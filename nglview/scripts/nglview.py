@@ -209,7 +209,8 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
         print('NOTE: make sure to open {0} in your local machine\n'.format(notebook_name))
 
     if not args.disable_autorun:
-        install_nbextension(jupyter=args.jexe)
+        if not args.test:
+            install_nbextension(jupyter=args.jexe)
     else:
         try:
             disable_extension(jupyter=args.jexe)

@@ -31,6 +31,9 @@ from nglview import js_utils
 from nglview.representation import Representation
 from nglview.utils.py_utils import encode_base64, decode_base64
 
+# local
+from utils import get_fn
+
 def default_view():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     return nv.show_pytraj(traj)
@@ -134,9 +137,7 @@ def test_load_data():
     view._load_data(t0)
 
     # load current folder
-    # if run nosetests in nglview root folder, the path is not correct
-    # turn of for now
-    # view._load_data('data/tz2.pdb')
+    view._load_data(get_fn('tz2.pdb'))
 
 def test_representations():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -262,13 +263,13 @@ def test_coordinates_meta():
         nt.assert_equal(view._trajlist[0].n_frames, N_FRAMES)
 
 def test_structure_file():
-    for fn in ['data/tz2.pdb', nv.datafiles.GRO]:
+    for fn in [get_fn('tz2.pdb'), nv.datafiles.GRO]:
         content = open(fn, 'rb').read()
         fs1 = nv.FileStructure(fn)
         nt.assert_equal(content, fs1.get_structure_string()) 
     
     # gz
-    fn = 'data/tz2_2.pdb.gz'
+    fn = get_fn('tz2_2.pdb.gz')
     fs2 = nv.FileStructure(fn)
     content = gzip.open(fn).read()
     nt.assert_equal(content, fs2.get_structure_string()) 
@@ -281,8 +282,8 @@ def test_camelize_parameters():
 def test_component_for_duck_typing():
     view = NGLWidget()
     traj = pt.load(nv.datafiles.PDB)
-    view.add_component('data/tz2.pdb')
-    view.add_component('data/tz2_2.pdb.gz')
+    view.add_component(get_fn('tz2.pdb'))
+    view.add_component(get_fn('tz2_2.pdb.gz'))
     view.add_trajectory(nv.PyTrajTrajectory(traj))
     
     c0 = view[0]
@@ -380,7 +381,7 @@ def test_existing_js_files():
     nt.assert_equal(len(mapfiles), 1)
 
 def test_add_struture_then_trajectory():
-    view = nv.show_structure_file('data/tz2.pdb')
+    view = nv.show_structure_file(get_fn('tz2.pdb'))
     traj = pt.datafiles.load_trpcage()
     view.add_trajectory(traj)
     view.frame = 3
