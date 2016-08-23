@@ -14,6 +14,24 @@ view = nv.demo(gui=True, theme='dark')
 view
 """.strip()
 
+density_source = """
+import nglview as nv
+
+view = nv.NGLWidget(gui=True)
+view.add_component('filename')
+view
+""".strip()
+
+def _is_density_data(filename):
+    filename = filename.lower()
+    return (filename.endswith('.dx') or
+            filename.endswith('.ccp4') or
+            filename.endswith('.mrc') or
+            filename.endswith('.map') or
+            filename.endswith('.dxbin') or
+            filename.endswith('.cube'))
+
+
 notebook_dict = {
  "cells": [
   {
@@ -155,6 +173,9 @@ def main(notebook_dict=notebook_dict):
         if parm.endswith('.py'):
             pycontent = open(parm).read().strip()
             notebook_dict['cells'][0]['source'] = pycontent
+            nb_json = json.dumps(notebook_dict)
+        elif _is_density_data(parm):
+            notebook_dict['cells'][0]['source'] = density_source.replace('filename', parm)
             nb_json = json.dumps(notebook_dict)
         else:
             if parm == 'demo':
