@@ -6,7 +6,7 @@ import subprocess
 from subprocess import CalledProcessError
 from .cmd_example import CMD_EXAMPLE 
 
-bin_path = sys.prefix + '/bin/'
+bin_path = os.path.join(sys.prefix, 'bin')
 
 demo_source = """
 import nglview as nv
@@ -26,9 +26,12 @@ view
 def _is_density_data(filename):
     from nglview.utils import FileManager
 
-    fm = FileManager(filename)
+    try:
+        fm = FileManager(filename)
 
-    return fm.ext.lower() in ['dx', 'ccp4', 'mrc', 'map', 'dxbin', 'cube']
+        return fm.ext.lower() in ['dx', 'ccp4', 'mrc', 'map', 'dxbin', 'cube']
+    except ValueError:
+        return False
 
 notebook_dict = {
  "cells": [
@@ -122,7 +125,7 @@ def get_remote_port(port=None):
     print(remote_msg.format(client_cm=client_cm, port=port, hostname=hostname))
     return port
 
-def main(notebook_dict=notebook_dict):
+def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
     PY3 = sys.version_info[0] == 3
     pyv_full_string = ','.join(str(i) for i in sys.version_info)
     pyv_short_string = str(sys.version_info[0])
@@ -144,7 +147,8 @@ def main(notebook_dict=notebook_dict):
     parser.add_argument('--remote', action='store_true', help='create remote notebook')
     parser.add_argument('--clean-cache', action='store_true', help='delete temp file after closing notebook')
     parser.add_argument('--disable-autorun', action='store_true', help='do not run 1st cell right after openning notebook')
-    args = parser.parse_args()
+    parser.add_argument('--test', action='store_true', help='test')
+    args = parser.parse_args(cmd_arg)
 
     command = parm = args.command
 
@@ -169,17 +173,24 @@ def main(notebook_dict=notebook_dict):
             notebook_dict['metadata']['language_info']['codemirror_mode']['version'] = pyv_short_string
             notebook_dict['metadata']['version'] = pyv_full_string
         if parm.endswith('.py'):
+            # a Python script
             pycontent = open(parm).read().strip()
             notebook_dict['cells'][0]['source'] = pycontent
             nb_json = json.dumps(notebook_dict)
+        elif parm == 'demo':
+            # running demo
+            notebook_dict['cells'][0]['source'] = demo_source
+            nb_json = json.dumps(notebook_dict)
+            nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
         elif _is_density_data(parm):
+            # check if density data
             notebook_dict['cells'][0]['source'] = density_source.replace('filename', parm)
             nb_json = json.dumps(notebook_dict)
         else:
-            if parm == 'demo':
-                notebook_dict['cells'][0]['source'] = demo_source
             nb_json = json.dumps(notebook_dict)
             nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
+            assert os.path.exists(parm), '{} does not exists'.format(parm)
+
         nb_json = nb_json.replace('"null"', 'null')
 
         with open(notebook_name, 'w') as fh:
@@ -198,7 +209,8 @@ def main(notebook_dict=notebook_dict):
         print('NOTE: make sure to open {0} in your local machine\n'.format(notebook_name))
 
     if not args.disable_autorun:
-        install_nbextension(jupyter=args.jexe)
+        if not args.test:
+            install_nbextension(jupyter=args.jexe)
     else:
         try:
             disable_extension(jupyter=args.jexe)
@@ -206,7 +218,11 @@ def main(notebook_dict=notebook_dict):
             pass
 
     try:
-        subprocess.check_call(cm.split())
+        if args.test:
+            # for testing cli
+            pass
+        else:
+            subprocess.check_call(cm.split())
     except KeyboardInterrupt:
         if args.clean_cache and create_new_nb:
             print("deleting {}".format(notebook_name))
@@ -215,4 +231,4 @@ def main(notebook_dict=notebook_dict):
             disable_extension(jupyter=args.jexe)
 
 if __name__ == '__main__':
-    main()
+    main(cmd_arg=sys.argv[1:])

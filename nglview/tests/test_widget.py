@@ -9,6 +9,7 @@ import os
 import nose.tools as nt
 import gzip
 import unittest
+import pytest
 from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
 import numpy as np
 
@@ -30,6 +31,10 @@ from nglview.utils.py_utils import PY2, PY3
 from nglview import js_utils
 from nglview.representation import Representation
 from nglview.utils.py_utils import encode_base64, decode_base64
+from nglview import interpolate
+
+# local
+from utils import get_fn, repr_dict as REPR_DICT
 
 def default_view():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -112,12 +117,113 @@ def test_API_promise_to_have():
     display.display(view.player.repr_widget)
     view.player._display()
 
+    # show
+    nv.show_pdbid('1tsu')
+    nv.show_url('https://dummy.pdb')
+    # other backends will be tested in other sections
+
+    # constructor
+    ngl_traj = nv.PyTrajTrajectory(pt.datafiles.load_ala3())
+    nv.NGLWidget(ngl_traj, parameters=dict(background_color='black'))
+    nv.NGLWidget(ngl_traj, representations=[dict(type='cartoon')])
+
+    view.parameters
+    view.camera
+    view.camera = 'perspective'
+    view._request_stage_parameters()
+    view._repr_dict = REPR_DICT
+
+    # dummy
+    class DummWidget():
+        value = ''
+
+    view.player.picked_widget = DummWidget()
+    view._on_picked(change=dict(new=''))
+
+    view._update_background_color(change=dict(new='blue'))
+    view.on_update_dragged_file(change=dict(new=2, old=1))
+    view.on_update_dragged_file(change=dict(new=1, old=1))
+    tab = view.player._display()
+
+    view.player.repr_widget = view.player._make_repr_widget()
+    view._handle_n_components_changed(change=dict(new=2, old=1))
+    view._handle_n_components_changed(change=dict(new=1, old=1))
+    view.on_loaded(change=dict(new=True))
+    view.on_loaded(change=dict(new=False))
+    view._refresh_render()
+    view.sync_view()
+
+    def _dummy():
+        pass
+    view._ipython_display_ = _dummy
+    view._ipython_display_()
+
+    view.display(gui=True)
+    view.display(gui=False)
+    view._set_draggable(True)
+    view._set_draggable(False)
+    view._set_sync_frame()
+    view._set_sync_camera()
+    view._set_spin([0, 1, 0], 0.5)
+    view._set_selection('.CA')
+    view.color_by('atomindex')
+    representations = [dict(type='cartoon', params=dict())]
+    view.representations = representations
+    repr_parameters = dict(opacity=0.3, params=dict())
+    view.update_representation(parameters=repr_parameters)
+    view._remove_representation()
+    view.clear()
+    view.add_representation('surface', selection='*', useWorker=True)
+    view.add_representation('surface', selection='*', component=1)
+    view.center()
+    view._hold_image = True
+    view._on_render_image(change=dict(new=u'xyz'))
+    view._hold_image = False
+    view._on_render_image(change=dict(new=u'xyz'))
+    view.render_image()
+    view.download_image()
+    view.superpose([1,], 0)
+
+    msg = dict(type='request_frame', data=dict())
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    msg = dict(type='repr_parameters', data=dict(name='hello'))
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    msg = dict(type='request_loaded', data=True)
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    msg = dict(type='all_reprs_info', data=REPR_DICT)
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    msg = dict(type='stage_parameters', data=dict())
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+
+    view.loaded = True
+    view.show_only([0,])
+    view._js_console()
+    view._get_full_params()
+    view.detach(split=False)
+    view.detach(split=True)
+
+def test_base_adaptor():
+    # abstract base class
+    def func_0():
+        nv.Structure().get_structure_string()
+
+    def func_1():
+        nv.Trajectory().get_coordinates(1)
+        nv.Trajectory().n_frames
+
+    pytest.raises(NotImplementedError, func_0)
+    pytest.raises(NotImplementedError, func_1)
+
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     view = nv.show_pytraj(traj)
     view.frame = 1
     coords = view.coordinates_dict[0]
     aa_eq(coords, traj[1].xyz)
+
+    # dummy
+    view._send_binary = False
+    view.coordinates_dict = {0: coords}
 
 def test_load_data():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -134,9 +240,7 @@ def test_load_data():
     view._load_data(t0)
 
     # load current folder
-    # if run nosetests in nglview root folder, the path is not correct
-    # turn of for now
-    # view._load_data('data/tz2.pdb')
+    view._load_data(get_fn('tz2.pdb'))
 
 def test_representations():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -156,12 +260,10 @@ def test_representations():
         # in real application, we are not allowed to assign values
         pass
 
+    view._repr_dict = REPR_DICT
     representation_widget = Representation(view, 0, 0)
-    try:
-        representation_widget._display()
-    except TraitError as e:
-        print("TraitError")
-        print(e)
+    representation_widget._display()
+    representation_widget._on_parameters_changed(change=dict(new=dict()))
                     
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -214,6 +316,7 @@ def test_show_simpletraj():
     traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
     view = nv.show_simpletraj(traj)
     view
+    view.frame = 3
 
 def test_show_mdtraj():
     import mdtraj as md
@@ -233,6 +336,10 @@ def test_show_parmed():
     fn = nv.datafiles.PDB 
     parm = pmd.load_file(fn)
     view = nv.show_parmed(parm)
+
+    ngl_traj = nv.ParmEdTrajectory(parm)
+    ngl_traj.only_save_1st_model = False
+    ngl_traj.get_structure_string()
 
 def test_encode_and_decode():
     xyz = np.arange(100).astype('f4')
@@ -262,13 +369,13 @@ def test_coordinates_meta():
         nt.assert_equal(view._trajlist[0].n_frames, N_FRAMES)
 
 def test_structure_file():
-    for fn in ['data/tz2.pdb', nv.datafiles.GRO]:
+    for fn in [get_fn('tz2.pdb'), nv.datafiles.GRO]:
         content = open(fn, 'rb').read()
         fs1 = nv.FileStructure(fn)
         nt.assert_equal(content, fs1.get_structure_string()) 
     
     # gz
-    fn = 'data/tz2_2.pdb.gz'
+    fn = get_fn('tz2_2.pdb.gz')
     fs2 = nv.FileStructure(fn)
     content = gzip.open(fn).read()
     nt.assert_equal(content, fs2.get_structure_string()) 
@@ -281,9 +388,10 @@ def test_camelize_parameters():
 def test_component_for_duck_typing():
     view = NGLWidget()
     traj = pt.load(nv.datafiles.PDB)
-    view.add_component('data/tz2.pdb')
-    view.add_component('data/tz2_2.pdb.gz')
+    view.add_component(get_fn('tz2.pdb'))
+    view.add_component(get_fn('tz2_2.pdb.gz'))
     view.add_trajectory(nv.PyTrajTrajectory(traj))
+    view.component_0.add_representation('cartoon')
     
     c0 = view[0]
     c1 = view[1]
@@ -380,17 +488,56 @@ def test_existing_js_files():
     nt.assert_equal(len(mapfiles), 1)
 
 def test_add_struture_then_trajectory():
-    view = nv.show_structure_file('data/tz2.pdb')
+    view = nv.show_structure_file(get_fn('tz2.pdb'))
+    view.loaded = True
     traj = pt.datafiles.load_trpcage()
     view.add_trajectory(traj)
     view.frame = 3
     coords = view.coordinates_dict[1].copy()
     aa_eq(coords, traj[3].xyz)
+    view.loaded = False
+    view.add_trajectory(traj)
 
 def test_player_simple():
     traj = pt.datafiles.load_tz2()
     view = nv.show_pytraj(traj)
     nt.assert_false(view.player.sync_frame)
+
+    # dummy
+    component_slider = ipywidgets.IntSlider()
+    repr_slider = ipywidgets.IntSlider()
+
+    # dummy test
+    player = nv.player.TrajectoryPlayer(view)
+    player.smooth()
+    player.camera = 'perspective'
+    player.camera = 'orthographic'
+    player.frame
+    player.frame = 10 
+    player.count
+    player.sync_frame = False
+    player.parameters = dict(step=2)
+    player._display()
+    player._make_button_center()
+    player._make_button_theme()
+    player._make_button_reset_theme()
+    player._make_preference_widget()
+    player._show_download_image()
+    player._make_button_url('dummy_url', description='dummy_url')
+    player._show_website()
+    player._make_button_qtconsole()
+    player._make_text_picked()
+    player._refresh(component_slider, repr_slider)
+    player._make_repr_widget()
+    player._make_resize_notebook_slider()
+    player._make_button_export_image()
+    player._make_repr_playground()
+    player._make_drag_widget()
+    player._make_spin_box()
+    player._make_picked_widget()
+    player._make_export_image_widget()
+    player._make_theme_box()
+    player._make_gen_box()
 
 def test_player_link_to_ipywidgets():
     traj = pt.datafiles.load_tz2()
@@ -460,3 +607,12 @@ def test_player_click_tab():
             nt.assert_true(isinstance(child, ipywidgets.Box))
         except TraitError:
             pass
+
+def test_interpolate():
+    # dummy test
+    traj = pt.datafiles.load_tz2()
+    ngl_traj = nv.PyTrajTrajectory(traj)
+    interpolate.linear(0, 0.4, ngl_traj, step=1)
+
+def dummy_test_to_increase_coverage():
+    nv.__version__

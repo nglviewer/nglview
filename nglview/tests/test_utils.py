@@ -1,10 +1,14 @@
 from __future__ import print_function
+import os
 import unittest
 import nglview
 from nglview.utils import py_utils, js_utils
 from nglview.utils.py_utils import seq_to_string, _camelize, _camelize_dict, FileManager
 import nose.tools as nt
 import gzip
+
+# local
+from utils import get_fn
 
 def test_get_name():
     fn = nglview.datafiles.PDB
@@ -44,9 +48,8 @@ def test_dict():
     nt.assert_true('defaultRepresentation' in kwargs2)
 
 def test_file_not_use_filename():
-    src = '../__init__.py'
+    src = os.path.abspath(nglview.__file__)
     fh = FileManager(src)
-    nt.assert_false(fh.use_filename)
     nt.assert_false(fh.compressed)
 
     nt.assert_true(fh.ext, 'py')
@@ -59,7 +62,7 @@ def test_file_not_use_filename():
 
 
 def test_file_current_folder():
-    src = 'data/tz2.pdb'
+    src = get_fn('tz2.pdb')
     fh = FileManager(src)
     nt.assert_true(fh.use_filename)
     nt.assert_false(fh.compressed)
@@ -85,7 +88,7 @@ def test_file_current_folder():
     nt.assert_equal(fh4.read(force_buffer=True), content)
 
 def test_file_gz():
-    src = 'data/tz2_2.pdb.gz'
+    src = get_fn('tz2_2.pdb.gz')
     fh = FileManager(src)
     nt.assert_true(fh.use_filename)
     nt.assert_true(fh.compressed)
@@ -115,7 +118,7 @@ def test_file_gz():
     nt.assert_equal(fh4.read(force_buffer=True), content)
 
 def test_file_passing_blob():
-    src = 'data/tz2.pdb'
+    src = get_fn('tz2.pdb')
     blob = open(src).read()
 
     fm = FileManager(blob)
@@ -124,7 +127,7 @@ def test_file_passing_blob():
 
 def test_file_passing_blob_from_gzip():
     import gzip
-    src = 'data/tz2_2.pdb.gz'
+    src = get_fn('tz2_2.pdb.gz')
     blob = gzip.open(src).read()
 
     fm = FileManager(blob)
@@ -146,4 +149,11 @@ def test_js_utils():
     js_utils.launch_qtconsole()
     js_utils.clean_empty_output_area()
     js_utils.clean_error_output()
-
+    js_utils._set_notebook_width()
+    js_utils._set_notebook_draggable()
+    js_utils._set_ipython_cell()
+    js_utils.ngl_demo()
+    js_utils.init_funcs()
+    js_utils._move_notebook_to_the_right()
+    js_utils._move_notebook_to_the_left()
+    js_utils._reset_notebook()
