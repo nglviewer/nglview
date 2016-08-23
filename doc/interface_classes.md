@@ -112,6 +112,6 @@ class NewTrajectoryClass:
 # if you already register your class, you can add `your_traj` directly to `view`
 # without creating `NewTrajectoryClass` instance.
 view.add_trajectory(your_traj)
-
-# further reading: nglview/adaptor.py
 ```
+
+Further reading: [nglview/adaptor.py](https://github.com/arose/nglview/blob/master/nglview/adaptor.py)
