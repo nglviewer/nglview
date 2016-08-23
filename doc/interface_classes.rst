@@ -3,7 +3,10 @@ Extend NGLView classes
 
 `Structures <#structures>`__ \| `Trajectories <#trajectories>`__ \|
 `Interface class <#interface-classes>`__ \| `Register your
-backend <#register-your-backend>`__ Structures ==========
+backend <#register-your-backend>`__
+
+Structures
+==========
 
 .. code:: python
 
