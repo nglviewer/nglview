@@ -23,7 +23,7 @@ from .adaptor import (Trajectory, PyTrajTrajectory,
 from .adaptor import BACKENDS
 from .parameters import REPRESENTATION_NAME_PAIRS
 
-__all__ = ['NGLWidget', 'ComponentViewer', 'register_backend']
+__all__ = ['NGLWidget', 'ComponentViewer']
 
 
 def _add_repr_method_shortcut(self, other):
