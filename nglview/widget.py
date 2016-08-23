@@ -505,16 +505,8 @@ class NGLWidget(DOMWidget):
                         if self.player.interpolate:
                             t = self.player.iparams.get('t', 0.5)
                             step = self.player.iparams.get('step', 1)
-                            itype = self.player.iparams.get('type', 'linear')
-
-                            if itype == 'linear':
-                                coordinates_dict[traj_index] = interpolate.linear(index,
+                            coordinates_dict[traj_index] = interpolate.linear(index,
                                         t=t, traj=trajectory, step=step)
-                            elif itype == 'spline':
-                                coordinates_dict[traj_index] = interpolate.spline(index,
-                                        t=t, traj=trajectory, step=step)
-                            else:
-                                raise ValueError('interpolation type must be linear or spline')
                         else:
                             coordinates_dict[traj_index] = trajectory.get_coordinates(index)
                     else:
@@ -1188,23 +1180,6 @@ class NGLWidget(DOMWidget):
             js_utils._move_notebook_to_the_right()
         self._remote_call('setDialog', target='Widget')
 
-    def _play(self, start=0, stop=-1, step=1, delay=0.08, n_times=1):
-        '''for testing. Might be removed in the future
-
-        Notes
-        -----
-        To stop, you need to choose 'Kernel' --> 'Interupt' in your notebook tab (top)
-        '''
-        from itertools import repeat
-        from time import sleep
-
-        if stop == -1:
-            stop = self.count
-
-        for indices in repeat(range(start, stop, step), n_times):
-            for frame in indices:
-                self.frame = frame
-                sleep(delay)
 
 class ComponentViewer(object):
     """Convenient attribute for NGLWidget. See example below.

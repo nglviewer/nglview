@@ -33,7 +33,7 @@ from nglview.utils.py_utils import encode_base64, decode_base64
 from nglview import interpolate
 
 # local
-from utils import get_fn
+from utils import get_fn, repr_dict as REPR_DICT
 
 def default_view():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -130,6 +130,8 @@ def test_API_promise_to_have():
     view.camera
     view.camera = 'perspective'
     view._request_stage_parameters()
+    view._repr_dict = REPR_DICT
+
     # dummy
     class DummWidget():
         value = ''
@@ -140,8 +142,64 @@ def test_API_promise_to_have():
     view._update_background_color(change=dict(new='blue'))
     view.on_update_dragged_file(change=dict(new=2, old=1))
     view.on_update_dragged_file(change=dict(new=1, old=1))
+    tab = view.player._display()
+
+    view.player.repr_widget = view.player._make_repr_widget()
     view._handle_n_components_changed(change=dict(new=2, old=1))
     view._handle_n_components_changed(change=dict(new=1, old=1))
+    view.on_loaded(change=dict(new=True))
+    view.on_loaded(change=dict(new=False))
+    view._refresh_render()
+    view.sync_view()
+
+    def _dummy():
+        pass
+    view._ipython_display_ = _dummy
+    view._ipython_display_()
+
+    view.display(gui=True)
+    view.display(gui=False)
+    view._set_draggable(True)
+    view._set_draggable(False)
+    view._set_sync_frame()
+    view._set_sync_camera()
+    view._set_spin([0, 1, 0], 0.5)
+    view._set_selection('.CA')
+    view.color_by('atomindex')
+    representations = [dict(type='cartoon', params=dict())]
+    view.representations = representations
+    repr_parameters = dict(opacity=0.3, params=dict())
+    view.update_representation(parameters=repr_parameters)
+    view._remove_representation()
+    view.clear()
+    view.add_representation('surface', selection='*', useWorker=True)
+    view.add_representation('surface', selection='*', component=1)
+    view.center()
+    view._hold_image = True
+    view._on_render_image(change=dict(new=u'xyz'))
+    view._hold_image = False
+    view._on_render_image(change=dict(new=u'xyz'))
+    view.render_image()
+    view.download_image()
+    view.superpose([1,], 0)
+
+    msg = dict(type='request_frame', data=dict())
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    msg = dict(type='repr_parameters', data=dict(name='hello'))
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    msg = dict(type='request_loaded', data=True)
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    msg = dict(type='all_reprs_info', data=REPR_DICT)
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    msg = dict(type='stage_parameters', data=dict())
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+
+    view.loaded = True
+    view.show_only([0,])
+    view._js_console()
+    view._get_full_params()
+    view.detach(split=False)
+    view.detach(split=True)
 
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -149,6 +207,10 @@ def test_coordinates_dict():
     view.frame = 1
     coords = view.coordinates_dict[0]
     aa_eq(coords, traj[1].xyz)
+
+    # dummy
+    view._send_binary = False
+    view.coordinates_dict = {0: coords}
 
 def test_load_data():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -313,6 +375,7 @@ def test_component_for_duck_typing():
     view.add_component(get_fn('tz2.pdb'))
     view.add_component(get_fn('tz2_2.pdb.gz'))
     view.add_trajectory(nv.PyTrajTrajectory(traj))
+    view.component_0.add_representation('cartoon')
     
     c0 = view[0]
     c1 = view[1]
@@ -410,11 +473,14 @@ def test_existing_js_files():
 
 def test_add_struture_then_trajectory():
     view = nv.show_structure_file(get_fn('tz2.pdb'))
+    view.loaded = True
     traj = pt.datafiles.load_trpcage()
     view.add_trajectory(traj)
     view.frame = 3
     coords = view.coordinates_dict[1].copy()
     aa_eq(coords, traj[3].xyz)
+    view.loaded = False
+    view.add_trajectory(traj)
 
 def test_player_simple():
     traj = pt.datafiles.load_tz2()
