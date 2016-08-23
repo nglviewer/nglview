@@ -97,3 +97,19 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
     def n_frames(self):
         # return total frames
 ```
+
+Register your backend
+=====================
+```python
+from nglview import register_backend
+
+@register_backend
+class NewTrajectoryClass:
+    def __init__(your_traj, *args, **kwargs):
+        # define your own implementation here
+    ...
+
+# if you already register your class, you can add `your_traj` directly to `view`
+# without creating `NewTrajectoryClass` instance.
+view.add_trajectory(yourr_traj)
+```
