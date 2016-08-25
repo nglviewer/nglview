@@ -316,6 +316,7 @@ class TrajectoryPlayer(DOMWidget):
         button_hide = Button(description=' Hide',
                 icon='fa-eye-slash',
                 tooltip='Hide/Show current representation')
+        button_hide._ngl_name = 'button_hide_representation'
         button_center_selection = Button(description=' Center', tooltip='center selected atoms',
                 icon='fa-bullseye')
         button_center_selection._ngl_name = 'button_center_selection'
@@ -338,11 +339,9 @@ class TrajectoryPlayer(DOMWidget):
             if button_hide.description == 'Hide':
                 hide = True
                 button_hide.description = 'Show'
-            elif button_hide.description == 'Show':
+            else:
                 hide = False
                 button_hide.description = 'Hide'
-            else:
-                raise ValueError("must be Hide or Show")
 
             self._view._remote_call('setVisibilityForRepr',
                                     target='Widget',
@@ -355,7 +354,11 @@ class TrajectoryPlayer(DOMWidget):
 
         bbox = _make_autofit(HBox([button_refresh, button_center_selection,
             button_hide, button_remove]))
-        return Box([Label(""), bbox])
+        bbox._ngl_name = 'button_repr_control'
+        fake_label_box = Box([Label(""), bbox])
+        fake_label_box._ngl_chilren = bbox.children
+        fake_label_box._ngl_name = 'button_repr_control'
+        return fake_label_box
 
     def _make_repr_widget(self):
         repr_name_text = Text(value='', description='representation')
@@ -445,9 +448,7 @@ class TrajectoryPlayer(DOMWidget):
         bbox = self._make_button_repr_control(component_slider, repr_slider,
                 repr_selection)
 
-        blank_box = Box([Label("")])
-
-        all_kids = [bbox, blank_box, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
+        all_kids = [bbox, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
                    component_slider, repr_slider, reprlist_choices,
                    repr_params_accordion]
 

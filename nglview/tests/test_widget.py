@@ -141,8 +141,6 @@ def test_API_promise_to_have():
     view._on_picked(change=dict(new=''))
 
     view._update_background_color(change=dict(new='blue'))
-    view.on_update_dragged_file(change=dict(new=2, old=1))
-    view.on_update_dragged_file(change=dict(new=1, old=1))
     tab = view.player._display()
 
     view.player.repr_widget = view.player._make_repr_widget()
@@ -185,15 +183,15 @@ def test_API_promise_to_have():
     view.superpose([1,], 0)
 
     msg = dict(type='request_frame', data=dict())
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._ngl_handle_message(view, msg=msg, buffers=[])
     msg = dict(type='repr_parameters', data=dict(name='hello'))
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._ngl_handle_message(view, msg=msg, buffers=[])
     msg = dict(type='request_loaded', data=True)
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._ngl_handle_message(view, msg=msg, buffers=[])
     msg = dict(type='all_reprs_info', data=REPR_DICT)
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._ngl_handle_message(view, msg=msg, buffers=[])
     msg = dict(type='stage_parameters', data=dict())
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._ngl_handle_message(view, msg=msg, buffers=[])
 
     view.loaded = True
     view.show_only([0,])
@@ -217,6 +215,7 @@ def test_base_adaptor():
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     view = nv.show_pytraj(traj)
+    view.n_components = 1
     view.frame = 1
     coords = view.coordinates_dict[0]
     aa_eq(coords, traj[1].xyz)
@@ -225,22 +224,23 @@ def test_coordinates_dict():
     view._send_binary = False
     view.coordinates_dict = {0: coords}
 
-def test_load_data():
+def test_add_component():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
 
     # load blob with ext
     blob = open(nv.datafiles.PDB).read()
-    view._load_data(blob, ext='pdb')
+    view.add_component(blob, ext='pdb')
 
     # raise if passing blob but does not provide ext
-    nt.assert_raises(ValueError, view._load_data, blob)
+    nt.assert_raises(ValueError, view.add_component, blob)
 
     # load PyTrajectory
     t0 = nv.PyTrajTrajectory(pt.datafiles.load_ala3())
-    view._load_data(t0)
+    view.add_component(t0)
 
     # load current folder
-    view._load_data(get_fn('tz2.pdb'))
+    view.add_component(get_fn('tz2.pdb'))
+    view.n_components = 4
 
 def test_representations():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -316,6 +316,7 @@ def test_show_simpletraj():
     traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
     view = nv.show_simpletraj(traj)
     view
+    view.n_components = 1
     view.frame = 3
 
 def test_show_mdtraj():
@@ -364,6 +365,7 @@ def test_coordinates_meta():
     views.append(nv.show_mdanalysis(trajs[3]))
 
     for index, (view, traj) in enumerate(zip(views, trajs)):
+        view.n_components = 1
         view.frame = 3
         
         nt.assert_equal(view._trajlist[0].n_frames, N_FRAMES)
@@ -389,12 +391,14 @@ def test_component_for_duck_typing():
     view = NGLWidget()
     traj = pt.load(nv.datafiles.PDB)
     view.add_component(get_fn('tz2.pdb'))
+    view.n_components = 1
     view.add_component(get_fn('tz2_2.pdb.gz'))
+    view.n_components = 2
     view.add_trajectory(nv.PyTrajTrajectory(traj))
+    view.n_components = 3
+
     view.component_0.add_representation('cartoon')
     
-    c0 = view[0]
-    c1 = view[1]
     nt.assert_true(hasattr(view, 'component_0'))
     nt.assert_true(hasattr(view, 'component_1'))
     nt.assert_true(hasattr(view, 'trajectory_0'))
@@ -402,9 +406,7 @@ def test_component_for_duck_typing():
     nt.assert_true(hasattr(view.trajectory_0, 'get_coordinates'))
     nt.assert_true(hasattr(view.trajectory_0, 'get_structure_string'))
 
-    c0.show()
-    c0.hide()
-
+    c0 = view[0]
     view.remove_component(c0.id)
     nt.assert_false(hasattr(view, 'component_2'))
 
@@ -415,7 +417,11 @@ def test_trajectory_show_hide_sending_cooridnates():
     traj1 = pt.datafiles.load_trpcage()
 
     view.add_trajectory(nv.PyTrajTrajectory(traj0))
+    view.n_components = 1
     view.add_trajectory(nv.PyTrajTrajectory(traj1))
+
+    # fake triggering n_components changed
+    view.n_components = 2
 
     for traj in view._trajlist:
         nt.assert_true(traj.shown)
@@ -489,18 +495,23 @@ def test_existing_js_files():
 
 def test_add_struture_then_trajectory():
     view = nv.show_structure_file(get_fn('tz2.pdb'))
+    view.n_components = 1
     view.loaded = True
     traj = pt.datafiles.load_trpcage()
     view.add_trajectory(traj)
+    # fake n_components changed
+    view.n_components = 2
     view.frame = 3
     coords = view.coordinates_dict[1].copy()
     aa_eq(coords, traj[3].xyz)
     view.loaded = False
     view.add_trajectory(traj)
+    view.n_components = 3
 
 def test_player_simple():
     traj = pt.datafiles.load_tz2()
     view = nv.show_pytraj(traj)
+    view.n_components = 1
     nt.assert_false(view.player.sync_frame)
 
     # dummy
@@ -561,6 +572,7 @@ def test_player_link_to_ipywidgets():
 
 def test_player_interpolation():
     view = default_view()
+    view.n_components = 1
 
     view.player.interpolate = True
     nt.assert_equal(view.player.iparams.get('type'), 'linear')

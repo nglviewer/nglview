@@ -97,6 +97,7 @@ class NGLWidget(DOMWidget):
     _repr_dict = Dict().tag(sync=False)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
+    _trajectory_id_cache = List().tag(sync=False)
     n_components = Int(0).tag(sync=True)
 
     displayed = False
@@ -120,12 +121,13 @@ class NGLWidget(DOMWidget):
         self.shape = Shape(view=self)
 
         # register to get data from JS side
-        self.on_msg(self._ngl_handle_msg)
+        self.on_msg(self._ngl_handle_message)
 
         self._trajlist = []
 
         self._ngl_component_ids = []
         self._init_structures = []
+        self._trajectory_id_cache = []
         if parameters:
             self.parameters = parameters
 
@@ -214,11 +216,6 @@ class NGLWidget(DOMWidget):
         color = change['new']
         self.parameters = dict(background_color=color)
 
-    @observe('_n_dragged_files')
-    def on_update_dragged_file(self, change):
-        if change['new'] - change['old'] == 1:
-            self._ngl_component_ids.append(uuid.uuid4())
-
     @observe('n_components')
     def _handle_n_components_changed(self, change):
         if self.player.repr_widget is not None:
@@ -247,6 +244,13 @@ class NGLWidget(DOMWidget):
                 repr_name_text.value = ' '
                 repr_selection.value = ' '
 
+        # assign an ID and update auto-completion
+        try:
+            self._ngl_component_ids.append(self._trajectory_id_cache.pop())
+        except IndexError:
+            self._ngl_component_ids.append(str(uuid.uuid4()))
+        self._update_component_auto_completion()
+
     @observe('_repr_dict')
     def _handle_repr_dict_changed(self, change):
         if self.player.repr_widget is not None:
@@ -261,7 +265,6 @@ class NGLWidget(DOMWidget):
 
             if change['new'] == {'c0': {}}:
                 repr_selection.value = ''
-
             else:
                 reprlist_choices.options = tuple([str(i) + '-' + name for (i, name) in enumerate(repr_names)])
 
@@ -273,10 +276,8 @@ class NGLWidget(DOMWidget):
                         reprlist_choices.value = ''
                     else:
                         reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
-
                 # e.g: 0-cartoon
                 repr_name_text.value = reprlist_choices.value.split('-')[-1]
-
                 repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
 
     def _update_count(self):
@@ -779,7 +780,7 @@ class NGLWidget(DOMWidget):
             self._remote_call('superpose', target='Widget',
                     args=[ref, index, align, selection_0, selection_1])
 
-    def _ngl_handle_msg(self, widget, msg, buffers):
+    def _ngl_handle_message(self, widget, msg, buffers):
         """store message sent from Javascript.
 
         How? use view.on_msg(get_msg)
@@ -811,7 +812,6 @@ class NGLWidget(DOMWidget):
                     repr_selection = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_selection')
                     repr_name_text.value = name
                     repr_selection.value = selection
-
             elif msg_type == 'request_loaded':
                 if not self.loaded:
                     # trick to trigger observe loaded
@@ -848,15 +848,13 @@ class NGLWidget(DOMWidget):
         nglview.NGLWidget.add_component
         '''
         if self.loaded:
-            self._load_data(structure, **kwargs)
+            self.add_component(structure, **kwargs)
         else:
             # update via structure_list
             self._init_structures.append(structure)
             name = py_utils.get_name(structure, kwargs)
             self._ngl_component_names.append(name)
-        self._ngl_component_ids.append(structure.id)
         self.center_view(component=len(self._ngl_component_ids)-1)
-        self._update_component_auto_completion()
 
     def add_trajectory(self, trajectory, **kwargs):
         '''add new trajectory to `view`
@@ -890,8 +888,11 @@ class NGLWidget(DOMWidget):
         else:
             trajectory = trajectory
 
+        trajectory.id = str(uuid.uuid4())
+        self._trajectory_id_cache.append(trajectory.id)
+
         if self.loaded:
-            self._load_data(trajectory, **kwargs)
+            self.add_component(trajectory, **kwargs)
         else:
             # update via structure_list
             self._init_structures.append(trajectory)
@@ -900,15 +901,13 @@ class NGLWidget(DOMWidget):
         setattr(trajectory, 'shown', True)
         self._trajlist.append(trajectory)
         self._update_count()
-        self._ngl_component_ids.append(trajectory.id)
-        self._update_component_auto_completion()
 
-    def add_component(self, filename, **kwargs):
+    def add_component(self, obj, **kwargs):
         '''add component from file/trajectory/struture
 
         Parameters
         ----------
-        filename : str or Trajectory or Structure or their derived class or url
+        obj : str or Trajectory or Structure or their derived class or url
             if you specify url, you must specify `url=True` in kwargs
         **kwargs : additional arguments, optional
 
@@ -917,19 +916,6 @@ class NGLWidget(DOMWidget):
         >>> view = nglview.Widget()
         >>> view
         >>> view.add_component(filename)
-        '''
-        self._load_data(filename, **kwargs)
-        # assign an ID
-        self._ngl_component_ids.append(str(uuid.uuid4()))
-        self._update_component_auto_completion()
-
-    def _load_data(self, obj, **kwargs):
-        '''
-
-        Parameters
-        ----------
-        obj : nglview.Structure or any object having 'get_structure_string' method or
-              string buffer (open(fn).read())
         '''
         kwargs2 = _camelize_dict(kwargs)
         try:
@@ -1058,7 +1044,7 @@ class NGLWidget(DOMWidget):
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
 
-    def _get_traj_by_id(self, itsid):
+    def _get_trajectory_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object
         """
         for traj in self._trajlist:
@@ -1074,7 +1060,7 @@ class NGLWidget(DOMWidget):
         for index in indices:
             comp_id = self._ngl_component_ids[index]
             if comp_id in traj_ids:
-                traj = self._get_traj_by_id(comp_id)
+                traj = self._get_trajectory_by_id(comp_id)
                 traj.shown = False
             self._remote_call("setVisibility",
                     target='compList',
@@ -1102,7 +1088,7 @@ class NGLWidget(DOMWidget):
 
         for index, comp_id in enumerate(self._ngl_component_ids):
             if comp_id in traj_ids:
-                traj = self._get_traj_by_id(comp_id)
+                traj = self._get_trajectory_by_id(comp_id)
             else:
                 traj = None
             if index in indices_:
@@ -1220,7 +1206,7 @@ class ComponentViewer(object):
                 target='compList',
                 args=[False,],
                 kwargs={'component_index': self._index})
-        traj = self._view._get_traj_by_id(self.id)
+        traj = self._view._get_trajectory_by_id(self.id)
         if traj is not None:
             traj.shown = False
 
@@ -1232,7 +1218,7 @@ class ComponentViewer(object):
                 args=[True,],
                 kwargs={'component_index': self._index})
 
-        traj = self._view._get_traj_by_id(self.id)
+        traj = self._view._get_trajectory_by_id(self.id)
         if traj is not None:
             traj.shown = True
 
@@ -1244,7 +1230,7 @@ class ComponentViewer(object):
         from functools import partial
         from types import MethodType
 
-        traj = view._get_traj_by_id(self.id)
+        traj = view._get_trajectory_by_id(self.id)
 
         for attname in attributes:
             view_att = getattr(view, attname)
