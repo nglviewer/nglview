@@ -566,18 +566,20 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                        this.representationsChanged();
 	
 	                        // for small peptide
-	                        var structure = component.structure;
-	                        if( structure.biomolDict.BU1 ){
-	                            var assembly = structure.biomolDict.BU1;
-	                            atomCount = assembly.getAtomCount( structure );
-	                            instanceCount = assembly.getInstanceCount();
-	                        }else{
-	                            atomCount = structure.getModelProxy( 0 ).atomCount;
-	                        }
+	                        if (component.structure){
+	                            var structure = component.structure;
+	                            if( structure.biomolDict.BU1 ){
+	                                var assembly = structure.biomolDict.BU1;
+	                                atomCount = assembly.getAtomCount( structure );
+	                                instanceCount = assembly.getInstanceCount();
+	                            }else{
+	                                atomCount = structure.getModelProxy( 0 ).atomCount;
+	                            }
 	
-	                        if (atomCount < 50) {
-	                            // why 50? arbitrary number
-	                            component.addRepresentation('licorice');
+	                            if (atomCount < 50) {
+	                                // why 50? arbitrary number
+	                                component.addRepresentation('licorice');
+	                            }
 	                        }
 	                    }.bind( this ) );
 	                }
