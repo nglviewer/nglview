@@ -482,6 +482,21 @@ var NGLView = widgets.DOMWidgetView.extend({
                         component.centerView();
                         // this.structureComponent = component;
                         this.representationsChanged();
+
+                        // for small peptide
+                        var structure = component.structure;
+                        if( structure.biomolDict.BU1 ){
+                            var assembly = structure.biomolDict.BU1;
+                            atomCount = assembly.getAtomCount( structure );
+                            instanceCount = assembly.getInstanceCount();
+                        }else{
+                            atomCount = structure.getModelProxy( 0 ).atomCount;
+                        }
+
+                        if (atomCount < 50) {
+                            // why 50? arbitrary number
+                            component.addRepresentation('licorice');
+                        }
                     }.bind( this ) );
                 }
             }
