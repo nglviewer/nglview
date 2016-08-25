@@ -549,6 +549,7 @@ def test_player_simple():
     player._make_widget_repr()
     player.widget_component_slider
     player.widget_repr_slider
+    player._create_all_tabs()
 
 def test_player_link_to_ipywidgets():
     traj = pt.datafiles.load_tz2()
