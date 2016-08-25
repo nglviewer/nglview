@@ -221,13 +221,13 @@ class NGLWidget(DOMWidget):
 
     @observe('n_components')
     def _handle_n_components_changed(self, change):
-        if self.player.repr_widget is not None:
-            component_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'component_slider')
+        if self.player.widget_repr is not None:
+            component_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'component_slider')
 
             if change['new'] - 1 >= component_slider.min:
                 component_slider.max = change['new'] - 1
 
-            component_dropdown = widget_utils.get_widget_by_name(self.player.repr_widget, 'component_dropdown')
+            component_dropdown = widget_utils.get_widget_by_name(self.player.widget_repr, 'component_dropdown')
             component_dropdown.options = tuple(self._ngl_component_names)
 
             if change['new'] == 0:
@@ -236,27 +236,27 @@ class NGLWidget(DOMWidget):
 
                 component_slider.max = 0
 
-                reprlist_choices = widget_utils.get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+                reprlist_choices = widget_utils.get_widget_by_name(self.player.widget_repr, 'reprlist_choices')
                 reprlist_choices.options = tuple([''])
 
-                repr_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_slider')
+                repr_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_slider')
                 repr_slider.max = 0
 
-                repr_name_text = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_name_text')
-                repr_selection = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_selection')
+                repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
+                repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
                 repr_name_text.value = ' '
                 repr_selection.value = ' '
 
     @observe('_repr_dict')
     def _handle_repr_dict_changed(self, change):
-        if self.player.repr_widget is not None:
-            repr_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_slider')
-            component_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'component_slider')
+        if self.player.widget_repr is not None:
+            repr_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_slider')
+            component_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'component_slider')
 
-            repr_name_text = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_name_text')
-            repr_selection = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_selection')
+            repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
+            repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
 
-            reprlist_choices = widget_utils.get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+            reprlist_choices = widget_utils.get_widget_by_name(self.player.widget_repr, 'reprlist_choices')
             repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
 
             if change['new'] == {'c0': {}}:
@@ -805,10 +805,10 @@ class NGLWidget(DOMWidget):
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
 
-                if self.player.repr_widget is not None:
+                if self.player.widget_repr is not None:
                     # TODO: refactor
-                    repr_name_text = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_name_text')
-                    repr_selection = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_selection')
+                    repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
+                    repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
                     repr_name_text.value = name
                     repr_selection.value = selection
 

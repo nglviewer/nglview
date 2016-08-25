@@ -9,7 +9,7 @@ try:
     form_item_layout = Layout(
         display='flex',
         flex_flow='row',
-        justify_content='space-between'
+        justify_content='space-between',
     )
 except TraitError:
     # for testing

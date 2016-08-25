@@ -62,10 +62,13 @@ class TrajectoryPlayer(DOMWidget):
                                    antialias=True,
                                    trim=False,
                                    transparent=False)
-        self.picked_widget = None
-        self.repr_widget = None
-        self._preference_widget = None
-        self._repr_parameter_widget = None
+        self.widget_general = None
+        self.widget_picked = None
+        self.widget_repr = None
+        self.widget_preference = None
+        self.widget_repr_parameteres = None
+        self.widget_help = None
+        self.widget_theme = None
 
     def smooth(self):
         self.interpolate = True
@@ -152,9 +155,9 @@ class TrajectoryPlayer(DOMWidget):
                                  self._spin_speed)
 
     def _display(self):
-        box_factory = [(self._make_gen_box, 'General'),
-                       (self._make_repr_widget, 'Representation'),
-                       (self._make_preference_widget, 'Preference'),
+        box_factory = [(self._make_general_box, 'General'),
+                       (self._make_widget_repr, 'Representation'),
+                       (self._make_widget_preference, 'Preference'),
                        (self._make_theme_box, 'Theme'),
                        (self._make_extra_box, 'Extra'),
                        (Box, 'Hide'),
@@ -193,7 +196,7 @@ class TrajectoryPlayer(DOMWidget):
             theme.reset()
         return button
 
-    def _make_preference_widget(self, width='100%'):
+    def _make_widget_preference(self, width='100%'):
         def make_func():
             parameters = self._view._full_stage_parameters
             def func(pan_speed=parameters.get('panSpeed', 0.8),
@@ -257,8 +260,9 @@ class TrajectoryPlayer(DOMWidget):
             self._view._full_stage_parameters = self._view._original_stage_parameters
             widget_sliders.children = [reset_button,] + list(make_widget_box().children)
 
-        self._preference_widget = _relayout_master(widget_sliders, width=width)
-        return self._preference_widget
+        self.widget_preference = _relayout_master(widget_sliders, width=width)
+        self.widget_preference.layout.padding = default.DEFAULT_PADDING
+        return self.widget_preference
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
@@ -283,7 +287,9 @@ class TrajectoryPlayer(DOMWidget):
             ("'http://arose.github.io/ngl/api/dev/tutorial-selection-language.html'", "Selection"),
             ("'http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html'", "Representation")]
         ]
-        return _make_autofit(HBox(buttons))
+        self.widget_help = _make_autofit(HBox(buttons))
+        self.widget_help.layout.padding = default.DEFAULT_PADDING
+        return self.widget_help
 
     def _make_button_qtconsole(self):
         from nglview import js_utils
@@ -338,11 +344,9 @@ class TrajectoryPlayer(DOMWidget):
             if button_hide.description == 'Hide':
                 hide = True
                 button_hide.description = 'Show'
-            elif button_hide.description == 'Show':
+            else:
                 hide = False
                 button_hide.description = 'Hide'
-            else:
-                raise ValueError("must be Hide or Show")
 
             self._view._remote_call('setVisibilityForRepr',
                                     target='Widget',
@@ -357,12 +361,13 @@ class TrajectoryPlayer(DOMWidget):
             button_hide, button_remove]))
         return Box([Label(""), bbox])
 
-    def _make_repr_widget(self):
+    def _make_widget_repr(self):
+        # TODO: class?
         repr_name_text = Text(value='', description='representation')
         repr_name_text._ngl_name = 'repr_name_text'
         repr_selection = Text(value=' ', description='selection')
         repr_selection._ngl_name = 'repr_selection'
-        # repr_selection.width = repr_name_text.width = default.DEFAULT_TEXT_WIDTH 
+        repr_selection.width = repr_name_text.width = default.DEFAULT_TEXT_WIDTH 
 
         max_n_components = max(self._view.n_components-1, 0)
         component_slider = IntSlider(value=0, max=max_n_components, min=0, description='component')
@@ -378,6 +383,10 @@ class TrajectoryPlayer(DOMWidget):
         repr_slider._ngl_name = 'repr_slider'
         repr_slider.visible = True
 
+        component_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
+        repr_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
+        component_dropdown.layout.width = component_dropdown.max_width = default.DEFAULT_TEXT_WIDTH
+
         # TODO: properly hide
         repr_params_accordion = Accordion()
         repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
@@ -390,7 +399,7 @@ class TrajectoryPlayer(DOMWidget):
         reprlist_choices = self._make_repr_name_choices(component_slider, repr_slider)
         reprlist_choices._ngl_name = 'reprlist_choices'
 
-        repr_add_widget = self._make_add_repr_widget(component_slider)
+        repr_add_widget = self._make_add_widget_repr(component_slider)
 
         def on_update_checkbox_reprlist(change):
             reprlist_choices.visible= change['new']
@@ -456,10 +465,11 @@ class TrajectoryPlayer(DOMWidget):
         self._view._request_repr_parameters(component=component_slider.value,
             repr_index=repr_slider.value)
 
-        self.repr_widget = _relayout_master(vbox, width='100%')
+        self.widget_repr = _relayout_master(vbox, width='100%')
 
         self._refresh(component_slider, repr_slider)
-        return self.repr_widget
+        self.widget_repr.layout.padding = default.DEFAULT_PADDING
+        return self.widget_repr
 
     def _make_slider_repr_parameters(self, component_slider, repr_slider, repr_name_text=None):
         name = repr_name_text.value if repr_name_text is not None else ' '
@@ -469,13 +479,13 @@ class TrajectoryPlayer(DOMWidget):
         widget._ngl_name = 'repr_parameters'
         widget._ngl_name = 'repr_parameters_box'
 
-        if self._repr_parameter_widget is None:
-            self._repr_parameter_widget = widget
+        if self.widget_repr_parameteres is None:
+            self.widget_repr_parameteres = widget
         else:
-            self._repr_parameter_widget.children = widget.children
+            self.widget_repr_parameteres.children = widget.children
 
-        self._repr_parameter_widget.visible = False
-        return self._repr_parameter_widget
+        self.widget_repr_parameteres.visible = False
+        return self.widget_repr_parameteres
 
     def _make_button_export_image(self):
         slider_factor = IntSlider(value=4, min=1, max=10, description='scale')
@@ -537,7 +547,7 @@ class TrajectoryPlayer(DOMWidget):
         resize_notebook_slider.observe(on_resize_notebook, names='value')
         return resize_notebook_slider
 
-    def _make_add_repr_widget(self, component_slider):
+    def _make_add_widget_repr(self, component_slider):
         dropdown_repr_name = Dropdown(options=REPRESENTATION_NAMES, value='cartoon')
         repr_selection = Text(value='*', description='')
         repr_button = Button(description='Add', tooltip="""Add representation.
@@ -611,6 +621,7 @@ class TrajectoryPlayer(DOMWidget):
             repr_slider.value = repr_index
 
         repr_choices.observe(on_chose, names='value')
+        repr_choices.layout.width = default.DEFAULT_TEXT_WIDTH
 
         return repr_choices
 
@@ -699,9 +710,9 @@ class TrajectoryPlayer(DOMWidget):
         spin_box = _relayout_master(spin_box, width='75%')
         return spin_box
 
-    def _make_picked_widget(self):
-        self.picked_widget = self._make_text_picked()
-        picked_box = HBox([self.picked_widget,])
+    def _make_widget_picked(self):
+        self.widget_picked = self._make_text_picked()
+        picked_box = HBox([self.widget_picked,])
         return _relayout_master(picked_box, width='75%')
 
     def _make_export_image_widget(self):
@@ -712,18 +723,20 @@ class TrajectoryPlayer(DOMWidget):
 
         extra_list = [(self._make_drag_widget, 'Drag'),
                       (self._make_spin_box, 'spin_box'),
-                      (self._make_picked_widget, 'picked atom'),
+                      (self._make_widget_picked, 'picked atom'),
                       (self._make_repr_playground, 'quick repr'),
                       (self._make_export_image_widget, 'Image')]
 
         extra_box = _make_delay_tab(extra_list, selected_index=0)
+        extra_box.layout.padding = default.DEFAULT_PADDING
         return extra_box
 
     def _make_theme_box(self):
-        theme_box = Box([self._make_button_theme(), self._make_button_reset_theme()])
-        return theme_box
+        self.widget_theme = Box([self._make_button_theme(), self._make_button_reset_theme()])
+        self.widget_theme.layout.padding = default.DEFAULT_PADDING
+        return self.widget_theme
 
-    def _make_gen_box(self):
+    def _make_general_box(self):
         step_slide = IntSlider(
             value=self.step,
             min=-100,
@@ -738,8 +751,7 @@ class TrajectoryPlayer(DOMWidget):
                                                  tooltip='smoothing trajectory')
         link((toggle_button_interpolate, 'value'), (self, 'interpolate'))
 
-        bg_color = ColorPicker(value='white', description='background')
-        bg_color.layout.width = '100.'
+        background_color_picker = ColorPicker(value='white', description='background')
         camera_type = Dropdown(value=self.camera,
                                options=['perspective', 'orthographic'], description='camera')
 
@@ -747,7 +759,7 @@ class TrajectoryPlayer(DOMWidget):
         link((delay_text, 'value'), (self, 'delay'))
         link((toggle_button_interpolate, 'value'), (self, 'interpolate'))
         link((camera_type, 'value'), (self, 'camera'))
-        link((bg_color, 'value'), (self._view, 'background'))
+        link((background_color_picker, 'value'), (self._view, 'background'))
 
         center_button = self._make_button_center()
         render_button = self._show_download_image()
@@ -757,10 +769,11 @@ class TrajectoryPlayer(DOMWidget):
 
         v0_left = VBox([step_slide,
                    delay_text,
-                   bg_color,
+                   background_color_picker,
                    camera_type,
                    center_render_hbox,
                    ])
 
         v0_left = _relayout_master(v0_left, width='100%')
-        return v0_left
+        self.widget_general = v0_left
+        return self.widget_general
