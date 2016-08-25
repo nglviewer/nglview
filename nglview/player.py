@@ -17,9 +17,9 @@ from ipywidgets import (DOMWidget,
 from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
 
-from .ngl_params import REPR_NAMES
+from .parameters import REPRESENTATION_NAMES
 from . import default
-from . import js_utils
+from .utils import js_utils
 from .layout import (form_item_layout, _relayout, _make_autofit, _relayout_master, _make_delay_tab,
         _make_box_layout)
 
@@ -168,7 +168,7 @@ class TrajectoryPlayer(DOMWidget):
         return tab
 
     def _make_button_center(self):
-        button = Button(description='Center')
+        button = Button(description=' Center', icon='fa-bullseye')
         @button.on_click
         def on_click(button):
             self._view.center()
@@ -262,7 +262,7 @@ class TrajectoryPlayer(DOMWidget):
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
-        button = Button(description='Screenshot')
+        button = Button(description=' Screenshot', icon='fa-camera')
         @button.on_click
         def on_click(button):
             self._view.download_image()
@@ -309,14 +309,15 @@ class TrajectoryPlayer(DOMWidget):
         self._view._handle_repr_dict_changed(change=dict(new=self._view._repr_dict))
 
     def _make_button_repr_control(self, component_slider, repr_slider, repr_selection):
-        button_refresh = Button(description='Refresh', tooltip='Get representation info', icon='fa-refresh')
-        button_remove = Button(description='Remove',
+        button_refresh = Button(description=' Refresh', tooltip='Get representation info', icon='fa-refresh')
+        button_remove = Button(description=' Remove',
                 icon='fa-trash',
                 tooltip='Remove current representation')
-        button_hide = Button(description='Hide',
+        button_hide = Button(description=' Hide',
                 icon='fa-eye-slash',
                 tooltip='Hide/Show current representation')
-        button_center_selection = Button(description='Center', tooltip='center selected atoms')
+        button_center_selection = Button(description=' Center', tooltip='center selected atoms',
+                icon='fa-bullseye')
         button_center_selection._ngl_name = 'button_center_selection'
 
         @button_refresh.on_click
@@ -401,7 +402,7 @@ class TrajectoryPlayer(DOMWidget):
 
             should_update = (self._real_time_update
                              and old and name
-                             and name in REPR_NAMES
+                             and name in REPRESENTATION_NAMES
                              and name != change['old'].strip())
 
             if should_update:
@@ -537,7 +538,7 @@ class TrajectoryPlayer(DOMWidget):
         return resize_notebook_slider
 
     def _make_add_repr_widget(self, component_slider):
-        dropdown_repr_name = Dropdown(options=REPR_NAMES, value='cartoon')
+        dropdown_repr_name = Dropdown(options=REPRESENTATION_NAMES, value='cartoon')
         repr_selection = Text(value='*', description='')
         repr_button = Button(description='Add', tooltip="""Add representation.
         You can also hit Enter in selection box""")
@@ -561,7 +562,7 @@ class TrajectoryPlayer(DOMWidget):
         vbox = VBox()
         children = []
 
-        rep_names = REPR_NAMES[:]
+        rep_names = REPRESENTATION_NAMES[:]
         excluded_names = ['ball+stick', 'distance']
         for name in excluded_names:
             rep_names.remove(name)
@@ -738,7 +739,7 @@ class TrajectoryPlayer(DOMWidget):
         link((toggle_button_interpolate, 'value'), (self, 'interpolate'))
 
         bg_color = ColorPicker(value='white', description='background')
-        bg_color.width = 100.
+        bg_color.layout.width = '100.'
         camera_type = Dropdown(value=self.camera,
                                options=['perspective', 'orthographic'], description='camera')
 

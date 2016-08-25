@@ -2,9 +2,10 @@ import argparse
 from os.path import dirname, abspath, join
 from notebook.nbextensions import install_nbextension, enable_nbextension
 
+
 def install(user=True, symlink=False, overwrite=True, **kwargs):
     """Install nglview nbextension.
-    
+
     Parameters
     ----------
     user: bool, default True
@@ -20,6 +21,7 @@ def install(user=True, symlink=False, overwrite=True, **kwargs):
     install_nbextension(directory, destination='nglview',
                         symlink=symlink, user=user, overwrite=overwrite,
                         **kwargs)
+
 
 def enable_nglview_js(user=True):
     enable_nbextension('nglview', '', user=user)

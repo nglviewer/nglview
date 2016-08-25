@@ -16,7 +16,8 @@ class Shape(object):
     >>> view = nv.NGLWidget()
     >>> view
     >>> shape = nv.Shape(view=view)
-    >>> shape.add_sphere(from=[0, 0, 0], to=[10, 10, 10], color=[1, 0, 0], radius=1.5])
+    >>> # TODO: add example
+    >>> shape.add_sphere(...)
 
     See also
     --------
@@ -48,7 +49,7 @@ class Shape(object):
 
         Examples
         --------
-        >>> shape = nv.Shape(view)
+        # TODO : add me
 
         See also
         --------

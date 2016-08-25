@@ -1,10 +1,14 @@
 from __future__ import absolute_import
-import os, sys
-import gzip, bz2
+import os
+import sys
+import gzip
+import bz2
 from zipfile import ZipFile
+import base64
 
-__all__ = ['seq_to_string', '_camelize', '_camelize_dict',
-           'get_colors_from_b64']
+__all__ = ['encode_base64', 'decode_base64',
+           'seq_to_string', '_camelize',
+           '_camelize_dict', 'get_colors_from_b64']
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -13,6 +17,15 @@ if PY3:
     string_types = str
 else:
     string_types = basestring
+
+def encode_base64(arr, dtype='f4'):
+    arr = arr.astype(dtype)
+    return base64.b64encode(arr.data).decode('utf8')
+
+def decode_base64(data, shape, dtype='f4'):
+    import numpy as np
+    decoded_str = base64.b64decode(data)
+    return np.frombuffer(decoded_str, dtype=dtype).reshape(shape)
 
 def get_name(obj, kwargs):
     name = kwargs.pop('name', str(obj))

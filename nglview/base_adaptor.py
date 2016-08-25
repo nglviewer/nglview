@@ -1,7 +1,42 @@
+from __future__ import print_function, absolute_import
+import uuid
 
-# Extend NGLView classes
+"""abstract base class.
+"""
 
-[Structures](#structures) | [Trajectories](#trajectories) | [Interface class](#interface-classes) | [Register your backend](#register-your-backend)
+__all__ = ['Structure', 'Trajectory']
+
+
+class Structure(object):
+    """abstract base class
+    """
+
+    def __init__(self):
+        self.ext = "pdb"
+        self.params = {}
+        self.id = str(uuid.uuid4())
+
+    def get_structure_string(self):
+        raise NotImplementedError()
+
+
+class Trajectory(object):
+    """abstract base class
+    """
+
+    def __init__(self):
+        self.id = str(uuid.uuid4())
+        self.shown = True
+
+    def get_coordinates(self, index):
+        raise NotImplementedError()
+
+    @property
+    def n_frames(self):
+        raise NotImplementedError()
+
+__doc__ = """
+Extend NGLView classes
 
 Structures
 ==========
@@ -39,21 +74,23 @@ wraps a trajectory loaded with [MDTraj](http://mdtraj.org/):
 import nglview
 import mdtraj
 traj = mdtraj.load(nglview.datafiles.XTC, top=nglview.datafiles.GRO)
-ngl_traj = nglview.MDTrajTrajectory(traj)
-view = nglview.NGLWidget(ngl_traj)
-view
+strucTraj = nglview.MDTrajTrajectory(traj)
+nglview.NGLWidget(strucTraj)
 ```
 
-You can also add more trajectories to the widget
+The displayed frame can be changed by setting the `frame` property of the
+widget instance `w`:
+
 ```python
-ngl_traj2 = nglview.MDTrajTrajectory(traj2)
-view.add_trajectory(ngl_traj2)
+view.frame = 100  # set to frame no 100
 ```
+
 
 Interface classes
 =================
 
-You can create your own adaptors simply by following the interfaces for `Structure` and `Trajectory`, which can also be combined into a single class.
+You can create your own adaptors simply by following the interfaces for `Structure` and `Trajectory`,
+which can also be combined into a single class.
 
 
 Structure
@@ -95,25 +132,8 @@ class MyStructureTrajectory(nglview.Structure, nglview.Trajectory):
 
     def get_coordinates(self, index):
         # return 2D numpy array, shape=(n_atoms, 3)
-        
+
     def n_frames(self):
         # return total frames
 ```
-
-Register your backend
-=====================
-```python
-from nglview import register_backend
-
-@register_backend(your_package_name)
-class NewTrajectoryClass:
-    def __init__(your_traj, *args, **kwargs):
-        # define your own implementation here
-    ...
-
-# if you already register your class, you can add `your_traj` directly to `view`
-# without creating `NewTrajectoryClass` instance.
-view.add_trajectory(your_traj)
-```
-
-Further reading: [nglview/adaptor.py](https://github.com/arose/nglview/blob/master/nglview/adaptor.py)
+"""
