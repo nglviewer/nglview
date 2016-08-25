@@ -516,6 +516,7 @@ def test_player_simple():
     player.frame = 10 
     player.count
     player.sync_frame = False
+    player.sync_frame = True
     player.parameters = dict(step=2)
     player._display()
     player._make_button_center()
@@ -538,6 +539,16 @@ def test_player_simple():
     player._make_export_image_widget()
     player._make_theme_box()
     player._make_general_box()
+    player._update_padding()
+    player.on_spin_changed(change=dict(new=True))
+    player.on_spin_x_changed(change=dict(new=1))
+    player.on_spin_y_changed(change=dict(new=1)
+    player.on_spin_z_changed(change=dict(new=1))
+    player.on_spin_speed_changed(change=dict(new=0.5))
+    player._real_time_update = True
+    player._make_widget_repr()
+    player.component_slider
+    player.repr_slider
 
 def test_player_link_to_ipywidgets():
     traj = pt.datafiles.load_tz2()

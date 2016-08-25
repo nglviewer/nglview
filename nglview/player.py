@@ -71,6 +71,8 @@ class TrajectoryPlayer(DOMWidget):
         self.widget_theme = None
         self.widget_help = None
         self.widget_export_image = None
+        self.widget_component_slider = None
+        self.widget_repr_slider = None
 
     def _update_padding(self, padding=default.DEFAULT_PADDING):
         widget_collection = [
@@ -415,6 +417,8 @@ class TrajectoryPlayer(DOMWidget):
             reprlist_choices._ngl_name = 'reprlist_choices'
 
             repr_add_widget = self._make_add_widget_repr(component_slider)
+            self.widget_component_slider = component_slider
+            self.widget_repr_slider = repr_slider
 
             def on_update_checkbox_reprlist(change):
                 reprlist_choices.visible= change['new']
