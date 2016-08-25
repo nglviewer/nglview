@@ -732,7 +732,7 @@ class TrajectoryPlayer(DOMWidget):
     def _make_export_image_widget(self):
         if self.widget_export_image is None:
             self.widget_export_image = HBox([self._make_button_export_image()])
-        return export_image_box
+        return self.widget_export_image
 
     def _make_extra_box(self):
         if self.widget_extra is None:
