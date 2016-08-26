@@ -27,7 +27,7 @@ twine upload dist/*
 
 Update Javascript build
 ========================
-```python
+```bash
 python setup.py build --npm
 ```
 
