@@ -25,6 +25,12 @@ python setup.py sdist
 twine upload dist/*
 ```
 
+Update Javascript build
+========================
+```python
+python setup.py build --npm
+```
+
 Test notebook
 =============
 
