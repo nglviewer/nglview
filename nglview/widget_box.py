@@ -28,3 +28,7 @@ class HBoxNGL(Box):
         for widget in self.children:
             if isinstance(widget, NGLWidget):
                   widget._remote_call('setSize', target='Widget', args=['700px', '500px'])
+
+    def _beautify(self):
+        self._update_padding()
+        self._update_size()
