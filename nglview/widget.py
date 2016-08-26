@@ -16,7 +16,7 @@ from .utils.py_utils import (seq_to_string, string_types, _camelize_dict,
 from .player import TrajectoryPlayer
 from . import interpolate
 from .shape import Shape
-from .representation import Representation
+from .representation import RepresentationControl
 
 from .adaptor import (Trajectory, PyTrajTrajectory,
         MDTrajTrajectory, MDAnalysisTrajectory, ParmEdTrajectory)
@@ -476,7 +476,7 @@ class NGLWidget(DOMWidget):
         except KeyError:
             name = ''
 
-        return Representation(self, component, repr_index, name=name)._display()
+        return RepresentationControl(self, component, repr_index, name=name)
 
     def _set_initial_structure(self, structures):
         """initialize structures for Widget
