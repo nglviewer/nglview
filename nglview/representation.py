@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from traitlets import Dict, Any, observe
-from ipywidgets import DOMWidget, interactive
+from ipywidgets import Box, DOMWidget, interactive
 from ipywidgets import VBox
 
 # local
@@ -8,7 +8,7 @@ from .color import COLOR_SCHEMES
 from .utils import widget_utils
 from .layout import _relayout_master
 
-class RepresentationControl(DOMWidget):
+class RepresentationControl(Box):
     parameters = Dict().tag(sync=False)
     name = Any().tag(sync=False)
 
@@ -17,7 +17,8 @@ class RepresentationControl(DOMWidget):
         self.component_index = component_index   
         self.repr_index = repr_index
         self._view = view
-        self.widget = self._make_widget(name=name)
+        self.children = self._make_widget(name=' ')
+        # trigger
         self.name = name
 
     @observe('parameters')
@@ -30,16 +31,11 @@ class RepresentationControl(DOMWidget):
 
     @observe('name')
     def _on_name_changed(self, change):
-        name = change['new']
-        if self.widget is not None:
-            if name == 'surface':
-                self.widget.children[-1].layout.display = 'flex'
-            else:
-                self.widget.children[-1].layout.display = 'none'
-
-    def _ipython_display_(self, **kwargs):
-        super(RepresentationControl, self)._ipython_display_(**kwargs)
-        self.widget._ipython_display_(**kwargs)
+        new_name = change['new']
+        if new_name == 'surface':
+            self.children[-1].layout.display = 'flex'
+        else:
+            self.children[-1].layout.display = 'none'
 
     def _make_widget(self, name):
         c_string = 'c' + str(self.component_index)
@@ -66,8 +62,6 @@ class RepresentationControl(DOMWidget):
         iwidget = interactive(func, opacity=(0., 1., 0.1),
                                  color_scheme=COLOR_SCHEMES,
                                  assembly=assembly_list)
-        widget_utils.make_default_slider_width(iwidget)
-        wbox = VBox([_relayout_master(iwidget, '100%'),])
         def func_extra(probe_radius=1.4,
                 isolevel=2.,
                 smooth=2.,
@@ -90,10 +84,4 @@ class RepresentationControl(DOMWidget):
                 box_size=(0, 100, 2),
                 cutoff=(0., 100, 0.1),
                 continuous_update=False)
-
-        widget_utils.make_default_slider_width(widget_extra)
-        wbox.children = [_relayout_master(iwidget, '100%'),
-                         _relayout_master(widget_extra, '100%')]
-        if name != 'surface':
-            wbox.children[-1].layout.display = 'none'
-        return wbox
+        return [iwidget, widget_extra]

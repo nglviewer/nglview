@@ -183,7 +183,7 @@ class TrajectoryPlayer(DOMWidget):
                        (self._show_website, 'Help')]
 
         tab = _make_delay_tab(box_factory, selected_index=-1)
-        tab = _make_autofit(tab)
+        # tab = _make_autofit(tab)
         tab.layout.align_self = 'center'
         tab.layout.align_items = 'stretch'
 
@@ -409,9 +409,7 @@ class TrajectoryPlayer(DOMWidget):
             self.widget_repr_parameteres =  self._make_widget_repr_parameteres(self.widget_component_slider,
                     self.widget_repr_slider,
                     self.widget_repr_name)
-            if self.widget_repr_name.value != 'surface':
-                self.widget_repr_parameteres.widget.children[1].layout.visibility = 'none'
-            self.widget_accordion_repr_parameters.children = [self.widget_repr_parameteres.widget]
+            self.widget_accordion_repr_parameters.children = [self.widget_repr_parameteres,]
             self.widget_accordion_repr_parameters.set_title(0, 'show parameters')
             self.widget_accordion_repr_parameters.selected_index = -1
             
@@ -456,8 +454,8 @@ class TrajectoryPlayer(DOMWidget):
 
             def on_repr_selection_value_changed(change):
                 if self._real_time_update:
-                    component=component_slider.value
-                    repr_index=repr_slider.value
+                    component = self.widget_component_slider.value
+                    repr_index = self.widget_repr_slider.value
                     self._view._set_selection(change['new'],
                                               component=component,
                                               repr_index=repr_index)
@@ -465,7 +463,7 @@ class TrajectoryPlayer(DOMWidget):
             def on_change_component_dropdown(change):
                 choice = change['new']
                 if choice:
-                     component_slider.value = self._view._ngl_component_names.index(choice)
+                     self.widget_component_slider.value = self._view._ngl_component_names.index(choice)
 
             component_dropdown.observe(on_change_component_dropdown, names='value')
 

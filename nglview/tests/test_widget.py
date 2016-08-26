@@ -29,7 +29,7 @@ import mdtraj as md
 import parmed as pmd
 from nglview.utils.py_utils import PY2, PY3
 from nglview import js_utils
-from nglview.representation import Representation
+from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
 from nglview import interpolate
 
@@ -261,9 +261,13 @@ def test_representations():
         pass
 
     view._repr_dict = REPR_DICT
-    representation_widget = Representation(view, 0, 0)
-    representation_widget._display()
+    representation_widget = RepresentationControl(view, 0, 0)
+    representation_widget
     representation_widget._on_parameters_changed(change=dict(new=dict()))
+
+def test_representation_control():
+    view = nv.demo()
+    repr_control = view._display_repr()
                     
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
