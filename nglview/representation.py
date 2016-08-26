@@ -17,7 +17,7 @@ class RepresentationControl(DOMWidget):
         self.component_index = component_index   
         self.repr_index = repr_index
         self._view = view
-        self.widget = None
+        self.widget = self._make_widget(name=name)
         self.name = name
 
     @observe('parameters')
@@ -37,12 +37,11 @@ class RepresentationControl(DOMWidget):
             else:
                 self.widget.children[-1].layout.display = 'none'
 
-    def _ipython_display_(self):
-        if self.widget is None:
-            self.widget = self._display()
-        self.widget._ipython_display_()
+    def _ipython_display_(self, **kwargs):
+        super(RepresentationControl, self)._ipython_display_(**kwargs)
+        self.widget._ipython_display_(**kwargs)
 
-    def _display(self):
+    def _make_widget(self, name):
         c_string = 'c' + str(self.component_index)
         r_string = str(self.repr_index)
         try:
@@ -95,7 +94,6 @@ class RepresentationControl(DOMWidget):
         widget_utils.make_default_slider_width(widget_extra)
         wbox.children = [_relayout_master(iwidget, '100%'),
                          _relayout_master(widget_extra, '100%')]
-        self.widget = wbox
-        if self.name != 'surface':
-            self.widget.children[-1].layout.display = 'none'
-        return self.widget
+        if name != 'surface':
+            wbox.children[-1].layout.display = 'none'
+        return wbox

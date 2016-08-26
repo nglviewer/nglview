@@ -73,6 +73,8 @@ class TrajectoryPlayer(DOMWidget):
         self.widget_export_image = None
         self.widget_component_slider = None
         self.widget_repr_slider = None
+        self.widget_accordion_repr_parameters = None
+        self.widget_repr_name = None
 
     def _update_padding(self, padding=default.DEFAULT_PADDING):
         widget_collection = [
@@ -380,45 +382,46 @@ class TrajectoryPlayer(DOMWidget):
     def _make_widget_repr(self):
         # TODO: class?
         if self.widget_repr is None:
-            repr_name_text = Text(value='', description='representation')
-            repr_name_text._ngl_name = 'repr_name_text'
+            self.widget_repr_name = Text(value='', description='representation')
+            self.widget_repr_name._ngl_name = 'repr_name_text'
             repr_selection = Text(value=' ', description='selection')
             repr_selection._ngl_name = 'repr_selection'
-            repr_selection.width = repr_name_text.width = default.DEFAULT_TEXT_WIDTH 
+            repr_selection.width = self.widget_repr_name.width = default.DEFAULT_TEXT_WIDTH 
 
             max_n_components = max(self._view.n_components-1, 0)
-            component_slider = IntSlider(value=0, max=max_n_components, min=0, description='component')
-            component_slider._ngl_name = 'component_slider'
-            component_slider.visible = False
+            self.widget_component_slider = IntSlider(value=0, max=max_n_components, min=0, description='component')
+            self.widget_component_slider._ngl_name = 'component_slider'
 
             cvalue = ' '
             component_dropdown = Dropdown(value=cvalue, options=[cvalue,],
                     description='component')
             component_dropdown._ngl_name = 'component_dropdown'
 
-            repr_slider = IntSlider(value=0, description='representation', width=default.DEFAULT_SLIDER_WIDTH)
-            repr_slider._ngl_name = 'repr_slider'
-            repr_slider.visible = True
+            self.widget_repr_slider = IntSlider(value=0, description='representation', width=default.DEFAULT_SLIDER_WIDTH)
+            self.widget_repr_slider._ngl_name = 'repr_slider'
+            self.widget_repr_slider.visible = True
 
-            component_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
-            repr_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
+            self.widget_component_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
+            self.widget_repr_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
             component_dropdown.layout.width = component_dropdown.max_width = default.DEFAULT_TEXT_WIDTH
 
-            # TODO: properly hide
-            repr_params_accordion = Accordion()
-            self.widget_repr_parameteres = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
-            repr_params_accordion.children = [self.widget_repr_parameteres]
-            repr_params_accordion.set_title(0, 'show parameters')
-            repr_params_accordion.selected_index = -1
+            self.widget_accordion_repr_parameters = Accordion()
+            self.widget_repr_parameteres =  self._make_widget_repr_parameteres(self.widget_component_slider,
+                    self.widget_repr_slider,
+                    self.widget_repr_name)
+            if self.widget_repr_name.value != 'surface':
+                self.widget_repr_parameteres.widget.children[1].layout.visibility = 'none'
+            self.widget_accordion_repr_parameters.children = [self.widget_repr_parameteres.widget]
+            self.widget_accordion_repr_parameters.set_title(0, 'show parameters')
+            self.widget_accordion_repr_parameters.selected_index = -1
             
             checkbox_reprlist = Checkbox(value=False, description='reprlist')
             checkbox_reprlist._ngl_name = 'checkbox_reprlist'
-            reprlist_choices = self._make_repr_name_choices(component_slider, repr_slider)
+            reprlist_choices = self._make_repr_name_choices(self.widget_component_slider,
+                    self.widget_repr_slider)
             reprlist_choices._ngl_name = 'reprlist_choices'
 
-            repr_add_widget = self._make_add_widget_repr(component_slider)
-            self.widget_component_slider = component_slider
-            self.widget_repr_slider = repr_slider
+            repr_add_widget = self._make_add_widget_repr(self.widget_component_slider)
 
             def on_update_checkbox_reprlist(change):
                 reprlist_choices.visible= change['new']
@@ -442,14 +445,14 @@ class TrajectoryPlayer(DOMWidget):
                     self._view._request_repr_parameters(component, repr_index)
 
             def on_component_or_repr_slider_value_changed(change):
-                self._view._request_repr_parameters(component=component_slider.value,
-                                                    repr_index=repr_slider.value)
+                self._view._request_repr_parameters(component=self.widget_component_slider.value,
+                                                    repr_index=self.widget_repr_slider.value)
                 component_dropdown.options = tuple(self._view._ngl_component_names)
 
-                if repr_params_accordion.selected_index >= 0:
-                    self.widget_repr_parameteres.name = repr_name_text.value
-                    self.widget_repr_parameteres.repr_index = repr_slider.value
-                    self.widget_repr_parameteres.component_index = component_slider.value
+                if self.widget_accordion_repr_parameters.selected_index >= 0:
+                    self.widget_repr_parameteres.name = self.widget_repr_name.value
+                    self.widget_repr_parameteres.repr_index = self.widget_repr_slider.value
+                    self.widget_repr_parameteres.component_index = self.widget_component_slider.value
 
             def on_repr_selection_value_changed(change):
                 if self._real_time_update:
@@ -466,39 +469,38 @@ class TrajectoryPlayer(DOMWidget):
 
             component_dropdown.observe(on_change_component_dropdown, names='value')
 
-            repr_slider.observe(on_component_or_repr_slider_value_changed, names='value')
-            component_slider.observe(on_component_or_repr_slider_value_changed, names='value')
-            repr_name_text.observe(on_repr_name_text_value_changed, names='value')
+            self.widget_repr_slider.observe(on_component_or_repr_slider_value_changed, names='value')
+            self.widget_component_slider.observe(on_component_or_repr_slider_value_changed, names='value')
+            self.widget_repr_name.observe(on_repr_name_text_value_changed, names='value')
             repr_selection.observe(on_repr_selection_value_changed, names='value')
 
-            bbox = self._make_button_repr_control(component_slider, repr_slider,
-                    repr_selection)
+            bbox = self._make_button_repr_control(self.widget_component_slider,
+            self.widget_repr_slider, repr_selection)
 
             blank_box = Box([Label("")])
 
-            all_kids = [bbox, blank_box, repr_add_widget, component_dropdown, repr_name_text, repr_selection,
-                       component_slider, repr_slider, reprlist_choices,
-                       repr_params_accordion]
+            all_kids = [bbox, blank_box, repr_add_widget, component_dropdown,
+                       self.widget_repr_name, repr_selection,
+                       self.widget_component_slider, self.widget_repr_slider, reprlist_choices,
+                       self.widget_accordion_repr_parameters]
 
             vbox = VBox(all_kids)
 
-            self._view._request_repr_parameters(component=component_slider.value,
-                repr_index=repr_slider.value)
+            self._view._request_repr_parameters(component=self.widget_component_slider.value,
+                repr_index=self.widget_repr_slider.value)
 
             self.widget_repr = _relayout_master(vbox, width='100%')
 
-            self._refresh(component_slider, repr_slider)
+            self._refresh(self.widget_component_slider, self.widget_repr_slider)
         return self.widget_repr
 
-    def _make_slider_repr_parameters(self, component_slider, repr_slider, repr_name_text=None):
+    def _make_widget_repr_parameteres(self, component_slider, repr_slider, repr_name_text=None):
         name = repr_name_text.value if repr_name_text is not None else ' '
         widget = self._view._display_repr(component=component_slider.value,
                                           repr_index=repr_slider.value,
                                           name=name)
         widget._ngl_name = 'repr_parameters_box'
-        if self.widget_repr_parameteres is None:
-            self.widget_repr_parameteres = widget
-        return self.widget_repr_parameteres
+        return widget
 
     def _make_button_export_image(self):
         slider_factor = IntSlider(value=4, min=1, max=10, description='scale')
