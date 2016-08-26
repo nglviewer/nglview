@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from traitlets import Dict, observe
+from traitlets import Dict, Any, observe
 from ipywidgets import DOMWidget, interactive
 from ipywidgets import VBox
 
@@ -8,14 +8,16 @@ from .color import COLOR_SCHEMES
 from .utils import widget_utils
 from .layout import _relayout_master
 
-class Representation(DOMWidget):
+class RepresentationControl(DOMWidget):
     parameters = Dict().tag(sync=False)
+    name = Any().tag(sync=False)
 
     def __init__(self, view, component_index, repr_index, name=None, *args, **kwargs):
-        super(Representation, self).__init__(*args, **kwargs)
+        super(RepresentationControl, self).__init__(*args, **kwargs)
         self.component_index = component_index   
         self.repr_index = repr_index
         self._view = view
+        self.widget = None
         self.name = name
 
     @observe('parameters')
@@ -25,6 +27,20 @@ class Representation(DOMWidget):
         self._view.update_representation(component=self.component_index,
                 repr_index=self.repr_index,
                 **parameters)
+
+    @observe('name')
+    def _on_name_changed(self, change):
+        name = change['new']
+        if self.widget is not None:
+            if name == 'surface':
+                self.widget.children[-1].layout.display = 'flex'
+            else:
+                self.widget.children[-1].layout.display = 'none'
+
+    def _ipython_display_(self):
+        if self.widget is None:
+            self.widget = self._display()
+        self.widget._ipython_display_()
 
     def _display(self):
         c_string = 'c' + str(self.component_index)
@@ -53,31 +69,33 @@ class Representation(DOMWidget):
                                  assembly=assembly_list)
         widget_utils.make_default_slider_width(iwidget)
         wbox = VBox([_relayout_master(iwidget, '100%'),])
-        if self.name == 'surface':
-            def func_extra(probe_radius=1.4,
-                    isolevel=2.,
-                    smooth=2.,
-                    surface_type='ms',
-                    box_size=10,
-                    cutoff=0.):
-                self.parameters = dict(probeRadius=probe_radius,
-                        isolevel=isolevel,
-                        smooth=smooth,
-                        surfaceType=surface_type,
-                        boxSize=box_size,
-                        cutoff=cutoff)
-            surface_types = ['vws', 'sas', 'ms', 'ses']
-            # use continuous_update=False to avoid expensive surface calculation and update
-            widget_extra = interactive(func_extra,
-                    probe_radius=(0., 5., 0.1),
-                    isolevel=(0., 10., 0.1),
-                    smooth=(0, 10, 1),
-                    surface_type=surface_types,
-                    box_size=(0, 100, 2),
-                    cutoff=(0., 100, 0.1),
-                    continuous_update=False)
+        def func_extra(probe_radius=1.4,
+                isolevel=2.,
+                smooth=2.,
+                surface_type='ms',
+                box_size=10,
+                cutoff=0.):
+            self.parameters = dict(probeRadius=probe_radius,
+                    isolevel=isolevel,
+                    smooth=smooth,
+                    surfaceType=surface_type,
+                    boxSize=box_size,
+                    cutoff=cutoff)
+        surface_types = ['vws', 'sas', 'ms', 'ses']
+        # use continuous_update=False to avoid expensive surface calculation and update
+        widget_extra = interactive(func_extra,
+                probe_radius=(0., 5., 0.1),
+                isolevel=(0., 10., 0.1),
+                smooth=(0, 10, 1),
+                surface_type=surface_types,
+                box_size=(0, 100, 2),
+                cutoff=(0., 100, 0.1),
+                continuous_update=False)
 
-            widget_utils.make_default_slider_width(widget_extra)
-            wbox.children = [_relayout_master(iwidget, '100%'),
-                             _relayout_master(widget_extra, '100%')]
-        return wbox
+        widget_utils.make_default_slider_width(widget_extra)
+        wbox.children = [_relayout_master(iwidget, '100%'),
+                         _relayout_master(widget_extra, '100%')]
+        self.widget = wbox
+        if self.name != 'surface':
+            self.widget.children[-1].layout.display = 'none'
+        return self.widget

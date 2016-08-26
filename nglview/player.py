@@ -406,8 +406,8 @@ class TrajectoryPlayer(DOMWidget):
 
             # TODO: properly hide
             repr_params_accordion = Accordion()
-            repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
-            repr_params_accordion.children = [repr_slider_parameters]
+            self.widget_repr_parameteres = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
+            repr_params_accordion.children = [self.widget_repr_parameteres]
             repr_params_accordion.set_title(0, 'show parameters')
             repr_params_accordion.selected_index = -1
             
@@ -447,8 +447,9 @@ class TrajectoryPlayer(DOMWidget):
                 component_dropdown.options = tuple(self._view._ngl_component_names)
 
                 if repr_params_accordion.selected_index >= 0:
-                    repr_slider_parameters = self._make_slider_repr_parameters(component_slider, repr_slider, repr_name_text)
-                    repr_params_accordion.children = [repr_slider_parameters,]
+                    self.widget_repr_parameteres.name = repr_name_text.value
+                    self.widget_repr_parameteres.repr_index = repr_slider.value
+                    self.widget_repr_parameteres.component_index = component_slider.value
 
             def on_repr_selection_value_changed(change):
                 if self._real_time_update:
@@ -494,15 +495,9 @@ class TrajectoryPlayer(DOMWidget):
         widget = self._view._display_repr(component=component_slider.value,
                                           repr_index=repr_slider.value,
                                           name=name)
-        widget._ngl_name = 'repr_parameters'
         widget._ngl_name = 'repr_parameters_box'
-
         if self.widget_repr_parameteres is None:
             self.widget_repr_parameteres = widget
-        else:
-            self.widget_repr_parameteres.children = widget.children
-
-        self.widget_repr_parameteres.visible = False
         return self.widget_repr_parameteres
 
     def _make_button_export_image(self):
