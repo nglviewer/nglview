@@ -330,10 +330,17 @@ class NGLWidget(DOMWidget):
             self._remote_call('cleanOutput',
                               target='Widget')
 
-    def display(self, gui=False):
-        display(self)
+    def display(self, gui=False, use_hbox=False):
         if gui:
-            display(self.player._display())
+            if use_hbox:
+                from nglview.widget_box import HBoxNGL
+                return HBoxNGL([self, self.player._display()])
+            else:
+                display(self)
+                display(self.player._display())
+                return None
+        else:
+            return self
 
     def _set_draggable(self, yes=True):
         if yes:

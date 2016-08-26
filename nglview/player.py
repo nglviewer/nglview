@@ -404,6 +404,7 @@ class TrajectoryPlayer(DOMWidget):
             self.widget_component_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
             self.widget_repr_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
             component_dropdown.layout.width = component_dropdown.max_width = default.DEFAULT_TEXT_WIDTH
+            component_dropdown.layout.display = 'flex'
 
             self.widget_accordion_repr_parameters = Accordion()
             self.widget_repr_parameteres =  self._make_widget_repr_parameteres(self.widget_component_slider,
