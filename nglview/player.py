@@ -107,8 +107,12 @@ class TrajectoryPlayer(DOMWidget):
     def _create_all_widgets(self):
         if self.widget_tab is None:
             self.widget_tab = self._display()
-            for index, _ in enumerate(self.widget_tab.childre):
-                self.widget_tab.selected_index = index
+
+        old_index = self.widget_tab.selected_index
+        for index, _ in enumerate(self.widget_tab.children):
+            self.widget_tab.selected_index = index
+
+        self.widget_tab.selected_index = old_index
 
     def smooth(self):
         self.interpolate = True
