@@ -15,7 +15,7 @@ class HBoxNGL(Box):
         for widget in self.children:
             if isinstance(widget, NGLWidget):
                 widget.displayed = True
-        js_utils._set_notebook_width('60%')
+        js_utils._set_notebook_width('60%', left_padding=None)
         super(HBoxNGL, self)._ipython_display_(*args, **kwargs)
 
     def _update_padding(self, padding=default.DEFAULT_PADDING):
