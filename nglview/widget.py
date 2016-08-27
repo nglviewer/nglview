@@ -336,6 +336,7 @@ class NGLWidget(DOMWidget):
                 from nglview.widget_box import BoxNGL
                 box = BoxNGL([self, self.player._display()])
                 box._gui_style = 'row'
+                box.layout.align_items = 'center'
                 return box
             else:
                 display(self)
