@@ -14,7 +14,7 @@ from ipywidgets import (DOMWidget,
                         interactive,
                         Layout, Accordion)
 
-from traitlets import Int, Bool, Dict, Float, CaselessStrEnum
+from traitlets import Any, Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
 
 from .parameters import REPRESENTATION_NAMES
@@ -45,6 +45,23 @@ class TrajectoryPlayer(DOMWidget):
     _render_params = Dict().tag(sync=False)
     _real_time_update = Bool(False).tag(sync=False)
 
+    widget_tab = Any(None).tag(sync=False)
+    widget_repr = Any(None).tag(sync=False)
+    widget_repr_parameteres = Any(None).tag(sync=False)
+    widget_quick_repr = Any(None).tag(sync=False)
+    widget_general = Any(None).tag(sync=False)
+    widget_picked = Any(None).tag(sync=False)
+    widget_preference = Any(None).tag(sync=False)
+    widget_extra = Any(None).tag(sync=False)
+    widget_theme = Any(None).tag(sync=False)
+    widget_help = Any(None).tag(sync=False)
+    widget_export_image = Any(None).tag(sync=False)
+    widget_component_slider = Any(None).tag(sync=False)
+    widget_repr_slider = Any(None).tag(sync=False)
+    widget_accordion_repr_parameters = Any(None).tag(sync=False)
+    widget_repr_name = Any(None).tag(sync=False)
+    widget_component_dropdown = Any(None).tag(sync=False)
+
     def __init__(self, view, step=1, delay=100,
                  sync_frame=False, min_delay=40):
         self._view = view
@@ -62,20 +79,16 @@ class TrajectoryPlayer(DOMWidget):
                                    antialias=True,
                                    trim=False,
                                    transparent=False)
-        self.widget_repr = None
-        self.widget_repr_parameteres = None
-        self.widget_general = None
-        self.widget_picked = None
-        self.widget_preference = None
-        self.widget_extra = None
-        self.widget_theme = None
-        self.widget_help = None
-        self.widget_export_image = None
-        self.widget_component_slider = None
-        self.widget_repr_slider = None
-        self.widget_accordion_repr_parameters = None
-        self.widget_repr_name = None
-        self.widget_component_dropdown = None
+
+        self._widget_names = [w for w in dir(self) if w.startswith('wiget_')]
+        self.observe(self._on_widget_built, names=['widget_repr_parameteres',
+            'widget_repr',
+            'widget_preference'])
+
+    def _on_widget_built(self, change):
+        widget = change['new']
+        if widget is not None:
+            widget.layout.padding = '5%'
 
     def _update_padding(self, padding=default.DEFAULT_PADDING):
         widget_collection = [
@@ -188,7 +201,9 @@ class TrajectoryPlayer(DOMWidget):
         tab.layout.align_self = 'center'
         tab.layout.align_items = 'stretch'
 
-        return tab
+        self.widget_tab = tab
+
+        return self.widget_tab
 
     def _make_button_center(self):
         button = Button(description=' Center', icon='fa-bullseye')
@@ -628,7 +643,8 @@ class TrajectoryPlayer(DOMWidget):
 
         vbox.children = children + [repr_selection, button_clear]
         _make_autofit(vbox)
-        return vbox
+        self.widget_quick_repr = vbox
+        return self.widget_quick_repr
 
     def _make_repr_name_choices(self, component_slider, repr_slider):
         repr_choices = Dropdown()
