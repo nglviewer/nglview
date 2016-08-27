@@ -36,7 +36,7 @@ class BoxNGL(Box):
     def _update_size(self):
         for widget in self.children:
             if isinstance(widget, NGLWidget):
-                  widget._remote_call('setSize', target='Widget', args=['700px', '500px'])
+                  widget._remote_call('setSize', target='Widget', args=['50%', '50%'])
 
     def _beautify(self):
         js_utils._set_notebook_width('60%', left_padding=None)
