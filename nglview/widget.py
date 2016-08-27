@@ -330,11 +330,14 @@ class NGLWidget(DOMWidget):
             self._remote_call('cleanOutput',
                               target='Widget')
 
-    def display(self, gui=False, use_hbox=False):
+    def display(self, gui=False, use_box=False):
         if gui:
-            if use_hbox:
-                from nglview.widget_box import HBoxNGL
-                return HBoxNGL([self, self.player._display()])
+            if use_box:
+                from nglview.widget_box import BoxNGL
+                box = BoxNGL([self, self.player._display()])
+                box._gui_style = 'row'
+                box.layout.align_items = 'center'
+                return box
             else:
                 display(self)
                 display(self.player._display())
