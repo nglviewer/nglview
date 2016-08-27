@@ -16,7 +16,7 @@ from .utils.py_utils import (seq_to_string, string_types, _camelize_dict,
 from .player import TrajectoryPlayer
 from . import interpolate
 from .shape import Shape
-from .representation import Representation
+from .representation import RepresentationControl
 
 from .adaptor import (Trajectory, PyTrajTrajectory,
         MDTrajTrajectory, MDAnalysisTrajectory, ParmEdTrajectory)
@@ -221,13 +221,13 @@ class NGLWidget(DOMWidget):
 
     @observe('n_components')
     def _handle_n_components_changed(self, change):
-        if self.player.repr_widget is not None:
-            component_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'component_slider')
+        if self.player.widget_repr is not None:
+            component_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'component_slider')
 
             if change['new'] - 1 >= component_slider.min:
                 component_slider.max = change['new'] - 1
 
-            component_dropdown = widget_utils.get_widget_by_name(self.player.repr_widget, 'component_dropdown')
+            component_dropdown = widget_utils.get_widget_by_name(self.player.widget_repr, 'component_dropdown')
             component_dropdown.options = tuple(self._ngl_component_names)
 
             if change['new'] == 0:
@@ -236,27 +236,27 @@ class NGLWidget(DOMWidget):
 
                 component_slider.max = 0
 
-                reprlist_choices = widget_utils.get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+                reprlist_choices = widget_utils.get_widget_by_name(self.player.widget_repr, 'reprlist_choices')
                 reprlist_choices.options = tuple([''])
 
-                repr_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_slider')
+                repr_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_slider')
                 repr_slider.max = 0
 
-                repr_name_text = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_name_text')
-                repr_selection = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_selection')
+                repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
+                repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
                 repr_name_text.value = ' '
                 repr_selection.value = ' '
 
     @observe('_repr_dict')
     def _handle_repr_dict_changed(self, change):
-        if self.player.repr_widget is not None:
-            repr_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_slider')
-            component_slider = widget_utils.get_widget_by_name(self.player.repr_widget, 'component_slider')
+        if self.player.widget_repr is not None:
+            repr_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_slider')
+            component_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'component_slider')
 
-            repr_name_text = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_name_text')
-            repr_selection = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_selection')
+            repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
+            repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
 
-            reprlist_choices = widget_utils.get_widget_by_name(self.player.repr_widget, 'reprlist_choices')
+            reprlist_choices = widget_utils.get_widget_by_name(self.player.widget_repr, 'reprlist_choices')
             repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
 
             if change['new'] == {'c0': {}}:
@@ -330,10 +330,20 @@ class NGLWidget(DOMWidget):
             self._remote_call('cleanOutput',
                               target='Widget')
 
-    def display(self, gui=False):
-        display(self)
+    def display(self, gui=False, use_box=False):
         if gui:
-            display(self.player._display())
+            if use_box:
+                from nglview.widget_box import BoxNGL
+                box = BoxNGL([self, self.player._display()])
+                box._gui_style = 'row'
+                box.layout.align_items = 'center'
+                return box
+            else:
+                display(self)
+                display(self.player._display())
+                return None
+        else:
+            return self
 
     def _set_draggable(self, yes=True):
         if yes:
@@ -476,7 +486,7 @@ class NGLWidget(DOMWidget):
         except KeyError:
             name = ''
 
-        return Representation(self, component, repr_index, name=name)._display()
+        return RepresentationControl(self, component, repr_index, name=name)
 
     def _set_initial_structure(self, structures):
         """initialize structures for Widget
@@ -805,10 +815,10 @@ class NGLWidget(DOMWidget):
                 data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
                 data_dict_json = data_dict_json.replace('null', '"null"')
 
-                if self.player.repr_widget is not None:
+                if self.player.widget_repr is not None:
                     # TODO: refactor
-                    repr_name_text = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_name_text')
-                    repr_selection = widget_utils.get_widget_by_name(self.player.repr_widget, 'repr_selection')
+                    repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
+                    repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
                     repr_name_text.value = name
                     repr_selection.value = selection
 

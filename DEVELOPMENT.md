@@ -24,6 +24,19 @@ python setup.py sdist
 # Upload with twine:
 twine upload dist/*
 ```
+Install
+=======
+Install developer mode so you don't need to  re-install after chaning your code.
+
+```python
+pip install -e .
+```
+
+Update Javascript build
+========================
+```bash
+python setup.py build --npm
+```
 
 Test notebook
 =============
