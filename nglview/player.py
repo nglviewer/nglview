@@ -75,6 +75,7 @@ class TrajectoryPlayer(DOMWidget):
         self.widget_repr_slider = None
         self.widget_accordion_repr_parameters = None
         self.widget_repr_name = None
+        self.widget_component_dropdown = None
 
     def _update_padding(self, padding=default.DEFAULT_PADDING):
         widget_collection = [
@@ -393,9 +394,9 @@ class TrajectoryPlayer(DOMWidget):
             self.widget_component_slider._ngl_name = 'component_slider'
 
             cvalue = ' '
-            component_dropdown = Dropdown(value=cvalue, options=[cvalue,],
+            self.widget_component_dropdown = Dropdown(value=cvalue, options=[cvalue,],
                     description='component')
-            component_dropdown._ngl_name = 'component_dropdown'
+            self.widget_component_dropdown._ngl_name = 'component_dropdown'
 
             self.widget_repr_slider = IntSlider(value=0, description='representation', width=default.DEFAULT_SLIDER_WIDTH)
             self.widget_repr_slider._ngl_name = 'repr_slider'
@@ -403,8 +404,11 @@ class TrajectoryPlayer(DOMWidget):
 
             self.widget_component_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
             self.widget_repr_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
-            component_dropdown.layout.width = component_dropdown.max_width = default.DEFAULT_TEXT_WIDTH
-            component_dropdown.layout.display = 'flex'
+            self.widget_component_dropdown.layout.width = self.widget_component_dropdown.max_width = default.DEFAULT_TEXT_WIDTH
+
+            # turn off for now
+            self.widget_component_dropdown.layout.display = 'none'
+            self.widget_component_dropdown.description = ''
 
             self.widget_accordion_repr_parameters = Accordion()
             self.widget_repr_parameteres =  self._make_widget_repr_parameteres(self.widget_component_slider,
@@ -446,7 +450,7 @@ class TrajectoryPlayer(DOMWidget):
             def on_component_or_repr_slider_value_changed(change):
                 self._view._request_repr_parameters(component=self.widget_component_slider.value,
                                                     repr_index=self.widget_repr_slider.value)
-                component_dropdown.options = tuple(self._view._ngl_component_names)
+                self.widget_component_dropdown.options = tuple(self._view._ngl_component_names)
 
                 if self.widget_accordion_repr_parameters.selected_index >= 0:
                     self.widget_repr_parameteres.name = self.widget_repr_name.value
@@ -466,7 +470,7 @@ class TrajectoryPlayer(DOMWidget):
                 if choice:
                      self.widget_component_slider.value = self._view._ngl_component_names.index(choice)
 
-            component_dropdown.observe(on_change_component_dropdown, names='value')
+            self.widget_component_dropdown.observe(on_change_component_dropdown, names='value')
 
             self.widget_repr_slider.observe(on_component_or_repr_slider_value_changed, names='value')
             self.widget_component_slider.observe(on_component_or_repr_slider_value_changed, names='value')
@@ -478,7 +482,7 @@ class TrajectoryPlayer(DOMWidget):
 
             blank_box = Box([Label("")])
 
-            all_kids = [bbox, blank_box, repr_add_widget, component_dropdown,
+            all_kids = [bbox, blank_box, repr_add_widget, self.widget_component_dropdown,
                        self.widget_repr_name, repr_selection,
                        self.widget_component_slider, self.widget_repr_slider, reprlist_choices,
                        self.widget_accordion_repr_parameters]
