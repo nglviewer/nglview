@@ -11,14 +11,20 @@ __alll__ = ['clean_error_output', 'launch_qtconsole',
 def run(command):
     display(Javascript(command))
 
-def _set_notebook_width(width='20%'):
+def _set_notebook_width(width='20%', left_padding=0):
     script_template = """
     var cb = Jupyter.notebook.container;
 
     cb.width('{width}');
-    cb.offset({{'left': 0}})
-    """
-    display(Javascript(script_template.format(width=width)))
+
+    """.format(width=width)
+
+    if left_padding is not None:
+        offset_str = "cb.offset({{'left': {}}})".format(left_padding)
+    else:
+        offset_str = ''
+    command = script_template + offset_str
+    display(Javascript(command))
 
 def _set_notebook_draggable(yes=True):
     script_template = """
