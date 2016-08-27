@@ -61,6 +61,7 @@ class TrajectoryPlayer(DOMWidget):
     widget_accordion_repr_parameters = Any(None).tag(sync=False)
     widget_repr_name = Any(None).tag(sync=False)
     widget_component_dropdown = Any(None).tag(sync=False)
+    widget_drag = Any(None).tag(sync=False)
 
     def __init__(self, view, step=1, delay=100,
                  sync_frame=False, min_delay=40):
@@ -102,6 +103,12 @@ class TrajectoryPlayer(DOMWidget):
         for widget in widget_collection:
             if widget is not None:
                 widget.layout.padding = padding
+
+    def _create_all_widgets(self):
+        if self.widget_tab is None:
+            self.widget_tab = self._display()
+            for index, _ in enumerate(self.widget_tab.childre):
+                self.widget_tab.selected_index = index
 
     def smooth(self):
         self.interpolate = True
@@ -704,6 +711,7 @@ class TrajectoryPlayer(DOMWidget):
         drag_box = HBox([button_drag, drag_nb, button_reset_notebook,
                         button_dialog, button_split_half])
         drag_box = _make_autofit(drag_box)
+        self.widget_drag = drag_box
         return drag_box
 
     def _make_spin_box(self):
