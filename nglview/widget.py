@@ -335,7 +335,7 @@ class NGLWidget(DOMWidget):
             if use_box:
                 from nglview.widget_box import BoxNGL
                 box = BoxNGL([self, self.player._display()])
-                box._gui_style = 'column'
+                box._gui_style = 'row'
                 return box
             else:
                 display(self)
