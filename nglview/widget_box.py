@@ -1,10 +1,10 @@
 from __future__ import absolute_import
-from ipywidgets import Box
+from ipywidgets import Box, DOMWidget
 from .widget import NGLWidget
 from .layout import form_item_layout
 from . import default
 from .utils import js_utils
-from traitlets import CaselessStrEnum, observe
+from traitlets import CaselessStrEnum, observe, Unicode
 
 class BoxNGL(Box):
     _gui_style = CaselessStrEnum(['row', 'column'], default_value='row').tag(sync=True)
@@ -35,3 +35,8 @@ class BoxNGL(Box):
     def _beautify(self):
         js_utils._set_notebook_width('60%', left_padding=None)
         self._update_size()
+
+class Box2(DOMWidget):
+    _view_name = Unicode("NGLBox").tag(sync=True)
+    _view_module = Unicode("nglview-js").tag(sync=True)
+    draggable = Unicode().tag(sync=True)

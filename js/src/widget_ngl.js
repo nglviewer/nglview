@@ -799,7 +799,20 @@ var NGLView = widgets.DOMWidgetView.extend({
 },
 });
 
+var NGLBox = widgets.BoxView.extend({
+    //render: function(){
+    //    widgets.BoxView.prototype.render.call(this);
+    //    this.on('change:draggable', this.draggableChanged, this);
+    //},
+
+    draggableChanged: function(){
+        var draggable = this.model.get('draggable');
+        this.$el.draggable(draggable);
+    },
+});
+
 module.exports = {
     'NGLView': NGLView,
-    'NGL': NGL
+    'NGL': NGL,
+    'NGLBox': NGLBox
 };

@@ -881,9 +881,22 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	},
 	});
 	
+	var NGLBox = widgets.BoxView.extend({
+	    //render: function(){
+	    //    widgets.BoxView.prototype.render.call(this);
+	    //    this.on('change:draggable', this.draggableChanged, this);
+	    //},
+	
+	    draggableChanged: function(){
+	        var draggable = this.model.get('draggable');
+	        this.$el.draggable(draggable);
+	    },
+	});
+	
 	module.exports = {
 	    'NGLView': NGLView,
-	    'NGL': NGL
+	    'NGL': NGL,
+	    'NGLBox': NGLBox
 	};
 
 
