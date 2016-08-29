@@ -36,6 +36,10 @@ Update Javascript build
 ========================
 ```bash
 python setup.py build --npm
+
+# you can install `watch` to autobuild if the js source code is changed.
+npm install watch -g
+watch 'python setup.py build --npm' js/src/
 ```
 
 Test notebook
