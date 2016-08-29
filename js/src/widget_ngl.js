@@ -800,14 +800,22 @@ var NGLView = widgets.DOMWidgetView.extend({
 });
 
 var NGLBox = widgets.BoxView.extend({
-    //render: function(){
-    //    widgets.BoxView.prototype.render.call(this);
-    //    this.on('change:draggable', this.draggableChanged, this);
-    //},
+    render: function(){
+        this.model.on('change:draggable', this.draggableChanged, this);
+        console.log('change 7');
+        widgets.BoxView.prototype.render.call(this);
+    },
 
     draggableChanged: function(){
         var draggable = this.model.get('draggable');
-        this.$el.draggable(draggable);
+        var $node = $(this.$el.parent()[0]);
+        if (draggable == 'on'){
+            $node.draggable();
+            $node.resizable();
+        }else if (draggable == 'off'){
+            $node.draggable('destroy');
+            $node.resizable('destroy');
+        }
     },
 });
 

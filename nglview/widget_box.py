@@ -36,7 +36,7 @@ class BoxNGL(Box):
         js_utils._set_notebook_width('60%', left_padding=None)
         self._update_size()
 
-class Box2(DOMWidget):
+class Box2(Box):
     _view_name = Unicode("NGLBox").tag(sync=True)
     _view_module = Unicode("nglview-js").tag(sync=True)
-    draggable = Unicode().tag(sync=True)
+    draggable = Unicode('off').tag(sync=True)
