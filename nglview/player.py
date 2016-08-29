@@ -12,7 +12,7 @@ from ipywidgets import (DOMWidget,
                         Text, Textarea, IntText, FloatText,
                         Label,
                         interactive,
-                        Layout, Accordion)
+                        Layout, Tab, Accordion, HTML)
 
 from traitlets import Any, Int, Bool, Dict, Float, CaselessStrEnum
 from traitlets import observe, link
@@ -436,13 +436,15 @@ class TrajectoryPlayer(DOMWidget):
             self.widget_component_dropdown.layout.display = 'none'
             self.widget_component_dropdown.description = ''
 
-            self.widget_accordion_repr_parameters = Accordion()
+            # self.widget_accordion_repr_parameters = Accordion()
+            self.widget_accordion_repr_parameters = Tab()
             self.widget_repr_parameteres =  self._make_widget_repr_parameteres(self.widget_component_slider,
                     self.widget_repr_slider,
                     self.widget_repr_name)
-            self.widget_accordion_repr_parameters.children = [self.widget_repr_parameteres,]
-            self.widget_accordion_repr_parameters.set_title(0, 'show parameters')
-            self.widget_accordion_repr_parameters.selected_index = -1
+            self.widget_accordion_repr_parameters.children = [self.widget_repr_parameteres, Box()]
+            self.widget_accordion_repr_parameters.set_title(0, 'Parameters')
+            self.widget_accordion_repr_parameters.set_title(1, 'Hide')
+            self.widget_accordion_repr_parameters.selected_index = 1
             
             checkbox_reprlist = Checkbox(value=False, description='reprlist')
             checkbox_reprlist._ngl_name = 'checkbox_reprlist'
