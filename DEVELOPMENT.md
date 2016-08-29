@@ -40,6 +40,11 @@ python setup.py build --npm
 # you can install `watch` to autobuild if the js source code is changed.
 npm install watch -g
 watch 'python setup.py build --npm' js/src/
+# tips
+# - Use private mode to avoid cache
+# - After changing js code
+#     - Kernel --> Restart and Clear Output
+#     - Refresh webpage (F5)
 ```
 
 Test notebook
