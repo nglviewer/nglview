@@ -882,22 +882,45 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	});
 	
 	var NGLBox = widgets.BoxView.extend({
+	    initialize: function(parameters){
+	        widgets.BoxView.prototype.initialize.call(this, parameters);
+	        this.$dialog = undefined;
+	    },
+	
 	    render: function(){
-	        this.model.on('change:draggable', this.draggableChanged, this);
-	        console.log('change 7');
+	        this.model.on('change:_dialog', this.draggableChanged, this);
+	        this.model.on('change:_ngl_command', this.commandChanged, this);
+	        console.log('change 9');
 	        widgets.BoxView.prototype.render.call(this);
 	    },
 	
 	    draggableChanged: function(){
-	        var draggable = this.model.get('draggable');
-	        var $node = $(this.$el.parent()[0]);
-	        if (draggable == 'on'){
-	            $node.draggable();
-	            $node.resizable();
-	        }else if (draggable == 'off'){
-	            $node.draggable('destroy');
-	            $node.resizable('destroy');
+	        var _dialog = this.model.get('_dialog');
+	        if (_dialog == 'on'){
+	            this.setDialog();
 	        }
+	    },
+	
+	    commandChanged: function(){
+	        console.log("place holder");
+	    },
+	
+	    setDialog: function(){
+	        var $node = $(this.$el.parent()[0]);
+	        var that = this;
+	        dialog  = $node.dialog({
+	            title: "Representation control",
+	            draggable: true,
+	            resizable: true,
+	            modal: false,
+	            height: 'auto',
+	            show: { effect: "blind", duration: 150 },
+	        });
+	        dialog.css({overflow: 'hidden'});
+	        dialog.prev('.ui-dialog-titlebar')
+	              .css({'background': 'transparent',
+	                    'border': 'none'});
+	        this.$dialog;
 	    },
 	});
 	

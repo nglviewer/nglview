@@ -58,6 +58,7 @@ class TrajectoryPlayer(DOMWidget):
     widget_export_image = Any(None).tag(sync=False)
     widget_component_slider = Any(None).tag(sync=False)
     widget_repr_slider = Any(None).tag(sync=False)
+    widget_repr_choices = Any(None).tag(sync=False)
     widget_accordion_repr_parameters = Any(None).tag(sync=False)
     widget_repr_name = Any(None).tag(sync=False)
     widget_component_dropdown = Any(None).tag(sync=False)
@@ -448,14 +449,14 @@ class TrajectoryPlayer(DOMWidget):
             
             checkbox_reprlist = Checkbox(value=False, description='reprlist')
             checkbox_reprlist._ngl_name = 'checkbox_reprlist'
-            reprlist_choices = self._make_repr_name_choices(self.widget_component_slider,
+            self.widget_repr_choices = self._make_repr_name_choices(self.widget_component_slider,
                     self.widget_repr_slider)
-            reprlist_choices._ngl_name = 'reprlist_choices'
+            self.widget_repr_choices._ngl_name = 'reprlist_choices'
 
             repr_add_widget = self._make_add_widget_repr(self.widget_component_slider)
 
             def on_update_checkbox_reprlist(change):
-                reprlist_choices.visible= change['new']
+                self.widget_repr_choices.visible= change['new']
             checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
 
             def on_repr_name_text_value_changed(change):
@@ -512,7 +513,7 @@ class TrajectoryPlayer(DOMWidget):
 
             all_kids = [bbox, blank_box, repr_add_widget, self.widget_component_dropdown,
                        self.widget_repr_name, repr_selection,
-                       self.widget_component_slider, self.widget_repr_slider, reprlist_choices,
+                       self.widget_component_slider, self.widget_repr_slider, self.widget_repr_choices,
                        self.widget_accordion_repr_parameters]
 
             vbox = VBox(all_kids)
@@ -670,7 +671,8 @@ class TrajectoryPlayer(DOMWidget):
         repr_choices.observe(on_chose, names='value')
         repr_choices.layout.width = default.DEFAULT_TEXT_WIDTH
 
-        return repr_choices
+        self.widget_repr_choices = repr_choices
+        return self.widget_repr_choices
 
     def _make_drag_widget(self):
         button_drag = Button(description='widget drag: off', tooltip='dangerous')

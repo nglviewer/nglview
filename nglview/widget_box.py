@@ -39,4 +39,4 @@ class BoxNGL(Box):
 class Box2(Box):
     _view_name = Unicode("NGLBox").tag(sync=True)
     _view_module = Unicode("nglview-js").tag(sync=True)
-    draggable = Unicode('off').tag(sync=True)
+    _dialog = Unicode('off').tag(sync=True)
