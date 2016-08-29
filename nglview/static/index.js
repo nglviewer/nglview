@@ -888,13 +888,13 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    },
 	
 	    render: function(){
-	        this.model.on('change:_dialog', this.draggableChanged, this);
+	        this.model.on('change:_dialog', this.dialogCommandChanged, this);
 	        this.model.on('change:_ngl_command', this.commandChanged, this);
 	        console.log('change 9');
 	        widgets.BoxView.prototype.render.call(this);
 	    },
 	
-	    draggableChanged: function(){
+	    dialogCommandChanged: function(){
 	        var _dialog = this.model.get('_dialog');
 	        if (_dialog == 'on'){
 	            this.setDialog();
@@ -909,7 +909,6 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        var $node = $(this.$el.parent()[0]);
 	        var that = this;
 	        dialog  = $node.dialog({
-	            title: "Representation control",
 	            draggable: true,
 	            resizable: true,
 	            modal: false,
@@ -920,7 +919,6 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        dialog.prev('.ui-dialog-titlebar')
 	              .css({'background': 'transparent',
 	                    'border': 'none'});
-	        this.$dialog;
 	    },
 	});
 	

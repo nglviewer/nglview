@@ -59,6 +59,8 @@ class TrajectoryPlayer(DOMWidget):
     widget_component_slider = Any(None).tag(sync=False)
     widget_repr_slider = Any(None).tag(sync=False)
     widget_repr_choices = Any(None).tag(sync=False)
+    widget_repr_control_buttons = Any(None).tag(sync=False)
+    widget_repr_add = Any(None).tag(sync=False)
     widget_accordion_repr_parameters = Any(None).tag(sync=False)
     widget_repr_name = Any(None).tag(sync=False)
     widget_component_dropdown = Any(None).tag(sync=False)
@@ -405,7 +407,8 @@ class TrajectoryPlayer(DOMWidget):
 
         bbox = _make_autofit(HBox([button_refresh, button_center_selection,
             button_hide, button_remove]))
-        return Box([Label(""), bbox])
+        self.widget_repr_control_buttons = bbox
+        return self.widget_repr_control_buttons
 
     def _make_widget_repr(self):
         # TODO: class?
@@ -453,7 +456,7 @@ class TrajectoryPlayer(DOMWidget):
                     self.widget_repr_slider)
             self.widget_repr_choices._ngl_name = 'reprlist_choices'
 
-            repr_add_widget = self._make_add_widget_repr(self.widget_component_slider)
+            self.widget_repr_add = self._make_add_widget_repr(self.widget_component_slider)
 
             def on_update_checkbox_reprlist(change):
                 self.widget_repr_choices.visible= change['new']
@@ -511,7 +514,7 @@ class TrajectoryPlayer(DOMWidget):
 
             blank_box = Box([Label("")])
 
-            all_kids = [bbox, blank_box, repr_add_widget, self.widget_component_dropdown,
+            all_kids = [bbox, blank_box, self.widget_repr_add, self.widget_component_dropdown,
                        self.widget_repr_name, repr_selection,
                        self.widget_component_slider, self.widget_repr_slider, self.widget_repr_choices,
                        self.widget_accordion_repr_parameters]
@@ -835,3 +838,10 @@ class TrajectoryPlayer(DOMWidget):
         for index, _ in enumerate(tab.children):
             # trigger ceating widgets
             tab.selected_index = index
+
+    def _simplify_repr_control(self):
+        for widget in self.widget_repr.children:
+            if widget != self.widget_repr_parameteres:
+                print(widget)
+                # widget.layout.display = 'none'
+

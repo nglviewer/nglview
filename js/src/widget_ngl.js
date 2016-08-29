@@ -806,13 +806,13 @@ var NGLBox = widgets.BoxView.extend({
     },
 
     render: function(){
-        this.model.on('change:_dialog', this.draggableChanged, this);
+        this.model.on('change:_dialog', this.dialogCommandChanged, this);
         this.model.on('change:_ngl_command', this.commandChanged, this);
         console.log('change 9');
         widgets.BoxView.prototype.render.call(this);
     },
 
-    draggableChanged: function(){
+    dialogCommandChanged: function(){
         var _dialog = this.model.get('_dialog');
         if (_dialog == 'on'){
             this.setDialog();
@@ -837,7 +837,6 @@ var NGLBox = widgets.BoxView.extend({
         dialog.prev('.ui-dialog-titlebar')
               .css({'background': 'transparent',
                     'border': 'none'});
-        this.$dialog;
     },
 });
 
