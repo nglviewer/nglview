@@ -58,6 +58,9 @@ class TrajectoryPlayer(DOMWidget):
     widget_export_image = Any(None).tag(sync=False)
     widget_component_slider = Any(None).tag(sync=False)
     widget_repr_slider = Any(None).tag(sync=False)
+    widget_repr_choices = Any(None).tag(sync=False)
+    widget_repr_control_buttons = Any(None).tag(sync=False)
+    widget_repr_add = Any(None).tag(sync=False)
     widget_accordion_repr_parameters = Any(None).tag(sync=False)
     widget_repr_name = Any(None).tag(sync=False)
     widget_component_dropdown = Any(None).tag(sync=False)
@@ -404,7 +407,8 @@ class TrajectoryPlayer(DOMWidget):
 
         bbox = _make_autofit(HBox([button_refresh, button_center_selection,
             button_hide, button_remove]))
-        return Box([Label(""), bbox])
+        self.widget_repr_control_buttons = bbox
+        return self.widget_repr_control_buttons
 
     def _make_widget_repr(self):
         # TODO: class?
@@ -448,14 +452,14 @@ class TrajectoryPlayer(DOMWidget):
             
             checkbox_reprlist = Checkbox(value=False, description='reprlist')
             checkbox_reprlist._ngl_name = 'checkbox_reprlist'
-            reprlist_choices = self._make_repr_name_choices(self.widget_component_slider,
+            self.widget_repr_choices = self._make_repr_name_choices(self.widget_component_slider,
                     self.widget_repr_slider)
-            reprlist_choices._ngl_name = 'reprlist_choices'
+            self.widget_repr_choices._ngl_name = 'reprlist_choices'
 
-            repr_add_widget = self._make_add_widget_repr(self.widget_component_slider)
+            self.widget_repr_add = self._make_add_widget_repr(self.widget_component_slider)
 
             def on_update_checkbox_reprlist(change):
-                reprlist_choices.visible= change['new']
+                self.widget_repr_choices.visible= change['new']
             checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
 
             def on_repr_name_text_value_changed(change):
@@ -510,9 +514,10 @@ class TrajectoryPlayer(DOMWidget):
 
             blank_box = Box([Label("")])
 
-            all_kids = [bbox, blank_box, repr_add_widget, self.widget_component_dropdown,
-                       self.widget_repr_name, repr_selection,
-                       self.widget_component_slider, self.widget_repr_slider, reprlist_choices,
+            all_kids = [bbox, blank_box, self.widget_repr_add, self.widget_component_dropdown,
+                       self.widget_repr_name,
+                       repr_selection,
+                       self.widget_component_slider, self.widget_repr_slider, self.widget_repr_choices,
                        self.widget_accordion_repr_parameters]
 
             vbox = VBox(all_kids)
@@ -523,7 +528,14 @@ class TrajectoryPlayer(DOMWidget):
             self.widget_repr = _relayout_master(vbox, width='100%')
 
             self._refresh(self.widget_component_slider, self.widget_repr_slider)
-        return self.widget_repr
+
+            setattr(self.widget_repr, "_saved_widgets", [])
+            for _box in self.widget_repr.children:
+                if hasattr(_box, 'children'):
+                    for kid in _box.children:
+                        self.widget_repr._saved_widgets.append(kid)
+
+            return self.widget_repr
 
     def _make_widget_repr_parameteres(self, component_slider, repr_slider, repr_name_text=None):
         name = repr_name_text.value if repr_name_text is not None else ' '
@@ -670,7 +682,8 @@ class TrajectoryPlayer(DOMWidget):
         repr_choices.observe(on_chose, names='value')
         repr_choices.layout.width = default.DEFAULT_TEXT_WIDTH
 
-        return repr_choices
+        self.widget_repr_choices = repr_choices
+        return self.widget_repr_choices
 
     def _make_drag_widget(self):
         button_drag = Button(description='widget drag: off', tooltip='dangerous')
@@ -833,3 +846,10 @@ class TrajectoryPlayer(DOMWidget):
         for index, _ in enumerate(tab.children):
             # trigger ceating widgets
             tab.selected_index = index
+
+    def _simplify_repr_control(self):
+        for widget in self.widget_repr._saved_widgets:
+            if not isinstance(widget, Tab):
+                widget.layout.display = 'none'
+        self.widget_repr_choices.layout.display = 'flex'
+        self.widget_accordion_repr_parameters.selected_index = 0
