@@ -515,7 +515,8 @@ class TrajectoryPlayer(DOMWidget):
             blank_box = Box([Label("")])
 
             all_kids = [bbox, blank_box, self.widget_repr_add, self.widget_component_dropdown,
-                       self.widget_repr_name, repr_selection,
+                       self.widget_repr_name,
+                       repr_selection,
                        self.widget_component_slider, self.widget_repr_slider, self.widget_repr_choices,
                        self.widget_accordion_repr_parameters]
 
@@ -527,7 +528,14 @@ class TrajectoryPlayer(DOMWidget):
             self.widget_repr = _relayout_master(vbox, width='100%')
 
             self._refresh(self.widget_component_slider, self.widget_repr_slider)
-        return self.widget_repr
+
+            setattr(self.widget_repr, "_saved_widgets", [])
+            for _box in self.widget_repr.children:
+                if hasattr(_box, 'children'):
+                    for kid in _box.children:
+                        self.widget_repr._saved_widgets.append(kid)
+
+            return self.widget_repr
 
     def _make_widget_repr_parameteres(self, component_slider, repr_slider, repr_name_text=None):
         name = repr_name_text.value if repr_name_text is not None else ' '
@@ -840,8 +848,8 @@ class TrajectoryPlayer(DOMWidget):
             tab.selected_index = index
 
     def _simplify_repr_control(self):
-        for widget in self.widget_repr.children:
-            if widget != self.widget_repr_parameteres:
-                print(widget)
-                # widget.layout.display = 'none'
-
+        for widget in self.widget_repr._saved_widgets:
+            if not isinstance(widget, Tab):
+                widget.layout.display = 'none'
+        self.widget_repr_choices.layout.display = 'flex'
+        self.widget_accordion_repr_parameters.selected_index = 0
