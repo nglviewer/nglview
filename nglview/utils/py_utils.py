@@ -13,6 +13,11 @@ __all__ = ['encode_base64', 'decode_base64',
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
+def _update_url(func):
+    from nglview.default import NGL_BASE_URL
+    func.__doc__ = func.__doc__.format(ngl_url=NGL_BASE_URL)
+    return func
+
 if PY3:
     string_types = str
 else:

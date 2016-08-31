@@ -1,6 +1,6 @@
+from .utils.py_utils import _update_url
 
-from . import default
-
+@_update_url
 class Shape(object):
     """TODO: doc
 
@@ -24,7 +24,7 @@ class Shape(object):
     See also
     --------
     {ngl_url}
-    """.format(ngl_url=default.NGL_BASE_URL)
+    """
 
     def __init__(self, view):
         self.view = view
@@ -46,6 +46,7 @@ class Shape(object):
             func = make_func(name)
             setattr(self, func_name, MethodType(func, self))
 
+    @_update_url
     def add(self, *args):
         """
 
@@ -56,6 +57,6 @@ class Shape(object):
         See also
         --------
         {ngl_url}
-        """.format(ngl_url=default.NGL_BASE_URL)
+        """
 
         self.view._add_shape([args,])

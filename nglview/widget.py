@@ -12,7 +12,8 @@ from traitlets import (Unicode, Bool, Dict, List, Int, observe,
 from .utils import py_utils, js_utils, widget_utils
 from .utils.py_utils import (seq_to_string, string_types, _camelize_dict,
                              FileManager, get_repr_names_from_dict,
-                             encode_base64)
+                             encode_base64,
+                             _update_url)
 from .player import TrajectoryPlayer
 from . import interpolate
 from .shape import Shape
@@ -589,6 +590,7 @@ class NGLWidget(DOMWidget):
                 target='compList',
                 kwargs={'component_index': component})
 
+    @_update_url
     def _add_shape(self, shapes, name='shape'):
         """add shape objects
 
@@ -613,7 +615,7 @@ class NGLWidget(DOMWidget):
         >>> sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
         >>> arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
         >>> view._add_shape([sphere, arrow], name='my_shape')
-        """.format(ngl_url=default.NGL_BASE_URL)
+        """
 
         self._remote_call('addShape', target='Widget',
                 args=[name, shapes])
