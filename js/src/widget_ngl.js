@@ -824,7 +824,8 @@ var NGLBox = widgets.BoxView.extend({
     },
 
     setDialog: function(){
-        var $node = $(this.$el.parent()[0]);
+        //var $node = $(this.$el.parent()[0]);
+        var $node = $(this.$el);
         var that = this;
         dialog  = $node.dialog({
             draggable: true,
