@@ -222,7 +222,7 @@ Add extra component
 view.add_component('my.ccp4')
 
 # add component from url
-view.add_component('rcsb://1tsu.pdb', url=True)
+view.add_component('rcsb://1tsu.pdb')
 # NOTE: Trajectory is a special case of component.
 ```
 
