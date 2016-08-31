@@ -237,13 +237,19 @@ class TrajectoryPlayer(DOMWidget):
                                     target='Widget')
         return button
 
-    def _make_button_reset_theme(self):
+    def _make_button_reset_theme(self, hide_toolbar=False):
         from nglview import theme
 
-        button = Button(description='Default')
-        @button.on_click
-        def on_click(button):
-            theme.reset()
+        if hide_toolbar:
+            button = Button(description='Simplify Default')
+            @button.on_click
+            def on_click(button):
+                theme.reset(hide_toolbar=True)
+        else:
+            button = Button(description='Default')
+            @button.on_click
+            def on_click(button):
+                theme.reset()
         return button
 
     def _make_widget_preference(self, width='100%'):
@@ -814,7 +820,9 @@ class TrajectoryPlayer(DOMWidget):
 
     def _make_theme_box(self):
         if self.widget_theme is None:
-            self.widget_theme = Box([self._make_button_theme(), self._make_button_reset_theme()])
+            self.widget_theme = Box([self._make_button_theme(),
+                                     self._make_button_reset_theme(hide_toolbar=False),
+                                     self._make_button_reset_theme(hide_toolbar=True)])
         return self.widget_theme
 
     def _make_general_box(self):

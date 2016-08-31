@@ -34,8 +34,15 @@ def _get_css_content(css_file):
 def oceans16():
     return _get_theme('oceans16.css')
 
-def reset():
+def reset(hide_toolbar=False):
     from IPython.display import Javascript, display
     from nglview import js_utils
     display(Javascript('$("#nglview_style").remove()'))
     js_utils.clean_empty_output_area()
+
+    if hide_toolbar:
+        display(Javascript("$('#maintoolbar').hide()"))
+        display(Javascript("$('#header-container').hide()"))
+    else:
+        display(Javascript("$('#maintoolbar').show()"))
+        display(Javascript("$('#header-container').show()"))
