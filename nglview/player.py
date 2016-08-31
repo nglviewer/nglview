@@ -62,6 +62,7 @@ class TrajectoryPlayer(DOMWidget):
     widget_repr_control_buttons = Any(None).tag(sync=False)
     widget_repr_add = Any(None).tag(sync=False)
     widget_accordion_repr_parameters = Any(None).tag(sync=False)
+    widget_repr_parameteres_dialog = Any(None).tag(sync=False)
     widget_repr_name = Any(None).tag(sync=False)
     widget_component_dropdown = Any(None).tag(sync=False)
     widget_drag = Any(None).tag(sync=False)
@@ -364,26 +365,27 @@ class TrajectoryPlayer(DOMWidget):
 
     def _make_button_repr_control(self, component_slider, repr_slider, repr_selection):
         button_refresh = Button(description=' Refresh', tooltip='Get representation info', icon='fa-refresh')
-        button_remove = Button(description=' Remove',
-                icon='fa-trash',
-                tooltip='Remove current representation')
-        button_hide = Button(description=' Hide',
-                icon='fa-eye-slash',
-                tooltip='Hide/Show current representation')
         button_center_selection = Button(description=' Center', tooltip='center selected atoms',
                 icon='fa-bullseye')
         button_center_selection._ngl_name = 'button_center_selection'
+        button_hide = Button(description=' Hide',
+                icon='fa-eye-slash',
+                tooltip='Hide/Show current representation')
+        button_remove = Button(description=' Remove',
+                icon='fa-trash',
+                tooltip='Remove current representation')
+        button_repr_parameter_dialog = Button(description=' Dialog',
+                tooltip='Pop up representation parameters control dialog')
 
         @button_refresh.on_click
         def on_click_refresh(button):
             self._refresh(component_slider, repr_slider)
 
-        @button_remove.on_click
-        def on_click_remove(button_remove):
-            self._view._remove_representation(component=component_slider.value,
-                                              repr_index=repr_slider.value)
-            self._view._request_repr_parameters(component=component_slider.value,
-                                                repr_index=repr_slider.value)
+        @button_center_selection.on_click
+        def on_click_center(center_selection):
+            self._view.center_view(selection=repr_selection.value,
+                                   component=component_slider.value)
+
         @button_hide.on_click
         def on_click_hide(button_hide):
             component=component_slider.value
@@ -400,15 +402,26 @@ class TrajectoryPlayer(DOMWidget):
                                     target='Widget',
                                     args=[component, repr_index, not hide])
 
-        @button_center_selection.on_click
-        def on_click_center(center_selection):
-            self._view.center_view(selection=repr_selection.value,
-                                   component=component_slider.value)
+        @button_remove.on_click
+        def on_click_remove(button_remove):
+            self._view._remove_representation(component=component_slider.value,
+                                              repr_index=repr_slider.value)
+            self._view._request_repr_parameters(component=component_slider.value,
+                                                repr_index=repr_slider.value)
+
+        @button_repr_parameter_dialog.on_click
+        def on_click_repr_dialog(_):
+            from nglview.widget_box import DraggableBox
+            if self.widget_repr_parameteres is not None and self.widget_repr_choices:
+                self.widget_repr_parameteres_dialog = DraggableBox([self.widget_repr_choices,
+                                     self.widget_repr_parameteres])
+                self.widget_repr_parameteres_dialog._ipython_display_()
+                self.widget_repr_parameteres_dialog._dialog = 'on'
 
         bbox = _make_autofit(HBox([button_refresh, button_center_selection,
-            button_hide, button_remove]))
-        self.widget_repr_control_buttons = bbox
-        return self.widget_repr_control_buttons
+                                   button_hide, button_remove,
+                                   button_repr_parameter_dialog]))
+        return bbox
 
     def _make_widget_repr(self):
         # TODO: class?
@@ -509,16 +522,22 @@ class TrajectoryPlayer(DOMWidget):
             self.widget_repr_name.observe(on_repr_name_text_value_changed, names='value')
             repr_selection.observe(on_repr_selection_value_changed, names='value')
 
-            bbox = self._make_button_repr_control(self.widget_component_slider,
+            self.widget_repr_control_buttons = self._make_button_repr_control(self.widget_component_slider,
             self.widget_repr_slider, repr_selection)
 
             blank_box = Box([Label("")])
 
-            all_kids = [bbox, blank_box, self.widget_repr_add, self.widget_component_dropdown,
-                       self.widget_repr_name,
-                       repr_selection,
-                       self.widget_component_slider, self.widget_repr_slider, self.widget_repr_choices,
-                       self.widget_accordion_repr_parameters]
+            all_kids = [self.widget_repr_control_buttons,
+                        blank_box,
+                        self.widget_repr_add,
+                        self.widget_component_dropdown,
+                        self.widget_repr_name,
+                        repr_selection,
+                        self.widget_component_slider,
+                        self.widget_repr_slider,
+                        self.widget_repr_choices,
+                        self.widget_accordion_repr_parameters
+            ]
 
             vbox = VBox(all_kids)
 

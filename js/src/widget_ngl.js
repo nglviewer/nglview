@@ -808,7 +808,7 @@ var NGLBox = widgets.BoxView.extend({
     render: function(){
         this.model.on('change:_dialog', this.dialogCommandChanged, this);
         this.model.on('change:_ngl_command', this.commandChanged, this);
-        console.log('change 9');
+        console.log('change 0');
         widgets.BoxView.prototype.render.call(this);
     },
 
@@ -824,7 +824,11 @@ var NGLBox = widgets.BoxView.extend({
     },
 
     setDialog: function(){
-        var $node = $(this.$el.parent()[0]);
+        //var $node = $(this.$el.parent()[0]);
+        var $node = $(this.$el);
+        $node.addClass('jupyter-widgets');
+        $node.addClass('widget-container');
+        $node.addClass('widget-box');
         var that = this;
         dialog  = $node.dialog({
             draggable: true,
