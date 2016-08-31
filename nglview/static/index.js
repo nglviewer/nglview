@@ -926,10 +926,33 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    },
 	});
 	
+	var NGLTab = widgets.TabView.extend({
+	    initialize: function(parameters){
+	        widgets.TabView.prototype.initialize.call(this, parameters);
+	    },
+	
+	    render: function(){
+	        widgets.TabView.prototype.render.call(this);
+	        // overwrite
+	        console.log("update: 1");
+	        console.log(this);
+	        this.setHover();
+	        $(this).hover(function(){
+	           console.log('hover'); 
+	        });
+	    },
+	
+	    setHover: function(){
+	        console.log("place holder: 0");
+	    },
+	
+	});
+	
 	module.exports = {
 	    'NGLView': NGLView,
 	    'NGL': NGL,
-	    'NGLBox': NGLBox
+	    'NGLBox': NGLBox,
+	    'NGLTab': NGLTab
 	};
 
 
