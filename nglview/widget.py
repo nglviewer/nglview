@@ -209,7 +209,7 @@ class NGLWidget(DOMWidget):
     def _on_picked(self, change):
         import json
         picked = change['new']
-        self.player.picked_widget.value = json.dumps(picked)
+        self.player.widget_picked.value = json.dumps(picked)
         
     @observe('background')
     def _update_background_color(self, change):
