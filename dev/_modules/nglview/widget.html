@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.widget &mdash; NGLView 0.5.2a+219.g42fca34 documentation</title>
+    <title>nglview.widget &mdash; NGLView 0.5.2a+223.g71b4fa8 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.5.2a+219.g42fca34',
+        VERSION:     '0.5.2a+223.g71b4fa8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+219.g42fca34 documentation" href="../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+223.g71b4fa8 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+219.g42fca34 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -827,25 +827,6 @@
                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">filename</span><span class="p">,],</span>
                           <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NGLWidget.superpose"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.superpose">[docs]</a>    <span class="k">def</span> <span class="nf">superpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,],</span> <span class="n">ref</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">selection_0</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">selection_1</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;port superpose method from NGL. Good for single structures.</span>
-<span class="sd">        If you are viewing trajectory, it&#39;s better to use your engine (ptraj, mdtraj,</span>
-<span class="sd">        MDAnalysis, ...)</span>
-
-<span class="sd">        Note: unstable feature</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        components : 1D int array-like, default [1,]</span>
-<span class="sd">            component index</span>
-<span class="sd">        ref : int, default 0</span>
-<span class="sd">            reference index</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;superpose&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ref</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">align</span><span class="p">,</span> <span class="n">selection_0</span><span class="p">,</span> <span class="n">selection_1</span><span class="p">])</span></div>
-
     <span class="k">def</span> <span class="nf">_ngl_handle_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">buffers</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;store message sent from Javascript.</span>
 
@@ -970,13 +951,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_auto_completion</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="NGLWidget.add_pdbid"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.add_pdbid">[docs]</a>    <span class="k">def</span> <span class="nf">add_pdbid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdbid</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;add new Structure view by fetching pdb id from rcsb</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; view = nglview.NGLWidget()</span>
+<span class="sd">        &gt;&gt;&gt; view.add_pdbid(&#39;1tsu&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # which is equal to </span>
+<span class="sd">        &gt;&gt;&gt; # view.add_component(&#39;rcsb://1tsu.pdb&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="s1">&#39;rcsb://{}.pdb&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pdbid</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="NGLWidget.add_component"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.add_component">[docs]</a>    <span class="k">def</span> <span class="nf">add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;add component from file/trajectory/struture</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str or Trajectory or Structure or their derived class or url</span>
-<span class="sd">            if you specify url, you must specify `url=True` in kwargs</span>
 <span class="sd">        **kwargs : additional arguments, optional</span>
 
 <span class="sd">        Examples</span>
@@ -984,6 +976,11 @@
 <span class="sd">        &gt;&gt;&gt; view = nglview.Widget()</span>
 <span class="sd">        &gt;&gt;&gt; view</span>
 <span class="sd">        &gt;&gt;&gt; view.add_component(filename)</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If you want to load binary file such as density data, mmtf format, it is</span>
+<span class="sd">        faster to load file from current or subfolder.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># assign an ID</span>
@@ -999,9 +996,10 @@
 <span class="sd">              string buffer (open(fn).read())</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">kwargs2</span> <span class="o">=</span> <span class="n">_camelize_dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">is_url</span> <span class="o">=</span> <span class="n">kwargs2</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">is_url</span> <span class="o">=</span> <span class="n">FileManager</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">is_url</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
             <span class="n">is_url</span> <span class="o">=</span> <span class="bp">False</span>
 
         <span class="k">if</span> <span class="s1">&#39;defaultRepresentation&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs2</span><span class="p">:</span>
@@ -1353,7 +1351,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+219.g42fca34 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

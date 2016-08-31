@@ -254,6 +254,8 @@ Add extra component
     # Or adding derived class of `nglview.Structure`
     view.add_component('my.ccp4')
 
+    # add component from url
+    view.add_component('rcsb://1tsu.pdb', url=True)
     # NOTE: Trajectory is a special case of component.
 
 Display more than two widgets

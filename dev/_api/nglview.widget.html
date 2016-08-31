@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.widget &mdash; NGLView 0.5.2a+219.g42fca34 documentation</title>
+    <title>nglview.widget &mdash; NGLView 0.5.2a+223.g71b4fa8 documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.5.2a+219.g42fca34',
+        VERSION:     '0.5.2a+223.g71b4fa8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+219.g42fca34 documentation" href="../index.html" /> 
+    <link rel="top" title="NGLView 0.5.2a+223.g71b4fa8 documentation" href="../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.5.2a+219.g42fca34 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -57,14 +57,25 @@
 <dt id="nglview.widget.NGLWidget.add_component">
 <code class="descname">add_component</code><span class="sig-paren">(</span><em>filename</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.add_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.add_component" title="Permalink to this definition">¶</a></dt>
 <dd><p>add component from file/trajectory/struture</p>
-<dl class="docutils">
-<dt>filename</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">str or Trajectory or Structure or their derived class or url</span><dd>if you specify url, you must specify <cite>url=True</cite> in kwargs</dd>
-</dl>
-<p><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs : additional arguments, optional</p>
+<p>filename : str or Trajectory or Structure or their derived class or url
+<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs : additional arguments, optional</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">Widget</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want to load binary file such as density data, mmtf format, it is
+faster to load file from current or subfolder.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.widget.NGLWidget.add_pdbid">
+<code class="descname">add_pdbid</code><span class="sig-paren">(</span><em>pdbid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.add_pdbid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.add_pdbid" title="Permalink to this definition">¶</a></dt>
+<dd><p>add new Structure view by fetching pdb id from rcsb</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_pdbid</span><span class="p">(</span><span class="s1">&#39;1tsu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># which is equal to </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># view.add_component(&#39;rcsb://1tsu.pdb&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -360,21 +371,6 @@ view.get_image()</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="nglview.widget.NGLWidget.superpose">
-<code class="descname">superpose</code><span class="sig-paren">(</span><em>components=[1], ref=0, align=True, selection_0='', selection_1=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.superpose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.superpose" title="Permalink to this definition">¶</a></dt>
-<dd><p>port superpose method from NGL. Good for single structures.
-If you are viewing trajectory, it&#8217;s better to use your engine (ptraj, mdtraj,
-MDAnalysis, ...)</p>
-<p>Note: unstable feature</p>
-<dl class="docutils">
-<dt>components</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">1D int array-like, default [1,]</span><dd>component index</dd>
-<dt>ref</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int, default 0</span><dd>reference index</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
 <dt id="nglview.widget.NGLWidget.sync_view">
 <code class="descname">sync_view</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.sync_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.sync_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>call this if you want to sync multiple views of a single viewer</p>
@@ -480,7 +476,7 @@ MDAnalysis, ...)</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.5.2a+219.g42fca34 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
