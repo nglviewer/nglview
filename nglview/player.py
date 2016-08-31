@@ -15,7 +15,7 @@ from ipywidgets import (DOMWidget,
                         Layout, Tab, Accordion, HTML)
 
 from traitlets import Any, Int, Bool, Dict, Float, CaselessStrEnum
-from traitlets import observe, link
+from traitlets import observe, link, directional_link
 
 from .parameters import REPRESENTATION_NAMES
 from . import default
