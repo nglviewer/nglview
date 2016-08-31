@@ -142,7 +142,6 @@ def test_API_promise_to_have():
         value = ''
 
     view.player.picked_widget = DummWidget()
-    view._on_picked(change=dict(new=''))
 
     view._update_background_color(change=dict(new='blue'))
     view.on_update_dragged_file(change=dict(new=2, old=1))
