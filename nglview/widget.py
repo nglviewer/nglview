@@ -945,6 +945,11 @@ class NGLWidget(DOMWidget):
         >>> view = nglview.Widget()
         >>> view
         >>> view.add_component(filename)
+
+        Notes
+        -----
+        If you want to load binary file such as density data, mmtf format, it is
+        faster to load file from current or subfolder.
         '''
         self._load_data(filename, **kwargs)
         # assign an ID
