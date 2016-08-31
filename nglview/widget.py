@@ -777,25 +777,6 @@ class NGLWidget(DOMWidget):
                           args=[filename,],
                           kwargs=params)
 
-    def superpose(self, components=[1,], ref=0, align=True, selection_0='', selection_1=''):
-        """port superpose method from NGL. Good for single structures.
-        If you are viewing trajectory, it's better to use your engine (ptraj, mdtraj,
-        MDAnalysis, ...)
-
-        Note: unstable feature
-
-        Parameters
-        ----------
-        components : 1D int array-like, default [1,]
-            component index
-        ref : int, default 0
-            reference index
-        """
-
-        for index in components:
-            self._remote_call('superpose', target='Widget',
-                    args=[ref, index, align, selection_0, selection_1])
-
     def _ngl_handle_msg(self, widget, msg, buffers):
         """store message sent from Javascript.
 
