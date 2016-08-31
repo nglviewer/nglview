@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.widget &mdash; NGLView 0.5.2a+366.g8d5d3f4.dirty documentation</title>
+    <title>nglview.widget &mdash; NGLView 0.5.2a+218.ga474cb9 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.5.2a+366.g8d5d3f4.dirty',
+        VERSION:     '0.5.2a+218.ga474cb9',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+366.g8d5d3f4.dirty documentation" href="../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+218.ga474cb9 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+366.g8d5d3f4.dirty documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+218.ga474cb9 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -62,16 +62,18 @@
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">py_utils</span><span class="p">,</span> <span class="n">js_utils</span><span class="p">,</span> <span class="n">widget_utils</span>
 <span class="kn">from</span> <span class="nn">.utils.py_utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">seq_to_string</span><span class="p">,</span> <span class="n">string_types</span><span class="p">,</span> <span class="n">_camelize_dict</span><span class="p">,</span>
                              <span class="n">FileManager</span><span class="p">,</span> <span class="n">get_repr_names_from_dict</span><span class="p">,</span>
-                             <span class="n">encode_base64</span><span class="p">)</span>
+                             <span class="n">encode_base64</span><span class="p">,</span>
+                             <span class="n">_update_url</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.player</span> <span class="kn">import</span> <span class="n">TrajectoryPlayer</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">interpolate</span>
 <span class="kn">from</span> <span class="nn">.shape</span> <span class="kn">import</span> <span class="n">Shape</span>
-<span class="kn">from</span> <span class="nn">.representation</span> <span class="kn">import</span> <span class="n">Representation</span>
+<span class="kn">from</span> <span class="nn">.representation</span> <span class="kn">import</span> <span class="n">RepresentationControl</span>
 
 <span class="kn">from</span> <span class="nn">.adaptor</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">PyTrajTrajectory</span><span class="p">,</span>
         <span class="n">MDTrajTrajectory</span><span class="p">,</span> <span class="n">MDAnalysisTrajectory</span><span class="p">,</span> <span class="n">ParmEdTrajectory</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.adaptor</span> <span class="kn">import</span> <span class="n">BACKENDS</span>
 <span class="kn">from</span> <span class="nn">.parameters</span> <span class="kn">import</span> <span class="n">REPRESENTATION_NAME_PAIRS</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">default</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NGLWidget&#39;</span><span class="p">,</span> <span class="s1">&#39;ComponentViewer&#39;</span><span class="p">]</span>
 
@@ -271,13 +273,13 @@
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;n_components&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_handle_n_components_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">component_slider</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;component_slider&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">component_slider</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;component_slider&#39;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="n">component_slider</span><span class="o">.</span><span class="n">min</span><span class="p">:</span>
                 <span class="n">component_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
 
-            <span class="n">component_dropdown</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;component_dropdown&#39;</span><span class="p">)</span>
+            <span class="n">component_dropdown</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;component_dropdown&#39;</span><span class="p">)</span>
             <span class="n">component_dropdown</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_names</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -286,27 +288,27 @@
 
                 <span class="n">component_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="mi">0</span>
 
-                <span class="n">reprlist_choices</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;reprlist_choices&#39;</span><span class="p">)</span>
+                <span class="n">reprlist_choices</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;reprlist_choices&#39;</span><span class="p">)</span>
                 <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">])</span>
 
-                <span class="n">repr_slider</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_slider&#39;</span><span class="p">)</span>
+                <span class="n">repr_slider</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;repr_slider&#39;</span><span class="p">)</span>
                 <span class="n">repr_slider</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="mi">0</span>
 
-                <span class="n">repr_name_text</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_name_text&#39;</span><span class="p">)</span>
-                <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_selection&#39;</span><span class="p">)</span>
+                <span class="n">repr_name_text</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;repr_name_text&#39;</span><span class="p">)</span>
+                <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;repr_selection&#39;</span><span class="p">)</span>
                 <span class="n">repr_name_text</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
                 <span class="n">repr_selection</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_repr_dict&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_handle_repr_dict_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">repr_slider</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_slider&#39;</span><span class="p">)</span>
-            <span class="n">component_slider</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;component_slider&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">repr_slider</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;repr_slider&#39;</span><span class="p">)</span>
+            <span class="n">component_slider</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;component_slider&#39;</span><span class="p">)</span>
 
-            <span class="n">repr_name_text</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_name_text&#39;</span><span class="p">)</span>
-            <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_selection&#39;</span><span class="p">)</span>
+            <span class="n">repr_name_text</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;repr_name_text&#39;</span><span class="p">)</span>
+            <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;repr_selection&#39;</span><span class="p">)</span>
 
-            <span class="n">reprlist_choices</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;reprlist_choices&#39;</span><span class="p">)</span>
+            <span class="n">reprlist_choices</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;reprlist_choices&#39;</span><span class="p">)</span>
             <span class="n">repr_names</span> <span class="o">=</span> <span class="n">get_repr_names_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_repr_dict</span><span class="p">,</span> <span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;c0&#39;</span><span class="p">:</span> <span class="p">{}}:</span>
@@ -380,10 +382,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;cleanOutput&#39;</span><span class="p">,</span>
                               <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NGLWidget.display"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gui</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-        <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<div class="viewcode-block" id="NGLWidget.display"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gui</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">use_box</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">gui</span><span class="p">:</span>
-            <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">_display</span><span class="p">())</span></div>
+            <span class="k">if</span> <span class="n">use_box</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">nglview.widget_box</span> <span class="kn">import</span> <span class="n">BoxNGL</span>
+                <span class="n">box</span> <span class="o">=</span> <span class="n">BoxNGL</span><span class="p">([</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">_display</span><span class="p">()])</span>
+                <span class="n">box</span><span class="o">.</span><span class="n">_gui_style</span> <span class="o">=</span> <span class="s1">&#39;row&#39;</span>
+                <span class="n">box</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">align_items</span> <span class="o">=</span> <span class="s1">&#39;center&#39;</span>
+                <span class="k">return</span> <span class="n">box</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">_display</span><span class="p">())</span>
+                <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_set_draggable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yes</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">yes</span><span class="p">:</span>
@@ -479,7 +491,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setParameters&#39;</span><span class="p">,</span>
                  <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Representation&#39;</span><span class="p">,</span>
-                 <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span></div>
+                 <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;requestReprsInfo&#39;</span><span class="p">,</span>
+                 <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NGLWidget.set_representations"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.set_representations">[docs]</a>    <span class="k">def</span> <span class="nf">set_representations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representations</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -526,7 +540,7 @@
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
-        <span class="k">return</span> <span class="n">Representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">repr_index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">_display</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">RepresentationControl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">repr_index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_initial_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structures</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;initialize structures for Widget</span>
@@ -626,6 +640,7 @@
                 <span class="n">target</span><span class="o">=</span><span class="s1">&#39;compList&#39;</span><span class="p">,</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;component_index&#39;</span><span class="p">:</span> <span class="n">component</span><span class="p">})</span></div>
 
+    <span class="nd">@_update_url</span>
     <span class="k">def</span> <span class="nf">_add_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shapes</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;shape&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;add shape objects</span>
 
@@ -643,7 +658,7 @@
 <span class="sd">        </span>
 <span class="sd">        See also</span>
 <span class="sd">        --------</span>
-<span class="sd">        http://arose.github.io/ngl/api/current/Shape.html</span>
+<span class="sd">        {ngl_url}</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -651,6 +666,7 @@
 <span class="sd">        &gt;&gt;&gt; arrow = (&#39;arrow&#39;, [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)</span>
 <span class="sd">        &gt;&gt;&gt; view._add_shape([sphere, arrow], name=&#39;my_shape&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;addShape&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="n">shapes</span><span class="p">])</span>
 
@@ -660,8 +676,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        repr_type : str</span>
-<span class="sd">            type of representation. Please see:</span>
-<span class="sd">            http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations</span>
+<span class="sd">            type of representation. Please see NGL viewer doc for further info.</span>
 <span class="sd">        selection : str or 1D array (atom indices) or any iterator that returns integer, default &#39;all&#39;</span>
 <span class="sd">            atom selection</span>
 <span class="sd">        **kwargs: additional arguments for representation</span>
@@ -679,6 +694,7 @@
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        User can also use shortcut</span>
+
 <span class="sd">        &gt;&gt;&gt; w.add_cartoon(selection) # w.add_representation(&#39;cartoon&#39;, selection)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">repr_type</span> <span class="o">==</span> <span class="s1">&#39;surface&#39;</span><span class="p">:</span>
@@ -855,10 +871,10 @@
                 <span class="n">data_dict_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;false&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">)</span>
                 <span class="n">data_dict_json</span> <span class="o">=</span> <span class="n">data_dict_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;null&#39;</span><span class="p">,</span> <span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                     <span class="c1"># TODO: refactor</span>
-                    <span class="n">repr_name_text</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_name_text&#39;</span><span class="p">)</span>
-                    <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">repr_widget</span><span class="p">,</span> <span class="s1">&#39;repr_selection&#39;</span><span class="p">)</span>
+                    <span class="n">repr_name_text</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;repr_name_text&#39;</span><span class="p">)</span>
+                    <span class="n">repr_selection</span> <span class="o">=</span> <span class="n">widget_utils</span><span class="o">.</span><span class="n">get_widget_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">widget_repr</span><span class="p">,</span> <span class="s1">&#39;repr_selection&#39;</span><span class="p">)</span>
                     <span class="n">repr_name_text</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">name</span>
                     <span class="n">repr_selection</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">selection</span>
 
@@ -1336,13 +1352,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+366.g8d5d3f4.dirty documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+218.ga474cb9 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 23, 2016.
+      Last updated on Aug 31, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

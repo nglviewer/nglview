@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.widget &mdash; NGLView 0.5.2a+366.g8d5d3f4.dirty documentation</title>
+    <title>nglview.widget &mdash; NGLView 0.5.2a+218.ga474cb9 documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.5.2a+366.g8d5d3f4.dirty',
+        VERSION:     '0.5.2a+218.ga474cb9',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+366.g8d5d3f4.dirty documentation" href="../index.html" /> 
+    <link rel="top" title="NGLView 0.5.2a+218.ga474cb9 documentation" href="../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.5.2a+366.g8d5d3f4.dirty documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.5.2a+218.ga474cb9 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -75,8 +75,7 @@
 <dd><p>Add structure representation (cartoon, licorice, ...) for given atom selection.</p>
 <dl class="docutils">
 <dt>repr_type</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd>type of representation. Please see:
-<a class="reference external" href="http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations">http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations</a></dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd>type of representation. Please see NGL viewer doc for further info.</dd>
 <dt>selection</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">str or 1D array (atom indices) or any iterator that returns integer, default &#8216;all&#8217;</span><dd>atom selection</dd>
 </dl>
@@ -90,8 +89,10 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span>
 </pre></div>
 </div>
-<p>User can also use shortcut
-&gt;&gt;&gt; w.add_cartoon(selection) # w.add_representation(&#8216;cartoon&#8217;, selection)</p>
+<p>User can also use shortcut</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span> <span class="c1"># w.add_representation(&#39;cartoon&#39;, selection)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -215,7 +216,7 @@ component : int, default 0</p>
 
 <dl class="method">
 <dt id="nglview.widget.NGLWidget.display">
-<code class="descname">display</code><span class="sig-paren">(</span><em>gui=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.display" title="Permalink to this definition">¶</a></dt>
+<code class="descname">display</code><span class="sig-paren">(</span><em>gui=False</em>, <em>use_box=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -479,12 +480,12 @@ MDAnalysis, ...)</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.5.2a+366.g8d5d3f4.dirty documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.5.2a+218.ga474cb9 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 23, 2016.
+      Last updated on Aug 31, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

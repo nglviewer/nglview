@@ -1,7 +1,8 @@
 `Installation <#installation>`__ \| `Example <#example>`__ \|
 `Usage <#usage>`__ \| `Command line <#command-line>`__ \| `API
 doc <#api-doc>`__ \| `Interface classes <interface_classes.html>`__ \|
-`Website <#website>`__
+`Website <#website>`__ \| `GUI <#show-gui>`__ \|
+`Acknowledgment <#acknowledgment>`__
 
 |Binder| |DOI| |Build Status| |bioconda-badge|
 
@@ -158,8 +159,8 @@ Representations
     # remove ALL cartoons of component 0 (default)
     view.remove_cartoon(opacity=0.4, component=0)
 
-And many more, please check `Selection
-language <http://arose.github.io/ngl/api/dev/tutorial-selection-language.html>`__
+And many more, please check `NGL
+website <http://arose.github.io/ngl/api//tutorial-selection-language.html>`__
 
 Representations can also be changed by overwriting the
 ``representations`` property of the widget instance ``view``. The
