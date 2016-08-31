@@ -777,25 +777,6 @@ class NGLWidget(DOMWidget):
                           args=[filename,],
                           kwargs=params)
 
-    def superpose(self, components=[1,], ref=0, align=True, selection_0='', selection_1=''):
-        """port superpose method from NGL. Good for single structures.
-        If you are viewing trajectory, it's better to use your engine (ptraj, mdtraj,
-        MDAnalysis, ...)
-
-        Note: unstable feature
-
-        Parameters
-        ----------
-        components : 1D int array-like, default [1,]
-            component index
-        ref : int, default 0
-            reference index
-        """
-
-        for index in components:
-            self._remote_call('superpose', target='Widget',
-                    args=[ref, index, align, selection_0, selection_1])
-
     def _ngl_handle_msg(self, widget, msg, buffers):
         """store message sent from Javascript.
 
@@ -920,13 +901,24 @@ class NGLWidget(DOMWidget):
         self._ngl_component_ids.append(trajectory.id)
         self._update_component_auto_completion()
 
+    def add_pdbid(self, pdbid):
+        '''add new Structure view by fetching pdb id from rcsb
+
+        Examples
+        --------
+        >>> view = nglview.NGLWidget()
+        >>> view.add_pdbid('1tsu')
+        >>> # which is equal to 
+        >>> # view.add_component('rcsb://1tsu.pdb')
+        '''
+        self.add_component('rcsb://{}.pdb'.format(pdbid))
+
     def add_component(self, filename, **kwargs):
         '''add component from file/trajectory/struture
 
         Parameters
         ----------
         filename : str or Trajectory or Structure or their derived class or url
-            if you specify url, you must specify `url=True` in kwargs
         **kwargs : additional arguments, optional
 
         Examples
@@ -934,6 +926,11 @@ class NGLWidget(DOMWidget):
         >>> view = nglview.Widget()
         >>> view
         >>> view.add_component(filename)
+
+        Notes
+        -----
+        If you want to load binary file such as density data, mmtf format, it is
+        faster to load file from current or subfolder.
         '''
         self._load_data(filename, **kwargs)
         # assign an ID
@@ -949,9 +946,10 @@ class NGLWidget(DOMWidget):
               string buffer (open(fn).read())
         '''
         kwargs2 = _camelize_dict(kwargs)
+
         try:
-            is_url = kwargs2.pop('url')
-        except KeyError:
+            is_url = FileManager(obj).is_url
+        except NameError:
             is_url = False
 
         if 'defaultRepresentation' not in kwargs2:

@@ -112,6 +112,10 @@ def test_API_promise_to_have():
     nv.NGLWidget.clear
     nv.NGLWidget.center
 
+    # add component
+    view.add_component('rcsb://1tsu.pdb')
+    view.add_pdbid('1tsu')
+
     # display
     js_utils.clean_error_output()
     display.display(view.player.widget_repr)
@@ -182,7 +186,6 @@ def test_API_promise_to_have():
     view._on_render_image(change=dict(new=u'xyz'))
     view.render_image()
     view.download_image()
-    view.superpose([1,], 0)
 
     msg = dict(type='request_frame', data=dict())
     view._ngl_handle_msg(view, msg=msg, buffers=[])
