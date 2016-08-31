@@ -241,7 +241,7 @@ class TrajectoryPlayer(DOMWidget):
         from nglview import theme
 
         if hide_toolbar:
-            button = Button(description='Simplify Default')
+            button = Button(description='Simplified Default')
             @button.on_click
             def on_click(button):
                 theme.reset(hide_toolbar=True)
