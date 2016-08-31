@@ -1,4 +1,6 @@
 
+from . import default
+
 class Shape(object):
     """TODO: doc
 
@@ -21,8 +23,8 @@ class Shape(object):
 
     See also
     --------
-    http://arose.github.io/ngl/api/dev/Shape.html
-    """
+    {ngl_url}
+    """.format(ngl_url=default.NGL_BASE_URL)
 
     def __init__(self, view):
         self.view = view
@@ -53,6 +55,7 @@ class Shape(object):
 
         See also
         --------
-        http://arose.github.io/ngl/api/dev/Shape.html
-        """
+        {ngl_url}
+        """.format(ngl_url=default.NGL_BASE_URL)
+
         self.view._add_shape([args,])

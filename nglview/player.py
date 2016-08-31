@@ -330,12 +330,12 @@ class TrajectoryPlayer(DOMWidget):
             display(Javascript(js_utils.open_url_template.format(url=url)))
         return button
 
-    def _show_website(self):
-        buttons = [self._make_button_url(url, description) for url, description in
+    def _show_website(self, ngl_base_url=default.NGL_BASE_URL):
+        buttons = [self._make_button_url(url.format(ngl_base_url), description) for url, description in
             [("'http://arose.github.io/nglview/latest/'", "nglview"),
-            ("'http://arose.github.io/ngl/api/dev/'", "NGL"),
-            ("'http://arose.github.io/ngl/api/dev/tutorial-selection-language.html'", "Selection"),
-            ("'http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html'", "Representation")]
+             ("'{}/index.html'", "NGL"),
+             ("'{}/tutorial-selection-language.html'", "Selection"),
+             ("'{}/tutorial-molecular-representations.html'", "Representation")]
         ]
         self.widget_help = _make_autofit(HBox(buttons))
         return self.widget_help

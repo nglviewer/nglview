@@ -22,6 +22,7 @@ from .adaptor import (Trajectory, PyTrajTrajectory,
         MDTrajTrajectory, MDAnalysisTrajectory, ParmEdTrajectory)
 from .adaptor import BACKENDS
 from .parameters import REPRESENTATION_NAME_PAIRS
+from . import default
 
 __all__ = ['NGLWidget', 'ComponentViewer']
 
@@ -605,14 +606,15 @@ class NGLWidget(DOMWidget):
         
         See also
         --------
-        http://arose.github.io/ngl/api/current/Shape.html
+        {ngl_url}
 
         Examples
         --------
         >>> sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
         >>> arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
         >>> view._add_shape([sphere, arrow], name='my_shape')
-        """
+        """.format(ngl_url=default.NGL_BASE_URL)
+
         self._remote_call('addShape', target='Widget',
                 args=[name, shapes])
 
@@ -622,8 +624,7 @@ class NGLWidget(DOMWidget):
         Parameters
         ----------
         repr_type : str
-            type of representation. Please see:
-            http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations
+            type of representation. Please see NGL viewer doc for further info.
         selection : str or 1D array (atom indices) or any iterator that returns integer, default 'all'
             atom selection
         **kwargs: additional arguments for representation
@@ -641,6 +642,7 @@ class NGLWidget(DOMWidget):
         Notes
         -----
         User can also use shortcut
+
         >>> w.add_cartoon(selection) # w.add_representation('cartoon', selection)
         '''
         if repr_type == 'surface':
