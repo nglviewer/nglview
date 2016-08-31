@@ -595,6 +595,13 @@ def test_player_interpolation():
 
     nt.assert_raises(ValueError, func())
 
+def test_player_picked():
+    view = nv.demo()
+    s = dict(x=3)
+    view.player.widget_picked = view.player._make_text_picked()
+    view.picked = s
+    nt.assert_equal(view.player.widget_picked.value, '{"x": 3}')
+
 def test_widget_utils():
     box = HBox()
     i0 = IntText()
