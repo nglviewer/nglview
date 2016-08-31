@@ -62,6 +62,7 @@ class TrajectoryPlayer(DOMWidget):
     widget_repr_control_buttons = Any(None).tag(sync=False)
     widget_repr_add = Any(None).tag(sync=False)
     widget_accordion_repr_parameters = Any(None).tag(sync=False)
+    widget_repr_parameteres_dialog = Any(None).tag(sync=False)
     widget_repr_name = Any(None).tag(sync=False)
     widget_component_dropdown = Any(None).tag(sync=False)
     widget_drag = Any(None).tag(sync=False)
@@ -412,16 +413,15 @@ class TrajectoryPlayer(DOMWidget):
         def on_click_repr_dialog(_):
             from nglview.widget_box import DraggableBox
             if self.widget_repr_parameteres is not None and self.widget_repr_choices:
-                dbox = DraggableBox([self.widget_repr_choices,
+                self.widget_repr_parameteres_dialog = DraggableBox([self.widget_repr_choices,
                                      self.widget_repr_parameteres])
-                dbox._ipython_display_()
-                dbox._dialog = 'on'
+                self.widget_repr_parameteres_dialog._ipython_display_()
+                self.widget_repr_parameteres_dialog._dialog = 'on'
 
         bbox = _make_autofit(HBox([button_refresh, button_center_selection,
                                    button_hide, button_remove,
                                    button_repr_parameter_dialog]))
-        self.widget_repr_control_buttons = bbox
-        return self.widget_repr_control_buttons
+        return bbox
 
     def _make_widget_repr(self):
         # TODO: class?
@@ -522,16 +522,22 @@ class TrajectoryPlayer(DOMWidget):
             self.widget_repr_name.observe(on_repr_name_text_value_changed, names='value')
             repr_selection.observe(on_repr_selection_value_changed, names='value')
 
-            bbox = self._make_button_repr_control(self.widget_component_slider,
+            self.widget_repr_control_buttons = self._make_button_repr_control(self.widget_component_slider,
             self.widget_repr_slider, repr_selection)
 
             blank_box = Box([Label("")])
 
-            all_kids = [bbox, blank_box, self.widget_repr_add, self.widget_component_dropdown,
-                       self.widget_repr_name,
-                       repr_selection,
-                       self.widget_component_slider, self.widget_repr_slider, self.widget_repr_choices,
-                       self.widget_accordion_repr_parameters]
+            all_kids = [self.widget_repr_control_buttons,
+                        blank_box,
+                        self.widget_repr_add,
+                        self.widget_component_dropdown,
+                        self.widget_repr_name,
+                        repr_selection,
+                        self.widget_component_slider,
+                        self.widget_repr_slider,
+                        self.widget_repr_choices,
+                        self.widget_accordion_repr_parameters
+            ]
 
             vbox = VBox(all_kids)
 
