@@ -620,13 +620,14 @@ class NGLWidget(DOMWidget):
         self._remote_call('addShape', target='Widget',
                 args=[name, shapes])
 
+    @_update_url
     def add_representation(self, repr_type, selection='all', **kwargs):
         '''Add structure representation (cartoon, licorice, ...) for given atom selection.
 
         Parameters
         ----------
         repr_type : str
-            type of representation. Please see NGL viewer doc for further info.
+            type of representation. Please see {ngl_url} for further info.
         selection : str or 1D array (atom indices) or any iterator that returns integer, default 'all'
             atom selection
         **kwargs: additional arguments for representation
