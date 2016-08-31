@@ -112,6 +112,10 @@ def test_API_promise_to_have():
     nv.NGLWidget.clear
     nv.NGLWidget.center
 
+    # add component
+    view.add_component('rcsb://1tsu.pdb')
+    view.add_pdbid('1tsu')
+
     # display
     js_utils.clean_error_output()
     display.display(view.player.widget_repr)

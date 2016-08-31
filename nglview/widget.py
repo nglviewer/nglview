@@ -920,6 +920,18 @@ class NGLWidget(DOMWidget):
         self._ngl_component_ids.append(trajectory.id)
         self._update_component_auto_completion()
 
+    def add_pdbid(self, pdbid):
+        '''add new Structure view by fetching pdb id from rcsb
+
+        Examples
+        --------
+        >>> view = nglview.NGLWidget()
+        >>> view.add_pdbid('1tsu')
+        >>> # which is equal to 
+        >>> # view.add_component('rcsb://1tsu.pdb')
+        '''
+        self.add_component('rcsb://{}.pdb'.format(pdbid))
+
     def add_component(self, filename, **kwargs):
         '''add component from file/trajectory/struture
 
