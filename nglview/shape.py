@@ -1,6 +1,5 @@
 from .utils.py_utils import _update_url
 
-@_update_url
 class Shape(object):
     """TODO: doc
 
@@ -20,10 +19,6 @@ class Shape(object):
     >>> shape = nv.Shape(view=view)
     >>> # TODO: add example
     >>> shape.add_sphere(...)
-
-    See also
-    --------
-    {ngl_url}
     """
 
     def __init__(self, view):
