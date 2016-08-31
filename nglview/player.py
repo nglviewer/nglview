@@ -47,7 +47,7 @@ class TrajectoryPlayer(DOMWidget):
 
     widget_tab = Any(None).tag(sync=False)
     widget_repr = Any(None).tag(sync=False)
-    widget_repr_parameteres = Any(None).tag(sync=False)
+    widget_repr_parameters = Any(None).tag(sync=False)
     widget_quick_repr = Any(None).tag(sync=False)
     widget_general = Any(None).tag(sync=False)
     widget_picked = Any(None).tag(sync=False)
@@ -62,7 +62,7 @@ class TrajectoryPlayer(DOMWidget):
     widget_repr_control_buttons = Any(None).tag(sync=False)
     widget_repr_add = Any(None).tag(sync=False)
     widget_accordion_repr_parameters = Any(None).tag(sync=False)
-    widget_repr_parameteres_dialog = Any(None).tag(sync=False)
+    widget_repr_parameters_dialog = Any(None).tag(sync=False)
     widget_repr_name = Any(None).tag(sync=False)
     widget_component_dropdown = Any(None).tag(sync=False)
     widget_drag = Any(None).tag(sync=False)
@@ -86,7 +86,7 @@ class TrajectoryPlayer(DOMWidget):
                                    transparent=False)
 
         self._widget_names = [w for w in dir(self) if w.startswith('wiget_')]
-        self.observe(self._on_widget_built, names=['widget_repr_parameteres',
+        self.observe(self._on_widget_built, names=['widget_repr_parameters',
             'widget_repr',
             'widget_preference'])
 
@@ -100,7 +100,7 @@ class TrajectoryPlayer(DOMWidget):
                 self.widget_general,
                 self.widget_repr,
                 self.widget_preference,
-                self.widget_repr_parameteres,
+                self.widget_repr_parameters,
                 self.widget_help,
                 self.widget_extra, self.widget_picked
         ]
@@ -412,11 +412,11 @@ class TrajectoryPlayer(DOMWidget):
         @button_repr_parameter_dialog.on_click
         def on_click_repr_dialog(_):
             from nglview.widget_box import DraggableBox
-            if self.widget_repr_parameteres is not None and self.widget_repr_choices:
-                self.widget_repr_parameteres_dialog = DraggableBox([self.widget_repr_choices,
-                                     self.widget_repr_parameteres])
-                self.widget_repr_parameteres_dialog._ipython_display_()
-                self.widget_repr_parameteres_dialog._dialog = 'on'
+            if self.widget_repr_parameters is not None and self.widget_repr_choices:
+                self.widget_repr_parameters_dialog = DraggableBox([self.widget_repr_choices,
+                                     self.widget_repr_parameters])
+                self.widget_repr_parameters_dialog._ipython_display_()
+                self.widget_repr_parameters_dialog._dialog = 'on'
 
         bbox = _make_autofit(HBox([button_refresh, button_center_selection,
                                    button_hide, button_remove,
@@ -455,10 +455,10 @@ class TrajectoryPlayer(DOMWidget):
 
             # self.widget_accordion_repr_parameters = Accordion()
             self.widget_accordion_repr_parameters = Tab()
-            self.widget_repr_parameteres =  self._make_widget_repr_parameteres(self.widget_component_slider,
+            self.widget_repr_parameters =  self._make_widget_repr_parameters(self.widget_component_slider,
                     self.widget_repr_slider,
                     self.widget_repr_name)
-            self.widget_accordion_repr_parameters.children = [self.widget_repr_parameteres, Box()]
+            self.widget_accordion_repr_parameters.children = [self.widget_repr_parameters, Box()]
             self.widget_accordion_repr_parameters.set_title(0, 'Parameters')
             self.widget_accordion_repr_parameters.set_title(1, 'Hide')
             self.widget_accordion_repr_parameters.selected_index = 1
@@ -498,9 +498,9 @@ class TrajectoryPlayer(DOMWidget):
                 self.widget_component_dropdown.options = tuple(self._view._ngl_component_names)
 
                 if self.widget_accordion_repr_parameters.selected_index >= 0:
-                    self.widget_repr_parameteres.name = self.widget_repr_name.value
-                    self.widget_repr_parameteres.repr_index = self.widget_repr_slider.value
-                    self.widget_repr_parameteres.component_index = self.widget_component_slider.value
+                    self.widget_repr_parameters.name = self.widget_repr_name.value
+                    self.widget_repr_parameters.repr_index = self.widget_repr_slider.value
+                    self.widget_repr_parameters.component_index = self.widget_component_slider.value
 
             def on_repr_selection_value_changed(change):
                 if self._real_time_update:
@@ -556,7 +556,7 @@ class TrajectoryPlayer(DOMWidget):
 
             return self.widget_repr
 
-    def _make_widget_repr_parameteres(self, component_slider, repr_slider, repr_name_text=None):
+    def _make_widget_repr_parameters(self, component_slider, repr_slider, repr_name_text=None):
         name = repr_name_text.value if repr_name_text is not None else ' '
         widget = self._view._display_repr(component=component_slider.value,
                                           repr_index=repr_slider.value,
