@@ -934,10 +934,10 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    render: function(){
 	        widgets.TabView.prototype.render.call(this);
 	        // overwrite
-	        console.log("update: 1");
+	        console.log("update: 3");
 	        console.log(this);
 	        this.setHover();
-	        $(this).hover(function(){
+	        this.$el.hover(function(){
 	           console.log('hover'); 
 	        });
 	    },

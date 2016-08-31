@@ -852,10 +852,10 @@ var NGLTab = widgets.TabView.extend({
     render: function(){
         widgets.TabView.prototype.render.call(this);
         // overwrite
-        console.log("update: 1");
+        console.log("update: 3");
         console.log(this);
         this.setHover();
-        $(this).hover(function(){
+        this.$el.hover(function(){
            console.log('hover'); 
         });
     },
