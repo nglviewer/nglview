@@ -129,7 +129,7 @@ view.update_cartoon(opacity=0.4, component=0)
 view.remove_cartoon(opacity=0.4, component=0)
 ```
 
-And many more, please check [Selection language](http://arose.github.io/ngl/api/dev/tutorial-selection-language.html)
+And many more, please check [NGL website](http://arose.github.io/ngl/api//tutorial-selection-language.html)
 
 Representations can also be changed by overwriting the `representations` property
 of the widget instance `view`. The available `type` and `params` are described
