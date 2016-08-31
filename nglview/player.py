@@ -809,9 +809,9 @@ class TrajectoryPlayer(DOMWidget):
     def _make_extra_box(self):
         if self.widget_extra is None:
             extra_list = [(self._make_drag_widget, 'Drag'),
-                          (self._make_spin_box, 'spin_box'),
-                          (self._make_widget_picked, 'picked atom'),
-                          (self._make_repr_playground, 'quick repr'),
+                          (self._make_spin_box, 'Spin'),
+                          (self._make_widget_picked, 'Picked'),
+                          (self._make_repr_playground, 'Quick'),
                           (self._make_export_image_widget, 'Image')]
 
             extra_box = _make_delay_tab(extra_list, selected_index=0)
