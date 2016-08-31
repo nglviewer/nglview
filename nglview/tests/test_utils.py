@@ -47,10 +47,25 @@ def test_dict():
     kwargs2 = _camelize_dict(kwargs)
     nt.assert_true('defaultRepresentation' in kwargs2)
 
+def test_file_manager_use_url():
+    fh = FileManager('rcsb://1tsu.pdb')
+    nt.assert_true(fh.is_url)
+    nt.assert_equal(fh.ext, 'pdb')
+    nt.assert_false(fh.is_compressed)
+
+    fh = FileManager('http://dummy.com/1tsu.pdb')
+    nt.assert_true(fh.is_url)
+    nt.assert_equal(fh.ext, 'pdb')
+
+    fh = FileManager('http://dummy.com/1tsu.pdb.gz')
+    nt.assert_true(fh.is_url)
+    nt.assert_equal(fh.ext, 'pdb')
+    nt.assert_true(fh.is_compressed)
+
 def test_file_not_use_filename():
     src = os.path.abspath(nglview.__file__)
     fh = FileManager(src)
-    nt.assert_false(fh.compressed)
+    nt.assert_false(fh.is_compressed)
 
     nt.assert_true(fh.ext, 'py')
     nt.assert_true(fh.is_filename)
@@ -65,7 +80,7 @@ def test_file_current_folder():
     src = get_fn('tz2.pdb')
     fh = FileManager(src)
     nt.assert_true(fh.use_filename)
-    nt.assert_false(fh.compressed)
+    nt.assert_false(fh.is_compressed)
 
     nt.assert_true(fh.ext, 'pdb')
     nt.assert_true(fh.is_filename)
@@ -91,7 +106,7 @@ def test_file_gz():
     src = get_fn('tz2_2.pdb.gz')
     fh = FileManager(src)
     nt.assert_true(fh.use_filename)
-    nt.assert_true(fh.compressed)
+    nt.assert_true(fh.is_compressed)
     nt.assert_equal(fh.compressed_ext, 'gz')
 
     nt.assert_true(fh.ext, 'pdb')
@@ -100,7 +115,7 @@ def test_file_gz():
     with open(src, 'rb') as src2:
         fh2 = FileManager(src2, compressed=True)
         nt.assert_false(fh2.is_filename)
-        nt.assert_true(fh.compressed)
+        nt.assert_true(fh.is_compressed)
 
         def func():
             fh2.ext
@@ -112,7 +127,7 @@ def test_file_gz():
 
     # specify compression
     fh4 = FileManager(src, compressed=True)
-    nt.assert_true(fh4.compressed)
+    nt.assert_true(fh4.is_compressed)
 
     content = gzip.open(src).read() 
     nt.assert_equal(fh4.read(force_buffer=True), content)

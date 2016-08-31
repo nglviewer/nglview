@@ -44,7 +44,6 @@ def show_pdbid(pdbid, **kwargs):
 
 def show_url(url, **kwargs):
     kwargs2 = dict((k, v) for k, v in kwargs.items())
-    kwargs2['url'] = True
     view = NGLWidget()
     view.add_component(url, **kwargs2)
     return view

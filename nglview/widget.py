@@ -926,7 +926,6 @@ class NGLWidget(DOMWidget):
         Parameters
         ----------
         filename : str or Trajectory or Structure or their derived class or url
-            if you specify url, you must specify `url=True` in kwargs
         **kwargs : additional arguments, optional
 
         Examples
@@ -949,9 +948,10 @@ class NGLWidget(DOMWidget):
               string buffer (open(fn).read())
         '''
         kwargs2 = _camelize_dict(kwargs)
+
         try:
-            is_url = kwargs2.pop('url')
-        except KeyError:
+            is_url = FileManager(obj).is_url
+        except NameError:
             is_url = False
 
         if 'defaultRepresentation' not in kwargs2:
