@@ -214,6 +214,7 @@ def test_API_promise_to_have():
     view._get_full_params()
     view.detach(split=False)
     view.detach(split=True)
+    view._simplify_repr_control()
 
 def test_base_adaptor():
     # abstract base class
