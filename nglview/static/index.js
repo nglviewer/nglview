@@ -91,7 +91,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        this.model.on( "change:_init_representations", this.representationsChanged, this );
 	
 	        // init structure loading
-	        this.model.on( "change:_init_structure_list", this.structureChanged, this );
+	        this.model.on( "change:_init_structures_sync", this.structureChanged, this );
 	
 	        // init setting of frame
 	        this.model.on( "change:frame", this.frameChanged, this );
@@ -256,7 +256,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        }, this);
 	
 	        // for callbacks from Python
-	        // must be after initialize NGL.Stage
+	        // must be after initializing NGL.Stage
 	        this.model.send({'type': 'request_loaded', 'data': true})
 	        var state_params = this.stage.getParameters();
 	        this.model.set('_original_stage_parameters', state_params);
@@ -549,10 +549,8 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    },
 	
 	    structureChanged: function(){
-	        this.structureComponent = undefined;
-	        var structureList = this.model.get( "_init_structure_list" );
-	
-	        if ( ! this.model.get( "loaded" ) ) {
+	        if ( !this.model.get( "loaded" ) ) {
+	            var structureList = this.model.get( "_init_structures_sync" );
 	            for ( var i = 0; i < Object.keys(structureList).length; i++ ){
 	                var structure = structureList[ i ];
 	                if( structure.data && structure.ext ){
@@ -584,7 +582,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                    }.bind( this ) );
 	                }
 	            }
-	        // only use _init_structure_list before Widget is loaded.
+	        // only use _init_structures_sync before Widget is loaded.
 	        }
 	    },
 	
@@ -872,7 +870,6 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	            }else if( msg.data == 'parameters' ){
 	                this.send( JSON.stringify( this.stage.parameters ));
 	            }else{
-	                console.log( this.stage.compList.length );
 	                for ( var i = 0; i < this.stage.compList.length; i++ ) {
 	                    console.log( this.stage.compList[ i ] );
 	                }
@@ -890,7 +887,6 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    render: function(){
 	        this.model.on('change:_dialog', this.dialogCommandChanged, this);
 	        this.model.on('change:_ngl_command', this.commandChanged, this);
-	        console.log('change 0');
 	        widgets.BoxView.prototype.render.call(this);
 	    },
 	

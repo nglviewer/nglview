@@ -88,7 +88,7 @@ class NGLWidget(DOMWidget):
     count = Int(1).tag(sync=True)
     _n_dragged_files = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
-    _init_structure_sync = List().tag(sync=True)
+    _init_structures_sync = List().tag(sync=True)
     _parameters = Dict().tag(sync=True)
     _full_stage_parameters = Dict().tag(sync=True)
     _original_stage_parameters = Dict().tag(sync=True)
@@ -103,6 +103,7 @@ class NGLWidget(DOMWidget):
     n_components = Int(0).tag(sync=True)
 
     displayed = False
+    _already_constructed = Bool(False).tag(sync=False)
     _ngl_msg = None
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
@@ -144,11 +145,8 @@ class NGLWidget(DOMWidget):
             if structure is not None:
                 self.add_structure(structure, **kwargs)
 
-        # initialize _init_structure_sync
-        # hack to trigger update on JS side
-        if structure is not None:
-            self._set_initial_structure(self._init_structures)
-
+        # call before setting representations
+        self._set_initial_structure(self._init_structures)
         if representations:
             self._init_representations = representations
         else:
@@ -169,10 +167,8 @@ class NGLWidget(DOMWidget):
             self._representations = self._init_representations[:]
 
         self._set_unsync_camera()
-
-        # need to initialize before _ngl_component_ids
         self.player = TrajectoryPlayer(self)
-
+        self._already_constructed = True
 
     @property
     def parameters(self):
@@ -500,13 +496,14 @@ class NGLWidget(DOMWidget):
         structures : list
             list of Structure or Trajectory
         """
-        _init_structure_sync = structures if isinstance(structures, (list, tuple)) else [structures,]
-        self._init_structure_sync = [
-                    {"data": _structure.get_structure_string(),
-                     "ext": _structure.ext,
-                     "params": _structure.params,
-                     "id": _structure.id}
-                for _structure in _init_structure_sync]
+        _init_structures_sync = structures if isinstance(structures, (list, tuple)) else [structures,]
+        if _init_structures_sync:
+            self._init_structures_sync = [
+                        {"data": _structure.get_structure_string(),
+                         "ext": _structure.ext,
+                         "params": _structure.params,
+                         "id": _structure.id}
+                    for _structure in _init_structures_sync]
 
     def _set_coordinates(self, index):
         '''update coordinates for all trajectories at index-th frame
@@ -845,7 +842,7 @@ class NGLWidget(DOMWidget):
         --------
         nglview.NGLWidget.add_component
         '''
-        if self.loaded:
+        if self.loaded or self._already_constructed:
             self._load_data(structure, **kwargs)
         else:
             # update via structure_list
@@ -888,10 +885,10 @@ class NGLWidget(DOMWidget):
         else:
             trajectory = trajectory
 
-        if self.loaded:
+        if self.loaded or self._already_constructed:
             self._load_data(trajectory, **kwargs)
         else:
-            # update via structure_list
+            # update via _init_structures_sync
             self._init_structures.append(trajectory)
             name = py_utils.get_name(trajectory, kwargs)
             self._ngl_component_names.append(name)
