@@ -1,10 +1,10 @@
 from __future__ import absolute_import
-from ipywidgets import Box
+from ipywidgets import Box, DOMWidget
 from .widget import NGLWidget
 from .layout import form_item_layout
 from . import default
 from .utils import js_utils
-from traitlets import CaselessStrEnum, observe
+from traitlets import CaselessStrEnum, observe, Unicode
 
 class BoxNGL(Box):
     _gui_style = CaselessStrEnum(['row', 'column'], default_value='row').tag(sync=True)
@@ -27,12 +27,6 @@ class BoxNGL(Box):
                 widget.displayed = True
         super(BoxNGL, self)._ipython_display_(*args, **kwargs)
 
-    def _update_padding(self, padding=default.DEFAULT_PADDING):
-        for widget in self.children:
-            if isinstance(widget, NGLWidget):
-                widget.player._create_all_tabs()
-                widget.player._update_padding(padding=padding)
-
     def _update_size(self):
         for widget in self.children:
             if isinstance(widget, NGLWidget):
@@ -40,5 +34,9 @@ class BoxNGL(Box):
 
     def _beautify(self):
         js_utils._set_notebook_width('60%', left_padding=None)
-        self._update_padding()
         self._update_size()
+
+class DraggableBox(Box):
+    _view_name = Unicode("NGLBox").tag(sync=True)
+    _view_module = Unicode("nglview-js").tag(sync=True)
+    _dialog = Unicode('off').tag(sync=True)

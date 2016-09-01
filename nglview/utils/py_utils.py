@@ -13,6 +13,11 @@ __all__ = ['encode_base64', 'decode_base64',
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
+def _update_url(func):
+    from nglview.default import NGL_BASE_URL
+    func.__doc__ = func.__doc__.format(ngl_url=NGL_BASE_URL)
+    return func
+
 if PY3:
     string_types = str
 else:
@@ -135,11 +140,11 @@ class FileManager(object):
                     return self.src
 
     @property
-    def compressed(self):
+    def is_compressed(self):
         '''naive detection
         '''
         if self._compressed is None:
-            if self.is_filename:
+            if self.is_filename or self.is_url:
                 return (self.src.endswith('gz') or
                         self.src.endswith('zip') or
                         self.src.endswith('bz2'))
@@ -150,7 +155,7 @@ class FileManager(object):
 
     @property
     def compressed_ext(self):
-        if self.compressed and self.is_filename:
+        if self.is_compressed and self.is_filename:
             return self.src.split('.')[-1]
         else:
             return ''
@@ -171,9 +176,9 @@ class FileManager(object):
         if self._ext is not None:
             return self._ext
         else:
-            if hasattr(self.src, 'read') or not self.is_filename:
+            if hasattr(self.src, 'read') or (not self.is_filename and not self.is_url):
                 raise ValueError("you must provide file extension if using file-like object or text content")
-            if self.compressed:
+            if self.is_compressed:
                 return self.src.split('.')[-2]
             else:
                 return self.src.split('.')[-1]
@@ -189,3 +194,9 @@ class FileManager(object):
     def is_binary(self):
         binary_exts = ["mmtf", "dcd", "mrc", "ccp4", "map", "dxbin"]
         return self.ext.lower() in binary_exts
+
+    @property
+    def is_url(self):
+        return (isinstance(self.src, string_types) and
+                ((self.src.startswith('http') or
+                self.src.startswith('rcsb://'))))

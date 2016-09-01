@@ -799,7 +799,53 @@ var NGLView = widgets.DOMWidgetView.extend({
 },
 });
 
+var NGLBox = widgets.BoxView.extend({
+    initialize: function(parameters){
+        widgets.BoxView.prototype.initialize.call(this, parameters);
+        this.$dialog = undefined;
+    },
+
+    render: function(){
+        this.model.on('change:_dialog', this.dialogCommandChanged, this);
+        this.model.on('change:_ngl_command', this.commandChanged, this);
+        console.log('change 0');
+        widgets.BoxView.prototype.render.call(this);
+    },
+
+    dialogCommandChanged: function(){
+        var _dialog = this.model.get('_dialog');
+        if (_dialog == 'on'){
+            this.setDialog();
+        }
+    },
+
+    commandChanged: function(){
+        console.log("place holder");
+    },
+
+    setDialog: function(){
+        //var $node = $(this.$el.parent()[0]);
+        var $node = $(this.$el);
+        $node.addClass('jupyter-widgets');
+        $node.addClass('widget-container');
+        $node.addClass('widget-box');
+        var that = this;
+        dialog  = $node.dialog({
+            draggable: true,
+            resizable: true,
+            modal: false,
+            height: 'auto',
+            show: { effect: "blind", duration: 150 },
+        });
+        dialog.css({overflow: 'hidden'});
+        dialog.prev('.ui-dialog-titlebar')
+              .css({'background': 'transparent',
+                    'border': 'none'});
+    },
+});
+
 module.exports = {
     'NGLView': NGLView,
-    'NGL': NGL
+    'NGL': NGL,
+    'NGLBox': NGLBox
 };

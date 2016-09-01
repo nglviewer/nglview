@@ -12,7 +12,8 @@ from traitlets import (Unicode, Bool, Dict, List, Int, observe,
 from .utils import py_utils, js_utils, widget_utils
 from .utils.py_utils import (seq_to_string, string_types, _camelize_dict,
                              FileManager, get_repr_names_from_dict,
-                             encode_base64)
+                             encode_base64,
+                             _update_url)
 from .player import TrajectoryPlayer
 from . import interpolate
 from .shape import Shape
@@ -22,6 +23,7 @@ from .adaptor import (Trajectory, PyTrajTrajectory,
         MDTrajTrajectory, MDAnalysisTrajectory, ParmEdTrajectory)
 from .adaptor import BACKENDS
 from .parameters import REPRESENTATION_NAME_PAIRS
+from . import default
 
 __all__ = ['NGLWidget', 'ComponentViewer']
 
@@ -207,7 +209,7 @@ class NGLWidget(DOMWidget):
     def _on_picked(self, change):
         import json
         picked = change['new']
-        self.player.picked_widget.value = json.dumps(picked)
+        self.player.widget_picked.value = json.dumps(picked)
         
     @observe('background')
     def _update_background_color(self, change):
@@ -440,6 +442,8 @@ class NGLWidget(DOMWidget):
         self._remote_call('setParameters',
                  target='Representation',
                  kwargs=kwargs)
+        self._remote_call('requestReprsInfo',
+                 target='Widget')
 
     def set_representations(self, representations, component=0):
         """
@@ -586,6 +590,7 @@ class NGLWidget(DOMWidget):
                 target='compList',
                 kwargs={'component_index': component})
 
+    @_update_url
     def _add_shape(self, shapes, name='shape'):
         """add shape objects
 
@@ -603,7 +608,7 @@ class NGLWidget(DOMWidget):
         
         See also
         --------
-        http://arose.github.io/ngl/api/current/Shape.html
+        {ngl_url}
 
         Examples
         --------
@@ -611,17 +616,18 @@ class NGLWidget(DOMWidget):
         >>> arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
         >>> view._add_shape([sphere, arrow], name='my_shape')
         """
+
         self._remote_call('addShape', target='Widget',
                 args=[name, shapes])
 
+    @_update_url
     def add_representation(self, repr_type, selection='all', **kwargs):
         '''Add structure representation (cartoon, licorice, ...) for given atom selection.
 
         Parameters
         ----------
         repr_type : str
-            type of representation. Please see:
-            http://arose.github.io/ngl/doc/#User_manual/Usage/Molecular_representations
+            type of representation. Please see {ngl_url} for further info.
         selection : str or 1D array (atom indices) or any iterator that returns integer, default 'all'
             atom selection
         **kwargs: additional arguments for representation
@@ -639,6 +645,7 @@ class NGLWidget(DOMWidget):
         Notes
         -----
         User can also use shortcut
+
         >>> w.add_cartoon(selection) # w.add_representation('cartoon', selection)
         '''
         if repr_type == 'surface':
@@ -770,25 +777,6 @@ class NGLWidget(DOMWidget):
                           args=[filename,],
                           kwargs=params)
 
-    def superpose(self, components=[1,], ref=0, align=True, selection_0='', selection_1=''):
-        """port superpose method from NGL. Good for single structures.
-        If you are viewing trajectory, it's better to use your engine (ptraj, mdtraj,
-        MDAnalysis, ...)
-
-        Note: unstable feature
-
-        Parameters
-        ----------
-        components : 1D int array-like, default [1,]
-            component index
-        ref : int, default 0
-            reference index
-        """
-
-        for index in components:
-            self._remote_call('superpose', target='Widget',
-                    args=[ref, index, align, selection_0, selection_1])
-
     def _ngl_handle_msg(self, widget, msg, buffers):
         """store message sent from Javascript.
 
@@ -913,13 +901,24 @@ class NGLWidget(DOMWidget):
         self._ngl_component_ids.append(trajectory.id)
         self._update_component_auto_completion()
 
+    def add_pdbid(self, pdbid):
+        '''add new Structure view by fetching pdb id from rcsb
+
+        Examples
+        --------
+        >>> view = nglview.NGLWidget()
+        >>> view.add_pdbid('1tsu')
+        >>> # which is equal to 
+        >>> # view.add_component('rcsb://1tsu.pdb')
+        '''
+        self.add_component('rcsb://{}.pdb'.format(pdbid))
+
     def add_component(self, filename, **kwargs):
         '''add component from file/trajectory/struture
 
         Parameters
         ----------
         filename : str or Trajectory or Structure or their derived class or url
-            if you specify url, you must specify `url=True` in kwargs
         **kwargs : additional arguments, optional
 
         Examples
@@ -927,6 +926,11 @@ class NGLWidget(DOMWidget):
         >>> view = nglview.Widget()
         >>> view
         >>> view.add_component(filename)
+
+        Notes
+        -----
+        If you want to load binary file such as density data, mmtf format, it is
+        faster to load file from current or subfolder.
         '''
         self._load_data(filename, **kwargs)
         # assign an ID
@@ -942,9 +946,10 @@ class NGLWidget(DOMWidget):
               string buffer (open(fn).read())
         '''
         kwargs2 = _camelize_dict(kwargs)
+
         try:
-            is_url = kwargs2.pop('url')
-        except KeyError:
+            is_url = FileManager(obj).is_url
+        except NameError:
             is_url = False
 
         if 'defaultRepresentation' not in kwargs2:

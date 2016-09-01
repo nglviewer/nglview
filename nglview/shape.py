@@ -1,3 +1,4 @@
+from .utils.py_utils import _update_url
 
 class Shape(object):
     """TODO: doc
@@ -18,10 +19,6 @@ class Shape(object):
     >>> shape = nv.Shape(view=view)
     >>> # TODO: add example
     >>> shape.add_sphere(...)
-
-    See also
-    --------
-    http://arose.github.io/ngl/api/dev/Shape.html
     """
 
     def __init__(self, view):
@@ -44,6 +41,7 @@ class Shape(object):
             func = make_func(name)
             setattr(self, func_name, MethodType(func, self))
 
+    @_update_url
     def add(self, *args):
         """
 
@@ -53,6 +51,7 @@ class Shape(object):
 
         See also
         --------
-        http://arose.github.io/ngl/api/dev/Shape.html
+        {ngl_url}
         """
+
         self.view._add_shape([args,])

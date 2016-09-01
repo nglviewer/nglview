@@ -66,7 +66,7 @@ def setup():
     _widget_attrs['_ipython_display_'] = Widget._ipython_display_
     def raise_not_implemented(*args, **kwargs):
         raise NotImplementedError()
-    Widget._ipython_display_ = raise_not_implemented
+    Widget._ipython_display_ = lambda _ : _
 
 
 def teardown():
@@ -112,6 +112,10 @@ def test_API_promise_to_have():
     nv.NGLWidget.clear
     nv.NGLWidget.center
 
+    # add component
+    view.add_component('rcsb://1tsu.pdb')
+    view.add_pdbid('1tsu')
+
     # display
     js_utils.clean_error_output()
     display.display(view.player.widget_repr)
@@ -138,7 +142,6 @@ def test_API_promise_to_have():
         value = ''
 
     view.player.picked_widget = DummWidget()
-    view._on_picked(change=dict(new=''))
 
     view._update_background_color(change=dict(new='blue'))
     view.on_update_dragged_file(change=dict(new=2, old=1))
@@ -182,7 +185,6 @@ def test_API_promise_to_have():
     view._on_render_image(change=dict(new=u'xyz'))
     view.render_image()
     view.download_image()
-    view.superpose([1,], 0)
 
     msg = dict(type='request_frame', data=dict())
     view._ngl_handle_msg(view, msg=msg, buffers=[])
@@ -502,6 +504,38 @@ def test_add_struture_then_trajectory():
     view.loaded = False
     view.add_trajectory(traj)
 
+def test_loaded_attribute():
+    # False
+    traj = pt.datafiles.load_tz2()
+    view = nv.NGLWidget()
+    view.loaded = False
+    structure = nv.FileStructure(nv.datafiles.PDB)
+    view.add_structure(structure)
+    view.add_trajectory(traj)
+    view._ipython_display_()
+    nt.assert_equal(len(view._init_structures), 2)
+
+    # True
+    traj = pt.datafiles.load_tz2()
+    view = nv.NGLWidget()
+    view.loaded = True
+    structure = nv.FileStructure(nv.datafiles.PDB)
+    view.add_structure(structure)
+    view.add_trajectory(traj)
+    view._ipython_display_()
+    nt.assert_equal(len(view._init_structures), 0)
+
+    # False then True
+    traj = pt.datafiles.load_tz2()
+    view = nv.NGLWidget()
+    view.loaded = False
+    structure = nv.FileStructure(nv.datafiles.PDB)
+    view.add_structure(structure)
+    view.loaded = True
+    view.add_trajectory(traj)
+    view._ipython_display_()
+    nt.assert_equal(len(view._init_structures), 1)
+
 def test_player_simple():
     traj = pt.datafiles.load_tz2()
     view = nv.show_pytraj(traj)
@@ -554,6 +588,9 @@ def test_player_simple():
     player.widget_component_slider
     player.widget_repr_slider
     player._create_all_tabs()
+    player._create_all_widgets()
+    player.widget_tab = None
+    player._create_all_widgets()
 
 def test_player_link_to_ipywidgets():
     traj = pt.datafiles.load_tz2()
@@ -588,6 +625,13 @@ def test_player_interpolation():
         view._set_coordinates(3)
 
     nt.assert_raises(ValueError, func())
+
+def test_player_picked():
+    view = nv.demo()
+    s = dict(x=3)
+    view.player.widget_picked = view.player._make_text_picked()
+    view.picked = s
+    nt.assert_equal(view.player.widget_picked.value, '{"x": 3}')
 
 def test_widget_utils():
     box = HBox()

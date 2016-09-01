@@ -1,87 +1,113 @@
 from __future__ import absolute_import
-from traitlets import Dict, Any, observe
+from traitlets import Int, Dict, Any, observe, Bool
 from ipywidgets import Box, DOMWidget, interactive
 from ipywidgets import VBox
 
 # local
 from .color import COLOR_SCHEMES
-from .utils import widget_utils
+from .utils import widget_utils, py_utils
 from .layout import _relayout_master
 
 class RepresentationControl(Box):
     parameters = Dict().tag(sync=False)
     name = Any().tag(sync=False)
+    repr_index = Int().tag(sync=False)
+    component_index = Int().tag(sync=False)
+    _disable_update_parameters = Bool(False).tag(sync=False)
 
     def __init__(self, view, component_index, repr_index, name=None, *args, **kwargs):
         super(RepresentationControl, self).__init__(*args, **kwargs)
         self.component_index = component_index   
         self.repr_index = repr_index
         self._view = view
-        self.children = self._make_widget(name=' ')
+        self.children = self._make_widget().children
         # trigger
         self.name = name
 
+    def _on_change_widget_value(self, change):
+        owner = change['owner']
+        new = change['new']
+        self.parameters = {py_utils._camelize(owner._ngl_description): new}
+
     @observe('parameters')
     def _on_parameters_changed(self, change):
-        parameters = change['new']
+        if not self._disable_update_parameters:
+            parameters = change['new']
 
-        self._view.update_representation(component=self.component_index,
-                repr_index=self.repr_index,
-                **parameters)
+            self._view.update_representation(component=self.component_index,
+                    repr_index=self.repr_index,
+                    **parameters)
 
     @observe('name')
     def _on_name_changed(self, change):
         new_name = change['new']
         if new_name == 'surface':
-            self.children[-1].layout.display = 'flex'
+            for kid in self.children:
+                if kid._ngl_type == 'surface':
+                    kid.layout.display = 'flex'
         else:
-            self.children[-1].layout.display = 'none'
+            for kid in self.children:
+                if kid._ngl_type == 'surface':
+                    kid.layout.display = 'none'
 
-    def _make_widget(self, name):
-        c_string = 'c' + str(self.component_index)
-        r_string = str(self.repr_index)
+    def _get_name_and_repr_dict(self, c_string, r_string):
         try:
             _repr_dict = self._view._repr_dict[c_string][r_string]['parameters']
+            name = self._view._repr_dict[c_string][r_string]['name']
         except KeyError:
             _repr_dict = dict()
+            name = ''
+
+        return name, _repr_dict
+
+    @observe('repr_index')
+    def _on_repr_index_changed(self, change):
+        c_string = 'c' + str(self.component_index)
+        r_string = str(change['new'])
+        name, _repr_dict = self._get_name_and_repr_dict(c_string, r_string)
+        self.name = name
+        self._disable_update_parameters = True
+        for kid in self.children:
+            desc = py_utils._camelize(kid._ngl_description)
+            if desc in _repr_dict:
+                kid.value = _repr_dict.get(desc)
+        self._disable_update_parameters = False
+
+    def _make_widget(self):
+        c_string = 'c' + str(self.component_index)
+        r_string = str(self.repr_index)
+        name, _repr_dict = self._get_name_and_repr_dict(c_string, r_string)
+
+        assembly_list = ['default', 'AU', 'BU1', 'UNITCELL', 'SUPERCELL']
+        surface_types = ['vws', 'sas', 'ms', 'ses']
 
         def func(opacity=_repr_dict.get('opacity', 1.),
                  assembly=_repr_dict.get('assembly', 'default'),
                  color_scheme=_repr_dict.get('colorScheme', " "),
-                 wireframe=_repr_dict.get('wireframe', False)):
-            parameters = dict(opacity=opacity,
-                    assembly=assembly,
-                    colorScheme=color_scheme,
-                    wireframe=wireframe)
-            if not color_scheme:
-                parameters.pop('colorScheme')
+                 wireframe=_repr_dict.get('wireframe', False),
+                 probe_radius=_repr_dict.get('probeRadius', 1.4),
+                 isolevel=_repr_dict.get('isolevel', 2.),
+                 smooth=_repr_dict.get('smooth', 2.),
+                 surface_type=_repr_dict.get('surfaceType', 'ms'),
+                 box_size=_repr_dict.get('boxSize', 10),
+                 cutoff=_repr_dict.get('cutoff', 0)):
+            pass
 
-            self.parameters = parameters 
-
-        assembly_list = ['default', 'AU', 'BU1', 'UNITCELL', 'SUPERCELL']
-        iwidget = interactive(func, opacity=(0., 1., 0.1),
+        widget = interactive(func, opacity=(0., 1., 0.1),
                                  color_scheme=COLOR_SCHEMES,
-                                 assembly=assembly_list)
-        def func_extra(probe_radius=1.4,
-                isolevel=2.,
-                smooth=2.,
-                surface_type='ms',
-                box_size=10,
-                cutoff=0.):
-            self.parameters = dict(probeRadius=probe_radius,
-                    isolevel=isolevel,
-                    smooth=smooth,
-                    surfaceType=surface_type,
-                    boxSize=box_size,
-                    cutoff=cutoff)
-        surface_types = ['vws', 'sas', 'ms', 'ses']
-        # use continuous_update=False to avoid expensive surface calculation and update
-        widget_extra = interactive(func_extra,
-                probe_radius=(0., 5., 0.1),
-                isolevel=(0., 10., 0.1),
-                smooth=(0, 10, 1),
-                surface_type=surface_types,
-                box_size=(0, 100, 2),
-                cutoff=(0., 100, 0.1),
-                continuous_update=False)
-        return [iwidget, widget_extra]
+                                 assembly=assembly_list,
+                                 probe_radius=(0., 5., 0.1),
+                                 isolevel=(0., 10., 0.1),
+                                 smooth=(0, 10, 1),
+                                 surface_type=surface_types,
+                                 box_size=(0, 100, 2),
+                                 cutoff=(0., 100, 0.1),
+                                 continuous_update=False)
+        for kid in widget.children:
+            setattr(kid, '_ngl_description', kid.description)
+            if kid._ngl_description in ['probe_radius', 'smooth', 'surface_type', 'box_size', 'cutoff']:
+                setattr(kid, '_ngl_type', 'surface')
+            else:
+                setattr(kid, '_ngl_type', 'basic')
+            kid.observe(self._on_change_widget_value, 'value')
+        return widget

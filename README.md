@@ -129,7 +129,7 @@ view.update_cartoon(opacity=0.4, component=0)
 view.remove_cartoon(opacity=0.4, component=0)
 ```
 
-And many more, please check [Selection language](http://arose.github.io/ngl/api/dev/tutorial-selection-language.html)
+And many more, please check [NGL website](http://arose.github.io/ngl/api//tutorial-selection-language.html)
 
 Representations can also be changed by overwriting the `representations` property
 of the widget instance `view`. The available `type` and `params` are described
@@ -221,6 +221,8 @@ Add extra component
 # Or adding derived class of `nglview.Structure`
 view.add_component('my.ccp4')
 
+# add component from url
+view.add_component('rcsb://1tsu.pdb')
 # NOTE: Trajectory is a special case of component.
 ```
 
@@ -323,3 +325,5 @@ License
 =======
 
 Generally MIT, see the LICENSE file for details.
+
+[![Coverage Status](https://coveralls.io/repos/github/arose/nglview/badge.svg)](https://coveralls.io/github/arose/nglview)
