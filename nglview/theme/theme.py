@@ -41,8 +41,6 @@ def reset(hide_toolbar=False):
     js_utils.clean_empty_output_area()
 
     if hide_toolbar:
-        display(Javascript("$('#maintoolbar').hide()"))
-        display(Javascript("$('#header-container').hide()"))
+        js_utils.hide_toolbar()
     else:
-        display(Javascript("$('#maintoolbar').show()"))
-        display(Javascript("$('#header-container').show()"))
+        js_utils.show_toolbar()
