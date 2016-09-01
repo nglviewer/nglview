@@ -222,10 +222,13 @@ def test_base_adaptor():
 
     def func_1():
         nv.Trajectory().get_coordinates(1)
+
+    def func_2():
         nv.Trajectory().n_frames
 
     pytest.raises(NotImplementedError, func_0)
     pytest.raises(NotImplementedError, func_1)
+    pytest.raises(NotImplementedError, func_2)
 
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)

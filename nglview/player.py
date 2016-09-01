@@ -593,21 +593,7 @@ class TrajectoryPlayer(DOMWidget):
                 = filename_text.layout.max_width = delay_text.layout.max_width = default.DEFAULT_TEXT_WIDTH
 
         button_movie_images = Button(description='Export Images')
-
-        def download_image(filename):
-            self._view.download_image(factor=slider_factor.value,
-                    antialias=checkbox_antialias.value,
-                    trim=checkbox_trim.value,
-                    transparent=checkbox_transparent.value,
-                    filename=filename)
-
-        @button_movie_images.on_click
-        def on_click_images(button_movie_images):
-            for i in range(start_text.value, stop_text.value, step_text.value):
-                self._view.frame = i
-                time.sleep(delay_text.value)
-                download_image(filename=filename_text.value + str(i))
-                time.sleep(delay_text.value)
+        button_movie_images.on_click(self.on_click_images)
 
         vbox = VBox([
             button_movie_images,
@@ -888,3 +874,17 @@ class TrajectoryPlayer(DOMWidget):
                 widget.layout.display = 'none'
         self.widget_repr_choices.layout.display = 'flex'
         self.widget_accordion_repr_parameters.selected_index = 0
+
+    def download_image(self, filename):
+        self._view.download_image(factor=slider_factor.value,
+                antialias=checkbox_antialias.value,
+                trim=checkbox_trim.value,
+                transparent=checkbox_transparent.value,
+                filename=filename)
+
+    def on_click_images(self, button_movie_images):
+        for i in range(start_text.value, stop_text.value, step_text.value):
+            self._view.frame = i
+            time.sleep(delay_text.value)
+            self.download_image(filename=filename_text.value + str(i))
+            time.sleep(delay_text.value)
