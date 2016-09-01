@@ -3,6 +3,7 @@ from __future__ import print_function, absolute_import
 import time
 import base64
 import uuid
+import json
 import numpy as np 
 from IPython.display import display
 from ipywidgets import DOMWidget, widget_image
@@ -87,7 +88,7 @@ class NGLWidget(DOMWidget):
     count = Int(1).tag(sync=True)
     _n_dragged_files = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
-    _init_structure_list = List().tag(sync=True)
+    _init_structure_sync = List().tag(sync=True)
     _parameters = Dict().tag(sync=True)
     _full_stage_parameters = Dict().tag(sync=True)
     _original_stage_parameters = Dict().tag(sync=True)
@@ -143,7 +144,7 @@ class NGLWidget(DOMWidget):
             if structure is not None:
                 self.add_structure(structure, **kwargs)
 
-        # initialize _init_structure_list
+        # initialize _init_structure_sync
         # hack to trigger update on JS side
         if structure is not None:
             self._set_initial_structure(self._init_structures)
@@ -207,7 +208,6 @@ class NGLWidget(DOMWidget):
 
     @observe('picked')
     def _on_picked(self, change):
-        import json
         picked = change['new']
         self.player.widget_picked.value = json.dumps(picked)
         
@@ -500,12 +500,13 @@ class NGLWidget(DOMWidget):
         structures : list
             list of Structure or Trajectory
         """
-        _init_structure_list = structures if isinstance(structures, (list, tuple)) else [structures,]
-        self._init_structure_list = [{"data": _structure.get_structure_string(),
-                                "ext": _structure.ext,
-                                "params": _structure.params,
-                                "id": _structure.id
-                                } for _structure in _init_structure_list]
+        _init_structure_sync = structures if isinstance(structures, (list, tuple)) else [structures,]
+        self._init_structure_sync = [
+                    {"data": _structure.get_structure_string(),
+                     "ext": _structure.ext,
+                     "params": _structure.params,
+                     "id": _structure.id}
+                for _structure in _init_structure_sync]
 
     def _set_coordinates(self, index):
         '''update coordinates for all trajectories at index-th frame
@@ -782,7 +783,6 @@ class NGLWidget(DOMWidget):
 
         How? use view.on_msg(get_msg)
         """
-        import json
         if isinstance(msg, string_types):
             self._ngl_msg = json.loads(msg)
         else:
