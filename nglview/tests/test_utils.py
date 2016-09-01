@@ -172,3 +172,5 @@ def test_js_utils():
     js_utils._move_notebook_to_the_right()
     js_utils._move_notebook_to_the_left()
     js_utils._reset_notebook()
+    js_utils.hide_toolbar()
+    js_utils.show_toolbar()
