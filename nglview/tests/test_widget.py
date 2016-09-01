@@ -147,6 +147,7 @@ def test_API_promise_to_have():
     view.camera = 'perspective'
     view._request_stage_parameters()
     view._repr_dict = REPR_DICT
+    view._handle_repr_dict_changed(dict(new=dict(c0={})))
 
     # dummy
     class DummWidget():
@@ -162,18 +163,24 @@ def test_API_promise_to_have():
     view.player.widget_repr = view.player._make_widget_repr()
     view._handle_n_components_changed(change=dict(new=2, old=1))
     view._handle_n_components_changed(change=dict(new=1, old=1))
+    view._handle_n_components_changed(change=dict(new=1, old=0))
     view.on_loaded(change=dict(new=True))
     view.on_loaded(change=dict(new=False))
     view._refresh_render()
     view.sync_view()
 
-    def _dummy():
-        pass
-    view._ipython_display_ = _dummy
+    view._first_time_loaded = False
+    view._ipython_display_()
+    view._first_time_loaded = True
+    view._ipython_display_()
+    view._init_gui = True
+    view._ipython_display_()
+    view._theme = 'dark'
     view._ipython_display_()
 
     view.display(gui=True)
     view.display(gui=False)
+    view.display(gui=True, use_box=True)
     view._set_draggable(True)
     view._set_draggable(False)
     view._set_sync_frame()

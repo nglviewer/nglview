@@ -11,15 +11,16 @@ class BoxNGL(Box):
     _is_beautified = Bool(False)
 
     def __init__(self, *args, **kwargs):
-        super(BoxNGL, self).__init__(*args, **kwargs)
-
         self.layout = form_item_layout
+        super(BoxNGL, self).__init__(*args, **kwargs)
 
     @observe('_gui_style')
     def _update_gui_style(self, change):
         """row or column style
         """
         what = change['new']
+        if self.layout is None:
+            self.layout = form_item_layout
         self.layout.flex_flow = what.lower()
 
     def _ipython_display_(self, *args, **kwargs):
