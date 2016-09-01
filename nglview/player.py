@@ -252,6 +252,13 @@ class TrajectoryPlayer(DOMWidget):
                 theme.reset()
         return button
 
+    def _make_button_clean_error_output(self):
+        button = Button(description='Clear Error')
+        @button.on_click
+        def on_click(_):
+            js_utils.clean_error_output()
+        return button
+
     def _make_widget_preference(self, width='100%'):
         def make_func():
             parameters = self._view._full_stage_parameters
@@ -586,7 +593,6 @@ class TrajectoryPlayer(DOMWidget):
                 = filename_text.layout.max_width = delay_text.layout.max_width = default.DEFAULT_TEXT_WIDTH
 
         button_movie_images = Button(description='Export Images')
-
         def download_image(filename):
             self._view.download_image(factor=slider_factor.value,
                     antialias=checkbox_antialias.value,
@@ -822,7 +828,8 @@ class TrajectoryPlayer(DOMWidget):
         if self.widget_theme is None:
             self.widget_theme = Box([self._make_button_theme(),
                                      self._make_button_reset_theme(hide_toolbar=False),
-                                     self._make_button_reset_theme(hide_toolbar=True)])
+                                     self._make_button_reset_theme(hide_toolbar=True),
+                                     self._make_button_clean_error_output()])
         return self.widget_theme
 
     def _make_general_box(self):

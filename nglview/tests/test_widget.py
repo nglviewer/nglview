@@ -15,7 +15,7 @@ import numpy as np
 
 from ipykernel.comm import Comm
 import ipywidgets
-from ipywidgets import Widget, IntText, BoundedFloatText, HBox
+from ipywidgets import Widget, IntText, BoundedFloatText, HBox, Layout, Button
 from traitlets import TraitError
 import ipywidgets as widgets
 from traitlets import TraitError, link
@@ -32,6 +32,13 @@ from nglview import js_utils
 from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
 from nglview import interpolate
+
+try:
+    import rdkit
+    from rdkit import Chem
+    from rdkit.Chem import AllChem
+except ImportError:
+    rdkit = AllChem = None
 
 # local
 from utils import get_fn, repr_dict as REPR_DICT
@@ -92,6 +99,10 @@ def _assert_dict_list_equal(listdict0, listdict1):
             nt.assert_equal(dict0.get(key0), dict1.get(key1))
 
 def test_API_promise_to_have():
+
+    # for Jupyter notebook extension
+    nv._jupyter_nbextension_paths()
+
     view = nv.demo()
 
     # Structure
@@ -136,6 +147,7 @@ def test_API_promise_to_have():
     view.camera = 'perspective'
     view._request_stage_parameters()
     view._repr_dict = REPR_DICT
+    view._handle_repr_dict_changed(dict(new=dict(c0={})))
 
     # dummy
     class DummWidget():
@@ -151,18 +163,24 @@ def test_API_promise_to_have():
     view.player.widget_repr = view.player._make_widget_repr()
     view._handle_n_components_changed(change=dict(new=2, old=1))
     view._handle_n_components_changed(change=dict(new=1, old=1))
+    view._handle_n_components_changed(change=dict(new=1, old=0))
     view.on_loaded(change=dict(new=True))
     view.on_loaded(change=dict(new=False))
     view._refresh_render()
     view.sync_view()
 
-    def _dummy():
-        pass
-    view._ipython_display_ = _dummy
+    view._first_time_loaded = False
+    view._ipython_display_()
+    view._first_time_loaded = True
+    view._ipython_display_()
+    view._init_gui = True
+    view._ipython_display_()
+    view._theme = 'dark'
     view._ipython_display_()
 
     view.display(gui=True)
     view.display(gui=False)
+    view.display(gui=True, use_box=True)
     view._set_draggable(True)
     view._set_draggable(False)
     view._set_sync_frame()
@@ -211,10 +229,13 @@ def test_base_adaptor():
 
     def func_1():
         nv.Trajectory().get_coordinates(1)
+
+    def func_2():
         nv.Trajectory().n_frames
 
     pytest.raises(NotImplementedError, func_0)
     pytest.raises(NotImplementedError, func_1)
+    pytest.raises(NotImplementedError, func_2)
 
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -250,8 +271,6 @@ def test_representations():
     view.add_cartoon()
     representations_2 = DEFAULT_REPR[:]
     representations_2.append({'type': 'cartoon', 'params': {'sele': 'all'}})
-    print(representations_2)
-    print(view.representations)
     _assert_dict_list_equal(view.representations, representations_2)
 
     # Representations
@@ -270,7 +289,12 @@ def test_representations():
 def test_representation_control():
     view = nv.demo()
     repr_control = view._display_repr()
-                    
+
+    repr_control.name = 'surface'
+    repr_control.name = 'cartoon'
+    repr_control.repr_index = 1
+    repr_control.component_index = 1
+
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     assert isinstance(view, nv.NGLWidget), 'must be instance of NGLWidget'
@@ -346,6 +370,17 @@ def test_show_parmed():
     ngl_traj = nv.ParmEdTrajectory(parm)
     ngl_traj.only_save_1st_model = False
     ngl_traj.get_structure_string()
+
+@unittest.skipUnless(rdkit is not None, 'must have rdkit')
+def test_show_rdkit():
+    rdkit_mol = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4')) 
+    AllChem.EmbedMultipleConfs(rdkit_mol, useExpTorsionAnglePrefs=True, useBasicKnowledge=True) 
+    view = nv.show_rdkit(rdkit_mol, parmed=False)
+    nt.assert_false(view._trajlist)
+    view = nv.show_rdkit(rdkit_mol, parmed=True) 
+    nt.assert_true(view._trajlist)
+
+    view = nv.RdkitStructure(rdkit_mol)
 
 def test_encode_and_decode():
     xyz = np.arange(100).astype('f4')
@@ -586,6 +621,8 @@ def test_player_simple():
     player._make_repr_playground()
     player._make_drag_widget()
     player._make_spin_box()
+    player.spin = True
+    player.spin = False
     player._make_widget_picked()
     player._make_export_image_widget()
     player._make_theme_box()
@@ -604,6 +641,7 @@ def test_player_simple():
     player._create_all_widgets()
     player.widget_tab = None
     player._create_all_widgets()
+    player._simplify_repr_control()
 
 def test_player_link_to_ipywidgets():
     traj = pt.datafiles.load_tz2()
@@ -646,6 +684,22 @@ def test_player_picked():
     view.picked = s
     nt.assert_equal(view.player.widget_picked.value, '{"x": 3}')
 
+def test_layout_BoxNGL():
+    view = nv.demo()
+    box = nv.widget_box.BoxNGL([view])
+    box._ipython_display_()
+    box.layout = Layout()
+    box._gui_style = 'row'
+    box._gui_style = 'column'
+    box._gui_style = 'row'
+
+def test_layout_DraggableBox():
+    view = nv.demo()
+    box = nv.widget_box.DraggableBox([view])
+    box._ipython_display_()
+    box._dialog = 'on'
+    box._dialog = 'off'
+
 def test_widget_utils():
     box = HBox()
     i0 = IntText()
@@ -662,6 +716,10 @@ def test_widget_utils():
     assert i1 is widget_utils.get_widget_by_name(box, 'i1')
 
     nt.assert_equal(widget_utils.get_widget_by_name(box, 'i100'), None)
+    nt.assert_equal(widget_utils.get_widget_by_name(None, 'i100'), None)
+
+def test_adaptor_raise():
+    nt.assert_raises(ValueError, lambda : nv.FileStructure('hellotheredda.pdb'))
 
 def test_theme():
     from nglview import theme
