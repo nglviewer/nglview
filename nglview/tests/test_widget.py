@@ -15,7 +15,7 @@ import numpy as np
 
 from ipykernel.comm import Comm
 import ipywidgets
-from ipywidgets import Widget, IntText, BoundedFloatText, HBox, Layout
+from ipywidgets import Widget, IntText, BoundedFloatText, HBox, Layout, Button
 from traitlets import TraitError
 import ipywidgets as widgets
 from traitlets import TraitError, link
@@ -214,7 +214,6 @@ def test_API_promise_to_have():
     view._get_full_params()
     view.detach(split=False)
     view.detach(split=True)
-    view._simplify_repr_control()
 
 def test_base_adaptor():
     # abstract base class
@@ -633,6 +632,7 @@ def test_player_simple():
     player._create_all_widgets()
     player.widget_tab = None
     player._create_all_widgets()
+    player._simplify_repr_control()
 
 def test_player_link_to_ipywidgets():
     traj = pt.datafiles.load_tz2()
