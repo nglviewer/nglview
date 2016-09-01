@@ -4,10 +4,11 @@ from .widget import NGLWidget
 from .layout import form_item_layout
 from . import default
 from .utils import js_utils
-from traitlets import CaselessStrEnum, observe, Unicode
+from traitlets import CaselessStrEnum, observe, Unicode, Bool
 
 class BoxNGL(Box):
     _gui_style = CaselessStrEnum(['row', 'column'], default_value='row').tag(sync=True)
+    _is_beautified = Bool(False)
 
     def __init__(self, *args, **kwargs):
         super(BoxNGL, self).__init__(*args, **kwargs)
@@ -22,19 +23,19 @@ class BoxNGL(Box):
         self.layout.flex_flow = what.lower()
 
     def _ipython_display_(self, *args, **kwargs):
-        for widget in self.children:
-            if isinstance(widget, NGLWidget):
-                widget.displayed = True
         super(BoxNGL, self)._ipython_display_(*args, **kwargs)
+        self._beautify()
 
     def _update_size(self):
         for widget in self.children:
             if isinstance(widget, NGLWidget):
-                  widget._remote_call('setSize', target='Widget', args=['50%', '50%'])
+                  widget._remote_call('setSize', target='Widget', args=['60%', '60%'])
 
     def _beautify(self):
-        js_utils._set_notebook_width('60%', left_padding=None)
-        self._update_size()
+        if not self._is_beautified:
+            js_utils._set_notebook_width('60%', left_padding=None)
+            self._update_size()
+            self._is_beautified = True
 
 class DraggableBox(Box):
     _view_name = Unicode("NGLBox").tag(sync=True)
