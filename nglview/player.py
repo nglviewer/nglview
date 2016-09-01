@@ -15,7 +15,7 @@ from ipywidgets import (DOMWidget,
                         Layout, Tab, Accordion, HTML)
 
 from traitlets import Any, Int, Bool, Dict, Float, CaselessStrEnum
-from traitlets import observe, link
+from traitlets import observe, link, directional_link
 
 from .parameters import REPRESENTATION_NAMES
 from . import default
@@ -237,13 +237,19 @@ class TrajectoryPlayer(DOMWidget):
                                     target='Widget')
         return button
 
-    def _make_button_reset_theme(self):
+    def _make_button_reset_theme(self, hide_toolbar=False):
         from nglview import theme
 
-        button = Button(description='Default')
-        @button.on_click
-        def on_click(button):
-            theme.reset()
+        if hide_toolbar:
+            button = Button(description='Simplified Default')
+            @button.on_click
+            def on_click(button):
+                theme.reset(hide_toolbar=True)
+        else:
+            button = Button(description='Default')
+            @button.on_click
+            def on_click(button):
+                theme.reset()
         return button
 
     def _make_widget_preference(self, width='100%'):
@@ -803,9 +809,9 @@ class TrajectoryPlayer(DOMWidget):
     def _make_extra_box(self):
         if self.widget_extra is None:
             extra_list = [(self._make_drag_widget, 'Drag'),
-                          (self._make_spin_box, 'spin_box'),
-                          (self._make_widget_picked, 'picked atom'),
-                          (self._make_repr_playground, 'quick repr'),
+                          (self._make_spin_box, 'Spin'),
+                          (self._make_widget_picked, 'Picked'),
+                          (self._make_repr_playground, 'Quick'),
                           (self._make_export_image_widget, 'Image')]
 
             extra_box = _make_delay_tab(extra_list, selected_index=0)
@@ -814,7 +820,9 @@ class TrajectoryPlayer(DOMWidget):
 
     def _make_theme_box(self):
         if self.widget_theme is None:
-            self.widget_theme = Box([self._make_button_theme(), self._make_button_reset_theme()])
+            self.widget_theme = Box([self._make_button_theme(),
+                                     self._make_button_reset_theme(hide_toolbar=False),
+                                     self._make_button_reset_theme(hide_toolbar=True)])
         return self.widget_theme
 
     def _make_general_box(self):

@@ -142,7 +142,6 @@ def test_API_promise_to_have():
         value = ''
 
     view.player.picked_widget = DummWidget()
-    view._on_picked(change=dict(new=''))
 
     view._update_background_color(change=dict(new='blue'))
     view.on_update_dragged_file(change=dict(new=2, old=1))
@@ -594,6 +593,13 @@ def test_player_interpolation():
         view._set_coordinates(3)
 
     nt.assert_raises(ValueError, func())
+
+def test_player_picked():
+    view = nv.demo()
+    s = dict(x=3)
+    view.player.widget_picked = view.player._make_text_picked()
+    view.picked = s
+    nt.assert_equal(view.player.widget_picked.value, '{"x": 3}')
 
 def test_widget_utils():
     box = HBox()
