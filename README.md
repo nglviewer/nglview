@@ -325,3 +325,5 @@ License
 =======
 
 Generally MIT, see the LICENSE file for details.
+
+[![Coverage Status](https://coveralls.io/repos/github/arose/nglview/badge.svg)](https://coveralls.io/github/arose/nglview)
