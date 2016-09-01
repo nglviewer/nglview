@@ -8,6 +8,14 @@ __alll__ = ['clean_error_output', 'launch_qtconsole',
             '_reset_notebook',
             '_set_notebook_draggable']
 
+def hide_toolbar():
+    display(Javascript("$('#maintoolbar').hide()"))
+    display(Javascript("$('#header-container').hide()"))
+
+def show_toolbar():
+    display(Javascript("$('#maintoolbar').show()"))
+    display(Javascript("$('#header-container').show()"))
+
 def run(command):
     display(Javascript(command))
 
