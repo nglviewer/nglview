@@ -66,7 +66,7 @@ def setup():
     _widget_attrs['_ipython_display_'] = Widget._ipython_display_
     def raise_not_implemented(*args, **kwargs):
         raise NotImplementedError()
-    Widget._ipython_display_ = raise_not_implemented
+    Widget._ipython_display_ = lambda _ : _
 
 
 def teardown():
@@ -503,6 +503,38 @@ def test_add_struture_then_trajectory():
     aa_eq(coords, traj[3].xyz)
     view.loaded = False
     view.add_trajectory(traj)
+
+def test_loaded_attribute():
+    # False
+    traj = pt.datafiles.load_tz2()
+    view = nv.NGLWidget()
+    view.loaded = False
+    structure = nv.FileStructure(nv.datafiles.PDB)
+    view.add_structure(structure)
+    view.add_trajectory(traj)
+    view._ipython_display_()
+    nt.assert_equal(len(view._init_structures), 2)
+
+    # True
+    traj = pt.datafiles.load_tz2()
+    view = nv.NGLWidget()
+    view.loaded = True
+    structure = nv.FileStructure(nv.datafiles.PDB)
+    view.add_structure(structure)
+    view.add_trajectory(traj)
+    view._ipython_display_()
+    nt.assert_equal(len(view._init_structures), 0)
+
+    # False then True
+    traj = pt.datafiles.load_tz2()
+    view = nv.NGLWidget()
+    view.loaded = False
+    structure = nv.FileStructure(nv.datafiles.PDB)
+    view.add_structure(structure)
+    view.loaded = True
+    view.add_trajectory(traj)
+    view._ipython_display_()
+    nt.assert_equal(len(view._init_structures), 1)
 
 def test_player_simple():
     traj = pt.datafiles.load_tz2()
