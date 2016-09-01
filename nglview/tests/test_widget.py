@@ -15,7 +15,7 @@ import numpy as np
 
 from ipykernel.comm import Comm
 import ipywidgets
-from ipywidgets import Widget, IntText, BoundedFloatText, HBox
+from ipywidgets import Widget, IntText, BoundedFloatText, HBox, Layout
 from traitlets import TraitError
 import ipywidgets as widgets
 from traitlets import TraitError, link
@@ -645,6 +645,22 @@ def test_player_picked():
     view.player.widget_picked = view.player._make_text_picked()
     view.picked = s
     nt.assert_equal(view.player.widget_picked.value, '{"x": 3}')
+
+def test_layout_BoxNGL():
+    view = nv.demo()
+    box = nv.widget_box.BoxNGL([view])
+    box._ipython_display_()
+    box.layout = Layout()
+    box._gui_style = 'row'
+    box._gui_style = 'column'
+    box._gui_style = 'row'
+
+def test_layout_DraggableBox():
+    view = nv.demo()
+    box = nv.widget_box.DraggableBox([view])
+    box._ipython_display_()
+    box._dialog = 'on'
+    box._dialog = 'off'
 
 def test_widget_utils():
     box = HBox()
