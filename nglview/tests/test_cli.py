@@ -1,6 +1,8 @@
+import sys
 import os
 import subprocess
 from nglview import datafiles
+from nglview.scripts.nglview import install_nbextension
 import pytest
 
 this_path = os.path.dirname(os.path.abspath(__file__))
@@ -55,6 +57,11 @@ def test_cli():
     nbfile = os.path.join(this_path, 'notebooks/api/test_detach.ipynb')
     command = 'nglview {nbfile} --test'.format(nbfile=nbfile)
     subprocess.check_call(command.split())
+
+def test_install():
+    jupyter = sys.prefix + '/bin/jupyter'
+    print(jupyter)
+    install_nbextension(jupyter)
 
 
 if __name__ == '__main__':
