@@ -78,31 +78,28 @@ def _add_repr_method_shortcut(self, other):
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js").tag(sync=True)
-    selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
+    frame = Int().tag(sync=True)
+    count = Int(1).tag(sync=True)
     background = Unicode('white').tag(sync=True)
     loaded = Bool(False).tag(sync=False)
+    picked = Dict().tag(sync=True)
+    n_components = Int(0).tag(sync=True)
+    orientation = List().tag(sync=True)
     _first_time_loaded = Bool(True).tag(sync=False)
-    frame = Int().tag(sync=True)
     # hack to always display movie
-    count = Int(1).tag(sync=True)
     _n_dragged_files = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
     _init_structures_sync = List().tag(sync=True)
     _parameters = Dict().tag(sync=True)
     _full_stage_parameters = Dict().tag(sync=True)
     _original_stage_parameters = Dict().tag(sync=True)
-    picked = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
     _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
         default_value='orthographic').tag(sync=True)
-    orientation = List().tag(sync=True)
     _repr_dict = Dict().tag(sync=False)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
-    n_components = Int(0).tag(sync=True)
-
-    displayed = False
     _already_constructed = Bool(False).tag(sync=False)
     _ngl_msg = None
     _send_binary = Bool(True).tag(sync=False)
@@ -311,7 +308,6 @@ class NGLWidget(DOMWidget):
         self.loaded = True
 
     def _ipython_display_(self, **kwargs):
-        self.displayed = True
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._first_time_loaded:
             self._first_time_loaded = False
@@ -1058,7 +1054,7 @@ class NGLWidget(DOMWidget):
         msg['args'] = args
         msg['kwargs'] = kwargs
 
-        if self.displayed is True:
+        if self.loaded:
             self.send(msg)
         else:
             # send later
