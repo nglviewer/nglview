@@ -505,31 +505,44 @@ def test_add_struture_then_trajectory():
     view.add_trajectory(traj)
 
 def test_loaded_attribute():
-    # False
     traj = pt.datafiles.load_tz2()
+    structure = nv.FileStructure(nv.datafiles.PDB)
+
+    # False, empty constructor
     view = nv.NGLWidget()
     view.loaded = False
-    structure = nv.FileStructure(nv.datafiles.PDB)
-    view.add_structure(structure)
-    view.add_trajectory(traj)
-    view._ipython_display_()
-    nt.assert_equal(len(view._init_structures), 2)
-
-    # True
-    traj = pt.datafiles.load_tz2()
-    view = nv.NGLWidget()
-    view.loaded = True
-    structure = nv.FileStructure(nv.datafiles.PDB)
     view.add_structure(structure)
     view.add_trajectory(traj)
     view._ipython_display_()
     nt.assert_equal(len(view._init_structures), 0)
 
-    # False then True
-    traj = pt.datafiles.load_tz2()
+    # False, constructor with a single Structure
+    view = nv.NGLWidget(structure)
+    view.loaded = False
+    view.add_trajectory(traj)
+    view._ipython_display_()
+    nt.assert_equal(len(view._init_structures), 1)
+
+    # True
+    view = nv.NGLWidget()
+    view.loaded = True
+    view.add_structure(structure)
+    view.add_trajectory(traj)
+    view._ipython_display_()
+    nt.assert_equal(len(view._init_structures), 0)
+
+    # False then True, empty constructor
     view = nv.NGLWidget()
     view.loaded = False
-    structure = nv.FileStructure(nv.datafiles.PDB)
+    view.add_structure(structure)
+    view.loaded = True
+    view.add_trajectory(traj)
+    view._ipython_display_()
+    nt.assert_equal(len(view._init_structures), 0)
+
+    # False then True, constructor with a Trajectory
+    view = nv.NGLWidget(nv.PyTrajTrajectory(traj))
+    view.loaded = False
     view.add_structure(structure)
     view.loaded = True
     view.add_trajectory(traj)
