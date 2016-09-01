@@ -40,6 +40,7 @@ script:
 
 after_success:
     - echo "Congrats"
+    - (cd nglview/tests && ../../devtools/travis-ci/coveralls)
 
 notifications:
   email: false
