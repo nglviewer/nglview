@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+
+import subprocess
+import sys
+
+if float(os.environ.get('PYTHON_VERSION')) >= 3.4 and sys.platform == 'linux':
+    subprocess.check_call('coveralls')
+else:
+    print('only perform coverage reporting for Python version >= 3.4 on Linux')

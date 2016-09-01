@@ -40,6 +40,9 @@ pip install git+https://github.com/arose/simpletraj
 pip install pytest
 pip install pytest-cov
 
+# coveralls
+pip install coveralls
+
 if [ "$TEST_NOTEBOOK" = "yes" ]; then
     npm install -g nightwatch
 fi
