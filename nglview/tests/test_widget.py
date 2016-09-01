@@ -33,6 +33,13 @@ from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
 from nglview import interpolate
 
+try:
+    import rdkit
+    from rdkit import Chem
+    from rdkit.Chem import AllChem
+except ImportError:
+    rdkit = AllChem = None
+
 # local
 from utils import get_fn, repr_dict as REPR_DICT
 
@@ -92,6 +99,10 @@ def _assert_dict_list_equal(listdict0, listdict1):
             nt.assert_equal(dict0.get(key0), dict1.get(key1))
 
 def test_API_promise_to_have():
+
+    # for Jupyter notebook extension
+    nv._jupyter_nbextension_paths()
+
     view = nv.demo()
 
     # Structure
@@ -250,8 +261,6 @@ def test_representations():
     view.add_cartoon()
     representations_2 = DEFAULT_REPR[:]
     representations_2.append({'type': 'cartoon', 'params': {'sele': 'all'}})
-    print(representations_2)
-    print(view.representations)
     _assert_dict_list_equal(view.representations, representations_2)
 
     # Representations
@@ -270,7 +279,12 @@ def test_representations():
 def test_representation_control():
     view = nv.demo()
     repr_control = view._display_repr()
-                    
+
+    repr_control.name = 'surface'
+    repr_control.name = 'cartoon'
+    repr_control.repr_index = 1
+    repr_control.component_index = 1
+
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     assert isinstance(view, nv.NGLWidget), 'must be instance of NGLWidget'
@@ -346,6 +360,15 @@ def test_show_parmed():
     ngl_traj = nv.ParmEdTrajectory(parm)
     ngl_traj.only_save_1st_model = False
     ngl_traj.get_structure_string()
+
+@unittest.skipUnless(rdkit is not None, 'must have rdkit')
+def test_show_rdkit():
+    m = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4')) 
+    AllChem.EmbedMultipleConfs(m, useExpTorsionAnglePrefs=True, useBasicKnowledge=True) 
+    view = nv.show_rdkit(m, parmed=False)
+    nt.assert_false(view._trajlist)
+    view = nv.show_rdkit(m, parmed=True) 
+    nt.assert_true(view._trajlist)
 
 def test_encode_and_decode():
     xyz = np.arange(100).astype('f4')
@@ -586,6 +609,8 @@ def test_player_simple():
     player._make_repr_playground()
     player._make_drag_widget()
     player._make_spin_box()
+    player.spin = True
+    player.spin = False
     player._make_widget_picked()
     player._make_export_image_widget()
     player._make_theme_box()
@@ -678,6 +703,7 @@ def test_widget_utils():
     assert i1 is widget_utils.get_widget_by_name(box, 'i1')
 
     nt.assert_equal(widget_utils.get_widget_by_name(box, 'i100'), None)
+    nt.assert_equal(widget_utils.get_widget_by_name(None, 'i100'), None)
 
 def test_theme():
     from nglview import theme

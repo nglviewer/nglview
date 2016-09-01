@@ -18,4 +18,4 @@ exclude_lines =
 
 omit = 
     
-    _version.py
+    *_version.py

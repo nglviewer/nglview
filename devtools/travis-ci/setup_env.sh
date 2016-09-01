@@ -43,6 +43,9 @@ pip install pytest-cov
 # coveralls
 pip install coveralls
 
+# rdkit
+conda install rdkit -c rdkit
+
 if [ "$TEST_NOTEBOOK" = "yes" ]; then
     npm install -g nightwatch
 fi
