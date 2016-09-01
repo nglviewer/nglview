@@ -373,12 +373,14 @@ def test_show_parmed():
 
 @unittest.skipUnless(rdkit is not None, 'must have rdkit')
 def test_show_rdkit():
-    m = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4')) 
-    AllChem.EmbedMultipleConfs(m, useExpTorsionAnglePrefs=True, useBasicKnowledge=True) 
-    view = nv.show_rdkit(m, parmed=False)
+    rdkit_mol = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4')) 
+    AllChem.EmbedMultipleConfs(rdkit_mol, useExpTorsionAnglePrefs=True, useBasicKnowledge=True) 
+    view = nv.show_rdkit(rdkit_mol, parmed=False)
     nt.assert_false(view._trajlist)
-    view = nv.show_rdkit(m, parmed=True) 
+    view = nv.show_rdkit(rdkit_mol, parmed=True) 
     nt.assert_true(view._trajlist)
+
+    view = nv.RdkitStructure(rdkit_mol)
 
 def test_encode_and_decode():
     xyz = np.arange(100).astype('f4')
@@ -715,6 +717,9 @@ def test_widget_utils():
 
     nt.assert_equal(widget_utils.get_widget_by_name(box, 'i100'), None)
     nt.assert_equal(widget_utils.get_widget_by_name(None, 'i100'), None)
+
+def test_adaptor_raise():
+    nt.assert_raises(ValueError, lambda : nv.FileStructure('hellotheredda.pdb'))
 
 def test_theme():
     from nglview import theme
