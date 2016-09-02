@@ -818,7 +818,8 @@ class TrajectoryPlayer(DOMWidget):
                           (self._make_spin_box, 'Spin'),
                           (self._make_widget_picked, 'Picked'),
                           (self._make_repr_playground, 'Quick'),
-                          (self._make_export_image_widget, 'Image')]
+                          (self._make_export_image_widget, 'Image'),
+                          (self._make_command_box, 'Command')]
 
             extra_box = _make_delay_tab(extra_list, selected_index=0)
             self.widget_extra = extra_box
@@ -874,6 +875,16 @@ class TrajectoryPlayer(DOMWidget):
             v0_left = _relayout_master(v0_left, width='100%')
             self.widget_general = v0_left
         return self.widget_general
+
+    def _make_command_box(self):
+        widget_text_command = Text()
+
+        @widget_text_command.on_submit
+        def _on_submit_command(_):
+            command = widget_text_command.value
+            js_utils.execute(command)
+            widget_text_command.value = ''
+        return widget_text_command
 
     def _create_all_tabs(self):
         tab = self._display()
