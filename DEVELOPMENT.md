@@ -35,6 +35,9 @@ pip install -e .
 Update Javascript build
 ========================
 ```bash
+# install nodejs
+# conda install -c javascript nodejs
+
 python setup.py build --npm
 
 # you can install `watch` to autobuild if the js source code is changed.
