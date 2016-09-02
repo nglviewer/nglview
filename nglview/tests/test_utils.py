@@ -174,3 +174,4 @@ def test_js_utils():
     js_utils._reset_notebook()
     js_utils.hide_toolbar()
     js_utils.show_toolbar()
+    js_utils.execute('print("hello")')

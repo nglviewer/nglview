@@ -20,6 +20,9 @@ def show_toolbar():
     run("$('#maintoolbar').show()")
     run("$('#header-container').show()")
 
+def execute(command):
+    run('Jupyter.notebook.kernel.execute("{}")'.format(command))
+
 def _set_notebook_width(width='20%', left_padding=0):
     script_template = """
     var cb = Jupyter.notebook.container;

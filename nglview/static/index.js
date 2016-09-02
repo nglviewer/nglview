@@ -897,8 +897,30 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        }
 	    },
 	
+	    merge: function(){
+	        // TODO: rename and add doc
+	        console.log('calling merge');
+	        var v0 = this.children_views.views[0];
+	        var v1 = this.children_views.views[1];
+	    
+	        v0.then(function(v00){
+	            v1.then(function(v11){
+	                v11.$el.appendTo(v00.$container)
+	                       .css( "position", "absolute" )
+	                       .css( "bottom", "5%" )
+	                       .css( "left", "3%" )
+	                       .css( "padding", "2px 5px 2px 5px" )
+	            });
+	        });
+	    },
+	    
 	    commandChanged: function(){
-	        console.log("place holder");
+	        var cm = this.model.get('_ngl_command');
+	        if (cm == 'merge'){
+	            this.merge();
+	        }else{
+	            console.log("place holder");
+	        }
 	    },
 	
 	    setDialog: function(){
