@@ -29,7 +29,7 @@ from nglview import NGLWidget
 from nglview import widget_utils
 import mdtraj as md
 import parmed as pmd
-from nglview.utils.py_utils import PY2, PY3, click
+from nglview.utils.py_utils import PY2, PY3, click, submit
 from nglview import js_utils
 from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
@@ -668,6 +668,14 @@ def test_player_simple():
     player.widget_repr_slider = 1
     slider_notebook = player._make_resize_notebook_slider()
     slider_notebook.value = 300
+
+    player.widget_repr_name.value = 'surface'
+    player.widget_repr_name.value = 'cartoon'
+
+def test_player_submit_text():
+    """ test_player_click_button """
+    view = nv.demo(gui=True)
+    submit(view.player._make_command_box())
 
 def test_player_click_button():
     """ test_player_click_button """

@@ -16,6 +16,9 @@ PY3 = sys.version_info[0] == 3
 def click(button):
     button._handle_button_msg(None, dict(event='click'), None)
 
+def submit(widget_text):
+    widget_text._handle_string_msg(None, dict(event='submit'), None)
+
 def _update_url(func):
     from nglview.default import NGL_BASE_URL
     func.__doc__ = func.__doc__.format(ngl_url=NGL_BASE_URL)
