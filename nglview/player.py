@@ -499,8 +499,8 @@ class TrajectoryPlayer(DOMWidget):
                                  and name != change['old'].strip())
 
                 if should_update:
-                    component=component_slider.value
-                    repr_index=repr_slider.value
+                    component=self.widget_component_slider.value
+                    repr_index=self.widget_repr_slider.value
                     self._view._remote_call('setRepresentation',
                                      target='Widget',
                                      args=[change['new'], {}, component, repr_index])
