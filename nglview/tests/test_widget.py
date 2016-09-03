@@ -664,8 +664,8 @@ def test_player_simple():
     player._simplify_repr_control()
 
     player._real_time_update = True
-    player.widget_repr_slider = 0
-    player.widget_repr_slider = 1
+    player.widget_repr_slider.value = 0
+    player.widget_repr_slider.value = 1
     slider_notebook = player._make_resize_notebook_slider()
     slider_notebook.value = 300
 
