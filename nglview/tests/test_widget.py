@@ -654,7 +654,8 @@ def test_player_simple():
     player._create_all_widgets()
     player._simplify_repr_control()
 
-    # click
+def test_player_click_button():
+    """ test_player_click_button """
     view = nv.demo(gui=True)
     view._ipython_display_()
     view._repr_dict = REPR_DICT
