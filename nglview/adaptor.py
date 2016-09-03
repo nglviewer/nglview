@@ -50,8 +50,6 @@ class FileStructure(Structure):
         self.ext = self.fm.ext
         self.params = {}
         self.path = path
-        if not self.fm.is_filename:
-            raise IOError("Not a file: " + path)
 
     def get_structure_string(self):
         return self.fm.read(force_buffer=True)

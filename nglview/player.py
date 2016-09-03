@@ -252,6 +252,13 @@ class TrajectoryPlayer(DOMWidget):
                 theme.reset()
         return button
 
+    def _make_button_clean_error_output(self):
+        button = Button(description='Clear Error')
+        @button.on_click
+        def on_click(_):
+            js_utils.clean_error_output()
+        return button
+
     def _make_widget_preference(self, width='100%'):
         def make_func():
             parameters = self._view._full_stage_parameters
@@ -586,7 +593,6 @@ class TrajectoryPlayer(DOMWidget):
                 = filename_text.layout.max_width = delay_text.layout.max_width = default.DEFAULT_TEXT_WIDTH
 
         button_movie_images = Button(description='Export Images')
-
         def download_image(filename):
             self._view.download_image(factor=slider_factor.value,
                     antialias=checkbox_antialias.value,
@@ -812,7 +818,8 @@ class TrajectoryPlayer(DOMWidget):
                           (self._make_spin_box, 'Spin'),
                           (self._make_widget_picked, 'Picked'),
                           (self._make_repr_playground, 'Quick'),
-                          (self._make_export_image_widget, 'Image')]
+                          (self._make_export_image_widget, 'Image'),
+                          (self._make_command_box, 'Command')]
 
             extra_box = _make_delay_tab(extra_list, selected_index=0)
             self.widget_extra = extra_box
@@ -822,7 +829,8 @@ class TrajectoryPlayer(DOMWidget):
         if self.widget_theme is None:
             self.widget_theme = Box([self._make_button_theme(),
                                      self._make_button_reset_theme(hide_toolbar=False),
-                                     self._make_button_reset_theme(hide_toolbar=True)])
+                                     self._make_button_reset_theme(hide_toolbar=True),
+                                     self._make_button_clean_error_output()])
         return self.widget_theme
 
     def _make_general_box(self):
@@ -867,6 +875,16 @@ class TrajectoryPlayer(DOMWidget):
             v0_left = _relayout_master(v0_left, width='100%')
             self.widget_general = v0_left
         return self.widget_general
+
+    def _make_command_box(self):
+        widget_text_command = Text()
+
+        @widget_text_command.on_submit
+        def _on_submit_command(_):
+            command = widget_text_command.value
+            js_utils.execute(command)
+            widget_text_command.value = ''
+        return widget_text_command
 
     def _create_all_tabs(self):
         tab = self._display()

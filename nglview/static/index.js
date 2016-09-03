@@ -91,7 +91,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        this.model.on( "change:_init_representations", this.representationsChanged, this );
 	
 	        // init structure loading
-	        this.model.on( "change:_init_structure_list", this.structureChanged, this );
+	        this.model.on( "change:_init_structures_sync", this.structureChanged, this );
 	
 	        // init setting of frame
 	        this.model.on( "change:frame", this.frameChanged, this );
@@ -131,7 +131,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        NGL.useWorker = false;
 	        this.stage = new NGL.Stage( undefined, {
 	            backgroundColor: "white"
-	        } );
+	        });
 	        this.structureComponent = undefined;
 	        this.$container = $( this.stage.viewer.container );
 	        this.$el.append( this.$container );
@@ -256,12 +256,25 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        }, this);
 	
 	        // for callbacks from Python
-	        // must be after initialize NGL.Stage
+	        // must be after initializing NGL.Stage
 	        this.model.send({'type': 'request_loaded', 'data': true})
 	        var state_params = this.stage.getParameters();
 	        this.model.set('_original_stage_parameters', state_params);
 	        this.touch();
 	    },
+	
+		setSelector: function(selector_id){
+	        // id is uuid that will be set from Python
+	        var selector = "<div class='" + selector_id + "'></div>";
+	        console.log('selector', selector);
+		    this.$ngl_selector = $(selector)
+		        .css( "position", "absolute" )
+		        .css( "bottom", "5%" )
+		        .css( "left", "3%" )
+		        .css( "padding", "2px 5px 2px 5px" )
+		        .css( "opacity", "0.7" )
+		        .appendTo(this.$container);
+		},
 	
 	    setIPythonLikeCell: function(){
 	        var cell = Jupyter.notebook.insert_cell_at_bottom();
@@ -549,10 +562,8 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    },
 	
 	    structureChanged: function(){
-	        this.structureComponent = undefined;
-	        var structureList = this.model.get( "_init_structure_list" );
-	
-	        if ( ! this.model.get( "loaded" ) ) {
+	        if ( !this.model.get( "loaded" ) ) {
+	            var structureList = this.model.get( "_init_structures_sync" );
 	            for ( var i = 0; i < Object.keys(structureList).length; i++ ){
 	                var structure = structureList[ i ];
 	                if( structure.data && structure.ext ){
@@ -584,7 +595,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                    }.bind( this ) );
 	                }
 	            }
-	        // only use _init_structure_list before Widget is loaded.
+	        // only use _init_structures_sync before Widget is loaded.
 	        }
 	    },
 	
@@ -872,7 +883,6 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	            }else if( msg.data == 'parameters' ){
 	                this.send( JSON.stringify( this.stage.parameters ));
 	            }else{
-	                console.log( this.stage.compList.length );
 	                for ( var i = 0; i < this.stage.compList.length; i++ ) {
 	                    console.log( this.stage.compList[ i ] );
 	                }
@@ -890,7 +900,6 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    render: function(){
 	        this.model.on('change:_dialog', this.dialogCommandChanged, this);
 	        this.model.on('change:_ngl_command', this.commandChanged, this);
-	        console.log('change 0');
 	        widgets.BoxView.prototype.render.call(this);
 	    },
 	
@@ -901,8 +910,30 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        }
 	    },
 	
+	    merge: function(){
+	        // TODO: rename and add doc
+	        console.log('calling merge');
+	        var v0 = this.children_views.views[0];
+	        var v1 = this.children_views.views[1];
+	    
+	        v0.then(function(v00){
+	            v1.then(function(v11){
+	                v11.$el.appendTo(v00.$container)
+	                       .css( "position", "absolute" )
+	                       .css( "bottom", "5%" )
+	                       .css( "left", "3%" )
+	                       .css( "padding", "2px 5px 2px 5px" )
+	            });
+	        });
+	    },
+	    
 	    commandChanged: function(){
-	        console.log("place holder");
+	        var cm = this.model.get('_ngl_command');
+	        if (cm == 'merge'){
+	            this.merge();
+	        }else{
+	            console.log("place holder");
+	        }
 	    },
 	
 	    setDialog: function(){

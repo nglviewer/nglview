@@ -18,8 +18,3 @@ def get_widget_by_name(box, widget_name):
             if hasattr(widget, '_ngl_name') and widget._ngl_name == widget_name:
                 return widget
     return None
-
-def make_default_slider_width(box):
-    for kid in box.children:
-        if isinstance(kid, (IntSlider, FloatSlider)):
-            kid.width = default.DEFAULT_SLIDER_WIDTH

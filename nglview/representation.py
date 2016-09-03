@@ -24,7 +24,7 @@ class RepresentationControl(Box):
         # trigger
         self.name = name
 
-    def _on_change_widget_value(self, change):
+    def _on_change_widget_child_value(self, change):
         owner = change['owner']
         new = change['new']
         self.parameters = {py_utils._camelize(owner._ngl_description): new}
@@ -64,6 +64,15 @@ class RepresentationControl(Box):
     def _on_repr_index_changed(self, change):
         c_string = 'c' + str(self.component_index)
         r_string = str(change['new'])
+        self._update(c_string, r_string)
+
+    @observe('component_index')
+    def _on_component_index_changed(self, change):
+        c_string = 'c' + str(change['new'])
+        r_string = str(self.repr_index)
+        self._update(c_string, r_string)
+
+    def _update(self, c_string, r_string):
         name, _repr_dict = self._get_name_and_repr_dict(c_string, r_string)
         self.name = name
         self._disable_update_parameters = True
@@ -109,5 +118,5 @@ class RepresentationControl(Box):
                 setattr(kid, '_ngl_type', 'surface')
             else:
                 setattr(kid, '_ngl_type', 'basic')
-            kid.observe(self._on_change_widget_value, 'value')
+            kid.observe(self._on_change_widget_child_value, 'value')
         return widget

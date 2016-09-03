@@ -3,6 +3,7 @@ from __future__ import print_function, absolute_import
 import time
 import base64
 import uuid
+import json
 import numpy as np 
 from IPython.display import display
 from ipywidgets import DOMWidget, widget_image
@@ -77,31 +78,30 @@ def _add_repr_method_shortcut(self, other):
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js").tag(sync=True)
-    selection = Unicode("*").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
+    selector = Unicode().tag(sync=True)
+    frame = Int().tag(sync=True)
+    count = Int(1).tag(sync=True)
     background = Unicode('white').tag(sync=True)
     loaded = Bool(False).tag(sync=False)
+    picked = Dict().tag(sync=True)
+    n_components = Int(0).tag(sync=True)
+    orientation = List().tag(sync=True)
     _first_time_loaded = Bool(True).tag(sync=False)
-    frame = Int().tag(sync=True)
     # hack to always display movie
-    count = Int(1).tag(sync=True)
     _n_dragged_files = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
-    _init_structure_list = List().tag(sync=True)
+    _init_structures_sync = List().tag(sync=True)
     _parameters = Dict().tag(sync=True)
     _full_stage_parameters = Dict().tag(sync=True)
     _original_stage_parameters = Dict().tag(sync=True)
-    picked = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
     _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
         default_value='orthographic').tag(sync=True)
-    orientation = List().tag(sync=True)
     _repr_dict = Dict().tag(sync=False)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
-    n_components = Int(0).tag(sync=True)
-
-    displayed = False
+    _already_constructed = Bool(False).tag(sync=False)
     _ngl_msg = None
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
@@ -143,11 +143,8 @@ class NGLWidget(DOMWidget):
             if structure is not None:
                 self.add_structure(structure, **kwargs)
 
-        # initialize _init_structure_list
-        # hack to trigger update on JS side
-        if structure is not None:
-            self._set_initial_structure(self._init_structures)
-
+        # call before setting representations
+        self._set_initial_structure(self._init_structures)
         if representations:
             self._init_representations = representations
         else:
@@ -168,10 +165,11 @@ class NGLWidget(DOMWidget):
             self._representations = self._init_representations[:]
 
         self._set_unsync_camera()
-
-        # need to initialize before _ngl_component_ids
+        self.selector = str(uuid.uuid4()).replace('-', '')
+        self._remote_call('setSelector', target='Widget', args=[self.selector,])
+        self.selector = '.' + self.selector # for PlaceProxy
         self.player = TrajectoryPlayer(self)
-
+        self._already_constructed = True
 
     @property
     def parameters(self):
@@ -207,7 +205,6 @@ class NGLWidget(DOMWidget):
 
     @observe('picked')
     def _on_picked(self, change):
-        import json
         picked = change['new']
         self.player.widget_picked.value = json.dumps(picked)
         
@@ -315,7 +312,6 @@ class NGLWidget(DOMWidget):
         self.loaded = True
 
     def _ipython_display_(self, **kwargs):
-        self.displayed = True
         super(NGLWidget, self)._ipython_display_(**kwargs)
         if self._first_time_loaded:
             self._first_time_loaded = False
@@ -338,7 +334,6 @@ class NGLWidget(DOMWidget):
                 from nglview.widget_box import BoxNGL
                 box = BoxNGL([self, self.player._display()])
                 box._gui_style = 'row'
-                box.layout.align_items = 'center'
                 return box
             else:
                 display(self)
@@ -500,12 +495,14 @@ class NGLWidget(DOMWidget):
         structures : list
             list of Structure or Trajectory
         """
-        _init_structure_list = structures if isinstance(structures, (list, tuple)) else [structures,]
-        self._init_structure_list = [{"data": _structure.get_structure_string(),
-                                "ext": _structure.ext,
-                                "params": _structure.params,
-                                "id": _structure.id
-                                } for _structure in _init_structure_list]
+        _init_structures_sync = structures if isinstance(structures, (list, tuple)) else [structures,]
+        if _init_structures_sync:
+            self._init_structures_sync = [
+                        {"data": _structure.get_structure_string(),
+                         "ext": _structure.ext,
+                         "params": _structure.params,
+                         "id": _structure.id}
+                    for _structure in _init_structures_sync]
 
     def _set_coordinates(self, index):
         '''update coordinates for all trajectories at index-th frame
@@ -782,7 +779,6 @@ class NGLWidget(DOMWidget):
 
         How? use view.on_msg(get_msg)
         """
-        import json
         if isinstance(msg, string_types):
             self._ngl_msg = json.loads(msg)
         else:
@@ -845,7 +841,7 @@ class NGLWidget(DOMWidget):
         --------
         nglview.NGLWidget.add_component
         '''
-        if self.loaded:
+        if self.loaded or self._already_constructed:
             self._load_data(structure, **kwargs)
         else:
             # update via structure_list
@@ -888,10 +884,10 @@ class NGLWidget(DOMWidget):
         else:
             trajectory = trajectory
 
-        if self.loaded:
+        if self.loaded or self._already_constructed:
             self._load_data(trajectory, **kwargs)
         else:
-            # update via structure_list
+            # update via _init_structures_sync
             self._init_structures.append(trajectory)
             name = py_utils.get_name(trajectory, kwargs)
             self._ngl_component_names.append(name)
@@ -1061,7 +1057,7 @@ class NGLWidget(DOMWidget):
         msg['args'] = args
         msg['kwargs'] = kwargs
 
-        if self.displayed is True:
+        if self.loaded:
             self.send(msg)
         else:
             # send later

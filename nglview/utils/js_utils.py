@@ -1,5 +1,5 @@
 from functools import partial
-from IPython.display import display, Javascript
+from IPython.display import display, Javascript, HTML
 
 __alll__ = ['clean_error_output', 'launch_qtconsole',
             'clean_empty_output_area', 'open_url_template',
@@ -10,6 +10,18 @@ __alll__ = ['clean_error_output', 'launch_qtconsole',
 
 def run(command):
     display(Javascript(command))
+
+# cell.clear_output()
+def hide_toolbar():
+    run("$('#maintoolbar').hide()")
+    run("$('#header-container').hide()")
+
+def show_toolbar():
+    run("$('#maintoolbar').show()")
+    run("$('#header-container').show()")
+
+def execute(command):
+    run('Jupyter.notebook.kernel.execute("{}")'.format(command))
 
 def _set_notebook_width(width='20%', left_padding=0):
     script_template = """
@@ -24,7 +36,7 @@ def _set_notebook_width(width='20%', left_padding=0):
     else:
         offset_str = ''
     command = script_template + offset_str
-    display(Javascript(command))
+    run(command)
 
 def _set_notebook_draggable(yes=True):
     script_template = """
@@ -32,16 +44,16 @@ def _set_notebook_draggable(yes=True):
     x.draggable({args});
     """
     if yes:
-        display(Javascript(script_template.replace('{args}', '')))
+        run(script_template.replace('{args}', ''))
     else:
-        display(Javascript(script_template.replace('{args}', '"destroy"')))
+        run(script_template.replace('{args}', '"destroy"'))
 
 def _move_notebook_to_the_right():
     script_template = """
     var x = $('#notebook-container');
     x.css({position: "relative", left: "20%"});
     """
-    display(Javascript(script_template))
+    run(script_template)
 
 def _move_notebook_to_the_left():
     script_template = """
@@ -49,7 +61,7 @@ def _move_notebook_to_the_left():
 
     cb.offset({'left': 0})
     """
-    display(Javascript(script_template))
+    run(script_template)
 
 def _reset_notebook():
     script_template = """
@@ -57,7 +69,7 @@ def _reset_notebook():
     x.width('30%');
     x.css({position: "relative", left: "0%"});
     """
-    display(Javascript(script_template))
+    run(script_template)
 
 
 clean_empty_output_area = partial(run, command="""
@@ -126,15 +138,12 @@ def _set_ipython_cell(background='#67a9cf'):
     var cell = Jupyter.notebook.get_selected_cell();
     cell.element.draggable().resizable();
     """
-    from IPython.display import display, Javascript
-    display(Javascript(cm))
-    display(Javascript(cm2))
+    run(cm)
+    run(cm2)
 
 def ngl_demo(width=400, height=400):
     """make a viewport, create stage object and populate NGL namespace
     """
-    from IPython.display import display, Javascript, HTML
-
     command = """
     <div id='viewport'></div>
     <script>
@@ -155,8 +164,6 @@ def ngl_demo(width=400, height=400):
 def init_funcs():
     """print
     """
-    from IPython.display import display, Javascript, HTML
-
     command = """
     <script>
         var print = function(x){
