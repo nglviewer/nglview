@@ -15,6 +15,7 @@ import pytest
 from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
 import numpy as np
 
+import traitlets
 from ipykernel.comm import Comm
 import ipywidgets
 from ipywidgets import Widget, IntText, BoundedFloatText, HBox, Layout, Button
@@ -817,7 +818,10 @@ def dummy_test_to_increase_coverage():
 def test_widget_box():
     # empty
     box = nv.widget_box.BoxNGL()
-    box.layout = Layout()
+    try:
+        box.layout = Layout()
+    except traitlets.TraitError:
+        pass
     box._update_size()
     view = nv.demo()
     box = nv.widget_box.BoxNGL([view])
