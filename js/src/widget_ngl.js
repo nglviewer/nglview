@@ -49,7 +49,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         NGL.useWorker = false;
         this.stage = new NGL.Stage( undefined, {
             backgroundColor: "white"
-        } );
+        });
         this.structureComponent = undefined;
         this.$container = $( this.stage.viewer.container );
         this.$el.append( this.$container );
@@ -180,6 +180,19 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.model.set('_original_stage_parameters', state_params);
         this.touch();
     },
+
+	setSelector: function(selector_id){
+        // id is uuid that will be set from Python
+        var selector = "<div class='" + selector_id + "'></div>";
+        console.log('selector', selector);
+	    this.$ngl_selector = $(selector)
+	        .css( "position", "absolute" )
+	        .css( "bottom", "5%" )
+	        .css( "left", "3%" )
+	        .css( "padding", "2px 5px 2px 5px" )
+	        .css( "opacity", "0.7" )
+	        .appendTo(this.$container);
+	},
 
     setIPythonLikeCell: function(){
         var cell = Jupyter.notebook.insert_cell_at_bottom();
