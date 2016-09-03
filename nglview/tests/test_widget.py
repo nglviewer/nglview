@@ -624,6 +624,9 @@ def test_player_simple():
     player._make_button_reset_theme()
     w = player._make_widget_preference()
     w.children[0].value = 1.
+    player.widget_preference = None
+    w = player._make_widget_preference()
+    w.children[0].value = 1.
     player._show_download_image()
     player._make_button_url('dummy_url', description='dummy_url')
     player._show_website()
@@ -647,6 +650,9 @@ def test_player_simple():
     player.on_spin_y_changed(change=dict(new=1))
     player.on_spin_z_changed(change=dict(new=1))
     player.on_spin_speed_changed(change=dict(new=0.5))
+    player._spin_x = 1
+    player._spin_y = 1
+    player._spin_z = 1
     player.spin = False
     player.on_spin_changed(change=dict(new=True))
     player.on_spin_x_changed(change=dict(new=1))
