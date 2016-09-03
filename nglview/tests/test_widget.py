@@ -5,6 +5,8 @@
 
 from __future__ import print_function
 import os
+import sys
+from itertools import chain
 
 import nose.tools as nt
 import gzip
@@ -27,7 +29,7 @@ from nglview import NGLWidget
 from nglview import widget_utils
 import mdtraj as md
 import parmed as pmd
-from nglview.utils.py_utils import PY2, PY3
+from nglview.utils.py_utils import PY2, PY3, click
 from nglview import js_utils
 from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
@@ -39,6 +41,12 @@ try:
     from rdkit.Chem import AllChem
 except ImportError:
     rdkit = AllChem = None
+
+try:
+    import MDAnalysis
+    has_MDAnalysis = True
+except ImportError:
+    has_MDAnalysis = False
 
 # local
 from utils import get_fn, repr_dict as REPR_DICT
@@ -355,6 +363,7 @@ def test_show_mdtraj():
     traj = md.load(fn)
     view = nv.show_mdtraj(traj)
 
+@unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
 def test_show_MDAnalysis():
     from MDAnalysis import Universe
     tn, fn = nv.datafiles.PDB, nv.datafiles.PDB
@@ -371,7 +380,8 @@ def test_show_parmed():
     ngl_traj.only_save_1st_model = False
     ngl_traj.get_structure_string()
 
-@unittest.skipUnless(rdkit is not None, 'must have rdkit')
+@unittest.skipUnless(rdkit is not None and not sys.platform.startswith('darwin'),
+                    'must have rdkit and linux')
 def test_show_rdkit():
     rdkit_mol = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4')) 
     AllChem.EmbedMultipleConfs(rdkit_mol, useExpTorsionAnglePrefs=True, useBasicKnowledge=True) 
@@ -390,6 +400,7 @@ def test_encode_and_decode():
     new_xyz = decode_base64(b64_str, dtype='f4', shape=shape)
     aa_eq(xyz, new_xyz) 
 
+@unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
 def test_coordinates_meta():
     from mdtraj.testing import get_fn
     fn, tn = [get_fn('frame0.pdb'),] * 2
@@ -642,6 +653,19 @@ def test_player_simple():
     player.widget_tab = None
     player._create_all_widgets()
     player._simplify_repr_control()
+
+    # click
+    view = nv.demo(gui=True)
+    view._ipython_display_()
+    view._repr_dict = REPR_DICT
+    view.player._create_all_widgets()
+    button_iter = chain.from_iterable([
+        view.player.widget_repr_control_buttons.children,
+        view.player.widget_theme.children,
+        view.player.widget_drag.children,
+    ])
+    for button in button_iter:
+        click(button)
 
 def test_player_link_to_ipywidgets():
     traj = pt.datafiles.load_tz2()
