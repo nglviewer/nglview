@@ -650,9 +650,9 @@ def test_player_simple():
     player.on_spin_y_changed(change=dict(new=1))
     player.on_spin_z_changed(change=dict(new=1))
     player.on_spin_speed_changed(change=dict(new=0.5))
-    player._spin_x = 1
-    player._spin_y = 1
-    player._spin_z = 1
+    player._spin_x = 2
+    player._spin_y = 2
+    player._spin_z = 2
     player.spin = False
     player.on_spin_changed(change=dict(new=True))
     player.on_spin_x_changed(change=dict(new=1))
