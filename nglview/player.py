@@ -102,7 +102,8 @@ class TrajectoryPlayer(DOMWidget):
                 self.widget_preference,
                 self.widget_repr_parameters,
                 self.widget_help,
-                self.widget_extra, self.widget_picked
+                self.widget_extra,
+                self.widget_picked
         ]
         for widget in widget_collection:
             if widget is not None:
@@ -498,8 +499,8 @@ class TrajectoryPlayer(DOMWidget):
                                  and name != change['old'].strip())
 
                 if should_update:
-                    component=component_slider.value
-                    repr_index=repr_slider.value
+                    component=self.widget_component_slider.value
+                    repr_index=self.widget_repr_slider.value
                     self._view._remote_call('setRepresentation',
                                      target='Widget',
                                      args=[change['new'], {}, component, repr_index])
@@ -891,6 +892,10 @@ class TrajectoryPlayer(DOMWidget):
         for index, _ in enumerate(tab.children):
             # trigger ceating widgets
             tab.selected_index = index
+
+        self.widget_extra = self._make_extra_box()
+        for index, _ in enumerate(self.widget_extra.children):
+            self.widget_extra.selected_index = index
 
     def _simplify_repr_control(self):
         for widget in self.widget_repr._saved_widgets:

@@ -5,6 +5,8 @@
 
 from __future__ import print_function
 import os
+import sys
+from itertools import chain
 
 import nose.tools as nt
 import gzip
@@ -13,6 +15,7 @@ import pytest
 from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
 import numpy as np
 
+import traitlets
 from ipykernel.comm import Comm
 import ipywidgets
 from ipywidgets import Widget, IntText, BoundedFloatText, HBox, Layout, Button
@@ -27,7 +30,7 @@ from nglview import NGLWidget
 from nglview import widget_utils
 import mdtraj as md
 import parmed as pmd
-from nglview.utils.py_utils import PY2, PY3
+from nglview.utils.py_utils import PY2, PY3, click, submit
 from nglview import js_utils
 from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
@@ -39,6 +42,12 @@ try:
     from rdkit.Chem import AllChem
 except ImportError:
     rdkit = AllChem = None
+
+try:
+    import MDAnalysis
+    has_MDAnalysis = True
+except ImportError:
+    has_MDAnalysis = False
 
 # local
 from utils import get_fn, repr_dict as REPR_DICT
@@ -133,7 +142,10 @@ def test_API_promise_to_have():
     view.player._display()
 
     # show
-    nv.show_pdbid('1tsu')
+    try:
+        nv.show_pdbid('1tsu')
+    except:
+        pass
     nv.show_url('https://dummy.pdb')
     # other backends will be tested in other sections
 
@@ -355,6 +367,7 @@ def test_show_mdtraj():
     traj = md.load(fn)
     view = nv.show_mdtraj(traj)
 
+@unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
 def test_show_MDAnalysis():
     from MDAnalysis import Universe
     tn, fn = nv.datafiles.PDB, nv.datafiles.PDB
@@ -371,7 +384,8 @@ def test_show_parmed():
     ngl_traj.only_save_1st_model = False
     ngl_traj.get_structure_string()
 
-@unittest.skipUnless(rdkit is not None, 'must have rdkit')
+@unittest.skipUnless(rdkit is not None and not sys.platform.startswith('darwin'),
+                    'must have rdkit and linux')
 def test_show_rdkit():
     rdkit_mol = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4')) 
     AllChem.EmbedMultipleConfs(rdkit_mol, useExpTorsionAnglePrefs=True, useBasicKnowledge=True) 
@@ -390,6 +404,7 @@ def test_encode_and_decode():
     new_xyz = decode_base64(b64_str, dtype='f4', shape=shape)
     aa_eq(xyz, new_xyz) 
 
+@unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
 def test_coordinates_meta():
     from mdtraj.testing import get_fn
     fn, tn = [get_fn('frame0.pdb'),] * 2
@@ -608,7 +623,11 @@ def test_player_simple():
     player._make_button_center()
     player._make_button_theme()
     player._make_button_reset_theme()
-    player._make_widget_preference()
+    w = player._make_widget_preference()
+    w.children[0].value = 1.
+    player.widget_preference = None
+    w = player._make_widget_preference()
+    w.children[0].value = 1.
     player._show_download_image()
     player._make_button_url('dummy_url', description='dummy_url')
     player._show_website()
@@ -621,18 +640,28 @@ def test_player_simple():
     player._make_repr_playground()
     player._make_drag_widget()
     player._make_spin_box()
-    player.spin = True
-    player.spin = False
     player._make_widget_picked()
     player._make_export_image_widget()
     player._make_theme_box()
     player._make_general_box()
     player._update_padding()
+    player.spin = True
     player.on_spin_changed(change=dict(new=True))
     player.on_spin_x_changed(change=dict(new=1))
     player.on_spin_y_changed(change=dict(new=1))
     player.on_spin_z_changed(change=dict(new=1))
     player.on_spin_speed_changed(change=dict(new=0.5))
+    player._spin_x = 2
+    player._spin_y = 2
+    player._spin_z = 2
+    player.spin = False
+    player.on_spin_changed(change=dict(new=True))
+    player.on_spin_x_changed(change=dict(new=1))
+    player.on_spin_y_changed(change=dict(new=1))
+    player.on_spin_z_changed(change=dict(new=1))
+    player.on_spin_speed_changed(change=dict(new=0.5))
+    player._on_widget_built(change=dict(new=player))
+    player._on_widget_built(change=dict(new=None))
     player._real_time_update = True
     player._make_widget_repr()
     player.widget_component_slider
@@ -642,6 +671,44 @@ def test_player_simple():
     player.widget_tab = None
     player._create_all_widgets()
     player._simplify_repr_control()
+
+    player._real_time_update = True
+    player.widget_repr_slider.value = 0
+    player.widget_repr_slider.value = 1
+    slider_notebook = player._make_resize_notebook_slider()
+    slider_notebook.value = 300
+
+    player.widget_repr_name.value = 'surface'
+    player.widget_repr_name.value = 'cartoon'
+
+def test_player_submit_text():
+    """ test_player_click_button """
+    view = nv.demo(gui=True)
+    submit(view.player._make_command_box())
+
+def test_player_click_button():
+    """ test_player_click_button """
+    view = nv.demo(gui=True)
+    view._ipython_display_()
+    view._repr_dict = REPR_DICT
+    view.player._create_all_widgets()
+    view.player.widget_export_image = view.player._make_button_export_image()
+    button_iter = chain.from_iterable([
+        view.player.widget_repr_control_buttons.children,
+        view.player.widget_theme.children,
+        view.player.widget_drag.children,
+        [view.player._show_download_image(),
+         view.player._make_button_url("", ""),
+         view.player._make_button_center(),
+         view.player._make_button_qtconsole(),
+         view.player.widget_export_image.children[0].children[0],
+         view.player.widget_repr_add.children[0],
+         ],
+        view.player.widget_drag.children,
+        [w for w in view.player.widget_preference.children if isinstance(w, Button)],
+    ])
+    for button in button_iter:
+        click(button)
 
 def test_player_link_to_ipywidgets():
     traj = pt.datafiles.load_tz2()
@@ -747,3 +814,20 @@ def test_interpolate():
 
 def dummy_test_to_increase_coverage():
     nv.__version__
+
+def test_widget_box():
+    # empty
+    box = nv.widget_box.BoxNGL()
+    try:
+        box.layout = Layout()
+    except traitlets.TraitError:
+        pass
+    box._update_size()
+    view = nv.demo()
+    box = nv.widget_box.BoxNGL([view])
+    box._update_size()
+
+    box._is_beautified = True
+    box._beautify()
+    box._is_beautified = False
+    box._beautify()
