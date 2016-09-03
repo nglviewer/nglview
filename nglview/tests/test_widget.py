@@ -813,3 +813,17 @@ def test_interpolate():
 
 def dummy_test_to_increase_coverage():
     nv.__version__
+
+def test_widget_box():
+    # empty
+    box = nv.widget_box.BoxNGL()
+    box.layout = Layout()
+    box._update_size()
+    view = nv.demo()
+    box = nv.widget_box.BoxNGL([view])
+    box._update_size()
+
+    box._is_beautified = True
+    box._beautify()
+    box._is_beautified = False
+    box._beautify()
