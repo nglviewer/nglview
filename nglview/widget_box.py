@@ -19,8 +19,6 @@ class BoxNGL(Box):
         """row or column style
         """
         what = change['new']
-        if self.layout is None:
-            self.layout = form_item_layout
         self.layout.flex_flow = what.lower()
 
     def _ipython_display_(self, *args, **kwargs):
