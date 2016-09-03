@@ -141,7 +141,10 @@ def test_API_promise_to_have():
     view.player._display()
 
     # show
-    nv.show_pdbid('1tsu')
+    try:
+        nv.show_pdbid('1tsu')
+    except:
+        pass
     nv.show_url('https://dummy.pdb')
     # other backends will be tested in other sections
 
@@ -632,18 +635,24 @@ def test_player_simple():
     player._make_repr_playground()
     player._make_drag_widget()
     player._make_spin_box()
-    player.spin = True
-    player.spin = False
     player._make_widget_picked()
     player._make_export_image_widget()
     player._make_theme_box()
     player._make_general_box()
     player._update_padding()
+    player.spin = True
     player.on_spin_changed(change=dict(new=True))
     player.on_spin_x_changed(change=dict(new=1))
     player.on_spin_y_changed(change=dict(new=1))
     player.on_spin_z_changed(change=dict(new=1))
     player.on_spin_speed_changed(change=dict(new=0.5))
+    player.spin = False
+    player.on_spin_changed(change=dict(new=True))
+    player.on_spin_x_changed(change=dict(new=1))
+    player.on_spin_y_changed(change=dict(new=1))
+    player.on_spin_z_changed(change=dict(new=1))
+    player.on_spin_speed_changed(change=dict(new=0.5))
+    player._on_widget_built(change=dict(new=player))
     player._real_time_update = True
     player._make_widget_repr()
     player.widget_component_slider
@@ -654,16 +663,32 @@ def test_player_simple():
     player._create_all_widgets()
     player._simplify_repr_control()
 
+    player._real_time_update = True
+    player.widget_repr_slider = 0
+    player.widget_repr_slider = 1
+    slider_notebook = player._make_resize_notebook_slider()
+    slider_notebook.value = 300
+
 def test_player_click_button():
     """ test_player_click_button """
     view = nv.demo(gui=True)
     view._ipython_display_()
     view._repr_dict = REPR_DICT
     view.player._create_all_widgets()
+    view.player.widget_export_image = view.player._make_button_export_image()
     button_iter = chain.from_iterable([
         view.player.widget_repr_control_buttons.children,
         view.player.widget_theme.children,
         view.player.widget_drag.children,
+        [view.player._show_download_image(),
+         view.player._make_button_url("", ""),
+         view.player._make_button_center(),
+         view.player._make_button_qtconsole(),
+         view.player.widget_export_image.children[0].children[0],
+         view.player.widget_repr_add.children[0],
+         ],
+        view.player.widget_drag.children,
+        [w for w in view.player.widget_preference.children if isinstance(w, Button)],
     ])
     for button in button_iter:
         click(button)
