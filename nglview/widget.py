@@ -359,7 +359,11 @@ class NGLWidget(DOMWidget):
         >>> slider = IntSlider()
         >>> import nglview
         >>> view = nglview.demo()
+        >>> view
         >>> view._set_place_proxy(slider)
+        >>> view._place_proxy
+        >>> # TODO: _place_proxy only has effect (adding widget to NGLWidget)
+        >>> # if it was displayed (should fix)
         """
         self._place_proxy.child = widget
 
