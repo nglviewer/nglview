@@ -33,7 +33,7 @@ Installation
 
 Released version
 ----------------
-
+**Note**: The released version only works with `ipywidgets < 5.0`
 - Available on `bioconda` channel
 
     `conda install nglview -c bioconda`
