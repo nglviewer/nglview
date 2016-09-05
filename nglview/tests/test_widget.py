@@ -233,6 +233,7 @@ def test_API_promise_to_have():
     view._get_full_params()
     view.detach(split=False)
     view.detach(split=True)
+    view._set_place_proxy(Box())
 
 def test_base_adaptor():
     # abstract base class
