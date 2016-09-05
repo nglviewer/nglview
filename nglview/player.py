@@ -209,7 +209,7 @@ class TrajectoryPlayer(DOMWidget):
                        (self._make_widget_preference, 'Preference'),
                        (self._make_theme_box, 'Theme'),
                        (self._make_extra_box, 'Extra'),
-                       (Box, 'Hide'),
+                       (self._make_hide_tab_with_place_proxy, 'Hide'),
                        (self._show_website, 'Help')]
 
         tab = _make_delay_tab(box_factory, selected_index=-1)
@@ -220,6 +220,12 @@ class TrajectoryPlayer(DOMWidget):
         self.widget_tab = tab
 
         return self.widget_tab
+
+    def _make_widget_tab(self):
+        return self._display()
+
+    def _make_hide_tab_with_place_proxy(self):
+        return Box([self._view._place_proxy])
 
     def _make_button_center(self):
         button = Button(description=' Center', icon='fa-bullseye')
@@ -438,137 +444,135 @@ class TrajectoryPlayer(DOMWidget):
         return bbox
 
     def _make_widget_repr(self):
-        # TODO: class?
-        if self.widget_repr is None:
-            self.widget_repr_name = Text(value='', description='representation')
-            self.widget_repr_name._ngl_name = 'repr_name_text'
-            repr_selection = Text(value=' ', description='selection')
-            repr_selection._ngl_name = 'repr_selection'
-            repr_selection.width = self.widget_repr_name.width = default.DEFAULT_TEXT_WIDTH 
+        self.widget_repr_name = Text(value='', description='representation')
+        self.widget_repr_name._ngl_name = 'repr_name_text'
+        repr_selection = Text(value=' ', description='selection')
+        repr_selection._ngl_name = 'repr_selection'
+        repr_selection.width = self.widget_repr_name.width = default.DEFAULT_TEXT_WIDTH 
 
-            max_n_components = max(self._view.n_components-1, 0)
-            self.widget_component_slider = IntSlider(value=0, max=max_n_components, min=0, description='component')
-            self.widget_component_slider._ngl_name = 'component_slider'
+        max_n_components = max(self._view.n_components-1, 0)
+        self.widget_component_slider = IntSlider(value=0, max=max_n_components, min=0, description='component')
+        self.widget_component_slider._ngl_name = 'component_slider'
 
-            cvalue = ' '
-            self.widget_component_dropdown = Dropdown(value=cvalue, options=[cvalue,],
-                    description='component')
-            self.widget_component_dropdown._ngl_name = 'component_dropdown'
+        cvalue = ' '
+        self.widget_component_dropdown = Dropdown(value=cvalue, options=[cvalue,],
+                description='component')
+        self.widget_component_dropdown._ngl_name = 'component_dropdown'
 
-            self.widget_repr_slider = IntSlider(value=0, description='representation', width=default.DEFAULT_SLIDER_WIDTH)
-            self.widget_repr_slider._ngl_name = 'repr_slider'
-            self.widget_repr_slider.visible = True
+        self.widget_repr_slider = IntSlider(value=0, description='representation', width=default.DEFAULT_SLIDER_WIDTH)
+        self.widget_repr_slider._ngl_name = 'repr_slider'
+        self.widget_repr_slider.visible = True
 
-            self.widget_component_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
-            self.widget_repr_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
-            self.widget_component_dropdown.layout.width = self.widget_component_dropdown.max_width = default.DEFAULT_TEXT_WIDTH
+        self.widget_component_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
+        self.widget_repr_slider.layout.width = default.DEFAULT_SLIDER_WIDTH
+        self.widget_component_dropdown.layout.width = self.widget_component_dropdown.max_width = default.DEFAULT_TEXT_WIDTH
 
-            # turn off for now
-            self.widget_component_dropdown.layout.display = 'none'
-            self.widget_component_dropdown.description = ''
+        # turn off for now
+        self.widget_component_dropdown.layout.display = 'none'
+        self.widget_component_dropdown.description = ''
 
-            # self.widget_accordion_repr_parameters = Accordion()
-            self.widget_accordion_repr_parameters = Tab()
-            self.widget_repr_parameters =  self._make_widget_repr_parameters(self.widget_component_slider,
-                    self.widget_repr_slider,
-                    self.widget_repr_name)
-            self.widget_accordion_repr_parameters.children = [self.widget_repr_parameters, Box()]
-            self.widget_accordion_repr_parameters.set_title(0, 'Parameters')
-            self.widget_accordion_repr_parameters.set_title(1, 'Hide')
-            self.widget_accordion_repr_parameters.selected_index = 1
-            
-            checkbox_reprlist = Checkbox(value=False, description='reprlist')
-            checkbox_reprlist._ngl_name = 'checkbox_reprlist'
-            self.widget_repr_choices = self._make_repr_name_choices(self.widget_component_slider,
-                    self.widget_repr_slider)
-            self.widget_repr_choices._ngl_name = 'reprlist_choices'
+        # self.widget_accordion_repr_parameters = Accordion()
+        self.widget_accordion_repr_parameters = Tab()
+        self.widget_repr_parameters =  self._make_widget_repr_parameters(self.widget_component_slider,
+                self.widget_repr_slider,
+                self.widget_repr_name)
+        self.widget_accordion_repr_parameters.children = [self.widget_repr_parameters, Box()]
+        self.widget_accordion_repr_parameters.set_title(0, 'Parameters')
+        self.widget_accordion_repr_parameters.set_title(1, 'Hide')
+        self.widget_accordion_repr_parameters.selected_index = 1
+        
+        checkbox_reprlist = Checkbox(value=False, description='reprlist')
+        checkbox_reprlist._ngl_name = 'checkbox_reprlist'
+        self.widget_repr_choices = self._make_repr_name_choices(self.widget_component_slider,
+                self.widget_repr_slider)
+        self.widget_repr_choices._ngl_name = 'reprlist_choices'
 
-            self.widget_repr_add = self._make_add_widget_repr(self.widget_component_slider)
+        self.widget_repr_add = self._make_add_widget_repr(self.widget_component_slider)
 
-            def on_update_checkbox_reprlist(change):
-                self.widget_repr_choices.visible= change['new']
-            checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
+        def on_update_checkbox_reprlist(change):
+            self.widget_repr_choices.visible= change['new']
+        checkbox_reprlist.observe(on_update_checkbox_reprlist, names='value')
 
-            def on_repr_name_text_value_changed(change):
-                name = change['new'].strip()
-                old = change['old'].strip()
+        def on_repr_name_text_value_changed(change):
+            name = change['new'].strip()
+            old = change['old'].strip()
 
-                should_update = (self._real_time_update
-                                 and old and name
-                                 and name in REPRESENTATION_NAMES
-                                 and name != change['old'].strip())
+            should_update = (self._real_time_update
+                             and old and name
+                             and name in REPRESENTATION_NAMES
+                             and name != change['old'].strip())
 
-                if should_update:
-                    component=self.widget_component_slider.value
-                    repr_index=self.widget_repr_slider.value
-                    self._view._remote_call('setRepresentation',
-                                     target='Widget',
-                                     args=[change['new'], {}, component, repr_index])
-                    self._view._request_repr_parameters(component, repr_index)
+            if should_update:
+                component=self.widget_component_slider.value
+                repr_index=self.widget_repr_slider.value
+                self._view._remote_call('setRepresentation',
+                                 target='Widget',
+                                 args=[change['new'], {}, component, repr_index])
+                self._view._request_repr_parameters(component, repr_index)
 
-            def on_component_or_repr_slider_value_changed(change):
-                self._view._request_repr_parameters(component=self.widget_component_slider.value,
-                                                    repr_index=self.widget_repr_slider.value)
-                self.widget_component_dropdown.options = tuple(self._view._ngl_component_names)
-
-                if self.widget_accordion_repr_parameters.selected_index >= 0:
-                    self.widget_repr_parameters.name = self.widget_repr_name.value
-                    self.widget_repr_parameters.repr_index = self.widget_repr_slider.value
-                    self.widget_repr_parameters.component_index = self.widget_component_slider.value
-
-            def on_repr_selection_value_changed(change):
-                if self._real_time_update:
-                    component = self.widget_component_slider.value
-                    repr_index = self.widget_repr_slider.value
-                    self._view._set_selection(change['new'],
-                                              component=component,
-                                              repr_index=repr_index)
-
-            def on_change_component_dropdown(change):
-                choice = change['new']
-                if choice:
-                     self.widget_component_slider.value = self._view._ngl_component_names.index(choice)
-
-            self.widget_component_dropdown.observe(on_change_component_dropdown, names='value')
-
-            self.widget_repr_slider.observe(on_component_or_repr_slider_value_changed, names='value')
-            self.widget_component_slider.observe(on_component_or_repr_slider_value_changed, names='value')
-            self.widget_repr_name.observe(on_repr_name_text_value_changed, names='value')
-            repr_selection.observe(on_repr_selection_value_changed, names='value')
-
-            self.widget_repr_control_buttons = self._make_button_repr_control(self.widget_component_slider,
-            self.widget_repr_slider, repr_selection)
-
-            blank_box = Box([Label("")])
-
-            all_kids = [self.widget_repr_control_buttons,
-                        blank_box,
-                        self.widget_repr_add,
-                        self.widget_component_dropdown,
-                        self.widget_repr_name,
-                        repr_selection,
-                        self.widget_component_slider,
-                        self.widget_repr_slider,
-                        self.widget_repr_choices,
-                        self.widget_accordion_repr_parameters
-            ]
-
-            vbox = VBox(all_kids)
-
+        def on_component_or_repr_slider_value_changed(change):
             self._view._request_repr_parameters(component=self.widget_component_slider.value,
-                repr_index=self.widget_repr_slider.value)
+                                                repr_index=self.widget_repr_slider.value)
+            self.widget_component_dropdown.options = tuple(self._view._ngl_component_names)
 
-            self.widget_repr = _relayout_master(vbox, width='100%')
+            if self.widget_accordion_repr_parameters.selected_index >= 0:
+                self.widget_repr_parameters.name = self.widget_repr_name.value
+                self.widget_repr_parameters.repr_index = self.widget_repr_slider.value
+                self.widget_repr_parameters.component_index = self.widget_component_slider.value
 
-            self._refresh(self.widget_component_slider, self.widget_repr_slider)
+        def on_repr_selection_value_changed(change):
+            if self._real_time_update:
+                component = self.widget_component_slider.value
+                repr_index = self.widget_repr_slider.value
+                self._view._set_selection(change['new'],
+                                          component=component,
+                                          repr_index=repr_index)
 
-            setattr(self.widget_repr, "_saved_widgets", [])
-            for _box in self.widget_repr.children:
-                if hasattr(_box, 'children'):
-                    for kid in _box.children:
-                        self.widget_repr._saved_widgets.append(kid)
+        def on_change_component_dropdown(change):
+            choice = change['new']
+            if choice:
+                 self.widget_component_slider.value = self._view._ngl_component_names.index(choice)
 
-            return self.widget_repr
+        self.widget_component_dropdown.observe(on_change_component_dropdown, names='value')
+
+        self.widget_repr_slider.observe(on_component_or_repr_slider_value_changed, names='value')
+        self.widget_component_slider.observe(on_component_or_repr_slider_value_changed, names='value')
+        self.widget_repr_name.observe(on_repr_name_text_value_changed, names='value')
+        repr_selection.observe(on_repr_selection_value_changed, names='value')
+
+        self.widget_repr_control_buttons = self._make_button_repr_control(self.widget_component_slider,
+        self.widget_repr_slider, repr_selection)
+
+        blank_box = Box([Label("")])
+
+        all_kids = [self.widget_repr_control_buttons,
+                    blank_box,
+                    self.widget_repr_add,
+                    self.widget_component_dropdown,
+                    self.widget_repr_name,
+                    repr_selection,
+                    self.widget_component_slider,
+                    self.widget_repr_slider,
+                    self.widget_repr_choices,
+                    self.widget_accordion_repr_parameters
+        ]
+
+        vbox = VBox(all_kids)
+
+        self._view._request_repr_parameters(component=self.widget_component_slider.value,
+            repr_index=self.widget_repr_slider.value)
+
+        self.widget_repr = _relayout_master(vbox, width='100%')
+
+        self._refresh(self.widget_component_slider, self.widget_repr_slider)
+
+        setattr(self.widget_repr, "_saved_widgets", [])
+        for _box in self.widget_repr.children:
+            if hasattr(_box, 'children'):
+                for kid in _box.children:
+                    self.widget_repr._saved_widgets.append(kid)
+
+        return self.widget_repr
 
     def _make_widget_repr_parameters(self, component_slider, repr_slider, repr_name_text=None):
         name = repr_name_text.value if repr_name_text is not None else ' '

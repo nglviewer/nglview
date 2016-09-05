@@ -831,8 +831,12 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                    func.apply( component, new_args );
 	                    break;
 	                case 'Widget':
-	                    var func = this[ msg.methodName ];
-	                    func.apply( this, new_args );
+                        var func = this[ msg.methodName ];
+                        if (func){
+                            func.apply( this, new_args );
+                        }else{
+                            console.log('can not create func for ' + msg.methodName);
+                        }
 	                    break;
 	                case 'Representation':
 	                    var component_index = msg['component_index'];

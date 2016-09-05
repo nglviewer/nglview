@@ -6,8 +6,8 @@ import uuid
 import json
 import numpy as np 
 from IPython.display import display
-from ipywidgets import DOMWidget, widget_image
-from traitlets import (Unicode, Bool, Dict, List, Int, observe,
+from ipywidgets import DOMWidget, widget_image, PlaceProxy
+from traitlets import (Instance, Unicode, Bool, Dict, List, Int, observe,
                        CaselessStrEnum)
 
 from .utils import py_utils, js_utils, widget_utils
@@ -168,6 +168,7 @@ class NGLWidget(DOMWidget):
         self.selector = str(uuid.uuid4()).replace('-', '')
         self._remote_call('setSelector', target='Widget', args=[self.selector,])
         self.selector = '.' + self.selector # for PlaceProxy
+        self._place_proxy = PlaceProxy(child=None, selector=self.selector)
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
@@ -328,6 +329,8 @@ class NGLWidget(DOMWidget):
             self._remote_call('cleanOutput',
                               target='Widget')
 
+        self._place_proxy._ipython_display_()
+
     def display(self, gui=False, use_box=False):
         if gui:
             if use_box:
@@ -338,9 +341,31 @@ class NGLWidget(DOMWidget):
             else:
                 display(self)
                 display(self.player._display())
+                display(self._place_proxy)
                 return None
         else:
             return self
+
+    def _set_place_proxy(self, widget):
+        """
+
+        Parameters
+        ----------
+        widget : instance of ipywidgets.DOMWidget (or derived class)
+
+        Examples
+        --------
+        >>> from ipywidgets import IntSlider
+        >>> slider = IntSlider()
+        >>> import nglview
+        >>> view = nglview.demo()
+        >>> view
+        >>> view._set_place_proxy(slider)
+        >>> view._place_proxy
+        >>> # TODO: _place_proxy only has effect (adding widget to NGLWidget)
+        >>> # if it was displayed (should fix)
+        """
+        self._place_proxy.child = widget
 
     def _set_draggable(self, yes=True):
         if yes:
