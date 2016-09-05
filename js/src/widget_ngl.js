@@ -750,7 +750,11 @@ var NGLView = widgets.DOMWidgetView.extend({
                     break;
                 case 'Widget':
                     var func = this[ msg.methodName ];
-                    func.apply( this, new_args );
+                    if (func){
+                        func.apply( this, new_args );
+                    }else{
+                        console.log('can not create func for ' + msg.methodName);
+                    }
                     break;
                 case 'Representation':
                     var component_index = msg['component_index'];
