@@ -1117,10 +1117,10 @@ class NGLWidget(DOMWidget):
                     args=[False,],
                     kwargs={'component_index': index})
 
-    def show(self, *args):
+    def show(self, **kwargs):
         """shortcut of `show_only`
         """
-        self.show_only(*args)
+        self.show_only(**kwargs)
 
     def show_only(self, indices='all'):
         """set visibility for given components (by their indices)

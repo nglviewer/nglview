@@ -235,7 +235,7 @@ def test_API_promise_to_have():
     # test negative frame (it will be set to self.count - 1)
     view.frame = -1
     msg = dict(type='request_frame', data=dict())
-    view._ngl_handle_msg(view, msg='a string', buffers=[])
+    view._ngl_handle_msg(view, msg='{c0: {}}', buffers=[])
 
     view.loaded = True
     view.show_only([0,])
