@@ -239,7 +239,7 @@ class NGLWidget(DOMWidget):
                 component_slider.max = 0
 
                 reprlist_choices = widget_utils.get_widget_by_name(self.player.widget_repr, 'reprlist_choices')
-                reprlist_choices.options = tuple([''])
+                reprlist_choices.options = tuple([' '])
 
                 repr_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_slider')
                 repr_slider.max = 0
