@@ -173,13 +173,10 @@ def test_API_promise_to_have():
     view.on_update_dragged_file(change=dict(new=1, old=1))
     tab = view.player._display()
 
-<<<<<<< HEAD
-=======
     view.player.widget_repr = view.player._make_widget_repr()
     view._handle_n_components_changed(change=dict(new=2, old=1))
     view._handle_n_components_changed(change=dict(new=1, old=1))
     view._handle_n_components_changed(change=dict(new=1, old=0))
->>>>>>> 4a825961f1b583c367139a36cb67e69452d45615
     view.on_loaded(change=dict(new=True))
     view.on_loaded(change=dict(new=False))
     view._refresh_render()
