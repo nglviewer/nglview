@@ -148,9 +148,6 @@ def test_API_promise_to_have():
     view.on_update_dragged_file(change=dict(new=1, old=1))
     tab = view.player._display()
 
-    view.player.widget_repr = view.player._make_widget_repr()
-    view._handle_n_components_changed(change=dict(new=2, old=1))
-    view._handle_n_components_changed(change=dict(new=1, old=1))
     view.on_loaded(change=dict(new=True))
     view.on_loaded(change=dict(new=False))
     view._refresh_render()
@@ -203,6 +200,19 @@ def test_API_promise_to_have():
     view._get_full_params()
     view.detach(split=False)
     view.detach(split=True)
+
+def test_handling_n_components_changed():
+    view = nv.NGLWidget()
+    n_traj = nv.PyTrajTrajectory(pt.load(nv.datafiles.PDB))
+    view.add_trajectory(n_traj)
+    # fake updating n_components and _repr_dict from front-end
+    view._repr_dict = REPR_DICT
+    view.n_components = 1
+    view.player.widget_repr = view.player._make_widget_repr()
+    view.remove_component(n_traj.id)
+    # fake updating n_components from front-end
+    view._repr_dict = {'c0': {}}
+    view.n_components = 0
 
 def test_base_adaptor():
     # abstract base class
