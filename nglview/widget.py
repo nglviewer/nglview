@@ -804,40 +804,43 @@ class NGLWidget(DOMWidget):
 
         How? use view.on_msg(get_msg)
         """
-        self._ngl_msg = msg
+        if isinstance(msg, string_types):
+            self._ngl_msg = json.loads(msg)
+        else:
+            self._ngl_msg = msg
 
-        msg_type = self._ngl_msg.get('type')
-        if msg_type == 'request_frame':
-            self.frame += self.player.step
-            if self.frame >= self.count:
-                self.frame = 0
-            elif self.frame < 0:
-                self.frame = self.count - 1
-        elif msg_type == 'repr_parameters':
-            data_dict = self._ngl_msg.get('data')
-            name = data_dict.pop('name') + '\n'
-            selection = data_dict.get('sele', '') + '\n'
-            # json change True to true
-            data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
-            data_dict_json = data_dict_json.replace('null', '"null"')
+            msg_type = self._ngl_msg.get('type')
+            if msg_type == 'request_frame':
+                self.frame += self.player.step
+                if self.frame >= self.count:
+                    self.frame = 0
+                elif self.frame < 0:
+                    self.frame = self.count - 1
+            elif msg_type == 'repr_parameters':
+                data_dict = self._ngl_msg.get('data')
+                name = data_dict.pop('name') + '\n'
+                selection = data_dict.get('sele', '') + '\n'
+                # json change True to true
+                data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
+                data_dict_json = data_dict_json.replace('null', '"null"')
 
-            if self.player.widget_repr is not None:
-                # TODO: refactor
-                repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
-                repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
-                repr_name_text.value = name
-                repr_selection.value = selection
+                if self.player.widget_repr is not None:
+                    # TODO: refactor
+                    repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
+                    repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
+                    repr_name_text.value = name
+                    repr_selection.value = selection
 
-        elif msg_type == 'request_loaded':
-            if not self.loaded:
-                # trick to trigger observe loaded
-                # so two viewers can have the same representations
-                self.loaded = False
-            self.loaded = msg.get('data')
-        elif msg_type == 'all_reprs_info':
-            self._repr_dict = self._ngl_msg.get('data')
-        elif msg_type == 'stage_parameters':
-            self._full_stage_parameters = msg.get('data')
+            elif msg_type == 'request_loaded':
+                if not self.loaded:
+                    # trick to trigger observe loaded
+                    # so two viewers can have the same representations
+                    self.loaded = False
+                self.loaded = msg.get('data')
+            elif msg_type == 'all_reprs_info':
+                self._repr_dict = self._ngl_msg.get('data')
+            elif msg_type == 'stage_parameters':
+                self._full_stage_parameters = msg.get('data')
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
