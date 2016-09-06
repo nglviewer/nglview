@@ -140,6 +140,7 @@ def test_API_promise_to_have():
     js_utils.clean_error_output()
     display.display(view.player.widget_repr)
     view.player._display()
+    view._display_image()
 
     # show
     try:
@@ -214,18 +215,26 @@ def test_API_promise_to_have():
     view._hold_image = False
     view._on_render_image(change=dict(new=u'xyz'))
     view.render_image()
+    view.render_image(frame=2)
     view.download_image()
 
     msg = dict(type='request_frame', data=dict())
     view._ngl_handle_msg(view, msg=msg, buffers=[])
     msg = dict(type='repr_parameters', data=dict(name='hello'))
     view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view.loaded = True
+    msg = dict(type='request_loaded', data=True)
+    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view.loaded = False
     msg = dict(type='request_loaded', data=True)
     view._ngl_handle_msg(view, msg=msg, buffers=[])
     msg = dict(type='all_reprs_info', data=REPR_DICT)
     view._ngl_handle_msg(view, msg=msg, buffers=[])
     msg = dict(type='stage_parameters', data=dict())
     view._ngl_handle_msg(view, msg=msg, buffers=[])
+    # test negative frame (it will be set to self.count - 1)
+    view.frame = -1
+    msg = dict(type='request_frame', data=dict())
 
     view.loaded = True
     view.show_only([0,])
@@ -234,6 +243,23 @@ def test_API_promise_to_have():
     view.detach(split=False)
     view.detach(split=True)
     view._set_place_proxy(HBox())
+
+    # iter
+    for c in view: 
+        nt.assert_true(isinstance(c, nv.widget.ComponentViewer))
+
+def test_handling_n_components_changed():
+    view = nv.NGLWidget()
+    n_traj = nv.PyTrajTrajectory(pt.load(nv.datafiles.PDB))
+    view.add_trajectory(n_traj)
+    # fake updating n_components and _repr_dict from front-end
+    view._repr_dict = REPR_DICT
+    view.n_components = 1
+    view.player.widget_repr = view.player._make_widget_repr()
+    view.remove_component(n_traj.id)
+    # fake updating n_components from front-end
+    view._repr_dict = {'c0': {}}
+    view.n_components = 0
 
 def test_base_adaptor():
     # abstract base class
@@ -260,6 +286,8 @@ def test_coordinates_dict():
     # dummy
     view._send_binary = False
     view.coordinates_dict = {0: coords}
+    # increase coverage for IndexError: make index=1000 (which is larger than n_frames)
+    view._set_coordinates(1000)
 
 def test_load_data():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -270,6 +298,9 @@ def test_load_data():
 
     # raise if passing blob but does not provide ext
     nt.assert_raises(ValueError, view._load_data, blob)
+
+    # raise if passing dummy name
+    nt.assert_raises(NameError, lambda : view._load_data(hahahaha))
 
     # load PyTrajectory
     t0 = nv.PyTrajTrajectory(pt.datafiles.load_ala3())
@@ -519,6 +550,9 @@ def test_trajectory_show_hide_sending_cooridnates():
     # show all
     view[1].show()
     view[0].show()
+    view.show(indices='all')
+    view.show(indices=[0,])
+    view.show(indices=[0, 1])
     view.frame = 1
     nt.assert_true(view._trajlist[0].shown)
     nt.assert_true(view._trajlist[1].shown)
