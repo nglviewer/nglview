@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "jupyter-js-widgets": "^1.1.1",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "ngl": "0.9.0-dev.0"
   }
 }
