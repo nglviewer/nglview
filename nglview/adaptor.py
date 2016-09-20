@@ -17,6 +17,7 @@ except ImportError:
 
 from .base_adaptor import Structure, Trajectory
 from .utils.py_utils import FileManager
+from . import config
 
 __all__ = [
     'FileStructure',
@@ -28,10 +29,8 @@ __all__ = [
     'PyTrajTrajectory',
     'ParmEdTrajectory',
     'MDAnalysisTrajectory',
-    'register_backend',
-    'BACKENDS']
-
-BACKENDS = dict()
+    'register_backend'
+]
 
 class register_backend(object):
     def __init__(self, package_name):
@@ -39,7 +38,7 @@ class register_backend(object):
         self.package_name = package_name
 
     def __call__(self, cls):
-        BACKENDS[self.package_name] = cls
+        config.BACKENDS[self.package_name] = cls
         return cls
 
 class FileStructure(Structure):

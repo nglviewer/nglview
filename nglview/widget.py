@@ -22,7 +22,7 @@ from .representation import RepresentationControl
 
 from .adaptor import (Trajectory, PyTrajTrajectory,
         MDTrajTrajectory, MDAnalysisTrajectory, ParmEdTrajectory)
-from .adaptor import BACKENDS
+from .config import BACKENDS
 from .parameters import REPRESENTATION_NAME_PAIRS
 from . import default
 

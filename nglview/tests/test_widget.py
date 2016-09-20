@@ -248,6 +248,12 @@ def test_API_promise_to_have():
     for c in view: 
         nt.assert_true(isinstance(c, nv.widget.ComponentViewer))
 
+def test_API_promise_to_have_add_more_backend():
+    @nv.register_backend('dummy')
+    class MyLovelyClass(nv.Structure, nv.Trajectory):
+        pass
+    assert 'dummy' in nv.BACKENDS
+
 def test_handling_n_components_changed():
     view = nv.NGLWidget()
     n_traj = nv.PyTrajTrajectory(pt.load(nv.datafiles.PDB))
