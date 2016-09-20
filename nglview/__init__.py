@@ -26,6 +26,7 @@ enable_nglview_js()
 
 # TODO: do not use import *
 # interface
+from .config import BACKENDS
 from .widget import NGLWidget
 from .base_adaptor import *
 from .adaptor import *
