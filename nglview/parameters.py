@@ -18,6 +18,7 @@ REPRESENTATION_NAME_PAIRS = [
         ('rocket', 'rocket'),
         ('helixorient', 'helixorient'),
         ('simplified_base', 'base'),
+        ('spacefill', 'spacefill'),
         ('ball_and_stick', 'ball+stick'),
         ]
 
