@@ -406,6 +406,11 @@ class NGLWidget(DOMWidget):
                          kwargs=dict(component_index=component,
                                      repr_index=repr_index))
         
+    def _set_color_by_residue(self, colors, component_index=0, repr_index=0):
+        self._remote_call('setColorByResidue',
+                           target='Widget',
+                           args=[colors, component_index, repr_index])
+
     def color_by(self, color_scheme, component=0):
         '''update color for all representations of given component
 
