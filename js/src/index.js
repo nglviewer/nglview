@@ -13,7 +13,6 @@ module.exports = {};
 
 var loadedModules = [
     require("./widget_ngl.js"),
-    //require("./ngl.js"),
 ]
 
 for (var i in loadedModules) {
