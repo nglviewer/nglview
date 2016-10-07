@@ -38,7 +38,13 @@ Update Javascript build
 # install nodejs
 # conda install -c javascript nodejs
 
+# if you want to update ngl code
+# cp /dir/to/ngl/dist/ngl.js js/src/
+
+# build
 python setup.py build --npm
+
+# then python setup.py install or pip install -e . # development
 
 # you can install `watch` to autobuild if the js source code is changed.
 npm install watch -g
