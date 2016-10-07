@@ -54,6 +54,9 @@ watch 'python setup.py build --npm' js/src/
 # - After changing js code:
 #     - Kernel --> Restart and Clear Output
 #     - Refresh webpage (F5)
+
+# run quick test in terminal
+nglview demo
 ```
 
 Test notebook
