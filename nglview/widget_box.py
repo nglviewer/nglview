@@ -1,8 +1,7 @@
 from __future__ import absolute_import
-from ipywidgets import Box, DOMWidget
+from ipywidgets import Box
 from .widget import NGLWidget
 from .layout import form_item_layout
-from . import default
 from .utils import js_utils
 from traitlets import CaselessStrEnum, observe, Unicode, Bool
 

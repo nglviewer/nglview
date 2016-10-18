@@ -12,7 +12,7 @@ import nose.tools as nt
 import gzip
 import unittest
 import pytest
-from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
+from numpy.testing import assert_almost_equal as aa_eq
 import numpy as np
 
 import traitlets
@@ -583,6 +583,12 @@ def test_existing_js_files():
 
     nt.assert_equal(len(jsfiles), 2)
     nt.assert_equal(len(mapfiles), 1)
+
+def test_add_structure():
+    view = nv.NGLWidget()
+    with pytest.raises(ValueError):
+        # raise if not is instance of nv.Structure
+        view.add_structure(nv.datafiles.PDB)
 
 def test_add_struture_then_trajectory():
     view = nv.show_structure_file(get_fn('tz2.pdb'))

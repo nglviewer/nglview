@@ -1,12 +1,10 @@
 from __future__ import absolute_import
 from traitlets import Int, Dict, Any, observe, Bool
-from ipywidgets import Box, DOMWidget, interactive
-from ipywidgets import VBox
+from ipywidgets import Box, interactive
 
 # local
 from .color import COLOR_SCHEMES
-from .utils import widget_utils, py_utils
-from .layout import _relayout_master
+from .utils import py_utils
 
 class RepresentationControl(Box):
     parameters = Dict().tag(sync=False)

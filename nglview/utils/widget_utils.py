@@ -1,8 +1,4 @@
-
 from __future__ import absolute_import
-from ipywidgets import IntSlider, FloatSlider
-
-from nglview import default
 
 def get_widget_by_name(box, widget_name):
 
