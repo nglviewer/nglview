@@ -1,4 +1,4 @@
-lengevin dynamics simulations
+Langevin dynamics simulations
 &cntrl
    ntx = 1, irest=0,
    imin = 0, nstlim = 500000, dt = 0.002,
