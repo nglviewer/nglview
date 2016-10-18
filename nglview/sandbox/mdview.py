@@ -1,7 +1,7 @@
 import os
 import time
 import pytraj as pt
-from threading import Thread
+import threading
 import abc, six
 
 @six.add_metaclass(abc.ABCMeta)
@@ -12,6 +12,10 @@ class BaseMD(object):
 
     @abc.abstractmethod
     def update(self):
+        pass
+
+    @abc.abstractmethod
+    def stop(self):
         pass
 
 class AmberMD(BaseMD):
@@ -34,6 +38,8 @@ class AmberMD(BaseMD):
         assert os.path.exists(reference), '{} must exists'.format(reference)
         self.restart = restart
         self.reference_traj = pt.load(reference, top=self.top)
+        self.thread = None
+        self.event = None
 
     def initialize(self, gui=False):
         self.view = self.reference_traj.visualize(gui=gui)
@@ -52,9 +58,11 @@ class AmberMD(BaseMD):
             If given, trajectory will be processed (autoimage, ...)
             Must follow func(traj)
         """
-        def _update():
+        # always reset
+        self.event = threading.Event()
+        def _update(event):
             start = time.time()
-            while time.time() - start <= timeout:
+            while time.time() - start <= timeout and not event.is_set():
                 time.sleep(every)
                 traj = pt.load(self.restart, top=self.top)
                 if callback is not None:
@@ -64,9 +72,14 @@ class AmberMD(BaseMD):
                     pt.superpose(traj, mask=mask, ref=self.reference_traj)
                 self._update_coordinates(traj[0].xyz)
         # non-blocking so we can use other Jupyter's cells
-        self.thread = Thread(target=_update)
+        self.thread = threading.Thread(target=_update, args=(self.event,))
         self.thread.daemon = True
         self.thread.start()
+
+    def stop(self):
+        """Stop update"""
+        if self.event is not None:
+            self.event.set()
 
     def _update_coordinates(self, xyz):
         self.view.coordinates_dict = {0: xyz}
