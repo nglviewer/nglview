@@ -878,3 +878,6 @@ def test_widget_box():
     box._beautify()
     box._is_beautified = False
     box._beautify()
+
+def test_sandbox():
+    from nglview.sandbox import mdview

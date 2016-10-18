@@ -1,0 +1,12 @@
+Langevin dynamics simulations
+&cntrl
+   ntx = 1, irest=0,
+   imin = 0, nstlim = 500000, dt = 0.002,
+   ntt = 3, gamma_ln=1., temp0 = 300.0, tempi=300.,
+   ntc= 2, ntf = 2,
+   igb=8, ntb = 0,
+   ntwx = 500, ntwe = 0, ntwr = 500, ntpr = 500,
+   cut = 999.0,
+   nscm = 500,
+/
+&end
