@@ -12,7 +12,7 @@ import nose.tools as nt
 import gzip
 import unittest
 import pytest
-from numpy.testing import assert_equal as eq, assert_almost_equal as aa_eq
+from numpy.testing import assert_almost_equal as aa_eq
 import numpy as np
 
 import traitlets

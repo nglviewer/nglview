@@ -150,18 +150,18 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
     parser.add_argument('--test', action='store_true', help='test')
     args = parser.parse_args(cmd_arg)
 
-    command = parm = args.command
+    command = args.command
 
     crd = args.traj if args.traj is not None else args.crd
     if crd is None:
-        crd = parm
+        crd = command
 
     browser = '--browser ' + args.browser if args.browser else ''
 
     create_new_nb = False
 
-    if parm.endswith('.ipynb'):
-        notebook_name = parm
+    if command.endswith('.ipynb'):
+        notebook_name = command
     else:
         notebook_name = args.notebook_name
         if not PY3:
@@ -172,24 +172,26 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
 
             notebook_dict['metadata']['language_info']['codemirror_mode']['version'] = pyv_short_string
             notebook_dict['metadata']['version'] = pyv_full_string
-        if parm.endswith('.py'):
+        if command.endswith('.py'):
             # a Python script
-            pycontent = open(parm).read().strip()
+            pycontent = open(command).read().strip()
             notebook_dict['cells'][0]['source'] = pycontent
             nb_json = json.dumps(notebook_dict)
-        elif parm == 'demo':
+        elif command == 'demo':
             # running demo
             notebook_dict['cells'][0]['source'] = demo_source
             nb_json = json.dumps(notebook_dict)
-            nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
-        elif _is_density_data(parm):
+            nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', command)
+        elif _is_density_data(command):
             # check if density data
-            notebook_dict['cells'][0]['source'] = density_source.replace('filename', parm)
+            notebook_dict['cells'][0]['source'] = density_source.replace('filename',
+                    command)
             nb_json = json.dumps(notebook_dict)
         else:
             nb_json = json.dumps(notebook_dict)
-            nb_json = nb_json.replace('"null"', 'null').replace('test.nc', crd).replace('prmtop', parm)
-            assert os.path.exists(parm), '{} does not exists'.format(parm)
+            nb_json = nb_json.replace('"null"', 'null').replace('test.nc',
+                    crd).replace('prmtop', command)
+            assert os.path.exists(command), '{} does not exists'.format(command)
 
         nb_json = nb_json.replace('"null"', 'null')
 

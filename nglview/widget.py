@@ -7,11 +7,11 @@ import json
 import numpy as np 
 from IPython.display import display
 from ipywidgets import DOMWidget, widget_image, PlaceProxy
-from traitlets import (Instance, Unicode, Bool, Dict, List, Int, observe,
+from traitlets import (Unicode, Bool, Dict, List, Int, observe,
                        CaselessStrEnum)
 
 from .utils import py_utils, js_utils, widget_utils
-from .utils.py_utils import (seq_to_string, string_types, _camelize_dict,
+from .utils.py_utils import (seq_to_string, _camelize_dict,
                              FileManager, get_repr_names_from_dict,
                              encode_base64,
                              _update_url)
@@ -20,11 +20,9 @@ from . import interpolate
 from .shape import Shape
 from .representation import RepresentationControl
 
-from .adaptor import (Structure, Trajectory, PyTrajTrajectory,
-        MDTrajTrajectory, MDAnalysisTrajectory, ParmEdTrajectory)
+from .adaptor import Structure, Trajectory
 from .config import BACKENDS
 from .parameters import REPRESENTATION_NAME_PAIRS
-from . import default
 
 __all__ = ['NGLWidget', 'ComponentViewer']
 

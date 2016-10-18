@@ -12,10 +12,10 @@ from ipywidgets import (DOMWidget,
                         Text, Textarea, IntText, FloatText,
                         Label,
                         interactive,
-                        Layout, Tab, Accordion, HTML)
+                        Layout, Tab)
 
 from traitlets import Any, Int, Bool, Dict, Float, CaselessStrEnum
-from traitlets import observe, link, directional_link
+from traitlets import observe, link
 
 from .parameters import REPRESENTATION_NAMES
 from . import default
