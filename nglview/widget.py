@@ -20,7 +20,7 @@ from . import interpolate
 from .shape import Shape
 from .representation import RepresentationControl
 
-from .adaptor import (Trajectory, PyTrajTrajectory,
+from .adaptor import (Structure, Trajectory, PyTrajTrajectory,
         MDTrajTrajectory, MDAnalysisTrajectory, ParmEdTrajectory)
 from .config import BACKENDS
 from .parameters import REPRESENTATION_NAME_PAIRS
@@ -868,6 +868,8 @@ class NGLWidget(DOMWidget):
         --------
         nglview.NGLWidget.add_component
         '''
+        if not isinstance(structure, Structure):
+            raise ValueError('{} is not an instance of Structure'.format(structure))
         if self.loaded or self._already_constructed:
             self._load_data(structure, **kwargs)
         else:
