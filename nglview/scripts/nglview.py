@@ -8,6 +8,10 @@ from .cmd_example import CMD_EXAMPLE
 
 bin_path = os.path.join(sys.prefix, 'bin')
 
+simple_source = """
+import nglview as nv
+""".strip()
+
 demo_source = """
 import nglview as nv
 
@@ -135,17 +139,18 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
                                      'interactively view molecular structures and trajectories.',
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog=CMD_EXAMPLE)
-    parser.add_argument('command',
+    parser.add_argument('command', nargs='?',
             help='command could be a topology filename (.pdb, .mol2, .parm7, ...) or \n'
-                          'could be a python script (.py), a notebook (.ipynb)') 
-    parser.add_argument('traj', nargs='?', help='coordinate filename')
+                          'could be a python script (.py), a notebook (.ipynb). '
+                          'If not given, a notebook will be created with only nglview imported') 
+    parser.add_argument('traj', nargs='?', help='coordinate filename, optional')
     parser.add_argument('-c', '--crd', help='coordinate filename')
     parser.add_argument('--browser', help='web browser')
     parser.add_argument('-j', '--jexe', default=default_jexe, help='jupyter path')
     parser.add_argument('--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
     parser.add_argument('--port', type=int, help='port number')
     parser.add_argument('--remote', action='store_true', help='create remote notebook')
-    parser.add_argument('--clean-cache', action='store_true', help='delete temp file after closing notebook')
+    parser.add_argument('--clean', action='store_true', help='delete temp file after closing notebook')
     parser.add_argument('--disable-autorun', action='store_true', help='do not run 1st cell right after openning notebook')
     parser.add_argument('--test', action='store_true', help='test')
     args = parser.parse_args(cmd_arg)
@@ -160,7 +165,7 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
 
     create_new_nb = False
 
-    if command.endswith('.ipynb'):
+    if command is not None and command.endswith('.ipynb'):
         notebook_name = command
     else:
         notebook_name = args.notebook_name
@@ -172,7 +177,12 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
 
             notebook_dict['metadata']['language_info']['codemirror_mode']['version'] = pyv_short_string
             notebook_dict['metadata']['version'] = pyv_full_string
-        if command.endswith('.py'):
+        if command is None:
+            # create a notebook and import nglview
+            notebook_dict['cells'][0]['source'] = simple_source
+            nb_json = json.dumps(notebook_dict)
+            nb_json = nb_json.replace('"null"', 'null')
+        elif command.endswith('.py'):
             # a Python script
             pycontent = open(command).read().strip()
             notebook_dict['cells'][0]['source'] = pycontent
@@ -210,14 +220,14 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
                                                                     port=port)
         print('NOTE: make sure to open {0} in your local machine\n'.format(notebook_name))
 
-    if not args.disable_autorun:
-        if not args.test:
-            install_nbextension(jupyter=args.jexe)
-    else:
+    if args.disable_autorun or command is None:
         try:
             disable_extension(jupyter=args.jexe)
         except CalledProcessError:
             pass
+    else:
+        if not args.test:
+            install_nbextension(jupyter=args.jexe)
 
     try:
         if args.test:
@@ -226,7 +236,7 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
         else:
             subprocess.check_call(cm.split())
     except KeyboardInterrupt:
-        if args.clean_cache and create_new_nb:
+        if args.clean and create_new_nb:
             print("deleting {}".format(notebook_name))
             os.remove(notebook_name)
         if not args.disable_autorun:

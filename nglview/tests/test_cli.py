@@ -7,10 +7,17 @@ from nglview.scripts.nglview import install_nbextension
 import pytest
 
 this_path = os.path.dirname(os.path.abspath(__file__))
-
 using_travis = '/home/travis' in this_path
 
 def test_cli():
+    # no argument 
+    command = 'nglview --test'
+    subprocess.check_call(command.split())
+
+    # only nglview and --clean
+    command = 'nglview --test --clean'
+    subprocess.check_call(command.split())
+
     # demo
     command = 'nglview demo --test'
     subprocess.check_call(command.split())

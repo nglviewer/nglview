@@ -257,8 +257,11 @@ Command line
 ============
 
 ```bash
-# Require installing pytraj (PR for other backends is welcome)
 
+# open a notebook and import nglview
+nglview 
+
+# Require installing pytraj (PR for other backends is welcome)
 # open notebook, load `my.pdb` to pytraj's trajectory then display `view`
 nglview my.pdb
 
