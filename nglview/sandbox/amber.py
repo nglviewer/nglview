@@ -8,7 +8,8 @@ from .base import BaseMD
 
 class AmberMD(BaseMD):
     # TODO: doc
-    """
+    '''
+    Unstable API
 
     Examples
     --------
@@ -19,7 +20,7 @@ class AmberMD(BaseMD):
     >>> # another cell
     >>> amber_view.update(every=1, timeout=3000)
     >>> # do other stuff
-    """
+    '''
     def __init__(self, top=None, restart=None, reference=None):
         self.top = top
         assert os.path.exists(restart), '{} must exists'.format(restart)
