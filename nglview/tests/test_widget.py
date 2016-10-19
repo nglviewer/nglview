@@ -880,4 +880,4 @@ def test_widget_box():
     box._beautify()
 
 def test_sandbox():
-    from nglview.sandbox import mdview
+    from nglview.sandbox import amber

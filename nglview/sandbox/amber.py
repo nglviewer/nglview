@@ -1,37 +1,26 @@
+from __future__ import absolute_import
 import os
 import time
 import pytraj as pt
 import threading
-import abc, six
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseMD(object):
-    @abc.abstractmethod
-    def initialize(self):
-        pass
-
-    @abc.abstractmethod
-    def update(self):
-        pass
-
-    @abc.abstractmethod
-    def stop(self):
-        pass
+from .base import BaseMD
 
 class AmberMD(BaseMD):
     # TODO: doc
-    """
+    '''
+    Unstable API
 
     Examples
     --------
-    >>> from nglview.sandbox.mdview import AmberMD
-    >>> ambermd = AmberMD(top='./peptide.top', restart='./md.r', reference='min.rst7')
-    >>> view = ambermd.initialize()
+    >>> from nglview.sandbox.amber import AmberMD
+    >>> amber_view = AmberMD(top='./peptide.top', restart='./md.r', reference='min.rst7')
+    >>> view = amber_view.initialize()
     >>> view
     >>> # another cell
-    >>> ambermd.update(every=1, timeout=3000)
+    >>> amber_view.update(every=1, timeout=3000)
     >>> # do other stuff
-    """
+    '''
     def __init__(self, top=None, restart=None, reference=None):
         self.top = top
         assert os.path.exists(restart), '{} must exists'.format(restart)
