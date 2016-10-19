@@ -12,12 +12,12 @@ class AmberMD(BaseMD):
 
     Examples
     --------
-    >>> from nglview.sandbox.mdview import AmberMD
-    >>> ambermd = AmberMD(top='./peptide.top', restart='./md.r', reference='min.rst7')
-    >>> view = ambermd.initialize()
+    >>> from nglview.sandbox.amber import AmberMD
+    >>> amber_view = AmberMD(top='./peptide.top', restart='./md.r', reference='min.rst7')
+    >>> view = amber_view.initialize()
     >>> view
     >>> # another cell
-    >>> ambermd.update(every=1, timeout=3000)
+    >>> amber_view.update(every=1, timeout=3000)
     >>> # do other stuff
     """
     def __init__(self, top=None, restart=None, reference=None):
