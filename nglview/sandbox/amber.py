@@ -1,22 +1,10 @@
+from __future__ import absolute_import
 import os
 import time
 import pytraj as pt
 import threading
-import abc, six
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseMD(object):
-    @abc.abstractmethod
-    def initialize(self):
-        pass
-
-    @abc.abstractmethod
-    def update(self):
-        pass
-
-    @abc.abstractmethod
-    def stop(self):
-        pass
+from .base import BaseMD
 
 class AmberMD(BaseMD):
     # TODO: doc
