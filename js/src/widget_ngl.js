@@ -122,7 +122,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             if (pd.bond) pd2.bond = pd.bond.toObject();
             if (pd.instance) pd2.instance = pd.instance;
             this.model.set("picked", pd2);
-            this.model.save();
+            this.touch();
             var pickingText = "";
             if (pd.atom) {
                 pickingText = "Atom: " + pd.atom.qualifiedName();
@@ -325,7 +325,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
                     if (this.sync_frame) {
                         this.model.set("frame", frame);
-                        this.model.save();
+                        this.touch();
                     } else {
                         this.requestFrame();
                     }
@@ -358,7 +358,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                     slide: function(event, ui) {
                         pause();
                         this.model.set("frame", ui.value);
-                        this.model.save();
+                        this.touch();
                     }.bind(this)
                 });
             this.$player = $("<div></div>")
