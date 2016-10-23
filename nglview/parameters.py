@@ -20,6 +20,6 @@ REPRESENTATION_NAME_PAIRS = [
         ('simplified_base', 'base'),
         ('spacefill', 'spacefill'),
         ('ball_and_stick', 'ball+stick'),
-        ]
+]
 
 REPRESENTATION_NAMES = list(sorted(set([name for pairs in REPRESENTATION_NAME_PAIRS for name in pairs])))
