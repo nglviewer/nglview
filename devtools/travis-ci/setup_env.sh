@@ -33,6 +33,9 @@ conda install mdtraj -c omnia --yes
 # ParmEd
 pip install https://github.com/ParmEd/ParmEd/archive/2.5.1.tar.gz
 
+# ase
+pip install https://github.com/hainm/ase/archive/3.11.0.tar.gz
+
 # simpletraj
 pip install git+https://github.com/arose/simpletraj
 

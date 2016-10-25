@@ -16,7 +16,7 @@ except ImportError:
     from urllib2 import urlopen
 
 from .base_adaptor import Structure, Trajectory
-from .utils.py_utils import FileManager
+from .utils.py_utils import FileManager, tempfolder
 from . import config
 
 __all__ = [
@@ -24,6 +24,7 @@ __all__ = [
     'TextStructure',
     'RdkitStructure',
     'PdbIdStructure',
+    'ASEStructure',
     'SimpletrajTrajectory',
     'MDTrajTrajectory',
     'PyTrajTrajectory',
@@ -93,6 +94,21 @@ class PdbIdStructure(Structure):
     def get_structure_string(self):
         url = "http://www.rcsb.org/pdb/files/" + self.pdbid + ".cif"
         return urlopen(url).read()
+
+
+class ASEStructure(Structure):
+
+    def __init__(self, ase_atoms, ext='pdb', params={}):
+        super(ASEStructure, self).__init__()
+        self.path = ''
+        self.ext = ext
+        self.params = params
+        self._ase_atoms = ase_atoms
+
+    def get_structure_string(self):
+        with tempfolder():
+            self._ase_atoms.write('tmp.pdb')
+            return open('tmp.pdb').read()
 
 
 @register_backend('simpletraj')

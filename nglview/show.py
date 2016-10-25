@@ -12,6 +12,7 @@ from .adaptor import (
     FileStructure,
     TextStructure,
     PdbIdStructure,
+    ASEStructure,
     MDTrajTrajectory,
     PyTrajTrajectory,
     ParmEdTrajectory,
@@ -22,6 +23,7 @@ __all__ = [
     'show_pdbid',
     'show_url',
     'show_text',
+    'show_ase',
     'show_simpletraj',
     'show_mdtraj',
     'show_pytraj',
@@ -52,6 +54,21 @@ def show_text(text, **kwargs):
     """for development
     """
     structure = TextStructure(text)
+    return NGLWidget(structure, **kwargs)
+
+def show_ase(ase_atoms, **kwargs):
+    """
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> from ase import Atom, Atoms
+    >>> dimer = Atoms([Atom('X', (0, 0, 0)),
+    ...                Atom('X', (0, 0, 1))])
+    >>> dimer.set_positions([(1, 2, 3), (4, 5, 6.2)])
+    >>> nv.show_ase(dimer)
+    """
+    structure = ASEStructure(ase_atoms)
     return NGLWidget(structure, **kwargs)
 
 def show_structure_file(path, **kwargs):

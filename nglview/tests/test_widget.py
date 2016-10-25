@@ -392,6 +392,13 @@ def test_show_text():
     text = open(nv.datafiles.PDB).read()
     nv.show_text(text)
 
+def test_show_ase():
+    from ase import Atom, Atoms
+    dimer = Atoms([Atom('X', (0, 0, 0)),
+                   Atom('X', (0, 0, 1))])
+    dimer.set_positions([(1, 2, 3), (4, 5, 6.2)])
+    nv.show_ase(dimer)
+
 def test_show_simpletraj():
     traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
     view = nv.show_simpletraj(traj)

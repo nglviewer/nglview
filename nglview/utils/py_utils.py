@@ -5,6 +5,10 @@ import gzip
 import bz2
 from zipfile import ZipFile
 import base64
+from contextlib import contextmanager
+import tempfile
+from shutil import rmtree
+
 
 __all__ = ['encode_base64', 'decode_base64',
            'seq_to_string', '_camelize',
@@ -43,6 +47,18 @@ def get_name(obj, kwargs):
     if name.startswith('<nglview.'):
         name = name.split()[0].strip('<')
     return name
+
+@contextmanager
+def tempfolder():
+  """run everything in temp folder
+  """
+  my_temp = tempfile.mkdtemp()
+  cwd = os.getcwd()
+  os.chdir(my_temp)
+  yield
+  os.chdir(cwd)
+  rmtree(my_temp)
+
 
 def get_repr_names_from_dict(repr_dict, component):
     """
