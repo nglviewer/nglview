@@ -320,7 +320,7 @@ Projects using NGLView
 - [deepchem](https://github.com/deepchem/deepchem) - Deep-learning models for Drug Discovery and Quantum Chemistry
 - [pychimera](https://github.com/insilichem/pychimera) - Use UCSF Chimera Python API in a standard interpreter
 - [htmd](https://github.com/Acellera/htmd) - High throughput molecular dynamics simulations
-- [https://github.com/kbsezginel/Moleidoscope} (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
+- [https://github.com/kbsezginel/Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
 
 Acknowledgment
 ==============
