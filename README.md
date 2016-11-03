@@ -208,8 +208,8 @@ Trajectory
 ```python
 # adding new trajectory
 view.add_trajectory(traj)
-# traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`, `htmd.Molecule`
-# or derived class of `nglview.Trajectory`
+# traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, 
+# `parmed.Structure`, `htmd.Molecule` or derived class of `nglview.Trajectory`
 
 # change representation
 view.trajectory_0.add_cartoon(...) # equal to view.add_cartoon(component=0)
