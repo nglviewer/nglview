@@ -49,6 +49,12 @@ try:
 except ImportError:
     has_MDAnalysis = False
 
+try:
+    import htmd
+    has_HTMD = True
+except ImportError:
+    has_HTMD = False
+
 # local
 from utils import get_fn, repr_dict as REPR_DICT
 
@@ -411,6 +417,13 @@ def test_show_mdtraj():
     fn = nv.datafiles.PDB 
     traj = md.load(fn)
     view = nv.show_mdtraj(traj)
+
+@unittest.skipUnless(has_HTMD, 'skip if not having HTMD')
+def test_show_htmd():
+    from htmd import Molecule
+    fn = nv.datafiles.PDB
+    traj = Molecule(fn)
+    view = nv.show_htmd(traj)
 
 @unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
 def test_show_MDAnalysis():

@@ -16,7 +16,8 @@ from .adaptor import (
     MDTrajTrajectory,
     PyTrajTrajectory,
     ParmEdTrajectory,
-    MDAnalysisTrajectory)
+    MDAnalysisTrajectory,
+    HTMDTrajectory)
 
 __all__ = [
     'demo',
@@ -30,7 +31,8 @@ __all__ = [
     'show_mdanalysis',
     'show_parmed',
     'show_rdkit',
-    'show_structure_file',]
+    'show_structure_file',
+    'show_htmd',]
 
 def show_pdbid(pdbid, **kwargs):
     '''Show PDB entry.
@@ -211,6 +213,23 @@ def show_mdanalysis(atomgroup, **kwargs):
     >>> w
     '''
     structure_trajectory = MDAnalysisTrajectory(atomgroup)
+    return NGLWidget(structure_trajectory, **kwargs)
+
+def show_htmd(mol, **kwargs):
+    '''Show NGL widget with HTMD Molecule.
+
+    Takes a Molecule object as its data input.
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> from htmd import Molecule
+    >>> mol = Molecule(nv.datafiles.PDB)
+    >>> mol.filter('protein')
+    >>> w = nv.show_htmd(mol)
+    >>> w
+    '''
+    structure_trajectory = HTMDTrajectory(mol)
     return NGLWidget(structure_trajectory, **kwargs)
 
 def demo(*args, **kwargs):

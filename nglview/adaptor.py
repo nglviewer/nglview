@@ -4,6 +4,7 @@ import os
 import os.path
 import uuid
 import tempfile
+import numpy as np
 
 try:
     from cStringIO import StringIO
@@ -30,6 +31,7 @@ __all__ = [
     'PyTrajTrajectory',
     'ParmEdTrajectory',
     'MDAnalysisTrajectory',
+    'HTMDTrajectory',
     'register_backend'
 ]
 
@@ -309,4 +311,41 @@ class MDAnalysisTrajectory(Trajectory, Structure):
             W.write(atoms)
         # extract from the stream
         pdb_string = f.read()
+        return pdb_string
+
+
+@register_backend('htmd')
+class HTMDTrajectory(Trajectory):
+    '''HTMD adaptor.
+
+    Takes a Molecule object.
+
+    Example
+    -------
+    >>> import nglview as nv
+    >>> from htmd import Molecule
+    >>> mol = Molecule(nv.datafiles.PDB)
+    >>> t = nv.HTMDTrajectory(mol)
+    >>> w = nv.NGLWidget(t)
+    >>> w
+    '''
+    def __init__(self, mol):
+        self.mol = mol
+        self.ext = "pdb"
+        self.params = {}
+        self.id = str(uuid.uuid4())
+
+    def get_coordinates(self, index):
+        return np.squeeze(self.mol.coords[:, :, index])
+
+    @property
+    def n_frames(self):
+        return self.mol.numFrames
+
+    def get_structure_string(self):
+        import tempfile
+        fd, fname = tempfile.mkstemp(suffix='.pdb')
+        self.mol.write(fname)
+        pdb_string = os.fdopen(fd).read()
+        # os.close( fd )
         return pdb_string
