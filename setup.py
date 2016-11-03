@@ -168,6 +168,8 @@ setup_args = {
         "MDAnalysis": ["MDAnalysis"],
         "ParmEd": ["parmed"],
         "rdkit": ["rdkit"],
+        "ase": ["ase"],
+        "htmd": ["htmd"],
     },
     'packages': set(find_packages() + ['nglview',
                  'nglview.static',
