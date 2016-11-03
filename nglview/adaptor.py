@@ -4,6 +4,7 @@ import os
 import os.path
 import uuid
 import tempfile
+import numpy as np
 
 try:
     from cStringIO import StringIO
@@ -322,7 +323,7 @@ class HTMDTrajectory(Trajectory):
     Example
     -------
     >>> import nglview as nv
-    >>> from htmd import *
+    >>> from htmd import Molecule
     >>> mol = Molecule(nv.datafiles.PDB)
     >>> t = nv.HTMDTrajectory(mol)
     >>> w = nv.NGLWidget(t)
@@ -335,7 +336,6 @@ class HTMDTrajectory(Trajectory):
         self.id = str(uuid.uuid4())
 
     def get_coordinates(self, index):
-        import numpy as np
         return np.squeeze(self.mol.coords[:, :, index])
 
     @property

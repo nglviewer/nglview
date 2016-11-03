@@ -223,7 +223,7 @@ def show_htmd(mol, **kwargs):
     Examples
     --------
     >>> import nglview as nv
-    >>> from htmd import *
+    >>> from htmd import Molecule
     >>> mol = Molecule(nv.datafiles.PDB)
     >>> mol.filter('protein')
     >>> w = nv.show_htmd(mol)
