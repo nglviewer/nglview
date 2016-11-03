@@ -335,6 +335,7 @@ class HTMDTrajectory(Trajectory):
         self.id = str(uuid.uuid4())
 
     def get_coordinates(self, index):
+        import numpy as np
         return np.squeeze(self.mol.coords[:, :, index])
 
     @property
