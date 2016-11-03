@@ -254,6 +254,37 @@ def test_API_promise_to_have():
     for c in view: 
         nt.assert_true(isinstance(c, nv.widget.ComponentViewer))
 
+def test_add_trajectory():
+    view = nv.NGLWidget()
+
+    def update_coords(view=view):
+        view.frame = 1000
+        view.frame = 0
+
+    p_traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
+    view.add_trajectory(p_traj)
+    m_traj = md.load(nv.datafiles.XTC, top=nv.datafiles.PDB)
+    view.add_trajectory(m_traj)
+    # trigger updating coordinates
+    update_coords()
+    assert len(view.coordinates_dict.keys()) == 2
+    if has_MDAnalysis:
+        from MDAnalysis import Universe
+        mda_traj = Universe(nv.datafiles.PDB, nv.datafiles.TRR)
+        view.add_trajectory(mda_traj)
+        update_coords()
+        assert len(view.coordinates_dict.keys()) == 3
+    if has_HTMD:
+        from htmd import Molecule
+        htmd_traj = Molecule(nv.datafiles.PDB)
+        htmd_traj.filter('protein')
+        view.add_trajectory(htmd_traj)
+        update_coords()
+        if has_MDAnalysis:
+            assert len(view.coordinates_dict.keys()) == 4
+        else:
+            assert len(view.coordinates_dict.keys()) == 3
+
 def test_API_promise_to_have_add_more_backend():
     @nv.register_backend('dummy')
     class MyLovelyClass(nv.Structure, nv.Trajectory):
@@ -424,6 +455,12 @@ def test_show_htmd():
     fn = nv.datafiles.PDB
     traj = Molecule(fn)
     view = nv.show_htmd(traj)
+    # trigger updating cooridnates
+    view.frame = 100
+    index = 0
+    view.frame = index
+    xyz_htmd = np.squeeze(traj.coords[:, :, index])
+    aa_eq(view.coordinates_dict[0], xyz_htmd)
 
 @unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
 def test_show_MDAnalysis():
