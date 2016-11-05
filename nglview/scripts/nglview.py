@@ -133,7 +133,7 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
     PY3 = sys.version_info[0] == 3
     pyv_full_string = ','.join(str(i) for i in sys.version_info)
     pyv_short_string = str(sys.version_info[0])
-    default_jexe = ' '.join((sys.executable, '-m jupyter'))
+    default_jexe = ' '.join((sys.executable, '-m jupyter_core'))
 
     parser = argparse.ArgumentParser(description='NGLView: An IPython/Jupyter widget to '
                                      'interactively view molecular structures and trajectories.',
