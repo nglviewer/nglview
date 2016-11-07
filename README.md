@@ -250,6 +250,17 @@ Notes: Unstable feature. [See also](https://github.com/arose/nglview/blob/master
 
 ![](examples/images/nglview_gui.png)
 
+Movie making
+------------
+
+Notes: Unstable feature.
+
+```python
+from nglview.contrib.movie import MovieMaker
+movie = MovieMaker(view, output='my.gif')
+movie.make()
+```
+
 API doc
 =======
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
