@@ -1,14 +1,15 @@
 import os
 import time
 import moviepy.editor as mpy
+import threading
 
-class MovieMaking(object):
+class MovieMaker(object):
     """
 
     Parameters
     ----------
     view : NGLWidget
-    folder_dir : str
+    download_folder : str
         Folder that stores images. You can not arbitarily set this folder. It must be
         the download directory of the web browser you are using.
         Normally this will be $HOME/Downloads/
@@ -21,7 +22,7 @@ class MovieMaking(object):
     start, stop, step : int, default (0, -1, 1)
         how many frames you want to render.
     skip_render : bool, default False
-        if True, do not render any frame and uses existings images in `folder_dir`
+        if True, do not render any frame and uses existings images in `download_folder`
         for movie making.
         if False, perform rendering first.
 
@@ -31,10 +32,10 @@ class MovieMaking(object):
     >>> import pytraj as pt
     >>> traj = pt.load(nv.datafiles.XTC, top=nv.datafiles.PDB)
     >>> view = nv.show_pytraj(traj)
-    >>> from nglview.contrib.movie import MovieMaking
-    >>> folder_dir = '/Users/xxx/Downloads'
+    >>> from nglview.contrib.movie import MovieMaker
+    >>> download_folder = '/Users/xxx/Downloads'
     >>> output = 'my.gif'
-    >>> mov = MovieMaking(view, folder_dir=folder_dir, output=output)
+    >>> mov = MovieMaker(view, download_folder=download_folder, output=output)
     >>> mov.make()
 
     Notes
@@ -54,7 +55,7 @@ class MovieMaking(object):
     
     def __init__(self,
                  view,
-                 folder_dir,
+                 download_folder,
                  prefix='movie',
                  output='my_movie.gif',
                  fps=8,
@@ -66,36 +67,44 @@ class MovieMaking(object):
         self.view = view
         self.skip_render = skip_render
         self.prefix = prefix
-        self.folder_dir = folder_dir
+        self.download_folder = download_folder
         self.timeout = timeout
         self.fps = fps
-        assert os.path.exists(folder_dir), '{} must exists'.format(folder_dir)
+        assert os.path.exists(download_folder), '{} must exists'.format(download_folder)
         self.output = output
         if stop < 0:
             stop = self.view.count
         self._time_range = range(start, stop, step)
+        self._event = threading.Event()
+        self._thread = None
 
-    def _render(self):
-        for i in self._time_range:
-            self.view.frame = i
-            time.sleep(self.timeout)
-            self.view.download_image(self.prefix + '.' + str(i) + '.png')
-            time.sleep(self.timeout)
-    
     def make(self):
-        """
-    
-        Parameters
-        ----------
-        view : nglview.NGLWidget
-        """
+        # TODO : make base class so we can reuse this with sandbox/base.py
+        self._event = threading.Event()
 
-        if not self.skip_render:
-            self._render()
-        template = "{}/{}.{}.png"
-        image_files = [template.format(self.folder_dir,
-                                           self.prefix,
-                                           str(i))
-                       for i in self._time_range]
-        im = mpy.ImageSequenceClip(image_files, fps=self.fps)
-        im.write_gif(self.output, fps=self.fps)
+        def _make(event):
+            if not self.skip_render:
+                for i in self._time_range:
+                    if not event.is_set():
+                        self.view.frame = i
+                        time.sleep(self.timeout)
+                        self.view.download_image(self.prefix + '.' + str(i) + '.png')
+                        time.sleep(self.timeout)
+            template = "{}/{}.{}.png"
+            image_files = [image_dir for image_dir in 
+                              (template.format(self.download_folder,
+                                                       self.prefix,
+                                                       str(i))
+                               for i in self._time_range)
+                           if os.path.exists(image_dir)]
+            if not self._event.is_set():
+                im = mpy.ImageSequenceClip(image_files, fps=self.fps)
+                im.write_gif(self.output, fps=self.fps)
+        self.thread = threading.Thread(target=_make, args=(self._event,))
+        self.thread.daemon = True
+        self.thread.start()
+
+    def interupt(self):
+        """ Stop making process """
+        if self._event is not None:
+            self._event.set()
