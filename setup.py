@@ -178,6 +178,7 @@ setup_args = {
                  'nglview.utils',
                  'nglview.tests',
                  'nglview.sandbox',
+                 'nglview.contrib',
                  'nglview.scripts']),
     'zip_safe': False,
     'cmdclass': {
