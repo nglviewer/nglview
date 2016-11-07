@@ -15,7 +15,6 @@ class MovieMaker(object):
         If None, $HOME/Downloads/ will be used.
     prefix : str, default 'movie'
         prefix name of rendered image.
-        Note that if calling `make(in_memory=True)`, there won't be any images on disk
     output : str, default 'my_movie.gif'
         output filename of the movie.
     fps : 8
@@ -32,6 +31,9 @@ class MovieMaker(object):
     mpy_params : dict or None, default None
         moviepy params for `write_gif` method.
         if None, use default values
+    in_memory : bool, default False
+        if False, save rendered images to disk first
+        if True, keep all image data in memory (good for small video)
 
     Examples
     --------
@@ -48,8 +50,7 @@ class MovieMaker(object):
     Notes
     -----
     unstable API. Currently supports .gif format
-    Do not work with remote cluster since the rendered images will be downloaded to your local
-    computer.
+    If you are using remote notebook, make sure to set in_memory=True
 
     Requires
     --------
@@ -72,6 +73,7 @@ class MovieMaker(object):
                  step=1,
                  skip_render=False,
                  timeout=1.,
+                 in_memory=False,
                  render_params=None,
                  mpy_params=None):
         if download_folder is None:
@@ -82,6 +84,7 @@ class MovieMaker(object):
         self.download_folder = download_folder
         self.timeout = timeout
         self.fps = fps
+        self.in_memory = in_memory
         self.render_params = render_params if render_params is not None else {}
         self.mpy_params = mpy_params if mpy_params is not None else {}
         if self.render_params is not None:
@@ -107,16 +110,16 @@ class MovieMaker(object):
                     if not event.is_set():
                         self.view.frame = i
                         time.sleep(self.timeout)
-                        if not in_memory:
+                        if not self.in_memory:
                             self.view.download_image(self.prefix + '.' + str(i) + '.png',
                                     **self.render_params)
                         else:
                             self.view.render_image(**self.render_params)
                         time.sleep(self.timeout)
-                        if in_memory:
+                        if self.in_memory:
                             rgb = self._base64_to_ndarray(self.view._image_data)
                             self._image_array.append(rgb)
-                if not in_memory:
+                if not self.in_memory:
                     template = "{}/{}.{}.png"
                     image_files = [image_dir for image_dir in 
                                       (template.format(self.download_folder,
@@ -129,6 +132,7 @@ class MovieMaker(object):
             if not self._event.is_set():
                 clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
                 clip.write_gif(self.output, fps=self.fps, **self.mpy_params)
+                self._image_array = []
         self.thread = threading.Thread(target=_make, args=(self._event,))
         self.thread.daemon = True
         self.thread.start()
