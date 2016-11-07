@@ -25,6 +25,18 @@ class MovieMaking(object):
         for movie making.
         if False, perform rendering first.
 
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> import pytraj as pt
+    >>> traj = pt.load(nv.datafiles.XTC, top=nv.datafiles.PDB)
+    >>> view = nv.show_pytraj(traj)
+    >>> from nglview.contrib.movie import MovieMaking
+    >>> folder_dir = '/Users/xxx/Downloads'
+    >>> output = 'my.gif'
+    >>> mov = MovieMaking(view, folder_dir=folder_dir, output=output)
+    >>> mov.make()
+
     Notes
     -----
     unstable API. Currently supports .gif format
