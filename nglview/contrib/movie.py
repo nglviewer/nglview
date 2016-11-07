@@ -9,10 +9,10 @@ class MovieMaker(object):
     Parameters
     ----------
     view : NGLWidget
-    download_folder : str
+    download_folder : str or None
         Folder that stores images. You can not arbitarily set this folder. It must be
         the download directory of the web browser you are using.
-        Normally this will be $HOME/Downloads/
+        If None, $HOME/Downloads/ will be used.
     prefix : str, default 'movie'
         prefix name of rendered image
     output : str, default 'my_movie.gif'
@@ -25,6 +25,12 @@ class MovieMaker(object):
         if True, do not render any frame and uses existings images in `download_folder`
         for movie making.
         if False, perform rendering first.
+    render_params : dict or None, default None
+        NGL rendering params. see NGLWidget.download_image.
+        If None, use default values
+    mpy_params : dict or None, default None
+        moviepy params for `write_gif` method.
+        if None, use default values
 
     Examples
     --------
@@ -55,7 +61,7 @@ class MovieMaker(object):
     
     def __init__(self,
                  view,
-                 download_folder,
+                 download_folder=None,
                  prefix='movie',
                  output='my_movie.gif',
                  fps=8,
@@ -63,13 +69,23 @@ class MovieMaker(object):
                  stop=-1,
                  step=1,
                  skip_render=False,
-                 timeout=1.):
+                 timeout=1.,
+                 render_params=None,
+                 mpy_params=None):
+        if download_folder is None:
+            download_folder = os.getenv('HOME', '') + '/Downloads/'
         self.view = view
         self.skip_render = skip_render
         self.prefix = prefix
         self.download_folder = download_folder
         self.timeout = timeout
         self.fps = fps
+        self.render_params = render_params if render_params is not None else {}
+        self.mpy_params = mpy_params if mpy_params is not None else {}
+        if self.render_params is not None:
+            assert isinstance(self.render_params, dict)
+        if self.mpy_params is not None:
+            assert isinstance(self.mpy_params, dict)
         assert os.path.exists(download_folder), '{} must exists'.format(download_folder)
         self.output = output
         if stop < 0:
@@ -88,7 +104,8 @@ class MovieMaker(object):
                     if not event.is_set():
                         self.view.frame = i
                         time.sleep(self.timeout)
-                        self.view.download_image(self.prefix + '.' + str(i) + '.png')
+                        self.view.download_image(self.prefix + '.' + str(i) + '.png',
+                                **self.render_params)
                         time.sleep(self.timeout)
             template = "{}/{}.{}.png"
             image_files = [image_dir for image_dir in 
@@ -99,7 +116,7 @@ class MovieMaker(object):
                            if os.path.exists(image_dir)]
             if not self._event.is_set():
                 im = mpy.ImageSequenceClip(image_files, fps=self.fps)
-                im.write_gif(self.output, fps=self.fps)
+                im.write_gif(self.output, fps=self.fps, **self.mpy_params)
         self.thread = threading.Thread(target=_make, args=(self._event,))
         self.thread.daemon = True
         self.thread.start()
