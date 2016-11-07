@@ -12,7 +12,8 @@ from shutil import rmtree
 
 __all__ = ['encode_base64', 'decode_base64',
            'seq_to_string', '_camelize',
-           '_camelize_dict', 'get_colors_from_b64']
+           '_camelize_dict', 'get_colors_from_b64',
+           'display_gif']
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -47,6 +48,10 @@ def get_name(obj, kwargs):
     if name.startswith('<nglview.'):
         name = name.split()[0].strip('<')
     return name
+
+def display_gif(fn):
+    from IPython import display
+    return display.HTML('<img src="{}">'.format(fn))
 
 @contextmanager
 def tempfolder():
@@ -222,3 +227,5 @@ class FileManager(object):
         return (isinstance(self.src, string_types) and
                 ((self.src.startswith('http') or
                 self.src.startswith('rcsb://'))))
+
+
