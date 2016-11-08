@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.theme.theme &mdash; NGLView 0.5.2a+223.g71b4fa8 documentation</title>
+    <title>nglview.theme.theme &mdash; NGLView 0.5.2a+278.g1b26760 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.5.2a+223.g71b4fa8',
+        VERSION:     '0.5.2a+278.g1b26760',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+223.g71b4fa8 documentation" href="../../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+278.g1b26760 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+278.g1b26760 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -84,11 +84,16 @@
 <div class="viewcode-block" id="oceans16"><a class="viewcode-back" href="../../../_api/nglview.theme.html#nglview.theme.theme.oceans16">[docs]</a><span class="k">def</span> <span class="nf">oceans16</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">_get_theme</span><span class="p">(</span><span class="s1">&#39;oceans16.css&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="reset"><a class="viewcode-back" href="../../../_api/nglview.theme.html#nglview.theme.theme.reset">[docs]</a><span class="k">def</span> <span class="nf">reset</span><span class="p">():</span>
+<div class="viewcode-block" id="reset"><a class="viewcode-back" href="../../../_api/nglview.theme.html#nglview.theme.theme.reset">[docs]</a><span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="n">hide_toolbar</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">display</span>
     <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">js_utils</span>
     <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="s1">&#39;$(&quot;#nglview_style&quot;).remove()&#39;</span><span class="p">))</span>
-    <span class="n">js_utils</span><span class="o">.</span><span class="n">clean_empty_output_area</span><span class="p">()</span></div>
+    <span class="n">js_utils</span><span class="o">.</span><span class="n">clean_empty_output_area</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">hide_toolbar</span><span class="p">:</span>
+        <span class="n">js_utils</span><span class="o">.</span><span class="n">hide_toolbar</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">js_utils</span><span class="o">.</span><span class="n">show_toolbar</span><span class="p">()</span></div>
 </pre></div>
 
           </div>
@@ -119,13 +124,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+278.g1b26760 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 31, 2016.
+      Last updated on Nov 07, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.scripts.nglview &mdash; NGLView 0.5.2a+223.g71b4fa8 documentation</title>
+    <title>nglview.scripts.nglview &mdash; NGLView 0.5.2a+278.g1b26760 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.5.2a+223.g71b4fa8',
+        VERSION:     '0.5.2a+278.g1b26760',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+223.g71b4fa8 documentation" href="../../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+278.g1b26760 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+278.g1b26760 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -57,6 +57,10 @@
 <span class="kn">from</span> <span class="nn">.cmd_example</span> <span class="kn">import</span> <span class="n">CMD_EXAMPLE</span> 
 
 <span class="n">bin_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="s1">&#39;bin&#39;</span><span class="p">)</span>
+
+<span class="n">simple_source</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">import nglview as nv</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
 <span class="n">demo_source</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">import nglview as nv</span>
@@ -179,39 +183,40 @@
     <span class="n">PY3</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
     <span class="n">pyv_full_string</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">)</span>
     <span class="n">pyv_short_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">default_jexe</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s1">&#39;-m jupyter&#39;</span><span class="p">))</span>
+    <span class="n">default_jexe</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s1">&#39;-m jupyter_core&#39;</span><span class="p">))</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;NGLView: An IPython/Jupyter widget to &#39;</span>
                                      <span class="s1">&#39;interactively view molecular structures and trajectories.&#39;</span><span class="p">,</span>
                                      <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
                                      <span class="n">epilog</span><span class="o">=</span><span class="n">CMD_EXAMPLE</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;command&#39;</span><span class="p">,</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;command&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s1">&#39;command could be a topology filename (.pdb, .mol2, .parm7, ...) or </span><span class="se">\n</span><span class="s1">&#39;</span>
-                          <span class="s1">&#39;could be a python script (.py), a notebook (.ipynb)&#39;</span><span class="p">)</span> 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;traj&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;coordinate filename&#39;</span><span class="p">)</span>
+                          <span class="s1">&#39;could be a python script (.py), a notebook (.ipynb). &#39;</span>
+                          <span class="s1">&#39;If not given, a notebook will be created with only nglview imported&#39;</span><span class="p">)</span> 
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;traj&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;coordinate filename, optional&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--crd&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;coordinate filename&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--browser&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;web browser&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-j&#39;</span><span class="p">,</span> <span class="s1">&#39;--jexe&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default_jexe</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;jupyter path&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--notebook-name&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;tmpnb_ngl.ipynb&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;notebook name&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--port&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;port number&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--remote&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;create remote notebook&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--clean-cache&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;delete temp file after closing notebook&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--clean&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;delete temp file after closing notebook&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--disable-autorun&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;do not run 1st cell right after openning notebook&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--test&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">cmd_arg</span><span class="p">)</span>
 
-    <span class="n">command</span> <span class="o">=</span> <span class="n">parm</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span>
 
     <span class="n">crd</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">traj</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">crd</span>
     <span class="k">if</span> <span class="n">crd</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">crd</span> <span class="o">=</span> <span class="n">parm</span>
+        <span class="n">crd</span> <span class="o">=</span> <span class="n">command</span>
 
     <span class="n">browser</span> <span class="o">=</span> <span class="s1">&#39;--browser &#39;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">browser</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">browser</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
 
     <span class="n">create_new_nb</span> <span class="o">=</span> <span class="bp">False</span>
 
-    <span class="k">if</span> <span class="n">parm</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.ipynb&#39;</span><span class="p">):</span>
-        <span class="n">notebook_name</span> <span class="o">=</span> <span class="n">parm</span>
+    <span class="k">if</span> <span class="n">command</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">command</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.ipynb&#39;</span><span class="p">):</span>
+        <span class="n">notebook_name</span> <span class="o">=</span> <span class="n">command</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">notebook_name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">notebook_name</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">PY3</span><span class="p">:</span>
@@ -222,24 +227,31 @@
 
             <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">][</span><span class="s1">&#39;language_info&#39;</span><span class="p">][</span><span class="s1">&#39;codemirror_mode&#39;</span><span class="p">][</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pyv_short_string</span>
             <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">][</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pyv_full_string</span>
-        <span class="k">if</span> <span class="n">parm</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.py&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">command</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c1"># create a notebook and import nglview</span>
+            <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simple_source</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.py&#39;</span><span class="p">):</span>
             <span class="c1"># a Python script</span>
-            <span class="n">pycontent</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">parm</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">pycontent</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pycontent</span>
             <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">parm</span> <span class="o">==</span> <span class="s1">&#39;demo&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;demo&#39;</span><span class="p">:</span>
             <span class="c1"># running demo</span>
             <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">demo_source</span>
             <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
-            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;test.nc&#39;</span><span class="p">,</span> <span class="n">crd</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;prmtop&#39;</span><span class="p">,</span> <span class="n">parm</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">_is_density_data</span><span class="p">(</span><span class="n">parm</span><span class="p">):</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;test.nc&#39;</span><span class="p">,</span> <span class="n">crd</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;prmtop&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_is_density_data</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
             <span class="c1"># check if density data</span>
-            <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">density_source</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="n">parm</span><span class="p">)</span>
+            <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">density_source</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span>
+                    <span class="n">command</span><span class="p">)</span>
             <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
-            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;test.nc&#39;</span><span class="p">,</span> <span class="n">crd</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;prmtop&#39;</span><span class="p">,</span> <span class="n">parm</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parm</span><span class="p">),</span> <span class="s1">&#39;{} does not exists&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parm</span><span class="p">)</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;test.nc&#39;</span><span class="p">,</span>
+                    <span class="n">crd</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;prmtop&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="s1">&#39;{} does not exists&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 
         <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span>
 
@@ -258,14 +270,14 @@
                                                                     <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;NOTE: make sure to open {0} in your local machine</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">disable_autorun</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">test</span><span class="p">:</span>
-            <span class="n">install_nbextension</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">disable_autorun</span> <span class="ow">or</span> <span class="n">command</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">disable_extension</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">CalledProcessError</span><span class="p">:</span>
             <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">test</span><span class="p">:</span>
+            <span class="n">install_nbextension</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test</span><span class="p">:</span>
@@ -274,7 +286,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
     <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">clean_cache</span> <span class="ow">and</span> <span class="n">create_new_nb</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">clean</span> <span class="ow">and</span> <span class="n">create_new_nb</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s2">&quot;deleting {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">))</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">disable_autorun</span><span class="p">:</span>
@@ -312,13 +324,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.5.2a+278.g1b26760 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 31, 2016.
+      Last updated on Nov 07, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

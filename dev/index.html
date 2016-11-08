@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Table of contents &mdash; NGLView 0.5.2a+223.g71b4fa8 documentation</title>
+    <title>Table of contents &mdash; NGLView 0.5.2a+278.g1b26760 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.2a+223.g71b4fa8',
+        VERSION:     '0.5.2a+278.g1b26760',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+223.g71b4fa8 documentation" href="#" /> 
+    <link rel="top" title="NGLView 0.5.2a+278.g1b26760 documentation" href="#" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+278.g1b26760 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -50,7 +50,7 @@
 doc</a> | <a class="reference external" href="interface_classes.html">Interface classes</a> |
 <a class="reference external" href="#website">Website</a> | <a class="reference external" href="#show-gui">GUI</a> |
 <a class="reference external" href="#acknowledgment">Acknowledgment</a></p>
-<p><a class="reference external" href="http://mybinder.org/repo/hainm/nglview-notebooks"><img alt="Binder" src="http://mybinder.org/assets/images/logo.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="http://bioconda.github.io"><img alt="bioconda-badge" src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square" /></a></p>
+<p><a class="reference external" href="http://mybinder.org/repo/hainm/nglview-notebooks"><img alt="Binder" src="http://mybinder.org/assets/images/logo.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="http://bioconda.github.io"><img alt="bioconda-badge" src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square" /></a> <a class="reference external" href="https://coveralls.io/github/arose/nglview"><img alt="Coverage Status" src="https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master" /></a></p>
 <p>An <a class="reference external" href="http://jupyter.org/">IPython/Jupyter</a> widget to interactively
 view molecular structures and trajectories. Utilizes the embeddable <a class="reference external" href="https://github.com/arose/ngl">NGL
 Viewer</a> for rendering. Support for
@@ -60,7 +60,9 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <a class="reference external" href="http://amber-md.github.io/pytraj/latest/index.html">pytraj</a>,
 <a class="reference external" href="http://www.mdanalysis.org/">mdanalysis</a>,
 <a class="reference external" href="http://parmed.github.io/ParmEd/">ParmEd</a>,
-<a class="reference external" href="https://github.com/rdkit/rdkit">rdkit</a>.</p>
+<a class="reference external" href="https://github.com/rdkit/rdkit">rdkit</a>,
+<a class="reference external" href="https://wiki.fysik.dtu.dk/ase/">ase</a>,
+<a class="reference external" href="https://www.htmd.org">HTMD</a></p>
 <p>Should work with Python 2 and 3. If you experience problems, please file
 an <a class="reference external" href="https://github.com/arose/nglview/issues">issue</a>.</p>
 <div class="figure" id="id1">
@@ -87,10 +89,12 @@ an <a class="reference external" href="https://github.com/arose/nglview/issues">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="released-version">
 <h2>Released version<a class="headerlink" href="#released-version" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong>: The released version only works with <code class="docutils literal"><span class="pre">ipywidgets</span> <span class="pre">&lt;</span> <span class="pre">5.0</span></code> -
+Available on <code class="docutils literal"><span class="pre">bioconda</span></code> channel</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>`conda install nglview -c bioconda`
+</pre></div>
+</div>
 <ul>
-<li><p class="first">Available on <code class="docutils literal"><span class="pre">bioconda</span></code> channel</p>
-<p><code class="docutils literal"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">nglview</span> <span class="pre">-c</span> <span class="pre">bioconda</span></code></p>
-</li>
 <li><p class="first">Available on <a class="reference external" href="https://pypi.python.org/pypi/nglview/">PyPI</a></p>
 <p><code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nglview</span></code></p>
 </li>
@@ -145,7 +149,8 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <a class="reference external" href="http://amber-md.github.io/pytraj/latest/index.html">pytraj</a>,
 <a class="reference external" href="http://www.mdanalysis.org/">mdanalysis</a>,
 <a class="reference external" href="http://parmed.github.io/ParmEd/">ParmEd</a>,
-<a class="reference external" href="https://github.com/rdkit/rdkit">rdkit</a>.</p>
+<a class="reference external" href="https://github.com/rdkit/rdkit">rdkit</a>,
+<a class="reference external" href="https://github.com/Acellera/htmd">HTMD</a>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="44%" />
@@ -181,6 +186,12 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_rdkit(mol)</span></code></td>
 <td>Shows <code class="docutils literal"><span class="pre">rdkit</span></code> rdkit.Chem.rdchem.Mol</td>
 </tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_ase(atoms)</span></code></td>
+<td>Shows <code class="docutils literal"><span class="pre">ase</span></code> Atoms</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_htmd(mol)</span></code></td>
+<td>Shows <code class="docutils literal"><span class="pre">HTMD</span></code> Molecules</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -210,12 +221,12 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <span class="n">view</span><span class="o">.</span><span class="n">remove_cartoon</span><span class="p">(</span><span class="n">opacity</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>And many more, please check <a class="reference external" href="http://arose.github.io/ngl/api//tutorial-selection-language.html">NGL
+<p>And many more, please check <a class="reference external" href="http://arose.github.io/ngl/api/index.html">NGL
 website</a></p>
 <p>Representations can also be changed by overwriting the
 <code class="docutils literal"><span class="pre">representations</span></code> property of the widget instance <code class="docutils literal"><span class="pre">view</span></code>. The
 available <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">params</span></code> are described in the NGL Viewer
-<a class="reference external" href="http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html">documentation</a>.</p>
+<a class="reference external" href="http://arose.github.io/ngl/api/index.html">documentation</a>.</p>
 <div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;residueindex&quot;</span>
@@ -277,8 +288,8 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 <h2>Trajectory<a class="headerlink" href="#trajectory" title="Permalink to this headline">¶</a></h2>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># adding new trajectory</span>
 <span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
-<span class="c1"># traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`</span>
-<span class="c1"># or derived class of `nglview.Trajectory`</span>
+<span class="c1"># traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`,</span>
+<span class="c1"># `parmed.Structure`, `htmd.Molecule` or derived class of `nglview.Trajectory`</span>
 
 <span class="c1"># change representation</span>
 <span class="n">view</span><span class="o">.</span><span class="n">trajectory_0</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1"># equal to view.add_cartoon(component=0)</span>
@@ -293,7 +304,7 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 <span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="s1">&#39;my.ccp4&#39;</span><span class="p">)</span>
 
 <span class="c1"># add component from url</span>
-<span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="s1">&#39;rcsb://1tsu.pdb&#39;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="s1">&#39;rcsb://1tsu.pdb&#39;</span><span class="p">)</span>
 <span class="c1"># NOTE: Trajectory is a special case of component.</span>
 </pre></div>
 </div>
@@ -319,6 +330,15 @@ also</a></p>
 <img alt="" src="https://github.com/arose/nglview/blob/master/examples/images/nglview_gui.png?raw=true" />
 </div>
 </div>
+<div class="section" id="movie-making">
+<h2>Movie making<a class="headerlink" href="#movie-making" title="Permalink to this headline">¶</a></h2>
+<p>Notes: Unstable feature.</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nglview.contrib.movie</span> <span class="k">import</span> <span class="n">MovieMaker</span>
+<span class="n">movie</span> <span class="o">=</span> <span class="n">MovieMaker</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;my.gif&#39;</span><span class="p">)</span>
+<span class="n">movie</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="api-doc">
 <h1>API doc<a class="headerlink" href="#api-doc" title="Permalink to this headline">¶</a></h1>
@@ -329,8 +349,10 @@ also</a></p>
 </div>
 <div class="section" id="command-line">
 <h1>Command line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h1>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Require installing pytraj (PR for other backends is welcome)</span>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># open a notebook and import nglview</span>
+<span class="n">nglview</span>
 
+<span class="c1"># Require installing pytraj (PR for other backends is welcome)</span>
 <span class="c1"># open notebook, load `my.pdb` to pytraj&#39;s trajectory then display `view`</span>
 <span class="n">nglview</span> <span class="n">my</span><span class="o">.</span><span class="n">pdb</span>
 
@@ -393,6 +415,8 @@ models for Drug Discovery and Quantum Chemistry</li>
 Chimera Python API in a standard interpreter</li>
 <li><a class="reference external" href="https://github.com/Acellera/htmd">htmd</a> - High throughput
 molecular dynamics simulations</li>
+<li>[<a class="reference external" href="https://github.com/kbsezginel/Moleidoscope">https://github.com/kbsezginel/Moleidoscope</a>]
+(<a class="reference external" href="https://github.com/kbsezginel/Moleidoscope">https://github.com/kbsezginel/Moleidoscope</a>) - Molecular kaleidoscope</li>
 </ul>
 </div>
 <div class="section" id="acknowledgment">
@@ -430,6 +454,7 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
 <li><a class="reference internal" href="#add-extra-component">Add extra component</a></li>
 <li><a class="reference internal" href="#display-more-than-two-widgets">Display more than two widgets</a></li>
 <li><a class="reference internal" href="#show-gui">Show GUI</a></li>
+<li><a class="reference internal" href="#movie-making">Movie making</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#api-doc">API doc</a></li>
@@ -471,12 +496,12 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+278.g1b26760 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 31, 2016.
+      Last updated on Nov 07, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

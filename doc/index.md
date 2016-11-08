@@ -4,8 +4,9 @@
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
 [![Build Status](https://travis-ci.org/arose/nglview.svg?branch=master)](https://travis-ci.org/arose/nglview)
 [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
+[![Coverage Status](https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master)](https://coveralls.io/github/arose/nglview)
 
-An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit).
+An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [ase](https://wiki.fysik.dtu.dk/ase/), [HTMD](https://www.htmd.org)
 
 Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
@@ -32,7 +33,7 @@ Installation
 
 Released version
 ----------------
-
+**Note**: The released version only works with `ipywidgets < 5.0`
 - Available on `bioconda` channel
 
     `conda install nglview -c bioconda`
@@ -86,7 +87,7 @@ view
 ```
 
 A number of convenience functions are available to quickly display data from
-the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit).
+the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [HTMD](https://github.com/Acellera/htmd).
 
 | Function                                 | Description                                           |
 |------------------------------------------|-------------------------------------------------------|
@@ -98,6 +99,8 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_parmed(structure)`                 | Shows `ParmEd` structure
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
 | `show_rdkit(mol)`                        | Shows `rdkit` rdkit.Chem.rdchem.Mol                   |
+| `show_ase(atoms)`                        | Shows `ase` Atoms                                     |
+| `show_htmd(mol)`                         | Shows `HTMD` Molecules                                |
 
 
 API
@@ -129,11 +132,11 @@ view.update_cartoon(opacity=0.4, component=0)
 view.remove_cartoon(opacity=0.4, component=0)
 ```
 
-And many more, please check [NGL website](http://arose.github.io/ngl/api//tutorial-selection-language.html)
+And many more, please check [NGL website](http://arose.github.io/ngl/api/index.html)
 
 Representations can also be changed by overwriting the `representations` property
 of the widget instance `view`. The available `type` and `params` are described
-in the NGL Viewer [documentation](http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html).
+in the NGL Viewer [documentation](http://arose.github.io/ngl/api/index.html).
 
 ```Python
 view.representations = [
@@ -205,8 +208,8 @@ Trajectory
 ```python
 # adding new trajectory
 view.add_trajectory(traj)
-# traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
-# or derived class of `nglview.Trajectory`
+# traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, 
+# `parmed.Structure`, `htmd.Molecule` or derived class of `nglview.Trajectory`
 
 # change representation
 view.trajectory_0.add_cartoon(...) # equal to view.add_cartoon(component=0)
@@ -222,7 +225,7 @@ Add extra component
 view.add_component('my.ccp4')
 
 # add component from url
-view.add_component('rcsb://1tsu.pdb', url=True)
+view.add_component('rcsb://1tsu.pdb')
 # NOTE: Trajectory is a special case of component.
 ```
 
@@ -247,6 +250,17 @@ Notes: Unstable feature. [See also](https://github.com/arose/nglview/blob/master
 
 ![](https://github.com/arose/nglview/blob/master/examples/images/nglview_gui.png?raw=true)
 
+Movie making
+------------
+
+Notes: Unstable feature.
+
+```python
+from nglview.contrib.movie import MovieMaker
+movie = MovieMaker(view, output='my.gif')
+movie.make()
+```
+
 API doc
 =======
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
@@ -256,8 +270,11 @@ Command line
 ============
 
 ```bash
-# Require installing pytraj (PR for other backends is welcome)
 
+# open a notebook and import nglview
+nglview 
+
+# Require installing pytraj (PR for other backends is welcome)
 # open notebook, load `my.pdb` to pytraj's trajectory then display `view`
 nglview my.pdb
 
@@ -315,6 +332,7 @@ Projects using NGLView
 - [deepchem](https://github.com/deepchem/deepchem) - Deep-learning models for Drug Discovery and Quantum Chemistry
 - [pychimera](https://github.com/insilichem/pychimera) - Use UCSF Chimera Python API in a standard interpreter
 - [htmd](https://github.com/Acellera/htmd) - High throughput molecular dynamics simulations
+- [https://github.com/kbsezginel/Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
 
 Acknowledgment
 ==============

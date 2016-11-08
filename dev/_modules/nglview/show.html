@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.show &mdash; NGLView 0.5.2a+223.g71b4fa8 documentation</title>
+    <title>nglview.show &mdash; NGLView 0.5.2a+278.g1b26760 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.5.2a+223.g71b4fa8',
+        VERSION:     '0.5.2a+278.g1b26760',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+223.g71b4fa8 documentation" href="../../index.html" />
+    <link rel="top" title="NGLView 0.5.2a+278.g1b26760 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+278.g1b26760 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -62,23 +62,27 @@
     <span class="n">FileStructure</span><span class="p">,</span>
     <span class="n">TextStructure</span><span class="p">,</span>
     <span class="n">PdbIdStructure</span><span class="p">,</span>
+    <span class="n">ASEStructure</span><span class="p">,</span>
     <span class="n">MDTrajTrajectory</span><span class="p">,</span>
     <span class="n">PyTrajTrajectory</span><span class="p">,</span>
     <span class="n">ParmEdTrajectory</span><span class="p">,</span>
-    <span class="n">MDAnalysisTrajectory</span><span class="p">)</span>
+    <span class="n">MDAnalysisTrajectory</span><span class="p">,</span>
+    <span class="n">HTMDTrajectory</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;demo&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_pdbid&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_url&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_text&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;show_ase&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_simpletraj&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_mdtraj&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_pytraj&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_mdanalysis&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_parmed&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_rdkit&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;show_structure_file&#39;</span><span class="p">,]</span>
+    <span class="s1">&#39;show_structure_file&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;show_htmd&#39;</span><span class="p">,]</span>
 
 <div class="viewcode-block" id="show_pdbid"><a class="viewcode-back" href="../../api.html#nglview.show_pdbid">[docs]</a><span class="k">def</span> <span class="nf">show_pdbid</span><span class="p">(</span><span class="n">pdbid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show PDB entry.</span>
@@ -102,6 +106,21 @@
     <span class="sd">&quot;&quot;&quot;for development</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">structure</span> <span class="o">=</span> <span class="n">TextStructure</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="show_ase"><a class="viewcode-back" href="../../api.html#nglview.show_ase">[docs]</a><span class="k">def</span> <span class="nf">show_ase</span><span class="p">(</span><span class="n">ase_atoms</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
+<span class="sd">    &gt;&gt;&gt; from ase import Atom, Atoms</span>
+<span class="sd">    &gt;&gt;&gt; dimer = Atoms([Atom(&#39;X&#39;, (0, 0, 0)),</span>
+<span class="sd">    ...                Atom(&#39;X&#39;, (0, 0, 1))])</span>
+<span class="sd">    &gt;&gt;&gt; dimer.set_positions([(1, 2, 3), (4, 5, 6.2)])</span>
+<span class="sd">    &gt;&gt;&gt; nv.show_ase(dimer)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">structure</span> <span class="o">=</span> <span class="n">ASEStructure</span><span class="p">(</span><span class="n">ase_atoms</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="show_structure_file"><a class="viewcode-back" href="../../api.html#nglview.show_structure_file">[docs]</a><span class="k">def</span> <span class="nf">show_structure_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -246,6 +265,23 @@
     <span class="n">structure_trajectory</span> <span class="o">=</span> <span class="n">MDAnalysisTrajectory</span><span class="p">(</span><span class="n">atomgroup</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="show_htmd"><a class="viewcode-back" href="../../api.html#nglview.show_htmd">[docs]</a><span class="k">def</span> <span class="nf">show_htmd</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Show NGL widget with HTMD Molecule.</span>
+
+<span class="sd">    Takes a Molecule object as its data input.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
+<span class="sd">    &gt;&gt;&gt; from htmd import Molecule</span>
+<span class="sd">    &gt;&gt;&gt; mol = Molecule(nv.datafiles.PDB)</span>
+<span class="sd">    &gt;&gt;&gt; mol.filter(&#39;protein&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; w = nv.show_htmd(mol)</span>
+<span class="sd">    &gt;&gt;&gt; w</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">structure_trajectory</span> <span class="o">=</span> <span class="n">HTMDTrajectory</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="demo"><a class="viewcode-back" href="../../api.html#nglview.demo">[docs]</a><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">nglview</span> <span class="kn">import</span> <span class="n">show_structure_file</span>
     <span class="k">return</span> <span class="n">show_structure_file</span><span class="p">(</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -279,13 +315,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+223.g71b4fa8 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.5.2a+278.g1b26760 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 31, 2016.
+      Last updated on Nov 07, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

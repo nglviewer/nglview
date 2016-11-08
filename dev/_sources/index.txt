@@ -4,7 +4,7 @@ doc <#api-doc>`__ \| `Interface classes <interface_classes.html>`__ \|
 `Website <#website>`__ \| `GUI <#show-gui>`__ \|
 `Acknowledgment <#acknowledgment>`__
 
-|Binder| |DOI| |Build Status| |bioconda-badge|
+|Binder| |DOI| |Build Status| |bioconda-badge| |Coverage Status|
 
 An `IPython/Jupyter <http://jupyter.org/>`__ widget to interactively
 view molecular structures and trajectories. Utilizes the embeddable `NGL
@@ -15,7 +15,9 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `pytraj <http://amber-md.github.io/pytraj/latest/index.html>`__,
 `mdanalysis <http://www.mdanalysis.org/>`__,
 `ParmEd <http://parmed.github.io/ParmEd/>`__,
-`rdkit <https://github.com/rdkit/rdkit>`__.
+`rdkit <https://github.com/rdkit/rdkit>`__,
+`ase <https://wiki.fysik.dtu.dk/ase/>`__,
+`HTMD <https://www.htmd.org>`__
 
 Should work with Python 2 and 3. If you experience problems, please file
 an `issue <https://github.com/arose/nglview/issues>`__.
@@ -45,9 +47,12 @@ Installation
 Released version
 ----------------
 
--  Available on ``bioconda`` channel
+**Note**: The released version only works with ``ipywidgets < 5.0`` -
+Available on ``bioconda`` channel
 
-   ``conda install nglview -c bioconda``
+::
+
+    `conda install nglview -c bioconda`
 
 -  Available on `PyPI <https://pypi.python.org/pypi/nglview/>`__
 
@@ -108,7 +113,8 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `pytraj <http://amber-md.github.io/pytraj/latest/index.html>`__,
 `mdanalysis <http://www.mdanalysis.org/>`__,
 `ParmEd <http://parmed.github.io/ParmEd/>`__,
-`rdkit <https://github.com/rdkit/rdkit>`__.
+`rdkit <https://github.com/rdkit/rdkit>`__,
+`HTMD <https://github.com/Acellera/htmd>`__.
 
 +----------------------------------------------+-----------------------------------------------------------+
 | Function                                     | Description                                               |
@@ -128,6 +134,10 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 | ``show_mdanalysis(univ)``                    | Shows ``MDAnalysis`` Universe or AtomGroup ``univ``       |
 +----------------------------------------------+-----------------------------------------------------------+
 | ``show_rdkit(mol)``                          | Shows ``rdkit`` rdkit.Chem.rdchem.Mol                     |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_ase(atoms)``                          | Shows ``ase`` Atoms                                       |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_htmd(mol)``                           | Shows ``HTMD`` Molecules                                  |
 +----------------------------------------------+-----------------------------------------------------------+
 
 API
@@ -160,12 +170,12 @@ Representations
     view.remove_cartoon(opacity=0.4, component=0)
 
 And many more, please check `NGL
-website <http://arose.github.io/ngl/api//tutorial-selection-language.html>`__
+website <http://arose.github.io/ngl/api/index.html>`__
 
 Representations can also be changed by overwriting the
 ``representations`` property of the widget instance ``view``. The
 available ``type`` and ``params`` are described in the NGL Viewer
-`documentation <http://arose.github.io/ngl/api/dev/tutorial-molecular-representations.html>`__.
+`documentation <http://arose.github.io/ngl/api/index.html>`__.
 
 .. code:: Python
 
@@ -238,8 +248,8 @@ Trajectory
 
     # adding new trajectory
     view.add_trajectory(traj)
-    # traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, `parmed.Structure`
-    # or derived class of `nglview.Trajectory`
+    # traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, 
+    # `parmed.Structure`, `htmd.Molecule` or derived class of `nglview.Trajectory`
 
     # change representation
     view.trajectory_0.add_cartoon(...) # equal to view.add_cartoon(component=0)
@@ -255,7 +265,7 @@ Add extra component
     view.add_component('my.ccp4')
 
     # add component from url
-    view.add_component('rcsb://1tsu.pdb', url=True)
+    view.add_component('rcsb://1tsu.pdb')
     # NOTE: Trajectory is a special case of component.
 
 Display more than two widgets
@@ -281,6 +291,17 @@ also <https://github.com/arose/nglview/blob/master/examples/README.md#unstable-f
 .. figure:: https://github.com/arose/nglview/blob/master/examples/images/nglview_gui.png?raw=true
    :alt: 
 
+Movie making
+------------
+
+Notes: Unstable feature.
+
+.. code:: python
+
+    from nglview.contrib.movie import MovieMaker
+    movie = MovieMaker(view, output='my.gif')
+    movie.make()
+
 API doc
 =======
 
@@ -292,8 +313,11 @@ Command line
 
 .. code:: bash
 
-    # Require installing pytraj (PR for other backends is welcome)
 
+    # open a notebook and import nglview
+    nglview 
+
+    # Require installing pytraj (PR for other backends is welcome)
     # open notebook, load `my.pdb` to pytraj's trajectory then display `view`
     nglview my.pdb
 
@@ -355,6 +379,8 @@ Projects using NGLView
    Chimera Python API in a standard interpreter
 -  `htmd <https://github.com/Acellera/htmd>`__ - High throughput
    molecular dynamics simulations
+-  [https://github.com/kbsezginel/Moleidoscope]
+   (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
 
 Acknowledgment
 ==============
@@ -375,3 +401,5 @@ Generally MIT, see the LICENSE file for details.
    :target: https://travis-ci.org/arose/nglview
 .. |bioconda-badge| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square
    :target: http://bioconda.github.io
+.. |Coverage Status| image:: https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master
+   :target: https://coveralls.io/github/arose/nglview
