@@ -25,6 +25,10 @@ class MovieMaker(object):
         if True, do not render any frame and uses existings images in `download_folder`
         for movie making.
         if False, perform rendering first.
+    timeout : a number (second), default 1.
+        The waiting time between rendering two consecutive frames.
+        You need to decide the "good" value by your self. `timeout` should be larger than
+        the rendering time of each frame.
     render_params : dict or None, default None
         NGL rendering params. see NGLWidget.download_image.
         If None, use default values
@@ -91,7 +95,6 @@ class MovieMaker(object):
             assert isinstance(self.render_params, dict)
         if self.mpy_params is not None:
             assert isinstance(self.mpy_params, dict)
-        assert os.path.exists(download_folder), '{} must exists'.format(download_folder)
         self.output = output
         if stop < 0:
             stop = self.view.count
