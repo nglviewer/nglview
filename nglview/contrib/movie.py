@@ -17,6 +17,7 @@ class MovieMaker(object):
         prefix name of rendered image.
     output : str, default 'my_movie.gif'
         output filename of the movie.
+        if output has '.gif', call `write_gif`, otherwise calling `write_videofile`
     fps : 8
         frame per second
     start, stop, step : int, default (0, -1, 1)
@@ -50,6 +51,15 @@ class MovieMaker(object):
     >>> output = 'my.gif'
     >>> mov = MovieMaker(view, download_folder=download_folder, output=output)
     >>> mov.make()
+
+    >>> # write avi format
+    >>> from nglview.contrib.movie import MovieMaker
+
+    >>> mpy_params = {
+    ...     'codec': 'mpeg4'
+    ... }
+    >>> movie = MovieMaker(view, output='my.avi', in_memory=True, mpy_params=mpy_params)
+    >>> movie.make()
 
     Notes
     -----
@@ -134,7 +144,10 @@ class MovieMaker(object):
                     image_files = self._image_array
             if not self._event.is_set():
                 clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
-                clip.write_gif(self.output, fps=self.fps, **self.mpy_params)
+                if self.output.endswith('.gif'):
+                    clip.write_gif(self.output, fps=self.fps, **self.mpy_params)
+                else:
+                    clip.write_videofile(self.output, fps=self.fps, **self.mpy_params)
                 self._image_array = []
         self.thread = threading.Thread(target=_make, args=(self._event,))
         self.thread.daemon = True
