@@ -25,7 +25,8 @@ conda install -c ambermd parmed --yes
 # ase
 pip install https://github.com/hainm/ase/archive/3.11.0.tar.gz
 # simpletraj
-pip install git+https://github.com/arose/simpletraj
+# turn off for now since this package requires install from source code.
+# pip install git+https://github.com/arose/simpletraj
 # rdkit
 # conda install rdkit -c rdkit --yes
 
