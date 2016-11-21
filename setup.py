@@ -42,7 +42,7 @@ def enable_extentions():
             from notebook.nbextensions import enable_nbextension_python
             enable_nbextension_python('widgetsnbextension')
             enable_nbextension_python('nglview')
-        except Exception as e:
+        except:
             print('Failed to enable extensions {}'.format(e))
 
 def js_prerelease(command, strict=False):
@@ -57,7 +57,7 @@ def js_prerelease(command, strict=False):
 
             try:
                 self.distribution.run_command('jsdeps')
-            except Exception as e:
+            except:
                 missing = [t for t in jsdeps.targets if not os.path.exists(t)]
                 if strict or missing:
                     log.warn('rebuilding js and css failed')
