@@ -7,3 +7,4 @@ ADD ../nglview /root/
 RUN     cd /root/nglview \
     &&  sh devtools/circleci/install_miniconda.sh \
     &&  python setup.py install
+CMD ["nglview", "demo"]
