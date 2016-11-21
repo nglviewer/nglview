@@ -8,4 +8,4 @@ dependencies:
 
 test:
   override:
-    - docker build -t nglview:dev devtools/
+    - docker build -t nglview:dev .
