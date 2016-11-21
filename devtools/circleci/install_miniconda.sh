@@ -16,15 +16,10 @@ conda install mdanalysis -c kain88-de --yes
 # mdtraj
 conda install mdtraj -c omnia --yes
 # ParmEd
-pip install https://github.com/ParmEd/ParmEd/archive/2.5.1.tar.gz
+conda install -c ambermd parmed --yes
 # ase
 pip install https://github.com/hainm/ase/archive/3.11.0.tar.gz
 # simpletraj
 pip install git+https://github.com/arose/simpletraj
-# pytest
-pip install pytest
-pip install pytest-cov
-# coveralls
-pip install coveralls
 # rdkit
-conda install rdkit -c rdkit --yes
+# conda install rdkit -c rdkit --yes
