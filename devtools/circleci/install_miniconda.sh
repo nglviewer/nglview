@@ -23,3 +23,6 @@ pip install https://github.com/hainm/ase/archive/3.11.0.tar.gz
 pip install git+https://github.com/arose/simpletraj
 # rdkit
 # conda install rdkit -c rdkit --yes
+
+# update a bunch of stuff
+conda install --yes -c conda-forge ipywidgets notebook pyzmq
