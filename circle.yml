@@ -4,7 +4,7 @@ machine:
 
 dependencies:
   override:
-    - docker pull ambermd/manylinux-extra
+    - docker pull condaforge/linux-anvil
 
 test:
   override:
