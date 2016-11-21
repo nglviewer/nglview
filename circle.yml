@@ -1,0 +1,11 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker pull ambermd/manylinux-extra
+
+test:
+  override:
+    - docker build -t nglview:dev devtools/
