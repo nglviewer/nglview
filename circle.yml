@@ -1,0 +1,11 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker pull condaforge/linux-anvil
+
+test:
+  override:
+    - docker build -t nglview:dev .
