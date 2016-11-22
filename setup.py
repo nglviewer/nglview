@@ -43,7 +43,8 @@ def enable_extentions():
             enable_nbextension_python('widgetsnbextension')
             enable_nbextension_python('nglview')
         except:
-            print('Failed to enable extensions {}'.format(e))
+            # TODO: add type of exception here?
+            print('Failed to enable extensions. Skip')
 
 def js_prerelease(command, strict=False):
     """decorator for building minified js/css prior to another command"""
