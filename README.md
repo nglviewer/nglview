@@ -40,9 +40,11 @@ Released version
     ```bash
     conda config --add channels conda-forge
     conda install nglview -c bioconda
+    jupyter-nbextension enable nglview --py --user
 
     # if you already installed nglview, you can `upgrade`
     conda upgrade nglview
+    jupyter-nbextension enable nglview --py --user
     ```
 
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
