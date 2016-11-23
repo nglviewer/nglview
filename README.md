@@ -40,6 +40,9 @@ Released version
     ```bash
     conda config --add channels conda-forge
     conda install nglview -c bioconda
+
+    # if you already installed nglview, you can `upgrade`
+    conda upgrade nglview
     ```
 
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
