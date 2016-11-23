@@ -2,5 +2,5 @@
 
 ```bash
 python -c 'import nglview; print(nglview.__version__)'
-python -c 'import nglview; print(ipywidgets.__version__)'
+python -c 'import ipywidgets; print(ipywidgets.__version__)'
 ```
