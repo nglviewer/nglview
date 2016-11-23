@@ -20,7 +20,7 @@ from traitlets import observe, link
 from .parameters import REPRESENTATION_NAMES
 from . import default
 from .utils import js_utils
-from .layout import (form_item_layout, _relayout, _make_autofit, _relayout_master, _make_delay_tab,
+from .layout import (make_form_item_layout, _relayout, _make_autofit, _relayout_master, _make_delay_tab,
         _make_box_layout)
 
 
@@ -626,7 +626,7 @@ class TrajectoryPlayer(DOMWidget):
             checkbox_transparent,
             ])
 
-        form_items = _relayout(vbox, form_item_layout)
+        form_items = _relayout(vbox, make_form_item_layout())
         form = Box(form_items, layout=_make_box_layout())
         # form = _relayout_master(vbox)
         return form

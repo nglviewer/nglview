@@ -156,9 +156,9 @@ setup_args = {
          'nglview/static/index.js.map',
         ]),
     ],
-    'install_requires': [
-        'ipywidgets>=5.1.5',
-    ],
+#     'install_requires': [
+#         'ipywidgets>=5.1.5',
+#     ],
     'tests_require': [
         'pytest'
     ],

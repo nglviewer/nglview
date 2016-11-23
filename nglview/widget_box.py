@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from ipywidgets import Box
 from .widget import NGLWidget
-from .layout import form_item_layout
+from .layout import make_form_item_layout
 from .utils import js_utils
 from traitlets import CaselessStrEnum, observe, Unicode, Bool
 
@@ -10,7 +10,7 @@ class BoxNGL(Box):
     _is_beautified = Bool(False)
 
     def __init__(self, *args, **kwargs):
-        self.layout = form_item_layout
+        self.layout = make_form_item_layout()
         super(BoxNGL, self).__init__(*args, **kwargs)
 
     @observe('_gui_style')
