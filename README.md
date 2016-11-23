@@ -273,6 +273,7 @@ movie.make()
 API doc
 =======
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
+- [All releases versions](http://arose.github.io/nglview/release/index.html)
 - [Development version](http://arose.github.io/nglview/dev/api.html)
 
 Command line
