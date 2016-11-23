@@ -5,15 +5,13 @@ from ipywidgets import Layout, Button, ToggleButton, Box, Label, Tab
 
 from traitlets import TraitError
 
-try:
-    form_item_layout = Layout(
+def make_form_item_layout():
+    # protect nglview if it is not used in notebook (wheen there is not `comm`
+    return Layout(
         display='flex',
         flex_flow='row',
         justify_content='space-between',
     )
-except TraitError:
-    # for testing
-    form_item_layout = None
 
 def _make_box_layout(width='100%'): 
     return Layout(
@@ -45,7 +43,7 @@ def _relayout_master(box, width='20%'):
     The `description` will be cleared.
     """
     old_children = box.children[:]
-    form_items = _relayout(box, form_item_layout)
+    form_items = _relayout(box, make_form_item_layout())
     form = Box(form_items, layout=_make_box_layout(width=width))
     form._ngl_children = old_children
     return form
