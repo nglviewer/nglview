@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nglview.contrib.movie &#8212; NGLView 0.6.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="top" title="NGLView 0.6.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for nglview.contrib.movie</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="k">as</span> <span class="nn">mpy</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<div class="viewcode-block" id="MovieMaker"><a class="viewcode-back" href="../../../_api/nglview.contrib.movie.html#nglview.contrib.movie.MovieMaker">[docs]</a><span class="k">class</span> <span class="nc">MovieMaker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    view : NGLWidget</span>
+<span class="sd">    download_folder : str or None</span>
+<span class="sd">        Folder that stores images. You can not arbitarily set this folder. It must be</span>
+<span class="sd">        the download directory of the web browser you are using.</span>
+<span class="sd">        If None, $HOME/Downloads/ will be used.</span>
+<span class="sd">    prefix : str, default &#39;movie&#39;</span>
+<span class="sd">        prefix name of rendered image.</span>
+<span class="sd">    output : str, default &#39;my_movie.gif&#39;</span>
+<span class="sd">        output filename of the movie.</span>
+<span class="sd">        if output has &#39;.gif&#39;, call `write_gif`, otherwise calling `write_videofile`</span>
+<span class="sd">    fps : 8</span>
+<span class="sd">        frame per second</span>
+<span class="sd">    start, stop, step : int, default (0, -1, 1)</span>
+<span class="sd">        how many frames you want to render.</span>
+<span class="sd">    skip_render : bool, default False</span>
+<span class="sd">        if True, do not render any frame and uses existings images in `download_folder`</span>
+<span class="sd">        for movie making.</span>
+<span class="sd">        if False, perform rendering first.</span>
+<span class="sd">    timeout : a number (second), default 1.</span>
+<span class="sd">        The waiting time between rendering two consecutive frames.</span>
+<span class="sd">        You need to decide the &quot;good&quot; value by your self. `timeout` should be larger than</span>
+<span class="sd">        the rendering time of each frame.</span>
+<span class="sd">    render_params : dict or None, default None</span>
+<span class="sd">        NGL rendering params. see NGLWidget.download_image.</span>
+<span class="sd">        If None, use default values</span>
+<span class="sd">    mpy_params : dict or None, default None</span>
+<span class="sd">        moviepy params for `write_gif` method.</span>
+<span class="sd">        if None, use default values</span>
+<span class="sd">    in_memory : bool, default False</span>
+<span class="sd">        if False, save rendered images to disk first</span>
+<span class="sd">        if True, keep all image data in memory (good for small video)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
+<span class="sd">    &gt;&gt;&gt; import pytraj as pt</span>
+<span class="sd">    &gt;&gt;&gt; traj = pt.load(nv.datafiles.XTC, top=nv.datafiles.PDB)</span>
+<span class="sd">    &gt;&gt;&gt; view = nv.show_pytraj(traj)</span>
+<span class="sd">    &gt;&gt;&gt; from nglview.contrib.movie import MovieMaker</span>
+<span class="sd">    &gt;&gt;&gt; download_folder = &#39;/Users/xxx/Downloads&#39;</span>
+<span class="sd">    &gt;&gt;&gt; output = &#39;my.gif&#39;</span>
+<span class="sd">    &gt;&gt;&gt; mov = MovieMaker(view, download_folder=download_folder, output=output)</span>
+<span class="sd">    &gt;&gt;&gt; mov.make()</span>
+
+<span class="sd">    &gt;&gt;&gt; # write avi format</span>
+<span class="sd">    &gt;&gt;&gt; from nglview.contrib.movie import MovieMaker</span>
+
+<span class="sd">    &gt;&gt;&gt; mpy_params = {</span>
+<span class="sd">    ...     &#39;codec&#39;: &#39;mpeg4&#39;</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; movie = MovieMaker(view, output=&#39;my.avi&#39;, in_memory=True, mpy_params=mpy_params)</span>
+<span class="sd">    &gt;&gt;&gt; movie.make()</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    unstable API. Currently supports .gif format</span>
+<span class="sd">    If you are using remote notebook, make sure to set in_memory=True</span>
+
+<span class="sd">    Requires</span>
+<span class="sd">    --------</span>
+<span class="sd">    </span>
+<span class="sd">    moviepy. e.g:</span>
+<span class="sd">    </span>
+<span class="sd">        pip install moviepy</span>
+<span class="sd">        conda install freeimage</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">view</span><span class="p">,</span>
+                 <span class="n">download_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;movie&#39;</span><span class="p">,</span>
+                 <span class="n">output</span><span class="o">=</span><span class="s1">&#39;my_movie.gif&#39;</span><span class="p">,</span>
+                 <span class="n">fps</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                 <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">stop</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">skip_render</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">timeout</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>
+                 <span class="n">in_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">render_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">mpy_params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">download_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">download_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/Downloads/&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skip_render</span> <span class="o">=</span> <span class="n">skip_render</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_folder</span> <span class="o">=</span> <span class="n">download_folder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="n">fps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_memory</span> <span class="o">=</span> <span class="n">in_memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">render_params</span> <span class="o">=</span> <span class="n">render_params</span> <span class="k">if</span> <span class="n">render_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpy_params</span> <span class="o">=</span> <span class="n">mpy_params</span> <span class="k">if</span> <span class="n">mpy_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">render_params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpy_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mpy_params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="k">if</span> <span class="n">stop</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="MovieMaker.make"><a class="viewcode-back" href="../../../_api/nglview.contrib.movie.html#nglview.contrib.movie.MovieMaker.make">[docs]</a>    <span class="k">def</span> <span class="nf">make</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># TODO : make base class so we can reuse this with sandbox/base.py</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">_make</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_render</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">i</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_memory</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">download_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">,</span>
+                                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">render_params</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">render_image</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">render_params</span><span class="p">)</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_memory</span><span class="p">:</span>
+                            <span class="n">rgb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base64_to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">_image_data</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_memory</span><span class="p">:</span>
+                    <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">.png&quot;</span>
+                    <span class="n">image_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">image_dir</span> <span class="k">for</span> <span class="n">image_dir</span> <span class="ow">in</span> 
+                                      <span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">download_folder</span><span class="p">,</span>
+                                                               <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
+                                                               <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                                       <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span><span class="p">)</span>
+                                   <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">image_dir</span><span class="p">)]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">image_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">ImageSequenceClip</span><span class="p">(</span><span class="n">image_files</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gif&#39;</span><span class="p">):</span>
+                    <span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">mpy_params</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">clip</span><span class="o">.</span><span class="n">write_videofile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">mpy_params</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_make</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="p">,))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MovieMaker.interupt"><a class="viewcode-back" href="../../../_api/nglview.contrib.movie.html#nglview.contrib.movie.MovieMaker.interupt">[docs]</a>    <span class="k">def</span> <span class="nf">interupt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stop making process &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_base64_to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">io</span>
+        <span class="kn">import</span> <span class="nn">base64</span>
+        <span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
+        <span class="n">im_bytes</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">im_bytes</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">im_bytes</span><span class="p">)</span>
+        <span class="c1"># convert to numpy RGB value (for moviepy.editor.VideoClip)</span>
+        <span class="k">return</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">im_bytes</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;JPG&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
+      Last updated on Nov 23, 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.
+    </div>
+  </body>
+</html>
