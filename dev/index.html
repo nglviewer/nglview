@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Table of contents &mdash; NGLView 0.5.2a+278.g1b26760 documentation</title>
+    <title>Table of contents &#8212; NGLView 0.6.1+8.geda1f18 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.2a+278.g1b26760',
+        VERSION:     '0.6.1+8.geda1f18',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="NGLView 0.5.2a+278.g1b26760 documentation" href="#" /> 
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="NGLView 0.6.1+8.geda1f18 documentation" href="#" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,7 +38,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+278.g1b26760 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.6.1+8.geda1f18 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -89,12 +91,19 @@ an <a class="reference external" href="https://github.com/arose/nglview/issues">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="released-version">
 <h2>Released version<a class="headerlink" href="#released-version" title="Permalink to this headline">¶</a></h2>
-<p><strong>Note</strong>: The released version only works with <code class="docutils literal"><span class="pre">ipywidgets</span> <span class="pre">&lt;</span> <span class="pre">5.0</span></code> -
-Available on <code class="docutils literal"><span class="pre">bioconda</span></code> channel</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>`conda install nglview -c bioconda`
+<p><strong>Note</strong>: The released version only works with <code class="docutils literal"><span class="pre">ipywidgets</span> <span class="pre">&gt;=</span> <span class="pre">5.2.2</span></code></p>
+<ul>
+<li><p class="first">Available on <code class="docutils literal"><span class="pre">bioconda</span></code> channel</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">add</span> <span class="n">channels</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">nglview</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span>
+<span class="n">jupyter</span><span class="o">-</span><span class="n">nbextension</span> <span class="n">enable</span> <span class="n">nglview</span> <span class="o">--</span><span class="n">py</span> <span class="o">--</span><span class="n">user</span>
+
+<span class="c1"># if you already installed nglview, you can `upgrade`</span>
+<span class="n">conda</span> <span class="n">upgrade</span> <span class="n">nglview</span>
+<span class="n">jupyter</span><span class="o">-</span><span class="n">nbextension</span> <span class="n">enable</span> <span class="n">nglview</span> <span class="o">--</span><span class="n">py</span> <span class="o">--</span><span class="n">user</span>
 </pre></div>
 </div>
-<ul>
+</li>
 <li><p class="first">Available on <a class="reference external" href="https://pypi.python.org/pypi/nglview/">PyPI</a></p>
 <p><code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nglview</span></code></p>
 </li>
@@ -102,7 +111,7 @@ Available on <code class="docutils literal"><span class="pre">bioconda</span></c
 </div>
 <div class="section" id="development-version">
 <h2>Development version<a class="headerlink" href="#development-version" title="Permalink to this headline">¶</a></h2>
-<p>Requirement: <code class="docutils literal"><span class="pre">ipywidgets</span> <span class="pre">&gt;=</span> <span class="pre">5.1</span></code>, <code class="docutils literal"><span class="pre">notebook</span> <span class="pre">&gt;=</span> <span class="pre">4.2</span></code></p>
+<p>Requirement: <code class="docutils literal"><span class="pre">ipywidgets</span> <span class="pre">&gt;=</span> <span class="pre">5.2.2</span></code>, <code class="docutils literal"><span class="pre">notebook</span> <span class="pre">&gt;=</span> <span class="pre">4.2</span></code></p>
 <p>The development version can be installed directly from github:</p>
 <div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">arose</span><span class="o">/</span><span class="n">nglview</span>
 <span class="n">cd</span> <span class="n">nglview</span>
@@ -476,8 +485,8 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -496,13 +505,13 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.5.2a+278.g1b26760 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.6.1+8.geda1f18 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Nov 07, 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
+      Last updated on Nov 23, 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.
     </div>
   </body>
 </html>
