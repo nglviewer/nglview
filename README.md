@@ -33,10 +33,19 @@ Installation
 
 Released version
 ----------------
-**Note**: The released version only works with `ipywidgets < 5.0`
+**Note**: The released version only works with `ipywidgets >= 5.2.2`
+
 - Available on `bioconda` channel
 
-    `conda install nglview -c bioconda`
+    ```bash
+    conda config --add channels conda-forge
+    conda install nglview -c bioconda
+    jupyter-nbextension enable nglview --py --user
+
+    # if you already installed nglview, you can `upgrade`
+    conda upgrade nglview
+    jupyter-nbextension enable nglview --py --user
+    ```
 
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
@@ -45,7 +54,7 @@ Released version
 Development version
 -------------------
 
-Requirement: `ipywidgets >= 5.1`, `notebook >= 4.2`
+Requirement: `ipywidgets >= 5.2.2`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
 
@@ -264,6 +273,7 @@ movie.make()
 API doc
 =======
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
+- [All releases versions](http://arose.github.io/nglview/release/index.html)
 - [Development version](http://arose.github.io/nglview/dev/api.html)
 
 Command line
