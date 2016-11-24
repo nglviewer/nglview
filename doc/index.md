@@ -33,19 +33,10 @@ Installation
 
 Released version
 ----------------
-**Note**: The released version only works with `ipywidgets >= 5.2.2`
-
+**Note**: The released version only works with `ipywidgets < 5.0`
 - Available on `bioconda` channel
 
-    ```bash
-    conda config --add channels conda-forge
-    conda install nglview -c bioconda
-    jupyter-nbextension enable nglview --py --user
-
-    # if you already installed nglview, you can `upgrade`
-    conda upgrade nglview
-    jupyter-nbextension enable nglview --py --user
-    ```
+    `conda install nglview -c bioconda`
 
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
@@ -54,7 +45,7 @@ Released version
 Development version
 -------------------
 
-Requirement: `ipywidgets >= 5.2.2`, `notebook >= 4.2`
+Requirement: `ipywidgets >= 5.1`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
 
