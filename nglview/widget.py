@@ -854,7 +854,6 @@ class NGLWidget(DOMWidget):
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
         elif msg_type == 'fire_callbacks':
-            print('getting fire_callbacks message from NGL')
             self._ok_for_callbacks = True
             self._fire_callbacks()
 
@@ -1100,7 +1099,6 @@ class NGLWidget(DOMWidget):
         msg['args'] = args
         msg['kwargs'] = kwargs
 
-        print('method_name', method_name)
         if self.loaded and self._ok_for_callbacks:
             self.send(msg)
             if method_name == 'loadFile':
@@ -1115,7 +1113,6 @@ class NGLWidget(DOMWidget):
 
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
-        print('_ngl_displayed_callbacks', [x._method_name for x in self._ngl_displayed_callbacks])
 
     def _get_traj_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object
