@@ -288,7 +288,15 @@ class NGLWidget(DOMWidget):
         time.sleep(0.1)
 
         if change['new']:
-            [callback(self) for callback in self._ngl_displayed_callbacks]
+            self._fire_callbacks()
+
+    def _fire_callbacks(self):
+        while self._ngl_displayed_callbacks:
+            callback = self._ngl_displayed_callbacks.pop(0)
+            callback(self)
+            if callback._method_name == 'loadFile':
+                # break to wait for signal from NGL
+                break
 
     def _refresh_render(self):
         """useful when you update coordinates for a single structure.
@@ -842,6 +850,8 @@ class NGLWidget(DOMWidget):
             self._repr_dict = self._ngl_msg.get('data')
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
+        elif msg_type == 'fire_callbacks':
+            self._fire_callbacks()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
