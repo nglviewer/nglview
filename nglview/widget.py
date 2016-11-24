@@ -82,6 +82,7 @@ class NGLWidget(DOMWidget):
     count = Int(1).tag(sync=True)
     background = Unicode('white').tag(sync=True)
     loaded = Bool(False).tag(sync=False)
+    _ok_for_callbacks = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
     n_components = Int(0).tag(sync=True)
     orientation = List().tag(sync=True)
@@ -287,6 +288,7 @@ class NGLWidget(DOMWidget):
         # trick for firefox on Linux
         time.sleep(0.1)
 
+        self._ok_for_callbacks = True
         if change['new']:
             self._fire_callbacks()
 
@@ -295,8 +297,9 @@ class NGLWidget(DOMWidget):
             callback = self._ngl_displayed_callbacks.pop(0)
             callback(self)
             if callback._method_name == 'loadFile':
-                # break to wait for signal from NGL
-                break
+               # break to wait for signal from NGL
+               # check _ngl_handle_msg (msg_type = 'fire_callbacks')
+               break
 
     def _refresh_render(self):
         """useful when you update coordinates for a single structure.
@@ -851,6 +854,8 @@ class NGLWidget(DOMWidget):
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
         elif msg_type == 'fire_callbacks':
+            print('getting fire_callbacks message from NGL')
+            self._ok_for_callbacks = True
             self._fire_callbacks()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
@@ -1095,8 +1100,12 @@ class NGLWidget(DOMWidget):
         msg['args'] = args
         msg['kwargs'] = kwargs
 
-        if self.loaded:
+        print('method_name', method_name)
+        if self.loaded and self._ok_for_callbacks:
             self.send(msg)
+            if method_name == 'loadFile':
+                self._ok_for_callbacks = False
+                # will put sub-sequent callbacks in _ngl_displayed_callbacks
         else:
             # send later
             def callback(widget, msg=msg):
@@ -1106,6 +1115,7 @@ class NGLWidget(DOMWidget):
 
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
+        print('_ngl_displayed_callbacks', [x._method_name for x in self._ngl_displayed_callbacks])
 
     def _get_traj_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object
