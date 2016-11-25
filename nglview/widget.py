@@ -104,6 +104,7 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     _hold_image = Bool(False).tag(sync=False)
+    _lock_from_loadFile = Bool(False).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
@@ -288,8 +289,16 @@ class NGLWidget(DOMWidget):
         time.sleep(0.1)
 
         if change['new']:
-            [callback(self) for callback in self._ngl_displayed_callbacks]
-
+            for callback in self._ngl_displayed_callbacks:
+                callback(self)
+                if callback._method_name == 'loadFile':
+                    self._lock_from_loadFile = True
+                    while True:
+                        time.sleep(0.1)
+                        if self._lock_from_loadFile == False:
+                            # break while True
+                            break
+            
     def _refresh_render(self):
         """useful when you update coordinates for a single structure.
 
@@ -842,6 +851,8 @@ class NGLWidget(DOMWidget):
             self._repr_dict = self._ngl_msg.get('data')
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
+        elif msg_type == 'fire_callbacks':
+            self._lock_from_loadFile = False
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
