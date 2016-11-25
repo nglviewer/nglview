@@ -82,6 +82,7 @@ class NGLWidget(DOMWidget):
     count = Int(1).tag(sync=True)
     background = Unicode('white').tag(sync=True)
     loaded = Bool(False).tag(sync=False)
+    _ok_for_callbacks = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
     n_components = Int(0).tag(sync=True)
     orientation = List().tag(sync=True)
@@ -287,8 +288,18 @@ class NGLWidget(DOMWidget):
         # trick for firefox on Linux
         time.sleep(0.1)
 
+        self._ok_for_callbacks = True
         if change['new']:
-            [callback(self) for callback in self._ngl_displayed_callbacks]
+            self._fire_callbacks()
+
+    def _fire_callbacks(self):
+        while self._ngl_displayed_callbacks:
+            callback = self._ngl_displayed_callbacks.pop(0)
+            callback(self)
+            if callback._method_name == 'loadFile':
+               # break to wait for signal from NGL
+               # check _ngl_handle_msg (msg_type = 'fire_callbacks')
+               break
 
     def _refresh_render(self):
         """useful when you update coordinates for a single structure.
@@ -842,6 +853,9 @@ class NGLWidget(DOMWidget):
             self._repr_dict = self._ngl_msg.get('data')
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
+        elif msg_type == 'fire_callbacks':
+            self._ok_for_callbacks = True
+            self._fire_callbacks()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
@@ -1085,8 +1099,11 @@ class NGLWidget(DOMWidget):
         msg['args'] = args
         msg['kwargs'] = kwargs
 
-        if self.loaded:
+        if self.loaded and self._ok_for_callbacks:
             self.send(msg)
+            if method_name == 'loadFile':
+                self._ok_for_callbacks = False
+                # will put sub-sequent callbacks in _ngl_displayed_callbacks
         else:
             # send later
             def callback(widget, msg=msg):
