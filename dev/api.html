@@ -78,7 +78,7 @@ document.addEventListener( "DOMContentLoaded", function(){
     var stage = new NGL.Stage("viewport")
     stage.setParameters({'backgroundColor': 'white'})
 
-    stage.loadFile( "rcsb://1BLJ.mmtf", { defaultRepresentation: true, asTrajectory: true}).then(function(o){
+    stage.loadFile( "https://files.rcsb.org/view/1BLJ.pdb", { defaultRepresentation: true, asTrajectory: true}).then(function(o){
     //stage.loadFile(
     //"https://raw.githubusercontent.com/hainm/notebook-nglview/master/membrane/sim.pdb",{defaultRepresentation:
     //   true, asTrajectory: true}).then(function(o){
