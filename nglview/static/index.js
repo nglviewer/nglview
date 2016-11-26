@@ -841,8 +841,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    },
 	
 	    _handle_finished_loading_file: function() {
-	        // this.send({'type': 'async_message', 'data': 'ok'});
-	        this._execute_other_messages();
+	        this.send({'type': 'async_message', 'data': 'ok'});
 	    },
 	
 	    on_msg: function(msg) {

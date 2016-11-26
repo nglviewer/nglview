@@ -105,6 +105,7 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     _hold_image = Bool(False).tag(sync=False)
+    command_queque = List().tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
@@ -117,6 +118,7 @@ class NGLWidget(DOMWidget):
         self._image_array = []
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._ngl_displayed_callbacks = []
+        self._ngl_displayed_callbacks_after_loaded = []
         _add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
         self._event = threading.Event()
@@ -304,6 +306,16 @@ class NGLWidget(DOMWidget):
         thread.daemon = True
         thread.start()
         return thread
+
+    @observe('_ngl_displayed_callbacks_after_loaded')
+    def _handle_callbacks_after_loaded(self, change):
+        callbacks = change['new']
+        def _call(event, callbacks):
+            for callback in callbacks:
+                callback(self)
+                if callback._method_name == 'loadFile':
+                    self._wait_until_finished()
+        self._run_on_another_thread(_call, self._event, callbacks)
 
     @observe('loaded')
     def on_loaded(self, change):
@@ -1116,25 +1128,14 @@ class NGLWidget(DOMWidget):
         msg['args'] = args
         msg['kwargs'] = kwargs
 
+        def callback(widget, msg=msg):
+            widget.send(msg)
+        callback._method_name = method_name
+
         if self.loaded:
-            self.send(msg)
-            # if method_name in ['loadFile']:
-            #     def run(event):
-            #         self.send(msg)
-            #         self._wait_until_finished()
-            #     thread = self._run_on_another_thread(run, self._event)
-            #     # while thread.ident:
-            #     #     print(thread.is_alive())
-            #     #     time.sleep(0.01)
-            #     # self.send(msg)
-            #     # self._wait_until_finished(0.05)
-            # else:
-            #     self.send(msg)
+            self._ngl_displayed_callbacks_after_loaded.append(callback)
         else:
             # send later
-            def callback(widget, msg=msg):
-                widget.send(msg)
-            callback._method_name = method_name
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
 
