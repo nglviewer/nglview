@@ -4,6 +4,7 @@ import time
 import base64
 import uuid
 import json
+import threading
 import numpy as np 
 from IPython.display import display
 from ipywidgets import DOMWidget, widget_image, PlaceProxy
@@ -119,6 +120,7 @@ class NGLWidget(DOMWidget):
         self._ngl_displayed_callbacks = []
         _add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
+        self._event = threading.Event()
 
         # register to get data from JS side
         self.on_msg(self._ngl_handle_msg)
@@ -288,16 +290,23 @@ class NGLWidget(DOMWidget):
         # trick for firefox on Linux
         time.sleep(0.1)
 
+        self._event.clear()
         if change['new']:
-            for callback in self._ngl_displayed_callbacks:
-                callback(self)
-                if callback._method_name == 'loadFile':
-                    self._lock_from_loadFile = True
-                    while True:
-                        time.sleep(0.1)
-                        if self._lock_from_loadFile == False:
-                            # break while True
-                            break
+            def _call(event):
+                for callback in self._ngl_displayed_callbacks:
+                    callback(self)
+                    if callback._method_name == 'loadFile':
+                        while True:
+                            # wait until 
+                            # idle to make room for waiting for 
+                            # fire_callbacks event sent from JS
+                            time.sleep(0.005)
+                            if self._event.is_set():
+                                # break while True
+                                break
+            self.thread = threading.Thread(target=_call, args=(self._event,))
+            self.thread.daemon = True
+            self.thread.start()
             
     def _refresh_render(self):
         """useful when you update coordinates for a single structure.
@@ -852,7 +861,7 @@ class NGLWidget(DOMWidget):
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
         elif msg_type == 'fire_callbacks':
-            self._lock_from_loadFile = False
+            self._event.set()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
