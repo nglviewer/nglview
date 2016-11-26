@@ -123,8 +123,6 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     _hold_image = Bool(False).tag(sync=False)
-    _ngl_callback_dict = Dict().tag(sync=False)
-    _ngl_dummy_callback_dict = Dict().tag(sync=True)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
@@ -326,24 +324,6 @@ class NGLWidget(DOMWidget):
         thread.daemon = True
         thread.start()
         return thread
-
-    @observe('_ngl_dummy_callback_dict')
-    def on_after_loaded(self, change):
-        print(change)
-        # note: should use simple dict to trigger observe
-        callback_dict = change['new']
-        if callback_dict:
-            def _call(event):
-                for key in sorted(callback_dict.keys()):
-                    # callback = self._ngl_callback_dict.pop(key)
-                    callback = self._ngl_callback_dict.get(key)
-                    callback(self)
-                    if callback._method_name == 'loadFile':
-                        self._wait_until_finished()
-            self._run_on_another_thread(_call, self._event)
-            # reset
-            # self._ngl_callback_dict = {}
-
 
     @observe('loaded')
     def on_loaded(self, change):
