@@ -150,7 +150,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
             that.stage.loadFile(file).then(function(o){
                 that.makeDefaultRepr(o);
-                that._handle_finished_loading_file();
+                that._handle_loading_file_finished();
             });
             var numDroppedFiles = that.model.get("_n_dragged_files");
             that.model.set("_n_dragged_files", numDroppedFiles + 1);
@@ -547,7 +547,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                                 component.addRepresentation('licorice');
                             }
                         }
-                        that._handle_finished_loading_file();
+                        that._handle_loading_file_finished();
                     }.bind(this));
                 }
             }
@@ -758,7 +758,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    _handle_finished_loading_file: function() {
+    _handle_loading_file_finished: function() {
         this.send({'type': 'async_message', 'data': 'ok'});
     },
 
@@ -796,11 +796,11 @@ var NGLView = widgets.DOMWidgetView.extend({
                                     });
                                 }
                                 this.stage.loadFile(blob, msg.kwargs).then(function(o){
-                                     that._handle_finished_loading_file();
+                                     that._handle_loading_file_finished();
                                 });
                             } else {
                                 this.stage.loadFile(msg.args[0].data, msg.kwargs).then(function(o){
-                                     that._handle_finished_loading_file();
+                                     that._handle_loading_file_finished();
                                 });
                             }
                         } else {
