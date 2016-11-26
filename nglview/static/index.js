@@ -232,7 +232,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	
 	            that.stage.loadFile(file).then(function(o){
 	                that.makeDefaultRepr(o);
-	                that.send({'type': 'fire_callbacks'});
+	                that._handle_finished_loading_file();
 	            });
 	            var numDroppedFiles = that.model.get("_n_dragged_files");
 	            that.model.set("_n_dragged_files", numDroppedFiles + 1);
@@ -629,7 +629,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                                component.addRepresentation('licorice');
 	                            }
 	                        }
-	                        that.send({'type': 'fire_callbacks'});
+	                        that._handle_finished_loading_file();
 	                    }.bind(this));
 	                }
 	            }
@@ -840,6 +840,11 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        }
 	    },
 	
+	    _handle_finished_loading_file: function() {
+	        // this.send({'type': 'async_message', 'data': 'ok'});
+	        this._execute_other_messages();
+	    },
+	
 	    on_msg: function(msg) {
 	        // TODO: re-organize
 	        if (msg.type == 'call_method') {
@@ -874,11 +879,11 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                                    });
 	                                }
 	                                this.stage.loadFile(blob, msg.kwargs).then(function(o){
-	                                     that.send({'type': 'fire_callbacks'});
+	                                     that._handle_finished_loading_file();
 	                                });
 	                            } else {
 	                                this.stage.loadFile(msg.args[0].data, msg.kwargs).then(function(o){
-	                                     that.send({'type': 'fire_callbacks'});
+	                                     that._handle_finished_loading_file();
 	                                });
 	                            }
 	                        } else {

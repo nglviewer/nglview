@@ -105,7 +105,6 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     _hold_image = Bool(False).tag(sync=False)
-    _lock_from_loadFile = Bool(False).tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
@@ -121,17 +120,17 @@ class NGLWidget(DOMWidget):
         _add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
         self._event = threading.Event()
-
-        # register to get data from JS side
-        self.on_msg(self._ngl_handle_msg)
-
+        self._handle_msg_thread = threading.Thread(target=self.on_msg,
+                args=(self._ngl_handle_msg,))
+        # # register to get data from JS side
+        self._handle_msg_thread.daemon = True
+        self._handle_msg_thread.start()
         self._trajlist = []
-
         self._ngl_component_ids = []
         self._init_structures = []
+
         if parameters:
             self.parameters = parameters
-
         if isinstance(structure, Trajectory):
             name = py_utils.get_name(structure, kwargs)
             self.add_trajectory(structure, name=name)
@@ -285,28 +284,39 @@ class NGLWidget(DOMWidget):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
                          'n_frames'))
 
+    def _wait_until_finished(self, timeout=0.0001, lock_main=False):
+        # NGL need to send 'finished' signal to
+        # backend
+        self._event.clear()
+        while True:
+            # idle to make room for waiting for 
+            # "finished" event sent from JS
+            time.sleep(timeout)
+            if self._event.is_set():
+                # if event is set from another thread
+                # break while True
+                break
+
+    def _run_on_another_thread(self, func, *args):
+        # use `event` to singal
+        # func(*args)
+        thread = threading.Thread(target=func, args=args,)
+        thread.daemon = True
+        thread.start()
+        return thread
+
     @observe('loaded')
     def on_loaded(self, change):
         # trick for firefox on Linux
         time.sleep(0.1)
 
-        self._event.clear()
         if change['new']:
             def _call(event):
                 for callback in self._ngl_displayed_callbacks:
                     callback(self)
                     if callback._method_name == 'loadFile':
-                        while True:
-                            # wait until 
-                            # idle to make room for waiting for 
-                            # fire_callbacks event sent from JS
-                            time.sleep(0.005)
-                            if self._event.is_set():
-                                # break while True
-                                break
-            self.thread = threading.Thread(target=_call, args=(self._event,))
-            self.thread.daemon = True
-            self.thread.start()
+                        self._wait_until_finished()
+            self._run_on_another_thread(_call, self._event)
             
     def _refresh_render(self):
         """useful when you update coordinates for a single structure.
@@ -860,8 +870,9 @@ class NGLWidget(DOMWidget):
             self._repr_dict = self._ngl_msg.get('data')
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
-        elif msg_type == 'fire_callbacks':
-            self._event.set()
+        elif msg_type == 'async_message':
+            if msg.get('data') == 'ok':
+                self._event.set()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
@@ -1107,13 +1118,23 @@ class NGLWidget(DOMWidget):
 
         if self.loaded:
             self.send(msg)
+            # if method_name in ['loadFile']:
+            #     def run(event):
+            #         self.send(msg)
+            #         self._wait_until_finished()
+            #     thread = self._run_on_another_thread(run, self._event)
+            #     # while thread.ident:
+            #     #     print(thread.is_alive())
+            #     #     time.sleep(0.01)
+            #     # self.send(msg)
+            #     # self._wait_until_finished(0.05)
+            # else:
+            #     self.send(msg)
         else:
             # send later
             def callback(widget, msg=msg):
                 widget.send(msg)
-
             callback._method_name = method_name
-
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks.append(callback)
 
