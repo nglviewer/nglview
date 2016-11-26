@@ -113,10 +113,10 @@ Try to use port = {port}
 \033[32m NOTE: you might want to replace {hostname} by full hostname with domain name \033[0m
 
 \033[32m Then open your web browser, copy and paste: \033[0m
-    http://localhost:{port}
+    http://localhost:{port}/notebooks/{notebook_name}
 """
 
-def get_remote_port(port=None):
+def get_remote_port(port=None, notebook_path=''):
     import os, socket
     from nglview.scripts.app import NGLViewApp
     port = NGLViewApp().get_port(port=port)
@@ -126,7 +126,10 @@ def get_remote_port(port=None):
     client_cm = "ssh -NL localhost:{port}:localhost:{port} {username}@{hostname}".format(username=username,
             hostname=hostname,
             port=port)
-    print(remote_msg.format(client_cm=client_cm, port=port, hostname=hostname))
+    base_notebook_name = os.path.basename(notebook_path)
+    print(remote_msg.format(client_cm=client_cm, port=port,
+                            hostname=hostname,
+                            notebook_name=base_notebook_name))
     return port
 
 def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
@@ -213,11 +216,14 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
     if not args.remote:
         cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
                                                                    notebook_name=notebook_name,
-                                                               browser=browser)
+                                                                   browser=browser)
     else:
-        port = get_remote_port(args.port)
-        cm = '{jupyter} notebook --no-browser --port {port}'.format(jupyter=args.jexe,
-                                                                    port=port)
+        dirname = os.path.dirname(notebook_name)
+        port = get_remote_port(args.port, notebook_name)
+        cm = '{jupyter} notebook --no-browser --port {port} ' \
+              '--notebook-dir {dirname}'.format(jupyter=args.jexe,
+                                                port=port,
+                                                dirname=dirname)
         print('NOTE: make sure to open {0} in your local machine\n'.format(notebook_name))
 
     if args.disable_autorun or command is None:

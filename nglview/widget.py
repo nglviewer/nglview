@@ -4,6 +4,7 @@ import time
 import base64
 import uuid
 import json
+import threading
 import numpy as np 
 from IPython.display import display
 from ipywidgets import DOMWidget, widget_image, PlaceProxy
@@ -73,6 +74,35 @@ def _add_repr_method_shortcut(self, other):
             fn = '_'.join((root_fn, rep[0]))
             setattr(self, fn, MethodType(func, other))
 
+class RemoteCallThread(threading.Thread):
+    def __init__(self, view, timeout=0.1):
+        self.q = []
+        self.view = view
+        self.timeout = timeout
+        super(RemoteCallThread, self).__init__()
+        self.daemon = True
+
+    def run(self):
+        # this `run` method will be called if `start` the thread
+        # How does this work?
+        # First, try to pop all callbacks and execute them, if loadFile
+        # then wait until getting 'ok' signal from NGL. Calling those callbacks
+        # will block execution from other threads. This is why we let this thread
+        # run forever in background. This thread is usually sleeping all the time
+        # and let other threads do the work. It "wake up" only if its 'q' is added more
+        # callbacks
+
+        # This class is needed if use call 
+        # add_trajectory, clear, add_representation, ... in the same notebook cell
+        while True:
+            try:
+                callback = self.q.pop(0)
+                callback(self.view)
+                if callback._method_name in ['loadFile']:
+                    self.view._wait_until_finished()
+            except IndexError:
+                time.sleep(self.timeout)
+
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js").tag(sync=True)
@@ -115,20 +145,24 @@ class NGLWidget(DOMWidget):
         self._widget_image.width = 900.
         self._image_array = []
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
-        self._ngl_displayed_callbacks = []
+        self._event = threading.Event()
+        self._ngl_displayed_callbacks_before_loaded = []
+        self._ngl_displayed_callbacks_after_loaded = []
         _add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
-
-        # register to get data from JS side
-        self.on_msg(self._ngl_handle_msg)
-
+        self._handle_msg_thread = threading.Thread(target=self.on_msg,
+                args=(self._ngl_handle_msg,))
+        # # register to get data from JS side
+        self._handle_msg_thread.daemon = True
+        self._handle_msg_thread.start()
+        self._remote_call_thread = RemoteCallThread(self)
+        self._remote_call_thread.start()
         self._trajlist = []
-
         self._ngl_component_ids = []
         self._init_structures = []
+
         if parameters:
             self.parameters = parameters
-
         if isinstance(structure, Trajectory):
             name = py_utils.get_name(structure, kwargs)
             self.add_trajectory(structure, name=name)
@@ -282,14 +316,43 @@ class NGLWidget(DOMWidget):
          self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
                          'n_frames'))
 
+    def _wait_until_finished(self, timeout=0.0001):
+        # NGL need to send 'finished' signal to
+        # backend
+        self._event.clear()
+        while True:
+            # idle to make room for waiting for 
+            # "finished" event sent from JS
+            time.sleep(timeout)
+            if self._event.is_set():
+                # if event is set from another thread
+                # break while True
+                break
+
+    def _run_on_another_thread(self, func, *args):
+        # use `event` to singal
+        # func(*args)
+        thread = threading.Thread(target=func, args=args,)
+        thread.daemon = True
+        thread.start()
+        return thread
+
     @observe('loaded')
     def on_loaded(self, change):
         # trick for firefox on Linux
         time.sleep(0.1)
 
         if change['new']:
-            [callback(self) for callback in self._ngl_displayed_callbacks]
+            self._fire_callbacks(self._ngl_displayed_callbacks_before_loaded)
 
+    def _fire_callbacks(self, callbacks):
+        def _call(event):
+            for callback in callbacks:
+                callback(self)
+                if callback._method_name == 'loadFile':
+                    self._wait_until_finished()
+        self._run_on_another_thread(_call, self._event)
+            
     def _refresh_render(self):
         """useful when you update coordinates for a single structure.
 
@@ -307,9 +370,7 @@ class NGLWidget(DOMWidget):
 
         Note: unstable feature
         """
-        self.loaded = False
-        # trigger reload callbacks
-        self.loaded = True
+        self._fire_callbacks(self._ngl_displayed_callbacks_after_loaded)
 
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
@@ -661,8 +722,9 @@ class NGLWidget(DOMWidget):
         Example
         -------
         >>> import nglview as nv
-        >>> import pytraj as pt
-        >>> t = (pt.datafiles.load_dpdp()[:].superpose('@CA'))
+        >>> 
+        >>> t = (pt.datafiles.load_dpdp()[:].supej = pt.load(membrane_pdb)
+                trajrpose('@CA'))
         >>> w = nv.show_pytraj(t)
         >>> w.add_representation('cartoon', selection='protein', color='blue')
         >>> w.add_representation('licorice', selection=[3, 8, 9, 11], color='red')
@@ -842,6 +904,9 @@ class NGLWidget(DOMWidget):
             self._repr_dict = self._ngl_msg.get('data')
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
+        elif msg_type == 'async_message':
+            if msg.get('data') == 'ok':
+                self._event.set()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call('requestReprParameters',
@@ -1085,17 +1150,18 @@ class NGLWidget(DOMWidget):
         msg['args'] = args
         msg['kwargs'] = kwargs
 
+        def callback(widget, msg=msg):
+            widget.send(msg)
+        callback._method_name = method_name
+
         if self.loaded:
-            self.send(msg)
+            self._remote_call_thread.q.append(callback)
         else:
             # send later
-            def callback(widget, msg=msg):
-                widget.send(msg)
-
-            callback._method_name = method_name
-
             # all callbacks will be called right after widget is loaded
-            self._ngl_displayed_callbacks.append(callback)
+            self._ngl_displayed_callbacks_before_loaded.append(callback)
+
+        self._ngl_displayed_callbacks_after_loaded.append(callback)
 
     def _get_traj_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object

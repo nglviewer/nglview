@@ -148,8 +148,10 @@ var NGLView = widgets.DOMWidgetView.extend({
             e.preventDefault();
             var file = e.dataTransfer.files[0];
 
-            that.stage.loadFile(file).then(that.makeDefaultRepr);
-
+            that.stage.loadFile(file).then(function(o){
+                that.makeDefaultRepr(o);
+                that._handle_loading_file_finished();
+            });
             var numDroppedFiles = that.model.get("_n_dragged_files");
             that.model.set("_n_dragged_files", numDroppedFiles + 1);
             that.touch();
@@ -523,6 +525,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                     var params = structure.params || {};
                     params.ext = structure.ext;
                     params.defaultRepresentation = false;
+                    var that = this;
                     this.stage.loadFile(blob, params).then(function(component) {
                         component.centerView();
                         // this.structureComponent = component;
@@ -544,6 +547,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                                 component.addRepresentation('licorice');
                             }
                         }
+                        that._handle_loading_file_finished();
                     }.bind(this));
                 }
             }
@@ -754,6 +758,10 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
+    _handle_loading_file_finished: function() {
+        this.send({'type': 'async_message', 'data': 'ok'});
+    },
+
     on_msg: function(msg) {
         // TODO: re-organize
         if (msg.type == 'call_method') {
@@ -774,6 +782,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                         if (msg.methodName == 'loadFile') {
                             // args = [{'type': ..., 'data': ...}]
                             var args0 = msg.args[0];
+                            var that = this;
                             if (args0.type == 'blob') {
                                 var blob;
                                 if (args0.binary) {
@@ -786,9 +795,13 @@ var NGLView = widgets.DOMWidgetView.extend({
                                         type: "text/plain"
                                     });
                                 }
-                                this.stage.loadFile(blob, msg.kwargs);
+                                this.stage.loadFile(blob, msg.kwargs).then(function(o){
+                                     that._handle_loading_file_finished();
+                                });
                             } else {
-                                this.stage.loadFile(msg.args[0].data, msg.kwargs);
+                                this.stage.loadFile(msg.args[0].data, msg.kwargs).then(function(o){
+                                     that._handle_loading_file_finished();
+                                });
                             }
                         } else {
                             stage_func.apply(stage, new_args);
