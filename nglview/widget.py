@@ -146,7 +146,8 @@ class NGLWidget(DOMWidget):
         self._image_array = []
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._event = threading.Event()
-        self._ngl_displayed_callbacks = []
+        self._ngl_displayed_callbacks_before_loaded = []
+        self._ngl_displayed_callbacks_after_loaded = []
         _add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
         self._handle_msg_thread = threading.Thread(target=self.on_msg,
@@ -342,12 +343,15 @@ class NGLWidget(DOMWidget):
         time.sleep(0.1)
 
         if change['new']:
-            def _call(event):
-                for callback in self._ngl_displayed_callbacks:
-                    callback(self)
-                    if callback._method_name == 'loadFile':
-                        self._wait_until_finished()
-            self._run_on_another_thread(_call, self._event)
+            self._fire_callbacks(self._ngl_displayed_callbacks_before_loaded)
+
+    def _fire_callbacks(self, callbacks):
+        def _call(event):
+            for callback in callbacks:
+                callback(self)
+                if callback._method_name == 'loadFile':
+                    self._wait_until_finished()
+        self._run_on_another_thread(_call, self._event)
             
     def _refresh_render(self):
         """useful when you update coordinates for a single structure.
@@ -366,9 +370,7 @@ class NGLWidget(DOMWidget):
 
         Note: unstable feature
         """
-        self.loaded = False
-        # trigger reload callbacks
-        self.loaded = True
+        self._fire_callbacks(self._ngl_displayed_callbacks_after_loaded)
 
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
@@ -1157,7 +1159,9 @@ class NGLWidget(DOMWidget):
         else:
             # send later
             # all callbacks will be called right after widget is loaded
-            self._ngl_displayed_callbacks.append(callback)
+            self._ngl_displayed_callbacks_before_loaded.append(callback)
+
+        self._ngl_displayed_callbacks_after_loaded.append(callback)
 
     def _get_traj_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object
