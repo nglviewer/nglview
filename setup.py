@@ -144,7 +144,8 @@ setup_args = {
          "nglview.datafiles": ["*"],
          "nglview.scripts": ["*"],
          "nglview.theme": ["*"],
-         "nglview.static": ["*"]
+         "nglview.static": ["*"],
+         "nglview.staticlab": ["*"]
      },
     'entry_points': {'console_scripts':
           ['nglview = nglview.scripts.nglview:main',]
@@ -154,6 +155,10 @@ setup_args = {
          'nglview/static/extension.js',
          'nglview/static/index.js',
          'nglview/static/index.js.map',
+        ]),
+        ('share/jupyter/labextensions/nglview', [
+         'nglview/staticlab/nglview.bundle.js',
+         'nglview/staticlab/nglview.bundle.js.manifest',
         ]),
     ],
 #     'install_requires': [
@@ -172,8 +177,10 @@ setup_args = {
         "ase": ["ase"],
         "htmd": ["htmd"],
     },
-    'packages': set(find_packages() + ['nglview',
+    'packages': set(find_packages() + 
+                ['nglview',
                  'nglview.static',
+                 'nglview.staticlab',
                  'nglview.theme',
                  'nglview.datafiles',
                  'nglview.utils',
