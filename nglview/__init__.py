@@ -22,6 +22,12 @@ def _jupyter_nbextension_paths():
         'require': 'nglview/extension'
     }]
 
+def _jupyter_labextension_paths():
+    return [{
+        'name': 'nglview',
+        'src': 'staticlab',
+    }]
+
 enable_nglview_js()
 
 # TODO: do not use import *
