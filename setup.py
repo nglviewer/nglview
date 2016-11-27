@@ -161,13 +161,11 @@ setup_args = {
          'nglview/staticlab/nglview.bundle.js.manifest',
         ]),
     ],
-#     'install_requires': [
-#         'ipywidgets>=5.1.5',
-#     ],
     'tests_require': [
         'pytest'
     ],
     'extras_require': {
+        "ipywidgets": ["ipywidgets"],
         "simpletraj": ["simpletraj"],
         "mdtraj": ["mdtraj"],
         "pytraj": ["pytraj"],
