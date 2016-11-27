@@ -1367,8 +1367,8 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 /***/ function(module, exports) {
 
 	module.exports = {
-		"name": "nglview-js",
-		"version": "0.5.2",
+		"name": "nglview",
+		"version": "0.5.3",
 		"description": "nglview",
 		"author": "Alexander S. Rose",
 		"license": "MIT",
@@ -1390,10 +1390,12 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 		"devDependencies": {
 			"json-loader": "^0.5.4",
 			"webpack": "^1.12.14",
+			"@jupyterlab/extension-builder": "^0.8.1",
 			"ngl": "0.10.0-dev.3"
 		},
 		"dependencies": {
-			"jupyter-js-widgets": "^1.1.1",
+			"jupyter-js-widgets": "^2.0.6",
+			"@jupyterlab/nbwidgets": "^0.6.0",
 			"underscore": "^1.8.3"
 		}
 	};
