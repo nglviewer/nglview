@@ -23,7 +23,8 @@
     "json-loader": "^0.5.4",
     "webpack": "^1.12.14",
     "@jupyterlab/extension-builder": "^0.8.1",
-    "ngl": "0.10.0-dev.3"
+    "ngl": "0.10.0-dev.3",
+    "jquery": "^1.12.1"
 
   },
   "dependencies": {
