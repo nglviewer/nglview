@@ -1,9 +1,9 @@
-nglview-js: package install
----------------------------
+nglview: package install
+------------------------
 
 **Prerequisites**
 - [node](http://nodejs.org/)
 
 ```bash
-npm install --save nglview-js
+npm install --save nglview
 ```
