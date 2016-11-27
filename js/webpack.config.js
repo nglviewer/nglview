@@ -6,6 +6,20 @@ var loaders = [
     { test: /\.json$/, loader: 'json-loader' },
 ];
 
+var buildExtension = require('@jupyterlab/extension-builder/lib/builder').buildExtension;
+
+buildExtension({
+  name: 'nglview',
+  entry: './src/labplugin',
+  outputDir: '../nglview/staticlab',
+  useDefaultLoaders: false,
+  config: {
+    module: {
+      loaders: loaders
+    }
+  }
+});
+
 
 module.exports = [
     {// Notebook extension
