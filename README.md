@@ -89,6 +89,8 @@ Next, install `nglview`
 sh devtools/install-dev.sh
 ```
 
+[How does `nglview` look like in jupyterlab?](examples/jupyterlab.md)
+
 Example
 =======
 
