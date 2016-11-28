@@ -1,0 +1,371 @@
+{
+	"entry": "nglview@0.5.3/src/labplugin.js",
+	"hash": "4f30b88f497047ba5a424eef3b7612fa",
+	"id": 0,
+	"name": "nglview",
+	"files": [
+		"nglview.bundle.js"
+	],
+	"modules": {
+		"nglview@0.5.3/src/labplugin.js": [
+			"nglview@0.5.3/src/index.js",
+			"@jupyterlab/nbwidgets@^0.6.0/lib/index.js"
+		],
+		"nglview@0.5.3/src/index.js": [
+			"nglview@0.5.3/src/widget_ngl.js",
+			"nglview@0.5.3/package.json"
+		],
+		"nglview@0.5.3/src/widget_ngl.js": [
+			"jupyter-js-widgets@^2.0.6/lib/index.js",
+			"ngl@0.10.0-dev.3/dist/ngl.js",
+			"jquery@^2.1.4/dist/jquery.js",
+			"jquery-ui@^1.12.1/ui/widgets/draggable.js",
+			"jquery-ui@^1.12.1/ui/widgets/slider.js",
+			"jquery-ui@^1.12.1/ui/widgets/dialog.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/index.js": [
+			"jupyter-js-widgets@2.0.6/lib/manager-base.js",
+			"jupyter-js-widgets@2.0.6/lib/utils.js",
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_layout.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_link.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_bool.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_button.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_box.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_image.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_color.js",
+			"jupyter-js-widgets@2.0.6/lib/services-shim.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_int.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_float.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_controller.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_selection.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_string.js",
+			"jupyter-js-widgets@2.0.6/package.json"
+		],
+		"jupyter-js-widgets@2.0.6/lib/manager-base.js": [
+			"underscore@^1.8.3/underscore.js",
+			"jupyter-js-widgets@2.0.6/lib/utils.js",
+			"semver@^5.1.0/semver.js",
+			"jupyter-js-widgets@2.0.6/package.json"
+		],
+		"underscore@1.8.3/underscore.js": [],
+		"jupyter-js-widgets@2.0.6/lib/utils.js": [
+			"jupyter-js-widgets@2.0.6/lib/index.js",
+			"jupyter-js-widgets@2.0.6/lib/index.js"
+		],
+		"semver@5.3.0/semver.js": [],
+		"process@0.11.9/browser.js": [],
+		"jupyter-js-widgets@2.0.6/package.json": [],
+		"jupyter-js-widgets@2.0.6/lib/widget.js": [
+			"backbone@1.2.0/backbone.js",
+			"underscore@^1.8.3/underscore.js",
+			"jupyter-js-widgets@2.0.6/lib/utils.js",
+			"jquery@^3.1.1/dist/jquery.js",
+			"jupyter-js-widgets@2.0.6/lib/nativeview.js",
+			"phosphor@^0.7.0/lib/ui/widget.js"
+		],
+		"backbone@1.2.0/backbone.js": [
+			"underscore@>=1.7.0/underscore.js",
+			"jquery@2.2.4/dist/jquery.js"
+		],
+		"jquery@2.2.4/dist/jquery.js": [],
+		"jquery@3.1.1/dist/jquery.js": [],
+		"jupyter-js-widgets@2.0.6/lib/nativeview.js": [
+			"backbone@1.2.0/backbone.js"
+		],
+		"phosphor@0.7.0/lib/ui/widget.js": [
+			"phosphor@0.7.0/lib/algorithm/iteration.js",
+			"phosphor@0.7.0/lib/core/messaging.js",
+			"phosphor@0.7.0/lib/core/properties.js",
+			"phosphor@0.7.0/lib/core/signaling.js",
+			"phosphor@0.7.0/lib/ui/title.js"
+		],
+		"phosphor@0.7.0/lib/algorithm/iteration.js": [],
+		"phosphor@0.7.0/lib/core/messaging.js": [
+			"phosphor@0.7.0/lib/algorithm/iteration.js",
+			"phosphor@0.7.0/lib/collections/queue.js"
+		],
+		"timers-browserify@1.4.2/main.js": [
+			"process@~0.11.0/browser.js"
+		],
+		"phosphor@0.7.0/lib/collections/queue.js": [
+			"phosphor@0.7.0/lib/algorithm/iteration.js"
+		],
+		"phosphor@0.7.0/lib/core/properties.js": [],
+		"phosphor@0.7.0/lib/core/signaling.js": [],
+		"phosphor@0.7.0/lib/ui/title.js": [
+			"phosphor@0.7.0/lib/core/signaling.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_layout.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_link.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_bool.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_button.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_box.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"jupyter-js-widgets@2.0.6/lib/utils.js",
+			"phosphor@^0.7.0/lib/ui/panel.js",
+			"phosphor@^0.7.0/lib/ui/widget.js",
+			"phosphor@^0.7.0/lib/algorithm/searching.js",
+			"underscore@^1.8.3/underscore.js",
+			"jquery@^3.1.1/dist/jquery.js"
+		],
+		"phosphor@0.7.0/lib/ui/panel.js": [
+			"phosphor@0.7.0/lib/algorithm/iteration.js",
+			"phosphor@0.7.0/lib/algorithm/mutation.js",
+			"phosphor@0.7.0/lib/algorithm/searching.js",
+			"phosphor@0.7.0/lib/collections/vector.js",
+			"phosphor@0.7.0/lib/core/messaging.js",
+			"phosphor@0.7.0/lib/ui/widget.js"
+		],
+		"phosphor@0.7.0/lib/algorithm/mutation.js": [
+			"phosphor@0.7.0/lib/algorithm/sequence.js"
+		],
+		"phosphor@0.7.0/lib/algorithm/sequence.js": [
+			"phosphor@0.7.0/lib/algorithm/iteration.js"
+		],
+		"phosphor@0.7.0/lib/algorithm/searching.js": [
+			"phosphor@0.7.0/lib/algorithm/iteration.js",
+			"phosphor@0.7.0/lib/algorithm/sequence.js"
+		],
+		"phosphor@0.7.0/lib/collections/vector.js": [
+			"phosphor@0.7.0/lib/algorithm/iteration.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_image.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_color.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/services-shim.js": [
+			"jupyter-js-widgets@2.0.6/lib/utils.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_int.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js",
+			"jquery@^3.1.1/dist/jquery.js",
+			"jquery-ui@^1.12.1/ui/widgets/slider.js",
+			"d3-format@^0.5.1/build/d3-format.js"
+		],
+		"jquery-ui@1.12.1/ui/widgets/slider.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/widgets/mouse.js",
+			"jquery-ui@1.12.1/ui/keycode.js",
+			"jquery-ui@1.12.1/ui/version.js",
+			"jquery-ui@1.12.1/ui/widget.js"
+		],
+		"jquery-ui@1.12.1/ui/widgets/mouse.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/ie.js",
+			"jquery-ui@1.12.1/ui/version.js",
+			"jquery-ui@1.12.1/ui/widget.js"
+		],
+		"jquery-ui@1.12.1/ui/ie.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/version.js": [
+			"jquery@2.2.4/dist/jquery.js"
+		],
+		"jquery-ui@1.12.1/ui/widget.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/keycode.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"d3-format@0.5.1/build/d3-format.js": [],
+		"jupyter-js-widgets@2.0.6/lib/widget_float.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_int.js",
+			"d3-format@^0.5.1/build/d3-format.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_controller.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js",
+			"jupyter-js-widgets@2.0.6/lib/utils.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_selection.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js",
+			"jupyter-js-widgets@2.0.6/lib/utils.js",
+			"jquery@^3.1.1/dist/jquery.js"
+		],
+		"jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"jupyter-js-widgets@2.0.6/lib/widget_box.js",
+			"phosphor@^0.7.0/lib/ui/tabbar.js",
+			"phosphor@^0.7.0/lib/ui/title.js",
+			"phosphor@^0.7.0/lib/ui/widget.js",
+			"underscore@^1.8.3/underscore.js",
+			"jupyter-js-widgets@2.0.6/lib/utils.js",
+			"jquery@^3.1.1/dist/jquery.js"
+		],
+		"phosphor@0.7.0/lib/ui/tabbar.js": [
+			"phosphor@0.7.0/lib/algorithm/iteration.js",
+			"phosphor@0.7.0/lib/algorithm/mutation.js",
+			"phosphor@0.7.0/lib/algorithm/searching.js",
+			"phosphor@0.7.0/lib/collections/vector.js",
+			"phosphor@0.7.0/lib/core/messaging.js",
+			"phosphor@0.7.0/lib/core/signaling.js",
+			"phosphor@0.7.0/lib/dom/cursor.js",
+			"phosphor@0.7.0/lib/dom/query.js",
+			"phosphor@0.7.0/lib/ui/title.js",
+			"phosphor@0.7.0/lib/ui/vdom.js",
+			"phosphor@0.7.0/lib/ui/widget.js"
+		],
+		"phosphor@0.7.0/lib/dom/cursor.js": [
+			"phosphor@0.7.0/lib/core/disposable.js"
+		],
+		"phosphor@0.7.0/lib/core/disposable.js": [
+			"phosphor@0.7.0/lib/algorithm/iteration.js"
+		],
+		"phosphor@0.7.0/lib/dom/query.js": [],
+		"phosphor@0.7.0/lib/ui/vdom.js": [],
+		"jupyter-js-widgets@2.0.6/lib/widget_string.js": [
+			"jupyter-js-widgets@2.0.6/lib/widget.js",
+			"underscore@^1.8.3/underscore.js"
+		],
+		"ngl@0.10.0-dev.3/dist/ngl.js": [],
+		"jquery-ui@1.12.1/ui/widgets/draggable.js": [
+			"jquery-ui@1.12.1/ui/widgets/mouse.js",
+			"jquery-ui@1.12.1/ui/data.js",
+			"jquery-ui@1.12.1/ui/plugin.js",
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/safe-blur.js",
+			"jquery-ui@1.12.1/ui/scroll-parent.js",
+			"jquery-ui@1.12.1/ui/version.js",
+			"jquery-ui@1.12.1/ui/widget.js",
+			"jquery-ui@1.12.1/ui/safe-active-element.js"
+		],
+		"jquery-ui@1.12.1/ui/data.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/plugin.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/safe-blur.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/scroll-parent.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/safe-active-element.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/widgets/dialog.js": [
+			"jquery-ui@1.12.1/ui/widgets/button.js",
+			"jquery-ui@1.12.1/ui/widgets/draggable.js",
+			"jquery-ui@1.12.1/ui/widgets/mouse.js",
+			"jquery-ui@1.12.1/ui/widgets/resizable.js",
+			"jquery-ui@1.12.1/ui/focusable.js",
+			"jquery-ui@1.12.1/ui/keycode.js",
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/safe-active-element.js",
+			"jquery-ui@1.12.1/ui/safe-blur.js",
+			"jquery-ui@1.12.1/ui/tabbable.js",
+			"jquery-ui@1.12.1/ui/unique-id.js",
+			"jquery-ui@1.12.1/ui/version.js",
+			"jquery-ui@1.12.1/ui/widget.js",
+			"jquery-ui@1.12.1/ui/position.js"
+		],
+		"jquery-ui@1.12.1/ui/widgets/button.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/widgets/controlgroup.js",
+			"jquery-ui@1.12.1/ui/widgets/checkboxradio.js",
+			"jquery-ui@1.12.1/ui/keycode.js",
+			"jquery-ui@1.12.1/ui/widget.js"
+		],
+		"jquery-ui@1.12.1/ui/widgets/controlgroup.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/widget.js"
+		],
+		"jquery-ui@1.12.1/ui/widgets/checkboxradio.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/escape-selector.js",
+			"jquery-ui@1.12.1/ui/form-reset-mixin.js",
+			"jquery-ui@1.12.1/ui/labels.js",
+			"jquery-ui@1.12.1/ui/widget.js"
+		],
+		"jquery-ui@1.12.1/ui/escape-selector.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/form-reset-mixin.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/form.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/form.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/labels.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js",
+			"jquery-ui@1.12.1/ui/escape-selector.js"
+		],
+		"jquery-ui@1.12.1/ui/widgets/resizable.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/widgets/mouse.js",
+			"jquery-ui@1.12.1/ui/disable-selection.js",
+			"jquery-ui@1.12.1/ui/plugin.js",
+			"jquery-ui@1.12.1/ui/version.js",
+			"jquery-ui@1.12.1/ui/widget.js"
+		],
+		"jquery-ui@1.12.1/ui/disable-selection.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/focusable.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/tabbable.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js",
+			"jquery-ui@1.12.1/ui/focusable.js"
+		],
+		"jquery-ui@1.12.1/ui/unique-id.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"jquery-ui@1.12.1/ui/position.js": [
+			"jquery@2.2.4/dist/jquery.js",
+			"jquery-ui@1.12.1/ui/version.js"
+		],
+		"nglview@0.5.3/package.json": [],
+		"@jupyterlab/nbwidgets@0.6.0/lib/index.js": [
+			"jupyter-js-widgets@^2.0.6/lib/index.js",
+			"phosphor@^0.7.0/lib/ui/panel.js",
+			"phosphor@^0.7.0/lib/core/token.js",
+			"phosphor@^0.7.0/lib/ui/widget.js",
+			"@jupyterlab/nbwidgets@0.6.0/lib/semvercache.js"
+		],
+		"phosphor@0.7.0/lib/core/token.js": [],
+		"@jupyterlab/nbwidgets@0.6.0/lib/semvercache.js": [
+			"semver@5.3.0/semver.js"
+		]
+	}
+}
