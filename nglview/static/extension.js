@@ -53,7 +53,7 @@ define(function() { return /******/ (function(modules) { // webpackBootstrap
 	    window.require.config({
 	        map: {
 	            "*" : {
-	                "nglview-js": "nbextensions/nglview/index",
+	                "nglview": "nbextensions/nglview/index",
 	                "jupyter-js-widgets": "nbextensions/jupyter-js-widgets/extension"
 	            }
 	        }

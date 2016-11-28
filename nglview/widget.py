@@ -105,7 +105,7 @@ class RemoteCallThread(threading.Thread):
 
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
-    _view_module = Unicode("nglview-js").tag(sync=True)
+    _view_module = Unicode("nglview").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
     selector = Unicode().tag(sync=True)
     frame = Int().tag(sync=True)

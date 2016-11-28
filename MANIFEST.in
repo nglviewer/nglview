@@ -1,6 +1,7 @@
 include nglview/datafiles/*
 include nglview/js/*
-include nglview/static/*
+recursive-include nglview/static *.*
+recursive-include nglview/staticlab *.*
 include nglview/theme/*
 include LICENSE README.md DEVELOPMENT.md CHANGELOG.md
 include setup.py
