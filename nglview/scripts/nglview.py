@@ -213,12 +213,12 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
             create_new_nb = True
     
     
+    dirname = os.path.dirname(os.path.abspath(notebook_name))
     if not args.remote:
         cm = '{jupyter} notebook {notebook_name} {browser}'.format(jupyter=args.jexe,
                                                                    notebook_name=notebook_name,
                                                                    browser=browser)
     else:
-        dirname = os.path.dirname(notebook_name)
         port = get_remote_port(args.port, notebook_name)
         cm = '{jupyter} notebook --no-browser --port {port} ' \
               '--notebook-dir {dirname}'.format(jupyter=args.jexe,
