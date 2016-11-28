@@ -33,7 +33,8 @@ Installation
 
 Released version
 ----------------
-**Note**: The released version only works with `ipywidgets >= 5.2.2`
+**Note**: The released version only works with `ipywidgets >= 5.2.2`. This version will not work
+with JupyterLab.
 
 - Available on `bioconda` channel
 
@@ -58,6 +59,8 @@ Requirement: `ipywidgets >= 5.2.2`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
 
+## notebook user
+
 ```bash
     git clone https://github.com/arose/nglview
     cd nglview
@@ -72,6 +75,18 @@ The development version can be installed directly from github:
     # jupyter nbextension enable --py --user nglview
     
     # tested with ipywidgets 5.2.2, notebook 4.2.1
+```
+
+## jupyterlab user
+
+**Note**: jupyterlab is alpha version, so the instruction below is for your curiosity.
+Make sure to install development versions of `ipywidgets`, `jupyterlab`. Please see their corresponding
+websites for further information.
+
+Next, install `nglview`
+
+```bash
+sh devtools/install-dev.sh
 ```
 
 Example
