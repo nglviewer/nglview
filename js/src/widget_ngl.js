@@ -1,9 +1,10 @@
 var widgets = require("jupyter-js-widgets");
 var NGL = require('ngl');
-// require('jquery');
+var $ = require('jquery');
+require('jquery-ui/ui/widgets/draggable');
+require('jquery-ui/ui/widgets/slider');
+require('jquery-ui/ui/widgets/dialog');
 // require('jquery-ui');
-// var $ = require('jquery-ui');
-// var $ = require(['jquery', 'jquery-ui']);
 
 var NGLView = widgets.DOMWidgetView.extend({
 
@@ -280,13 +281,13 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
     },
 
-    setDraggable: function(params) {
-        if (params) {
-            this.$container.draggable(params);
-        } else {
-            this.$container.draggable();
-        }
-    },
+    // setDraggable: function(params) {
+    //     if (params) {
+    //         this.$container.draggable(params);
+    //     } else {
+    //         this.$container.draggable();
+    //     }
+    // },
     setDelay: function(delay) {
         this.delay = delay;
     },
