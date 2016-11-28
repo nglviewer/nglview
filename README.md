@@ -59,7 +59,7 @@ Requirement: `ipywidgets >= 5.2.2`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
 
-## notebook user
+### notebook user
 
 ```bash
     git clone https://github.com/arose/nglview
@@ -77,9 +77,9 @@ The development version can be installed directly from github:
     # tested with ipywidgets 5.2.2, notebook 4.2.1
 ```
 
-## jupyterlab user
+### jupyterlab user
 
-**Note**: jupyterlab is alpha version, so the instruction below is for your curiosity.
+**Note**: jupyterlab is in its alpha version, so the instruction below might or might now work.
 Make sure to install development versions of `ipywidgets`, `jupyterlab`. Please see their corresponding
 websites for further information.
 
