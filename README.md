@@ -44,7 +44,7 @@ with JupyterLab.
     jupyter-nbextension enable nglview --py --user
 
     # if you already installed nglview, you can `upgrade`
-    conda upgrade nglview
+    conda upgrade nglview --force
     jupyter-nbextension enable nglview --py --user
     ```
 
