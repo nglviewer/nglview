@@ -5,8 +5,7 @@ matrix:
      - { os: linux, env: PYTHON_VERSION=2.7 }
      - { os: linux, env: PYTHON_VERSION=3.4 }
      - { os: linux, env: PYTHON_VERSION=3.5 }
-     # - { os: linux, env: PYTHON_VERSION=3.5 CONDA=yes} # do not change 3.5
-     # - { os: linux, env: PYTHON_VERSION=3.5 TEST_NOTEBOOK=yes}
+     - { os: osx, env: PYTHON_VERSION=3.5 }
 
 sudo: true
 dist: trusty
@@ -37,6 +36,7 @@ install:
 
 script:
     - source devtools/travis-ci/run_tests.sh
+    - conda build devtools/recipe
 
 after_success:
     - echo "Congrats"
