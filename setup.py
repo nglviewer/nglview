@@ -48,7 +48,7 @@ def enable_extentions():
         enable_nbextension_python('widgetsnbextension')
         install()
         enable_nglview_js()
-    except (ImportError, PermissionError):
+    except (ImportError, OSError):
         # TODO: add type of exception here?
         print('Failed to enable extensions. Skip')
 
