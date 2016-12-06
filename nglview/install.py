@@ -17,6 +17,7 @@ def install(user=True, symlink=False, overwrite=True, **kwargs):
     **kwargs: keyword arguments
         Other keyword arguments passed to the install_nbextension command
     """
+    print("Install nglview extension")
     directory = join(dirname(abspath(__file__)), 'static')
     install_nbextension(directory, destination='nglview',
                         symlink=symlink, user=user, overwrite=overwrite,
@@ -24,6 +25,7 @@ def install(user=True, symlink=False, overwrite=True, **kwargs):
 
 
 def enable_nglview_js(user=True):
+    print("Enable nglview extension")
     enable_nbextension('nglview', '', user=user)
 
 if __name__ == '__main__':

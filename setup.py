@@ -39,6 +39,7 @@ def enable_extentions():
         try:
             # enable_nbextension_python does not exist in older notebook
             # use try ... except in case users do not have notebook yet
+            # TODO: do we install nglview extension yet?
             from notebook.nbextensions import enable_nbextension_python
             enable_nbextension_python('widgetsnbextension')
             enable_nbextension_python('nglview')
