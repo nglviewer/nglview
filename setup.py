@@ -30,21 +30,27 @@ try:
     rebuild_nglview_js = True
 except ValueError:
     rebuild_nglview_js = False
+try:
+    sys.argv.remove('--conda')
+    conda_build = True
+except ValueError:
+    conda_build = False
 
 def enable_extentions():
     print("Trying to enable extensions")
-    if not rebuild_nglview_js:
-        # this is for normal users
-        # for developers, you should know what to do. :D
-        try:
-            # enable_nbextension_python does not exist in older notebook
-            # use try ... except in case users do not have notebook yet
-            from notebook.nbextensions import enable_nbextension_python
-            enable_nbextension_python('widgetsnbextension')
-            enable_nbextension_python('nglview')
-        except:
-            # TODO: add type of exception here?
-            print('Failed to enable extensions. Skip')
+    # this is for normal users
+    # for developers, you should know what to do. :D
+    try:
+        # enable_nbextension_python does not exist in older notebook
+        # use try ... except in case users do not have notebook yet
+        from notebook.nbextensions import enable_nbextension_python
+        from nglview.install import install, enable_nglview_js
+        enable_nbextension_python('widgetsnbextension')
+        install()
+        enable_nglview_js()
+    except (ImportError, PermissionError):
+        # TODO: add type of exception here?
+        print('Failed to enable extensions. Skip')
 
 def js_prerelease(command, strict=False):
     """decorator for building minified js/css prior to another command"""
@@ -224,4 +230,5 @@ setup_args = {
 }
 
 setup(**setup_args)
-enable_extentions()
+if not conda_build:
+    enable_extentions()
