@@ -15,7 +15,7 @@ import nglview as nv
 demo_source = """
 import nglview as nv
 
-view = nv.demo(gui=True, theme='dark')
+view = nv.demo(gui=True)
 view
 """.strip()
 
