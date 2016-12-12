@@ -1,8 +1,3 @@
-# adpated from Jupyter ipywidgets project.
-
-# Copyright (c) Jupyter Development Team.
-# Distributed under the terms of the Modified BSD License.
-
 from __future__ import print_function
 import os
 import sys
@@ -14,7 +9,6 @@ import unittest
 import pytest
 from numpy.testing import assert_almost_equal as aa_eq
 import numpy as np
-
 import traitlets
 from ipykernel.comm import Comm
 import ipywidgets
@@ -23,25 +17,47 @@ from traitlets import TraitError
 import ipywidgets as widgets
 from traitlets import TraitError, link
 from IPython import display
-
-import pytraj as pt
 import nglview as nv
 from nglview import NGLWidget
 from nglview import widget_utils
-import mdtraj as md
-import parmed as pmd
 from nglview.utils.py_utils import PY2, PY3, click, submit
 from nglview import js_utils
 from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
 from nglview import interpolate
 
+
+try:
+    import simpletraj
+    has_simpletraj = True
+except ImportError:
+    has_simpletraj = False
+
+try:
+    import pytraj as pt
+    has_pytraj = True
+except ImportError:
+    has_pytraj = False
+
+try:
+    import mdtraj as md
+    has_mdtraj = True
+except ImportError:
+    has_mdtraj = False
+try:
+    import parmed as pmd
+    has_parmed = True
+except ImportError:
+    has_parmed = False
+
 try:
     import rdkit
     from rdkit import Chem
     from rdkit.Chem import AllChem
+    has_rdkit = True
 except ImportError:
     rdkit = AllChem = None
+    has_rdkit = False
 
 try:
     import MDAnalysis
@@ -55,6 +71,12 @@ try:
 except ImportError:
     has_HTMD = False
 
+try:
+    import ase
+    has_ase = True
+except ImportError:
+    has_ase = False
+
 # local
 from utils import get_fn, repr_dict as REPR_DICT
 
@@ -64,6 +86,10 @@ def default_view():
 
 #-----------------------------------------------------------------------------
 # Utility stuff from ipywidgets tests
+# 
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+
 #-----------------------------------------------------------------------------
 
 class DummyComm(Comm):
@@ -254,6 +280,8 @@ def test_API_promise_to_have():
     for c in view: 
         nt.assert_true(isinstance(c, nv.widget.ComponentViewer))
 
+@unittest.skipUnless(has_pytraj, 'skip if not having pytraj')
+@unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
 def test_add_trajectory():
     view = nv.NGLWidget()
 
@@ -429,6 +457,7 @@ def test_show_text():
     text = open(nv.datafiles.PDB).read()
     nv.show_text(text)
 
+@unittest.skipUnless(has_ase, 'skip if not having ase')
 def test_show_ase():
     from ase import Atom, Atoms
     dimer = Atoms([Atom('X', (0, 0, 0)),
@@ -436,12 +465,14 @@ def test_show_ase():
     dimer.set_positions([(1, 2, 3), (4, 5, 6.2)])
     nv.show_ase(dimer)
 
+@unittest.skipUnless(has_simpletraj, 'skip if not having simpletraj')
 def test_show_simpletraj():
     traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
     view = nv.show_simpletraj(traj)
     view
     view.frame = 3
 
+@unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
 def test_show_mdtraj():
     import mdtraj as md
     from mdtraj.testing import get_fn
@@ -469,6 +500,7 @@ def test_show_MDAnalysis():
     u = Universe(fn, tn)
     view = nv.show_mdanalysis(u)
 
+@unittest.skipUnless(has_parmed, 'skip if not having ParmEd')
 def test_show_parmed():
     import parmed as pmd
     fn = nv.datafiles.PDB 
@@ -479,7 +511,7 @@ def test_show_parmed():
     ngl_traj.only_save_1st_model = False
     ngl_traj.get_structure_string()
 
-@unittest.skipUnless(rdkit is not None and not sys.platform.startswith('darwin'),
+@unittest.skipUnless(has_rdkit and not sys.platform.startswith('darwin'),
                     'must have rdkit and linux')
 def test_show_rdkit():
     rdkit_mol = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4')) 
@@ -558,6 +590,9 @@ def test_component_for_duck_typing():
 
     view.remove_component(c0.id)
     nt.assert_false(hasattr(view, 'component_2'))
+
+    # negative indexing
+    assert view[-1]._index == c1._index
 
 def test_trajectory_show_hide_sending_cooridnates():
     view = NGLWidget()

@@ -1256,8 +1256,8 @@ class NGLWidget(DOMWidget):
     def __getitem__(self, index):
         """return ComponentViewer
         """
-        assert index < len(self._ngl_component_ids)
-        return ComponentViewer(self, index) 
+        postive_index = py_utils.get_positive_index(index, len(self._ngl_component_ids))
+        return ComponentViewer(self, postive_index) 
 
     def __iter__(self):
         """return ComponentViewer
