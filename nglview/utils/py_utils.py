@@ -18,6 +18,16 @@ __all__ = ['encode_base64', 'decode_base64',
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
+def get_positive_index(index, size):
+    """Used for negative indexing"""
+    if index < 0:
+        index = size + index
+        if index < 0:
+            raise ValueError("index is out of range")
+    if index >= size:
+        raise ValueError("index is out of range")
+    return index
+
 def click(button):
     button._handle_button_msg(None, dict(event='click'), None)
 
