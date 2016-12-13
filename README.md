@@ -17,7 +17,7 @@ Table of contents
 
 * [Installation](#installation)
 * [Example](#example)
-* [Showcase from users](#showcase_from_users)
+* [Showcase from users](#showcase-from-users)
 * [Usage](#usage)
 * [Command line](#command-line)
 * [API doc](#api-doc)
@@ -100,7 +100,7 @@ Example
 
 Showcase from users
 ===================
-Please check [user examples](examples/user_examples.md)
+Please check [user examples](examples/user_examples.md). Feel free to contribute.
 
 Usage
 =====
