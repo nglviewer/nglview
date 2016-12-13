@@ -17,6 +17,7 @@ Table of contents
 
 * [Installation](#installation)
 * [Example](#example)
+* [Showcase from users](#showcase_from_users)
 * [Usage](#usage)
 * [Command line](#command-line)
 * [API doc](#api-doc)
@@ -96,6 +97,10 @@ Example
 
 - Notebooks: please see our [Jupyter notebook examples](examples/README.md)
 - Simple demo for trajectory (take time to load): [biomembrane](http://amber-md.github.io/pytraj/latest/ngl_player.html)
+
+Showcase from users
+===================
+Please check [user examples](examples/user_examples.md)
 
 Usage
 =====
