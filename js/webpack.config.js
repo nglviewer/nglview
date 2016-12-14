@@ -9,7 +9,7 @@ var loaders = [
 var buildExtension = require('@jupyterlab/extension-builder/lib/builder').buildExtension;
 
 buildExtension({
-  name: 'nglview',
+  name: 'nglview-js-widgets',
   entry: './src/labplugin',
   outputDir: '../nglview/staticlab',
   useDefaultLoaders: false,
@@ -74,7 +74,7 @@ module.exports = [
             filename: 'index.js',
             path: './dist/',
             libraryTarget: 'amd',
-            publicPath: 'https://unpkg.com/nglview@' + version + '/dist/'
+            publicPath: 'https://unpkg.com/nglview-js-widgets@' + version + '/dist/'
         },
         devtool: 'source-map',
         module: {

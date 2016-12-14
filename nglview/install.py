@@ -1,10 +1,11 @@
 import argparse
 from os.path import dirname, abspath, join
-from notebook.nbextensions import install_nbextension, enable_nbextension
+from notebook import nbextensions
+from glob import glob
 
 
-def install(user=True, symlink=False, overwrite=True, **kwargs):
-    """Install nglview nbextension.
+def install_nglview_js_widgets(user=True, symlink=False, overwrite=True, debug=False, **kwargs):
+    """Install nglview-js-widgets nbextension.
 
     Parameters
     ----------
@@ -17,17 +18,17 @@ def install(user=True, symlink=False, overwrite=True, **kwargs):
     **kwargs: keyword arguments
         Other keyword arguments passed to the install_nbextension command
     """
-    directory = join(dirname(abspath(__file__)), 'static')
-    install_nbextension(directory, destination='nglview',
-                        symlink=symlink, user=user, overwrite=overwrite,
-                        **kwargs)
+    nglivew_js_dirs = nbextensions.install_nbextension_python('nglview',
+            user=user, symlink=symlink, overwrite=overwrite, **kwargs)
+    if debug:
+        print(nglivew_js_dirs)
+        print([glob(join(my_dir, '*')) for my_dir in nglivew_js_dirs])
 
-
-def enable_nglview_js(user=True):
-    enable_nbextension('nglview', '', user=user)
+def enable_nglview_js_widgets(user=True):
+    nbextensions.enable_nbextension_python('nglview', user=user)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="nglview")
+    parser = argparse.ArgumentParser(description="nglview-js-widgets")
     parser.add_argument("-u", "--user",
                         help="Install as current user instead of system-wide",
                         action="store_true")
@@ -37,6 +38,12 @@ if __name__ == '__main__':
     parser.add_argument("-f", "--force",
                         help="Overwrite any previously-installed files for this extension",
                         action="store_true")
+    parser.add_argument("-d", "--debug",
+                        help="print nglivew-js-widgets",
+                        action="store_true")
     args = parser.parse_args()
-    install(user=args.user, symlink=args.symlink, overwrite=args.force)
-    enable_nglview_js()
+    install_nglview_js_widgets(user=args.user,
+            symlink=args.symlink,
+            overwrite=args.force,
+            debug=args.debug)
+    enable_nglview_js_widgets()

@@ -2,14 +2,12 @@ from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions
 
-from .install import install, enable_nglview_js
+from .install import install_nglview_js_widgets
+from .install import enable_nglview_js_widgets
 import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
 
-# we already install from setup
-# but it's better to install again. haizz
-install()
 
 # Register nbextension
 
@@ -18,17 +16,20 @@ def _jupyter_nbextension_paths():
     return [{
         'section': 'notebook',
         'src': 'static',
-        'dest': 'nglview',
-        'require': 'nglview/extension'
+        'dest': 'nglview-js-widgets',
+        'require': 'nglview-js-widgets/extension'
     }]
 
 def _jupyter_labextension_paths():
     return [{
-        'name': 'nglview',
+        'name': 'nglview-js-widgets',
         'src': 'staticlab',
     }]
 
-enable_nglview_js()
+# call install after defining
+# _jupyter_nbextension_paths and _jupyter_labextension_paths methods
+install_nglview_js_widgets()
+enable_nglview_js_widgets()
 
 # TODO: do not use import *
 # interface
