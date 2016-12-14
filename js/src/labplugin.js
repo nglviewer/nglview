@@ -10,7 +10,7 @@ module.exports = {
   requires: [jupyterlab_widgets.INBWidgetExtension],
   activate: function(app, widgets) {
       widgets.registerWidget({
-          name: 'nglview',
+          name: 'nglview-js-widgets',
           version: nglview.version,
           exports: nglview
       });

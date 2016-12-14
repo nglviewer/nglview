@@ -1,6 +1,6 @@
-/** START DEFINE BLOCK for nglview@0.5.3/src/labplugin.js **/
-jupyter.define('nglview@0.5.3/src/labplugin.js', function (module, exports, __jupyter_require__) {
-	var nglview = __jupyter_require__('nglview@0.5.3/src/index.js');
+/** START DEFINE BLOCK for nglview-js-widgets@0.5.4/src/labplugin.js **/
+jupyter.define('nglview-js-widgets@0.5.4/src/labplugin.js', function (module, exports, __jupyter_require__) {
+	var nglview = __jupyter_require__('nglview-js-widgets@0.5.4/src/index.js');
 	
 	var jupyterlab_widgets = __jupyter_require__('@jupyterlab/nbwidgets@^0.6.0/lib/index.js');
 	
@@ -12,7 +12,7 @@ jupyter.define('nglview@0.5.3/src/labplugin.js', function (module, exports, __ju
 	  requires: [jupyterlab_widgets.INBWidgetExtension],
 	  activate: function(app, widgets) {
 	      widgets.registerWidget({
-	          name: 'nglview',
+	          name: 'nglview-js-widgets',
 	          version: nglview.version,
 	          exports: nglview
 	      });
@@ -21,29 +21,15 @@ jupyter.define('nglview@0.5.3/src/labplugin.js', function (module, exports, __ju
 	};
 	
 })
-/** END DEFINE BLOCK for nglview@0.5.3/src/labplugin.js **/
+/** END DEFINE BLOCK for nglview-js-widgets@0.5.4/src/labplugin.js **/
 
 
-/** START DEFINE BLOCK for nglview@0.5.3/src/index.js **/
-jupyter.define('nglview@0.5.3/src/index.js', function (module, exports, __jupyter_require__) {
-	// Entry point for the notebook bundle containing custom model definitions.
-	//
-	// Setup notebook base URL
-	//
-	// Some static assets may be required by the custom widget javascript. The base
-	// url for the notebook is not known at build time and is therefore computed
-	// dynamically.
-	//
-	
-	// remove?
-	// __webpack_public_path__ = document.querySelector('body').getAttribute('data-base-url') + 'nbextensions/nglview/';
-	
-	// Export widget models and views, and the npm package version number.
-	
+/** START DEFINE BLOCK for nglview-js-widgets@0.5.4/src/index.js **/
+jupyter.define('nglview-js-widgets@0.5.4/src/index.js', function (module, exports, __jupyter_require__) {
 	module.exports = {};
 	
 	var loadedModules = [
-	    __jupyter_require__('nglview@0.5.3/src/widget_ngl.js'),
+	    __jupyter_require__('nglview-js-widgets@0.5.4/src/widget_ngl.js'),
 	    //require("./ngl.js"),
 	]
 	
@@ -58,14 +44,14 @@ jupyter.define('nglview@0.5.3/src/index.js', function (module, exports, __jupyte
 	    }
 	}
 	
-	module.exports['version'] = __jupyter_require__('nglview@0.5.3/package.json').version;
+	module.exports['version'] = __jupyter_require__('nglview-js-widgets@0.5.4/package.json').version;
 	
 })
-/** END DEFINE BLOCK for nglview@0.5.3/src/index.js **/
+/** END DEFINE BLOCK for nglview-js-widgets@0.5.4/src/index.js **/
 
 
-/** START DEFINE BLOCK for nglview@0.5.3/src/widget_ngl.js **/
-jupyter.define('nglview@0.5.3/src/widget_ngl.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for nglview-js-widgets@0.5.4/src/widget_ngl.js **/
+jupyter.define('nglview-js-widgets@0.5.4/src/widget_ngl.js', function (module, exports, __jupyter_require__) {
 	var widgets = __jupyter_require__('jupyter-js-widgets@^2.0.6/lib/index.js');
 	var NGL = __jupyter_require__('ngl@0.10.0-dev.3/dist/ngl.js');
 	var $ = __jupyter_require__('jquery@^2.1.4/dist/jquery.js');
@@ -1042,47 +1028,47 @@ jupyter.define('nglview@0.5.3/src/widget_ngl.js', function (module, exports, __j
 	};
 	
 })
-/** END DEFINE BLOCK for nglview@0.5.3/src/widget_ngl.js **/
+/** END DEFINE BLOCK for nglview-js-widgets@0.5.4/src/widget_ngl.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/index.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/index.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/index.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/index.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
 	function __export(m) {
 	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	}
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/manager-base.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/utils.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_layout.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_link.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_bool.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_button.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_box.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_image.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_color.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/services-shim.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_int.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_float.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_controller.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_selection.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_string.js'));
-	exports.version = __jupyter_require__('jupyter-js-widgets@2.0.6/package.json').version;
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/manager-base.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_layout.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_link.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_bool.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_button.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_box.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_image.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_color.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/services-shim.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_int.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_float.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_controller.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_selection.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_string.js'));
+	exports.version = __jupyter_require__('jupyter-js-widgets@2.0.17/package.json').version;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/index.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/index.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/manager-base.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/manager-base.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/manager-base.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/manager-base.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
 	var semver = __jupyter_require__('semver@^5.1.0/semver.js');
 	/**
 	 * Manager abstract base class
@@ -1119,7 +1105,6 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/manager-base.js', function (module,
 	     */
 	    ManagerBase.prototype.display_model = function (msg, model, options) {
 	        options = options || {};
-	        options.root = true; // This element is at the root of the widget hierarchy.
 	        return this.create_view(model, options).then(_.bind(function (view) {
 	            return this.display_view(msg, view, options);
 	        }, this)).catch(utils.reject('Could not create view', true));
@@ -1246,7 +1231,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/manager-base.js', function (module,
 	        return this._create_comm(this.version_comm_target_name, undefined, {}).then((function (comm) {
 	            return new Promise((function (resolve, reject) {
 	                comm.on_msg((function (msg) {
-	                    var version = __jupyter_require__('jupyter-js-widgets@2.0.6/package.json').version;
+	                    var version = __jupyter_require__('jupyter-js-widgets@2.0.17/package.json').version;
 	                    var requirement = msg.content.data.version;
 	                    var validated = semver.satisfies(version, requirement);
 	                    comm.send({ 'validated': validated, 'frontend_version': version });
@@ -1322,11 +1307,10 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/manager-base.js', function (module,
 	    };
 	    ;
 	    /**
-	
-	    * Close all widgets and empty the widget state.
-	    * @param commlessOnly should only commless widgets be removed
-	    * @return promise that resolves when the widget state is cleared.
-	    */
+	     * Close all widgets and empty the widget state.
+	     * @param commlessOnly should only commless widgets be removed
+	     * @return promise that resolves when the widget state is cleared.
+	     */
 	    ManagerBase.prototype.clear_state = function (commlessOnly) {
 	        var _this = this;
 	        return utils.resolvePromisesDict(this._models).then(function (models) {
@@ -1354,39 +1338,16 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/manager-base.js', function (module,
 	            for (var model_id in models) {
 	                if (models.hasOwnProperty(model_id)) {
 	                    var model = models[model_id];
-	                    // If the model has one or more views defined for it,
-	                    // consider it displayed.
-	                    var displayed_flag = !(options && options.only_displayed) || Object.keys(model.views).length > 0;
-	                    var live_flag = (options && options.not_live) || model.comm_live;
-	                    if (displayed_flag && live_flag) {
-	                        state[model_id] = utils.resolvePromisesDict({
-	                            model_name: model.name,
-	                            model_module: model.module,
-	                            state: model.constructor._serialize_state(model.get_state(options.drop_defaults), that),
-	                            views: utils.resolvePromisesDict(model.views).then(function (views) {
-	                                return _.values(views).filter(function (view) {
-	                                    return view.options !== undefined && view.options.root;
-	                                }).map(function (view) {
-	                                    return that.filterViewOptions(view.options);
-	                                });
-	                            })
-	                        });
-	                    }
+	                    state[model_id] = utils.resolvePromisesDict({
+	                        model_name: model.name,
+	                        model_module: model.module,
+	                        model_module_version: model.get('_model_module_version'),
+	                        state: model.constructor._serialize_state(model.get_state(options.drop_defaults), that)
+	                    });
 	                }
 	            }
 	            return utils.resolvePromisesDict(state);
 	        }).catch(utils.reject('Could not get state of widget manager', true));
-	    };
-	    ;
-	    /**
-	     * Returns the keys of view options that must be stored in the serialized
-	     * widget manager state.
-	     *
-	     * This is meant to be overloaded in custom managers, which may register
-	     * the cell index.
-	     */
-	    ManagerBase.prototype.filterViewOptions = function (options) {
-	        return {};
 	    };
 	    ;
 	    /**
@@ -1431,26 +1392,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/manager-base.js', function (module,
 	                }
 	            }));
 	        });
-	        // Display all the views
-	        return all_models.then(function (models) {
-	            return Promise.all(_.map(models, function (model) {
-	                // Display the views of the model.
-	                if (state[model.id] !== undefined) {
-	                    // Display the model using the display options merged with the
-	                    // options.
-	                    if (displayOptions && displayOptions.displayOnce && state[model.id].views && state[model.id].views.length) {
-	                        return that.display_model(undefined, model, _.extend({}, displayOptions));
-	                    }
-	                    else {
-	                        // Display the model using the display options merged with the
-	                        // options.
-	                        return Promise.all(_.map(state[model.id].views, function (options) {
-	                            return that.display_model(undefined, model, _.extend({}, options, displayOptions));
-	                        }));
-	                    }
-	                }
-	            }));
-	        }).catch(utils.reject('Could not set widget manager state.', true));
+	        return all_models;
 	    };
 	    ;
 	    /**
@@ -1464,7 +1406,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/manager-base.js', function (module,
 	exports.ManagerBase = ManagerBase;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/manager-base.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/manager-base.js **/
 
 
 /** START DEFINE BLOCK for underscore@1.8.3/underscore.js **/
@@ -3022,8 +2964,8 @@ jupyter.define('underscore@1.8.3/underscore.js', function (module, exports, __ju
 /** END DEFINE BLOCK for underscore@1.8.3/underscore.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/utils.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/utils.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/utils.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/utils.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -3058,15 +3000,16 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/utils.js', function (module, export
 	var WrappedError = (function (_super) {
 	    __extends(WrappedError, _super);
 	    function WrappedError(message, error) {
-	        _super.call(this, message);
+	        var _this = _super.call(this, message) || this;
 	        // Keep a stack of the original error messages.
 	        if (error instanceof WrappedError) {
-	            this.error_stack = error.error_stack;
+	            _this.error_stack = error.error_stack;
 	        }
 	        else {
-	            this.error_stack = [error];
+	            _this.error_stack = [error];
 	        }
-	        this.error_stack.push(this);
+	        _this.error_stack.push(_this);
+	        return _this;
 	    }
 	    return WrappedError;
 	}(Error));
@@ -3101,11 +3044,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/utils.js', function (module, export
 	                    });
 	                }
 	                else if (module_name === 'jupyter-js-widgets') {
-	                    modulePromise = Promise.resolve(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/index.js'));
+	                    modulePromise = Promise.resolve(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/index.js'));
 	                }
 	            }
 	            else if (module_name === 'jupyter-js-widgets') {
-	                modulePromise = Promise.resolve(__jupyter_require__('jupyter-js-widgets@2.0.6/lib/index.js'));
+	                modulePromise = Promise.resolve(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/index.js'));
 	            }
 	            else {
 	                // FUTURE: Investigate dynamic loading methods other than require.js.
@@ -3181,7 +3124,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/utils.js', function (module, export
 	    if (text !== void 0) {
 	        element.textContent = text;
 	    }
-	    if (typeof MathJax !== "undefined") {
+	    if (window.MathJax !== void 0) {
 	        MathJax.Hub.Queue(['Typeset', MathJax.Hub, element]);
 	    }
 	}
@@ -3198,7 +3141,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/utils.js', function (module, export
 	;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/utils.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/utils.js **/
 
 
 /** START DEFINE BLOCK for semver@5.3.0/semver.js **/
@@ -4599,36 +4542,44 @@ jupyter.define('process@0.11.9/browser.js', function (module, exports, __jupyter
 /** END DEFINE BLOCK for process@0.11.9/browser.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/package.json **/
-jupyter.define('jupyter-js-widgets@2.0.6/package.json', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/package.json **/
+jupyter.define('jupyter-js-widgets@2.0.17/package.json', function (module, exports, __jupyter_require__) {
 	module.exports = {
 		"_args": [
 			[
-				"jupyter-js-widgets@^2.0.6",
+				{
+					"raw": "jupyter-js-widgets@^2.0.6",
+					"scope": null,
+					"escapedName": "jupyter-js-widgets",
+					"name": "jupyter-js-widgets",
+					"rawSpec": "^2.0.6",
+					"spec": ">=2.0.6 <3.0.0",
+					"type": "range"
+				},
 				"/Users/haichit/programs/3d/nglview/js"
 			]
 		],
 		"_from": "jupyter-js-widgets@>=2.0.6 <3.0.0",
-		"_id": "jupyter-js-widgets@2.0.6",
+		"_id": "jupyter-js-widgets@2.0.17",
 		"_inCache": true,
-		"_installable": true,
 		"_location": "/jupyter-js-widgets",
-		"_nodeVersion": "6.9.0",
+		"_nodeVersion": "4.1.1",
 		"_npmOperationalInternal": {
 			"host": "packages-12-west.internal.npmjs.com",
-			"tmp": "tmp/jupyter-js-widgets-2.0.6.tgz_1479969430854_0.9660155193414539"
+			"tmp": "tmp/jupyter-js-widgets-2.0.17.tgz_1481647987839_0.5571067275013775"
 		},
 		"_npmUser": {
-			"email": "jason@jasongrout.org",
-			"name": "jasongrout"
+			"name": "sylvaincorlay",
+			"email": "sylvain.corlay@gmail.com"
 		},
-		"_npmVersion": "3.10.8",
+		"_npmVersion": "3.8.1",
 		"_phantomChildren": {},
 		"_requested": {
-			"name": "jupyter-js-widgets",
 			"raw": "jupyter-js-widgets@^2.0.6",
-			"rawSpec": "^2.0.6",
 			"scope": null,
+			"escapedName": "jupyter-js-widgets",
+			"name": "jupyter-js-widgets",
+			"rawSpec": "^2.0.6",
 			"spec": ">=2.0.6 <3.0.0",
 			"type": "range"
 		},
@@ -4636,8 +4587,8 @@ jupyter.define('jupyter-js-widgets@2.0.6/package.json', function (module, export
 			"/",
 			"/@jupyterlab/nbwidgets"
 		],
-		"_resolved": "https://registry.npmjs.org/jupyter-js-widgets/-/jupyter-js-widgets-2.0.6.tgz",
-		"_shasum": "8220a6e0c001a44b20476078e030abb4a9787284",
+		"_resolved": "https://registry.npmjs.org/jupyter-js-widgets/-/jupyter-js-widgets-2.0.17.tgz",
+		"_shasum": "cfb922b9ad94c13be293ea2280f0e2ab408ea608",
 		"_shrinkwrap": null,
 		"_spec": "jupyter-js-widgets@^2.0.6",
 		"_where": "/Users/haichit/programs/3d/nglview/js",
@@ -4651,11 +4602,13 @@ jupyter.define('jupyter-js-widgets@2.0.6/package.json', function (module, export
 			"@jupyterlab/services": "^0.34.2",
 			"@types/backbone": "^1.3.33",
 			"@types/semver": "^5.3.30",
+			"ajv": "^4.9.0",
 			"backbone": "1.2.0",
 			"d3-format": "^0.5.1",
 			"font-awesome": "^4.5.0",
 			"jquery": "^3.1.1",
 			"jquery-ui": "^1.12.1",
+			"jupyter-widgets-schema": "^0.1.1",
 			"lolex": "^1.4.0",
 			"phosphor": "^0.7.0",
 			"scriptjs": "^2.5.8",
@@ -4700,8 +4653,8 @@ jupyter.define('jupyter-js-widgets@2.0.6/package.json', function (module, export
 		},
 		"directories": {},
 		"dist": {
-			"shasum": "8220a6e0c001a44b20476078e030abb4a9787284",
-			"tarball": "https://registry.npmjs.org/jupyter-js-widgets/-/jupyter-js-widgets-2.0.6.tgz"
+			"shasum": "cfb922b9ad94c13be293ea2280f0e2ab408ea608",
+			"tarball": "https://registry.npmjs.org/jupyter-js-widgets/-/jupyter-js-widgets-2.0.17.tgz"
 		},
 		"files": [
 			"lib/*.d.ts",
@@ -4714,36 +4667,8 @@ jupyter.define('jupyter-js-widgets@2.0.6/package.json', function (module, export
 		"main": "lib/index.js",
 		"maintainers": [
 			{
-				"email": "bussonniermatthias@gmail.com",
-				"name": "carreau"
-			},
-			{
-				"email": "ellisonbg@gmail.com",
-				"name": "ellisonbg"
-			},
-			{
-				"email": "fperez.net@gmail.com",
-				"name": "fperez"
-			},
-			{
-				"email": "jason@jasongrout.org",
-				"name": "jasongrout"
-			},
-			{
-				"email": "jon.freder@gmail.com",
-				"name": "jdfreder"
-			},
-			{
-				"email": "benjaminrk@gmail.com",
-				"name": "minrk"
-			},
-			{
-				"email": "rgbkrk@gmail.com",
-				"name": "rgbkrk"
-			},
-			{
-				"email": "sylvain.corlay@gmail.com",
-				"name": "sylvaincorlay"
+				"name": "sylvaincorlay",
+				"email": "sylvain.corlay@gmail.com"
 			}
 		],
 		"name": "jupyter-js-widgets",
@@ -4783,14 +4708,14 @@ jupyter.define('jupyter-js-widgets@2.0.6/package.json', function (module, export
 			"test:unit:ie": "npm run test:unit:default -- --browsers=IE"
 		},
 		"typings": "lib/index.d.ts",
-		"version": "2.0.6"
+		"version": "2.0.17"
 	};
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/package.json **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/package.json **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -4801,9 +4726,9 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	};
 	var Backbone = __jupyter_require__('backbone@1.2.0/backbone.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
 	var $ = __jupyter_require__('jquery@^3.1.1/dist/jquery.js');
-	var nativeview_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/nativeview.js');
+	var nativeview_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/nativeview.js');
 	var widget_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
 	/**
 	 * Replace model ids with models recursively.
@@ -4837,7 +4762,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	var WidgetModel = (function (_super) {
 	    __extends(WidgetModel, _super);
 	    function WidgetModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * The default attributes.
@@ -4978,10 +4903,12 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	        this.state_lock = state;
 	        try {
 	            this.set(state);
-	            this.state_lock = null;
 	        }
 	        catch (e) {
 	            console.error('Error setting state:', e.message);
+	        }
+	        finally {
+	            this.state_lock = null;
 	        }
 	    };
 	    /**
@@ -5270,7 +5197,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	var DOMWidgetModel = (function (_super) {
 	    __extends(DOMWidgetModel, _super);
 	    function DOMWidgetModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    DOMWidgetModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -5278,16 +5205,16 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	            _dom_classes: []
 	        });
 	    };
-	    DOMWidgetModel.serializers = _.extend({
-	        layout: { deserialize: unpack_models },
-	    }, WidgetModel.serializers);
 	    return DOMWidgetModel;
 	}(WidgetModel));
+	DOMWidgetModel.serializers = _.extend({
+	    layout: { deserialize: unpack_models },
+	}, WidgetModel.serializers);
 	exports.DOMWidgetModel = DOMWidgetModel;
 	var LabeledDOMWidgetModel = (function (_super) {
 	    __extends(LabeledDOMWidgetModel, _super);
 	    function LabeledDOMWidgetModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    LabeledDOMWidgetModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -5299,7 +5226,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	exports.LabeledDOMWidgetModel = LabeledDOMWidgetModel;
 	/**
 	 * - create_view and remove_view are default functions called when adding or removing views
-	 * - create_view takes a model and returns a view or a promise for a view for that model
+	 * - create_view takes a model and an index and returns a view or a promise for a view for that model
 	 * - remove_view takes a view and destroys it (including calling `view.remove()`)
 	 * - each time the update() function is called with a new list, the create and remove
 	 *   callbacks will be called in an order so that if you append the views created in the
@@ -5348,7 +5275,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	        }
 	        // Add the rest of the new list items.
 	        for (; i < new_models.length; i++) {
-	            this.views.push(Promise.resolve(create.call(context, new_models[i])));
+	            this.views.push(Promise.resolve(create.call(context, new_models[i], i)));
 	        }
 	        // make a copy of the input array
 	        this._models = new_models.slice();
@@ -5374,7 +5301,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	var WidgetView = (function (_super) {
 	    __extends(WidgetView, _super);
 	    function WidgetView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Public constructor.
@@ -5438,34 +5365,37 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	var JupyterPhosphorWidget = (function (_super) {
 	    __extends(JupyterPhosphorWidget, _super);
 	    function JupyterPhosphorWidget(options) {
+	        var _this;
 	        var view = options.view;
 	        delete options.view;
-	        _super.call(this, options);
-	        this._view = view;
+	        _this = _super.call(this, options) || this;
+	        _this._view = view;
+	        return _this;
 	    }
-	    Object.defineProperty(JupyterPhosphorWidget.prototype, "isDisposed", {
-	        get: function () {
-	            return this._view === null;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
+	    /**
+	     * Dispose the widget.
+	     *
+	     * This causes the view to be destroyed as well with 'remove'
+	     */
 	    JupyterPhosphorWidget.prototype.dispose = function () {
 	        if (this.isDisposed) {
 	            return;
 	        }
 	        _super.prototype.dispose.call(this);
+	        if (this._view) {
+	            this._view.remove();
+	        }
 	        this._view = null;
 	    };
-	    JupyterPhosphorWidget.prototype.onResize = function (msg) {
-	        if (this._view.onResize) {
-	            this._view.onResize(msg);
-	        }
-	        _super.prototype.onResize.call(this, msg);
-	    };
-	    JupyterPhosphorWidget.prototype.onAfterAttach = function (msg) {
-	        _super.prototype.onAfterAttach.call(this, msg);
-	        this._view.trigger('displayed');
+	    /**
+	     * Process the phosphor message.
+	     *
+	     * Any custom phosphor widget used inside a Jupyter widget should override
+	     * the processMessage function like this.
+	     */
+	    JupyterPhosphorWidget.prototype.processMessage = function (msg) {
+	        _super.prototype.processMessage.call(this, msg);
+	        this._view.processPhosphorMessage(msg);
 	    };
 	    return JupyterPhosphorWidget;
 	}(widget_1.Widget));
@@ -5473,7 +5403,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	var DOMWidgetView = (function (_super) {
 	    __extends(DOMWidgetView, _super);
 	    function DOMWidgetView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Public constructor
@@ -5587,14 +5517,20 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	        }
 	        return _super.prototype.remove.call(this);
 	    };
-	    DOMWidgetView.prototype.onResize = function (msg) { };
+	    DOMWidgetView.prototype.processPhosphorMessage = function (msg) {
+	        switch (msg.type) {
+	            case 'after-attach':
+	                this.trigger('displayed');
+	                break;
+	        }
+	    };
 	    return DOMWidgetView;
 	}(WidgetView));
 	exports.DOMWidgetView = DOMWidgetView;
 	var LabeledDOMWidgetView = (function (_super) {
 	    __extends(LabeledDOMWidgetView, _super);
 	    function LabeledDOMWidgetView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    LabeledDOMWidgetView.prototype.render = function () {
 	        this.label = document.createElement('div');
@@ -5619,7 +5555,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget.js', function (module, expor
 	exports.LabeledDOMWidgetView = LabeledDOMWidgetView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget.js **/
 
 
 /** START DEFINE BLOCK for backbone@1.2.0/backbone.js **/
@@ -27546,8 +27482,8 @@ jupyter.define('jquery@3.1.1/dist/jquery.js', function (module, exports, __jupyt
 /** END DEFINE BLOCK for jquery@3.1.1/dist/jquery.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/nativeview.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/nativeview.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/nativeview.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/nativeview.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -27603,7 +27539,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/nativeview.js', function (module, e
 	var NativeView = (function (_super) {
 	    __extends(NativeView, _super);
 	    function NativeView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    NativeView.prototype._removeElement = function () {
 	        this.undelegateEvents();
@@ -27706,7 +27642,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/nativeview.js', function (module, e
 	exports.NativeView = NativeView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/nativeview.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/nativeview.js **/
 
 
 /** START DEFINE BLOCK for phosphor@0.7.0/lib/ui/widget.js **/
@@ -30205,18 +30141,14 @@ jupyter.define('phosphor@0.7.0/lib/core/messaging.js', function (module, exports
 	    }
 	})(MessageLoop || (MessageLoop = {}));
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __jupyter_require__('timers-browserify@1.4.2/main.js').setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __jupyter_require__('timers-browserify@2.0.2/main.js').setImmediate))
 })
 /** END DEFINE BLOCK for phosphor@0.7.0/lib/core/messaging.js **/
 
 
-/** START DEFINE BLOCK for timers-browserify@1.4.2/main.js **/
-jupyter.define('timers-browserify@1.4.2/main.js', function (module, exports, __jupyter_require__) {
-	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __jupyter_require__('process@~0.11.0/browser.js').nextTick;
+/** START DEFINE BLOCK for timers-browserify@2.0.2/main.js **/
+jupyter.define('timers-browserify@2.0.2/main.js', function (module, exports, __jupyter_require__) {
 	var apply = Function.prototype.apply;
-	var slice = Array.prototype.slice;
-	var immediateIds = {};
-	var nextImmediateId = 0;
 	
 	// DOM APIs, for completeness
 	
@@ -30227,7 +30159,11 @@ jupyter.define('timers-browserify@1.4.2/main.js', function (module, exports, __j
 	  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
 	};
 	exports.clearTimeout =
-	exports.clearInterval = function(timeout) { timeout.close(); };
+	exports.clearInterval = function(timeout) {
+	  if (timeout) {
+	    timeout.close();
+	  }
+	};
 	
 	function Timeout(id, clearFn) {
 	  this._id = id;
@@ -30261,36 +30197,207 @@ jupyter.define('timers-browserify@1.4.2/main.js', function (module, exports, __j
 	  }
 	};
 	
-	// That's not how node.js implements it but the exposed api is the same.
-	exports.setImmediate = typeof setImmediate === "function" ? setImmediate : function(fn) {
-	  var id = nextImmediateId++;
-	  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
+	// setimmediate attaches itself to the global object
+	__jupyter_require__('setimmediate@^1.0.4/setImmediate.js');
+	exports.setImmediate = setImmediate;
+	exports.clearImmediate = clearImmediate;
 	
-	  immediateIds[id] = true;
-	
-	  nextTick(function onNextTick() {
-	    if (immediateIds[id]) {
-	      // fn.call() is faster so we optimize for the common use-case
-	      // @see http://jsperf.com/call-apply-segu
-	      if (args) {
-	        fn.apply(null, args);
-	      } else {
-	        fn.call(null);
-	      }
-	      // Prevent ids from leaking
-	      exports.clearImmediate(id);
-	    }
-	  });
-	
-	  return id;
-	};
-	
-	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
-	  delete immediateIds[id];
-	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __jupyter_require__('timers-browserify@1.4.2/main.js').setImmediate, __jupyter_require__('timers-browserify@1.4.2/main.js').clearImmediate))
 })
-/** END DEFINE BLOCK for timers-browserify@1.4.2/main.js **/
+/** END DEFINE BLOCK for timers-browserify@2.0.2/main.js **/
+
+
+/** START DEFINE BLOCK for setimmediate@1.0.5/setImmediate.js **/
+jupyter.define('setimmediate@1.0.5/setImmediate.js', function (module, exports, __jupyter_require__) {
+	/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+	    "use strict";
+	
+	    if (global.setImmediate) {
+	        return;
+	    }
+	
+	    var nextHandle = 1; // Spec says greater than zero
+	    var tasksByHandle = {};
+	    var currentlyRunningATask = false;
+	    var doc = global.document;
+	    var registerImmediate;
+	
+	    function setImmediate(callback) {
+	      // Callback can either be a function or a string
+	      if (typeof callback !== "function") {
+	        callback = new Function("" + callback);
+	      }
+	      // Copy function arguments
+	      var args = new Array(arguments.length - 1);
+	      for (var i = 0; i < args.length; i++) {
+	          args[i] = arguments[i + 1];
+	      }
+	      // Store and register the task
+	      var task = { callback: callback, args: args };
+	      tasksByHandle[nextHandle] = task;
+	      registerImmediate(nextHandle);
+	      return nextHandle++;
+	    }
+	
+	    function clearImmediate(handle) {
+	        delete tasksByHandle[handle];
+	    }
+	
+	    function run(task) {
+	        var callback = task.callback;
+	        var args = task.args;
+	        switch (args.length) {
+	        case 0:
+	            callback();
+	            break;
+	        case 1:
+	            callback(args[0]);
+	            break;
+	        case 2:
+	            callback(args[0], args[1]);
+	            break;
+	        case 3:
+	            callback(args[0], args[1], args[2]);
+	            break;
+	        default:
+	            callback.apply(undefined, args);
+	            break;
+	        }
+	    }
+	
+	    function runIfPresent(handle) {
+	        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+	        // So if we're currently running a task, we'll need to delay this invocation.
+	        if (currentlyRunningATask) {
+	            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+	            // "too much recursion" error.
+	            setTimeout(runIfPresent, 0, handle);
+	        } else {
+	            var task = tasksByHandle[handle];
+	            if (task) {
+	                currentlyRunningATask = true;
+	                try {
+	                    run(task);
+	                } finally {
+	                    clearImmediate(handle);
+	                    currentlyRunningATask = false;
+	                }
+	            }
+	        }
+	    }
+	
+	    function installNextTickImplementation() {
+	        registerImmediate = function(handle) {
+	            process.nextTick(function () { runIfPresent(handle); });
+	        };
+	    }
+	
+	    function canUsePostMessage() {
+	        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+	        // where `global.postMessage` means something completely different and can't be used for this purpose.
+	        if (global.postMessage && !global.importScripts) {
+	            var postMessageIsAsynchronous = true;
+	            var oldOnMessage = global.onmessage;
+	            global.onmessage = function() {
+	                postMessageIsAsynchronous = false;
+	            };
+	            global.postMessage("", "*");
+	            global.onmessage = oldOnMessage;
+	            return postMessageIsAsynchronous;
+	        }
+	    }
+	
+	    function installPostMessageImplementation() {
+	        // Installs an event handler on `global` for the `message` event: see
+	        // * https://developer.mozilla.org/en/DOM/window.postMessage
+	        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+	
+	        var messagePrefix = "setImmediate$" + Math.random() + "$";
+	        var onGlobalMessage = function(event) {
+	            if (event.source === global &&
+	                typeof event.data === "string" &&
+	                event.data.indexOf(messagePrefix) === 0) {
+	                runIfPresent(+event.data.slice(messagePrefix.length));
+	            }
+	        };
+	
+	        if (global.addEventListener) {
+	            global.addEventListener("message", onGlobalMessage, false);
+	        } else {
+	            global.attachEvent("onmessage", onGlobalMessage);
+	        }
+	
+	        registerImmediate = function(handle) {
+	            global.postMessage(messagePrefix + handle, "*");
+	        };
+	    }
+	
+	    function installMessageChannelImplementation() {
+	        var channel = new MessageChannel();
+	        channel.port1.onmessage = function(event) {
+	            var handle = event.data;
+	            runIfPresent(handle);
+	        };
+	
+	        registerImmediate = function(handle) {
+	            channel.port2.postMessage(handle);
+	        };
+	    }
+	
+	    function installReadyStateChangeImplementation() {
+	        var html = doc.documentElement;
+	        registerImmediate = function(handle) {
+	            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+	            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+	            var script = doc.createElement("script");
+	            script.onreadystatechange = function () {
+	                runIfPresent(handle);
+	                script.onreadystatechange = null;
+	                html.removeChild(script);
+	                script = null;
+	            };
+	            html.appendChild(script);
+	        };
+	    }
+	
+	    function installSetTimeoutImplementation() {
+	        registerImmediate = function(handle) {
+	            setTimeout(runIfPresent, 0, handle);
+	        };
+	    }
+	
+	    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+	    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+	    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+	
+	    // Don't get fooled by e.g. browserify environments.
+	    if ({}.toString.call(global.process) === "[object process]") {
+	        // For Node.js before 0.9
+	        installNextTickImplementation();
+	
+	    } else if (canUsePostMessage()) {
+	        // For non-IE10 modern browsers
+	        installPostMessageImplementation();
+	
+	    } else if (global.MessageChannel) {
+	        // For web workers, where supported
+	        installMessageChannelImplementation();
+	
+	    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+	        // For IE 6–8
+	        installReadyStateChangeImplementation();
+	
+	    } else {
+	        // For older browsers
+	        installSetTimeoutImplementation();
+	    }
+	
+	    attachTo.setImmediate = setImmediate;
+	    attachTo.clearImmediate = clearImmediate;
+	}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __jupyter_require__('process@0.11.9/browser.js')))
+})
+/** END DEFINE BLOCK for setimmediate@1.0.5/setImmediate.js **/
 
 
 /** START DEFINE BLOCK for phosphor@0.7.0/lib/collections/queue.js **/
@@ -31187,7 +31294,7 @@ jupyter.define('phosphor@0.7.0/lib/core/signaling.js', function (module, exports
 	    list.length -= count;
 	}
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __jupyter_require__('timers-browserify@1.4.2/main.js').setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __jupyter_require__('timers-browserify@2.0.2/main.js').setImmediate))
 })
 /** END DEFINE BLOCK for phosphor@0.7.0/lib/core/signaling.js **/
 
@@ -31420,8 +31527,8 @@ jupyter.define('phosphor@0.7.0/lib/ui/title.js', function (module, exports, __ju
 /** END DEFINE BLOCK for phosphor@0.7.0/lib/ui/title.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_layout.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_layout.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_layout.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_layout.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -31430,7 +31537,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_layout.js', function (module
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	/**
 	 * css properties exposed by the layout widget with their default values.
@@ -31468,7 +31575,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_layout.js', function (module
 	var LayoutModel = (function (_super) {
 	    __extends(LayoutModel, _super);
 	    function LayoutModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    LayoutModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31482,7 +31589,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_layout.js', function (module
 	var LayoutView = (function (_super) {
 	    __extends(LayoutView, _super);
 	    function LayoutView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Public constructor
@@ -31560,11 +31667,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_layout.js', function (module
 	exports.LayoutView = LayoutView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_layout.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_layout.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_link.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_link.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_link.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_link.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -31573,12 +31680,12 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_link.js', function (module, 
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var DirectionalLinkModel = (function (_super) {
 	    __extends(DirectionalLinkModel, _super);
 	    function DirectionalLinkModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    DirectionalLinkModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31634,17 +31741,17 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_link.js', function (module, 
 	            this.stopListening(this.targetModel, 'destroy', null);
 	        }
 	    };
-	    DirectionalLinkModel.serializers = _.extend({
-	        target: { deserialize: widget_1.unpack_models },
-	        source: { deserialize: widget_1.unpack_models }
-	    }, widget_1.WidgetModel.serializers);
 	    return DirectionalLinkModel;
 	}(widget_1.WidgetModel));
+	DirectionalLinkModel.serializers = _.extend({
+	    target: { deserialize: widget_1.unpack_models },
+	    source: { deserialize: widget_1.unpack_models }
+	}, widget_1.WidgetModel.serializers);
 	exports.DirectionalLinkModel = DirectionalLinkModel;
 	var LinkModel = (function (_super) {
 	    __extends(LinkModel, _super);
 	    function LinkModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    LinkModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31671,11 +31778,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_link.js', function (module, 
 	exports.LinkModel = LinkModel;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_link.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_link.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_bool.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_bool.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_bool.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_bool.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -31684,12 +31791,12 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_bool.js', function (module, 
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var BoolModel = (function (_super) {
 	    __extends(BoolModel, _super);
 	    function BoolModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    BoolModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31704,7 +31811,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_bool.js', function (module, 
 	var CheckboxModel = (function (_super) {
 	    __extends(CheckboxModel, _super);
 	    function CheckboxModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    CheckboxModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31718,7 +31825,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_bool.js', function (module, 
 	var CheckboxView = (function (_super) {
 	    __extends(CheckboxView, _super);
 	    function CheckboxView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -31726,7 +31833,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_bool.js', function (module, 
 	    CheckboxView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-checkbox');
 	        this.checkbox = document.createElement('input');
 	        this.checkbox.setAttribute('type', 'checkbox');
@@ -31768,7 +31875,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_bool.js', function (module, 
 	var ToggleButtonModel = (function (_super) {
 	    __extends(ToggleButtonModel, _super);
 	    function ToggleButtonModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ToggleButtonModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31785,7 +31892,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_bool.js', function (module, 
 	var ToggleButtonView = (function (_super) {
 	    __extends(ToggleButtonView, _super);
 	    function ToggleButtonView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -31880,7 +31987,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_bool.js', function (module, 
 	var ValidModel = (function (_super) {
 	    __extends(ValidModel, _super);
 	    function ValidModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ValidModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31895,7 +32002,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_bool.js', function (module, 
 	var ValidView = (function (_super) {
 	    __extends(ValidView, _super);
 	    function ValidView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -31931,11 +32038,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_bool.js', function (module, 
 	exports.ValidView = ValidView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_bool.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_bool.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_button.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_button.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_button.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_button.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -31944,12 +32051,12 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_button.js', function (module
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var ButtonModel = (function (_super) {
 	    __extends(ButtonModel, _super);
 	    function ButtonModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ButtonModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31968,7 +32075,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_button.js', function (module
 	var ButtonView = (function (_super) {
 	    __extends(ButtonView, _super);
 	    function ButtonView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -32048,11 +32155,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_button.js', function (module
 	exports.ButtonView = ButtonView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_button.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_button.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_box.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_box.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -32061,42 +32168,47 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, e
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
-	var utils_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/utils.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var utils_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
+	var searching_1 = __jupyter_require__('phosphor@^0.7.0/lib/algorithm/searching.js');
 	var panel_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/panel.js');
 	var widget_2 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
-	var searching_1 = __jupyter_require__('phosphor@^0.7.0/lib/algorithm/searching.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var $ = __jupyter_require__('jquery@^3.1.1/dist/jquery.js');
 	var JupyterPhosphorPanelWidget = (function (_super) {
 	    __extends(JupyterPhosphorPanelWidget, _super);
 	    function JupyterPhosphorPanelWidget(options) {
-	        _super.call(this);
-	        this._view = options.view;
+	        var _this;
+	        var view = options.view;
+	        delete options.view;
+	        _this = _super.call(this, options) || this;
+	        _this._view = view;
+	        return _this;
 	    }
-	    JupyterPhosphorPanelWidget.prototype.onAfterAttach = function (msg) {
-	        _super.prototype.onAfterAttach.call(this, msg);
-	        this._view.trigger('displayed');
+	    /**
+	     * Process the phosphor message.
+	     *
+	     * Any custom phosphor widget used inside a Jupyter widget should override
+	     * the processMessage function like this.
+	     */
+	    JupyterPhosphorPanelWidget.prototype.processMessage = function (msg) {
+	        _super.prototype.processMessage.call(this, msg);
+	        this._view.processPhosphorMessage(msg);
 	    };
-	    Object.defineProperty(JupyterPhosphorPanelWidget.prototype, "isDisposed", {
-	        get: function () {
-	            return this._view === null;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
+	    /**
+	     * Dispose the widget.
+	     *
+	     * This causes the view to be destroyed as well with 'remove'
+	     */
 	    JupyterPhosphorPanelWidget.prototype.dispose = function () {
 	        if (this.isDisposed) {
 	            return;
 	        }
 	        _super.prototype.dispose.call(this);
-	        this._view = null;
-	    };
-	    JupyterPhosphorPanelWidget.prototype.onResize = function (msg) {
-	        if (this._view.onResize) {
-	            this._view.onResize(msg);
+	        if (this._view) {
+	            this._view.remove();
 	        }
-	        _super.prototype.onResize.call(this, msg);
+	        this._view = null;
 	    };
 	    return JupyterPhosphorPanelWidget;
 	}(panel_1.Panel));
@@ -32104,7 +32216,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, e
 	var BoxModel = (function (_super) {
 	    __extends(BoxModel, _super);
 	    function BoxModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    BoxModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -32116,16 +32228,44 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, e
 	            overflow_y: ''
 	        });
 	    };
-	    BoxModel.serializers = _.extend({
-	        children: { deserialize: widget_1.unpack_models }
-	    }, widget_1.DOMWidgetModel.serializers);
 	    return BoxModel;
 	}(widget_1.DOMWidgetModel));
+	BoxModel.serializers = _.extend({
+	    children: { deserialize: widget_1.unpack_models }
+	}, widget_1.DOMWidgetModel.serializers);
 	exports.BoxModel = BoxModel;
+	var HBoxModel = (function (_super) {
+	    __extends(HBoxModel, _super);
+	    function HBoxModel() {
+	        return _super.apply(this, arguments) || this;
+	    }
+	    HBoxModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _view_name: 'HBoxView',
+	            _model_name: 'HBoxModel',
+	        });
+	    };
+	    return HBoxModel;
+	}(BoxModel));
+	exports.HBoxModel = HBoxModel;
+	var VBoxModel = (function (_super) {
+	    __extends(VBoxModel, _super);
+	    function VBoxModel() {
+	        return _super.apply(this, arguments) || this;
+	    }
+	    VBoxModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _view_name: 'VBoxView',
+	            _model_name: 'VBoxModel',
+	        });
+	    };
+	    return VBoxModel;
+	}(BoxModel));
+	exports.VBoxModel = VBoxModel;
 	var ProxyModel = (function (_super) {
 	    __extends(ProxyModel, _super);
 	    function ProxyModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ProxyModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -32134,16 +32274,16 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, e
 	            child: null
 	        });
 	    };
-	    ProxyModel.serializers = _.extend({
-	        child: { deserialize: widget_1.unpack_models }
-	    }, widget_1.DOMWidgetModel.serializers);
 	    return ProxyModel;
 	}(widget_1.DOMWidgetModel));
+	ProxyModel.serializers = _.extend({
+	    child: { deserialize: widget_1.unpack_models }
+	}, widget_1.DOMWidgetModel.serializers);
 	exports.ProxyModel = ProxyModel;
 	var ProxyView = (function (_super) {
 	    __extends(ProxyView, _super);
 	    function ProxyView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ProxyView.prototype.initialize = function (parameters) {
 	        // Public constructor
@@ -32203,7 +32343,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, e
 	var PlaceProxyModel = (function (_super) {
 	    __extends(PlaceProxyModel, _super);
 	    function PlaceProxyModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    PlaceProxyModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -32218,7 +32358,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, e
 	var PlaceProxyView = (function (_super) {
 	    __extends(PlaceProxyView, _super);
 	    function PlaceProxyView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    PlaceProxyView.prototype.initialize = function (parameters) {
 	        _super.prototype.initialize.call(this, parameters);
@@ -32235,7 +32375,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, e
 	var BoxView = (function (_super) {
 	    __extends(BoxView, _super);
 	    function BoxView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    BoxView.prototype._createElement = function (tagName) {
 	        this.pWidget = new JupyterPhosphorPanelWidget({ view: this });
@@ -32269,6 +32409,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, e
 	     * Called when view is rendered.
 	     */
 	    BoxView.prototype.render = function () {
+	        _super.prototype.render.call(this);
 	        this.children_views.update(this.model.get('children'));
 	        this.update_overflow_x();
 	        this.update_overflow_y();
@@ -32309,10 +32450,6 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, e
 	            var i = searching_1.indexOf(_this.pWidget.widgets, dummy);
 	            _this.pWidget.insertWidget(i, view.pWidget);
 	            dummy.dispose();
-	            // Trigger the displayed event of the child view.
-	            _this.displayed.then(function () {
-	                view.trigger('displayed', _this);
-	            });
 	            return view;
 	        }).catch(utils_1.reject('Could not add child view to box', true));
 	    };
@@ -32326,663 +32463,39 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_box.js', function (module, e
 	    return BoxView;
 	}(widget_1.DOMWidgetView));
 	exports.BoxView = BoxView;
+	var HBoxView = (function (_super) {
+	    __extends(HBoxView, _super);
+	    function HBoxView() {
+	        return _super.apply(this, arguments) || this;
+	    }
+	    /**
+	     * Public constructor
+	     */
+	    HBoxView.prototype.initialize = function (parameters) {
+	        _super.prototype.initialize.call(this, parameters);
+	        this.pWidget.addClass('widget-hbox');
+	    };
+	    return HBoxView;
+	}(BoxView));
+	exports.HBoxView = HBoxView;
+	var VBoxView = (function (_super) {
+	    __extends(VBoxView, _super);
+	    function VBoxView() {
+	        return _super.apply(this, arguments) || this;
+	    }
+	    /**
+	     * Public constructor
+	     */
+	    VBoxView.prototype.initialize = function (parameters) {
+	        _super.prototype.initialize.call(this, parameters);
+	        this.pWidget.addClass('widget-vbox');
+	    };
+	    return VBoxView;
+	}(BoxView));
+	exports.VBoxView = VBoxView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_box.js **/
-
-
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/ui/panel.js **/
-jupyter.define('phosphor@0.7.0/lib/ui/panel.js', function (module, exports, __jupyter_require__) {
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	/*-----------------------------------------------------------------------------
-	| Copyright (c) 2014-2016, PhosphorJS Contributors
-	|
-	| Distributed under the terms of the BSD 3-Clause License.
-	|
-	| The full license is in the file LICENSE, distributed with this software.
-	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
-	var mutation_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/mutation.js');
-	var searching_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/searching.js');
-	var vector_1 = __jupyter_require__('phosphor@0.7.0/lib/collections/vector.js');
-	var messaging_1 = __jupyter_require__('phosphor@0.7.0/lib/core/messaging.js');
-	var widget_1 = __jupyter_require__('phosphor@0.7.0/lib/ui/widget.js');
-	/**
-	 * The class name added to Panel instances.
-	 */
-	var PANEL_CLASS = 'p-Panel';
-	/**
-	 * A simple and convenient panel widget class.
-	 *
-	 * #### Notes
-	 * This class is suitable as a base class for implementing a variety of
-	 * convenience panel widgets, but can also be used directly with CSS to
-	 * arrange a collection of widgets.
-	 *
-	 * This class provides a convenience wrapper around a [[PanelLayout]].
-	 */
-	var Panel = (function (_super) {
-	    __extends(Panel, _super);
-	    /**
-	     * Construct a new panel.
-	     *
-	     * @param options - The options for initializing the panel.
-	     */
-	    function Panel(options) {
-	        if (options === void 0) { options = {}; }
-	        _super.call(this);
-	        this.addClass(PANEL_CLASS);
-	        this.layout = Private.createLayout(options);
-	    }
-	    Object.defineProperty(Panel.prototype, "widgets", {
-	        /**
-	         * A read-only sequence of the widgets in the panel.
-	         *
-	         * #### Notes
-	         * This is a read-only property.
-	         */
-	        get: function () {
-	            return this.layout.widgets;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    /**
-	     * Add a widget to the end of the panel.
-	     *
-	     * @param widget - The widget to add to the panel.
-	     *
-	     * #### Notes
-	     * If the is already contained in the panel, it will be moved.
-	     */
-	    Panel.prototype.addWidget = function (widget) {
-	        this.layout.addWidget(widget);
-	    };
-	    /**
-	     * Insert a widget at the specified index.
-	     *
-	     * @param index - The index at which to insert the widget.
-	     *
-	     * @param widget - The widget to insert into to the panel.
-	     *
-	     * #### Notes
-	     * If the widget is already contained in the panel, it will be moved.
-	     */
-	    Panel.prototype.insertWidget = function (index, widget) {
-	        this.layout.insertWidget(index, widget);
-	    };
-	    return Panel;
-	}(widget_1.Widget));
-	exports.Panel = Panel;
-	/**
-	 * A concrete layout implementation suitable for many use cases.
-	 *
-	 * #### Notes
-	 * This class is suitable as a base class for implementing a variety of
-	 * layouts, but can also be used directly with standard CSS to layout a
-	 * collection of widgets.
-	 */
-	var PanelLayout = (function (_super) {
-	    __extends(PanelLayout, _super);
-	    function PanelLayout() {
-	        _super.apply(this, arguments);
-	        this._widgets = new vector_1.Vector();
-	    }
-	    /**
-	     * Dispose of the resources held by the layout.
-	     *
-	     * #### Notes
-	     * This will clear and dispose all widgets in the layout.
-	     *
-	     * All reimplementations should call the superclass method.
-	     *
-	     * This method is called automatically when the parent is disposed.
-	     */
-	    PanelLayout.prototype.dispose = function () {
-	        while (this._widgets.length > 0) {
-	            this._widgets.popBack().dispose();
-	        }
-	        _super.prototype.dispose.call(this);
-	    };
-	    Object.defineProperty(PanelLayout.prototype, "widgets", {
-	        /**
-	         * A read-only sequence of the widgets in the layout.
-	         *
-	         * #### Notes
-	         * This is a read-only property.
-	         */
-	        get: function () {
-	            return this._widgets;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    /**
-	     * Create an iterator over the widgets in the layout.
-	     *
-	     * @returns A new iterator over the widgets in the layout.
-	     */
-	    PanelLayout.prototype.iter = function () {
-	        return this._widgets.iter();
-	    };
-	    /**
-	     * Add a widget to the end of the layout.
-	     *
-	     * @param widget - The widget to add to the layout.
-	     *
-	     * #### Notes
-	     * If the widget is already contained in the layout, it will be moved.
-	     */
-	    PanelLayout.prototype.addWidget = function (widget) {
-	        this.insertWidget(this._widgets.length, widget);
-	    };
-	    /**
-	     * Insert a widget into the layout at the specified index.
-	     *
-	     * @param index - The index at which to insert the widget.
-	     *
-	     * @param widget - The widget to insert into the layout.
-	     *
-	     * #### Notes
-	     * The index will be clamped to the bounds of the widgets.
-	     *
-	     * If the widget is already added to the layout, it will be moved.
-	     */
-	    PanelLayout.prototype.insertWidget = function (index, widget) {
-	        // Remove the widget from its current parent. This is a no-op
-	        // if the widget's parent is already the layout parent widget.
-	        widget.parent = this.parent;
-	        // Look up the current index of the widget.
-	        var i = searching_1.indexOf(this._widgets, widget);
-	        // Clamp the insert index to the vector bounds.
-	        var j = Math.max(0, Math.min(Math.floor(index), this._widgets.length));
-	        // If the widget is not in the vector, insert it.
-	        if (i === -1) {
-	            // Insert the widget into the vector.
-	            this._widgets.insert(j, widget);
-	            // If the layout is parented, attach the widget to the DOM.
-	            if (this.parent)
-	                this.attachWidget(j, widget);
-	            // There is nothing more to do.
-	            return;
-	        }
-	        // Otherwise, the widget exists in the vector and should be moved.
-	        // Adjust the index if the location is at the end of the vector.
-	        if (j === this._widgets.length)
-	            j--;
-	        // Bail if there is no effective move.
-	        if (i === j)
-	            return;
-	        // Move the widget to the new location.
-	        mutation_1.move(this._widgets, i, j);
-	        // If the layout is parented, move the widget in the DOM.
-	        if (this.parent)
-	            this.moveWidget(i, j, widget);
-	    };
-	    /**
-	     * Remove a widget from the layout.
-	     *
-	     * @param widget - The widget to remove from the layout.
-	     *
-	     * #### Notes
-	     * A widget is automatically removed from the layout when its `parent`
-	     * is set to `null`. This method should only be invoked directly when
-	     * removing a widget from a layout which has yet to be installed on a
-	     * parent widget.
-	     *
-	     * This method does *not* modify the widget's `parent`.
-	     */
-	    PanelLayout.prototype.removeWidget = function (widget) {
-	        this.removeWidgetAt(searching_1.indexOf(this._widgets, widget));
-	    };
-	    /**
-	     * Remove the widget at a given index from the layout.
-	     *
-	     * @param index - The index of the widget to remove.
-	     *
-	     * #### Notes
-	     * A widget is automatically removed from the layout when its `parent`
-	     * is set to `null`. This method should only be invoked directly when
-	     * removing a widget from a layout which has yet to be installed on a
-	     * parent widget.
-	     *
-	     * This method does *not* modify the widget's `parent`.
-	     */
-	    PanelLayout.prototype.removeWidgetAt = function (index) {
-	        // Bail if the index is out of range.
-	        var i = Math.floor(index);
-	        if (i < 0 || i >= this._widgets.length) {
-	            return;
-	        }
-	        // Remove the widget from the vector.
-	        var widget = this._widgets.removeAt(i);
-	        // If the layout is parented, detach the widget from the DOM.
-	        if (this.parent)
-	            this.detachWidget(i, widget);
-	    };
-	    /**
-	     * Perform layout initialization which requires the parent widget.
-	     */
-	    PanelLayout.prototype.init = function () {
-	        var _this = this;
-	        _super.prototype.init.call(this);
-	        var index = 0;
-	        iteration_1.each(this, function (widget) { _this.attachWidget(index++, widget); });
-	    };
-	    /**
-	     * Attach a widget to the parent's DOM node.
-	     *
-	     * @param index - The current index of the widget in the layout.
-	     *
-	     * @param widget - The widget to attach to the parent.
-	     *
-	     * #### Notes
-	     * This method is called automatically by the panel layout at the
-	     * appropriate time. It should not be called directly by user code.
-	     *
-	     * The default implementation adds the widgets's node to the parent's
-	     * node at the proper location, and sends an `'after-attach'` message
-	     * to the widget if the parent is attached to the DOM.
-	     *
-	     * Subclasses may reimplement this method to control how the widget's
-	     * node is added to the parent's node, but the reimplementation must
-	     * send an `'after-attach'` message to the widget if the parent is
-	     * attached to the DOM.
-	     */
-	    PanelLayout.prototype.attachWidget = function (index, widget) {
-	        // Look up the next sibling reference node.
-	        var ref = this.parent.node.children[index];
-	        // Insert the widget's node before the sibling.
-	        this.parent.node.insertBefore(widget.node, ref);
-	        // Send an `'after-attach'` message if the parent is attached.
-	        if (this.parent.isAttached)
-	            messaging_1.sendMessage(widget, widget_1.WidgetMessage.AfterAttach);
-	    };
-	    /**
-	     * Move a widget in the parent's DOM node.
-	     *
-	     * @param fromIndex - The previous index of the widget in the layout.
-	     *
-	     * @param toIndex - The current index of the widget in the layout.
-	     *
-	     * @param widget - The widget to move in the parent.
-	     *
-	     * #### Notes
-	     * This method is called automatically by the panel layout at the
-	     * appropriate time. It should not be called directly by user code.
-	     *
-	     * The default implementation moves the widget's node to the proper
-	     * location in the parent's node and sends both a `'before-detach'`
-	     * and an `'after-attach'` message to the widget if the parent is
-	     * attached to the DOM.
-	     *
-	     * Subclasses may reimplement this method to control how the widget's
-	     * node is moved in the parent's node, but the reimplementation must
-	     * send both a `'before-detach'` and an `'after-attach'` message to
-	     * the widget if the parent is attached to the DOM.
-	     */
-	    PanelLayout.prototype.moveWidget = function (fromIndex, toIndex, widget) {
-	        // Send a `'before-detach'` message if the parent is attached.
-	        if (this.parent.isAttached)
-	            messaging_1.sendMessage(widget, widget_1.WidgetMessage.BeforeDetach);
-	        // Remove the widget's node from the parent.
-	        this.parent.node.removeChild(widget.node);
-	        // Look up the next sibling reference node.
-	        var ref = this.parent.node.children[toIndex];
-	        // Insert the widget's node before the sibling.
-	        this.parent.node.insertBefore(widget.node, ref);
-	        // Send an `'after-attach'` message if the parent is attached.
-	        if (this.parent.isAttached)
-	            messaging_1.sendMessage(widget, widget_1.WidgetMessage.AfterAttach);
-	    };
-	    /**
-	     * Detach a widget from the parent's DOM node.
-	     *
-	     * @param index - The previous index of the widget in the layout.
-	     *
-	     * @param widget - The widget to detach from the parent.
-	     *
-	     * #### Notes
-	     * This method is called automatically by the panel layout at the
-	     * appropriate time. It should not be called directly by user code.
-	     *
-	     * The default implementation removes the widget's node from the
-	     * parent's node, and sends a `'before-detach'` message to the widget
-	     * if the parent is attached to the DOM.
-	     *
-	     * Subclasses may reimplement this method to control how the widget's
-	     * node is removed from the parent's node, but the reimplementation
-	     * must send a `'before-detach'` message to the widget if the parent
-	     * is attached to the DOM.
-	     */
-	    PanelLayout.prototype.detachWidget = function (index, widget) {
-	        // Send a `'before-detach'` message if the parent is attached.
-	        if (this.parent.isAttached)
-	            messaging_1.sendMessage(widget, widget_1.WidgetMessage.BeforeDetach);
-	        // Remove the widget's node from the parent.
-	        this.parent.node.removeChild(widget.node);
-	    };
-	    return PanelLayout;
-	}(widget_1.Layout));
-	exports.PanelLayout = PanelLayout;
-	/**
-	 * The namespace for the private module data.
-	 */
-	var Private;
-	(function (Private) {
-	    /**
-	     * Create a panel layout for the given panel options.
-	     */
-	    function createLayout(options) {
-	        return options.layout || new PanelLayout();
-	    }
-	    Private.createLayout = createLayout;
-	})(Private || (Private = {}));
-	
-})
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/ui/panel.js **/
-
-
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/mutation.js **/
-jupyter.define('phosphor@0.7.0/lib/algorithm/mutation.js', function (module, exports, __jupyter_require__) {
-	"use strict";
-	/*-----------------------------------------------------------------------------
-	| Copyright (c) 2014-2016, PhosphorJS Contributors
-	|
-	| Distributed under the terms of the BSD 3-Clause License.
-	|
-	| The full license is in the file LICENSE, distributed with this software.
-	|----------------------------------------------------------------------------*/
-	var sequence_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/sequence.js');
-	/**
-	 * Move an element in a sequence from one index to another.
-	 *
-	 * @param object - The sequence or array-like object to mutate.
-	 *
-	 * @param fromIndex - The index of the element to move.
-	 *
-	 * @param toIndex - The target index of the element.
-	 *
-	 * #### Complexity
-	 * Linear.
-	 *
-	 * #### Undefined Behavior
-	 * A `fromIndex` which is non-integral or out of range.
-	 *
-	 * A `toIndex` which is non-integral or out of range.
-	 *
-	 * #### Example
-	 * ```typescript
-	 * import { move } from 'phosphor/lib/algorithm/mutation';
-	 *
-	 * let data = [0, 1, 2, 3, 4];
-	 * move(data, 1, 2);  // [0, 2, 1, 3, 4]
-	 * move(data, 4, 2);  // [0, 2, 4, 1, 3]
-	 * ```
-	 */
-	function move(object, fromIndex, toIndex) {
-	    if (object.length <= 1 || fromIndex === toIndex) {
-	        return;
-	    }
-	    var d = fromIndex < toIndex ? 1 : -1;
-	    var seq = sequence_1.asMutableSequence(object);
-	    var value = seq.at(fromIndex);
-	    for (var i = fromIndex; i !== toIndex; i += d) {
-	        seq.set(i, seq.at(i + d));
-	    }
-	    seq.set(toIndex, value);
-	}
-	exports.move = move;
-	/**
-	 * Reverse a sequence in-place subject to an optional range.
-	 *
-	 * @param object - The sequence or array-like object to mutate.
-	 *
-	 * @param first - The index of the first element of the range. This
-	 *   should be `<=` the `last` index. The default is `0`.
-	 *
-	 * @param last - The index of the last element of the range. This
-	 *   should be `>=` the `first` index. The default is `length - 1`.
-	 *
-	 * #### Complexity
-	 * Linear.
-	 *
-	 * #### Undefined Behavior
-	 * A `first` index which is non-integral or out of range.
-	 *
-	 * A `last` index which is non-integral or out of range.
-	 *
-	 * #### Example
-	 * ```typescript
-	 * import { reverse } from 'phosphor/lib/algorithm/mutation';
-	 *
-	 * let data = [0, 1, 2, 3, 4];
-	 * reverse(data, 1, 3);  // [0, 3, 2, 1, 4]
-	 * reverse(data, 3);     // [0, 3, 2, 4, 1]
-	 * reverse(data);        // [1, 4, 2, 3, 0]
-	 * ```
-	 */
-	function reverse(object, first, last) {
-	    var length = object.length;
-	    if (length <= 1) {
-	        return;
-	    }
-	    if (first === void 0) {
-	        first = 0;
-	    }
-	    if (last === void 0) {
-	        last = length - 1;
-	    }
-	    if (first >= last) {
-	        return;
-	    }
-	    var seq = sequence_1.asMutableSequence(object);
-	    while (first < last) {
-	        var front = seq.at(first);
-	        var back = seq.at(last);
-	        seq.set(first++, back);
-	        seq.set(last--, front);
-	    }
-	}
-	exports.reverse = reverse;
-	/**
-	 * Rotate the elements of a sequence by a positive or negative amount.
-	 *
-	 * @param object - The sequence or array-like object to mutate.
-	 *
-	 * @param delta - The amount of rotation to apply to the elements. A
-	 *   positive value will rotate the elements to the left. A negative
-	 *   value will rotate the elements to the right.
-	 *
-	 * #### Complexity
-	 * Linear.
-	 *
-	 * #### Undefined Behavior
-	 * A `delta` amount which is non-integral.
-	 *
-	 * #### Example
-	 * ```typescript
-	 * import { rotate } from 'phosphor/lib/algorithm/mutation';
-	 *
-	 * let data = [0, 1, 2, 3, 4];
-	 * rotate(data, 2);   // [2, 3, 4, 0, 1]
-	 * rotate(data, -2);  // [0, 1, 2, 3, 4]
-	 * rotate(data, 10);  // [0, 1, 2, 3, 4]
-	 * rotate(data, 9);   // [4, 0, 1, 2, 3]
-	 * ```
-	 */
-	function rotate(object, delta) {
-	    var length = object.length;
-	    if (length <= 1) {
-	        return;
-	    }
-	    if (delta > 0) {
-	        delta = delta % length;
-	    }
-	    else if (delta < 0) {
-	        delta = ((delta % length) + length) % length;
-	    }
-	    if (delta === 0) {
-	        return;
-	    }
-	    var seq = sequence_1.asMutableSequence(object);
-	    reverse(seq, 0, delta - 1);
-	    reverse(seq, delta, length - 1);
-	    reverse(seq, 0, length - 1);
-	}
-	exports.rotate = rotate;
-	
-})
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/mutation.js **/
-
-
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/sequence.js **/
-jupyter.define('phosphor@0.7.0/lib/algorithm/sequence.js', function (module, exports, __jupyter_require__) {
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	/*-----------------------------------------------------------------------------
-	| Copyright (c) 2014-2016, PhosphorJS Contributors
-	|
-	| Distributed under the terms of the BSD 3-Clause License.
-	|
-	| The full license is in the file LICENSE, distributed with this software.
-	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
-	/**
-	 * Cast a sequence or array-like object to a sequence.
-	 *
-	 * @param object - The sequence or array-like object of interest.
-	 *
-	 * @returns A sequence for the given object.
-	 *
-	 * #### Notes
-	 * This function allows sequence algorithms to operate on user-defined
-	 * sequence types and builtin array-like objects in a uniform fashion.
-	 */
-	function asSequence(object) {
-	    var seq;
-	    if (typeof object.at === 'function') {
-	        seq = object;
-	    }
-	    else {
-	        seq = new ArraySequence(object);
-	    }
-	    return seq;
-	}
-	exports.asSequence = asSequence;
-	/**
-	 * Cast a mutable sequence or array-like object to a mutable sequence.
-	 *
-	 * @param object - The sequence or array-like object of interest.
-	 *
-	 * @returns A mutable sequence for the given object.
-	 *
-	 * #### Notes
-	 * This function allows sequence algorithms to operate on user-defined
-	 * sequence types and builtin array-like objects in a uniform fashion.
-	 */
-	function asMutableSequence(object) {
-	    var seq;
-	    if (typeof object.set === 'function') {
-	        seq = object;
-	    }
-	    else {
-	        seq = new MutableArraySequence(object);
-	    }
-	    return seq;
-	}
-	exports.asMutableSequence = asMutableSequence;
-	/**
-	 * A sequence for an array-like object.
-	 *
-	 * #### Notes
-	 * This sequence can be used for any builtin JS array-like object.
-	 */
-	var ArraySequence = (function () {
-	    /**
-	     * Construct a new array sequence.
-	     *
-	     * @param source - The array-like object of interest.
-	     */
-	    function ArraySequence(source) {
-	        this._source = source;
-	    }
-	    Object.defineProperty(ArraySequence.prototype, "length", {
-	        /**
-	         * The length of the sequence.
-	         *
-	         * #### Notes
-	         * This is a read-only property.
-	         */
-	        get: function () {
-	            return this._source.length;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    /**
-	     * Create an iterator over the object's values.
-	     *
-	     * @returns A new iterator which traverses the object's values.
-	     */
-	    ArraySequence.prototype.iter = function () {
-	        return new iteration_1.ArrayIterator(this._source, 0);
-	    };
-	    /**
-	     * Get the value at the specified index.
-	     *
-	     * @param index - The positive integer index of interest.
-	     *
-	     * @returns The value at the specified index.
-	     *
-	     * #### Undefined Behavior
-	     * An `index` which is non-integral or out of range.
-	     */
-	    ArraySequence.prototype.at = function (index) {
-	        return this._source[index];
-	    };
-	    return ArraySequence;
-	}());
-	exports.ArraySequence = ArraySequence;
-	/**
-	 * A sequence for a mutable array-like object.
-	 *
-	 * #### Notes
-	 * This sequence can be used for any builtin JS array-like object.
-	 */
-	var MutableArraySequence = (function (_super) {
-	    __extends(MutableArraySequence, _super);
-	    function MutableArraySequence() {
-	        _super.apply(this, arguments);
-	    }
-	    /**
-	     * Set the value at the specified index.
-	     *
-	     * @param index - The positive integer index of interest.
-	     *
-	     * @param value - The value to set at the specified index.
-	     *
-	     * #### Undefined Behavior
-	     * An `index` which is non-integral or out of range.
-	     */
-	    MutableArraySequence.prototype.set = function (index, value) {
-	        this._source[index] = value;
-	    };
-	    return MutableArraySequence;
-	}(ArraySequence));
-	exports.MutableArraySequence = MutableArraySequence;
-	
-})
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/sequence.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_box.js **/
 
 
 /** START DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/searching.js **/
@@ -33579,6 +33092,660 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/searching.js', function (module, ex
 /** END DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/searching.js **/
 
 
+/** START DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/sequence.js **/
+jupyter.define('phosphor@0.7.0/lib/algorithm/sequence.js', function (module, exports, __jupyter_require__) {
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	/*-----------------------------------------------------------------------------
+	| Copyright (c) 2014-2016, PhosphorJS Contributors
+	|
+	| Distributed under the terms of the BSD 3-Clause License.
+	|
+	| The full license is in the file LICENSE, distributed with this software.
+	|----------------------------------------------------------------------------*/
+	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
+	/**
+	 * Cast a sequence or array-like object to a sequence.
+	 *
+	 * @param object - The sequence or array-like object of interest.
+	 *
+	 * @returns A sequence for the given object.
+	 *
+	 * #### Notes
+	 * This function allows sequence algorithms to operate on user-defined
+	 * sequence types and builtin array-like objects in a uniform fashion.
+	 */
+	function asSequence(object) {
+	    var seq;
+	    if (typeof object.at === 'function') {
+	        seq = object;
+	    }
+	    else {
+	        seq = new ArraySequence(object);
+	    }
+	    return seq;
+	}
+	exports.asSequence = asSequence;
+	/**
+	 * Cast a mutable sequence or array-like object to a mutable sequence.
+	 *
+	 * @param object - The sequence or array-like object of interest.
+	 *
+	 * @returns A mutable sequence for the given object.
+	 *
+	 * #### Notes
+	 * This function allows sequence algorithms to operate on user-defined
+	 * sequence types and builtin array-like objects in a uniform fashion.
+	 */
+	function asMutableSequence(object) {
+	    var seq;
+	    if (typeof object.set === 'function') {
+	        seq = object;
+	    }
+	    else {
+	        seq = new MutableArraySequence(object);
+	    }
+	    return seq;
+	}
+	exports.asMutableSequence = asMutableSequence;
+	/**
+	 * A sequence for an array-like object.
+	 *
+	 * #### Notes
+	 * This sequence can be used for any builtin JS array-like object.
+	 */
+	var ArraySequence = (function () {
+	    /**
+	     * Construct a new array sequence.
+	     *
+	     * @param source - The array-like object of interest.
+	     */
+	    function ArraySequence(source) {
+	        this._source = source;
+	    }
+	    Object.defineProperty(ArraySequence.prototype, "length", {
+	        /**
+	         * The length of the sequence.
+	         *
+	         * #### Notes
+	         * This is a read-only property.
+	         */
+	        get: function () {
+	            return this._source.length;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * Create an iterator over the object's values.
+	     *
+	     * @returns A new iterator which traverses the object's values.
+	     */
+	    ArraySequence.prototype.iter = function () {
+	        return new iteration_1.ArrayIterator(this._source, 0);
+	    };
+	    /**
+	     * Get the value at the specified index.
+	     *
+	     * @param index - The positive integer index of interest.
+	     *
+	     * @returns The value at the specified index.
+	     *
+	     * #### Undefined Behavior
+	     * An `index` which is non-integral or out of range.
+	     */
+	    ArraySequence.prototype.at = function (index) {
+	        return this._source[index];
+	    };
+	    return ArraySequence;
+	}());
+	exports.ArraySequence = ArraySequence;
+	/**
+	 * A sequence for a mutable array-like object.
+	 *
+	 * #### Notes
+	 * This sequence can be used for any builtin JS array-like object.
+	 */
+	var MutableArraySequence = (function (_super) {
+	    __extends(MutableArraySequence, _super);
+	    function MutableArraySequence() {
+	        _super.apply(this, arguments);
+	    }
+	    /**
+	     * Set the value at the specified index.
+	     *
+	     * @param index - The positive integer index of interest.
+	     *
+	     * @param value - The value to set at the specified index.
+	     *
+	     * #### Undefined Behavior
+	     * An `index` which is non-integral or out of range.
+	     */
+	    MutableArraySequence.prototype.set = function (index, value) {
+	        this._source[index] = value;
+	    };
+	    return MutableArraySequence;
+	}(ArraySequence));
+	exports.MutableArraySequence = MutableArraySequence;
+	
+})
+/** END DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/sequence.js **/
+
+
+/** START DEFINE BLOCK for phosphor@0.7.0/lib/ui/panel.js **/
+jupyter.define('phosphor@0.7.0/lib/ui/panel.js', function (module, exports, __jupyter_require__) {
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	/*-----------------------------------------------------------------------------
+	| Copyright (c) 2014-2016, PhosphorJS Contributors
+	|
+	| Distributed under the terms of the BSD 3-Clause License.
+	|
+	| The full license is in the file LICENSE, distributed with this software.
+	|----------------------------------------------------------------------------*/
+	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
+	var mutation_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/mutation.js');
+	var searching_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/searching.js');
+	var vector_1 = __jupyter_require__('phosphor@0.7.0/lib/collections/vector.js');
+	var messaging_1 = __jupyter_require__('phosphor@0.7.0/lib/core/messaging.js');
+	var widget_1 = __jupyter_require__('phosphor@0.7.0/lib/ui/widget.js');
+	/**
+	 * The class name added to Panel instances.
+	 */
+	var PANEL_CLASS = 'p-Panel';
+	/**
+	 * A simple and convenient panel widget class.
+	 *
+	 * #### Notes
+	 * This class is suitable as a base class for implementing a variety of
+	 * convenience panel widgets, but can also be used directly with CSS to
+	 * arrange a collection of widgets.
+	 *
+	 * This class provides a convenience wrapper around a [[PanelLayout]].
+	 */
+	var Panel = (function (_super) {
+	    __extends(Panel, _super);
+	    /**
+	     * Construct a new panel.
+	     *
+	     * @param options - The options for initializing the panel.
+	     */
+	    function Panel(options) {
+	        if (options === void 0) { options = {}; }
+	        _super.call(this);
+	        this.addClass(PANEL_CLASS);
+	        this.layout = Private.createLayout(options);
+	    }
+	    Object.defineProperty(Panel.prototype, "widgets", {
+	        /**
+	         * A read-only sequence of the widgets in the panel.
+	         *
+	         * #### Notes
+	         * This is a read-only property.
+	         */
+	        get: function () {
+	            return this.layout.widgets;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * Add a widget to the end of the panel.
+	     *
+	     * @param widget - The widget to add to the panel.
+	     *
+	     * #### Notes
+	     * If the is already contained in the panel, it will be moved.
+	     */
+	    Panel.prototype.addWidget = function (widget) {
+	        this.layout.addWidget(widget);
+	    };
+	    /**
+	     * Insert a widget at the specified index.
+	     *
+	     * @param index - The index at which to insert the widget.
+	     *
+	     * @param widget - The widget to insert into to the panel.
+	     *
+	     * #### Notes
+	     * If the widget is already contained in the panel, it will be moved.
+	     */
+	    Panel.prototype.insertWidget = function (index, widget) {
+	        this.layout.insertWidget(index, widget);
+	    };
+	    return Panel;
+	}(widget_1.Widget));
+	exports.Panel = Panel;
+	/**
+	 * A concrete layout implementation suitable for many use cases.
+	 *
+	 * #### Notes
+	 * This class is suitable as a base class for implementing a variety of
+	 * layouts, but can also be used directly with standard CSS to layout a
+	 * collection of widgets.
+	 */
+	var PanelLayout = (function (_super) {
+	    __extends(PanelLayout, _super);
+	    function PanelLayout() {
+	        _super.apply(this, arguments);
+	        this._widgets = new vector_1.Vector();
+	    }
+	    /**
+	     * Dispose of the resources held by the layout.
+	     *
+	     * #### Notes
+	     * This will clear and dispose all widgets in the layout.
+	     *
+	     * All reimplementations should call the superclass method.
+	     *
+	     * This method is called automatically when the parent is disposed.
+	     */
+	    PanelLayout.prototype.dispose = function () {
+	        while (this._widgets.length > 0) {
+	            this._widgets.popBack().dispose();
+	        }
+	        _super.prototype.dispose.call(this);
+	    };
+	    Object.defineProperty(PanelLayout.prototype, "widgets", {
+	        /**
+	         * A read-only sequence of the widgets in the layout.
+	         *
+	         * #### Notes
+	         * This is a read-only property.
+	         */
+	        get: function () {
+	            return this._widgets;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * Create an iterator over the widgets in the layout.
+	     *
+	     * @returns A new iterator over the widgets in the layout.
+	     */
+	    PanelLayout.prototype.iter = function () {
+	        return this._widgets.iter();
+	    };
+	    /**
+	     * Add a widget to the end of the layout.
+	     *
+	     * @param widget - The widget to add to the layout.
+	     *
+	     * #### Notes
+	     * If the widget is already contained in the layout, it will be moved.
+	     */
+	    PanelLayout.prototype.addWidget = function (widget) {
+	        this.insertWidget(this._widgets.length, widget);
+	    };
+	    /**
+	     * Insert a widget into the layout at the specified index.
+	     *
+	     * @param index - The index at which to insert the widget.
+	     *
+	     * @param widget - The widget to insert into the layout.
+	     *
+	     * #### Notes
+	     * The index will be clamped to the bounds of the widgets.
+	     *
+	     * If the widget is already added to the layout, it will be moved.
+	     */
+	    PanelLayout.prototype.insertWidget = function (index, widget) {
+	        // Remove the widget from its current parent. This is a no-op
+	        // if the widget's parent is already the layout parent widget.
+	        widget.parent = this.parent;
+	        // Look up the current index of the widget.
+	        var i = searching_1.indexOf(this._widgets, widget);
+	        // Clamp the insert index to the vector bounds.
+	        var j = Math.max(0, Math.min(Math.floor(index), this._widgets.length));
+	        // If the widget is not in the vector, insert it.
+	        if (i === -1) {
+	            // Insert the widget into the vector.
+	            this._widgets.insert(j, widget);
+	            // If the layout is parented, attach the widget to the DOM.
+	            if (this.parent)
+	                this.attachWidget(j, widget);
+	            // There is nothing more to do.
+	            return;
+	        }
+	        // Otherwise, the widget exists in the vector and should be moved.
+	        // Adjust the index if the location is at the end of the vector.
+	        if (j === this._widgets.length)
+	            j--;
+	        // Bail if there is no effective move.
+	        if (i === j)
+	            return;
+	        // Move the widget to the new location.
+	        mutation_1.move(this._widgets, i, j);
+	        // If the layout is parented, move the widget in the DOM.
+	        if (this.parent)
+	            this.moveWidget(i, j, widget);
+	    };
+	    /**
+	     * Remove a widget from the layout.
+	     *
+	     * @param widget - The widget to remove from the layout.
+	     *
+	     * #### Notes
+	     * A widget is automatically removed from the layout when its `parent`
+	     * is set to `null`. This method should only be invoked directly when
+	     * removing a widget from a layout which has yet to be installed on a
+	     * parent widget.
+	     *
+	     * This method does *not* modify the widget's `parent`.
+	     */
+	    PanelLayout.prototype.removeWidget = function (widget) {
+	        this.removeWidgetAt(searching_1.indexOf(this._widgets, widget));
+	    };
+	    /**
+	     * Remove the widget at a given index from the layout.
+	     *
+	     * @param index - The index of the widget to remove.
+	     *
+	     * #### Notes
+	     * A widget is automatically removed from the layout when its `parent`
+	     * is set to `null`. This method should only be invoked directly when
+	     * removing a widget from a layout which has yet to be installed on a
+	     * parent widget.
+	     *
+	     * This method does *not* modify the widget's `parent`.
+	     */
+	    PanelLayout.prototype.removeWidgetAt = function (index) {
+	        // Bail if the index is out of range.
+	        var i = Math.floor(index);
+	        if (i < 0 || i >= this._widgets.length) {
+	            return;
+	        }
+	        // Remove the widget from the vector.
+	        var widget = this._widgets.removeAt(i);
+	        // If the layout is parented, detach the widget from the DOM.
+	        if (this.parent)
+	            this.detachWidget(i, widget);
+	    };
+	    /**
+	     * Perform layout initialization which requires the parent widget.
+	     */
+	    PanelLayout.prototype.init = function () {
+	        var _this = this;
+	        _super.prototype.init.call(this);
+	        var index = 0;
+	        iteration_1.each(this, function (widget) { _this.attachWidget(index++, widget); });
+	    };
+	    /**
+	     * Attach a widget to the parent's DOM node.
+	     *
+	     * @param index - The current index of the widget in the layout.
+	     *
+	     * @param widget - The widget to attach to the parent.
+	     *
+	     * #### Notes
+	     * This method is called automatically by the panel layout at the
+	     * appropriate time. It should not be called directly by user code.
+	     *
+	     * The default implementation adds the widgets's node to the parent's
+	     * node at the proper location, and sends an `'after-attach'` message
+	     * to the widget if the parent is attached to the DOM.
+	     *
+	     * Subclasses may reimplement this method to control how the widget's
+	     * node is added to the parent's node, but the reimplementation must
+	     * send an `'after-attach'` message to the widget if the parent is
+	     * attached to the DOM.
+	     */
+	    PanelLayout.prototype.attachWidget = function (index, widget) {
+	        // Look up the next sibling reference node.
+	        var ref = this.parent.node.children[index];
+	        // Insert the widget's node before the sibling.
+	        this.parent.node.insertBefore(widget.node, ref);
+	        // Send an `'after-attach'` message if the parent is attached.
+	        if (this.parent.isAttached)
+	            messaging_1.sendMessage(widget, widget_1.WidgetMessage.AfterAttach);
+	    };
+	    /**
+	     * Move a widget in the parent's DOM node.
+	     *
+	     * @param fromIndex - The previous index of the widget in the layout.
+	     *
+	     * @param toIndex - The current index of the widget in the layout.
+	     *
+	     * @param widget - The widget to move in the parent.
+	     *
+	     * #### Notes
+	     * This method is called automatically by the panel layout at the
+	     * appropriate time. It should not be called directly by user code.
+	     *
+	     * The default implementation moves the widget's node to the proper
+	     * location in the parent's node and sends both a `'before-detach'`
+	     * and an `'after-attach'` message to the widget if the parent is
+	     * attached to the DOM.
+	     *
+	     * Subclasses may reimplement this method to control how the widget's
+	     * node is moved in the parent's node, but the reimplementation must
+	     * send both a `'before-detach'` and an `'after-attach'` message to
+	     * the widget if the parent is attached to the DOM.
+	     */
+	    PanelLayout.prototype.moveWidget = function (fromIndex, toIndex, widget) {
+	        // Send a `'before-detach'` message if the parent is attached.
+	        if (this.parent.isAttached)
+	            messaging_1.sendMessage(widget, widget_1.WidgetMessage.BeforeDetach);
+	        // Remove the widget's node from the parent.
+	        this.parent.node.removeChild(widget.node);
+	        // Look up the next sibling reference node.
+	        var ref = this.parent.node.children[toIndex];
+	        // Insert the widget's node before the sibling.
+	        this.parent.node.insertBefore(widget.node, ref);
+	        // Send an `'after-attach'` message if the parent is attached.
+	        if (this.parent.isAttached)
+	            messaging_1.sendMessage(widget, widget_1.WidgetMessage.AfterAttach);
+	    };
+	    /**
+	     * Detach a widget from the parent's DOM node.
+	     *
+	     * @param index - The previous index of the widget in the layout.
+	     *
+	     * @param widget - The widget to detach from the parent.
+	     *
+	     * #### Notes
+	     * This method is called automatically by the panel layout at the
+	     * appropriate time. It should not be called directly by user code.
+	     *
+	     * The default implementation removes the widget's node from the
+	     * parent's node, and sends a `'before-detach'` message to the widget
+	     * if the parent is attached to the DOM.
+	     *
+	     * Subclasses may reimplement this method to control how the widget's
+	     * node is removed from the parent's node, but the reimplementation
+	     * must send a `'before-detach'` message to the widget if the parent
+	     * is attached to the DOM.
+	     */
+	    PanelLayout.prototype.detachWidget = function (index, widget) {
+	        // Send a `'before-detach'` message if the parent is attached.
+	        if (this.parent.isAttached)
+	            messaging_1.sendMessage(widget, widget_1.WidgetMessage.BeforeDetach);
+	        // Remove the widget's node from the parent.
+	        this.parent.node.removeChild(widget.node);
+	    };
+	    return PanelLayout;
+	}(widget_1.Layout));
+	exports.PanelLayout = PanelLayout;
+	/**
+	 * The namespace for the private module data.
+	 */
+	var Private;
+	(function (Private) {
+	    /**
+	     * Create a panel layout for the given panel options.
+	     */
+	    function createLayout(options) {
+	        return options.layout || new PanelLayout();
+	    }
+	    Private.createLayout = createLayout;
+	})(Private || (Private = {}));
+	
+})
+/** END DEFINE BLOCK for phosphor@0.7.0/lib/ui/panel.js **/
+
+
+/** START DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/mutation.js **/
+jupyter.define('phosphor@0.7.0/lib/algorithm/mutation.js', function (module, exports, __jupyter_require__) {
+	"use strict";
+	/*-----------------------------------------------------------------------------
+	| Copyright (c) 2014-2016, PhosphorJS Contributors
+	|
+	| Distributed under the terms of the BSD 3-Clause License.
+	|
+	| The full license is in the file LICENSE, distributed with this software.
+	|----------------------------------------------------------------------------*/
+	var sequence_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/sequence.js');
+	/**
+	 * Move an element in a sequence from one index to another.
+	 *
+	 * @param object - The sequence or array-like object to mutate.
+	 *
+	 * @param fromIndex - The index of the element to move.
+	 *
+	 * @param toIndex - The target index of the element.
+	 *
+	 * #### Complexity
+	 * Linear.
+	 *
+	 * #### Undefined Behavior
+	 * A `fromIndex` which is non-integral or out of range.
+	 *
+	 * A `toIndex` which is non-integral or out of range.
+	 *
+	 * #### Example
+	 * ```typescript
+	 * import { move } from 'phosphor/lib/algorithm/mutation';
+	 *
+	 * let data = [0, 1, 2, 3, 4];
+	 * move(data, 1, 2);  // [0, 2, 1, 3, 4]
+	 * move(data, 4, 2);  // [0, 2, 4, 1, 3]
+	 * ```
+	 */
+	function move(object, fromIndex, toIndex) {
+	    if (object.length <= 1 || fromIndex === toIndex) {
+	        return;
+	    }
+	    var d = fromIndex < toIndex ? 1 : -1;
+	    var seq = sequence_1.asMutableSequence(object);
+	    var value = seq.at(fromIndex);
+	    for (var i = fromIndex; i !== toIndex; i += d) {
+	        seq.set(i, seq.at(i + d));
+	    }
+	    seq.set(toIndex, value);
+	}
+	exports.move = move;
+	/**
+	 * Reverse a sequence in-place subject to an optional range.
+	 *
+	 * @param object - The sequence or array-like object to mutate.
+	 *
+	 * @param first - The index of the first element of the range. This
+	 *   should be `<=` the `last` index. The default is `0`.
+	 *
+	 * @param last - The index of the last element of the range. This
+	 *   should be `>=` the `first` index. The default is `length - 1`.
+	 *
+	 * #### Complexity
+	 * Linear.
+	 *
+	 * #### Undefined Behavior
+	 * A `first` index which is non-integral or out of range.
+	 *
+	 * A `last` index which is non-integral or out of range.
+	 *
+	 * #### Example
+	 * ```typescript
+	 * import { reverse } from 'phosphor/lib/algorithm/mutation';
+	 *
+	 * let data = [0, 1, 2, 3, 4];
+	 * reverse(data, 1, 3);  // [0, 3, 2, 1, 4]
+	 * reverse(data, 3);     // [0, 3, 2, 4, 1]
+	 * reverse(data);        // [1, 4, 2, 3, 0]
+	 * ```
+	 */
+	function reverse(object, first, last) {
+	    var length = object.length;
+	    if (length <= 1) {
+	        return;
+	    }
+	    if (first === void 0) {
+	        first = 0;
+	    }
+	    if (last === void 0) {
+	        last = length - 1;
+	    }
+	    if (first >= last) {
+	        return;
+	    }
+	    var seq = sequence_1.asMutableSequence(object);
+	    while (first < last) {
+	        var front = seq.at(first);
+	        var back = seq.at(last);
+	        seq.set(first++, back);
+	        seq.set(last--, front);
+	    }
+	}
+	exports.reverse = reverse;
+	/**
+	 * Rotate the elements of a sequence by a positive or negative amount.
+	 *
+	 * @param object - The sequence or array-like object to mutate.
+	 *
+	 * @param delta - The amount of rotation to apply to the elements. A
+	 *   positive value will rotate the elements to the left. A negative
+	 *   value will rotate the elements to the right.
+	 *
+	 * #### Complexity
+	 * Linear.
+	 *
+	 * #### Undefined Behavior
+	 * A `delta` amount which is non-integral.
+	 *
+	 * #### Example
+	 * ```typescript
+	 * import { rotate } from 'phosphor/lib/algorithm/mutation';
+	 *
+	 * let data = [0, 1, 2, 3, 4];
+	 * rotate(data, 2);   // [2, 3, 4, 0, 1]
+	 * rotate(data, -2);  // [0, 1, 2, 3, 4]
+	 * rotate(data, 10);  // [0, 1, 2, 3, 4]
+	 * rotate(data, 9);   // [4, 0, 1, 2, 3]
+	 * ```
+	 */
+	function rotate(object, delta) {
+	    var length = object.length;
+	    if (length <= 1) {
+	        return;
+	    }
+	    if (delta > 0) {
+	        delta = delta % length;
+	    }
+	    else if (delta < 0) {
+	        delta = ((delta % length) + length) % length;
+	    }
+	    if (delta === 0) {
+	        return;
+	    }
+	    var seq = sequence_1.asMutableSequence(object);
+	    reverse(seq, 0, delta - 1);
+	    reverse(seq, delta, length - 1);
+	    reverse(seq, 0, length - 1);
+	}
+	exports.rotate = rotate;
+	
+})
+/** END DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/mutation.js **/
+
+
 /** START DEFINE BLOCK for phosphor@0.7.0/lib/collections/vector.js **/
 jupyter.define('phosphor@0.7.0/lib/collections/vector.js', function (module, exports, __jupyter_require__) {
 	"use strict";
@@ -33895,8 +34062,8 @@ jupyter.define('phosphor@0.7.0/lib/collections/vector.js', function (module, exp
 /** END DEFINE BLOCK for phosphor@0.7.0/lib/collections/vector.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_image.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_image.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_image.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_image.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -33905,12 +34072,12 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_image.js', function (module,
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var ImageModel = (function (_super) {
 	    __extends(ImageModel, _super);
 	    function ImageModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ImageModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -33928,7 +34095,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_image.js', function (module,
 	var ImageView = (function (_super) {
 	    __extends(ImageView, _super);
 	    function ImageView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ImageView.prototype.render = function () {
 	        /**
@@ -33984,11 +34151,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_image.js', function (module,
 	exports.ImageView = ImageView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_image.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_image.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_color.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_color.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_color.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_color.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -33997,12 +34164,12 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_color.js', function (module,
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var ColorPickerModel = (function (_super) {
 	    __extends(ColorPickerModel, _super);
 	    function ColorPickerModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ColorPickerModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34018,15 +34185,15 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_color.js', function (module,
 	var ColorPickerView = (function (_super) {
 	    __extends(ColorPickerView, _super);
 	    function ColorPickerView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ColorPickerView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-colorpicker');
 	        this._color_container = document.createElement('div');
-	        this._color_container.className = 'widget-hbox widget-colorpicker-input';
+	        this._color_container.className = 'widget-inline-hbox widget-colorpicker-input';
 	        this.el.appendChild(this._color_container);
 	        this._textbox = document.createElement('input');
 	        this._textbox.setAttribute('type', 'text');
@@ -34098,15 +34265,15 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_color.js', function (module,
 	}
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_color.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_color.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/services-shim.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/services-shim.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/services-shim.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/services-shim.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
 	var shims;
 	(function (shims) {
 	    var services;
@@ -34328,11 +34495,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/services-shim.js', function (module
 	})(shims = exports.shims || (exports.shims = {}));
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/services-shim.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/services-shim.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_int.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_int.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -34341,7 +34508,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var $ = __jupyter_require__('jquery@^3.1.1/dist/jquery.js');
 	__jupyter_require__('jquery-ui@^1.12.1/ui/widgets/slider.js');
@@ -34349,7 +34516,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	var IntModel = (function (_super) {
 	    __extends(IntModel, _super);
 	    function IntModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    IntModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34364,7 +34531,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	var BoundedIntModel = (function (_super) {
 	    __extends(BoundedIntModel, _super);
 	    function BoundedIntModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    BoundedIntModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34380,7 +34547,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	var IntSliderModel = (function (_super) {
 	    __extends(IntSliderModel, _super);
 	    function IntSliderModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    IntSliderModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34408,14 +34575,15 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	var IntSliderView = (function (_super) {
 	    __extends(IntSliderView, _super);
 	    function IntSliderView() {
-	        _super.apply(this, arguments);
-	        this._parse_value = parseInt;
-	        this._range_regex = /^\s*([+-]?\d+)\s*[-:]\s*([+-]?\d+)/;
+	        var _this = _super.apply(this, arguments) || this;
+	        _this._parse_value = parseInt;
+	        _this._range_regex = /^\s*([+-]?\d+)\s*[-:]\s*([+-]?\d+)/;
+	        return _this;
 	    }
 	    IntSliderView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-slider');
 	        this.el.classList.add('widget-hslider');
 	        (this.$slider = $('<div />'))
@@ -34515,14 +34683,14 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	            if (orientation == 'vertical') {
 	                this.el.classList.remove('widget-hslider');
 	                this.el.classList.add('widget-vslider');
-	                this.el.classList.remove('widget-hbox');
-	                this.el.classList.add('widget-vbox');
+	                this.el.classList.remove('widget-inline-hbox');
+	                this.el.classList.add('widget-inline-vbox');
 	            }
 	            else {
 	                this.el.classList.remove('widget-vslider');
 	                this.el.classList.add('widget-hslider');
-	                this.el.classList.remove('widget-vbox');
-	                this.el.classList.add('widget-hbox');
+	                this.el.classList.remove('widget-inline-vbox');
+	                this.el.classList.add('widget-inline-hbox');
 	            }
 	            var readout = this.model.get('readout');
 	            if (readout) {
@@ -34705,7 +34873,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	var IntTextModel = (function (_super) {
 	    __extends(IntTextModel, _super);
 	    function IntTextModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    IntTextModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34719,13 +34887,14 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	var IntTextView = (function (_super) {
 	    __extends(IntTextView, _super);
 	    function IntTextView() {
-	        _super.apply(this, arguments);
-	        this._parse_value = parseInt;
+	        var _this = _super.apply(this, arguments) || this;
+	        _this._parse_value = parseInt;
+	        return _this;
 	    }
 	    IntTextView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-text');
 	        this.textbox = document.createElement('input');
 	        this.textbox.setAttribute('type', 'text');
@@ -34832,7 +35001,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	var ProgressModel = (function (_super) {
 	    __extends(ProgressModel, _super);
 	    function ProgressModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ProgressModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34848,7 +35017,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	var ProgressView = (function (_super) {
 	    __extends(ProgressView, _super);
 	    function ProgressView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ProgressView.prototype.render = function () {
 	        _super.prototype.render.call(this);
@@ -34885,17 +35054,17 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	        var orientation = this.model.get('orientation');
 	        var percent = 100.0 * (value - min) / (max - min);
 	        if (orientation === 'horizontal') {
-	            this.el.classList.remove('widget-vbox');
+	            this.el.classList.remove('widget-inline-vbox');
 	            this.el.classList.remove('widget-vprogress');
-	            this.el.classList.add('widget-hbox');
+	            this.el.classList.add('widget-inline-hbox');
 	            this.el.classList.add('widget-hprogress');
 	            this.bar.style.width = percent + '%';
 	            this.bar.style.height = '100%';
 	        }
 	        else {
-	            this.el.classList.remove('widget-hbox');
+	            this.el.classList.remove('widget-inline-hbox');
 	            this.el.classList.remove('widget-hprogress');
-	            this.el.classList.add('widget-vbox');
+	            this.el.classList.add('widget-inline-vbox');
 	            this.el.classList.add('widget-vprogress');
 	            this.bar.style.width = '100%';
 	            this.bar.style.height = percent + '%';
@@ -34917,7 +35086,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	var PlayModel = (function (_super) {
 	    __extends(PlayModel, _super);
 	    function PlayModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    PlayModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34968,12 +35137,12 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	var PlayView = (function (_super) {
 	    __extends(PlayView, _super);
 	    function PlayView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    PlayView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-play');
 	        this.playButton = document.createElement('button');
 	        this.pauseButton = document.createElement('button');
@@ -35015,7 +35184,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_int.js', function (module, e
 	exports.PlayView = PlayView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_int.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_int.js **/
 
 
 /** START DEFINE BLOCK for jquery-ui@1.12.1/ui/widgets/slider.js **/
@@ -37356,8 +37525,8 @@ jupyter.define('d3-format@0.5.1/build/d3-format.js', function (module, exports, 
 /** END DEFINE BLOCK for d3-format@0.5.1/build/d3-format.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_float.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_float.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_float.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_float.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -37366,14 +37535,14 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_float.js', function (module,
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var widget_int_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_int.js');
+	var widget_int_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_int.js');
 	var d3format = __jupyter_require__('d3-format@^0.5.1/build/d3-format.js').format;
 	var FloatModel = (function (_super) {
 	    __extends(FloatModel, _super);
 	    function FloatModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    FloatModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37388,7 +37557,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_float.js', function (module,
 	var BoundedFloatModel = (function (_super) {
 	    __extends(BoundedFloatModel, _super);
 	    function BoundedFloatModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    BoundedFloatModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37404,7 +37573,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_float.js', function (module,
 	var FloatSliderModel = (function (_super) {
 	    __extends(FloatSliderModel, _super);
 	    function FloatSliderModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    FloatSliderModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37432,10 +37601,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_float.js', function (module,
 	var FloatSliderView = (function (_super) {
 	    __extends(FloatSliderView, _super);
 	    function FloatSliderView() {
-	        _super.apply(this, arguments);
-	        this._parse_value = parseFloat;
+	        var _this = _super.apply(this, arguments) || this;
+	        _this._parse_value = parseFloat;
 	        // matches: whitespace?, float, whitespace?, [-:], whitespace?, float
-	        this._range_regex = /^\s*([+-]?(?:\d*\.?\d+|\d+\.)(?:[eE][+-]?\d+)?)\s*[-:]\s*([+-]?(?:\d*\.?\d+|\d+\.)(?:[eE][+-]?\d+)?)/;
+	        _this._range_regex = /^\s*([+-]?(?:\d*\.?\d+|\d+\.)(?:[eE][+-]?\d+)?)\s*[-:]\s*([+-]?(?:\d*\.?\d+|\d+\.)(?:[eE][+-]?\d+)?)/;
+	        return _this;
 	    }
 	    /**
 	     * Validate the value of the slider before sending it to the back-end
@@ -37450,7 +37620,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_float.js', function (module,
 	var FloatTextModel = (function (_super) {
 	    __extends(FloatTextModel, _super);
 	    function FloatTextModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    FloatTextModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37464,19 +37634,20 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_float.js', function (module,
 	var FloatTextView = (function (_super) {
 	    __extends(FloatTextView, _super);
 	    function FloatTextView() {
-	        _super.apply(this, arguments);
-	        this._parse_value = parseFloat;
+	        var _this = _super.apply(this, arguments) || this;
+	        _this._parse_value = parseFloat;
+	        return _this;
 	    }
 	    return FloatTextView;
 	}(widget_int_1.IntTextView));
 	exports.FloatTextView = FloatTextView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_float.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_float.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_controller.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_controller.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_controller.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -37485,13 +37656,13 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_controller.js', function (mo
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
 	var ControllerButtonModel = (function (_super) {
 	    __extends(ControllerButtonModel, _super);
 	    function ControllerButtonModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ControllerButtonModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37510,7 +37681,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_controller.js', function (mo
 	var ControllerButtonView = (function (_super) {
 	    __extends(ControllerButtonView, _super);
 	    function ControllerButtonView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ControllerButtonView.prototype.render = function () {
 	        this.el.classList.add('jupyter-widgets');
@@ -37544,7 +37715,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_controller.js', function (mo
 	var ControllerAxisModel = (function (_super) {
 	    __extends(ControllerAxisModel, _super);
 	    function ControllerAxisModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ControllerAxisModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37562,7 +37733,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_controller.js', function (mo
 	var ControllerAxisView = (function (_super) {
 	    __extends(ControllerAxisView, _super);
 	    function ControllerAxisView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ControllerAxisView.prototype.render = function () {
 	        this.el.classList.add('jupyter-widgets');
@@ -37599,7 +37770,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_controller.js', function (mo
 	var ControllerModel = (function (_super) {
 	    __extends(ControllerModel, _super);
 	    function ControllerModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ControllerModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37743,6 +37914,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_controller.js', function (mo
 	        return this.widget_manager.new_widget({
 	            model_name: 'ControllerButtonModel',
 	            model_module: 'jupyter-js-widgets',
+	            model_module_version: this.get('_model_module_version'),
 	            widget_class: 'Jupyter.ControllerButton',
 	        }).then(function (model) {
 	            model.set('description', index);
@@ -37756,18 +37928,19 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_controller.js', function (mo
 	        return this.widget_manager.new_widget({
 	            model_name: 'ControllerAxisModel',
 	            model_module: 'jupyter-js-widgets',
+	            model_module_version: this.get('_model_module_version'),
 	            widget_class: 'Jupyter.ControllerAxis',
 	        }).then(function (model) {
 	            model.set('description', index);
 	            return model;
 	        });
 	    };
-	    ControllerModel.serializers = _.extend({
-	        buttons: { deserialize: widget_1.unpack_models },
-	        axes: { deserialize: widget_1.unpack_models }
-	    }, widget_1.DOMWidgetModel.serializers);
 	    return ControllerModel;
 	}(widget_1.DOMWidgetModel));
+	ControllerModel.serializers = _.extend({
+	    buttons: { deserialize: widget_1.unpack_models },
+	    axes: { deserialize: widget_1.unpack_models }
+	}, widget_1.DOMWidgetModel.serializers);
 	exports.ControllerModel = ControllerModel;
 	/**
 	 * A simple view for a gamepad.
@@ -37775,7 +37948,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_controller.js', function (mo
 	var ControllerView = (function (_super) {
 	    __extends(ControllerView, _super);
 	    function ControllerView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ControllerView.prototype.initialize = function (parameters) {
 	        _super.prototype.initialize.call(this, parameters);
@@ -37842,11 +38015,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_controller.js', function (mo
 	exports.ControllerView = ControllerView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_controller.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_controller.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_selection.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_selection.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -37855,9 +38028,9 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
 	var $ = __jupyter_require__('jquery@^3.1.1/dist/jquery.js');
 	function scrollIfNeeded(area, elem) {
 	    var ar = area.getBoundingClientRect();
@@ -37872,7 +38045,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var SelectionModel = (function (_super) {
 	    __extends(SelectionModel, _super);
 	    function SelectionModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    SelectionModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37888,7 +38061,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var DropdownModel = (function (_super) {
 	    __extends(DropdownModel, _super);
 	    function DropdownModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    DropdownModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37903,7 +38076,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var DropdownView = (function (_super) {
 	    __extends(DropdownView, _super);
 	    function DropdownView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    DropdownView.prototype.initialize = function (options) {
 	        this.onKeydown = this._handle_keydown.bind(this);
@@ -37918,7 +38091,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	    DropdownView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-dropdown');
 	        this.toggle = document.createElement('div');
 	        this.toggle.className = 'widget-dropdown-toggle';
@@ -38256,7 +38429,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var RadioButtonsModel = (function (_super) {
 	    __extends(RadioButtonsModel, _super);
 	    function RadioButtonsModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    RadioButtonsModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38273,7 +38446,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var RadioButtonsView = (function (_super) {
 	    __extends(RadioButtonsView, _super);
 	    function RadioButtonsView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -38281,7 +38454,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	    RadioButtonsView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-radio');
 	        this.container = document.createElement('div');
 	        this.el.appendChild(this.container);
@@ -38353,7 +38526,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var ToggleButtonsModel = (function (_super) {
 	    __extends(ToggleButtonsModel, _super);
 	    function ToggleButtonsModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ToggleButtonsModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38367,7 +38540,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var ToggleButtonsView = (function (_super) {
 	    __extends(ToggleButtonsView, _super);
 	    function ToggleButtonsView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    ToggleButtonsView.prototype.initialize = function (options) {
 	        this._css_state = {};
@@ -38379,7 +38552,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	    ToggleButtonsView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-toggle-buttons');
 	        this.buttongroup = document.createElement('div');
 	        this.el.appendChild(this.buttongroup);
@@ -38505,7 +38678,6 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	    return ToggleButtonsView;
 	}(widget_1.LabeledDOMWidgetView));
 	exports.ToggleButtonsView = ToggleButtonsView;
-	var ToggleButtonsView;
 	(function (ToggleButtonsView) {
 	    ToggleButtonsView.classMap = {
 	        primary: ['mod-primary'],
@@ -38515,10 +38687,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	        danger: ['mod-danger']
 	    };
 	})(ToggleButtonsView = exports.ToggleButtonsView || (exports.ToggleButtonsView = {}));
+	exports.ToggleButtonsView = ToggleButtonsView;
 	var SelectModel = (function (_super) {
 	    __extends(SelectModel, _super);
 	    function SelectModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    SelectModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38532,7 +38705,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var SelectView = (function (_super) {
 	    __extends(SelectView, _super);
 	    function SelectView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -38540,7 +38713,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	    SelectView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-select');
 	        this.listbox = document.createElement('select');
 	        this.el.appendChild(this.listbox);
@@ -38614,7 +38787,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var SelectionSliderModel = (function (_super) {
 	    __extends(SelectionSliderModel, _super);
 	    function SelectionSliderModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    SelectionSliderModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38631,7 +38804,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var SelectionSliderView = (function (_super) {
 	    __extends(SelectionSliderView, _super);
 	    function SelectionSliderView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -38640,7 +38813,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	        var _this = this;
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-hslider');
 	        this.el.classList.add('widget-slider');
 	        (this.$slider = $('<div />'))
@@ -38697,15 +38870,15 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	            // Use the right CSS classes for vertical & horizontal sliders
 	            if (orientation === 'vertical') {
 	                this.el.classList.remove('widget-hslider');
-	                this.el.classList.remove('widget-hbox');
+	                this.el.classList.remove('widget-inline-hbox');
 	                this.el.classList.add('widget-vslider');
-	                this.el.classList.add('widget-vbox');
+	                this.el.classList.add('widget-inline-vbox');
 	            }
 	            else {
 	                this.el.classList.remove('widget-vslider');
-	                this.el.classList.remove('widget-vbox');
+	                this.el.classList.remove('widget-inline-vbox');
 	                this.el.classList.add('widget-hslider');
-	                this.el.classList.add('widget-hbox');
+	                this.el.classList.add('widget-inline-hbox');
 	            }
 	            var readout = this.model.get('readout');
 	            if (readout) {
@@ -38764,7 +38937,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var MultipleSelectionModel = (function (_super) {
 	    __extends(MultipleSelectionModel, _super);
 	    function MultipleSelectionModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    MultipleSelectionModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38777,7 +38950,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var SelectMultipleModel = (function (_super) {
 	    __extends(SelectMultipleModel, _super);
 	    function SelectMultipleModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    SelectMultipleModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38791,7 +38964,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	var SelectMultipleView = (function (_super) {
 	    __extends(SelectMultipleView, _super);
 	    function SelectMultipleView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -38846,11 +39019,11 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selection.js', function (mod
 	exports.SelectMultipleView = SelectMultipleView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_selection.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_selection.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -38859,18 +39032,20 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js', func
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
-	var widget_box_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget_box.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var widget_box_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_box.js');
 	var tabbar_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/tabbar.js');
+	var panel_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/panel.js');
 	var title_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/title.js');
-	var widget_2 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
+	var iteration_1 = __jupyter_require__('phosphor@^0.7.0/lib/algorithm/iteration.js');
+	var searching_1 = __jupyter_require__('phosphor@^0.7.0/lib/algorithm/searching.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
 	var $ = __jupyter_require__('jquery@^3.1.1/dist/jquery.js');
 	var SelectionContainerModel = (function (_super) {
 	    __extends(SelectionContainerModel, _super);
 	    function SelectionContainerModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    SelectionContainerModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38885,7 +39060,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js', func
 	var AccordionModel = (function (_super) {
 	    __extends(AccordionModel, _super);
 	    function AccordionModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    AccordionModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38899,9 +39074,10 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js', func
 	var AccordionView = (function (_super) {
 	    __extends(AccordionView, _super);
 	    function AccordionView() {
-	        _super.apply(this, arguments);
-	        this.pages = [];
-	        this.view_pages = Object.create(null);
+	        var _this = _super.apply(this, arguments) || this;
+	        _this.pages = [];
+	        _this.view_pages = Object.create(null);
+	        return _this;
 	    }
 	    AccordionView.prototype.initialize = function (parameters) {
 	        var _this = this;
@@ -39012,7 +39188,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js', func
 	var TabModel = (function (_super) {
 	    __extends(TabModel, _super);
 	    function TabModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    TabModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -39023,75 +39199,117 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js', func
 	    return TabModel;
 	}(SelectionContainerModel));
 	exports.TabModel = TabModel;
+	// We implement our own tab widget since Phoshpor's TabPanel uses an absolute
+	// positioning BoxLayout, but we want a more an html/css-based Panel layout.
 	var TabView = (function (_super) {
 	    __extends(TabView, _super);
 	    function TabView() {
-	        _super.apply(this, arguments);
+	        var _this = _super.apply(this, arguments) || this;
+	        _this.updatingTabs = false;
+	        return _this;
 	    }
+	    TabView.prototype._createElement = function (tagName) {
+	        this.pWidget = new widget_box_1.JupyterPhosphorPanelWidget({ view: this });
+	        return this.pWidget.node;
+	    };
+	    TabView.prototype._setElement = function (el) {
+	        if (this.el || el !== this.pWidget.node) {
+	            // TabViews don't allow setting the element beyond the initial creation.
+	            throw new Error('Cannot reset the DOM element.');
+	        }
+	        this.el = this.pWidget.node;
+	        this.$el = $(this.pWidget.node);
+	    };
 	    /**
 	     * Public constructor.
 	     */
 	    TabView.prototype.initialize = function (parameters) {
+	        var _this = this;
 	        _super.prototype.initialize.call(this, parameters);
-	        this.childrenViews = new widget_1.ViewList(this.addChildView, this.removeChildView, this);
-	        this.listenTo(this.model, 'change:children', function (model, value) { this.childrenViews.update(value); });
-	        this.listenTo(this.model, 'change:_titles', function (model, value, options) { this.updateTitles(options); });
+	        this.childrenViews = new widget_1.ViewList(this.addChildView, function (view) { view.remove(); }, this);
+	        this.listenTo(this.model, 'change:children', function () { return _this.updateTabs(); });
+	        this.listenTo(this.model, 'change:_titles', function () { return _this.updateTitles(); });
 	    };
 	    /**
 	     * Called when view is rendered.
 	     */
 	    TabView.prototype.render = function () {
-	        var parent = this;
-	        this.el.className = 'jupyter-widgets widget-container widget-tab';
-	        this.tabBar = new tabbar_1.TabBar();
+	        this.pWidget.addClass('jupyter-widgets');
+	        this.pWidget.addClass('widget-container');
+	        this.pWidget.addClass('widget-tab');
+	        this.tabBar = new tabbar_1.TabBar({ insertBehavior: 'none' });
 	        this.tabBar.tabsMovable = false;
 	        this.tabBar.addClass('widget-tab-bar');
 	        this.tabBar.currentChanged.connect(this._onTabChanged, this);
-	        this.tabBar.tabCloseRequested.connect(this._onTabCloseRequested, this);
-	        this.tabContents = document.createElement('div');
-	        this.tabContents.className = 'widget-tab-contents';
+	        this.tabContents = new panel_1.Panel();
+	        this.tabContents.addClass('widget-tab-contents');
+	        this.pWidget.addWidget(this.tabBar);
+	        this.pWidget.addWidget(this.tabContents);
+	        this.updateTabs();
+	        this.update();
+	    };
+	    /**
+	     * Render tab views based on the current model's children.
+	     */
+	    TabView.prototype.updateTabs = function () {
+	        // While we are updating, the index may not be valid, so deselect the
+	        // tabs before updating so we don't get spurious changes in the index.
+	        this.updatingTabs = true;
+	        var oldTitle = this.tabBar.currentTitle;
+	        this.tabBar.currentIndex = -1;
 	        this.childrenViews.update(this.model.get('children'));
-	        this.displayed.then(function () {
-	            widget_2.Widget.attach(parent.tabBar, parent.el);
-	            parent.el.appendChild(parent.tabContents);
-	        });
+	        this.tabBar.currentIndex = this.model.get('selected_index');
+	        var newTitle = this.tabBar.currentTitle;
+	        if (oldTitle !== newTitle) {
+	            if (oldTitle && oldTitle.owner) {
+	                oldTitle.owner.hide();
+	            }
+	            if (newTitle && newTitle.owner) {
+	                newTitle.owner.show();
+	            }
+	        }
+	        this.updatingTabs = false;
 	    };
 	    /**
 	     * Called when a child is added to children list.
 	     */
-	    TabView.prototype.addChildView = function (model) {
-	        var parent = this;
-	        return this.create_child_view(model).then(function (child) {
-	            var current = parent.el.querySelector('.mod-active');
-	            if (current) {
-	                current.classList.add('mod-active');
-	                current.classList.add('mod-hidden');
+	    TabView.prototype.addChildView = function (model, index) {
+	        var _this = this;
+	        // Placeholder title to keep our position in the tab bar while we create the view.
+	        var label = this.model.get('_titles')[index] || (index + 1).toString();
+	        var tempTitle = new title_1.Title({ label: label });
+	        this.tabBar.addTab(tempTitle);
+	        return this.create_child_view(model).then(function (view) {
+	            var widget = view.pWidget;
+	            widget.hide();
+	            widget.addClass('widget-tab-child');
+	            _this.tabContents.addWidget(widget);
+	            var title = widget.title;
+	            title.closable = false;
+	            title.label = tempTitle.label;
+	            var i = searching_1.indexOf(_this.tabBar.titles, tempTitle);
+	            // insert after tempTitle so that if tempTitle is selected,
+	            // after this the replacement title will be selected.
+	            _this.tabBar.insertTab(i + 1, title);
+	            _this.tabBar.removeTab(tempTitle);
+	            view.on('remove', function () { return _this.tabBar.removeTab(title); });
+	            if (_this.tabBar.currentTitle === title) {
+	                widget.show();
 	            }
-	            child.el.classList.add('widget-tab-child');
-	            child.el.classList.add('mod-active');
-	            child.el.classList.remove('mod-hidden');
-	            // TODO: add a child widget, rather than DOM nodes
-	            parent.tabContents.appendChild(child.el);
-	            var title = new title_1.Title({ label: '', closable: true });
-	            parent.tabBar.addTab(title);
-	            parent.displayed.then(function () {
-	                child.trigger('displayed', parent);
-	                parent.update();
-	            });
-	            child.on('remove', function () { parent.tabBar.removeTab(title); });
-	            return child;
+	            return view;
 	        }).catch(utils.reject('Could not add child view to box', true));
 	    };
-	    TabView.prototype.removeChildView = function (child) { child.remove(); };
 	    /**
 	     * Update the contents of this view
 	     *
 	     * Called when the model is changed.  The model may have been
 	     * changed by another view or by a state update from the back-end.
 	     */
-	    TabView.prototype.update = function (options) {
-	        this.updateTitles();
-	        this.updateSelectedIndex(options);
+	    TabView.prototype.update = function () {
+	        // Update the selected index in the overall update method because it
+	        // should be run after the tabs have been updated. Otherwise the
+	        // selected index may not be a valid tab in the tab bar.
+	        this.updateSelectedIndex();
 	        return _super.prototype.update.call(this);
 	    };
 	    /**
@@ -39099,82 +39317,56 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js', func
 	     */
 	    TabView.prototype.updateTitles = function () {
 	        var titles = this.model.get('_titles') || {};
-	        for (var i = 0, len = this.tabBar.titles.length; i < len; i++) {
-	            this.tabBar.titles.at(i).label = titles[i] || (i + 1).toString();
-	        }
+	        iteration_1.each(iteration_1.enumerate(this.tabBar.titles), function (_a) {
+	            var i = _a[0], title = _a[1];
+	            title.label = titles[i] || (i + 1).toString();
+	        });
 	    };
 	    /**
 	     * Updates the selected index.
 	     */
-	    TabView.prototype.updateSelectedIndex = function (options) {
-	        if (options === undefined || options.updated_view !== this) {
-	            var index = this.model.get('selected_index');
-	            if (typeof index === 'undefined') {
-	                index = 0;
-	            }
-	            if (0 <= index && index < this.tabBar.titles.length) {
-	                this.selectPage(index);
-	            }
+	    TabView.prototype.updateSelectedIndex = function () {
+	        var current = this.model.get('selected_index');
+	        var previous = this.model.previous('selected_index');
+	        if (current === void 0) {
+	            current = 0;
 	        }
-	    };
-	    /**
-	     * Select a page.
-	     */
-	    TabView.prototype.selectPage = function (index) {
-	        this.tabBar.currentIndex = index;
-	        var actives = this.el.querySelectorAll('.mod-active');
-	        if (actives.length) {
-	            for (var i = 0, len = actives.length; i < len; i++) {
-	                actives[i].classList.remove('mod-active');
-	                actives[i].classList.add('mod-hidden');
+	        var titles = this.tabBar.titles;
+	        if (0 <= current && current < titles.length) {
+	            if (previous !== void 0 && previous !== current) {
+	                var previousTitle = titles.at(previous);
+	                var previousWidget = previousTitle ? previousTitle.owner : null;
+	                if (previousWidget) {
+	                    previousWidget.hide();
+	                }
 	            }
-	        }
-	        var active = this.el.querySelectorAll('.widget-tab-child')[index];
-	        if (active) {
-	            active.classList.add('mod-active');
-	            active.classList.remove('mod-hidden');
+	            this.tabBar.currentIndex = current;
+	            var currentWidget = this.tabBar.currentTitle.owner;
+	            if (currentWidget) {
+	                currentWidget.show();
+	            }
 	        }
 	    };
 	    TabView.prototype.remove = function () {
-	        /*
-	         * The tab bar needs to be disposed before its node is removed by the
-	         * super call, otherwise phosphor's Widget.detach will throw an error.
-	         */
-	        this.tabBar.dispose();
-	        /*
-	         * We remove this widget before removing the children as an optimization
-	         * we want to remove the entire container from the DOM first before
-	         * removing each individual child separately.
-	         */
+	        this.tabBar = null;
+	        this.tabContents = null;
+	        // Remove this widget before children so that the entire container
+	        // leaves the DOM at once.
 	        _super.prototype.remove.call(this);
 	        this.childrenViews.remove();
 	    };
 	    TabView.prototype._onTabChanged = function (sender, args) {
-	        this.model.set('selected_index', args.currentIndex, { updated_view: this });
-	        this.touch();
-	    };
-	    TabView.prototype._onTabCloseRequested = function (sender, args) {
-	        /*
-	         * When a tab is removed, the titles dictionary must be reset for all
-	         * indices that are larger than the index of the tab that was removed.
-	         */
-	        var len = this.model.get('children').length;
-	        var titles = _.extend({}, this.model.get('_titles')) || {};
-	        delete titles[args.index];
-	        for (var i = args.index + 1; i < len; i++) {
-	            titles[i - 1] = titles[i];
+	        if (!this.updatingTabs) {
+	            this.model.set('selected_index', args.currentIndex);
+	            this.touch();
 	        }
-	        delete titles[len - 1];
-	        var children = _.filter(this.model.get('children'), function (child, index) { return index !== args.index; });
-	        this.model.set({ 'children': children, '_titles': titles }, { updated_view: this });
-	        this.touch();
 	    };
 	    return TabView;
 	}(widget_1.DOMWidgetView));
 	exports.TabView = TabView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_selectioncontainer.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js **/
 
 
 /** START DEFINE BLOCK for phosphor@0.7.0/lib/ui/tabbar.js **/
@@ -41533,8 +41725,8 @@ jupyter.define('phosphor@0.7.0/lib/ui/vdom.js', function (module, exports, __jup
 /** END DEFINE BLOCK for phosphor@0.7.0/lib/ui/vdom.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_string.js **/
-jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_string.js **/
+jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_string.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -41543,18 +41735,18 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.6/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var StringModel = (function (_super) {
 	    __extends(StringModel, _super);
 	    function StringModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    StringModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
 	            value: '',
 	            disabled: false,
-	            placeholder: '',
+	            placeholder: '\u200b',
 	            _model_name: 'StringModel'
 	        });
 	    };
@@ -41564,7 +41756,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	var HTMLModel = (function (_super) {
 	    __extends(HTMLModel, _super);
 	    function HTMLModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    HTMLModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -41578,7 +41770,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	var HTMLView = (function (_super) {
 	    __extends(HTMLView, _super);
 	    function HTMLView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -41605,7 +41797,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	var LabelModel = (function (_super) {
 	    __extends(LabelModel, _super);
 	    function LabelModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    LabelModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -41619,7 +41811,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	var LabelView = (function (_super) {
 	    __extends(LabelView, _super);
 	    function LabelView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -41646,7 +41838,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	var TextareaModel = (function (_super) {
 	    __extends(TextareaModel, _super);
 	    function TextareaModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    TextareaModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -41660,7 +41852,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	var TextareaView = (function (_super) {
 	    __extends(TextareaView, _super);
 	    function TextareaView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -41669,7 +41861,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	        var _this = this;
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-textarea');
 	        this.textbox = document.createElement('textarea');
 	        this.textbox.setAttribute('rows', '5');
@@ -41757,7 +41949,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	var TextModel = (function (_super) {
 	    __extends(TextModel, _super);
 	    function TextModel() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    TextModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -41771,7 +41963,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	var TextView = (function (_super) {
 	    __extends(TextView, _super);
 	    function TextView() {
-	        _super.apply(this, arguments);
+	        return _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -41779,7 +41971,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	    TextView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-hbox');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-text');
 	        this.textbox = document.createElement('input');
 	        this.textbox.setAttribute('type', 'text');
@@ -41880,7 +42072,7 @@ jupyter.define('jupyter-js-widgets@2.0.6/lib/widget_string.js', function (module
 	exports.TextView = TextView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.6/lib/widget_string.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_string.js **/
 
 
 /** START DEFINE BLOCK for ngl@0.10.0-dev.3/dist/ngl.js **/
@@ -41915,7 +42107,7 @@ jupyter.define('ngl@0.10.0-dev.3/dist/ngl.js', function (module, exports, __jupy
 	var It=s.split(/\s+/),Lt=parseInt(s[18])-1;0===Lt&&(a=new O,o.matrixList.push(a));var Rt=a.elements;Rt[0+Lt]=parseFloat(It[4]),Rt[4+Lt]=parseFloat(It[5]),Rt[8+Lt]=parseFloat(It[6]),Rt[12+Lt]=parseFloat(It[7])}else if("APPLY THE FOLLOWING TO CHAINS:"===s.substr(11,30)||"                   AND CHAINS:"===s.substr(11,30)){"APPLY"===s.substr(11,5)&&(o=r.addPart());var Ot=s.substr(41,30).split(",");for(ht=Ot.length;ut<ht;++ut){var Dt=Ot[ut].trim();Dt&&o.chainList.push(Dt)}}}else if("HEADER"===c)F.id=s.substr(62,4);else if("TITLE "===c)F.title+=(F.title?" ":"")+s.substr(10,70).trim();else if("MODEL "===c)ct=!0;else if("ENDMDL"===c||s.startsWith("END")){if(ct)continue;U&&!G&&($.push(new Float32Array(i)),G=!0),st+=1,ct=!0}else if("MTRIX"===s.substr(0,5)){if("1"===s[59])continue;var Nt=s.split(/\s+/),kt=Nt[1].trim();if("1"===s[5]&&"1"===kt){var Ft="NCS";r=new Do(Ft),H[Ft]=r,o=r.addPart()}var zt=parseInt(s[5])-1;0===zt&&(a=new O,o.matrixList.push(a));var Bt=a.elements;Bt[0+zt]=parseFloat(Nt[2]),Bt[4+zt]=parseFloat(Nt[3]),Bt[8+zt]=parseFloat(Nt[4]),Bt[12+zt]=parseFloat(Nt[5])}else if("ORIGX"===s.substr(0,5)){X.origx||(X.origx=new O);var Ut=s.split(/\s+/),jt=parseInt(s[5])-1,$t=X.origx.elements;$t[0+jt]=parseFloat(Ut[1]),$t[4+jt]=parseFloat(Ut[2]),$t[8+jt]=parseFloat(Ut[3]),$t[12+jt]=parseFloat(Ut[4])}else if("SCALE"===s.substr(0,5)){X.scale||(X.scale=new O);var Vt=s.split(/\s+/),Gt=parseInt(s[5])-1,Ht=X.scale.elements;Ht[0+Gt]=parseFloat(Vt[1]),Ht[4+Gt]=parseFloat(Vt[2]),Ht[8+Gt]=parseFloat(Vt[3]),Ht[12+Gt]=parseFloat(Vt[4])}else if("CRYST1"===c){var Wt=parseFloat(s.substr(6,9)),Xt=parseFloat(s.substr(15,9)),qt=parseFloat(s.substr(24,9)),Yt=parseFloat(s.substr(33,7)),Zt=parseFloat(s.substr(40,7)),Kt=parseFloat(s.substr(47,7)),Qt=s.substr(55,11).trim(),Jt=new Float32Array(9);Jt[0]=Wt,Jt[4]=Xt,Jt[8]=qt,V.push(Jt),0===st&&(X.a=Wt,X.b=Xt,X.c=qt,X.alpha=Yt,X.beta=Zt,X.gamma=Kt,X.spacegroup=Qt)}}t.Debug&&uv.time("PdbParser._parse "+this.name);var i,n,r,o,a,s,c,u,h,l,d,f,p,m,g,v,y,b,x,_,w,S,A,M,C,P,T,E,I,L,R,D,N="pqr"===this.type,k=/\s+/,F=this.structure,z=this.structureBuilder,B=this.firstModelOnly,U=this.asTrajectory,j=this.cAlphaOnly,$=F.frames,V=F.boxes,G=!1,H=F.biomolDict,W={},X={},q={},Y=[],Z=["MOL_ID","MOLECULE","CHAIN","FRAGMENT","SYNONYM","EC","ENGINEERED","MUTATION","OTHER_DETAILS"],K={},Q={},J={helices:[],sheets:[]},tt=J.helices,et=J.sheets,it=F.atomMap,nt=F.atomStore;nt.resize(Math.round(this.streamer.data.length/80));var rt=F.getAtomProxy(),ot=F.getAtomProxy(),at=0,st=0,ct=!0;this.streamer.eachChunkOfLines(function(t){e(0,t.length,t)});var ut=Y.length;if(Y.length){F.eachChain(function(t){t.entityIndex=ut}),Y.forEach(function(t,e){var i=t.chainList.map(function(t){return K[t]});F.entityList.push(new pc(F,e,t.name,"polymer",i))});var ht=Y.length,lt=F.getResidueProxy(),dt={};F.eachChain(function(t){t.entityIndex===ut&&(lt.index=t.residueOffset,dt[lt.resname]||(dt[lt.resname]=[]),dt[lt.resname].push(t.index))}),Object.keys(dt).forEach(function(t){var e=dt[t],i="non-polymer",n=Q[t]||t;_m.includes(t)&&(n="water",i="water"),F.entityList.push(new pc(F,ht,n,i,e)),ht+=1})}void 0!==X.a?F.unitcell=new lc(X.a,X.b,X.c,X.alpha,X.beta,X.gamma,X.spacegroup,X.scale):F.unitcell=void 0,z.finalize(),F.finalizeAtoms(),Fo(F),zo(F),F.finalizeBonds(),tt.length||et.length?ko(F,J):zv(F),Vo(F),t.Debug&&uv.timeEnd("PdbParser._parse "+this.name)}}),mv.add("pdb",mc),mv.add("pdb1",mc),mv.add("ent",mc),gc.prototype=Object.assign(Object.create(mc.prototype),{constructor:gc,type:"pqr"}),mv.add("pqr",gc);var Xv=/\s+/,qv=/'((?:(?!'\s).)*)'|"((?:(?!"\s).)*)"|(\S+)/g,Yv=/"/g,Zv=/^['"]+|['"]+$/g;Cc.prototype=Object.assign(Object.create(hc.prototype),{constructor:Cc,type:"cif",_parse:function(){function e(e,q,Y){for(var Z=e;Z<q;++Z)if(r=Y[Z],o=r.trim(),(o||R||N)&&"#"!==o[0])if("data_"===o.substring(0,5));else if(";"===o[0])R?(N?(z===F.length&&(z=0),F[z].push(O),z+=1):U===!1?E[B]=O:E[B][U]=O,R=!1,O=null):(R=!0,O=o.substring(1));else if("loop_"===o)N=!0,k=!0,F.length=0,$.length=0,z=0;else if("_"===o[0]){var K,Q,J;if(N&&!k&&(N=!1),N)K=o.split("."),Q=K[0].substring(1),J=K[1],1===K.length?(J=!1,E[Q]||(E[Q]=[]),F.push(E[Q])):(E[Q]||(E[Q]={}),E[Q][J]?uv.warn(Q,J,"already exists"):(E[Q][J]=[],F.push(E[Q][J]),$.push(J))),B=Q,U=J,j=!0;else{var tt=o.match(qv),et=tt[0],it=tt[1];K=et.split("."),Q=K[0].substring(1),J=K[1],1===K.length?(J=!1,E[Q]=it):(E[Q]||(E[Q]={}),E[Q][J]?uv.warn(Q,J,"already exists"):E[Q][J]=it),it||(D=!0),B=Q,U=J}}else if(R)O+=r;else if(N){var nt,rt;if(!o)continue;if("atom_site"===B){nt=$.length,rt=o.split(Xv),j&&(a=$.indexOf("auth_asym_id"),s=$.indexOf("auth_seq_id"),c=$.indexOf("label_atom_id"),u=$.indexOf("label_comp_id"),h=$.indexOf("label_asym_id"),l=$.indexOf("label_entity_id"),d=$.indexOf("label_alt_id"),y=$.indexOf("Cartn_x"),b=$.indexOf("Cartn_y"),x=$.indexOf("Cartn_z"),p=$.indexOf("id"),m=$.indexOf("type_symbol"),f=$.indexOf("group_PDB"),_=$.indexOf("B_iso_or_equiv"),g=$.indexOf("pdbx_PDB_model_num"),v=$.indexOf("pdbx_PDB_ins_code"),w=$.indexOf("occupancy"),j=!1,H=parseInt(rt[g]),C&&(i=[],n=0));var ot=parseInt(rt[g]);if(H!==ot&&(C&&(0===X&&T.push(new Float32Array(i)),i=new Float32Array(3*G.count),T.push(i),n=0),X+=1),H=ot,M&&X>0)continue;var at=rt[c].replace(Yv,"");if(P&&"CA"!==at)continue;var st=parseFloat(rt[y]),ct=parseFloat(rt[b]),ut=parseFloat(rt[x]);if(C){var ht=3*n;if(i[ht+0]=st,i[ht+1]=ct,i[ht+2]=ut,n+=1,X>0)continue}var lt=rt[u],dt=parseInt(rt[s]),ft=rt[v];ft="?"===ft?"":ft;var pt=rt[a],mt=rt[h],gt="H"===rt[f][0]?1:0,vt=rt[m],yt=parseFloat(rt[_]),bt=parseFloat(rt[w]),xt=rt[d];if(xt="."===xt?"":xt,G.growIfFull(),G.atomTypeId[W]=V.add(at,vt),G.x[W]=st,G.y[W]=ct,G.z[W]=ut,G.serial[W]=parseInt(rt[p]),G.bfactor[W]=isNaN(yt)?0:yt,G.occupancy[W]=isNaN(bt)?0:bt,G.altloc[W]=xt.charCodeAt(0),A.addAtom(X,pt,mt,lt,dt,gt,void 0,ft),t.Debug){var _t=I[mt];void 0!==_t&&_t!==pt&&uv.warn(_t,pt)}I[mt]=pt;var wt=rt[l];L[wt]||(L[wt]=new Set),L[wt].add(S.chainStore.count-1),W+=1}else{rt=o.match(qv),nt=rt.length,z===F.length&&(z=0);for(var St=0;St<nt;++St)F[z+St].push(rt[St]);z+=nt}k=!1}else if("'"===o[0]&&"'"===o[o.length-1]){var At=o.substring(1,o.length-1);U===!1?E[B]=At:E[B][U]=At}else D?U===!1?E[B]=o:E[B][U]=o:t.Debug&&uv.log("CifParser._parse: unknown state",o);else R=!1,N=!1,D=!1,F.length=0,z=null,B=null,U=null,j=null,$.length=0}uv.time("CifParser._parse "+this.name);var i,n,r,o,a,s,c,u,h,l,d,f,p,m,g,v,y,b,x,_,w,S=this.structure,A=this.structureBuilder,M=this.firstModelOnly,C=this.asTrajectory,P=this.cAlphaOnly,T=S.frames,E={},I={},L={},R=!1,O=null,D=!1,N=!1,k=!1,F=[],z=null,B=null,U=null,j=null,$=[],V=S.atomMap,G=S.atomStore;G.resize(this.streamer.data.length/100);var H,W=0,X=0;if(this.streamer.eachChunkOfLines(function(t){e(0,t.length,t)}),E.chem_comp&&E.chem_comp_atom)_c(E,S,A),A.finalize(),S.finalizeAtoms(),S.finalizeBonds(),Go(S);else{var q=wc(E,S,I);if(Sc(E,S,I),Ac(E,S,I),Mc(E,S,L),E.struct&&E.struct.title&&(S.title=E.struct.title.trim().replace(Zv,"")),E.entry&&E.entry.id&&(S.id=E.entry.id.trim().replace(Zv,"")),E.database_PDB_rev){if(E.database_PDB_rev.date){vc(E.database_PDB_rev,"date");var Y=E.database_PDB_rev.date.filter(yc);Y.length&&(S.header.releaseDate=Y[Y.length-1])}if(E.database_PDB_rev.date_original){vc(E.database_PDB_rev,"date_original");var Z=E.database_PDB_rev.date_original.filter(yc);Z.length&&(S.header.depositionDate=Z[Z.length-1])}}E.reflns&&E.reflns.d_resolution_high?yc(E.reflns.d_resolution_high)&&(S.header.resolution=parseFloat(E.reflns.d_resolution_high)):E.refine&&E.refine.ls_d_res_high&&yc(E.refine.ls_d_res_high)&&(S.header.resolution=parseFloat(E.refine.ls_d_res_high)),E.refine&&E.refine.ls_R_factor_R_free&&yc(E.refine.ls_R_factor_R_free)&&(S.header.rFree=parseFloat(E.refine.ls_R_factor_R_free)),E.refine&&E.refine.ls_R_factor_R_work&&yc(E.refine.ls_R_factor_R_work)&&(S.header.rWork=parseFloat(E.refine.ls_R_factor_R_work)),E.exptl&&E.exptl.method&&(vc(E.exptl,"method"),S.header.experimentalMethods=E.exptl.method.map(function(t){return t.replace(Zv,"")})),A.finalize(),S.finalizeAtoms(),zo(S),S.finalizeBonds(),q?ko(S,q):zv(S),Vo(S)}t.Debug&&uv.timeEnd("CifParser._parse "+this.name)}}),mv.add("cif",Cc),mv.add("mcif",Cc),mv.add("mmcif",Cc),Pc.prototype=Object.assign(Object.create(hc.prototype),{constructor:Pc,type:"sdf",_parse:function(){function e(t,e,a){for(var M=t;M<e;++M){var C=a[M];if("$$$$"===C.substr(0,4)&&(w=-1,++S,A=d.count),3===w&&(f=parseInt(C.substr(0,3)),p=parseInt(C.substr(3,3)),m=4,g=m+f,v=g,y=v+p,o&&(c=0,s=new Float32Array(3*f),u.push(s),S>0&&(h=!0))),w>=m&&w<g){if(r&&S>0)continue;var P=parseFloat(C.substr(0,10)),T=parseFloat(C.substr(10,10)),E=parseFloat(C.substr(20,10));if(o){var I=3*c;if(s[I+0]=P,s[I+1]=T,s[I+2]=E,c+=1,h)continue}var L=C.substr(31,3).trim(),R=L+(_+1);d.growIfFull(),d.atomTypeId[_]=l.add(R,L),d.x[_]=P,d.y[_]=T,d.z[_]=E,d.serial[_]=_,n.addAtom(S,"","","HET",1,1),_+=1}if(w>=v&&w<y){if(r&&S>0)continue;if(o&&S>0)continue;b.index=parseInt(C.substr(0,3))-1+A,x.index=parseInt(C.substr(3,3))-1+A;var O=parseInt(C.substr(6,3));i.bondStore.addBond(b,x,O)}++w}}t.Debug&&uv.time("SdfParser._parse "+this.name);var i=this.structure,n=this.structureBuilder,r=this.firstModelOnly,o=this.asTrajectory,a=this.streamer.peekLines(2);i.id=a[0].trim(),i.title=a[1].trim();var s,c,u=i.frames,h=!1,l=i.atomMap,d=i.atomStore;d.resize(Math.round(this.streamer.data.length/50));var f,p,m,g,v,y,b=i.getAtomProxy(),x=i.getAtomProxy(),_=0,w=0,S=0,A=0;this.streamer.eachChunkOfLines(function(t){e(0,t.length,t)}),n.finalize(),i.finalizeAtoms(),i.finalizeBonds(),Go(i),t.Debug&&uv.timeEnd("SdfParser._parse "+this.name)},_postProcess:function(){Go(this.structure)}}),mv.add("sdf",Pc),Tc.prototype=Object.assign(Object.create(hc.prototype),{constructor:Tc,type:"mol2",_parse:function(){function e(t,e,M){for(var C,P=t;P<e;++P){var T=M[P].trim();if(""!==T&&"#"!==T[0])if("@"===T[0])"@<TRIPOS>MOLECULE"===T?(y=b,p=0,++g):"@<TRIPOS>ATOM"===T?(y=x,m=d.count,c&&(n=0,i=new Float32Array(3*v),u.push(i),g>0&&(h=!0))):y="@<TRIPOS>BOND"===T?_:0;else if(y===b)0===p?(o.title=T,o.id=T):1===p&&(C=T.split(r),v=parseInt(C[0])),++p;else if(y===x){if(C=T.split(r),s&&g>0)continue;var E=parseFloat(C[2]),I=parseFloat(C[3]),L=parseFloat(C[4]);if(c){var R=3*n;if(i[R+0]=E,i[R+1]=I,i[R+2]=L,n+=1,h)continue}var O=C[0],D=C[1],N=C[5].split(".")[0],k=C[6]?parseInt(C[6]):1,F=C[7]?C[7]:"",z=C[8]?parseFloat(C[8]):0;d.growIfFull(),d.atomTypeId[f]=l.add(D,N),d.x[f]=E,d.y[f]=I,d.z[f]=L,d.serial[f]=O,d.bfactor[f]=z,a.addAtom(g,"","",F,k,1),f+=1}else if(y===_){if(s&&g>0)continue;if(c&&g>0)continue;C=T.split(r),w.index=parseInt(C[1])-1+m,S.index=parseInt(C[2])-1+m;var B=A[C[3]];o.bondStore.addBond(w,S,B)}}}t.Debug&&uv.time("Mol2Parser._parse "+this.name);var i,n,r=/\s+/,o=this.structure,a=this.structureBuilder,s=this.firstModelOnly,c=this.asTrajectory,u=o.frames,h=!1,l=o.atomMap,d=o.atomStore;d.resize(Math.round(this.streamer.data.length/60));var f=0,p=0,m=0,g=-1,v=0,y=0,b=1,x=2,_=3,w=o.getAtomProxy(),S=o.getAtomProxy(),A={1:1,2:2,3:3,am:1,ar:1,du:1,un:1,nc:0};this.streamer.eachChunkOfLines(function(t){e(0,t.length,t)}),a.finalize(),o.finalizeAtoms(),Fo(o),jo(o,!0),$o(o,!0),o.finalizeBonds(),Go(o),zv(o),t.Debug&&uv.timeEnd("Mol2Parser._parse "+this.name)}}),mv.add("mol2",Tc);var Kv=["mmtfVersion","mmtfProducer","unitCell","spaceGroup","structureId","title","depositionDate","releaseDate","experimentalMethods","resolution","rFree","rWork","bioAssemblyList","ncsOperatorList","entityList","groupList","numBonds","numAtoms","numGroups","numChains","numModels","groupsPerChain","chainsPerModel"],Qv=["xCoordList","yCoordList","zCoordList","groupIdList","groupTypeList","chainIdList","bFactorList","atomIdList","altLocList","occupancyList","secStructList","insCodeList","sequenceIndexList","chainNameList","bondAtomList","bondOrderList"],Jv=Kv.concat(Qv),ty={0:"i".charCodeAt(0),1:"s".charCodeAt(0),2:"h".charCodeAt(0),3:"e".charCodeAt(0),4:"g".charCodeAt(0),5:"b".charCodeAt(0),6:"t".charCodeAt(0),7:"l".charCodeAt(0),"-1":"".charCodeAt(0)};Kc.prototype=Object.assign(Object.create(hc.prototype),{constructor:Kc,type:"mmtf",_parse:function(){t.Debug&&uv.time("MmtfParser._parse "+this.name);var e,i,n,r,o,a=this.structure,s=Zc(qc(this.streamer.data)),c=["depositionDate","releaseDate","resolution","rFree","rWork","experimentalMethods"];c.forEach(function(t){void 0!==s[t]&&(a.header[t]=s[t])});var u,h,l,d,f,p;if(a.id=s.structureId,a.title=s.title,this.firstModelOnly||this.asTrajectory){for(f=1,d=s.chainsPerModel[0],l=0,e=0,i=d;e<i;++e)l+=s.groupsPerChain[e];for(h=0,e=0,i=l;e<i;++e)o=s.groupList[s.groupTypeList[e]],h+=o.atomNameList.length;u=s.numBonds,p=[d]}else u=s.numBonds,h=s.numAtoms,l=s.numGroups,d=s.numChains,f=s.numModels,p=s.chainsPerModel;if(u+=l,this.asTrajectory)for(e=0,i=s.numModels;e<i;++e){var m=new Float32Array(3*h),g=h*e;for(n=0;n<h;++n){var v=3*n,y=n+g;m[v]=s.xCoordList[y],m[v+1]=s.yCoordList[y],m[v+2]=s.zCoordList[y]}a.frames.push(m)}var b=new Uint32Array(u),x=new Uint32Array(u),_=new Uint8Array(u),w=new Uint32Array(h),S=new Uint32Array(l),A=new Uint32Array(l),M=new Uint16Array(l),C=new Uint16Array(d),P=new Uint32Array(d),T=new Uint32Array(d),E=new Uint32Array(f),I=new Uint32Array(f),L=0;for(e=0,i=f;e<i;++e){var R=p[e];for(E[e]=L,I[e]=R,n=0;n<R;++n)C[n+L]=e;L+=R}var D=s.groupsPerChain,N=0;for(e=0,i=d;e<i;++e){var k=D[e];for(P[e]=N,T[e]=k,n=0;n<k;++n)S[n+N]=e;N+=k}var F=0,z=0;for(e=0,i=l;e<i;++e){o=s.groupList[s.groupTypeList[e]];var B=o.atomNameList.length,U=o.bondAtomList,j=o.bondOrderList;for(n=0,r=j.length;n<r;++n)b[z]=F+U[2*n],x[z]=F+U[2*n+1],_[z]=j[n],z+=1;for(A[e]=F,M[e]=B,n=0;n<B;++n)w[F]=e,F+=1}var $=s.bondAtomList;if($)for(s.bondOrderList&&_.set(s.bondOrderList,z),e=0,i=$.length;e<i;e+=2){var V=$[e],G=$[e+1];V<h&&G<h&&(b[z]=V,x[z]=G,z+=1)}a.bondStore.length=_.length,a.bondStore.count=z,a.bondStore.atomIndex1=b,a.bondStore.atomIndex2=x,a.bondStore.bondOrder=_,a.atomStore.length=h,a.atomStore.count=h,a.atomStore.residueIndex=w,a.atomStore.atomTypeId=new Uint16Array(h),a.atomStore.x=s.xCoordList.subarray(0,h),a.atomStore.y=s.yCoordList.subarray(0,h),a.atomStore.z=s.zCoordList.subarray(0,h),a.atomStore.serial=s.atomIdList.subarray(0,h),a.atomStore.bfactor=s.bFactorList.subarray(0,h),a.atomStore.altloc=s.altLocList.subarray(0,h),a.atomStore.occupancy=s.occupancyList.subarray(0,h),a.residueStore.length=l,a.residueStore.count=l,a.residueStore.chainIndex=S,a.residueStore.residueTypeId=s.groupTypeList,a.residueStore.atomOffset=A,a.residueStore.atomCount=M,a.residueStore.resno=s.groupIdList.subarray(0,l),a.residueStore.sstruc=s.secStructList.subarray(0,l),a.residueStore.inscode=s.insCodeList.subarray(0,l),a.chainStore.length=d,a.chainStore.count=d,a.chainStore.entityIndex=new Uint16Array(d),a.chainStore.modelIndex=C,a.chainStore.residueOffset=P,a.chainStore.residueCount=T,a.chainStore.chainname=s.chainNameList.subarray(0,4*d),a.chainStore.chainid=s.chainIdList.subarray(0,4*d),a.modelStore.length=f,a.modelStore.count=f,a.modelStore.chainOffset=E,a.modelStore.chainCount=I;var H={};for(e=0,i=s.groupList.length;e<i;++e){var W=s.groupList[e],X=[];for(n=0,r=W.atomNameList.length;n<r;++n){var q=W.elementList[n].toUpperCase(),Y=W.atomNameList[n];X.push(a.atomMap.add(Y,q))}var Z=W.chemCompType.toUpperCase(),K=um.includes(Z),Q=W.bondOrderList.length,J=new Array(Q),tt=new Array(Q);for(n=0;n<Q;++n)J[n]=W.bondAtomList[2*n],tt[n]=W.bondAtomList[2*n+1];var et={atomIndices1:J,atomIndices2:tt,bondOrders:W.bondOrderList};H[e]=a.residueMap.add(W.groupName,X,K,Z,et)}for(e=0,i=l;e<i;++e)a.residueStore.residueTypeId[e]=H[a.residueStore.residueTypeId[e]];for(e=0,i=a.atomStore.count;e<i;++e){var it=a.atomStore.residueIndex[e],nt=a.residueMap.list[a.residueStore.residueTypeId[it]],rt=a.residueStore.atomOffset[it];a.atomStore.atomTypeId[e]=nt.atomTypeIdList[e-rt]}if(s.secStructList){var ot=s.secStructList.length;for(e=0,i=a.residueStore.count;e<i;++e){var at=ty[a.residueStore.sstruc[e%ot]];void 0!==at&&(a.residueStore.sstruc[e]=at)}}if(s.entityList&&s.entityList.forEach(function(t,e){a.entityList[e]=new pc(a,e,t.description,t.type,t.chainIndexList)}),s.bioAssemblyList&&s.bioAssemblyList.forEach(function(t,e){var i=e+1,n=new Do(i);a.biomolDict["BU"+i]=n;var r={};t.transformList.forEach(function(t){var e=(new O).fromArray(t.matrix).transpose(),i=t.chainIndexList.map(function(t){for(var e="",i=0;i<4;++i){var n=s.chainNameList[4*t+i];if(!n)break;e+=String.fromCharCode(n)}return e}),o=r[i];o?o.matrixList.push(e):r[i]=n.addPart([e],i)})}),s.ncsOperatorList){var st="NCS",ct=new Do(st),ut=ct.addPart();s.ncsOperatorList.forEach(function(t){var e=(new O).fromArray(t).transpose();ut.matrixList.push(e)}),ut.matrixList.length>0&&(a.biomolDict[st]=ct)}s.unitCell&&Array.isArray(s.unitCell)&&s.unitCell[0]?a.unitcell=new lc(s.unitCell[0],s.unitCell[1],s.unitCell[2],s.unitCell[3],s.unitCell[4],s.unitCell[5],s.spaceGroup):a.unitcell=void 0,t.Debug&&uv.timeEnd("MmtfParser._parse "+this.name),$o(a,!0),jo(a,!0),a.finalizeAtoms(),a.finalizeBonds(),Vo(a)}}),mv.add("mmtf",Kc),Qc.prototype={constructor:Qc},Jc.prototype=Object.assign(Object.create(cc.prototype),{constructor:Jc,type:"trajectory",__objName:"frames"}),tu.prototype=Object.assign(Object.create(Jc.prototype),{constructor:tu,type:"dcd",_parse:function(){t.Debug&&uv.time("DcdParser._parse "+this.name);var e=this.streamer.data;e instanceof Uint8Array&&(e=e.buffer);var i,n,r=new DataView(e),o=this.frames,a=o.coordinates,s=o.boxes,c={},u=0,h=new Int32Array(e,0,23),l=h[0]!==r.getInt32(0);if(84!==h[0])for(n=e.byteLength,i=0;i<n;i+=4)r.setFloat32(i,r.getFloat32(i),!0);84!==h[0]&&uv.error("dcd bad format, header block start");var d=String.fromCharCode(r.getUint8(4),r.getUint8(5),r.getUint8(6),r.getUint8(7));"CORD"!==d&&uv.error("dcd bad format, format string");var f=!1,p=!1,m=!1;0!==h[22]&&(f=!0,0!==h[12]&&(p=!0),1===h[13]&&(m=!0)),c.NSET=h[2],c.ISTART=h[3],c.NSAVC=h[4],c.NAMNF=h[10],f?c.DELTA=r.getFloat32(44,l):c.DELTA=r.getFloat64(44,l),84!==h[22]&&uv.error("dcd bad format, header block end"),u=u+84+8;var g=r.getInt32(u,l),v=u+1;if((g-4)%80!==0&&uv.error("dcd bad format, title block start"),c.TITLE=_(new Uint8Array(e,v,g)),r.getInt32(v+g+4-1,l)!==g&&uv.error("dcd bad format, title block end"),u=u+g+8,4!==r.getInt32(u,l)&&uv.error("dcd bad format, natom block start"),c.NATOM=r.getInt32(u+4,l),4!==r.getInt32(u+8,l)&&uv.error("dcd bad format, natom block end"),u=u+4+8,c.NAMNF>0)return void uv.error("dcd format with fixed atoms unsupported, aborting");var y=c.NATOM,b=4*y;for(i=0,n=c.NSET;i<n;++i){if(p){u+=4;var x=new Float32Array(9);x[0]=r.getFloat64(u,l),x[4]=r.getFloat64(u+16,l),x[8]=r.getFloat64(u+40,l),s.push(x),u+=48,u+=4}for(var w=new Float32Array(3*y),S=0;S<3;++S){r.getInt32(u,l)!==b&&uv.error("dcd bad format, coord block start",i,S),u+=4;for(var A=new Float32Array(e,u,y),M=0;M<y;++M)w[3*M+S]=A[M];u+=b,r.getInt32(u,l)!==b&&uv.error("dcd bad format, coord block end",i,S),u+=4}if(a.push(w),m){var C=r.getInt32(u,l);u+=4+C+4}}t.Debug&&uv.timeEnd("DcdParser._parse "+this.name)}}),mv.add("dcd",tu),eu.prototype=Object.assign(Object.create(cc.prototype),{constructor:eu,type:"volume",__objName:"volume",_afterParse:function(){this.volume.setMatrix(this.getMatrix())},getMatrix:function(){return new O}}),iu.prototype=Object.assign(Object.create(eu.prototype),{constructor:iu,type:"mrc",_parse:function(){t.Debug&&uv.time("MrcParser._parse "+this.name);var e=this.streamer.data;e instanceof Uint8Array&&(e=e.buffer);var i=this.volume,n={},r=new Int32Array(e,0,56),o=new Float32Array(e,0,56),a=new DataView(e);if(n.MAP=String.fromCharCode(a.getUint8(208),a.getUint8(209),a.getUint8(210),a.getUint8(211)),n.MACHST=[a.getUint8(212),a.getUint8(213)],17===n.MACHST[0]&&17===n.MACHST[1])for(var s=e.byteLength,c=0;c<s;c+=4)a.setFloat32(c,a.getFloat32(c),!0);n.NX=r[0],n.NY=r[1],n.NZ=r[2],n.MODE=r[3],n.NXSTART=r[4],n.NYSTART=r[5],n.NZSTART=r[6],n.MX=r[7],n.MY=r[8],n.MZ=r[9],n.xlen=o[10],n.ylen=o[11],n.zlen=o[12],n.alpha=o[13],n.beta=o[14],n.gamma=o[15],n.MAPC=r[16],n.MAPR=r[17],n.MAPS=r[18],n.DMIN=o[19],n.DMAX=o[20],n.DMEAN=o[21],n.ISPG=r[22],n.NSYMBT=r[23],n.LSKFLG=r[24],n.originX=o[49],n.originY=o[50],n.originZ=o[51],n.ARMS=o[54],i.header=n;var u=new Float32Array(e,1024+n.NSYMBT,n.NX*n.NY*n.NZ);i.setData(u,n.NX,n.NY,n.NZ),t.Debug&&uv.timeEnd("MrcParser._parse "+this.name)},getMatrix:function(){var t=this.volume.header,e=[t.xlen,0,0],i=[t.ylen*Math.cos(Math.PI/180*t.gamma),t.ylen*Math.sin(Math.PI/180*t.gamma),0],n=[t.zlen*Math.cos(Math.PI/180*t.beta),t.zlen*(Math.cos(Math.PI/180*t.alpha)-Math.cos(Math.PI/180*t.gamma)*Math.cos(Math.PI/180*t.beta))/Math.sin(Math.PI/180*t.gamma),0];n[2]=Math.sqrt(t.zlen*t.zlen*Math.sin(Math.PI/180*t.beta)*Math.sin(Math.PI/180*t.beta)-n[1]*n[1]);var r=[0,e,i,n],o=[0,t.MX,t.MY,t.MZ],a=[0,t.MAPC,t.MAPR,t.MAPS],s=new O;return s.set(r[a[1]][0]/o[a[1]],r[a[2]][0]/o[a[2]],r[a[3]][0]/o[a[3]],0,r[a[1]][1]/o[a[1]],r[a[2]][1]/o[a[2]],r[a[3]][1]/o[a[3]],0,r[a[1]][2]/o[a[1]],r[a[2]][2]/o[a[2]],r[a[3]][2]/o[a[3]],0,0,0,0,1),s.setPosition(new N(t.originX,t.originY,t.originZ)),s.multiply((new O).makeTranslation(t.NXSTART,t.NYSTART,t.NZSTART)),s}}),mv.add("mrc",iu),mv.add("ccp4",iu),mv.add("map",iu),nu.prototype=Object.assign(Object.create(eu.prototype),{constructor:nu,type:"cube",_parse:function(){function e(t,e){var i=r[t].trim().split(a)[e];return parseFloat(i)}function i(t,e,i){for(var n=t;n<e;++n){var r=i[n].trim();if(""!==r&&h>=o.atomCount+6){r=r.split(a);for(var s=0,l=r.length;s<l;++s)1!==r.length&&(c[u]=parseFloat(r[s]),++u)}++h}}t.Debug&&uv.time("CubeParser._parse "+this.name);var n=this.volume,r=this.streamer.peekLines(6),o={},a=/\s+/,s=.529177210859;o.atomCount=Math.abs(e(2,0)),o.originX=e(2,1)*s,o.originY=e(2,2)*s,o.originZ=e(2,3)*s,o.NVX=e(3,0),o.NVY=e(4,0),o.NVZ=e(5,0),o.AVX=e(3,1)*s,o.AVY=e(4,2)*s,o.AVZ=e(5,3)*s;var c=new Float32Array(o.NVX*o.NVY*o.NVZ),u=0,h=0;this.streamer.eachChunkOfLines(function(t){i(0,t.length,t)}),n.header=o,n.setData(c,o.NVZ,o.NVY,o.NVX),t.Debug&&uv.timeEnd("CubeParser._parse "+this.name)},getMatrix:function(){var t=this.volume.header,e=new O;return e.multiply((new O).makeRotationY(wn(90))),e.multiply((new O).makeTranslation(-t.originZ,t.originY,t.originX)),e.multiply((new O).makeScale(-t.AVZ,t.AVY,t.AVX)),e}}),mv.add("cub",nu),mv.add("cube",nu),ru.prototype=Object.assign(Object.create(eu.prototype),{constructor:ru,type:"dx",_parse:function(){function e(t,e,i){for(var n=t;n<e;++n){if(h<c&&l>a){var r=i[n].trim();if(""!==r)for(var o=r.split(s),d=0,f=o.length;d<f;++d)u[h]=parseFloat(o[d]),++h}++l}}t.Debug&&uv.time("DxParser._parse "+this.name);var i=this.volume,n=this.streamer.peekLines(30),r=this.parseHeaderLines(n),o=this.volume.header,a=r.dataLineStart,s=/\s+/,c=o.nx*o.ny*o.nz,u=new Float32Array(c),h=0,l=0;this.streamer.eachChunkOfLines(function(t){e(0,t.length,t)}),i.setData(u,o.nz,o.ny,o.nx),t.Debug&&uv.timeEnd("DxParser._parse "+this.name)},parseHeaderLines:function(t){for(var e={},i=/\s+/,n=t.length,r=0,o=0,a=0,s=0;s<n;++s){var c,u=t[s];if(u.startsWith("object 1"))c=u.split(i),e.nx=parseInt(c[5]),e.ny=parseInt(c[6]),e.nz=parseInt(c[7]);else if(u.startsWith("origin"))c=u.split(i),e.xmin=parseFloat(c[1]),e.ymin=parseFloat(c[2]),e.zmin=parseFloat(c[3]);else if(u.startsWith("delta"))c=u.split(i),0===a?e.hx=parseFloat(c[1]):1===a?e.hy=parseFloat(c[2]):2===a&&(e.hz=parseFloat(c[3])),a+=1;else if(u.startsWith("object 3")){r=s,o+=u.length+1;break}o+=u.length+1}return this.volume.header=e,{dataLineStart:r,headerByteCount:o}},getMatrix:function(){var t=this.volume.header,e=new O;return e.multiply((new O).makeRotationY(wn(90))),e.multiply((new O).makeTranslation(-t.zmin,t.ymin,t.xmin)),e.multiply((new O).makeScale(-t.hz,t.hy,t.hx)),e}}),mv.add("dx",ru),ou.prototype=Object.assign(Object.create(ru.prototype),{constructor:ou,type:"dxbin",_parse:function(){t.Debug&&uv.time("DxbinParser._parse "+this.name);var e=this.streamer.data;e instanceof Uint8Array&&(e=e.buffer);for(var i=w(new Uint8Array(e,0,1e3)),n=this.parseHeaderLines(i),r=this.volume.header,o=n.headerByteCount,a=r.nx*r.ny*r.nz,s=new DataView(e),c=new Float32Array(a),u=0;u<a;++u)c[u]=s.getFloat64(8*u+o,!0);this.volume.setData(c,r.nz,r.ny,r.nx),t.Debug&&uv.timeEnd("DxbinParser._parse "+this.name)}}),mv.add("dxbin",ou),au.prototype=Object.assign(Object.create(eu.prototype),{constructor:au,type:"xplor",_parse:function(){function e(t){return t.trim().split(s).map(parseFloat)}function i(t,e,i){for(var n=t;n<e;++n){var r=i[n];if(v>=c&&(v-c)%y!==0&&g<p)for(var o=0,a=6;o<a;++o)m[g]=parseFloat(r.substr(12*o,12)),++g;++v}}t.Debug&&uv.time("XplorParser._parse "+this.name);var n,r=this.volume,o=this.streamer.peekLines(8),a={},s=/\s+/;n=o[2].startsWith("REMARKS")?parseInt(o[1].substring(0,8))+2:5;var c=n+3,u=e(o[n]);a.NA=u[0],a.AMIN=u[1],a.AMAX=u[2],a.NB=u[3],a.BMIN=u[4],a.BMAX=u[5],a.NC=u[6],a.CMIN=u[7],a.CMAX=u[8];var h=e(o[n+1]);a.a=h[0],a.b=h[1],a.c=h[2],a.alpha=h[3],a.beta=h[4],a.gamma=h[5];var l=a.AMAX-a.AMIN+1,d=a.BMAX-a.BMIN+1,f=a.CMAX-a.CMIN+1,p=l*d*f,m=new Float32Array(p),g=0,v=0,y=1+l*d/6;this.streamer.eachChunkOfLines(function(t){i(0,t.length,t)}),r.header=a,r.setData(m,l,d,f),t.Debug&&uv.timeEnd("XplorParser._parse "+this.name)},getMatrix:function(){var t=this.volume.header,e=[t.a,0,0],i=[t.b*Math.cos(Math.PI/180*t.gamma),t.b*Math.sin(Math.PI/180*t.gamma),0],n=[t.c*Math.cos(Math.PI/180*t.beta),t.c*(Math.cos(Math.PI/180*t.alpha)-Math.cos(Math.PI/180*t.gamma)*Math.cos(Math.PI/180*t.beta))/Math.sin(Math.PI/180*t.gamma),0];n[2]=Math.sqrt(t.c*t.c*Math.sin(Math.PI/180*t.beta)*Math.sin(Math.PI/180*t.beta)-n[1]*n[1]);var r=[0,e,i,n],o=[0,t.NA,t.NB,t.NC],a=[0,1,2,3],s=new O;return s.set(r[a[1]][0]/o[a[1]],r[a[2]][0]/o[a[2]],r[a[3]][0]/o[a[3]],0,r[a[1]][1]/o[a[1]],r[a[2]][1]/o[a[2]],r[a[3]][1]/o[a[3]],0,r[a[1]][2]/o[a[1]],r[a[2]][2]/o[a[2]],r[a[3]][2]/o[a[3]],0,0,0,0,1),s.multiply((new O).makeTranslation(t.AMIN,t.BMIN,t.CMIN)),s}}),mv.add("xplor",au),mv.add("cns",au),su.prototype=Object.assign(Object.create(cc.prototype),{constructor:su,type:"surface",__objName:"surface",_parse:function(){var t=this.loader.parse(this.streamer.asText());this.surface.fromGeometry(t)}}),cu.prototype={constructor:cu,setPropertyNameMapping:function(t){this.propertyNameMapping=t},bin2str:function(t){for(var e=new Uint8Array(t),i="",n=0;n<t.byteLength;n++)i+=String.fromCharCode(e[n]);return i},isASCII:function(t){var e=this.parseHeader(this.bin2str(t));return"ascii"===e.format},parse:function(t){return t instanceof ArrayBuffer?this.isASCII(t)?this.parseASCII(this.bin2str(t)):this.parseBinary(t):this.parseASCII(t)},parseHeader:function(t){function e(t,e){var i={type:t[0]};return"list"===i.type?(i.name=t[3],i.countType=t[1],i.itemType=t[2]):i.name=t[1],i.name in e&&(i.name=e[i.name]),i}var i=/ply([\s\S]*)end_header\s/,n="",r=0,o=i.exec(t);null!==o&&(n=o[1],r=o[0].length);for(var a,s,c,u={comments:[],elements:[],headerLength:r},h=n.split("\n"),l=0;l<h.length;l++){var d=h[l];if(d=d.trim(),""!==d)switch(c=d.split(/\s+/),s=c.shift(),d=c.join(" "),s){case"format":u.format=c[0],u.version=c[1];break;case"comment":u.comments.push(d);break;case"element":void 0!==a&&u.elements.push(a),a={},a.name=c[0],a.count=parseInt(c[1]),a.properties=[];break;case"property":a.properties.push(e(c,this.propertyNameMapping));break;default:console.log("unhandled",s,c)}}return void 0!==a&&u.elements.push(a),u},parseASCIINumber:function(t,e){switch(e){case"char":case"uchar":case"short":case"ushort":case"int":case"uint":case"int8":case"uint8":case"int16":case"uint16":case"int32":case"uint32":return parseInt(t);case"float":case"double":case"float32":case"float64":return parseFloat(t)}},parseASCIIElement:function(t,e){for(var i=e.split(/\s+/),n={},r=0;r<t.length;r++)if("list"===t[r].type){for(var o=[],a=this.parseASCIINumber(i.shift(),t[r].countType),s=0;s<a;s++)o.push(this.parseASCIINumber(i.shift(),t[r].itemType));n[t[r].name]=o}else n[t[r].name]=this.parseASCIINumber(i.shift(),t[r].type);return n},parseASCII:function(t){var e,i=new ae,n=this.parseHeader(t),r=/end_header\s([\s\S]*)$/,o="";null!==(e=r.exec(t))&&(o=e[1]);var a=o.split("\n"),s=0,c=0;i.useColor=!1;for(var u=0;u<a.length;u++){var h=a[u];if(h=h.trim(),""!==h){c>=n.elements[s].count&&(s++,c=0);var l=this.parseASCIIElement(n.elements[s].properties,h);this.handleElement(i,n.elements[s].name,l),c++}}return this.postProcess(i)},postProcess:function(t){if(t.useColor){for(var e=0;e<t.faces.length;e++)t.faces[e].vertexColors=[t.colors[t.faces[e].a],t.colors[t.faces[e].b],t.colors[t.faces[e].c]];t.elementsNeedUpdate=!0}return t.computeBoundingSphere(),t},handleElement:function(t,e,i){if("vertex"===e){if(t.vertices.push(new N(i.x,i.y,i.z)),"red"in i&&"green"in i&&"blue"in i){t.useColor=!0;var n=new Pt;n.setRGB(i.red/255,i.green/255,i.blue/255),t.colors.push(n)}}else if("face"===e){var r=i.vertex_indices;3===r.length?t.faces.push(new ee(r[0],r[1],r[2])):4===r.length&&t.faces.push(new ee(r[0],r[1],r[3]),new ee(r[1],r[2],r[3]))}},binaryRead:function(t,e,i,n){switch(i){case"int8":case"char":return[t.getInt8(e),1];case"uint8":case"uchar":return[t.getUint8(e),1];case"int16":case"short":return[t.getInt16(e,n),2];case"uint16":case"ushort":return[t.getUint16(e,n),2];case"int32":case"int":return[t.getInt32(e,n),4];case"uint32":case"uint":return[t.getUint32(e,n),4];case"float32":case"float":return[t.getFloat32(e,n),4];case"float64":case"double":return[t.getFloat64(e,n),8]}},binaryReadElement:function(t,e,i,n){for(var r,o={},a=0,s=0;s<i.length;s++)if("list"===i[s].type){var c=[];r=this.binaryRead(t,e+a,i[s].countType,n);var u=r[0];a+=r[1];for(var h=0;h<u;h++)r=this.binaryRead(t,e+a,i[s].itemType,n),c.push(r[0]),a+=r[1];o[i[s].name]=c}else r=this.binaryRead(t,e+a,i[s].type,n),o[i[s].name]=r[0],a+=r[1];return[o,a]},parseBinary:function(t){for(var e,i=new ae,n=this.parseHeader(this.bin2str(t)),r="binary_little_endian"===n.format,o=new DataView(t,n.headerLength),a=0,s=0;s<n.elements.length;s++)for(var c=0;c<n.elements[s].count;c++){e=this.binaryReadElement(o,a,n.elements[s].properties,r),a+=e[1];var u=e[0];this.handleElement(i,n.elements[s].name,u)}return this.postProcess(i)}},uu.prototype=Object.assign(Object.create(su.prototype),{constructor:uu,type:"ply"}),mv.add("ply",uu),hu.prototype={constructor:hu,setPath:function(t){this.path=t},_createParserState:function(){var t={objects:[],object:{},vertices:[],normals:[],startObject:function(t,e){return this.object&&this.object.fromDeclaration===!1?(this.object.name=t,void(this.object.fromDeclaration=e!==!1)):(this.object={name:t||"",geometry:{vertices:[],normals:[]},fromDeclaration:e!==!1},void this.objects.push(this.object))},parseVertexIndex:function(t,e){var i=parseInt(t,10);return 3*(i>=0?i-1:i+e/3)},parseNormalIndex:function(t,e){var i=parseInt(t,10);return 3*(i>=0?i-1:i+e/3)},addVertex:function(t,e,i){var n=this.vertices,r=this.object.geometry.vertices;r.push(n[t+0]),r.push(n[t+1]),r.push(n[t+2]),r.push(n[e+0]),r.push(n[e+1]),r.push(n[e+2]),r.push(n[i+0]),r.push(n[i+1]),r.push(n[i+2])},addVertexLine:function(t){var e=this.vertices,i=this.object.geometry.vertices;i.push(e[t+0]),i.push(e[t+1]),i.push(e[t+2])},addNormal:function(t,e,i){var n=this.normals,r=this.object.geometry.normals;r.push(n[t+0]),r.push(n[t+1]),r.push(n[t+2]),r.push(n[e+0]),r.push(n[e+1]),r.push(n[e+2]),r.push(n[i+0]),r.push(n[i+1]),r.push(n[i+2])},addFace:function(t,e,i,n,r,o,a,s){var c,u=this.vertices.length,h=this.parseVertexIndex(t,u),l=this.parseVertexIndex(e,u),d=this.parseVertexIndex(i,u);if(void 0===n?this.addVertex(h,l,d):(c=this.parseVertexIndex(n,u),this.addVertex(h,l,c),this.addVertex(l,d,c)),void 0!==r){var f=this.normals.length;h=this.parseNormalIndex(r,f),l=r===o?h:this.parseNormalIndex(o,f),d=r===a?h:this.parseNormalIndex(a,f),void 0===n?this.addNormal(h,l,d):(c=this.parseNormalIndex(s,f),this.addNormal(h,l,c),this.addNormal(l,d,c))}},addLineGeometry:function(t){this.object.geometry.type="Line";for(var e=this.vertices.length,i=0,n=t.length;i<n;i++)this.addVertexLine(this.parseVertexIndex(t[i],e))}};return t.startObject("",!1),t},parse:function(t){var e=this._createParserState();
 	t.indexOf("\r\n")!==-1&&(t=t.replace(/\r\n/g,"\n")),t.indexOf("\\\n")!==-1&&(t=t.replace(/\\\n/g,""));var i,n,r=t.split("\n"),o="",a="",s="",c=0,u=[],h="function"==typeof"".trimLeft;for(i=0,n=r.length;i<n;i++)if(o=r[i],o=h?o.trimLeft():o.trim(),c=o.length,0!==c&&(a=o.charAt(0),"#"!==a))if("v"===a){if(s=o.charAt(1)," "===s&&null!==(u=this.regexp.vertex_pattern.exec(o)))e.vertices.push(parseFloat(u[1]),parseFloat(u[2]),parseFloat(u[3]));else if("n"===s&&null!==(u=this.regexp.normal_pattern.exec(o)))e.normals.push(parseFloat(u[1]),parseFloat(u[2]),parseFloat(u[3]));else if("t"!==s||null===(u=this.regexp.uv_pattern.exec(o)))throw new Error("Unexpected vertex/normal/uv line: '"+o+"'")}else if("f"===a)if(null!==(u=this.regexp.face_vertex_uv_normal.exec(o)))e.addFace(u[1],u[4],u[7],u[10],u[3],u[6],u[9],u[12]);else if(null!==(u=this.regexp.face_vertex_uv.exec(o)));else if(null!==(u=this.regexp.face_vertex_normal.exec(o)))e.addFace(u[1],u[3],u[5],u[7],u[2],u[4],u[6],u[8]);else{if(null===(u=this.regexp.face_vertex.exec(o)))throw new Error("Unexpected face line: '"+o+"'");e.addFace(u[1],u[2],u[3],u[4])}else if("l"===a){var l=o.substring(1).trim().split(" "),d=[],f=[];if(o.indexOf("/")===-1)d=l;else for(var p=0,m=l.length;p<m;p++){var g=l[p].split("/");""!==g[0]&&d.push(g[0]),""!==g[1]&&f.push(g[1])}e.addLineGeometry(d,f)}else if(null!==(u=this.regexp.object_pattern.exec(o))){var v=u[0].substr(1).trim();e.startObject(v)}else if(this.regexp.material_use_pattern.test(o));else if(this.regexp.material_library_pattern.test(o));else if(null===(u=this.regexp.smoothing_pattern.exec(o))){if("\0"===o)continue;throw new Error("Unexpected line: '"+o+"'")}var y=[];for(i=0,n=e.objects.length;i<n;i++){var b=e.objects[i],x=b.geometry;if(0!==x.vertices.length){var _=new ue;_.addAttribute("position",new Kt(new Float32Array(x.vertices),3)),x.normals.length>0?_.addAttribute("normal",new Kt(new Float32Array(x.normals),3)):_.computeVertexNormals(),y.push(_)}}return y}},lu.prototype=Object.assign(Object.create(su.prototype),{constructor:lu,type:"obj"}),mv.add("obj",lu),du.prototype=Object.assign(Object.create(cc.prototype),{constructor:du,type:"text",__objName:"text",_parse:function(){this.text.data=this.streamer.asText()}}),mv.add("txt",du),mv.add("text",du),fu.prototype=Object.assign(Object.create(cc.prototype),{constructor:fu,type:"csv",__objName:"table",_parse:function(){var t=this.table.data,e=/\s*,\s*/;this.streamer.eachChunkOfLines(function(i,n){for(var r=i.length,o=0;o<r;++o){var a=i[o].trim(),s=a.split(e);0===n&&0===o?this.table.colNames=s:a&&t.push(s)}}.bind(this))}}),mv.add("csv",fu),pu.prototype=Object.assign(Object.create(cc.prototype),{constructor:pu,type:"json",__objName:"json",_parse:function(){this.streamer.isBinary()||this.string?this.json.data=JSON.parse(this.streamer.asText()):this.json.data=this.streamer.data}}),mv.add("json",pu),mu.prototype=Object.assign(Object.create(cc.prototype),{constructor:mu,type:"xml",__objName:"xml",__xmlParser:function(t){function e(){return{declaration:i(),root:n()}}function i(){var t=s(/^<\?xml\s*/);if(t){for(var e={attributes:{}};!c()&&!u("?>");){var i=o();if(!i)return e;e.attributes[i.name]=i.value}return s(/\?>\s*/),e}}function n(){var t=s(/^<([\w-:.]+)\s*/);if(t){for(var e={name:t[1],attributes:{},children:[]};!(c()||u(">")||u("?>")||u("/>"));){var i=o();if(!i)return e;e.attributes[i.name]=i.value}if(s(/^\s*\/>\s*/))return e;s(/\??>\s*/),e.content=r();for(var a;a=n();)e.children.push(a);return s(/^<\/[\w-:.]+>\s*/),e}}function r(){var t=s(/^([^<]*)/);return t?t[1]:""}function o(){var t=s(/([\w:-]+)\s*=\s*("[^"]*"|'[^']*'|\w+)\s*/);if(t)return{name:t[1],value:a(t[2])}}function a(t){return t.replace(/^['"]|['"]$/g,"")}function s(e){var i=t.match(e);if(i)return t=t.slice(i[0].length),i}function c(){return 0===t.length}function u(e){return 0===t.indexOf(e)}return t=t.trim(),t=t.replace(/<!--[\s\S]*?-->/g,""),e()},__domParser:function(t){var e=new window.DOMParser;return e.parseFromString(t,"text/xml")},_parse:function(){t.Debug&&uv.time("XmlParser._parse "+this.name),this.useDomParser?this.streamer.isBinary()||this.string?this.xml.data=this.__domParser(this.streamer.asText()):this.xml.data=this.streamer.data:this.xml.data=this.__xmlParser(this.streamer.asText()),t.Debug&&uv.timeEnd("XmlParser._parse "+this.name)}}),mv.add("xml",mu);var ey,iy,ny=_u(),ry=30,oy=12,ay=15,sy=852,cy=592,uy=0,hy=1,ly=2,dy=[3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258,0,0],fy=[16,16,16,16,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,16,72,78],py=[1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577,0,0],my=[16,16,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27,28,28,29,29,64,64],gy=0,vy=1,yy=2,by=4,xy=5,_y=6,wy=0,Sy=1,Ay=2,My=-2,Cy=-3,Py=-4,Ty=-5,Ey=8,Iy=1,Ly=2,Ry=3,Oy=4,Dy=5,Ny=6,ky=7,Fy=8,zy=9,By=10,Uy=11,jy=12,$y=13,Vy=14,Gy=15,Hy=16,Wy=17,Xy=18,qy=19,Yy=20,Zy=21,Ky=22,Qy=23,Jy=24,tb=25,eb=26,ib=27,nb=28,rb=29,ob=30,ab=31,sb=32,cb=852,ub=592,hb=!0,lb=!0,db=!0;try{String.fromCharCode.apply(null,[0])}catch(t){lb=!1}try{String.fromCharCode.apply(null,new Uint8Array(1))}catch(t){db=!1}for(var fb=new Uint8Array(256),pb=0;pb<256;pb++)fb[pb]=pb>=252?6:pb>=248?5:pb>=240?4:pb>=224?3:pb>=192?2:1;fb[254]=fb[254]=1;var mb=0,gb=2,vb=4,yb=0,bb=1,xb=2,_b=-5,wb={2:"need dictionary",1:"stream end",0:"","-1":"file error","-2":"stream error","-3":"data error","-4":"insufficient memory","-5":"buffer error","-6":"incompatible version"},Sb=Object.prototype.toString;Gu.prototype.push=function(t,e){var i,n,r,o,a,s,c=this.strm,u=this.options.chunkSize,h=this.options.dictionary,l=!1;if(this.ended)return!1;n=e===~~e?e:e===!0?vb:mb,"string"==typeof t?c.input=Bu(t):"[object ArrayBuffer]"===Sb.call(t)?c.input=new Uint8Array(t):c.input=t,c.next_in=0,c.avail_in=c.input.length;do{if(0===c.avail_out&&(c.output=new Uint8Array(u),c.next_out=0,c.avail_out=u),i=Ou(c,mb),i===xb&&h&&(s="string"==typeof h?Fu(h):"[object ArrayBuffer]"===Sb.call(h)?new Uint8Array(h):h,i=ku(this.strm,s)),i===_b&&l===!0&&(i=yb,l=!1),i!==bb&&i!==yb)return this.onEnd(i),this.ended=!0,!1;c.next_out&&(0!==c.avail_out&&i!==bb&&(0!==c.avail_in||n!==vb&&n!==gb)||("string"===this.options.to?(r=ju(c.output,c.next_out),o=c.next_out-r,a=Uu(c.output,r),c.next_out=o,c.avail_out=u-o,o&&yu(c.output,c.output,r,o,0),this.onData(a)):this.onData(vu(c.output,c.next_out)))),0===c.avail_in&&0===c.avail_out&&(l=!0)}while((c.avail_in>0||0===c.avail_out)&&i!==bb);return i===bb&&(n=vb),n===vb?(i=Du(this.strm),this.onEnd(i),this.ended=!0,i===yb):n!==gb||(this.onEnd(yb),c.avail_out=0,!0)},Gu.prototype.onData=function(t){this.chunks.push(t)},Gu.prototype.onEnd=function(t){t===yb&&("string"===this.options.to?this.result=this.chunks.join(""):this.result=bu(this.chunks)),this.chunks=[],this.err=t,this.msg=this.strm.msg},vv.add("gz",Wu);var Ab="//files.rcsb.org/download/",Mb="//mmtf.rcsb.org/v1.0/",Cb=Mb+"full/",Pb=Mb+"reduced/";fv.add("rcsb",new Xu);var Tb="//pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/",Eb="/SDF?record_type=3d";fv.add("pubchem",new qu),fv.add("ftp",new Yu),fv.add("http",new Yu),fv.add("https",new Yu);var Ib="0.10.0-dev.3";window.Promise||(window.Promise=n),t.Version=Ib,t.setDebug=qn,t.DatasourceRegistry=fv,t.StaticDatasource=Zu,t.ParserRegistry=mv,t.autoLoad=rr,t.RepresentationRegistry=pv,t.ColorMakerRegistry=dv,t.ColorMaker=Mn,t.Selection=_n,t.PdbWriter=cr,t.Stage=os,t.Collection=is,t.ComponentCollection=ns,t.RepresentationCollection=rs,t.Assembly=Do,t.TrajectoryPlayer=as,t.superpose=cs,t.guessElement=Bv,t.Queue=pa,t.Counter=ur,t.throttle=b,t.download=v,t.getQuery=h,t.getDataInfo=nr,t.getFileInfo=y,t.uniqueArray=x,t.BufferRepresentation=Ua,t.SphereBuffer=Ta,t.EllipsoidBuffer=Ia,t.CylinderBuffer=Da,t.ConeBuffer=ka,t.ArrowBuffer=Fa,t.Shape=za,t.Kdtree=Lo,t.SpatialHash=bo,t.Signal=xn,t.Matrix3=Lt,t.Matrix4=O,t.Vector3=N,t.Box3=Et,t.Quaternion=D,t.Plane=Rt,t.Color=Pt,Object.defineProperty(t,"__esModule",{value:!0})});
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __jupyter_require__('timers-browserify@1.4.2/main.js').setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __jupyter_require__('timers-browserify@2.0.2/main.js').setImmediate))
 })
 /** END DEFINE BLOCK for ngl@0.10.0-dev.3/dist/ngl.js **/
 
@@ -47502,12 +47694,12 @@ jupyter.define('jquery-ui@1.12.1/ui/position.js', function (module, exports, __j
 /** END DEFINE BLOCK for jquery-ui@1.12.1/ui/position.js **/
 
 
-/** START DEFINE BLOCK for nglview@0.5.3/package.json **/
-jupyter.define('nglview@0.5.3/package.json', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for nglview-js-widgets@0.5.4/package.json **/
+jupyter.define('nglview-js-widgets@0.5.4/package.json', function (module, exports, __jupyter_require__) {
 	module.exports = {
-		"name": "nglview",
-		"version": "0.5.3",
-		"description": "nglview",
+		"name": "nglview-js-widgets",
+		"version": "0.5.4",
+		"description": "nglview-js-widgets",
 		"author": "Alexander S. Rose",
 		"license": "MIT",
 		"main": "src/index.js",
@@ -47540,11 +47732,11 @@ jupyter.define('nglview@0.5.3/package.json', function (module, exports, __jupyte
 		}
 	};
 })
-/** END DEFINE BLOCK for nglview@0.5.3/package.json **/
+/** END DEFINE BLOCK for nglview-js-widgets@0.5.4/package.json **/
 
 
-/** START DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.0/lib/index.js **/
-jupyter.define('@jupyterlab/nbwidgets@0.6.0/lib/index.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.4/lib/index.js **/
+jupyter.define('@jupyterlab/nbwidgets@0.6.4/lib/index.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -47553,11 +47745,11 @@ jupyter.define('@jupyterlab/nbwidgets@0.6.0/lib/index.js', function (module, exp
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var jupyter_js_widgets_1 = __jupyter_require__('jupyter-js-widgets@^2.0.6/lib/index.js');
+	var jupyter_js_widgets_1 = __jupyter_require__('jupyter-js-widgets@^2.0.12/lib/index.js');
 	var panel_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/panel.js');
 	var token_1 = __jupyter_require__('phosphor@^0.7.0/lib/core/token.js');
 	var widget_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
-	var semvercache_1 = __jupyter_require__('@jupyterlab/nbwidgets@0.6.0/lib/semvercache.js');
+	var semvercache_1 = __jupyter_require__('@jupyterlab/nbwidgets@0.6.4/lib/semvercache.js');
 	/**
 	 * The token identifying the JupyterLab plugin.
 	 */
@@ -47725,7 +47917,7 @@ jupyter.define('@jupyterlab/nbwidgets@0.6.0/lib/index.js', function (module, exp
 	 */
 	var WidgetRenderer = (function () {
 	    function WidgetRenderer(widgetManager) {
-	        this.mimetypes = ['application/vnd.jupyter.widget'];
+	        this.mimetypes = ['application/vnd.jupyter.widget-view+json'];
 	        this._manager = widgetManager;
 	    }
 	    /**
@@ -47747,7 +47939,7 @@ jupyter.define('@jupyterlab/nbwidgets@0.6.0/lib/index.js', function (module, exp
 	        var _this = this;
 	        // data is a model id
 	        var w = new panel_1.Panel();
-	        var model = this._manager.get_model(options.source);
+	        var model = this._manager.get_model(options.source.model_id);
 	        if (model) {
 	            model.then(function (model) {
 	                return _this._manager.display_model(void 0, model, void 0);
@@ -47790,7 +47982,7 @@ jupyter.define('@jupyterlab/nbwidgets@0.6.0/lib/index.js', function (module, exp
 	exports.WidgetRenderer = WidgetRenderer;
 	
 })
-/** END DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.0/lib/index.js **/
+/** END DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.4/lib/index.js **/
 
 
 /** START DEFINE BLOCK for phosphor@0.7.0/lib/core/token.js **/
@@ -47858,8 +48050,8 @@ jupyter.define('phosphor@0.7.0/lib/core/token.js', function (module, exports, __
 /** END DEFINE BLOCK for phosphor@0.7.0/lib/core/token.js **/
 
 
-/** START DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.0/lib/semvercache.js **/
-jupyter.define('@jupyterlab/nbwidgets@0.6.0/lib/semvercache.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.4/lib/semvercache.js **/
+jupyter.define('@jupyterlab/nbwidgets@0.6.4/lib/semvercache.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -47891,4 +48083,4 @@ jupyter.define('@jupyterlab/nbwidgets@0.6.0/lib/semvercache.js', function (modul
 	exports.SemVerCache = SemVerCache;
 	
 })
-/** END DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.0/lib/semvercache.js **/
+/** END DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.4/lib/semvercache.js **/

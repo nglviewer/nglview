@@ -44,13 +44,23 @@ def enable_extentions():
         # enable_nbextension_python does not exist in older notebook
         # use try ... except in case users do not have notebook yet
         from notebook.nbextensions import enable_nbextension_python
-        from nglview.install import install, enable_nglview_js
+        from nglview.install import install_nglview_js_widgets
+        from nglview.install import enable_nglview_js_widgets
         enable_nbextension_python('widgetsnbextension')
-        install()
-        enable_nglview_js()
-    except (ImportError, OSError):
+
+        # user=True
+        # TODO: sys_prefix? Using user specified option? (--user)
+        install_nglview_js_widgets(user=True, debug=True)
+        enable_nglview_js_widgets(user=True)
+        print("Seems OK")
+    except (ImportError, OSError) as e: 
         # TODO: add type of exception here?
-        print('Failed to enable extensions. Skip')
+        # Case: 
+        #    - notebook is not installed before nglview
+        #    - permission denied? 
+        print('Failed to enable extensions.')
+        print(e)
+        print('Skip')
 
 def js_prerelease(command, strict=False):
     """decorator for building minified js/css prior to another command"""
@@ -157,14 +167,14 @@ setup_args = {
           ['nglview = nglview.scripts.nglview:main',]
     },
     'data_files': [
-        ('share/jupyter/nbextensions/nglview', [
+        ('share/jupyter/nbextensions/nglview-js-widgets', [
          'nglview/static/extension.js',
          'nglview/static/index.js',
          'nglview/static/index.js.map',
         ]),
-        ('share/jupyter/labextensions/nglview', [
-         'nglview/staticlab/nglview.bundle.js',
-         'nglview/staticlab/nglview.bundle.js.manifest',
+        ('share/jupyter/labextensions/nglview-js-widgets', [
+         'nglview/staticlab/nglview-js-widgets.bundle.js',
+         'nglview/staticlab/nglview-js-widgets.bundle.js.manifest',
         ]),
     ],
     'tests_require': [

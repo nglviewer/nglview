@@ -1,7 +1,7 @@
 {
-  "name": "nglview",
-  "version": "0.5.3",
-  "description": "nglview",
+  "name": "nglview-js-widgets",
+  "version": "0.5.4",
+  "description": "nglview-js-widgets",
   "author": "Alexander S. Rose",
   "license": "MIT",
   "main": "src/index.js",
