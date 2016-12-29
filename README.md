@@ -90,6 +90,18 @@ Next, install `nglview`
 sh devtools/install-dev.sh
 ```
 
+### Docker user
+
+- First, run
+```bash
+docker run -it -p 8888:8888 hainm/nglview
+```
+
+- Then open web browser, paste
+```bash
+localhost:8888
+```
+
 [How does `nglview` look like in jupyterlab?](examples/jupyterlab.md)
 
 Example
