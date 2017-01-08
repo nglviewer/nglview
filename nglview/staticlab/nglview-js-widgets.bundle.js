@@ -1,6 +1,6 @@
-/** START DEFINE BLOCK for nglview-js-widgets@0.5.4/src/labplugin.js **/
-jupyter.define('nglview-js-widgets@0.5.4/src/labplugin.js', function (module, exports, __jupyter_require__) {
-	var nglview = __jupyter_require__('nglview-js-widgets@0.5.4/src/index.js');
+/** START DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/src/labplugin.js **/
+jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/labplugin.js', function (module, exports, __jupyter_require__) {
+	var nglview = __jupyter_require__('nglview-js-widgets@0.5.4-dev.1/src/index.js');
 	
 	var jupyterlab_widgets = __jupyter_require__('@jupyterlab/nbwidgets@^0.6.0/lib/index.js');
 	
@@ -21,15 +21,15 @@ jupyter.define('nglview-js-widgets@0.5.4/src/labplugin.js', function (module, ex
 	};
 	
 })
-/** END DEFINE BLOCK for nglview-js-widgets@0.5.4/src/labplugin.js **/
+/** END DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/src/labplugin.js **/
 
 
-/** START DEFINE BLOCK for nglview-js-widgets@0.5.4/src/index.js **/
-jupyter.define('nglview-js-widgets@0.5.4/src/index.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/src/index.js **/
+jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/index.js', function (module, exports, __jupyter_require__) {
 	module.exports = {};
 	
 	var loadedModules = [
-	    __jupyter_require__('nglview-js-widgets@0.5.4/src/widget_ngl.js'),
+	    __jupyter_require__('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js'),
 	    //require("./ngl.js"),
 	]
 	
@@ -44,14 +44,14 @@ jupyter.define('nglview-js-widgets@0.5.4/src/index.js', function (module, export
 	    }
 	}
 	
-	module.exports['version'] = __jupyter_require__('nglview-js-widgets@0.5.4/package.json').version;
+	module.exports['version'] = __jupyter_require__('nglview-js-widgets@0.5.4-dev.1/package.json').version;
 	
 })
-/** END DEFINE BLOCK for nglview-js-widgets@0.5.4/src/index.js **/
+/** END DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/src/index.js **/
 
 
-/** START DEFINE BLOCK for nglview-js-widgets@0.5.4/src/widget_ngl.js **/
-jupyter.define('nglview-js-widgets@0.5.4/src/widget_ngl.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js **/
+jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (module, exports, __jupyter_require__) {
 	var widgets = __jupyter_require__('jupyter-js-widgets@^2.0.6/lib/index.js');
 	var NGL = __jupyter_require__('ngl@0.10.0-dev.3/dist/ngl.js');
 	var $ = __jupyter_require__('jquery@^2.1.4/dist/jquery.js');
@@ -765,7 +765,11 @@ jupyter.define('nglview-js-widgets@0.5.4/src/widget_ngl.js', function (module, e
 	
 	    parametersChanged: function() {
 	        var _parameters = this.model.get("_parameters");
-	        this.stage.setParameters(_parameters);
+	        this.setParameters(_parameters);
+	    },
+	
+	    setParameters: function(parameters) {
+	        this.stage.setParameters(parameters);
 	
 	        // do not set _full_stage_parameters here
 	        // or parameters will be never updated (not sure why) 
@@ -1028,7 +1032,7 @@ jupyter.define('nglview-js-widgets@0.5.4/src/widget_ngl.js', function (module, e
 	};
 	
 })
-/** END DEFINE BLOCK for nglview-js-widgets@0.5.4/src/widget_ngl.js **/
+/** END DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js **/
 
 
 /** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/index.js **/
@@ -47694,11 +47698,11 @@ jupyter.define('jquery-ui@1.12.1/ui/position.js', function (module, exports, __j
 /** END DEFINE BLOCK for jquery-ui@1.12.1/ui/position.js **/
 
 
-/** START DEFINE BLOCK for nglview-js-widgets@0.5.4/package.json **/
-jupyter.define('nglview-js-widgets@0.5.4/package.json', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/package.json **/
+jupyter.define('nglview-js-widgets@0.5.4-dev.1/package.json', function (module, exports, __jupyter_require__) {
 	module.exports = {
 		"name": "nglview-js-widgets",
-		"version": "0.5.4",
+		"version": "0.5.4-dev.1",
 		"description": "nglview-js-widgets",
 		"author": "Alexander S. Rose",
 		"license": "MIT",
@@ -47732,7 +47736,7 @@ jupyter.define('nglview-js-widgets@0.5.4/package.json', function (module, export
 		}
 	};
 })
-/** END DEFINE BLOCK for nglview-js-widgets@0.5.4/package.json **/
+/** END DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/package.json **/
 
 
 /** START DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.4/lib/index.js **/

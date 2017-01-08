@@ -782,7 +782,11 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	
 	    parametersChanged: function() {
 	        var _parameters = this.model.get("_parameters");
-	        this.stage.setParameters(_parameters);
+	        this.setParameters(_parameters);
+	    },
+	
+	    setParameters: function(parameters) {
+	        this.stage.setParameters(parameters);
 	
 	        // do not set _full_stage_parameters here
 	        // or parameters will be never updated (not sure why) 
@@ -18737,7 +18741,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 
 	module.exports = {
 		"name": "nglview-js-widgets",
-		"version": "0.5.4",
+		"version": "0.5.4-dev.1",
 		"description": "nglview-js-widgets",
 		"author": "Alexander S. Rose",
 		"license": "MIT",
