@@ -380,7 +380,7 @@ Projects using NGLView
 
 Acknowledgment
 ==============
-- Funding: Hai Nguyen is supported by NIH Grant GM103297, "The Center for HIV RNA Studies".
+- Funding: Hai Nguyen is supported by NIH Grant GM103297, "The Center for HIV RNA Studies" (2015 to 02-2017).
 - [dunovank/jupyter-themes](https://github.com/dunovank/jupyter-themes): for `oceans16` theme
 
 License
