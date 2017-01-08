@@ -711,7 +711,11 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     parametersChanged: function() {
         var _parameters = this.model.get("_parameters");
-        this.stage.setParameters(_parameters);
+        this.setParameters(_parameters);
+    },
+
+    setParameters: function(parameters) {
+        this.stage.setParameters(parameters);
 
         // do not set _full_stage_parameters here
         // or parameters will be never updated (not sure why) 

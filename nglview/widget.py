@@ -120,7 +120,8 @@ class NGLWidget(DOMWidget):
     _n_dragged_files = Int().tag(sync=True)
     _init_representations = List().tag(sync=True)
     _init_structures_sync = List().tag(sync=True)
-    _parameters = Dict().tag(sync=True)
+    # TODO: remove _parameters?
+    _parameters = Dict().tag(sync=False)
     _full_stage_parameters = Dict().tag(sync=True)
     _original_stage_parameters = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
@@ -212,6 +213,7 @@ class NGLWidget(DOMWidget):
     def parameters(self, params):
         params = _camelize_dict(params)
         self._parameters = params
+        self._remote_call('setParameters', target='Widget', args=[params,])
 
     @property
     def camera(self):

@@ -1,21 +1,21 @@
 {
-	"entry": "nglview-js-widgets@0.5.4/src/labplugin.js",
-	"hash": "172eab951b2aa56b364f4bc044fccdff",
+	"entry": "nglview-js-widgets@0.5.4-dev.1/src/labplugin.js",
+	"hash": "0fe11d2652c58d2710c8f2c5feb90b65",
 	"id": 0,
 	"name": "nglview-js-widgets",
 	"files": [
 		"nglview-js-widgets.bundle.js"
 	],
 	"modules": {
-		"nglview-js-widgets@0.5.4/src/labplugin.js": [
-			"nglview-js-widgets@0.5.4/src/index.js",
+		"nglview-js-widgets@0.5.4-dev.1/src/labplugin.js": [
+			"nglview-js-widgets@0.5.4-dev.1/src/index.js",
 			"@jupyterlab/nbwidgets@^0.6.0/lib/index.js"
 		],
-		"nglview-js-widgets@0.5.4/src/index.js": [
-			"nglview-js-widgets@0.5.4/src/widget_ngl.js",
-			"nglview-js-widgets@0.5.4/package.json"
+		"nglview-js-widgets@0.5.4-dev.1/src/index.js": [
+			"nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js",
+			"nglview-js-widgets@0.5.4-dev.1/package.json"
 		],
-		"nglview-js-widgets@0.5.4/src/widget_ngl.js": [
+		"nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js": [
 			"jupyter-js-widgets@^2.0.6/lib/index.js",
 			"ngl@0.10.0-dev.3/dist/ngl.js",
 			"jquery@^2.1.4/dist/jquery.js",
@@ -358,7 +358,7 @@
 			"jquery@2.2.4/dist/jquery.js",
 			"jquery-ui@1.12.1/ui/version.js"
 		],
-		"nglview-js-widgets@0.5.4/package.json": [],
+		"nglview-js-widgets@0.5.4-dev.1/package.json": [],
 		"@jupyterlab/nbwidgets@0.6.4/lib/index.js": [
 			"jupyter-js-widgets@^2.0.12/lib/index.js",
 			"phosphor@^0.7.0/lib/ui/panel.js",
