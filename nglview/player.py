@@ -708,7 +708,7 @@ class TrajectoryPlayer(DOMWidget):
         return self.widget_quick_repr
 
     def _make_repr_name_choices(self, component_slider, repr_slider):
-        repr_choices = Dropdown()
+        repr_choices = Dropdown(options=[" ",])
 
         def on_chose(change):
             repr_name = change['new']
