@@ -111,7 +111,11 @@ class RepresentationControl(Box):
                                  cutoff=(0., 100, 0.1),
                                  continuous_update=False)
         for kid in widget.children:
-            setattr(kid, '_ngl_description', kid.description)
+            try:
+                setattr(kid, '_ngl_description', kid.description)
+            except AttributeError:
+                # ipywidgets.Output does not have `description` attribute
+                setattr(kid, '_ngl_description', '')
             if kid._ngl_description in ['probe_radius', 'smooth', 'surface_type', 'box_size', 'cutoff']:
                 setattr(kid, '_ngl_type', 'surface')
             else:
