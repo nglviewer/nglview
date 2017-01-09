@@ -1,15 +1,15 @@
 from __future__ import print_function
 from setuptools import setup, find_packages, Command
-from setuptools.command.sdist import sdist
-from setuptools.command.build_py import build_py
 from setuptools.command.egg_info import egg_info
 from subprocess import check_call
 
 import os
 import sys
-import platform
 
 import versioneer
+from versioneer import get_cmdclass
+sdist = get_cmdclass()['sdist']
+build_py = get_cmdclass()['build_py']
 
 here = os.path.dirname(os.path.abspath(__file__))
 node_root = os.path.join(here, 'js')
@@ -208,6 +208,7 @@ setup_args = {
         'egg_info': js_prerelease(egg_info),
         'sdist': js_prerelease(sdist, strict=True),
         'jsdeps': NPM,
+        'version': get_cmdclass()['version']
     },
 
     'author': 'Alexander S. Rose',
