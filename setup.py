@@ -211,7 +211,7 @@ setup_args = {
         'version': get_cmdclass()['version']
     },
 
-    'author': 'Alexander S. Rose',
+    'author': 'Alexander S. Rose, Hai Nguyen',
     'author_email': 'alexander.rose@weirdbyte.de',
     'url': 'https://github.com/arose/nglview',
     'keywords': [
