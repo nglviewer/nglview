@@ -6,15 +6,16 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.contrib.movie &#8212; NGLView 0.6.1 documentation</title>
+    <title>nglview.contrib.movie &#8212; NGLView 0.6.2.1+16.g9d243d7 documentation</title>
     
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.6.1',
+        VERSION:     '0.6.2.1+16.g9d243d7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,10 +24,11 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/jupyter-js-widgets@^2.0.13/dist/embed.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="NGLView 0.6.1 documentation" href="../index.html" /> 
+    <link rel="top" title="NGLView 0.6.2.1+16.g9d243d7 documentation" href="../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -38,7 +40,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.6.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -49,8 +51,87 @@
             
   <div class="section" id="nglview-contrib-movie">
 <h1>nglview.contrib.movie<a class="headerlink" href="#nglview-contrib-movie" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-nglview.contrib.movie">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nglview.contrib.movie" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nglview.contrib.movie.MovieMaker">
+<em class="property">class </em><code class="descclassname">nglview.contrib.movie.</code><code class="descname">MovieMaker</code><span class="sig-paren">(</span><em>view</em>, <em>download_folder=None</em>, <em>prefix='movie'</em>, <em>output='my_movie.gif'</em>, <em>fps=8</em>, <em>start=0</em>, <em>stop=-1</em>, <em>step=1</em>, <em>skip_render=False</em>, <em>timeout=1.0</em>, <em>in_memory=False</em>, <em>render_params=None</em>, <em>mpy_params=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/contrib/movie.html#MovieMaker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.contrib.movie.MovieMaker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>view : NGLWidget
+download_folder : str or None</p>
+<blockquote>
+<div>Folder that stores images. You can not arbitarily set this folder. It must be
+the download directory of the web browser you are using.
+If None, $HOME/Downloads/ will be used.</div></blockquote>
+<dl class="docutils">
+<dt>prefix</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str, default &#8216;movie&#8217;</span><dd>prefix name of rendered image.</dd>
+<dt>output</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str, default &#8216;my_movie.gif&#8217;</span><dd>output filename of the movie.
+if output has &#8216;.gif&#8217;, call <cite>write_gif</cite>, otherwise calling <cite>write_videofile</cite></dd>
+<dt>fps</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">8</span><dd>frame per second</dd>
+<dt>start, stop, step</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int, default (0, -1, 1)</span><dd>how many frames you want to render.</dd>
+<dt>skip_render</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">bool, default False</span><dd>if True, do not render any frame and uses existings images in <cite>download_folder</cite>
+for movie making.
+if False, perform rendering first.</dd>
+<dt>timeout</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a number (second), default 1.</span><dd>The waiting time between rendering two consecutive frames.
+You need to decide the &#8220;good&#8221; value by your self. <cite>timeout</cite> should be larger than
+the rendering time of each frame.</dd>
+<dt>render_params</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dict or None, default None</span><dd>NGL rendering params. see NGLWidget.download_image.
+If None, use default values</dd>
+<dt>mpy_params</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dict or None, default None</span><dd>moviepy params for <cite>write_gif</cite> method.
+if None, use default values</dd>
+<dt>in_memory</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">bool, default False</span><dd>if False, save rendered images to disk first
+if True, keep all image data in memory (good for small video)</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="k">as</span> <span class="nn">pt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">traj</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pytraj</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nglview.contrib.movie</span> <span class="k">import</span> <span class="n">MovieMaker</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">download_folder</span> <span class="o">=</span> <span class="s1">&#39;/Users/xxx/Downloads&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="s1">&#39;my.gif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mov</span> <span class="o">=</span> <span class="n">MovieMaker</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">download_folder</span><span class="o">=</span><span class="n">download_folder</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mov</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># write avi format</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nglview.contrib.movie</span> <span class="k">import</span> <span class="n">MovieMaker</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mpy_params</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;codec&#39;</span><span class="p">:</span> <span class="s1">&#39;mpeg4&#39;</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">movie</span> <span class="o">=</span> <span class="n">MovieMaker</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;my.avi&#39;</span><span class="p">,</span> <span class="n">in_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mpy_params</span><span class="o">=</span><span class="n">mpy_params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">movie</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>unstable API. Currently supports .gif format
+If you are using remote notebook, make sure to set in_memory=True</p>
+<p>moviepy. e.g:</p>
+<blockquote>
+<div>pip install moviepy
+conda install freeimage</div></blockquote>
+<dl class="method">
+<dt id="nglview.contrib.movie.MovieMaker.interupt">
+<code class="descname">interupt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/contrib/movie.html#MovieMaker.interupt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.contrib.movie.MovieMaker.interupt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop making process</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nglview.contrib.movie.MovieMaker.make">
+<code class="descname">make</code><span class="sig-paren">(</span><em>in_memory=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/contrib/movie.html#MovieMaker.make"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.contrib.movie.MovieMaker.make" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
@@ -63,7 +144,7 @@
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">nglview.contrib.movie</a><ul>
-<li><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li><a class="reference internal" href="#module-nglview.contrib.movie">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -98,12 +179,12 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.6.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Nov 24, 2016.
+      Last updated on Jan 09, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.
     </div>
   </body>

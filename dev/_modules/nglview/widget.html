@@ -6,15 +6,16 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.widget &#8212; NGLView 0.6.1 documentation</title>
+    <title>nglview.widget &#8212; NGLView 0.6.2.1+16.g9d243d7 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.6.1',
+        VERSION:     '0.6.2.1+16.g9d243d7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,10 +24,11 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/jupyter-js-widgets@^2.0.13/dist/embed.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="NGLView 0.6.1 documentation" href="../../index.html" />
+    <link rel="top" title="NGLView 0.6.2.1+16.g9d243d7 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
@@ -39,7 +41,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -56,6 +58,7 @@
 <span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span>
 <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">DOMWidget</span><span class="p">,</span> <span class="n">widget_image</span><span class="p">,</span> <span class="n">PlaceProxy</span>
@@ -125,9 +128,38 @@
             <span class="n">fn</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">root_fn</span><span class="p">,</span> <span class="n">rep</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">other</span><span class="p">))</span>
 
+<span class="k">class</span> <span class="nc">RemoteCallThread</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RemoteCallThread</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># this `run` method will be called if `start` the thread</span>
+        <span class="c1"># How does this work?</span>
+        <span class="c1"># First, try to pop all callbacks and execute them, if loadFile</span>
+        <span class="c1"># then wait until getting &#39;ok&#39; signal from NGL. Calling those callbacks</span>
+        <span class="c1"># will block execution from other threads. This is why we let this thread</span>
+        <span class="c1"># run forever in background. This thread is usually sleeping all the time</span>
+        <span class="c1"># and let other threads do the work. It &quot;wake up&quot; only if its &#39;q&#39; is added more</span>
+        <span class="c1"># callbacks</span>
+
+        <span class="c1"># This class is needed if use call </span>
+        <span class="c1"># add_trajectory, clear, add_representation, ... in the same notebook cell</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">callback</span><span class="o">.</span><span class="n">_method_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;loadFile&#39;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">_wait_until_finished</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+
 <div class="viewcode-block" id="NGLWidget"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget">[docs]</a><span class="k">class</span> <span class="nc">NGLWidget</span><span class="p">(</span><span class="n">DOMWidget</span><span class="p">):</span>
     <span class="n">_view_name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;NGLView&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">_view_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;nglview-js&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">_view_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;nglview-js-widgets&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_image_data</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">selector</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">frame</span> <span class="o">=</span> <span class="n">Int</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -142,7 +174,8 @@
     <span class="n">_n_dragged_files</span> <span class="o">=</span> <span class="n">Int</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_init_representations</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_init_structures_sync</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># TODO: remove _parameters?</span>
+    <span class="n">_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">_full_stage_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_original_stage_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_coordinates_dict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -167,20 +200,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_widget_image</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mf">900.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># do not use _displayed_callbacks since there is another Widget._display_callbacks</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks_before_loaded</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks_after_loaded</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">_add_repr_method_shortcut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">Shape</span><span class="p">(</span><span class="n">view</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-
-        <span class="c1"># register to get data from JS side</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">on_msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_handle_msg</span><span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">on_msg</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_handle_msg</span><span class="p">,))</span>
+        <span class="c1"># # register to get data from JS side</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call_thread</span> <span class="o">=</span> <span class="n">RemoteCallThread</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span> <span class="o">=</span> <span class="p">[]</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
-
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">Trajectory</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">py_utils</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
@@ -230,6 +267,7 @@
     <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">_camelize_dict</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setParameters&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">params</span><span class="p">,])</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">camera</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -334,14 +372,43 @@
          <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span>
                          <span class="s1">&#39;n_frames&#39;</span><span class="p">))</span>
 
+    <span class="k">def</span> <span class="nf">_wait_until_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">):</span>
+        <span class="c1"># NGL need to send &#39;finished&#39; signal to</span>
+        <span class="c1"># backend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># idle to make room for waiting for </span>
+            <span class="c1"># &quot;finished&quot; event sent from JS</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="c1"># if event is set from another thread</span>
+                <span class="c1"># break while True</span>
+                <span class="k">break</span>
+
+    <span class="k">def</span> <span class="nf">_run_on_another_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="c1"># use `event` to singal</span>
+        <span class="c1"># func(*args)</span>
+        <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,)</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">thread</span>
+
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;loaded&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">on_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="c1"># trick for firefox on Linux</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]:</span>
-            <span class="p">[</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fire_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks_before_loaded</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_fire_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callbacks</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
+                <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">callback</span><span class="o">.</span><span class="n">_method_name</span> <span class="o">==</span> <span class="s1">&#39;loadFile&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_wait_until_finished</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_on_another_thread</span><span class="p">(</span><span class="n">_call</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="p">)</span>
+            
     <span class="k">def</span> <span class="nf">_refresh_render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;useful when you update coordinates for a single structure.</span>
 
@@ -359,9 +426,7 @@
 
 <span class="sd">        Note: unstable feature</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="c1"># trigger reload callbacks</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fire_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks_after_loaded</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_ipython_display_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NGLWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_ipython_display_</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -713,8 +778,9 @@
 <span class="sd">        Example</span>
 <span class="sd">        -------</span>
 <span class="sd">        &gt;&gt;&gt; import nglview as nv</span>
-<span class="sd">        &gt;&gt;&gt; import pytraj as pt</span>
-<span class="sd">        &gt;&gt;&gt; t = (pt.datafiles.load_dpdp()[:].superpose(&#39;@CA&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt; t = (pt.datafiles.load_dpdp()[:].supej = pt.load(membrane_pdb)</span>
+<span class="sd">                trajrpose(&#39;@CA&#39;))</span>
 <span class="sd">        &gt;&gt;&gt; w = nv.show_pytraj(t)</span>
 <span class="sd">        &gt;&gt;&gt; w.add_representation(&#39;cartoon&#39;, selection=&#39;protein&#39;, color=&#39;blue&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; w.add_representation(&#39;licorice&#39;, selection=[3, 8, 9, 11], color=&#39;red&#39;)</span>
@@ -894,6 +960,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_repr_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;stage_parameters&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_full_stage_parameters</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;async_message&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;ok&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_request_repr_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">repr_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;requestReprParameters&#39;</span><span class="p">,</span>
@@ -1137,17 +1206,18 @@
         <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
         <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;kwargs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span>
 
+        <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">):</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">callback</span><span class="o">.</span><span class="n">_method_name</span> <span class="o">=</span> <span class="n">method_name</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call_thread</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># send later</span>
-            <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">):</span>
-                <span class="n">widget</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-            <span class="n">callback</span><span class="o">.</span><span class="n">_method_name</span> <span class="o">=</span> <span class="n">method_name</span>
-
             <span class="c1"># all callbacks will be called right after widget is loaded</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks_before_loaded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks_after_loaded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_traj_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itsid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;return nglview.Trajectory or its derived class object</span>
@@ -1242,8 +1312,8 @@
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;return ComponentViewer</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ComponentViewer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> 
+        <span class="n">postive_index</span> <span class="o">=</span> <span class="n">py_utils</span><span class="o">.</span><span class="n">get_positive_index</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ComponentViewer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">postive_index</span><span class="p">)</span> 
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;return ComponentViewer</span>
@@ -1377,13 +1447,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Nov 24, 2016.
+      Last updated on Jan 09, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.
     </div>
   </body>

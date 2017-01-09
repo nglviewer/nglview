@@ -1,10 +1,10 @@
-nglview.jsutils
-==============
+nglview.js_utils
+================
 
 Module contents
 ---------------
 
-.. automodule:: nglview.jsutils
+.. automodule:: nglview.utils.js_utils
     :members:
     :undoc-members:
     :show-inheritance:

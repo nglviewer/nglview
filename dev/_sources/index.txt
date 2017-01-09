@@ -26,12 +26,12 @@ an `issue <https://github.com/arose/nglview/issues>`__.
    :alt: membrane
 
    membrane
-
 Table of contents
 =================
 
 -  `Installation <#installation>`__
 -  `Example <#example>`__
+-  `Showcase from users <#showcase-from-users>`__
 -  `Usage <#usage>`__
 -  `Command line <#command-line>`__
 -  `API doc <#api-doc>`__
@@ -48,12 +48,20 @@ Installation
 Released version
 ----------------
 
-**Note**: The released version only works with ``ipywidgets < 5.0`` -
-Available on ``bioconda`` channel
+**Note**: The released version only works with ``ipywidgets >= 5.2.2``.
+This version will not work with JupyterLab.
 
-::
+-  Available on ``bioconda`` channel
 
-    `conda install nglview -c bioconda`
+   .. code:: bash
+
+       conda config --add channels conda-forge
+       conda install nglview -c bioconda
+       # might need: jupyter-nbextension enable nglview --py --user
+
+       # if you already installed nglview, you can `upgrade`
+       conda upgrade nglview --force
+       # might need: jupyter-nbextension enable nglview --py --user
 
 -  Available on `PyPI <https://pypi.python.org/pypi/nglview/>`__
 
@@ -62,9 +70,12 @@ Available on ``bioconda`` channel
 Development version
 -------------------
 
-Requirement: ``ipywidgets >= 5.1``, ``notebook >= 4.2``
+Requirement: ``ipywidgets >= 5.2.2``, ``notebook >= 4.2``
 
 The development version can be installed directly from github:
+
+notebook user
+~~~~~~~~~~~~~
 
 .. code:: bash
 
@@ -82,6 +93,38 @@ The development version can be installed directly from github:
         
         # tested with ipywidgets 5.2.2, notebook 4.2.1
 
+jupyterlab user
+~~~~~~~~~~~~~~~
+
+**Note**: jupyterlab is in its alpha version, so the instruction below
+might or might now work. Make sure to install development versions of
+``ipywidgets``, ``jupyterlab``. Please see their corresponding websites
+for further information.
+
+Next, install ``nglview``
+
+.. code:: bash
+
+    sh devtools/install-dev.sh
+
+Docker user
+~~~~~~~~~~~
+
+-  First, run
+
+   .. code:: bash
+
+       docker run -it -p 8888:8888 hainm/nglview
+
+-  Then open web browser, paste
+
+   .. code:: bash
+
+       localhost:8888
+
+`How does ``nglview`` look like in
+jupyterlab? <examples/jupyterlab.md>`__
+
 Example
 =======
 
@@ -89,6 +132,12 @@ Example
    examples <https://github.com/arose/nglview/blob/master/examples/README.md>`__
 -  Simple demo for trajectory (take time to load):
    `biomembrane <http://amber-md.github.io/pytraj/latest/ngl_player.html>`__
+
+Showcase from users
+===================
+
+Please check `user examples <examples/user_examples.md>`__. Feel free to
+contribute.
 
 Usage
 =====
@@ -101,7 +150,7 @@ Open a notebook
 
 and issue
 
-.. code:: python
+.. code:: Python
 
     import nglview
     view = nglview.show_pdbid("3pqr")  # load "3pqr" from RCSB PDB and display viewer widget
@@ -117,29 +166,29 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `rdkit <https://github.com/rdkit/rdkit>`__,
 `HTMD <https://github.com/Acellera/htmd>`__.
 
-+---------------------------------------------+----------------------------------------------------------+
-| Function                                    | Description                                              |
-+=============================================+==========================================================+
-| ``show_structure_file(path)``               | Shows structure (pdb, gro, mol2, sdf) in ``path``        |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_pdbid(pdbid)``                       | Shows ``pdbid`` fetched from RCSB PDB                    |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_simpletraj(struc_path, traj_path)``  | Shows structure & trajectory loaded with ``simpletraj``  |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_mdtraj(traj)``                       | Shows ``MDTraj`` trajectory ``traj``                     |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_pytraj(traj)``                       | Shows ``PyTraj`` trajectory ``traj``                     |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_parmed(structure)``                  | Shows ``ParmEd`` structure                               |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_mdanalysis(univ)``                   | Shows ``MDAnalysis`` Universe or AtomGroup ``univ``      |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_rdkit(mol)``                         | Shows ``rdkit`` rdkit.Chem.rdchem.Mol                    |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_ase(atoms)``                         | Shows ``ase`` Atoms                                      |
-+---------------------------------------------+----------------------------------------------------------+
-| ``show_htmd(mol)``                          | Shows ``HTMD`` Molecules                                 |
-+---------------------------------------------+----------------------------------------------------------+
++----------------------------------------------+-----------------------------------------------------------+
+| Function                                     | Description                                               |
++==============================================+===========================================================+
+| ``show_structure_file(path)``                | Shows structure (pdb, gro, mol2, sdf) in ``path``         |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_pdbid(pdbid)``                        | Shows ``pdbid`` fetched from RCSB PDB                     |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_simpletraj(struc_path, traj_path)``   | Shows structure & trajectory loaded with ``simpletraj``   |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_mdtraj(traj)``                        | Shows ``MDTraj`` trajectory ``traj``                      |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_pytraj(traj)``                        | Shows ``PyTraj`` trajectory ``traj``                      |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_parmed(structure)``                   | Shows ``ParmEd`` structure                                |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_mdanalysis(univ)``                    | Shows ``MDAnalysis`` Universe or AtomGroup ``univ``       |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_rdkit(mol)``                          | Shows ``rdkit`` rdkit.Chem.rdchem.Mol                     |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_ase(atoms)``                          | Shows ``ase`` Atoms                                       |
++----------------------------------------------+-----------------------------------------------------------+
+| ``show_htmd(mol)``                           | Shows ``HTMD`` Molecules                                  |
++----------------------------------------------+-----------------------------------------------------------+
 
 API
 ===
@@ -178,7 +227,7 @@ Representations can also be changed by overwriting the
 available ``type`` and ``params`` are described in the NGL Viewer
 `documentation <http://arose.github.io/ngl/api/index.html>`__.
 
-.. code:: python
+.. code:: Python
 
     view.representations = [
         {"type": "cartoon", "params": {
@@ -191,7 +240,7 @@ available ``type`` and ``params`` are described in the NGL Viewer
 
 The widget constructor also accepts a ``representation`` argument:
 
-.. code:: python
+.. code:: Python
 
     initial_repr = [
         {"type": "cartoon", "params": {
@@ -205,12 +254,12 @@ The widget constructor also accepts a ``representation`` argument:
 Properties
 ----------
 
-.. code:: python
+.. code:: Python
 
     # set the frame number
     view.frame = 100
 
-.. code:: python
+.. code:: Python
 
     # parameters for the NGL stage object
     view.parameters = {
@@ -307,6 +356,8 @@ API doc
 =======
 
 -  `Latest version <http://arose.github.io/nglview/latest/api.html>`__
+-  `All releases
+   versions <http://arose.github.io/nglview/release/index.html>`__
 -  `Development version <http://arose.github.io/nglview/dev/api.html>`__
 
 Command line
@@ -386,6 +437,10 @@ Projects using NGLView
 Acknowledgment
 ==============
 
+-  Funding: Hai Nguyen is supported by NIH Grant GM103297, "The Center
+   for HIV RNA Studies" (2015 to 02-2017).
+-  Many thanks to ``nglview``
+   `contributors <https://github.com/arose/nglview/graphs/contributors>`__
 -  `dunovank/jupyter-themes <https://github.com/dunovank/jupyter-themes>`__:
    for ``oceans16`` theme
 

@@ -17,6 +17,7 @@ Table of contents
 
 * [Installation](#installation)
 * [Example](#example)
+* [Showcase from users](#showcase-from-users)
 * [Usage](#usage)
 * [Command line](#command-line)
 * [API doc](#api-doc)
@@ -33,10 +34,20 @@ Installation
 
 Released version
 ----------------
-**Note**: The released version only works with `ipywidgets < 5.0`
+**Note**: The released version only works with `ipywidgets >= 5.2.2`. This version will not work
+with JupyterLab.
+
 - Available on `bioconda` channel
 
-    `conda install nglview -c bioconda`
+    ```bash
+    conda config --add channels conda-forge
+    conda install nglview -c bioconda
+    # might need: jupyter-nbextension enable nglview --py --user
+
+    # if you already installed nglview, you can `upgrade`
+    conda upgrade nglview --force
+    # might need: jupyter-nbextension enable nglview --py --user
+    ```
 
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
@@ -45,9 +56,11 @@ Released version
 Development version
 -------------------
 
-Requirement: `ipywidgets >= 5.1`, `notebook >= 4.2`
+Requirement: `ipywidgets >= 5.2.2`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
+
+### notebook user
 
 ```bash
     git clone https://github.com/arose/nglview
@@ -65,11 +78,41 @@ The development version can be installed directly from github:
     # tested with ipywidgets 5.2.2, notebook 4.2.1
 ```
 
+### jupyterlab user
+
+**Note**: jupyterlab is in its alpha version, so the instruction below might or might now work.
+Make sure to install development versions of `ipywidgets`, `jupyterlab`. Please see their corresponding
+websites for further information.
+
+Next, install `nglview`
+
+```bash
+sh devtools/install-dev.sh
+```
+
+### Docker user
+
+- First, run
+```bash
+docker run -it -p 8888:8888 hainm/nglview
+```
+
+- Then open web browser, paste
+```bash
+localhost:8888
+```
+
+[How does `nglview` look like in jupyterlab?](examples/jupyterlab.md)
+
 Example
 =======
 
 - Notebooks: please see our [Jupyter notebook examples](https://github.com/arose/nglview/blob/master/examples/README.md)
 - Simple demo for trajectory (take time to load): [biomembrane](http://amber-md.github.io/pytraj/latest/ngl_player.html)
+
+Showcase from users
+===================
+Please check [user examples](examples/user_examples.md). Feel free to contribute.
 
 Usage
 =====
@@ -264,6 +307,7 @@ movie.make()
 API doc
 =======
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
+- [All releases versions](http://arose.github.io/nglview/release/index.html)
 - [Development version](http://arose.github.io/nglview/dev/api.html)
 
 Command line
@@ -336,7 +380,8 @@ Projects using NGLView
 
 Acknowledgment
 ==============
-
+- Funding: Hai Nguyen is supported by NIH Grant GM103297, "The Center for HIV RNA Studies" (2015 to 02-2017).
+- Many thanks to `nglview` [contributors](https://github.com/arose/nglview/graphs/contributors)
 - [dunovank/jupyter-themes](https://github.com/dunovank/jupyter-themes): for `oceans16` theme
 
 License

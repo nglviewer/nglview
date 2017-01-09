@@ -6,15 +6,16 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.scripts.nglview &#8212; NGLView 0.6.1 documentation</title>
+    <title>nglview.scripts.nglview &#8212; NGLView 0.6.2.1+16.g9d243d7 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.6.1',
+        VERSION:     '0.6.2.1+16.g9d243d7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,10 +24,11 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/jupyter-js-widgets@^2.0.13/dist/embed.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="top" title="NGLView 0.6.1 documentation" href="../../../index.html" />
+    <link rel="top" title="NGLView 0.6.2.1+16.g9d243d7 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
@@ -39,7 +41,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -67,7 +69,7 @@
 <span class="n">demo_source</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">import nglview as nv</span>
 
-<span class="s2">view = nv.demo(gui=True, theme=&#39;dark&#39;)</span>
+<span class="s2">view = nv.demo(gui=True)</span>
 <span class="s2">view</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
@@ -165,10 +167,10 @@
 <span class="se">\033</span><span class="s2">[32m NOTE: you might want to replace </span><span class="si">{hostname}</span><span class="s2"> by full hostname with domain name </span><span class="se">\033</span><span class="s2">[0m</span>
 
 <span class="se">\033</span><span class="s2">[32m Then open your web browser, copy and paste: </span><span class="se">\033</span><span class="s2">[0m</span>
-<span class="s2">    http://localhost:</span><span class="si">{port}</span><span class="s2"></span>
+<span class="s2">    http://localhost:</span><span class="si">{port}</span><span class="s2">/notebooks/</span><span class="si">{notebook_name}</span><span class="s2"></span>
 <span class="s2">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="get_remote_port"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.get_remote_port">[docs]</a><span class="k">def</span> <span class="nf">get_remote_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_remote_port"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.get_remote_port">[docs]</a><span class="k">def</span> <span class="nf">get_remote_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">notebook_path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">socket</span>
     <span class="kn">from</span> <span class="nn">nglview.scripts.app</span> <span class="k">import</span> <span class="n">NGLViewApp</span>
     <span class="n">port</span> <span class="o">=</span> <span class="n">NGLViewApp</span><span class="p">()</span><span class="o">.</span><span class="n">get_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
@@ -178,7 +180,10 @@
     <span class="n">client_cm</span> <span class="o">=</span> <span class="s2">&quot;ssh -NL localhost:</span><span class="si">{port}</span><span class="s2">:localhost:</span><span class="si">{port}</span><span class="s2"> </span><span class="si">{username}</span><span class="s2">@</span><span class="si">{hostname}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
             <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">,</span>
             <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">remote_msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">client_cm</span><span class="o">=</span><span class="n">client_cm</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">))</span>
+    <span class="n">base_notebook_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">notebook_path</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">remote_msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">client_cm</span><span class="o">=</span><span class="n">client_cm</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+                            <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">,</span>
+                            <span class="n">notebook_name</span><span class="o">=</span><span class="n">base_notebook_name</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">port</span></div>
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">notebook_dict</span><span class="o">=</span><span class="n">notebook_dict</span><span class="p">,</span> <span class="n">cmd_arg</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
@@ -262,14 +267,17 @@
             <span class="n">create_new_nb</span> <span class="o">=</span> <span class="kc">True</span>
     
     
+    <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">remote</span><span class="p">:</span>
         <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{jupyter}</span><span class="s1"> notebook </span><span class="si">{notebook_name}</span><span class="s1"> </span><span class="si">{browser}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">,</span>
                                                                    <span class="n">notebook_name</span><span class="o">=</span><span class="n">notebook_name</span><span class="p">,</span>
-                                                               <span class="n">browser</span><span class="o">=</span><span class="n">browser</span><span class="p">)</span>
+                                                                   <span class="n">browser</span><span class="o">=</span><span class="n">browser</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">port</span> <span class="o">=</span> <span class="n">get_remote_port</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-        <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{jupyter}</span><span class="s1"> notebook --no-browser --port </span><span class="si">{port}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">,</span>
-                                                                    <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">get_remote_port</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">notebook_name</span><span class="p">)</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{jupyter}</span><span class="s1"> notebook --no-browser --port </span><span class="si">{port}</span><span class="s1"> &#39;</span> \
+              <span class="s1">&#39;--notebook-dir </span><span class="si">{dirname}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">,</span>
+                                                <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+                                                <span class="n">dirname</span><span class="o">=</span><span class="n">dirname</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NOTE: make sure to open </span><span class="si">{0}</span><span class="s1"> in your local machine</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">disable_autorun</span> <span class="ow">or</span> <span class="n">command</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -326,13 +334,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Nov 24, 2016.
+      Last updated on Jan 09, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.
     </div>
   </body>
