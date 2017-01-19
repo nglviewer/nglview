@@ -89,6 +89,7 @@ class TrajectoryPlayer(DOMWidget):
         self.observe(self._on_widget_built, names=['widget_repr_parameters',
             'widget_repr',
             'widget_preference'])
+        self._movie_maker = None
 
     def _on_widget_built(self, change):
         widget = change['new']
@@ -581,6 +582,18 @@ class TrajectoryPlayer(DOMWidget):
                                           name=name)
         widget._ngl_name = 'repr_parameters_box'
         return widget
+
+    def _make_movie(self, output='my.gif', **kwargs):
+        try:
+            import moviepy
+        except ImportError:
+            print("You must install moviepy and ffmeg")
+            print("pip install moviepy")
+            print("conda install -c conda-forge ffmpeg")
+        from nglview.contrib.movie import MovieMaker
+
+        self._movie_maker = MovieMaker(self._view, **kwargs)
+        self._movie_maker.make()
 
     def _make_button_export_image(self):
         slider_factor = IntSlider(value=4, min=1, max=10, description='scale')
