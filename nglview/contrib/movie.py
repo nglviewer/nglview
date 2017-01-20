@@ -33,7 +33,7 @@ class MovieMaker(object):
     render_params : dict or None, default None
         NGL rendering params. see NGLWidget.download_image.
         If None, use default values
-    mpy_params : dict or None, default None
+    moviepy_params : dict or None, default None
         moviepy params for `write_gif` method.
         if None, use default values
     in_memory : bool, default False
@@ -55,10 +55,10 @@ class MovieMaker(object):
     >>> # write avi format
     >>> from nglview.contrib.movie import MovieMaker
 
-    >>> mpy_params = {
+    >>> moviepy_params = {
     ...     'codec': 'mpeg4'
     ... }
-    >>> movie = MovieMaker(view, output='my.avi', in_memory=True, mpy_params=mpy_params)
+    >>> movie = MovieMaker(view, output='my.avi', in_memory=True, moviepy_params=moviepy_params)
     >>> movie.make()
 
     Notes
@@ -89,7 +89,7 @@ class MovieMaker(object):
                  timeout=1.,
                  in_memory=False,
                  render_params=None,
-                 mpy_params=None):
+                 moviepy_params=None):
         if download_folder is None:
             download_folder = os.getenv('HOME', '') + '/Downloads/'
         self.view = view
@@ -100,11 +100,11 @@ class MovieMaker(object):
         self.fps = fps
         self.in_memory = in_memory
         self.render_params = render_params if render_params is not None else {}
-        self.mpy_params = mpy_params if mpy_params is not None else {}
+        self.moviepy_params = moviepy_params if moviepy_params is not None else {}
         if self.render_params is not None:
             assert isinstance(self.render_params, dict)
-        if self.mpy_params is not None:
-            assert isinstance(self.mpy_params, dict)
+        if self.moviepy_params is not None:
+            assert isinstance(self.moviepy_params, dict)
         self.output = output
         if stop < 0:
             stop = self.view.count
@@ -145,9 +145,9 @@ class MovieMaker(object):
             if not self._event.is_set():
                 clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
                 if self.output.endswith('.gif'):
-                    clip.write_gif(self.output, fps=self.fps, **self.mpy_params)
+                    clip.write_gif(self.output, fps=self.fps, **self.moviepy_params)
                 else:
-                    clip.write_videofile(self.output, fps=self.fps, **self.mpy_params)
+                    clip.write_videofile(self.output, fps=self.fps, **self.moviepy_params)
                 self._image_array = []
         self.thread = threading.Thread(target=_make, args=(self._event,))
         self.thread.daemon = True

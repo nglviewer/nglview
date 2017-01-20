@@ -884,11 +884,25 @@ class NGLWidget(DOMWidget):
                           kwargs=params)
 
     def _get_movie_maker(self, in_memory=True, **kwargs):
+        ''' create MovieMaker object
+
+        Examples
+        --------
+        >>> movie = view._get_movie_maker(output='my.gif')
+        >>> movie.make()
+
+
+        Notes
+        -----
+        We only test with imageio 1.6 and moviepy 0.2.2.11
+        Good luck.
+        '''
         try:
             import moviepy
         except ImportError:
             print("You must install moviepy and ffmeg")
-            print("pip install moviepy")
+            print("pip install moviepy==0.2.2.11")
+            print("pip install imageio==1.6")
         from nglview.contrib.movie import MovieMaker
 
         if 'in_memory' not in kwargs:
