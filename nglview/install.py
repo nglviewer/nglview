@@ -1,5 +1,5 @@
 import argparse
-from os.path import dirname, abspath, join
+from os.path import join
 from notebook import nbextensions
 from glob import glob
 
