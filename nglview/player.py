@@ -89,6 +89,7 @@ class TrajectoryPlayer(DOMWidget):
         self.observe(self._on_widget_built, names=['widget_repr_parameters',
             'widget_repr',
             'widget_preference'])
+        self._movie_maker = None
 
     def _on_widget_built(self, change):
         widget = change['new']
