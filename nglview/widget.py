@@ -408,6 +408,22 @@ class NGLWidget(DOMWidget):
         else:
             return self
 
+    def _set_size(self, w, h):
+        '''
+
+        Parameters
+        ----------
+        w, h : float or str
+
+        Examples
+        --------
+        >>> view._set_size(100, 100)
+        >>> view._set_size('100px', '100px')
+        >>> view._set_size('50%', '50%')
+        '''
+        self._remote_call('setSize', target='Widget',
+                args=[w, h])
+
     def _set_place_proxy(self, widget):
         """
 

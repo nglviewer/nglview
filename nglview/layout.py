@@ -3,8 +3,6 @@
 from __future__ import absolute_import
 from ipywidgets import Layout, Button, ToggleButton, Box, Label, Tab
 
-from traitlets import TraitError
-
 def make_form_item_layout():
     # protect nglview if it is not used in notebook (wheen there is not `comm`
     return Layout(
