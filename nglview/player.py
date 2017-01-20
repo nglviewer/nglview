@@ -583,18 +583,6 @@ class TrajectoryPlayer(DOMWidget):
         widget._ngl_name = 'repr_parameters_box'
         return widget
 
-    def _make_movie(self, output='my.gif', **kwargs):
-        try:
-            import moviepy
-        except ImportError:
-            print("You must install moviepy and ffmeg")
-            print("pip install moviepy")
-            print("conda install -c conda-forge ffmpeg")
-        from nglview.contrib.movie import MovieMaker
-
-        self._movie_maker = MovieMaker(self._view, **kwargs)
-        self._movie_maker.make()
-
     def _make_button_export_image(self):
         slider_factor = IntSlider(value=4, min=1, max=10, description='scale')
         checkbox_antialias = Checkbox(value=True, description='antialias')

@@ -883,6 +883,20 @@ class NGLWidget(DOMWidget):
                           args=[filename,],
                           kwargs=params)
 
+    def _get_movie_maker(self, in_memory=True, **kwargs):
+        try:
+            import moviepy
+        except ImportError:
+            print("You must install moviepy and ffmeg")
+            print("pip install moviepy")
+        from nglview.contrib.movie import MovieMaker
+
+        if 'in_memory' not in kwargs:
+            kwargs['in_memory'] = in_memory 
+
+        movie_maker = MovieMaker(self, **kwargs)
+        return movie_maker
+
     def _ngl_handle_msg(self, widget, msg, buffers):
         """store message sent from Javascript.
 

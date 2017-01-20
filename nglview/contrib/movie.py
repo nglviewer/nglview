@@ -4,7 +4,7 @@ import moviepy.editor as mpy
 import threading
 
 class MovieMaker(object):
-    """
+    """ Unstable API
 
     Parameters
     ----------
@@ -165,4 +165,4 @@ class MovieMaker(object):
         im_bytes = base64.b64decode(value)
         im_bytes = io.BytesIO(im_bytes)
         # convert to numpy RGB value (for moviepy.editor.VideoClip)
-        return mpimg.imread(im_bytes, format='JPG')
+        return mpimg.imread(im_bytes, format='PNG')
