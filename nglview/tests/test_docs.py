@@ -1,9 +1,13 @@
+import sys
+import unittest
 import doctest
 import nglview
 from nglview import widget, show
 
 import warnings
 warnings.filterwarnings('ignore')
+
+PY3 = sys.version_info[0] == 3
 
 
 try:
@@ -45,6 +49,7 @@ except ImportError:
 def get_total_errors(modules):
     return sum([doctest.testmod(mod).failed for mod in modules])
 
+@unittest.skipUnless(PY3, 'doctest with py3 only')
 def test_nglview_show_module():
     """
     """
