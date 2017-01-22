@@ -41,7 +41,7 @@ def show_pdbid(pdbid, **kwargs):
     --------
     >>> import nglview as nv
     >>> w = nv.show_pdbid("3pqr")
-    >>> w
+    >>> w # doctest: +SKIP
     '''
     structure = PdbIdStructure(pdbid)
     return NGLWidget(structure, **kwargs)
@@ -68,7 +68,8 @@ def show_ase(ase_atoms, **kwargs):
     >>> dimer = Atoms([Atom('X', (0, 0, 0)),
     ...                Atom('X', (0, 0, 1))])
     >>> dimer.set_positions([(1, 2, 3), (4, 5, 6.2)])
-    >>> nv.show_ase(dimer)
+    >>> w = nv.show_ase(dimer)
+    >>> w # doctest: +SKIP
     """
     structure = ASEStructure(ase_atoms)
     return NGLWidget(structure, **kwargs)
@@ -82,7 +83,7 @@ def show_structure_file(path, **kwargs):
     --------
     >>> import nglview as nv
     >>> w = nv.show_structure_file(nv.datafiles.GRO)
-    >>> w
+    >>> w # doctest: +SKIP
     '''
     structure = FileStructure(path)
     return NGLWidget(structure, **kwargs)
@@ -94,8 +95,9 @@ def show_simpletraj(traj, **kwargs):
     Examples
     --------
     >>> import nglview as nv
-    >>> w = nv.show_simpletraj(nv.datafiles.GRO, nv.datafiles.XTC)
-    >>> w
+    >>> traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
+    >>> view = nv.show_simpletraj(traj)
+    >>> view # doctest: +SKIP
     '''
     return NGLWidget(traj, **kwargs)
 
@@ -109,7 +111,7 @@ def show_mdtraj(mdtraj_trajectory, **kwargs):
     >>> import mdtraj as md
     >>> t = md.load(nv.datafiles.XTC, top=nv.datafiles.GRO)
     >>> w = nv.show_mdtraj(t)
-    >>> w
+    >>> w # doctest: +SKIP
     '''
     structure_trajectory = MDTrajTrajectory(mdtraj_trajectory)
     return NGLWidget(structure_trajectory, **kwargs)
@@ -124,7 +126,7 @@ def show_pytraj(pytraj_trajectory, **kwargs):
     >>> import pytraj as pt
     >>> t = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     >>> w = nv.show_pytraj(t)
-    >>> w
+    >>> w # doctest: +SKIP
     '''
     trajlist = pytraj_trajectory if isinstance(pytraj_trajectory, (list, tuple)) else [pytraj_trajectory,]
 
@@ -139,9 +141,9 @@ def show_parmed(parmed_structure, **kwargs):
     --------
     >>> import nglview as nv
     >>> import parmed as pmd
-    >>> t = pt.load_file(nv.datafiles.PDB)
+    >>> t = pmd.load_file(nv.datafiles.PDB)
     >>> w = nv.show_parmed(t)
-    >>> w
+    >>> w # doctest: +SKIP
     '''
     structure_trajectory = ParmEdTrajectory(parmed_structure)
     return NGLWidget(structure_trajectory, **kwargs)
@@ -160,12 +162,14 @@ def show_rdkit(rdkit_mol, **kwargs):
     >>> from rdkit import Chem
     >>> from rdkit.Chem import AllChem
     >>> m = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4'))
-    >>> AllChem.EmbedMultipleConfs(m, useExpTorsionAnglePrefs=True, useBasicKnowledge=True)
+    >>> _ = AllChem.EmbedMultipleConfs(m, useExpTorsionAnglePrefs=True, useBasicKnowledge=True)
     >>> view = nv.show_rdkit(m)
-    >>> view
+    >>> view # doctest: +SKIP
 
     >>> # add component m2
     >>> # create file-like object
+    >>> from nglview.show import StringIO
+    >>> m2 = Chem.AddHs(Chem.MolFromSmiles('N[C@H](C)C(=O)O'))
     >>> fh = StringIO(Chem.MolToPDBBlock(m2))
     >>> view.add_component(fh, ext='pdb')
 
@@ -210,7 +214,7 @@ def show_mdanalysis(atomgroup, **kwargs):
     >>> u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)
     >>> prot = u.select_atoms('protein')
     >>> w = nv.show_mdanalysis(prot)
-    >>> w
+    >>> w # doctest: +SKIP
     '''
     structure_trajectory = MDAnalysisTrajectory(atomgroup)
     return NGLWidget(structure_trajectory, **kwargs)
@@ -222,16 +226,24 @@ def show_htmd(mol, **kwargs):
 
     Examples
     --------
-    >>> import nglview as nv
-    >>> from htmd import Molecule
-    >>> mol = Molecule(nv.datafiles.PDB)
-    >>> mol.filter('protein')
-    >>> w = nv.show_htmd(mol)
-    >>> w
+    >>> import nglview as nv # doctest: +SKIP
+    ... from htmd import Molecule
+    ... mol = Molecule(nv.datafiles.PDB)
+    ... mol.filter('protein')
+    ... w = nv.show_htmd(mol)
+    ... w
     '''
     structure_trajectory = HTMDTrajectory(mol)
     return NGLWidget(structure_trajectory, **kwargs)
 
 def demo(*args, **kwargs):
+    '''
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> view = nv.demo()
+    >>> view # doctest: +SKIP
+    '''
     from nglview import show_structure_file
     return show_structure_file(datafiles.PDB, *args, **kwargs)
