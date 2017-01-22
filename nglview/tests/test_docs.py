@@ -2,6 +2,10 @@ import doctest
 import nglview
 from nglview import widget, show
 
+import warnings
+warnings.filterwarnings('ignore')
+
+
 try:
     from ipywidgets import Widget
     from ipykernel.comm import Comm
