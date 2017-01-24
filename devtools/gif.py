@@ -1,4 +1,11 @@
-from moviepy import editor
+# require: ffmpeg
+# e.g: conda install ffmpeg -c menpo
+# 
+import sys
+import subprocess
 
-x = editor.VideoFileClip('nglview.mov')
-x.write_gif("nglview.gif", fps=8, opt='nq')
+mov_in = sys.argv[1]
+mov_out = sys.argv[2]
+
+command = 'ffmpeg -i {} -pix_fmt rgb24 -r 10 -f gif {}'.format(mov_in, mov_out)
+subprocess.call(command, shell=True)
