@@ -377,6 +377,7 @@ Projects using NGLView
 - [pychimera](https://github.com/insilichem/pychimera) - Use UCSF Chimera Python API in a standard interpreter
 - [htmd](https://github.com/Acellera/htmd) - High throughput molecular dynamics simulations
 - [https://github.com/kbsezginel/Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
+- [ssbio](https://github.com/nmih/ssbio) - Tools for enabling structural systems biology
 
 Acknowledgment
 ==============
