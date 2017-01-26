@@ -30,6 +30,7 @@ Animations
 - [pytraj](pytraj.md)
 - [mdtraj](mdtraj.md)
 - [parmed](parmed.md)
+- [Structure minimization](parmed_minimization.md)
 
 Unstable Features
 -----------------
