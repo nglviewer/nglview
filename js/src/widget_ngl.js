@@ -194,7 +194,6 @@ var NGLView = widgets.DOMWidgetView.extend({
     setSelector: function(selector_id) {
         // id is uuid that will be set from Python
         var selector = "<div class='" + selector_id + "'></div>";
-        console.log('selector', selector);
         this.$ngl_selector = $(selector)
             .css("position", "absolute")
             .css("bottom", "5%")
@@ -517,6 +516,25 @@ var NGLView = widgets.DOMWidgetView.extend({
         shapeComp.addRepresentation("buffer");
     },
 
+    replaceStructure: function(structure){
+         var blob = new Blob([structure.data], {type: "text/plain"});
+         var params = structure.params || {};
+         params.ext = structure.ext;
+         params.defaultRepresentation = false;
+         var comp = this.stage.compList[0];
+         var representations = comp.reprList.slice();
+         this.stage.removeComponent(comp);
+         var old_orientation = this.stage.getOrientation();
+         var that = this;
+         this.stage.loadFile(blob, params).then(function(component) {
+             that.stage.setOrientation(old_orientation);
+             representations.forEach(function(repr) {
+                 // TODO: keep eye on this
+                 component.addRepresentation(repr.repr.type, repr.repr.params);
+             });
+         });
+    },
+
     structureChanged: function() {
         if (!this.model.get("loaded")) {
             var structureList = this.model.get("_init_structures_sync");
@@ -837,6 +855,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                     if (func) {
                         func.apply(this, new_args);
                     } else {
+                        // send error message to Python?
                         console.log('can not create func for ' + msg.methodName);
                     }
                     break;
