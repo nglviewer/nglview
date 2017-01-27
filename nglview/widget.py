@@ -589,7 +589,7 @@ class NGLWidget(DOMWidget):
         r = str(repr_index)
 
         try:
-            name = self._repr_dict[c][r]['name']
+            name = self._repr_dict[c][r]['type']
         except KeyError:
             name = ''
 

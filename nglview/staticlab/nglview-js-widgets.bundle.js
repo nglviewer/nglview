@@ -325,8 +325,8 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	            for (var j = 0; j < comp.reprList.length; j++) {
 	                var repr = comp.reprList[j];
 	                msgi[j] = {};
-	                msgi[j]['name'] = repr.name;
-	                msgi[j]['parameters'] = repr.repr.getParameters();
+	                msgi[j]['type'] = repr.name;
+	                msgi[j]['params'] = repr.repr.getParameters();
 	            }
 	        }
 	        this.send({
