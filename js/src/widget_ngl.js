@@ -532,6 +532,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                  component.addRepresentation(repr.repr.type, repr.repr.params);
              });
              that.stage.removeComponent(comp);
+             that._handle_loading_file_finished();
          });
     },
 
