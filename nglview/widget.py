@@ -1,10 +1,9 @@
 from __future__ import print_function, absolute_import
-
+import threading
 import time
 import base64
 import uuid
 import json
-import threading
 import numpy as np 
 from IPython.display import display
 from ipywidgets import DOMWidget, widget_image, PlaceProxy
@@ -24,6 +23,7 @@ from .representation import RepresentationControl
 from .adaptor import Structure, Trajectory
 from .config import BACKENDS
 from .parameters import REPRESENTATION_NAME_PAIRS
+from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
 
@@ -73,35 +73,6 @@ def _add_repr_method_shortcut(self, other):
             func= make_func(rep)
             fn = '_'.join((root_fn, rep[0]))
             setattr(self, fn, MethodType(func, other))
-
-class RemoteCallThread(threading.Thread):
-    def __init__(self, view, timeout=0.1):
-        self.q = []
-        self.view = view
-        self.timeout = timeout
-        super(RemoteCallThread, self).__init__()
-        self.daemon = True
-
-    def run(self):
-        # this `run` method will be called if `start` the thread
-        # How does this work?
-        # First, try to pop all callbacks and execute them, if loadFile
-        # then wait until getting 'ok' signal from NGL. Calling those callbacks
-        # will block execution from other threads. This is why we let this thread
-        # run forever in background. This thread is usually sleeping all the time
-        # and let other threads do the work. It "wake up" only if its 'q' is added more
-        # callbacks
-
-        # This class is needed if use call 
-        # add_trajectory, clear, add_representation, ... in the same notebook cell
-        while True:
-            try:
-                callback = self.q.pop(0)
-                callback(self.view)
-                if callback._method_name in ['loadFile']:
-                    self.view._wait_until_finished()
-            except IndexError:
-                time.sleep(self.timeout)
 
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
