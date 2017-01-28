@@ -127,7 +127,8 @@ class NGLWidget(DOMWidget):
         # # register to get data from JS side
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
-        self._remote_call_thread = RemoteCallThread(self)
+        self._remote_call_thread = RemoteCallThread(self,
+                registered_funcs=['loadFile', 'replaceStructure'])
         self._remote_call_thread.start()
         self._trajlist = []
         self._ngl_component_ids = []

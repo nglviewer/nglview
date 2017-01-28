@@ -586,6 +586,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                 component.addRepresentation(repr.repr.type, repr.repr.params);
 	             });
 	             that.stage.removeComponent(comp);
+	             that._handle_loading_file_finished();
 	         });
 	    },
 	

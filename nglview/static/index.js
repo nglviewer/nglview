@@ -603,6 +603,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                 component.addRepresentation(repr.repr.type, repr.repr.params);
 	             });
 	             that.stage.removeComponent(comp);
+	             that._handle_loading_file_finished();
 	         });
 	    },
 	
