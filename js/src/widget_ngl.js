@@ -523,7 +523,6 @@ var NGLView = widgets.DOMWidgetView.extend({
          params.defaultRepresentation = false;
          var comp = this.stage.compList[0];
          var representations = comp.reprList.slice();
-         this.stage.removeComponent(comp);
          var old_orientation = this.stage.getOrientation();
          var that = this;
          this.stage.loadFile(blob, params).then(function(component) {
@@ -532,6 +531,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                  // TODO: keep eye on this
                  component.addRepresentation(repr.repr.type, repr.repr.params);
              });
+             that.stage.removeComponent(comp);
          });
     },
 
