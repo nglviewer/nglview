@@ -577,7 +577,6 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	         params.defaultRepresentation = false;
 	         var comp = this.stage.compList[0];
 	         var representations = comp.reprList.slice();
-	         this.stage.removeComponent(comp);
 	         var old_orientation = this.stage.getOrientation();
 	         var that = this;
 	         this.stage.loadFile(blob, params).then(function(component) {
@@ -586,6 +585,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                 // TODO: keep eye on this
 	                 component.addRepresentation(repr.repr.type, repr.repr.params);
 	             });
+	             that.stage.removeComponent(comp);
 	         });
 	    },
 	
