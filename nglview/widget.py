@@ -89,7 +89,6 @@ class NGLWidget(DOMWidget):
     _first_time_loaded = Bool(True).tag(sync=False)
     # hack to always display movie
     _n_dragged_files = Int().tag(sync=True)
-    _init_representations = List().tag(sync=True)
     _init_structures_sync = List().tag(sync=True)
     # TODO: remove _parameters?
     _parameters = Dict().tag(sync=False)
@@ -132,8 +131,6 @@ class NGLWidget(DOMWidget):
         self._remote_call_thread.start()
         self._trajlist = []
         self._ngl_component_ids = []
-        self._init_structures = []
-
         if parameters:
             self.parameters = parameters
         if isinstance(structure, Trajectory):
@@ -148,8 +145,6 @@ class NGLWidget(DOMWidget):
             if structure is not None:
                 self.add_structure(structure, **kwargs)
 
-        # call before setting representations
-        self._set_initial_structure(self._init_structures)
         if representations:
             self._init_representations = representations
         else:
@@ -173,7 +168,7 @@ class NGLWidget(DOMWidget):
         self.selector = str(uuid.uuid4()).replace('-', '')
         self._remote_call('setSelector', target='Widget', args=[self.selector,])
         self.selector = '.' + self.selector # for PlaceProxy
-        self._place_proxy = PlaceProxy(child=None, selector=self.selector)
+        # self._place_proxy = PlaceProxy(child=None, selector=self.selector)
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
@@ -363,7 +358,7 @@ class NGLWidget(DOMWidget):
             self._remote_call('cleanOutput',
                               target='Widget')
 
-        self._place_proxy._ipython_display_()
+        # self._place_proxy._ipython_display_()
 
     def display(self, gui=False, use_box=False):
         if gui:
@@ -375,7 +370,7 @@ class NGLWidget(DOMWidget):
             else:
                 display(self)
                 display(self.player._display())
-                display(self._place_proxy)
+                # display(self._place_proxy)
                 return None
         else:
             return self
@@ -566,23 +561,6 @@ class NGLWidget(DOMWidget):
             name = ''
 
         return RepresentationControl(self, component, repr_index, name=name)
-
-    def _set_initial_structure(self, structures):
-        """initialize structures for Widget
-
-        Parameters
-        ----------
-        structures : list
-            list of Structure or Trajectory
-        """
-        _init_structures_sync = structures if isinstance(structures, (list, tuple)) else [structures,]
-        if _init_structures_sync:
-            self._init_structures_sync = [
-                        {"data": _structure.get_structure_string(),
-                         "ext": _structure.ext,
-                         "params": _structure.params,
-                         "id": _structure.id}
-                    for _structure in _init_structures_sync]
 
     def _set_coordinates(self, index):
         '''update coordinates for all trajectories at index-th frame
@@ -952,15 +930,10 @@ class NGLWidget(DOMWidget):
         '''
         if not isinstance(structure, Structure):
             raise ValueError('{} is not an instance of Structure'.format(structure))
-        if self.loaded or self._already_constructed:
-            self._load_data(structure, **kwargs)
-        else:
-            # update via structure_list
-            self._init_structures.append(structure)
-            name = py_utils.get_name(structure, kwargs)
-            self._ngl_component_names.append(name)
+        self._load_data(structure, **kwargs)
         self._ngl_component_ids.append(structure.id)
-        self.center_view(component=len(self._ngl_component_ids)-1)
+        if self.n_components > 1:
+            self.center_view(component=len(self._ngl_component_ids)-1)
         self._update_component_auto_completion()
 
     def add_trajectory(self, trajectory, **kwargs):
@@ -995,13 +968,7 @@ class NGLWidget(DOMWidget):
         else:
             trajectory = trajectory
 
-        if self.loaded or self._already_constructed:
-            self._load_data(trajectory, **kwargs)
-        else:
-            # update via _init_structures_sync
-            self._init_structures.append(trajectory)
-            name = py_utils.get_name(trajectory, kwargs)
-            self._ngl_component_names.append(name)
+        self._load_data(trajectory, **kwargs)
         setattr(trajectory, 'shown', True)
         self._trajlist.append(trajectory)
         self._update_count()
