@@ -13,9 +13,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         // init representations handling
         this.model.on("change:_init_representations", this.representationsChanged, this);
 
-        // init structure loading
-        this.model.on("change:_init_structures_sync", this.structureChanged, this);
-
         // init setting of frame
         this.model.on("change:frame", this.frameChanged, this);
 
@@ -86,9 +83,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         $(this.stage.viewer.container).dblclick(function() {
             this.stage.toggleFullscreen();
         }.bind(this));
-
-        // init model data
-        this.structureChanged();
 
         // init picking handling
         this.$pickingInfo = $("<div></div>")
@@ -536,48 +530,6 @@ var NGLView = widgets.DOMWidgetView.extend({
          });
     },
 
-    structureChanged: function() {
-        if (!this.model.get("loaded")) {
-            var structureList = this.model.get("_init_structures_sync");
-            for (var i = 0; i < Object.keys(structureList).length; i++) {
-                var structure = structureList[i];
-                if (structure.data && structure.ext) {
-                    var blob = new Blob([structure.data], {
-                        type: "text/plain"
-                    });
-                    var params = structure.params || {};
-                    params.ext = structure.ext;
-                    params.defaultRepresentation = false;
-                    var that = this;
-                    this.stage.loadFile(blob, params).then(function(component) {
-                        component.centerView();
-                        // this.structureComponent = component;
-                        this.representationsChanged();
-
-                        // for small peptide
-                        if (component.structure) {
-                            var structure = component.structure;
-                            if (structure.biomolDict.BU1) {
-                                var assembly = structure.biomolDict.BU1;
-                                atomCount = assembly.getAtomCount(structure);
-                                instanceCount = assembly.getInstanceCount();
-                            } else {
-                                atomCount = structure.getModelProxy(0).atomCount;
-                            }
-
-                            if (atomCount < 50) {
-                                // why 50? arbitrary number
-                                component.addRepresentation('licorice');
-                            }
-                        }
-                        that._handle_loading_file_finished();
-                    }.bind(this));
-                }
-            }
-            // only use _init_structures_sync before Widget is loaded.
-        }
-    },
-
     superpose: function(cindex0, cindex1, align, sele0, sele1) {
         // superpose two components with given params
         var component0 = this.stage.compList[cindex0];
@@ -791,6 +743,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     on_msg: function(msg) {
         // TODO: re-organize
+        console.log(msg);
         if (msg.type == 'call_method') {
             var new_args = msg.args.slice();
             new_args.push(msg.kwargs);
