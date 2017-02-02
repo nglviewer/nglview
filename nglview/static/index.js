@@ -75,7 +75,13 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	__webpack_require__(8);
 	__webpack_require__(18);
 	__webpack_require__(20);
-	// require('jquery-ui');
+	
+	var Jupyter;
+	if (typeof window !== 'undefined') {
+	  Jupyter = window['Jupyter'] = window['Jupyter'] || {};
+	} else {
+	  Jupyter = Jupyter || {};
+	}
 	
 	var NGLView = widgets.DOMWidgetView.extend({
 	
@@ -205,7 +211,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        this.initPlayer();
 	
 	        var container = this.stage.viewer.container;
-	        var that = this;
+	        that = this;
 	        container.addEventListener('dragover', function(e) {
 	            e.stopPropagation();
 	            e.preventDefault();
@@ -226,7 +232,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	            that.touch();
 	        }, false);
 	
-	        var that = this;
+	        that = this;
 	        this.stage.signals.componentAdded.add(function() {
 	            var len = this.stage.compList.length;
 	            this.model.set("n_components", len);
@@ -277,6 +283,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                selected_cell.execute();
 	                selected_cell.set_text('');
 	            }
+	            event; // to pass eslint
 	            return false;
 	        };
 	
@@ -418,6 +425,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                    } else if (this.$playerButton.text() === "pause") {
 	                        pause();
 	                    }
+	                    event; // to pass eslint
 	                }.bind(this));
 	            this.$playerSlider = $("<div></div>")
 	                .css("margin-left", "70px")
@@ -447,7 +455,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	
 	            if (this.model.get("count") < 2) {
 	                this.$player.hide()
-	            };
+	            }
 	        }
 	    },
 	
@@ -458,11 +466,12 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        });
 	        if (this.model.get("count") > 1) {
 	            this.$player.show()
-	        };
+	        }
 	    },
 	
 	    representationsChanged: function() {
 	        var representations = this.model.get("_init_representations");
+	        var component;
 	
 	        for (var i = 0; i < this.stage.compList.length; i++) {
 	            component = this.stage.compList[i];
@@ -552,6 +561,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                 var color = colors[atom.residueIndex];
 	                 return color
 	            };
+	            params; // to pass eslint; ack;
 	        });
 	        repr.setColor(schemeId);
 	    },
@@ -677,7 +687,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	
 	    openNotebookCommandDialog: function() {
 	        var that = this;
-	        dialog = this.$notebook_text.dialog({
+	        var dialog = this.$notebook_text.dialog({
 	            draggable: true,
 	            resizable: true,
 	            modal: false,
@@ -688,6 +698,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	            close: function(event, ui) {
 	                that.$container.append(that.$notebook_text);
 	                that.$notebook_text.dialog('destroy');
+	                event; ui; // to pass eslint; ack;
 	            },
 	        });
 	        dialog.css({
@@ -704,7 +715,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    setDialog: function() {
 	        var $nb_container = Jupyter.notebook.container;
 	        var that = this;
-	        dialog = this.$container.dialog({
+	        var dialog = this.$container.dialog({
 	            title: "NGLView",
 	            draggable: true,
 	            resizable: true,
@@ -724,6 +735,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                that.$el.append(that.$container);
 	                that.$container.dialog('destroy');
 	                that.handleResize();
+	                event; ui; // to pass eslint; ack;
 	            },
 	            resize: function(event, ui) {
 	                that.stage.handleResize();
@@ -815,18 +827,19 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    on_msg: function(msg) {
 	        // TODO: re-organize
 	        if (msg.type == 'call_method') {
+	            var index, component, func, stage;
 	            var new_args = msg.args.slice();
 	            new_args.push(msg.kwargs);
 	
 	            switch (msg.target) {
 	                case 'Stage':
 	                    var stage_func = this.stage[msg.methodName];
-	                    var stage = this.stage;
+	                    stage = this.stage;
 	                    if (msg.methodName == 'screenshot') {
 	                        NGL.screenshot(this.stage.viewer, msg.kwargs);
 	                    } else if (msg.methodName == 'removeComponent') {
-	                        var index = msg.args[0];
-	                        var component = this.stage.compList[index];
+	                        index = msg.args[0];
+	                        component = this.stage.compList[index];
 	                        this.stage.removeComponent(component);
 	                    } else {
 	                        if (msg.methodName == 'loadFile') {
@@ -847,10 +860,12 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                                }
 	                                this.stage.loadFile(blob, msg.kwargs).then(function(o){
 	                                     that._handle_loading_file_finished();
+	                                     o; // to pass eslint; ack;
 	                                });
 	                            } else {
 	                                this.stage.loadFile(msg.args[0].data, msg.kwargs).then(function(o){
 	                                     that._handle_loading_file_finished();
+	                                     o; // to pass eslint; ack;
 	                                });
 	                            }
 	                        } else {
@@ -860,22 +875,22 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                    break;
 	                case 'Viewer':
 	                    var viewer = this.stage.viewer;
-	                    var func = this.stage.viewer[msg.methodName];
+	                    func = this.stage.viewer[msg.methodName];
 	                    func.apply(viewer, new_args);
 	                    break;
 	                case 'compList':
-	                    var index = msg['component_index'];
-	                    var component = this.stage.compList[index];
-	                    var func = component[msg.methodName];
+	                    index = msg['component_index'];
+	                    component = this.stage.compList[index];
+	                    func = component[msg.methodName];
 	                    func.apply(component, new_args);
 	                    break;
 	                case 'StructureComponent':
-	                    var component = this.structureComponent;
-	                    var func = component[msg.methodName];
+	                    component = this.structureComponent;
+	                    func = component[msg.methodName];
 	                    func.apply(component, new_args);
 	                    break;
 	                case 'Widget':
-	                    var func = this[msg.methodName];
+	                    func = this[msg.methodName];
 	                    if (func) {
 	                        func.apply(this, new_args);
 	                    } else {
@@ -886,9 +901,9 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                case 'Representation':
 	                    var component_index = msg['component_index'];
 	                    var repr_index = msg['repr_index'];
-	                    var component = this.stage.compList[component_index];
 	                    var repr = component.reprList[repr_index];
-	                    var func = repr[msg.methodName];
+	                    component = this.stage.compList[component_index];
+	                    func = repr[msg.methodName];
 	                    if (repr && func) {
 	                        func.apply(repr, new_args);
 	                    }
@@ -910,7 +925,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	            }
 	        } else if (msg.type == 'binary_single') {
 	            var coordinateMeta = msg.data;
-	            var keys = Object.keys(coordinateMeta);
+	            keys = Object.keys(coordinateMeta);
 	
 	            for (i = 0; i < keys.length; i++) {
 	                traj_index = keys[i];
@@ -18706,27 +18721,37 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 		"name": "nglview-js-widgets",
 		"version": "0.5.4-dev.1",
 		"description": "nglview-js-widgets",
-		"author": "Alexander S. Rose",
+		"author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
 		"license": "MIT",
 		"main": "src/index.js",
 		"repository": {
 			"type": "git",
 			"url": "https://github.com/arose/nglview.git"
 		},
+		"bugs": {
+			"url": "https://github.com/arose/nglview/issues"
+		},
+		"files": [
+			"dist"
+		],
 		"keywords": [
+			"molecular graphics",
+			"molecular structure",
 			"jupyter",
 			"widgets",
 			"ipython",
-			"ipywidgets"
+			"ipywidgets",
+			"science"
 		],
 		"scripts": {
-			"lint": "eslint src",
+			"lint": "eslint src test",
 			"prepublish": "webpack",
-			"test": "echo \"Error: no test specified\" && exit 1"
+			"test": "mocha"
 		},
 		"devDependencies": {
 			"@jupyterlab/extension-builder": "^0.8.1",
 			"babel-eslint": "^7.0.0",
+			"babel-register": "^6.11.6",
 			"eslint": "^3.2.2",
 			"eslint-config-google": "^0.7.1",
 			"json-loader": "^0.5.4",
