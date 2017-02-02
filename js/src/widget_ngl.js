@@ -743,7 +743,6 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     on_msg: function(msg) {
         // TODO: re-organize
-        console.log(msg);
         if (msg.type == 'call_method') {
             var new_args = msg.args.slice();
             new_args.push(msg.kwargs);
