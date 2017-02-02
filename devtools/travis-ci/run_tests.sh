@@ -9,7 +9,7 @@ if [ "$TEST_NOTEBOOK" == "yes" ]; then
 else
   if [ "$TESTJS" == "True" ]; then
       conda install nodejs -c conda-forge -y
-      (cd js/ && npm run lint); 
+      (cd js/ && npm install && npm run lint); 
   else
       (cd nglview/tests && py.test --cov=nglview -vs .);
   fi
