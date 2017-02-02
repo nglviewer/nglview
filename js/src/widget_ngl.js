@@ -94,7 +94,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             .css("opacity", "0.7")
             .appendTo(this.$container);
 
-        $inputNotebookCommand = $('<input id="input_notebook_command" type="text"></input>');
+        var $inputNotebookCommand = $('<input id="input_notebook_command" type="text"></input>');
         var that = this;
 
         $inputNotebookCommand.keypress(function(e) {
@@ -827,9 +827,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                     break;
             }
         } else if (msg.type == 'base64_single') {
-            // TODO: remove time
-            var time0 = Date.now();
-
             var coordinatesDict = msg.data;
             var keys = Object.keys(coordinatesDict);
 
@@ -840,29 +837,24 @@ var NGLView = widgets.DOMWidgetView.extend({
                     this.updateCoordinates(coordinates, traj_index);
                 }
             }
-            var time1 = Date.now();
         } else if (msg.type == 'binary_single') {
-            // TODO: remove time
-            var time0 = Date.now();
-
             var coordinateMeta = msg.data;
             var keys = Object.keys(coordinateMeta);
 
-            for (var i = 0; i < keys.length; i++) {
-                var traj_index = keys[i];
-                var coordinates = new Float32Array(msg.buffers[i].buffer);
+            for (i = 0; i < keys.length; i++) {
+                traj_index = keys[i];
+                coordinates = new Float32Array(msg.buffers[i].buffer);
                 if (coordinates.byteLength > 0) {
                     this.updateCoordinates(coordinates, traj_index);
                 }
             }
-            var time1 = Date.now();
         } else if (msg.type == 'get') {
             if (msg.data == 'camera') {
                 this.send(JSON.stringify(this.stage.viewer.camera));
             } else if (msg.data == 'parameters') {
                 this.send(JSON.stringify(this.stage.parameters));
             } else {
-                for (var i = 0; i < this.stage.compList.length; i++) {
+                for (i = 0; i < this.stage.compList.length; i++) {
                     console.log(this.stage.compList[i]);
                 }
             }
@@ -921,8 +913,7 @@ var NGLBox = widgets.BoxView.extend({
         $node.addClass('jupyter-widgets');
         $node.addClass('widget-container');
         $node.addClass('widget-box');
-        var that = this;
-        dialog = $node.dialog({
+        var dialog = $node.dialog({
             draggable: true,
             resizable: true,
             modal: false,
