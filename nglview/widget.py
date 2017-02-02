@@ -78,7 +78,6 @@ class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
-    selector = Unicode().tag(sync=True)
     frame = Int().tag(sync=True)
     count = Int(1).tag(sync=True)
     background = Unicode('white').tag(sync=True)
@@ -89,7 +88,6 @@ class NGLWidget(DOMWidget):
     _first_time_loaded = Bool(True).tag(sync=False)
     # hack to always display movie
     _n_dragged_files = Int().tag(sync=True)
-    _init_structures_sync = List().tag(sync=True)
     # TODO: remove _parameters?
     _parameters = Dict().tag(sync=False)
     _full_stage_parameters = Dict().tag(sync=True)
@@ -165,10 +163,9 @@ class NGLWidget(DOMWidget):
             self._representations = self._init_representations[:]
 
         self._set_unsync_camera()
-        self.selector = str(uuid.uuid4()).replace('-', '')
-        self._remote_call('setSelector', target='Widget', args=[self.selector,])
-        self.selector = '.' + self.selector # for PlaceProxy
-        # self._place_proxy = PlaceProxy(child=None, selector=self.selector)
+        selector = 'nglviewHolder' + str(id(self))
+        self._remote_call('setSelector', target='Widget', args=[selector,])
+        self._place_proxy = PlaceProxy(child=None, selector=selector)
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
