@@ -66,7 +66,7 @@ def test_file_manager_use_url():
     assert fh.is_compressed
 
 def test_file_not_use_filename():
-    src = os.path.abspath(nglview.__file__)
+    src = os.path.join(os.path.dirname(nglview.__file__), '__init__.py')
     fh = FileManager(src)
     assert not fh.is_compressed
 
