@@ -165,7 +165,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	            .css("opacity", "0.7")
 	            .appendTo(this.$container);
 	
-	        $inputNotebookCommand = $('<input id="input_notebook_command" type="text"></input>');
+	        var $inputNotebookCommand = $('<input id="input_notebook_command" type="text"></input>');
 	        var that = this;
 	
 	        $inputNotebookCommand.keypress(function(e) {
@@ -898,9 +898,6 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                    break;
 	            }
 	        } else if (msg.type == 'base64_single') {
-	            // TODO: remove time
-	            var time0 = Date.now();
-	
 	            var coordinatesDict = msg.data;
 	            var keys = Object.keys(coordinatesDict);
 	
@@ -911,29 +908,24 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                    this.updateCoordinates(coordinates, traj_index);
 	                }
 	            }
-	            var time1 = Date.now();
 	        } else if (msg.type == 'binary_single') {
-	            // TODO: remove time
-	            var time0 = Date.now();
-	
 	            var coordinateMeta = msg.data;
 	            var keys = Object.keys(coordinateMeta);
 	
-	            for (var i = 0; i < keys.length; i++) {
-	                var traj_index = keys[i];
-	                var coordinates = new Float32Array(msg.buffers[i].buffer);
+	            for (i = 0; i < keys.length; i++) {
+	                traj_index = keys[i];
+	                coordinates = new Float32Array(msg.buffers[i].buffer);
 	                if (coordinates.byteLength > 0) {
 	                    this.updateCoordinates(coordinates, traj_index);
 	                }
 	            }
-	            var time1 = Date.now();
 	        } else if (msg.type == 'get') {
 	            if (msg.data == 'camera') {
 	                this.send(JSON.stringify(this.stage.viewer.camera));
 	            } else if (msg.data == 'parameters') {
 	                this.send(JSON.stringify(this.stage.parameters));
 	            } else {
-	                for (var i = 0; i < this.stage.compList.length; i++) {
+	                for (i = 0; i < this.stage.compList.length; i++) {
 	                    console.log(this.stage.compList[i]);
 	                }
 	            }
@@ -992,8 +984,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        $node.addClass('jupyter-widgets');
 	        $node.addClass('widget-container');
 	        $node.addClass('widget-box');
-	        var that = this;
-	        dialog = $node.dialog({
+	        var dialog = $node.dialog({
 	            draggable: true,
 	            resizable: true,
 	            modal: false,
@@ -18729,14 +18720,18 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 			"ipywidgets"
 		],
 		"scripts": {
+			"lint": "eslint src",
 			"prepublish": "webpack",
 			"test": "echo \"Error: no test specified\" && exit 1"
 		},
 		"devDependencies": {
-			"json-loader": "^0.5.4",
-			"webpack": "^1.12.14",
 			"@jupyterlab/extension-builder": "^0.8.1",
-			"ngl": "0.10.0-dev.3"
+			"babel-eslint": "^7.0.0",
+			"eslint": "^3.2.2",
+			"eslint-config-google": "^0.7.1",
+			"json-loader": "^0.5.4",
+			"ngl": "0.10.0-dev.3",
+			"webpack": "^1.12.14"
 		},
 		"dependencies": {
 			"jquery": "^2.1.4",
