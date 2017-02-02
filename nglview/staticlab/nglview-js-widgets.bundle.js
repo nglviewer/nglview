@@ -797,7 +797,6 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	
 	    on_msg: function(msg) {
 	        // TODO: re-organize
-	        console.log(msg);
 	        if (msg.type == 'call_method') {
 	            var new_args = msg.args.slice();
 	            new_args.push(msg.kwargs);
