@@ -210,7 +210,7 @@ class TrajectoryPlayer(DOMWidget):
                        (self._make_widget_preference, 'Preference'),
                        (self._make_theme_box, 'Theme'),
                        (self._make_extra_box, 'Extra'),
-                       (self._make_hide_tab_with_place_proxy, 'Hide'),
+                       # (self._make_hide_tab_with_place_proxy, 'Hide'),
                        (self._show_website, 'Help')]
 
         tab = _make_delay_tab(box_factory, selected_index=-1)
@@ -225,8 +225,8 @@ class TrajectoryPlayer(DOMWidget):
     def _make_widget_tab(self):
         return self._display()
 
-    def _make_hide_tab_with_place_proxy(self):
-        return Box([self._view._place_proxy])
+    # def _make_hide_tab_with_place_proxy(self):
+    #     return Box([self._view._place_proxy])
 
     def _make_button_center(self):
         button = Button(description=' Center', icon='fa-bullseye')
