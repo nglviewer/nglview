@@ -3,7 +3,6 @@ import os
 import sys
 from itertools import chain
 
-import nose.tools as nt
 import gzip
 import unittest
 import pytest
@@ -136,8 +135,8 @@ DEFAULT_REPR = [{'params': {'sele': 'polymer'}, 'type': 'cartoon'},
 def _assert_dict_list_equal(listdict0, listdict1):
     for (dict0, dict1) in zip(listdict0, listdict1):
         for (key0, key1) in zip(sorted(dict0.keys()), sorted(dict1.keys())):
-            nt.assert_equal(key0, key1)
-            nt.assert_equal(dict0.get(key0), dict1.get(key1))
+            assert key0 == key1
+            assert dict0.get(key0) == dict1.get(key1)
 
 def test_API_promise_to_have():
 
@@ -149,13 +148,12 @@ def test_API_promise_to_have():
     # Structure
     structure = nv.Structure()
     structure.get_structure_string
-    nt.assert_true(hasattr(structure, 'id'))
-    nt.assert_true(hasattr(structure, 'ext'))
-    nt.assert_true(hasattr(structure, 'params'))
+    assert hasattr(structure, 'id')
+    assert hasattr(structure, 'ext')
+    assert hasattr(structure, 'params')
 
     # Widget
     nv.NGLWidget._set_coordinates
-    nv.NGLWidget._set_initial_structure
 
     nv.NGLWidget.add_component
     nv.NGLWidget.add_trajectory
@@ -274,11 +272,11 @@ def test_API_promise_to_have():
     view._get_full_params()
     view.detach(split=False)
     view.detach(split=True)
-    view._set_place_proxy(HBox())
+    # view._set_place_proxy(HBox())
 
     # iter
     for c in view: 
-        nt.assert_true(isinstance(c, nv.widget.ComponentViewer))
+        assert isinstance(c, nv.widget.ComponentViewer)
 
 @unittest.skipUnless(has_pytraj, 'skip if not having pytraj')
 @unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
@@ -368,10 +366,12 @@ def test_load_data():
     view._load_data(blob, ext='pdb')
 
     # raise if passing blob but does not provide ext
-    nt.assert_raises(ValueError, view._load_data, blob)
+    with pytest.raises(ValueError):
+        view._load_data(blob)
 
     # raise if passing dummy name
-    nt.assert_raises(NameError, lambda : view._load_data(hahahaha))
+    with pytest.raises(NameError):
+        view._load_data(hahahaha)
 
     # load PyTrajectory
     t0 = nv.PyTrajTrajectory(pt.datafiles.load_ala3())
@@ -382,7 +382,7 @@ def test_load_data():
 
 def test_representations():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
-    nt.assert_equal(view.representations, DEFAULT_REPR)
+    assert view.representations == DEFAULT_REPR
     view.add_cartoon()
     representations_2 = DEFAULT_REPR[:]
     representations_2.append({'type': 'cartoon', 'params': {'sele': 'all'}})
@@ -517,9 +517,9 @@ def test_show_rdkit():
     rdkit_mol = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4')) 
     AllChem.EmbedMultipleConfs(rdkit_mol, useExpTorsionAnglePrefs=True, useBasicKnowledge=True) 
     view = nv.show_rdkit(rdkit_mol, parmed=False)
-    nt.assert_false(view._trajlist)
+    assert not view._trajlist
     view = nv.show_rdkit(rdkit_mol, parmed=True) 
-    nt.assert_true(view._trajlist)
+    assert view._trajlist
 
     view = nv.RdkitStructure(rdkit_mol)
 
@@ -549,24 +549,24 @@ def test_coordinates_meta():
     for index, (view, traj) in enumerate(zip(views, trajs)):
         view.frame = 3
         
-        nt.assert_equal(view._trajlist[0].n_frames, N_FRAMES)
+        assert view._trajlist[0].n_frames == N_FRAMES
 
 def test_structure_file():
     for fn in [get_fn('tz2.pdb'), nv.datafiles.GRO]:
         content = open(fn, 'rb').read()
         fs1 = nv.FileStructure(fn)
-        nt.assert_equal(content, fs1.get_structure_string()) 
+        assert content == fs1.get_structure_string()
     
     # gz
     fn = get_fn('tz2_2.pdb.gz')
     fs2 = nv.FileStructure(fn)
     content = gzip.open(fn).read()
-    nt.assert_equal(content, fs2.get_structure_string()) 
+    assert content == fs2.get_structure_string()
 
 def test_camelize_parameters():
     view = nv.NGLWidget()
     view.parameters = dict(background_color='black')
-    nt.assert_true('backgroundColor' in view._parameters) 
+    assert 'backgroundColor' in view._parameters
 
 def test_component_for_duck_typing():
     view = NGLWidget()
@@ -578,18 +578,18 @@ def test_component_for_duck_typing():
     
     c0 = view[0]
     c1 = view[1]
-    nt.assert_true(hasattr(view, 'component_0'))
-    nt.assert_true(hasattr(view, 'component_1'))
-    nt.assert_true(hasattr(view, 'trajectory_0'))
-    nt.assert_true(hasattr(view.trajectory_0, 'n_frames'))
-    nt.assert_true(hasattr(view.trajectory_0, 'get_coordinates'))
-    nt.assert_true(hasattr(view.trajectory_0, 'get_structure_string'))
+    assert hasattr(view, 'component_0')
+    assert hasattr(view, 'component_1')
+    assert hasattr(view, 'trajectory_0')
+    assert hasattr(view.trajectory_0, 'n_frames')
+    assert hasattr(view.trajectory_0, 'get_coordinates')
+    assert hasattr(view.trajectory_0, 'get_structure_string')
 
     c0.show()
     c0.hide()
 
     view.remove_component(c0.id)
-    nt.assert_false(hasattr(view, 'component_2'))
+    assert not hasattr(view, 'component_2')
 
     # negative indexing
     assert view[-1]._index == c1._index
@@ -604,7 +604,7 @@ def test_trajectory_show_hide_sending_cooridnates():
     view.add_trajectory(nv.PyTrajTrajectory(traj1))
 
     for traj in view._trajlist:
-        nt.assert_true(traj.shown)
+        assert traj.shown
 
     view.frame = 1
 
@@ -618,31 +618,31 @@ def test_trajectory_show_hide_sending_cooridnates():
 
     # hide 0
     view.hide([0,])
-    nt.assert_false(view._trajlist[0].shown)
-    nt.assert_true(view._trajlist[1].shown)
+    assert not view._trajlist[0].shown
+    assert view._trajlist[1].shown
 
     # update frame so view can update its coordinates
     view.frame = 2
     coordinates_dict = copy_coordinate_dict(view)
-    nt.assert_equal(coordinates_dict[0].shape[0], 0)
+    assert coordinates_dict[0].shape[0] == 0
     aa_eq(coordinates_dict[1], traj1[2].xyz)
 
     # hide 0, 1
     view.hide([0, 1])
-    nt.assert_false(view._trajlist[0].shown)
-    nt.assert_false(view._trajlist[1].shown)
+    assert not view._trajlist[0].shown
+    assert not view._trajlist[1].shown
     view.frame = 3
     coordinates_dict = copy_coordinate_dict(view)
-    nt.assert_equal(coordinates_dict[0].shape[0], 0)
-    nt.assert_equal(coordinates_dict[1].shape[0], 0)
+    assert coordinates_dict[0].shape[0] == 0
+    assert coordinates_dict[1].shape[0] == 0
 
     # slicing, show only component 1
     view[1].show()
     view.frame = 0
-    nt.assert_false(view._trajlist[0].shown)
-    nt.assert_true(view._trajlist[1].shown)
+    assert not view._trajlist[0].shown
+    assert view._trajlist[1].shown
     coordinates_dict = copy_coordinate_dict(view)
-    nt.assert_equal(coordinates_dict[0].shape[0], 0)
+    assert coordinates_dict[0].shape[0] == 0
     aa_eq(coordinates_dict[1], traj1[0].xyz)
 
     # show all
@@ -652,8 +652,7 @@ def test_trajectory_show_hide_sending_cooridnates():
     view.show(indices=[0,])
     view.show(indices=[0, 1])
     view.frame = 1
-    nt.assert_true(view._trajlist[0].shown)
-    nt.assert_true(view._trajlist[1].shown)
+    assert view._trajlist[1].shown
     coordinates_dict = copy_coordinate_dict(view)
     aa_eq(coordinates_dict[0], traj0[1].xyz)
     aa_eq(coordinates_dict[1], traj1[1].xyz)
@@ -662,19 +661,19 @@ def test_trajectory_show_hide_sending_cooridnates():
     view[1].hide()
     view[0].hide()
     view.frame = 2
-    nt.assert_false(view._trajlist[0].shown)
-    nt.assert_false(view._trajlist[1].shown)
+    assert not view._trajlist[0].shown
+    assert not view._trajlist[1].shown
     coordinates_dict = copy_coordinate_dict(view)
-    nt.assert_equal(coordinates_dict[0].shape[0], 0)
-    nt.assert_equal(coordinates_dict[1].shape[0], 0)
+    assert coordinates_dict[0].shape[0] == 0
+    assert coordinates_dict[1].shape[0] == 0
 
 def test_existing_js_files():
     from glob import glob
     jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*js'))
     mapfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*map'))
 
-    nt.assert_equal(len(jsfiles), 2)
-    nt.assert_equal(len(mapfiles), 1)
+    assert len(jsfiles) == 2
+    assert len(mapfiles) == 1
 
 def test_add_structure():
     view = nv.NGLWidget()
@@ -703,14 +702,12 @@ def test_loaded_attribute():
     view.add_structure(structure)
     view.add_trajectory(traj)
     view._ipython_display_()
-    nt.assert_equal(len(view._init_structures), 0)
 
     # False, constructor with a single Structure
     view = nv.NGLWidget(structure)
     view.loaded = False
     view.add_trajectory(traj)
     view._ipython_display_()
-    nt.assert_equal(len(view._init_structures), 1)
 
     # True
     view = nv.NGLWidget()
@@ -718,7 +715,6 @@ def test_loaded_attribute():
     view.add_structure(structure)
     view.add_trajectory(traj)
     view._ipython_display_()
-    nt.assert_equal(len(view._init_structures), 0)
 
     # False then True, empty constructor
     view = nv.NGLWidget()
@@ -727,7 +723,6 @@ def test_loaded_attribute():
     view.loaded = True
     view.add_trajectory(traj)
     view._ipython_display_()
-    nt.assert_equal(len(view._init_structures), 0)
 
     # False then True, constructor with a Trajectory
     view = nv.NGLWidget(nv.PyTrajTrajectory(traj))
@@ -736,12 +731,11 @@ def test_loaded_attribute():
     view.loaded = True
     view.add_trajectory(traj)
     view._ipython_display_()
-    nt.assert_equal(len(view._init_structures), 1)
 
 def test_player_simple():
     traj = pt.datafiles.load_tz2()
     view = nv.show_pytraj(traj)
-    nt.assert_false(view.player.sync_frame)
+    assert not view.player.sync_frame
 
     # dummy
     component_slider = ipywidgets.IntSlider()
@@ -859,36 +853,29 @@ def test_player_link_to_ipywidgets():
     link((int_text, 'value'), (view.player, 'step'))
     link((float_text, 'value'), (view.player, 'delay'))
 
-    nt.assert_equal(view.player.step, 2)
-    nt.assert_equal(view.player.delay, 40)
+    assert view.player.step == 2
+    assert view.player.delay == 40
 
     float_text.value = 100
-    nt.assert_equal(view.player.delay, 100)
+    assert view.player.delay == 100
 
     float_text.value= 0.00
     # we set min=10
-    nt.assert_equal(view.player.delay, 10)
+    assert view.player.delay == 10
 
 def test_player_interpolation():
     view = default_view()
 
     view.player.interpolate = True
-    nt.assert_equal(view.player.iparams.get('type'), 'linear')
-    nt.assert_equal(view.player.iparams.get('step'), 1)
-
-    def func():
-        view.player.interpolate = True
-        view.player.iparams = dict(type='spline_typos')
-        view._set_coordinates(3)
-
-    nt.assert_raises(ValueError, func())
+    assert view.player.iparams.get('type') == 'linear'
+    assert view.player.iparams.get('step') == 1
 
 def test_player_picked():
     view = nv.demo()
     s = dict(x=3)
     view.player.widget_picked = view.player._make_text_picked()
     view.picked = s
-    nt.assert_equal(view.player.widget_picked.value, '{"x": 3}')
+    assert view.player.widget_picked.value == '{"x": 3}'
 
 def test_layout_BoxNGL():
     view = nv.demo()
@@ -921,11 +908,12 @@ def test_widget_utils():
     assert i0 is widget_utils.get_widget_by_name(box, 'i0')
     assert i1 is widget_utils.get_widget_by_name(box, 'i1')
 
-    nt.assert_equal(widget_utils.get_widget_by_name(box, 'i100'), None)
-    nt.assert_equal(widget_utils.get_widget_by_name(None, 'i100'), None)
+    assert widget_utils.get_widget_by_name(box, 'i100') is None
+    assert widget_utils.get_widget_by_name(None, 'i100') is None
 
 def test_adaptor_raise():
-    nt.assert_raises(ValueError, lambda : nv.FileStructure('hellotheredda.pdb'))
+    with pytest.raises(ValueError):
+        nv.FileStructure('hellotheredda.pdb')
 
 def test_theme():
     from nglview import theme
@@ -936,12 +924,12 @@ def test_theme():
 def test_player_click_tab():
     view = nv.demo()
     gui = view.player._display()
-    nt.assert_true(isinstance(gui, ipywidgets.Tab))
+    assert isinstance(gui, ipywidgets.Tab)
 
     for i, child in enumerate(gui.children):
         try:
             gui.selected_index = i
-            nt.assert_true(isinstance(child, ipywidgets.Box))
+            assert isinstance(child, ipywidgets.Box)
         except TraitError:
             pass
 
