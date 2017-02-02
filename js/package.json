@@ -2,27 +2,37 @@
   "name": "nglview-js-widgets",
   "version": "0.5.4-dev.1",
   "description": "nglview-js-widgets",
-  "author": "Alexander S. Rose",
+  "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
   "license": "MIT",
   "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/arose/nglview.git"
   },
+  "bugs": {
+    "url": "https://github.com/arose/nglview/issues"
+  },
+  "files": [
+    "dist"
+  ],
   "keywords": [
+    "molecular graphics",
+    "molecular structure",
     "jupyter",
     "widgets",
     "ipython",
-    "ipywidgets"
+    "ipywidgets",
+    "science"
   ],
   "scripts": {
-    "lint": "eslint src",
+    "lint": "eslint src test",
     "prepublish": "webpack",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "devDependencies": {
     "@jupyterlab/extension-builder": "^0.8.1",
     "babel-eslint": "^7.0.0",
+    "babel-register": "^6.11.6",
     "eslint": "^3.2.2",
     "eslint-config-google": "^0.7.1",
     "json-loader": "^0.5.4",

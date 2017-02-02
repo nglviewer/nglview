@@ -5,10 +5,12 @@ require('jquery-ui/ui/widgets/draggable');
 require('jquery-ui/ui/widgets/slider');
 require('jquery-ui/ui/widgets/dialog');
 
-if (! Jupyter){
-    var Jupyter = require('base/js/namespace');
+var Jupyter;
+if (typeof window !== 'undefined') {
+  Jupyter = window['Jupyter'] = window['Jupyter'] || {};
+} else {
+  Jupyter = Jupyter || {};
 }
-// require('jquery-ui');
 
 var NGLView = widgets.DOMWidgetView.extend({
 
