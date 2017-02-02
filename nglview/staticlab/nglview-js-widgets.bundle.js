@@ -58,7 +58,13 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	__jupyter_require__('jquery-ui@^1.12.1/ui/widgets/draggable.js');
 	__jupyter_require__('jquery-ui@^1.12.1/ui/widgets/slider.js');
 	__jupyter_require__('jquery-ui@^1.12.1/ui/widgets/dialog.js');
-	// require('jquery-ui');
+	
+	var Jupyter;
+	if (typeof window !== 'undefined') {
+	  Jupyter = window['Jupyter'] = window['Jupyter'] || {};
+	} else {
+	  Jupyter = Jupyter || {};
+	}
 	
 	var NGLView = widgets.DOMWidgetView.extend({
 	
@@ -148,7 +154,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	            .css("opacity", "0.7")
 	            .appendTo(this.$container);
 	
-	        $inputNotebookCommand = $('<input id="input_notebook_command" type="text"></input>');
+	        var $inputNotebookCommand = $('<input id="input_notebook_command" type="text"></input>');
 	        var that = this;
 	
 	        $inputNotebookCommand.keypress(function(e) {
@@ -188,7 +194,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	        this.initPlayer();
 	
 	        var container = this.stage.viewer.container;
-	        var that = this;
+	        that = this;
 	        container.addEventListener('dragover', function(e) {
 	            e.stopPropagation();
 	            e.preventDefault();
@@ -209,7 +215,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	            that.touch();
 	        }, false);
 	
-	        var that = this;
+	        that = this;
 	        this.stage.signals.componentAdded.add(function() {
 	            var len = this.stage.compList.length;
 	            this.model.set("n_components", len);
@@ -260,6 +266,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                selected_cell.execute();
 	                selected_cell.set_text('');
 	            }
+	            event; // to pass eslint
 	            return false;
 	        };
 	
@@ -401,6 +408,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                    } else if (this.$playerButton.text() === "pause") {
 	                        pause();
 	                    }
+	                    event; // to pass eslint
 	                }.bind(this));
 	            this.$playerSlider = $("<div></div>")
 	                .css("margin-left", "70px")
@@ -430,7 +438,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	
 	            if (this.model.get("count") < 2) {
 	                this.$player.hide()
-	            };
+	            }
 	        }
 	    },
 	
@@ -441,11 +449,12 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	        });
 	        if (this.model.get("count") > 1) {
 	            this.$player.show()
-	        };
+	        }
 	    },
 	
 	    representationsChanged: function() {
 	        var representations = this.model.get("_init_representations");
+	        var component;
 	
 	        for (var i = 0; i < this.stage.compList.length; i++) {
 	            component = this.stage.compList[i];
@@ -535,6 +544,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                 var color = colors[atom.residueIndex];
 	                 return color
 	            };
+	            params; // to pass eslint; ack;
 	        });
 	        repr.setColor(schemeId);
 	    },
@@ -660,7 +670,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	
 	    openNotebookCommandDialog: function() {
 	        var that = this;
-	        dialog = this.$notebook_text.dialog({
+	        var dialog = this.$notebook_text.dialog({
 	            draggable: true,
 	            resizable: true,
 	            modal: false,
@@ -671,6 +681,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	            close: function(event, ui) {
 	                that.$container.append(that.$notebook_text);
 	                that.$notebook_text.dialog('destroy');
+	                event; ui; // to pass eslint; ack;
 	            },
 	        });
 	        dialog.css({
@@ -687,7 +698,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	    setDialog: function() {
 	        var $nb_container = Jupyter.notebook.container;
 	        var that = this;
-	        dialog = this.$container.dialog({
+	        var dialog = this.$container.dialog({
 	            title: "NGLView",
 	            draggable: true,
 	            resizable: true,
@@ -707,6 +718,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                that.$el.append(that.$container);
 	                that.$container.dialog('destroy');
 	                that.handleResize();
+	                event; ui; // to pass eslint; ack;
 	            },
 	            resize: function(event, ui) {
 	                that.stage.handleResize();
@@ -798,18 +810,19 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	    on_msg: function(msg) {
 	        // TODO: re-organize
 	        if (msg.type == 'call_method') {
+	            var index, component, func, stage;
 	            var new_args = msg.args.slice();
 	            new_args.push(msg.kwargs);
 	
 	            switch (msg.target) {
 	                case 'Stage':
 	                    var stage_func = this.stage[msg.methodName];
-	                    var stage = this.stage;
+	                    stage = this.stage;
 	                    if (msg.methodName == 'screenshot') {
 	                        NGL.screenshot(this.stage.viewer, msg.kwargs);
 	                    } else if (msg.methodName == 'removeComponent') {
-	                        var index = msg.args[0];
-	                        var component = this.stage.compList[index];
+	                        index = msg.args[0];
+	                        component = this.stage.compList[index];
 	                        this.stage.removeComponent(component);
 	                    } else {
 	                        if (msg.methodName == 'loadFile') {
@@ -830,10 +843,12 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                                }
 	                                this.stage.loadFile(blob, msg.kwargs).then(function(o){
 	                                     that._handle_loading_file_finished();
+	                                     o; // to pass eslint; ack;
 	                                });
 	                            } else {
 	                                this.stage.loadFile(msg.args[0].data, msg.kwargs).then(function(o){
 	                                     that._handle_loading_file_finished();
+	                                     o; // to pass eslint; ack;
 	                                });
 	                            }
 	                        } else {
@@ -843,22 +858,22 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                    break;
 	                case 'Viewer':
 	                    var viewer = this.stage.viewer;
-	                    var func = this.stage.viewer[msg.methodName];
+	                    func = this.stage.viewer[msg.methodName];
 	                    func.apply(viewer, new_args);
 	                    break;
 	                case 'compList':
-	                    var index = msg['component_index'];
-	                    var component = this.stage.compList[index];
-	                    var func = component[msg.methodName];
+	                    index = msg['component_index'];
+	                    component = this.stage.compList[index];
+	                    func = component[msg.methodName];
 	                    func.apply(component, new_args);
 	                    break;
 	                case 'StructureComponent':
-	                    var component = this.structureComponent;
-	                    var func = component[msg.methodName];
+	                    component = this.structureComponent;
+	                    func = component[msg.methodName];
 	                    func.apply(component, new_args);
 	                    break;
 	                case 'Widget':
-	                    var func = this[msg.methodName];
+	                    func = this[msg.methodName];
 	                    if (func) {
 	                        func.apply(this, new_args);
 	                    } else {
@@ -869,9 +884,9 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                case 'Representation':
 	                    var component_index = msg['component_index'];
 	                    var repr_index = msg['repr_index'];
-	                    var component = this.stage.compList[component_index];
 	                    var repr = component.reprList[repr_index];
-	                    var func = repr[msg.methodName];
+	                    component = this.stage.compList[component_index];
+	                    func = repr[msg.methodName];
 	                    if (repr && func) {
 	                        func.apply(repr, new_args);
 	                    }
@@ -881,9 +896,6 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                    break;
 	            }
 	        } else if (msg.type == 'base64_single') {
-	            // TODO: remove time
-	            var time0 = Date.now();
-	
 	            var coordinatesDict = msg.data;
 	            var keys = Object.keys(coordinatesDict);
 	
@@ -894,29 +906,24 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                    this.updateCoordinates(coordinates, traj_index);
 	                }
 	            }
-	            var time1 = Date.now();
 	        } else if (msg.type == 'binary_single') {
-	            // TODO: remove time
-	            var time0 = Date.now();
-	
 	            var coordinateMeta = msg.data;
-	            var keys = Object.keys(coordinateMeta);
+	            keys = Object.keys(coordinateMeta);
 	
-	            for (var i = 0; i < keys.length; i++) {
-	                var traj_index = keys[i];
-	                var coordinates = new Float32Array(msg.buffers[i].buffer);
+	            for (i = 0; i < keys.length; i++) {
+	                traj_index = keys[i];
+	                coordinates = new Float32Array(msg.buffers[i].buffer);
 	                if (coordinates.byteLength > 0) {
 	                    this.updateCoordinates(coordinates, traj_index);
 	                }
 	            }
-	            var time1 = Date.now();
 	        } else if (msg.type == 'get') {
 	            if (msg.data == 'camera') {
 	                this.send(JSON.stringify(this.stage.viewer.camera));
 	            } else if (msg.data == 'parameters') {
 	                this.send(JSON.stringify(this.stage.parameters));
 	            } else {
-	                for (var i = 0; i < this.stage.compList.length; i++) {
+	                for (i = 0; i < this.stage.compList.length; i++) {
 	                    console.log(this.stage.compList[i]);
 	                }
 	            }
@@ -975,8 +982,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	        $node.addClass('jupyter-widgets');
 	        $node.addClass('widget-container');
 	        $node.addClass('widget-box');
-	        var that = this;
-	        dialog = $node.dialog({
+	        var dialog = $node.dialog({
 	            draggable: true,
 	            resizable: true,
 	            modal: false,
@@ -47676,28 +47682,42 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/package.json', function (module, 
 		"name": "nglview-js-widgets",
 		"version": "0.5.4-dev.1",
 		"description": "nglview-js-widgets",
-		"author": "Alexander S. Rose",
+		"author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
 		"license": "MIT",
 		"main": "src/index.js",
 		"repository": {
 			"type": "git",
 			"url": "https://github.com/arose/nglview.git"
 		},
+		"bugs": {
+			"url": "https://github.com/arose/nglview/issues"
+		},
+		"files": [
+			"dist"
+		],
 		"keywords": [
+			"molecular graphics",
+			"molecular structure",
 			"jupyter",
 			"widgets",
 			"ipython",
-			"ipywidgets"
+			"ipywidgets",
+			"science"
 		],
 		"scripts": {
+			"lint": "eslint src test",
 			"prepublish": "webpack",
-			"test": "echo \"Error: no test specified\" && exit 1"
+			"test": "mocha"
 		},
 		"devDependencies": {
-			"json-loader": "^0.5.4",
-			"webpack": "^1.12.14",
 			"@jupyterlab/extension-builder": "^0.8.1",
-			"ngl": "0.10.0-dev.3"
+			"babel-eslint": "^7.0.0",
+			"babel-register": "^6.11.6",
+			"eslint": "^3.2.2",
+			"eslint-config-google": "^0.7.1",
+			"json-loader": "^0.5.4",
+			"ngl": "0.10.0-dev.3",
+			"webpack": "^1.12.14"
 		},
 		"dependencies": {
 			"jquery": "^2.1.4",

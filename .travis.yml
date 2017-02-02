@@ -4,8 +4,8 @@ matrix:
   include:
      - { os: linux, env: PYTHON_VERSION=2.7 }
      - { os: linux, env: PYTHON_VERSION=3.4 }
-     - { os: linux, env: PYTHON_VERSION=3.5 }
-     # - { os: osx, env: PYTHON_VERSION=3.5 }
+     - { os: linux, env: PYTHON_VERSION=3.5 CONDA_BUILD=True}
+     - { os: linux, env: PYTHON_VERSION=3.5 TESTJS=True}
 
 sudo: true
 dist: trusty
@@ -36,7 +36,7 @@ install:
 
 script:
     - source devtools/travis-ci/run_tests.sh
-    - conda build devtools/recipe
+    - if [ "$CONDA_BUILD" == "True" ]; then conda build devtools/recipe; fi
 
 after_success:
     - echo "Congrats"
