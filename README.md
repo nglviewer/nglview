@@ -376,7 +376,7 @@ Projects using NGLView
 - [deepchem](https://github.com/deepchem/deepchem) - Deep-learning models for Drug Discovery and Quantum Chemistry
 - [pychimera](https://github.com/insilichem/pychimera) - Use UCSF Chimera Python API in a standard interpreter
 - [htmd](https://github.com/Acellera/htmd) - High throughput molecular dynamics simulations
-- [https://github.com/kbsezginel/Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
+- [Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
 - [ssbio](https://github.com/nmih/ssbio) - Tools for enabling structural systems biology
 - [hublib](https://github.com/martin-hunt/hublib) - hublib is a Python library for the [HUBzero](https://hubzero.org/) science gateway platform.
 
