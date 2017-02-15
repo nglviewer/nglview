@@ -374,7 +374,6 @@ Projects using NGLView
 - [AMBER](http://ambermd.org/) -  A package of programs for molecular dynamics simulations of proteins and nucleic acids
 - [mbuild](https://github.com/iModels/mbuild) - A hierarchical, component based molecule builder
 - [deepchem](https://github.com/deepchem/deepchem) - Deep-learning models for Drug Discovery and Quantum Chemistry
-- [pychimera](https://github.com/insilichem/pychimera) - Use UCSF Chimera Python API in a standard interpreter
 - [htmd](https://github.com/Acellera/htmd) - High throughput molecular dynamics simulations
 - [Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
 - [ssbio](https://github.com/nmih/ssbio) - Tools for enabling structural systems biology
