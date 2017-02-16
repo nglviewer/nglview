@@ -893,7 +893,7 @@ class NGLWidget(DOMWidget):
                 # so two viewers can have the same representations
                 self.loaded = False
             self.loaded = msg.get('data')
-        elif msg_type == 'all_reprs_info':
+        elif msg_type == 'repr_dict':
             self._repr_dict = self._ngl_msg.get('data')
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
