@@ -239,10 +239,10 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	            this.touch();
 	            var comp = this.stage.compList[len - 1];
 	            comp.signals.representationRemoved.add(function() {
-	                that.requestReprsInfo();
+	                that.requestReprDict();
 	            });
 	            comp.signals.representationAdded.add(function() {
-	                that.requestReprsInfo();
+	                that.requestReprDict();
 	            });
 	        }, this);
 	
@@ -331,7 +331,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        }
 	    },
 	
-	    requestReprsInfo: function() {
+	    requestReprDict: function() {
 	        var n_components = this.stage.compList.length;
 	        var msg = {};
 	
@@ -347,7 +347,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	            }
 	        }
 	        this.send({
-	            'type': 'all_reprs_info',
+	            'type': 'repr_dict',
 	            'data': msg
 	        });
 	    },
@@ -549,7 +549,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                repr.setRepresentation(new_repr);
 	                repr.name = name;
 	                component.reprList[repr_index] = repr;
-	                this.requestReprsInfo();
+	                this.requestReprDict();
 	            }
 	        }
 	    },
@@ -598,13 +598,17 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	         params.defaultRepresentation = false;
 	         var comp = this.stage.compList[0];
 	         var representations = comp.reprList.slice();
+	         console.log('representations', representations);
 	         var old_orientation = this.stage.getOrientation();
 	         var that = this;
 	         this.stage.loadFile(blob, params).then(function(component) {
 	             that.stage.setOrientation(old_orientation);
 	             representations.forEach(function(repr) {
-	                 // TODO: keep eye on this
-	                 component.addRepresentation(repr.repr.type, repr.repr.params);
+	                 var repr_name = repr.name;
+	                 var repr_params = repr.repr.getParameters();
+	                 // Note: not using repr.repr.type, repr.repr.params
+	                 // since seems to me that repr.repr.params won't return correct "sele"
+	                 component.addRepresentation(repr_name, repr_params);
 	             });
 	             that.stage.removeComponent(comp);
 	             that._handle_loading_file_finished();

@@ -222,10 +222,10 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	            this.touch();
 	            var comp = this.stage.compList[len - 1];
 	            comp.signals.representationRemoved.add(function() {
-	                that.requestReprsInfo();
+	                that.requestReprDict();
 	            });
 	            comp.signals.representationAdded.add(function() {
-	                that.requestReprsInfo();
+	                that.requestReprDict();
 	            });
 	        }, this);
 	
@@ -314,7 +314,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	        }
 	    },
 	
-	    requestReprsInfo: function() {
+	    requestReprDict: function() {
 	        var n_components = this.stage.compList.length;
 	        var msg = {};
 	
@@ -330,7 +330,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	            }
 	        }
 	        this.send({
-	            'type': 'all_reprs_info',
+	            'type': 'repr_dict',
 	            'data': msg
 	        });
 	    },
@@ -532,7 +532,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                repr.setRepresentation(new_repr);
 	                repr.name = name;
 	                component.reprList[repr_index] = repr;
-	                this.requestReprsInfo();
+	                this.requestReprDict();
 	            }
 	        }
 	    },
@@ -581,13 +581,17 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	         params.defaultRepresentation = false;
 	         var comp = this.stage.compList[0];
 	         var representations = comp.reprList.slice();
+	         console.log('representations', representations);
 	         var old_orientation = this.stage.getOrientation();
 	         var that = this;
 	         this.stage.loadFile(blob, params).then(function(component) {
 	             that.stage.setOrientation(old_orientation);
 	             representations.forEach(function(repr) {
-	                 // TODO: keep eye on this
-	                 component.addRepresentation(repr.repr.type, repr.repr.params);
+	                 var repr_name = repr.name;
+	                 var repr_params = repr.repr.getParameters();
+	                 // Note: not using repr.repr.type, repr.repr.params
+	                 // since seems to me that repr.repr.params won't return correct "sele"
+	                 component.addRepresentation(repr_name, repr_params);
 	             });
 	             that.stage.removeComponent(comp);
 	             that._handle_loading_file_finished();
@@ -1013,45 +1017,48 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 /** END DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/index.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/index.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/index.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/index.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
 	function __export(m) {
 	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	}
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/manager-base.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_layout.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_link.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_bool.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_button.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_box.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_image.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_color.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/services-shim.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_int.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_float.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_controller.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_selection.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js'));
-	__export(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_string.js'));
-	exports.version = __jupyter_require__('jupyter-js-widgets@2.0.17/package.json').version;
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/manager-base.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/utils.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_layout.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_style.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_link.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_bool.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_button.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_box.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_image.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_color.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_date.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/services-shim.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_int.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_float.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_controller.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_selection.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_selectioncontainer.js'));
+	__export(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_string.js'));
+	exports.version = __jupyter_require__('jupyter-js-widgets@2.0.30/package.json').version;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/index.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/index.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/manager-base.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/manager-base.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/manager-base.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/manager-base.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/utils.js');
 	var semver = __jupyter_require__('semver@^5.1.0/semver.js');
+	var widget_string_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_string.js');
 	/**
 	 * Manager abstract base class
 	 */
@@ -1104,10 +1111,8 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/manager-base.js', function (module
 	     * Takes a requirejs success handler and returns a requirejs error handler.
 	     * The default implementation just throws the original error.
 	     */
-	    ManagerBase.prototype.require_error = function (success_callback, version) {
-	        return function (err) {
-	            throw err;
-	        };
+	    ManagerBase.prototype.require_error = function (success_callback, failure_callback, version) {
+	        return failure_callback;
 	    };
 	    ;
 	    /**
@@ -1213,7 +1218,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/manager-base.js', function (module
 	        return this._create_comm(this.version_comm_target_name, undefined, {}).then((function (comm) {
 	            return new Promise((function (resolve, reject) {
 	                comm.on_msg((function (msg) {
-	                    var version = __jupyter_require__('jupyter-js-widgets@2.0.17/package.json').version;
+	                    var version = __jupyter_require__('jupyter-js-widgets@2.0.30/package.json').version;
 	                    var requirement = msg.content.data.version;
 	                    var validated = semver.satisfies(version, requirement);
 	                    comm.send({ 'validated': validated, 'frontend_version': version });
@@ -1263,27 +1268,43 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/manager-base.js', function (module
 	        else {
 	            throw new Error('Neither comm nor model_id provided in options object. At least one must exist.');
 	        }
+	        var error_handler = function (error) {
+	            var modelOptions = {
+	                widget_manager: that,
+	                model_id: model_id,
+	                comm: options.comm,
+	            };
+	            var widget_model = new widget_string_1.HTMLModel({}, modelOptions);
+	            widget_model.once('comm:close', function () {
+	                delete that._models[model_id];
+	            });
+	            var placeholder = "<table style=\"width:100%\">\n                <thead>\n                    <tr>\n                        <th colspan=\"2\">\n                        Could not create model:\n                        </th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr>\n                        <td>Model name</td>\n                        <td> " + options.model_name + " </td>\n                    </tr>\n                    <tr>\n                        <td>Model module</td>\n                        <td> " + options.model_module + " </td>\n                    </tr>\n                    <tr>\n                        <td>Model module version</td>\n                        <td> " + options.model_module_version + " </td>\n                    </tr>\n                <tbody>\n                <tfoot>\n                    <tr>\n                        <th colspan=\"2\">\n                        " + error.message + "\n                        </th>\n                    </tr>\n                </tfoot>\n                </table>";
+	            widget_model.set('value', placeholder);
+	            return widget_model;
+	        };
 	        var model_promise = this.loadClass(options.model_name, options.model_module, options.model_module_version, that.require_error)
 	            .then(function (ModelType) {
-	            return ModelType._deserialize_state(serialized_state || {}, that).then(function (attributes) {
-	                var modelOptions = {
-	                    widget_manager: that,
-	                    model_id: model_id,
-	                    comm: options.comm,
-	                };
-	                var widget_model = new ModelType(attributes, modelOptions);
-	                widget_model.once('comm:close', function () {
-	                    delete that._models[model_id];
+	            try {
+	                return ModelType._deserialize_state(serialized_state || {}, that)
+	                    .then(function (attributes) {
+	                    var modelOptions = {
+	                        widget_manager: that,
+	                        model_id: model_id,
+	                        comm: options.comm,
+	                    };
+	                    var widget_model = new ModelType(attributes, modelOptions);
+	                    widget_model.once('comm:close', function () {
+	                        delete that._models[model_id];
+	                    });
+	                    widget_model.name = options.model_name;
+	                    widget_model.module = options.model_module;
+	                    return widget_model;
 	                });
-	                widget_model.name = options.model_name;
-	                widget_model.module = options.model_module;
-	                return widget_model;
-	            });
-	        }, function (error) {
-	            delete that._models[model_id];
-	            var wrapped_error = new utils.WrappedError('Could not create model', error);
-	            return Promise.reject(wrapped_error);
-	        });
+	            }
+	            catch (error) {
+	                error_handler(error); // error handler call if ModelType is undefined.
+	            }
+	        }, error_handler); // error handler call if module cannot be loaded.
 	        this._models[model_id] = model_promise;
 	        return model_promise;
 	    };
@@ -1388,7 +1409,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/manager-base.js', function (module
 	exports.ManagerBase = ManagerBase;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/manager-base.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/manager-base.js **/
 
 
 /** START DEFINE BLOCK for underscore@1.8.3/underscore.js **/
@@ -2946,8 +2967,8 @@ jupyter.define('underscore@1.8.3/underscore.js', function (module, exports, __ju
 /** END DEFINE BLOCK for underscore@1.8.3/underscore.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/utils.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/utils.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/utils.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/utils.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -2982,16 +3003,15 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/utils.js', function (module, expor
 	var WrappedError = (function (_super) {
 	    __extends(WrappedError, _super);
 	    function WrappedError(message, error) {
-	        var _this = _super.call(this, message) || this;
+	        _super.call(this, message);
 	        // Keep a stack of the original error messages.
 	        if (error instanceof WrappedError) {
-	            _this.error_stack = error.error_stack;
+	            this.error_stack = error.error_stack;
 	        }
 	        else {
-	            _this.error_stack = [error];
+	            this.error_stack = [error];
 	        }
-	        _this.error_stack.push(_this);
-	        return _this;
+	        this.error_stack.push(this);
 	    }
 	    return WrappedError;
 	}(Error));
@@ -3021,16 +3041,16 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/utils.js', function (module, expor
 	                        var success_callback = function (module) {
 	                            innerResolve(module);
 	                        };
-	                        var failure_callback = require_error ? require_error(success_callback, module_version) : innerReject;
+	                        var failure_callback = require_error ? require_error(success_callback, reject, module_version) : reject;
 	                        window.require([module_name], success_callback, failure_callback);
 	                    });
 	                }
 	                else if (module_name === 'jupyter-js-widgets') {
-	                    modulePromise = Promise.resolve(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/index.js'));
+	                    modulePromise = Promise.resolve(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/index.js'));
 	                }
 	            }
 	            else if (module_name === 'jupyter-js-widgets') {
-	                modulePromise = Promise.resolve(__jupyter_require__('jupyter-js-widgets@2.0.17/lib/index.js'));
+	                modulePromise = Promise.resolve(__jupyter_require__('jupyter-js-widgets@2.0.30/lib/index.js'));
 	            }
 	            else {
 	                // FUTURE: Investigate dynamic loading methods other than require.js.
@@ -3123,7 +3143,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/utils.js', function (module, expor
 	;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/utils.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/utils.js **/
 
 
 /** START DEFINE BLOCK for semver@5.3.0/semver.js **/
@@ -4524,180 +4544,408 @@ jupyter.define('process@0.11.9/browser.js', function (module, exports, __jupyter
 /** END DEFINE BLOCK for process@0.11.9/browser.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/package.json **/
-jupyter.define('jupyter-js-widgets@2.0.17/package.json', function (module, exports, __jupyter_require__) {
-	module.exports = {
-		"_args": [
-			[
-				{
-					"raw": "jupyter-js-widgets@^2.0.6",
-					"scope": null,
-					"escapedName": "jupyter-js-widgets",
-					"name": "jupyter-js-widgets",
-					"rawSpec": "^2.0.6",
-					"spec": ">=2.0.6 <3.0.0",
-					"type": "range"
-				},
-				"/Users/haichit/programs/3d/nglview/js"
-			]
-		],
-		"_from": "jupyter-js-widgets@>=2.0.6 <3.0.0",
-		"_id": "jupyter-js-widgets@2.0.17",
-		"_inCache": true,
-		"_location": "/jupyter-js-widgets",
-		"_nodeVersion": "4.1.1",
-		"_npmOperationalInternal": {
-			"host": "packages-12-west.internal.npmjs.com",
-			"tmp": "tmp/jupyter-js-widgets-2.0.17.tgz_1481647987839_0.5571067275013775"
-		},
-		"_npmUser": {
-			"name": "sylvaincorlay",
-			"email": "sylvain.corlay@gmail.com"
-		},
-		"_npmVersion": "3.8.1",
-		"_phantomChildren": {},
-		"_requested": {
-			"raw": "jupyter-js-widgets@^2.0.6",
-			"scope": null,
-			"escapedName": "jupyter-js-widgets",
-			"name": "jupyter-js-widgets",
-			"rawSpec": "^2.0.6",
-			"spec": ">=2.0.6 <3.0.0",
-			"type": "range"
-		},
-		"_requiredBy": [
-			"/",
-			"/@jupyterlab/nbwidgets"
-		],
-		"_resolved": "https://registry.npmjs.org/jupyter-js-widgets/-/jupyter-js-widgets-2.0.17.tgz",
-		"_shasum": "cfb922b9ad94c13be293ea2280f0e2ab408ea608",
-		"_shrinkwrap": null,
-		"_spec": "jupyter-js-widgets@^2.0.6",
-		"_where": "/Users/haichit/programs/3d/nglview/js",
-		"author": {
-			"name": "Project Jupyter"
-		},
-		"bugs": {
-			"url": "https://github.com/ipython/ipywidgets/issues"
-		},
-		"dependencies": {
-			"@jupyterlab/services": "^0.34.2",
-			"@types/backbone": "^1.3.33",
-			"@types/semver": "^5.3.30",
-			"ajv": "^4.9.0",
-			"backbone": "1.2.0",
-			"d3-format": "^0.5.1",
-			"font-awesome": "^4.5.0",
-			"jquery": "^3.1.1",
-			"jquery-ui": "^1.12.1",
-			"jupyter-widgets-schema": "^0.1.1",
-			"lolex": "^1.4.0",
-			"phosphor": "^0.7.0",
-			"scriptjs": "^2.5.8",
-			"semver": "^5.1.0",
-			"underscore": "^1.8.3"
-		},
-		"description": "Jupyter interactive widgets",
-		"devDependencies": {
-			"@types/expect.js": "^0.3.29",
-			"@types/mathjax": "0.0.31",
-			"@types/mocha": "^2.2.32",
-			"@types/requirejs": "^2.1.28",
-			"@types/sinon": "^1.16.31",
-			"cpx": "^1.5.0",
-			"css-loader": "^0.23.1",
-			"es6-promise": "^3.1.2",
-			"expect.js": "^0.3.1",
-			"file-loader": "^0.8.5",
-			"istanbul-instrumenter-loader": "^0.2.0",
-			"json-loader": "^0.5.4",
-			"karma": "^0.13.15",
-			"karma-chrome-launcher": "^0.2.2",
-			"karma-coverage": "^1.0.0",
-			"karma-firefox-launcher": "^0.1.7",
-			"karma-ie-launcher": "^1.0.0",
-			"karma-mocha": "^0.2.1",
-			"karma-mocha-reporter": "^1.1.3",
-			"karma-webpack": "^1.7.0",
-			"mocha": "^2.3.4",
-			"npm-run-all": "^1.5.1",
-			"postcss-cli": "^2.6.0",
-			"postcss-cssnext": "^2.8.0",
-			"postcss-import": "^8.1.2",
-			"rimraf": "^2.4.1",
-			"sinon": "^1.17.2",
-			"spawn-sync": "^1.0.14",
-			"style-loader": "^0.13.1",
-			"typedoc": "^0.5.0",
-			"typescript": "^2.0.10",
-			"url-loader": "^0.5.7",
-			"webpack": "^1.12.11"
-		},
-		"directories": {},
-		"dist": {
-			"shasum": "cfb922b9ad94c13be293ea2280f0e2ab408ea608",
-			"tarball": "https://registry.npmjs.org/jupyter-js-widgets/-/jupyter-js-widgets-2.0.17.tgz"
-		},
-		"files": [
-			"lib/*.d.ts",
-			"lib/*.js",
-			"css/*.css",
-			"dist/"
-		],
-		"homepage": "https://github.com/ipython/ipywidgets#readme",
-		"license": "BSD-3-Clause",
-		"main": "lib/index.js",
-		"maintainers": [
-			{
-				"name": "sylvaincorlay",
-				"email": "sylvain.corlay@gmail.com"
-			}
-		],
-		"name": "jupyter-js-widgets",
-		"optionalDependencies": {},
-		"readme": "ERROR: No README data found!",
-		"repository": {
-			"type": "git",
-			"url": "git+https://github.com/ipython/ipywidgets.git"
-		},
-		"scripts": {
-			"build": "npm run build:src && npm run build:src-embed && npm run build:css && webpack",
-			"build:css": "postcss --use postcss-import --use postcss-cssnext -o css/widgets.built.css css/widgets.css",
-			"build:src": "tsc --project src",
-			"build:src-embed": "tsc --project src-embed",
-			"build:test": "tsc --project test/src && webpack --config test/webpack.conf.js",
-			"clean": "npm run clean:src && npm run clean:embed",
-			"clean:embed": "rimraf lib-embed",
-			"clean:src": "rimraf lib",
-			"docs": "npm run docs:src && npm run docs:embed",
-			"docs:embed": "typedoc --mode file --module commonjs --excludeNotExported --target es5 --moduleResolution node --out docs-embed/ src-embed",
-			"docs:src": "typedoc --mode file --module commonjs --excludeNotExported --target es5 --moduleResolution node --out docs/ src",
-			"postinstall": "npm dedupe",
-			"prepublish": "npm run build",
-			"test": "npm run test:unit && npm run test:examples",
-			"test:coverage": "npm run build:test && webpack --config test/webpack-cov.conf.js && karma start test/karma-cov.conf.js",
-			"test:example:web1": "cd examples/web && npm install && npm run test:default",
-			"test:example:web2": "cd examples/web2 && npm install && npm run test:default",
-			"test:example:web3": "cd examples/web3 && npm install && npm run test:default",
-			"test:example:web4": "cd examples/web3 && npm install && npm run test:default",
-			"test:examples": "npm run test:examples:chrome && npm run test:examples:firefox",
-			"test:examples:chrome": "npm-run-all \"test:example:*\"",
-			"test:examples:firefox": "npm-run-all \"test:example:* -- -- --browsers Firefox\"",
-			"test:unit": "npm run test:unit:firefox && npm run test:unit:chrome",
-			"test:unit:chrome": "npm run test:unit:default -- --browsers=Chrome",
-			"test:unit:default": "npm run build:test && karma start test/karma.conf.js --log-level debug",
-			"test:unit:firefox": "npm run test:unit:default -- --browsers=Firefox",
-			"test:unit:ie": "npm run test:unit:default -- --browsers=IE"
-		},
-		"typings": "lib/index.d.ts",
-		"version": "2.0.17"
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_string.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_string.js', function (module, exports, __jupyter_require__) {
+	// Copyright (c) Jupyter Development Team.
+	// Distributed under the terms of the Modified BSD License.
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
+	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
+	var StringModel = (function (_super) {
+	    __extends(StringModel, _super);
+	    function StringModel() {
+	        _super.apply(this, arguments);
+	    }
+	    StringModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            value: '',
+	            disabled: false,
+	            placeholder: '\u200b',
+	            _model_name: 'StringModel'
+	        });
+	    };
+	    return StringModel;
+	}(widget_core_1.CoreLabeledDOMWidgetModel));
+	exports.StringModel = StringModel;
+	var HTMLModel = (function (_super) {
+	    __extends(HTMLModel, _super);
+	    function HTMLModel() {
+	        _super.apply(this, arguments);
+	    }
+	    HTMLModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _view_name: 'HTMLView',
+	            _model_name: 'HTMLModel'
+	        });
+	    };
+	    return HTMLModel;
+	}(StringModel));
+	exports.HTMLModel = HTMLModel;
+	var HTMLView = (function (_super) {
+	    __extends(HTMLView, _super);
+	    function HTMLView() {
+	        _super.apply(this, arguments);
+	    }
+	    /**
+	     * Called when view is rendered.
+	     */
+	    HTMLView.prototype.render = function () {
+	        _super.prototype.render.call(this);
+	        this.el.classList.add('jupyter-widgets');
+	        this.el.classList.add('widget-inline-hbox');
+	        this.el.classList.add('widget-html');
+	        this.content = document.createElement('div');
+	        this.content.classList.add('widget-html-content');
+	        this.el.appendChild(this.content);
+	        this.update(); // Set defaults.
+	    };
+	    /**
+	     * Update the contents of this view
+	     *
+	     * Called when the model is changed.  The model may have been
+	     * changed by another view or by a state update from the back-end.
+	     */
+	    HTMLView.prototype.update = function () {
+	        this.content.innerHTML = this.model.get('value');
+	        return _super.prototype.update.call(this);
+	    };
+	    return HTMLView;
+	}(widget_1.LabeledDOMWidgetView));
+	exports.HTMLView = HTMLView;
+	var HTMLMathModel = (function (_super) {
+	    __extends(HTMLMathModel, _super);
+	    function HTMLMathModel() {
+	        _super.apply(this, arguments);
+	    }
+	    HTMLMathModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _view_name: 'HTMLMathView',
+	            _model_name: 'HTMLMathModel'
+	        });
+	    };
+	    return HTMLMathModel;
+	}(StringModel));
+	exports.HTMLMathModel = HTMLMathModel;
+	var HTMLMathView = (function (_super) {
+	    __extends(HTMLMathView, _super);
+	    function HTMLMathView() {
+	        _super.apply(this, arguments);
+	    }
+	    /**
+	     * Called when view is rendered.
+	     */
+	    HTMLMathView.prototype.render = function () {
+	        _super.prototype.render.call(this);
+	        this.el.classList.add('jupyter-widgets');
+	        this.el.classList.add('widget-inline-hbox');
+	        this.el.classList.add('widget-htmlmath');
+	        this.content = document.createElement('div');
+	        this.content.classList.add('widget-htmlmath-content');
+	        this.el.appendChild(this.content);
+	        this.update(); // Set defaults.
+	    };
+	    /**
+	     * Update the contents of this view
+	     */
+	    HTMLMathView.prototype.update = function () {
+	        this.content.innerHTML = this.model.get('value');
+	        this.typeset(this.content);
+	        return _super.prototype.update.call(this);
+	    };
+	    return HTMLMathView;
+	}(widget_1.LabeledDOMWidgetView));
+	exports.HTMLMathView = HTMLMathView;
+	var LabelModel = (function (_super) {
+	    __extends(LabelModel, _super);
+	    function LabelModel() {
+	        _super.apply(this, arguments);
+	    }
+	    LabelModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _view_name: 'LabelView',
+	            _model_name: 'LabelModel'
+	        });
+	    };
+	    return LabelModel;
+	}(StringModel));
+	exports.LabelModel = LabelModel;
+	var LabelView = (function (_super) {
+	    __extends(LabelView, _super);
+	    function LabelView() {
+	        _super.apply(this, arguments);
+	    }
+	    /**
+	     * Called when view is rendered.
+	     */
+	    LabelView.prototype.render = function () {
+	        _super.prototype.render.call(this);
+	        this.el.classList.add('jupyter-widgets');
+	        this.el.classList.add('widget-label');
+	        this.update(); // Set defaults.
+	    };
+	    /**
+	     * Update the contents of this view
+	     *
+	     * Called when the model is changed.  The model may have been
+	     * changed by another view or by a state update from the back-end.
+	     */
+	    LabelView.prototype.update = function () {
+	        this.typeset(this.el, this.model.get('value'));
+	        return _super.prototype.update.call(this);
+	    };
+	    return LabelView;
+	}(widget_1.LabeledDOMWidgetView));
+	exports.LabelView = LabelView;
+	var TextareaModel = (function (_super) {
+	    __extends(TextareaModel, _super);
+	    function TextareaModel() {
+	        _super.apply(this, arguments);
+	    }
+	    TextareaModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _view_name: 'TextareaView',
+	            _model_name: 'TextareaModel',
+	            rows: null
+	        });
+	    };
+	    return TextareaModel;
+	}(StringModel));
+	exports.TextareaModel = TextareaModel;
+	var TextareaView = (function (_super) {
+	    __extends(TextareaView, _super);
+	    function TextareaView() {
+	        _super.apply(this, arguments);
+	    }
+	    /**
+	     * Called when view is rendered.
+	     */
+	    TextareaView.prototype.render = function () {
+	        var _this = this;
+	        _super.prototype.render.call(this);
+	        this.el.classList.add('jupyter-widgets');
+	        this.el.classList.add('widget-inline-hbox');
+	        this.el.classList.add('widget-textarea');
+	        this.textbox = document.createElement('textarea');
+	        this.textbox.setAttribute('rows', '5');
+	        this.el.appendChild(this.textbox);
+	        this.update(); // Set defaults.
+	        this.listenTo(this.model, 'msg:custom', function (content) {
+	            _this._handle_textarea_msg(content);
+	        });
+	        this.listenTo(this.model, 'change:placeholder', function (model, value, options) {
+	            this.update_placeholder(value);
+	        });
+	        this.update_placeholder();
+	    };
+	    /**
+	     * Handle when a custom msg is recieved from the back-end.
+	     */
+	    TextareaView.prototype._handle_textarea_msg = function (content) {
+	        if (content.method == 'scroll_to_bottom') {
+	            this.scroll_to_bottom();
+	        }
+	    };
+	    TextareaView.prototype.update_placeholder = function (value) {
+	        value = value || this.model.get('placeholder');
+	        this.textbox.setAttribute('placeholder', value.toString());
+	    };
+	    /**
+	     * Scroll the text-area view to the bottom.
+	     */
+	    TextareaView.prototype.scroll_to_bottom = function () {
+	        //this.$textbox.scrollTop(this.$textbox[0].scrollHeight); // DW TODO
+	    };
+	    /**
+	     * Update the contents of this view
+	     *
+	     * Called when the model is changed.  The model may have been
+	     * changed by another view or by a state update from the back-end.
+	     */
+	    TextareaView.prototype.update = function (options) {
+	        if (options === undefined || options.updated_view != this) {
+	            this.textbox.value = this.model.get('value');
+	            this.textbox.rows = this.model.get('rows');
+	            var disabled = this.model.get('disabled');
+	            this.textbox.disabled = disabled;
+	        }
+	        return _super.prototype.update.call(this);
+	    };
+	    TextareaView.prototype.events = function () {
+	        return {
+	            // Dictionary of events and their handlers.
+	            'keydown textarea': 'handleKeyDown',
+	            'keypress textarea': 'handleKeypress',
+	            'keyup textarea': 'handleChanging',
+	            'paste textarea': 'handleChanging',
+	            'cut textarea': 'handleChanging'
+	        };
+	    };
+	    /**
+	     * Handle key down
+	     *
+	     * Stop propagation so the event isn't sent to the application.
+	     */
+	    TextareaView.prototype.handleKeyDown = function (e) {
+	        e.stopPropagation();
+	    };
+	    /**
+	     * Handles key press
+	     *
+	     * Stop propagation so the keypress isn't sent to the application.
+	     */
+	    TextareaView.prototype.handleKeypress = function (e) {
+	        e.stopPropagation();
+	    };
+	    /**
+	     * Handles and validates user input.
+	     *
+	     * Calling model.set will trigger all of the other views of the
+	     * model to update.
+	     */
+	    TextareaView.prototype.handleChanging = function (e) {
+	        this.model.set('value', e.target.value, { updated_view: this });
+	        this.touch();
+	    };
+	    return TextareaView;
+	}(widget_1.LabeledDOMWidgetView));
+	exports.TextareaView = TextareaView;
+	var TextModel = (function (_super) {
+	    __extends(TextModel, _super);
+	    function TextModel() {
+	        _super.apply(this, arguments);
+	    }
+	    TextModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _view_name: 'TextView',
+	            _model_name: 'TextModel'
+	        });
+	    };
+	    return TextModel;
+	}(StringModel));
+	exports.TextModel = TextModel;
+	var TextView = (function (_super) {
+	    __extends(TextView, _super);
+	    function TextView() {
+	        _super.apply(this, arguments);
+	    }
+	    /**
+	     * Called when view is rendered.
+	     */
+	    TextView.prototype.render = function () {
+	        _super.prototype.render.call(this);
+	        this.el.classList.add('jupyter-widgets');
+	        this.el.classList.add('widget-inline-hbox');
+	        this.el.classList.add('widget-text');
+	        this.textbox = document.createElement('input');
+	        this.textbox.setAttribute('type', 'text');
+	        this.el.appendChild(this.textbox);
+	        this.update(); // Set defaults.
+	        this.listenTo(this.model, 'change:placeholder', function (model, value, options) {
+	            this.update_placeholder(value);
+	        });
+	        this.update_placeholder();
+	    };
+	    TextView.prototype.update_placeholder = function (value) {
+	        if (!value) {
+	            value = this.model.get('placeholder');
+	        }
+	        this.textbox.setAttribute('placeholder', value);
+	    };
+	    TextView.prototype.update = function (options) {
+	        /**
+	         * Update the contents of this view
+	         *
+	         * Called when the model is changed.  The model may have been
+	         * changed by another view or by a state update from the back-end.
+	         */
+	        if (options === undefined || options.updated_view != this) {
+	            if (this.textbox.value != this.model.get('value')) {
+	                this.textbox.value = this.model.get('value');
+	            }
+	            var disabled = this.model.get('disabled');
+	            this.textbox.disabled = disabled;
+	        }
+	        return _super.prototype.update.call(this);
+	    };
+	    TextView.prototype.events = function () {
+	        return {
+	            // Dictionary of events and their handlers.
+	            'keydown input': 'handleKeyDown',
+	            'keypress input': 'handleKeypress',
+	            'keyup input': 'handleChanging',
+	            'paste input': 'handleChanging',
+	            'cut input': 'handleChanging',
+	            'blur input': 'handleBlur',
+	            'focusout input': 'handleFocusOut'
+	        };
+	    };
+	    /**
+	     * Handle key down
+	     *
+	     * Stop propagation so the keypress isn't sent to the application.
+	     */
+	    TextView.prototype.handleKeyDown = function (e) {
+	        e.stopPropagation();
+	    };
+	    /**
+	     * Handles text submission
+	     */
+	    TextView.prototype.handleKeypress = function (e) {
+	        e.stopPropagation();
+	        if (e.keyCode == 13) {
+	            this.send({ event: 'submit' });
+	            e.preventDefault();
+	        }
+	    };
+	    /**
+	     * Handles user input.
+	     *
+	     * Calling model.set will trigger all of the other views of the
+	     * model to update.
+	     */
+	    TextView.prototype.handleChanging = function (e) {
+	        e.stopPropagation();
+	        this.model.set('value', e.target.value, { updated_view: this });
+	        this.touch();
+	    };
+	    /**
+	     * Prevent a blur from firing if the blur was not user intended.
+	     * This is a workaround for the return-key focus loss bug.
+	     * TODO: Is the original bug actually a fault of the keyboard
+	     * manager?
+	     */
+	    TextView.prototype.handleBlur = function (e) {
+	        if (e.relatedTarget === null) {
+	            e.stopPropagation();
+	            e.preventDefault();
+	        }
+	    };
+	    /**
+	     * Prevent a blur from firing if the blur was not user intended.
+	     * This is a workaround for the return-key focus loss bug.
+	     */
+	    TextView.prototype.handleFocusOut = function (e) {
+	        if (e.relatedTarget === null) {
+	            e.stopPropagation();
+	            e.preventDefault();
+	        }
+	    };
+	    return TextView;
+	}(widget_1.LabeledDOMWidgetView));
+	exports.TextView = TextView;
+	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/package.json **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_string.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -4708,10 +4956,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	};
 	var Backbone = __jupyter_require__('backbone@1.2.0/backbone.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/utils.js');
 	var $ = __jupyter_require__('jquery@^3.1.1/dist/jquery.js');
-	var nativeview_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/nativeview.js');
+	var nativeview_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/nativeview.js');
 	var widget_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
+	var messaging_1 = __jupyter_require__('phosphor@^0.7.0/lib/core/messaging.js');
+	var widget_2 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
 	/**
 	 * Replace model ids with models recursively.
 	 */
@@ -4744,7 +4994,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	var WidgetModel = (function (_super) {
 	    __extends(WidgetModel, _super);
 	    function WidgetModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * The default attributes.
@@ -5179,7 +5429,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	var DOMWidgetModel = (function (_super) {
 	    __extends(DOMWidgetModel, _super);
 	    function DOMWidgetModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    DOMWidgetModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -5187,25 +5437,13 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	            _dom_classes: []
 	        });
 	    };
+	    DOMWidgetModel.serializers = _.extend({
+	        layout: { deserialize: unpack_models },
+	        style: { deserialize: unpack_models },
+	    }, WidgetModel.serializers);
 	    return DOMWidgetModel;
 	}(WidgetModel));
-	DOMWidgetModel.serializers = _.extend({
-	    layout: { deserialize: unpack_models },
-	}, WidgetModel.serializers);
 	exports.DOMWidgetModel = DOMWidgetModel;
-	var LabeledDOMWidgetModel = (function (_super) {
-	    __extends(LabeledDOMWidgetModel, _super);
-	    function LabeledDOMWidgetModel() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    LabeledDOMWidgetModel.prototype.defaults = function () {
-	        return _.extend(_super.prototype.defaults.call(this), {
-	            description: '',
-	        });
-	    };
-	    return LabeledDOMWidgetModel;
-	}(DOMWidgetModel));
-	exports.LabeledDOMWidgetModel = LabeledDOMWidgetModel;
 	/**
 	 * - create_view and remove_view are default functions called when adding or removing views
 	 * - create_view takes a model and an index and returns a view or a promise for a view for that model
@@ -5261,6 +5499,8 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	        }
 	        // make a copy of the input array
 	        this._models = new_models.slice();
+	        // return a promise that resolves to all of the resolved views
+	        return Promise.all(this.views);
 	    };
 	    /**
 	     * removes every view in the list; convenience function for `.update([])`
@@ -5268,14 +5508,24 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	     * returns a promise that resolves after this removal is done
 	     */
 	    ViewList.prototype.remove = function () {
-	        var that = this;
+	        var _this = this;
 	        return Promise.all(this.views).then(function (views) {
-	            for (var i = 0; i < that.views.length; i++) {
-	                that._remove_view.call(that._handler_context, views[i]);
-	            }
-	            that.views = [];
-	            that._models = [];
+	            views.forEach(function (value) { return _this._remove_view.call(_this._handler_context, value); });
+	            _this.views = [];
+	            _this._models = [];
 	        });
+	    };
+	    /**
+	     * Dispose this viewlist.
+	     *
+	     * A synchronous function which just deletes references to child views. This
+	     * function does not call .remove() on child views because that is
+	     * asynchronous. Use this in cases where child views will be removed in
+	     * another way.
+	     */
+	    ViewList.prototype.dispose = function () {
+	        this.views = null;
+	        this._models = null;
 	    };
 	    return ViewList;
 	}());
@@ -5283,7 +5533,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	var WidgetView = (function (_super) {
 	    __extends(WidgetView, _super);
 	    function WidgetView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Public constructor.
@@ -5347,12 +5597,10 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	var JupyterPhosphorWidget = (function (_super) {
 	    __extends(JupyterPhosphorWidget, _super);
 	    function JupyterPhosphorWidget(options) {
-	        var _this;
 	        var view = options.view;
 	        delete options.view;
-	        _this = _super.call(this, options) || this;
-	        _this._view = view;
-	        return _this;
+	        _super.call(this, options);
+	        this._view = view;
 	    }
 	    /**
 	     * Dispose the widget.
@@ -5385,7 +5633,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	var DOMWidgetView = (function (_super) {
 	    __extends(DOMWidgetView, _super);
 	    function DOMWidgetView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Public constructor
@@ -5396,15 +5644,20 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	        this.id = utils.uuid();
 	        this.listenTo(this.model, 'change:_dom_classes', function (model, new_classes) {
 	            var old_classes = model.previous('_dom_classes');
-	            this.update_classes(old_classes, new_classes);
+	            _this.update_classes(old_classes, new_classes);
 	        });
 	        this.layoutPromise = Promise.resolve();
 	        this.listenTo(this.model, 'change:layout', function (model, value) {
-	            this.setLayout(value, model.previous('layout'));
+	            _this.setLayout(value, model.previous('layout'));
+	        });
+	        this.stylePromise = Promise.resolve();
+	        this.listenTo(this.model, 'change:style', function (model, value) {
+	            _this.setStyle(value, model.previous('style'));
 	        });
 	        this.displayed.then(function () {
 	            _this.update_classes([], _this.model.get('_dom_classes'));
 	            _this.setLayout(_this.model.get('layout'));
+	            _this.setStyle(_this.model.get('style'));
 	        });
 	    };
 	    DOMWidgetView.prototype.setLayout = function (layout, oldLayout) {
@@ -5413,14 +5666,43 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	            this.layoutPromise = this.layoutPromise.then(function (oldLayoutView) {
 	                if (oldLayoutView) {
 	                    oldLayoutView.unlayout();
+	                    _this.stopListening(oldLayoutView.model);
+	                    oldLayoutView.remove();
 	                }
 	                return _this.create_child_view(layout).then(function (view) {
 	                    // Trigger the displayed event of the child view.
 	                    return _this.displayed.then(function () {
-	                        view.trigger('displayed', _this);
+	                        view.trigger('displayed');
+	                        _this.listenTo(view.model, 'change', function () {
+	                            // Post (asynchronous) so layout changes can take
+	                            // effect first.
+	                            messaging_1.postMessage(_this.pWidget, widget_2.ResizeMessage.UnknownSize);
+	                        });
+	                        messaging_1.postMessage(_this.pWidget, widget_2.ResizeMessage.UnknownSize);
 	                        return view;
 	                    });
 	                }).catch(utils.reject('Could not add LayoutView to DOMWidgetView', true));
+	            });
+	        }
+	    };
+	    DOMWidgetView.prototype.setStyle = function (style, oldStyle) {
+	        var _this = this;
+	        if (style) {
+	            this.stylePromise = this.stylePromise.then(function (oldStyleView) {
+	                if (oldStyleView) {
+	                    oldStyleView.unstyle();
+	                    _this.stopListening(oldStyleView.model);
+	                    oldStyleView.remove();
+	                }
+	                return _this.create_child_view(style).then(function (view) {
+	                    // Trigger the displayed event of the child view.
+	                    return _this.displayed.then(function () {
+	                        view.trigger('displayed');
+	                        // Unlike for the layout attribute, style changes don't
+	                        // trigger phosphor resize messages.
+	                        return view;
+	                    });
+	                }).catch(utils.reject('Could not add styleView to DOMWidgetView', true));
 	            });
 	        }
 	    };
@@ -5479,6 +5761,11 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	        var new_classes = class_map[key] ? class_map[key] : [];
 	        this.update_classes(old_classes, new_classes, el || this.el);
 	    };
+	    DOMWidgetView.prototype.set_mapped_classes = function (class_map, trait_name, el) {
+	        var key = this.model.get(trait_name);
+	        var new_classes = class_map[key] ? class_map[key] : [];
+	        this.update_classes([], new_classes, el || this.el);
+	    };
 	    DOMWidgetView.prototype.typeset = function (element, text) {
 	        this.displayed.then(function () { utils.typeset(element, text); });
 	    };
@@ -5509,10 +5796,23 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	    return DOMWidgetView;
 	}(WidgetView));
 	exports.DOMWidgetView = DOMWidgetView;
+	var LabeledDOMWidgetModel = (function (_super) {
+	    __extends(LabeledDOMWidgetModel, _super);
+	    function LabeledDOMWidgetModel() {
+	        _super.apply(this, arguments);
+	    }
+	    LabeledDOMWidgetModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            description: '',
+	        });
+	    };
+	    return LabeledDOMWidgetModel;
+	}(DOMWidgetModel));
+	exports.LabeledDOMWidgetModel = LabeledDOMWidgetModel;
 	var LabeledDOMWidgetView = (function (_super) {
 	    __extends(LabeledDOMWidgetView, _super);
 	    function LabeledDOMWidgetView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    LabeledDOMWidgetView.prototype.render = function () {
 	        this.label = document.createElement('div');
@@ -5528,16 +5828,18 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget.js', function (module, expo
 	            this.label.style.display = 'none';
 	        }
 	        else {
-	            this.typeset(this.label, description);
+	            this.label.innerHTML = description;
+	            this.typeset(this.label);
 	            this.label.style.display = '';
 	        }
+	        this.label.title = description;
 	    };
 	    return LabeledDOMWidgetView;
 	}(DOMWidgetView));
 	exports.LabeledDOMWidgetView = LabeledDOMWidgetView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget.js **/
 
 
 /** START DEFINE BLOCK for backbone@1.2.0/backbone.js **/
@@ -27464,8 +27766,8 @@ jupyter.define('jquery@3.1.1/dist/jquery.js', function (module, exports, __jupyt
 /** END DEFINE BLOCK for jquery@3.1.1/dist/jquery.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/nativeview.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/nativeview.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/nativeview.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/nativeview.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -27521,7 +27823,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/nativeview.js', function (module, 
 	var NativeView = (function (_super) {
 	    __extends(NativeView, _super);
 	    function NativeView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    NativeView.prototype._removeElement = function () {
 	        this.undelegateEvents();
@@ -27624,11 +27926,11 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/nativeview.js', function (module, 
 	exports.NativeView = NativeView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/nativeview.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/nativeview.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/ui/widget.js **/
-jupyter.define('phosphor@0.7.0/lib/ui/widget.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/ui/widget.js **/
+jupyter.define('phosphor@0.7.1/lib/ui/widget.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -27642,11 +27944,11 @@ jupyter.define('phosphor@0.7.0/lib/ui/widget.js', function (module, exports, __j
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
-	var messaging_1 = __jupyter_require__('phosphor@0.7.0/lib/core/messaging.js');
-	var properties_1 = __jupyter_require__('phosphor@0.7.0/lib/core/properties.js');
-	var signaling_1 = __jupyter_require__('phosphor@0.7.0/lib/core/signaling.js');
-	var title_1 = __jupyter_require__('phosphor@0.7.0/lib/ui/title.js');
+	var iteration_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/iteration.js');
+	var messaging_1 = __jupyter_require__('phosphor@0.7.1/lib/core/messaging.js');
+	var properties_1 = __jupyter_require__('phosphor@0.7.1/lib/core/properties.js');
+	var signaling_1 = __jupyter_require__('phosphor@0.7.1/lib/core/signaling.js');
+	var title_1 = __jupyter_require__('phosphor@0.7.1/lib/ui/title.js');
 	/**
 	 * The class name added to Widget instances.
 	 */
@@ -28267,7 +28569,6 @@ jupyter.define('phosphor@0.7.0/lib/ui/widget.js', function (module, exports, __j
 	/**
 	 * The namespace for the `Widget` class statics.
 	 */
-	var Widget;
 	(function (Widget) {
 	    // TODO - should this be an instance method?
 	    /**
@@ -28401,6 +28702,7 @@ jupyter.define('phosphor@0.7.0/lib/ui/widget.js', function (module, exports, __j
 	    }
 	    Widget.setGeometry = setGeometry;
 	})(Widget = exports.Widget || (exports.Widget = {}));
+	exports.Widget = Widget;
 	/**
 	 * An abstract base class for creating Phosphor layouts.
 	 *
@@ -28668,6 +28970,7 @@ jupyter.define('phosphor@0.7.0/lib/ui/widget.js', function (module, exports, __j
 	/**
 	 * An enum of widget bit flags.
 	 */
+	var WidgetFlag;
 	(function (WidgetFlag) {
 	    /**
 	     * The widget has been disposed.
@@ -28689,8 +28992,7 @@ jupyter.define('phosphor@0.7.0/lib/ui/widget.js', function (module, exports, __j
 	     * A layout cannot be set on the widget.
 	     */
 	    WidgetFlag[WidgetFlag["DisallowLayout"] = 16] = "DisallowLayout";
-	})(exports.WidgetFlag || (exports.WidgetFlag = {}));
-	var WidgetFlag = exports.WidgetFlag;
+	})(WidgetFlag = exports.WidgetFlag || (exports.WidgetFlag = {}));
 	// TODO should this be in the Widget namespace?
 	/**
 	 * A collection of stateless messages related to widgets.
@@ -28790,8 +29092,9 @@ jupyter.define('phosphor@0.7.0/lib/ui/widget.js', function (module, exports, __j
 	     * @param child - The child widget for the message.
 	     */
 	    function ChildMessage(type, child) {
-	        _super.call(this, type);
-	        this._child = child;
+	        var _this = _super.call(this, type) || this;
+	        _this._child = child;
+	        return _this;
 	    }
 	    Object.defineProperty(ChildMessage.prototype, "child", {
 	        /**
@@ -28825,9 +29128,10 @@ jupyter.define('phosphor@0.7.0/lib/ui/widget.js', function (module, exports, __j
 	     *   the height is not known.
 	     */
 	    function ResizeMessage(width, height) {
-	        _super.call(this, 'resize');
-	        this._width = width;
-	        this._height = height;
+	        var _this = _super.call(this, 'resize') || this;
+	        _this._width = width;
+	        _this._height = height;
+	        return _this;
 	    }
 	    Object.defineProperty(ResizeMessage.prototype, "width", {
 	        /**
@@ -28865,13 +29169,13 @@ jupyter.define('phosphor@0.7.0/lib/ui/widget.js', function (module, exports, __j
 	/**
 	 * The namespace for the `ResizeMessage` class statics.
 	 */
-	var ResizeMessage;
 	(function (ResizeMessage) {
 	    /**
 	     * A singleton `'resize'` message with an unknown size.
 	     */
 	    ResizeMessage.UnknownSize = new ResizeMessage(-1, -1);
 	})(ResizeMessage = exports.ResizeMessage || (exports.ResizeMessage = {}));
+	exports.ResizeMessage = ResizeMessage;
 	/**
 	 * The namespace for the private module data.
 	 */
@@ -28901,11 +29205,11 @@ jupyter.define('phosphor@0.7.0/lib/ui/widget.js', function (module, exports, __j
 	})(Private || (Private = {}));
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/ui/widget.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/ui/widget.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/iteration.js **/
-jupyter.define('phosphor@0.7.0/lib/algorithm/iteration.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/algorithm/iteration.js **/
+jupyter.define('phosphor@0.7.1/lib/algorithm/iteration.js', function (module, exports, __jupyter_require__) {
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
 	|
@@ -29436,7 +29740,7 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/iteration.js', function (module, ex
 	function chain() {
 	    var objects = [];
 	    for (var _i = 0; _i < arguments.length; _i++) {
-	        objects[_i - 0] = arguments[_i];
+	        objects[_i] = arguments[_i];
 	    }
 	    return new ChainIterator(map(objects, iter));
 	}
@@ -29516,7 +29820,7 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/iteration.js', function (module, ex
 	function zip() {
 	    var objects = [];
 	    for (var _i = 0; _i < arguments.length; _i++) {
-	        objects[_i - 0] = arguments[_i];
+	        objects[_i] = arguments[_i];
 	    }
 	    return new ZipIterator(objects.map(iter));
 	}
@@ -29644,11 +29948,11 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/iteration.js', function (module, ex
 	exports.StrideIterator = StrideIterator;
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/iteration.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/algorithm/iteration.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/core/messaging.js **/
-jupyter.define('phosphor@0.7.0/lib/core/messaging.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/core/messaging.js **/
+jupyter.define('phosphor@0.7.1/lib/core/messaging.js', function (module, exports, __jupyter_require__) {
 	/* WEBPACK VAR INJECTION */(function(setImmediate) {"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -29662,8 +29966,8 @@ jupyter.define('phosphor@0.7.0/lib/core/messaging.js', function (module, exports
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
-	var queue_1 = __jupyter_require__('phosphor@0.7.0/lib/collections/queue.js');
+	var iteration_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/iteration.js');
+	var queue_1 = __jupyter_require__('phosphor@0.7.1/lib/collections/queue.js');
 	/**
 	 * A message which can be delivered to a message handler.
 	 *
@@ -29779,7 +30083,7 @@ jupyter.define('phosphor@0.7.0/lib/core/messaging.js', function (module, exports
 	var ConflatableMessage = (function (_super) {
 	    __extends(ConflatableMessage, _super);
 	    function ConflatableMessage() {
-	        _super.apply(this, arguments);
+	        return _super !== null && _super.apply(this, arguments) || this;
 	    }
 	    Object.defineProperty(ConflatableMessage.prototype, "isConflatable", {
 	        /**
@@ -30047,7 +30351,12 @@ jupyter.define('phosphor@0.7.0/lib/core/messaging.js', function (module, exports
 	    function invokeHook(hook, handler, msg) {
 	        var result;
 	        try {
-	            result = hook(handler, msg);
+	            if (typeof hook === 'function') {
+	                result = hook(handler, msg);
+	            }
+	            else {
+	                result = hook.messageHook(handler, msg);
+	            }
 	        }
 	        catch (err) {
 	            result = true;
@@ -30125,7 +30434,7 @@ jupyter.define('phosphor@0.7.0/lib/core/messaging.js', function (module, exports
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, __jupyter_require__('timers-browserify@2.0.2/main.js').setImmediate))
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/core/messaging.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/core/messaging.js **/
 
 
 /** START DEFINE BLOCK for timers-browserify@2.0.2/main.js **/
@@ -30382,8 +30691,8 @@ jupyter.define('setimmediate@1.0.5/setImmediate.js', function (module, exports, 
 /** END DEFINE BLOCK for setimmediate@1.0.5/setImmediate.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/collections/queue.js **/
-jupyter.define('phosphor@0.7.0/lib/collections/queue.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/collections/queue.js **/
+jupyter.define('phosphor@0.7.1/lib/collections/queue.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
@@ -30392,7 +30701,7 @@ jupyter.define('phosphor@0.7.0/lib/collections/queue.js', function (module, expo
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
+	var iteration_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/iteration.js');
 	/**
 	 * A generic FIFO queue data structure.
 	 */
@@ -30673,11 +30982,11 @@ jupyter.define('phosphor@0.7.0/lib/collections/queue.js', function (module, expo
 	}());
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/collections/queue.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/collections/queue.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/core/properties.js **/
-jupyter.define('phosphor@0.7.0/lib/core/properties.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/core/properties.js **/
+jupyter.define('phosphor@0.7.1/lib/core/properties.js', function (module, exports, __jupyter_require__) {
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
 	|
@@ -30869,11 +31178,11 @@ jupyter.define('phosphor@0.7.0/lib/core/properties.js', function (module, export
 	}
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/core/properties.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/core/properties.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/core/signaling.js **/
-jupyter.define('phosphor@0.7.0/lib/core/signaling.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/core/signaling.js **/
+jupyter.define('phosphor@0.7.1/lib/core/signaling.js', function (module, exports, __jupyter_require__) {
 	/* WEBPACK VAR INJECTION */(function(setImmediate) {/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
 	|
@@ -31278,11 +31587,11 @@ jupyter.define('phosphor@0.7.0/lib/core/signaling.js', function (module, exports
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, __jupyter_require__('timers-browserify@2.0.2/main.js').setImmediate))
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/core/signaling.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/core/signaling.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/ui/title.js **/
-jupyter.define('phosphor@0.7.0/lib/ui/title.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/ui/title.js **/
+jupyter.define('phosphor@0.7.1/lib/ui/title.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
@@ -31291,7 +31600,7 @@ jupyter.define('phosphor@0.7.0/lib/ui/title.js', function (module, exports, __ju
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var signaling_1 = __jupyter_require__('phosphor@0.7.0/lib/core/signaling.js');
+	var signaling_1 = __jupyter_require__('phosphor@0.7.1/lib/core/signaling.js');
 	/**
 	 * An object which holds data related to a widget's title.
 	 *
@@ -31506,11 +31815,11 @@ jupyter.define('phosphor@0.7.0/lib/ui/title.js', function (module, exports, __ju
 	signaling_1.defineSignal(Title.prototype, 'changed');
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/ui/title.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/ui/title.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_layout.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_layout.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_core.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_core.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -31519,7 +31828,246 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_layout.js', function (modul
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	// widget_core implements some common patterns for the core widget collection
+	// that are not to be used directly by third-party widget authors.
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
+	var semver_range = "^" + __jupyter_require__('jupyter-js-widgets@2.0.30/package.json').version;
+	var CoreWidgetModel = (function (_super) {
+	    __extends(CoreWidgetModel, _super);
+	    function CoreWidgetModel() {
+	        _super.apply(this, arguments);
+	    }
+	    CoreWidgetModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _model_name: 'CoreWidgetModel',
+	            _model_module_version: semver_range,
+	            _view_module_version: semver_range
+	        });
+	    };
+	    return CoreWidgetModel;
+	}(widget_1.WidgetModel));
+	exports.CoreWidgetModel = CoreWidgetModel;
+	var CoreDOMWidgetModel = (function (_super) {
+	    __extends(CoreDOMWidgetModel, _super);
+	    function CoreDOMWidgetModel() {
+	        _super.apply(this, arguments);
+	    }
+	    CoreDOMWidgetModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _model_name: 'CoreDOMWidgetModel',
+	            _model_module_version: semver_range,
+	            _view_module_version: semver_range
+	        });
+	    };
+	    return CoreDOMWidgetModel;
+	}(widget_1.DOMWidgetModel));
+	exports.CoreDOMWidgetModel = CoreDOMWidgetModel;
+	var CoreLabeledDOMWidgetModel = (function (_super) {
+	    __extends(CoreLabeledDOMWidgetModel, _super);
+	    function CoreLabeledDOMWidgetModel() {
+	        _super.apply(this, arguments);
+	    }
+	    CoreLabeledDOMWidgetModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _model_name: 'CoreLabeledDOMWidgetModel',
+	            _model_module_version: semver_range,
+	            _view_module_version: semver_range
+	        });
+	    };
+	    return CoreLabeledDOMWidgetModel;
+	}(widget_1.LabeledDOMWidgetModel));
+	exports.CoreLabeledDOMWidgetModel = CoreLabeledDOMWidgetModel;
+	
+})
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_core.js **/
+
+
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/package.json **/
+jupyter.define('jupyter-js-widgets@2.0.30/package.json', function (module, exports, __jupyter_require__) {
+	module.exports = {
+		"_args": [
+			[
+				{
+					"raw": "jupyter-js-widgets@~2.0.28",
+					"scope": null,
+					"escapedName": "jupyter-js-widgets",
+					"name": "jupyter-js-widgets",
+					"rawSpec": "~2.0.28",
+					"spec": ">=2.0.28 <2.1.0",
+					"type": "range"
+				},
+				"/Users/haichit/programs/3d/nglview/js"
+			]
+		],
+		"_from": "jupyter-js-widgets@>=2.0.28 <2.1.0",
+		"_id": "jupyter-js-widgets@2.0.30",
+		"_inCache": true,
+		"_installable": true,
+		"_location": "/jupyter-js-widgets",
+		"_nodeVersion": "6.9.0",
+		"_npmOperationalInternal": {
+			"host": "packages-12-west.internal.npmjs.com",
+			"tmp": "tmp/jupyter-js-widgets-2.0.30.tgz_1487183619536_0.15181437507271767"
+		},
+		"_npmUser": {
+			"name": "jasongrout",
+			"email": "jason@jasongrout.org"
+		},
+		"_npmVersion": "3.10.8",
+		"_phantomChildren": {},
+		"_requested": {
+			"raw": "jupyter-js-widgets@~2.0.28",
+			"scope": null,
+			"escapedName": "jupyter-js-widgets",
+			"name": "jupyter-js-widgets",
+			"rawSpec": "~2.0.28",
+			"spec": ">=2.0.28 <2.1.0",
+			"type": "range"
+		},
+		"_requiredBy": [
+			"/",
+			"/@jupyterlab/nbwidgets"
+		],
+		"_resolved": "https://registry.npmjs.org/jupyter-js-widgets/-/jupyter-js-widgets-2.0.30.tgz",
+		"_shasum": "d1d09183881d1a52b6f9abd3cc027007c06f48fa",
+		"_shrinkwrap": null,
+		"_spec": "jupyter-js-widgets@~2.0.28",
+		"_where": "/Users/haichit/programs/3d/nglview/js",
+		"author": {
+			"name": "Project Jupyter"
+		},
+		"bugs": {
+			"url": "https://github.com/ipython/ipywidgets/issues"
+		},
+		"dependencies": {
+			"@jupyterlab/services": "^0.35.0",
+			"@types/backbone": "^1.3.33",
+			"@types/semver": "^5.3.30",
+			"ajv": "^4.9.0",
+			"backbone": "1.2.0",
+			"d3-format": "^0.5.1",
+			"font-awesome": "^4.5.0",
+			"jquery": "^3.1.1",
+			"jquery-ui": "^1.12.1",
+			"jupyter-widgets-schema": "^0.1.1",
+			"lolex": "^1.4.0",
+			"phosphor": "^0.7.0",
+			"scriptjs": "^2.5.8",
+			"semver": "^5.1.0",
+			"underscore": "^1.8.3"
+		},
+		"description": "Jupyter interactive widgets",
+		"devDependencies": {
+			"@types/expect.js": "^0.3.29",
+			"@types/mathjax": "0.0.31",
+			"@types/mocha": "2.2.32",
+			"@types/requirejs": "^2.1.28",
+			"@types/sinon": "^1.16.31",
+			"cpx": "^1.5.0",
+			"css-loader": "^0.23.1",
+			"es6-promise": "^3.1.2",
+			"expect.js": "^0.3.1",
+			"file-loader": "^0.8.5",
+			"istanbul-instrumenter-loader": "^0.2.0",
+			"json-loader": "^0.5.4",
+			"karma": "^0.13.15",
+			"karma-chrome-launcher": "^0.2.2",
+			"karma-coverage": "^1.0.0",
+			"karma-firefox-launcher": "^0.1.7",
+			"karma-ie-launcher": "^1.0.0",
+			"karma-mocha": "^0.2.1",
+			"karma-mocha-reporter": "^1.1.3",
+			"karma-webpack": "^1.7.0",
+			"mocha": "^2.3.4",
+			"npm-run-all": "^1.5.1",
+			"postcss-cli": "^2.6.0",
+			"postcss-cssnext": "^2.8.0",
+			"postcss-import": "^8.1.2",
+			"rimraf": "^2.4.1",
+			"sinon": "^1.17.2",
+			"spawn-sync": "^1.0.14",
+			"style-loader": "^0.13.1",
+			"typedoc": "^0.5.0",
+			"typescript": "~2.0.10",
+			"url-loader": "^0.5.7",
+			"webpack": "^1.12.11"
+		},
+		"directories": {},
+		"dist": {
+			"shasum": "d1d09183881d1a52b6f9abd3cc027007c06f48fa",
+			"tarball": "https://registry.npmjs.org/jupyter-js-widgets/-/jupyter-js-widgets-2.0.30.tgz"
+		},
+		"files": [
+			"lib/**/*.d.ts",
+			"lib/**/*.js",
+			"css/*.css",
+			"dist/"
+		],
+		"homepage": "https://github.com/ipython/ipywidgets#readme",
+		"license": "BSD-3-Clause",
+		"main": "lib/index.js",
+		"maintainers": [
+			{
+				"name": "sylvaincorlay",
+				"email": "sylvain.corlay@gmail.com"
+			}
+		],
+		"name": "jupyter-js-widgets",
+		"optionalDependencies": {},
+		"readme": "ERROR: No README data found!",
+		"repository": {
+			"type": "git",
+			"url": "git+https://github.com/ipython/ipywidgets.git"
+		},
+		"scripts": {
+			"build": "npm run build:src && npm run build:src-embed && npm run build:css && webpack",
+			"build:css": "postcss --use postcss-import --use postcss-cssnext -o css/widgets.built.css css/widgets.css",
+			"build:src": "tsc --project src",
+			"build:src-embed": "tsc --project src-embed",
+			"build:test": "tsc --project test/src && webpack --config test/webpack.conf.js",
+			"clean": "npm run clean:src && npm run clean:embed",
+			"clean:embed": "rimraf lib-embed",
+			"clean:src": "rimraf lib",
+			"docs": "npm run docs:src && npm run docs:embed",
+			"docs:embed": "typedoc --mode file --module commonjs --excludeNotExported --target es5 --moduleResolution node --out docs-embed/ src-embed",
+			"docs:src": "typedoc --mode file --module commonjs --excludeNotExported --target es5 --moduleResolution node --out docs/ src",
+			"postinstall": "npm dedupe",
+			"prepublish": "npm run build",
+			"test": "npm run test:unit && npm run test:examples",
+			"test:coverage": "npm run build:test && webpack --config test/webpack-cov.conf.js && karma start test/karma-cov.conf.js",
+			"test:example:web2": "cd examples/web2 && npm install && npm run test:default",
+			"test:example:web3": "cd examples/web3 && npm install && npm run test:default",
+			"test:example:web4": "cd examples/web4 && npm install && npm run test:default",
+			"test:example:web5": "cd examples/web5 && npm install && npm run test:default",
+			"test:examples": "npm run test:examples:chrome && npm run test:examples:firefox",
+			"test:examples:chrome": "npm-run-all \"test:example:*\"",
+			"test:examples:firefox": "npm-run-all \"test:example:* -- -- --browsers Firefox\"",
+			"test:unit": "npm run test:unit:firefox && npm run test:unit:chrome",
+			"test:unit:chrome": "npm run test:unit:default -- --browsers=Chrome",
+			"test:unit:default": "npm run build:test && karma start test/karma.conf.js --log-level debug",
+			"test:unit:firefox": "npm run test:unit:default -- --browsers=Firefox",
+			"test:unit:ie": "npm run test:unit:default -- --browsers=IE"
+		},
+		"typings": "lib/index.d.ts",
+		"version": "2.0.30"
+	};
+})
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/package.json **/
+
+
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_layout.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_layout.js', function (module, exports, __jupyter_require__) {
+	// Copyright (c) Jupyter Development Team.
+	// Distributed under the terms of the Modified BSD License.
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	/**
 	 * css properties exposed by the layout widget with their default values.
@@ -31551,13 +32099,10 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_layout.js', function (modul
 	    visibility: null,
 	    width: null
 	};
-	/**
-	 * Represents a group of CSS style attributes
-	 */
 	var LayoutModel = (function (_super) {
 	    __extends(LayoutModel, _super);
 	    function LayoutModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    LayoutModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31566,12 +32111,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_layout.js', function (modul
 	        }, css_properties);
 	    };
 	    return LayoutModel;
-	}(widget_1.DOMWidgetModel));
+	}(widget_core_1.CoreWidgetModel));
 	exports.LayoutModel = LayoutModel;
 	var LayoutView = (function (_super) {
 	    __extends(LayoutView, _super);
 	    function LayoutView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Public constructor
@@ -31597,9 +32142,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_layout.js', function (modul
 	            _this.handleChange(trait, value);
 	        });
 	        // Set the initial value on display.
-	        this.displayed.then(function () {
-	            _this.handleChange(trait, _this.model.get(trait));
-	        });
+	        this.handleChange(trait, this.model.get(trait));
 	    };
 	    /**
 	     * Get the the name of the css property from the trait name
@@ -31613,47 +32156,45 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_layout.js', function (modul
 	     * Handles when a trait value changes
 	     */
 	    LayoutView.prototype.handleChange = function (trait, value) {
-	        var _this = this;
-	        this.displayed.then(function (parent) {
-	            if (parent) {
-	                if (value === null) {
-	                    parent.el.style.removeProperty(_this.css_name(trait));
-	                }
-	                else {
-	                    parent.el.style[_this.css_name(trait)] = value;
-	                }
+	        // should be synchronous so that we can measure later.
+	        var parent = this.options.parent;
+	        if (parent) {
+	            if (value === null) {
+	                parent.el.style.removeProperty(this.css_name(trait));
 	            }
 	            else {
-	                console.warn('Style not applied because a parent view doesn\'t exist');
+	                parent.el.style[this.css_name(trait)] = value;
 	            }
-	        });
+	        }
+	        else {
+	            console.warn('Style not applied because a parent view does not exist');
+	        }
 	    };
 	    /**
 	     * Remove the styling from the parent view.
 	     */
 	    LayoutView.prototype.unlayout = function () {
 	        var _this = this;
+	        var parent = this.options.parent;
 	        this._traitNames.forEach(function (trait) {
-	            _this.displayed.then(function (parent) {
-	                if (parent) {
-	                    parent.el.style.removeProperty(_this.css_name(trait));
-	                }
-	                else {
-	                    console.warn('Style not removed because a parent view doesn\'t exist');
-	                }
-	            });
+	            if (parent) {
+	                parent.el.style.removeProperty(_this.css_name(trait));
+	            }
+	            else {
+	                console.warn('Style not removed because a parent view does not exist');
+	            }
 	        }, this);
 	    };
 	    return LayoutView;
-	}(widget_1.DOMWidgetView));
+	}(widget_1.WidgetView));
 	exports.LayoutView = LayoutView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_layout.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_layout.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_link.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_link.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_style.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_style.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -31662,12 +32203,133 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_link.js', function (module,
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
+	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
+	var StyleModel = (function (_super) {
+	    __extends(StyleModel, _super);
+	    function StyleModel() {
+	        _super.apply(this, arguments);
+	    }
+	    StyleModel.prototype.defaults = function () {
+	        var Derived = this.constructor;
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _model_name: 'StyleModel',
+	            _view_name: 'StyleView',
+	        }, _.reduce(Object.keys(Derived.styleProperties), function (obj, key) {
+	            obj[key] = Derived.styleProperties[key].default;
+	            return obj;
+	        }, {}));
+	    };
+	    StyleModel.styleProperties = {};
+	    return StyleModel;
+	}(widget_core_1.CoreWidgetModel));
+	exports.StyleModel = StyleModel;
+	var StyleView = (function (_super) {
+	    __extends(StyleView, _super);
+	    function StyleView() {
+	        _super.apply(this, arguments);
+	    }
+	    /**
+	     * Public constructor
+	     */
+	    StyleView.prototype.initialize = function (parameters) {
+	        this._traitNames = [];
+	        _super.prototype.initialize.call(this, parameters);
+	        // Register the traits that live on the Python side
+	        var ModelType = this.model.constructor;
+	        for (var _i = 0, _a = Object.keys(ModelType.styleProperties); _i < _a.length; _i++) {
+	            var key = _a[_i];
+	            this.registerTrait(key);
+	        }
+	    };
+	    /**
+	     * Register a CSS trait that is known by the model
+	     * @param trait
+	     */
+	    StyleView.prototype.registerTrait = function (trait) {
+	        var _this = this;
+	        this._traitNames.push(trait);
+	        // Listen to changes, and set the value on change.
+	        this.listenTo(this.model, "change:" + trait, function (model, value) {
+	            _this.handleChange(trait, value);
+	        });
+	        // Set the initial value on display.
+	        this.handleChange(trait, this.model.get(trait));
+	    };
+	    /**
+	     * Handles when a trait value changes
+	     */
+	    StyleView.prototype.handleChange = function (trait, value) {
+	        // should be synchronous so that we can measure later.
+	        var parent = this.options.parent;
+	        if (parent) {
+	            var ModelType = this.model.constructor;
+	            var styleProperties = ModelType.styleProperties;
+	            var attribute = styleProperties[trait].attribute;
+	            var selector = styleProperties[trait].selector;
+	            var elements = selector ? parent.el.querySelectorAll(selector) : [parent.el];
+	            if (value === null) {
+	                for (var i = 0; i !== elements.length; ++i) {
+	                    elements[i].style.removeProperty(attribute);
+	                }
+	            }
+	            else {
+	                for (var i = 0; i !== elements.length; ++i) {
+	                    elements[i].style[attribute] = value;
+	                }
+	            }
+	        }
+	        else {
+	            console.warn('Style not applied because a parent view does not exist');
+	        }
+	    };
+	    /**
+	     * Remove the styling from the parent view.
+	     */
+	    StyleView.prototype.unstyle = function () {
+	        var parent = this.options.parent;
+	        var ModelType = this.model.constructor;
+	        var styleProperties = ModelType.styleProperties;
+	        this._traitNames.forEach(function (trait) {
+	            if (parent) {
+	                var attribute = styleProperties[trait].attribute;
+	                var selector = styleProperties[trait].selector;
+	                var elements = selector ? parent.el.querySelectorAll(selector) : [parent.el];
+	                for (var i = 0; i !== elements.length; ++i) {
+	                    elements[i].style.removeProperty(attribute);
+	                }
+	            }
+	            else {
+	                console.warn('Style not removed because a parent view does not exist');
+	            }
+	        }, this);
+	    };
+	    return StyleView;
+	}(widget_1.WidgetView));
+	exports.StyleView = StyleView;
+	
+})
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_style.js **/
+
+
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_link.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_link.js', function (module, exports, __jupyter_require__) {
+	// Copyright (c) Jupyter Development Team.
+	// Distributed under the terms of the Modified BSD License.
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var DirectionalLinkModel = (function (_super) {
 	    __extends(DirectionalLinkModel, _super);
 	    function DirectionalLinkModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    DirectionalLinkModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31723,17 +32385,17 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_link.js', function (module,
 	            this.stopListening(this.targetModel, 'destroy', null);
 	        }
 	    };
+	    DirectionalLinkModel.serializers = _.extend({
+	        target: { deserialize: widget_1.unpack_models },
+	        source: { deserialize: widget_1.unpack_models }
+	    }, widget_core_1.CoreWidgetModel.serializers);
 	    return DirectionalLinkModel;
-	}(widget_1.WidgetModel));
-	DirectionalLinkModel.serializers = _.extend({
-	    target: { deserialize: widget_1.unpack_models },
-	    source: { deserialize: widget_1.unpack_models }
-	}, widget_1.WidgetModel.serializers);
+	}(widget_core_1.CoreWidgetModel));
 	exports.DirectionalLinkModel = DirectionalLinkModel;
 	var LinkModel = (function (_super) {
 	    __extends(LinkModel, _super);
 	    function LinkModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    LinkModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31760,11 +32422,11 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_link.js', function (module,
 	exports.LinkModel = LinkModel;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_link.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_link.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_bool.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_bool.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_bool.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_bool.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -31773,12 +32435,13 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_bool.js', function (module,
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var BoolModel = (function (_super) {
 	    __extends(BoolModel, _super);
 	    function BoolModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    BoolModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31788,12 +32451,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_bool.js', function (module,
 	        });
 	    };
 	    return BoolModel;
-	}(widget_1.LabeledDOMWidgetModel));
+	}(widget_core_1.CoreLabeledDOMWidgetModel));
 	exports.BoolModel = BoolModel;
 	var CheckboxModel = (function (_super) {
 	    __extends(CheckboxModel, _super);
 	    function CheckboxModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    CheckboxModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31802,12 +32465,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_bool.js', function (module,
 	        });
 	    };
 	    return CheckboxModel;
-	}(widget_1.LabeledDOMWidgetModel));
+	}(widget_core_1.CoreLabeledDOMWidgetModel));
 	exports.CheckboxModel = CheckboxModel;
 	var CheckboxView = (function (_super) {
 	    __extends(CheckboxView, _super);
 	    function CheckboxView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -31857,7 +32520,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_bool.js', function (module,
 	var ToggleButtonModel = (function (_super) {
 	    __extends(ToggleButtonModel, _super);
 	    function ToggleButtonModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ToggleButtonModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31874,26 +32537,23 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_bool.js', function (module,
 	var ToggleButtonView = (function (_super) {
 	    __extends(ToggleButtonView, _super);
 	    function ToggleButtonView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Called when view is rendered.
 	     */
 	    ToggleButtonView.prototype.render = function () {
+	        _super.prototype.render.call(this);
 	        this.el.className = 'jupyter-widgets jupyter-button widget-toggle-button';
 	        this.listenTo(this.model, 'change:button_style', this.update_button_style);
-	        this.update_button_style();
+	        this.set_button_style();
 	        this.update(); // Set defaults.
 	    };
 	    ToggleButtonView.prototype.update_button_style = function () {
-	        var class_map = {
-	            primary: ['mod-primary'],
-	            success: ['mod-success'],
-	            info: ['mod-info'],
-	            warning: ['mod-warning'],
-	            danger: ['mod-danger']
-	        };
-	        this.update_mapped_classes(class_map, 'button_style');
+	        this.update_mapped_classes(ToggleButtonView.class_map, 'button_style');
+	    };
+	    ToggleButtonView.prototype.set_button_style = function () {
+	        this.set_mapped_classes(ToggleButtonView.class_map, 'button_style');
 	    };
 	    /**
 	     * Update the contents of this view
@@ -31963,13 +32623,20 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_bool.js', function (module,
 	        enumerable: true,
 	        configurable: true
 	    });
+	    ToggleButtonView.class_map = {
+	        primary: ['mod-primary'],
+	        success: ['mod-success'],
+	        info: ['mod-info'],
+	        warning: ['mod-warning'],
+	        danger: ['mod-danger']
+	    };
 	    return ToggleButtonView;
 	}(widget_1.DOMWidgetView));
 	exports.ToggleButtonView = ToggleButtonView;
 	var ValidModel = (function (_super) {
 	    __extends(ValidModel, _super);
 	    function ValidModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ValidModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -31984,14 +32651,22 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_bool.js', function (module,
 	var ValidView = (function (_super) {
 	    __extends(ValidView, _super);
 	    function ValidView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Called when view is rendered.
 	     */
 	    ValidView.prototype.render = function () {
+	        _super.prototype.render.call(this);
 	        this.el.classList.add('jupyter-widgets');
 	        this.el.classList.add('widget-valid');
+	        this.el.classList.add('widget-inline-hbox');
+	        var icon = document.createElement('i');
+	        this.el.appendChild(icon);
+	        this.readout = document.createElement('span');
+	        this.readout.classList.add('widget-valid-readout');
+	        this.readout.classList.add('widget-readout');
+	        this.el.appendChild(this.readout);
 	        this.update();
 	    };
 	    /**
@@ -32001,30 +32676,26 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_bool.js', function (module,
 	     * changed by another view or by a state update from the back-end.
 	     */
 	    ValidView.prototype.update = function () {
-	        this.el.textContent = '';
 	        this.el.classList.remove('mod-valid');
 	        this.el.classList.remove('mod-invalid');
-	        var icon = document.createElement('i');
-	        this.el.appendChild(icon);
+	        this.readout.textContent = this.model.get('readout');
 	        if (this.model.get('value')) {
 	            this.el.classList.add('mod-valid');
 	        }
 	        else {
-	            var readout = document.createTextNode(this.model.get('readout'));
 	            this.el.classList.add('mod-invalid');
-	            this.el.appendChild(readout);
 	        }
 	    };
 	    return ValidView;
-	}(widget_1.DOMWidgetView));
+	}(widget_1.LabeledDOMWidgetView));
 	exports.ValidView = ValidView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_bool.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_bool.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_button.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_button.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_button.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_button.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -32033,12 +32704,39 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_button.js', function (modul
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
+	var widget_style_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_style.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
+	var ButtonStyleModel = (function (_super) {
+	    __extends(ButtonStyleModel, _super);
+	    function ButtonStyleModel() {
+	        _super.apply(this, arguments);
+	    }
+	    ButtonStyleModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _model_name: 'ButtonStyleModel',
+	        });
+	    };
+	    ButtonStyleModel.styleProperties = {
+	        button_color: {
+	            selector: '',
+	            attribute: 'background-color',
+	            default: null
+	        },
+	        font_weight: {
+	            selector: '',
+	            attribute: 'font-weight',
+	            default: ''
+	        }
+	    };
+	    return ButtonStyleModel;
+	}(widget_style_1.StyleModel));
+	exports.ButtonStyleModel = ButtonStyleModel;
 	var ButtonModel = (function (_super) {
 	    __extends(ButtonModel, _super);
 	    function ButtonModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ButtonModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -32048,16 +32746,17 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_button.js', function (modul
 	            icon: '',
 	            button_style: '',
 	            _view_name: 'ButtonView',
-	            _model_name: 'ButtonModel'
+	            _model_name: 'ButtonModel',
+	            style: void 0
 	        });
 	    };
 	    return ButtonModel;
-	}(widget_1.DOMWidgetModel));
+	}(widget_core_1.CoreDOMWidgetModel));
 	exports.ButtonModel = ButtonModel;
 	var ButtonView = (function (_super) {
 	    __extends(ButtonView, _super);
 	    function ButtonView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -32065,7 +32764,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_button.js', function (modul
 	    ButtonView.prototype.render = function () {
 	        this.el.className = 'jupyter-widgets jupyter-button widget-button';
 	        this.listenTo(this.model, 'change:button_style', this.update_button_style);
-	        this.update_button_style();
+	        this.set_button_style();
 	        this.update(); // Set defaults.
 	    };
 	    /**
@@ -32092,14 +32791,10 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_button.js', function (modul
 	        return _super.prototype.update.call(this);
 	    };
 	    ButtonView.prototype.update_button_style = function () {
-	        var class_map = {
-	            primary: ['mod-primary'],
-	            success: ['mod-success'],
-	            info: ['mod-info'],
-	            warning: ['mod-warning'],
-	            danger: ['mod-danger']
-	        };
-	        this.update_mapped_classes(class_map, 'button_style');
+	        this.update_mapped_classes(ButtonView.class_map, 'button_style');
+	    };
+	    ButtonView.prototype.set_button_style = function () {
+	        this.set_mapped_classes(ButtonView.class_map, 'button_style');
 	    };
 	    /**
 	     * Dictionary of events and handlers
@@ -32132,16 +32827,23 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_button.js', function (modul
 	        enumerable: true,
 	        configurable: true
 	    });
+	    ButtonView.class_map = {
+	        primary: ['mod-primary'],
+	        success: ['mod-success'],
+	        info: ['mod-info'],
+	        warning: ['mod-warning'],
+	        danger: ['mod-danger']
+	    };
 	    return ButtonView;
 	}(widget_1.DOMWidgetView));
 	exports.ButtonView = ButtonView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_button.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_button.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_box.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_box.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_box.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -32150,9 +32852,11 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
-	var utils_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
+	var utils_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/utils.js');
 	var searching_1 = __jupyter_require__('phosphor@^0.7.0/lib/algorithm/searching.js');
+	var messaging_1 = __jupyter_require__('phosphor@^0.7.0/lib/core/messaging.js');
 	var panel_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/panel.js');
 	var widget_2 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
@@ -32160,12 +32864,10 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	var JupyterPhosphorPanelWidget = (function (_super) {
 	    __extends(JupyterPhosphorPanelWidget, _super);
 	    function JupyterPhosphorPanelWidget(options) {
-	        var _this;
 	        var view = options.view;
 	        delete options.view;
-	        _this = _super.call(this, options) || this;
-	        _this._view = view;
-	        return _this;
+	        _super.call(this, options);
+	        this._view = view;
 	    }
 	    /**
 	     * Process the phosphor message.
@@ -32198,28 +32900,26 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	var BoxModel = (function (_super) {
 	    __extends(BoxModel, _super);
 	    function BoxModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    BoxModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
 	            _view_name: 'BoxView',
 	            _model_name: 'BoxModel',
 	            children: [],
-	            box_style: '',
-	            overflow_x: '',
-	            overflow_y: ''
+	            box_style: ''
 	        });
 	    };
+	    BoxModel.serializers = _.extend({
+	        children: { deserialize: widget_1.unpack_models }
+	    }, widget_core_1.CoreDOMWidgetModel.serializers);
 	    return BoxModel;
-	}(widget_1.DOMWidgetModel));
-	BoxModel.serializers = _.extend({
-	    children: { deserialize: widget_1.unpack_models }
-	}, widget_1.DOMWidgetModel.serializers);
+	}(widget_core_1.CoreDOMWidgetModel));
 	exports.BoxModel = BoxModel;
 	var HBoxModel = (function (_super) {
 	    __extends(HBoxModel, _super);
 	    function HBoxModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    HBoxModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -32233,7 +32933,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	var VBoxModel = (function (_super) {
 	    __extends(VBoxModel, _super);
 	    function VBoxModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    VBoxModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -32247,7 +32947,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	var ProxyModel = (function (_super) {
 	    __extends(ProxyModel, _super);
 	    function ProxyModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ProxyModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -32256,16 +32956,16 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	            child: null
 	        });
 	    };
+	    ProxyModel.serializers = _.extend({
+	        child: { deserialize: widget_1.unpack_models }
+	    }, widget_core_1.CoreDOMWidgetModel.serializers);
 	    return ProxyModel;
-	}(widget_1.DOMWidgetModel));
-	ProxyModel.serializers = _.extend({
-	    child: { deserialize: widget_1.unpack_models }
-	}, widget_1.DOMWidgetModel.serializers);
+	}(widget_core_1.CoreDOMWidgetModel));
 	exports.ProxyModel = ProxyModel;
 	var ProxyView = (function (_super) {
 	    __extends(ProxyView, _super);
 	    function ProxyView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ProxyView.prototype.initialize = function (parameters) {
 	        // Public constructor
@@ -32285,12 +32985,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	    };
 	    ProxyView.prototype.remove = function () {
 	        var _this = this;
-	        _super.prototype.remove.call(this);
 	        this.child_promise.then(function () {
 	            if (_this.child) {
 	                _this.child.remove();
 	            }
 	        });
+	        _super.prototype.remove.call(this);
 	    };
 	    ProxyView.prototype.set_child = function (value) {
 	        var _this = this;
@@ -32325,7 +33025,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	var PlaceProxyModel = (function (_super) {
 	    __extends(PlaceProxyModel, _super);
 	    function PlaceProxyModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    PlaceProxyModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -32340,7 +33040,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	var PlaceProxyView = (function (_super) {
 	    __extends(PlaceProxyView, _super);
 	    function PlaceProxyView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    PlaceProxyView.prototype.initialize = function (parameters) {
 	        _super.prototype.initialize.call(this, parameters);
@@ -32357,7 +33057,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	var BoxView = (function (_super) {
 	    __extends(BoxView, _super);
 	    function BoxView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    BoxView.prototype._createElement = function (tagName) {
 	        this.pWidget = new JupyterPhosphorPanelWidget({ view: this });
@@ -32377,11 +33077,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	    BoxView.prototype.initialize = function (parameters) {
 	        _super.prototype.initialize.call(this, parameters);
 	        this.children_views = new widget_1.ViewList(this.add_child_model, null, this);
-	        this.listenTo(this.model, 'change:children', function (model, value) {
-	            this.children_views.update(value);
-	        });
-	        this.listenTo(this.model, 'change:overflow_x', this.update_overflow_x);
-	        this.listenTo(this.model, 'change:overflow_y', this.update_overflow_y);
+	        this.listenTo(this.model, 'change:children', this.update_children);
 	        this.listenTo(this.model, 'change:box_style', this.update_box_style);
 	        this.pWidget.addClass('jupyter-widgets');
 	        this.pWidget.addClass('widget-container');
@@ -32392,35 +33088,23 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	     */
 	    BoxView.prototype.render = function () {
 	        _super.prototype.render.call(this);
-	        this.children_views.update(this.model.get('children'));
-	        this.update_overflow_x();
-	        this.update_overflow_y();
-	        this.update_box_style();
+	        this.update_children();
+	        this.set_box_style();
 	    };
-	    /**
-	     * Called when the x-axis overflow setting is changed.
-	     */
-	    BoxView.prototype.update_overflow_x = function () {
-	        this.pWidget.node.style.overflowX = this.model.get('overflow_x');
-	    };
-	    /**
-	     * Called when the y-axis overflow setting is changed.
-	     */
-	    BoxView.prototype.update_overflow_y = function () {
-	        this.pWidget.node.style.overflowY = this.model.get('overflow_y');
+	    BoxView.prototype.update_children = function () {
+	        this.children_views.update(this.model.get('children')).then(function (views) {
+	            // Notify all children that their sizes may have changed.
+	            views.forEach(function (view) {
+	                messaging_1.postMessage(view.pWidget, widget_2.ResizeMessage.UnknownSize);
+	            });
+	        });
 	    };
 	    BoxView.prototype.update_box_style = function () {
-	        var class_map = {
-	            success: ['alert', 'alert-success'],
-	            info: ['alert', 'alert-info'],
-	            warning: ['alert', 'alert-warning'],
-	            danger: ['alert', 'alert-danger']
-	        };
-	        this.update_mapped_classes(class_map, 'box_style');
+	        this.update_mapped_classes(BoxView.class_map, 'box_style');
 	    };
-	    /**
-	     * Called when a model is added to the children list.
-	     */
+	    BoxView.prototype.set_box_style = function () {
+	        this.set_mapped_classes(BoxView.class_map, 'box_style');
+	    };
 	    BoxView.prototype.add_child_model = function (model) {
 	        var _this = this;
 	        // we insert a dummy element so the order is preserved when we add
@@ -32436,11 +33120,14 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	        }).catch(utils_1.reject('Could not add child view to box', true));
 	    };
 	    BoxView.prototype.remove = function () {
-	        // We remove this widget before removing the children as an optimization
-	        // we want to remove the entire container from the DOM first before
-	        // removing each individual child separately.
+	        this.children_views = null;
 	        _super.prototype.remove.call(this);
-	        this.children_views.remove();
+	    };
+	    BoxView.class_map = {
+	        success: ['alert', 'alert-success'],
+	        info: ['alert', 'alert-info'],
+	        warning: ['alert', 'alert-warning'],
+	        danger: ['alert', 'alert-danger']
 	    };
 	    return BoxView;
 	}(widget_1.DOMWidgetView));
@@ -32448,7 +33135,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	var HBoxView = (function (_super) {
 	    __extends(HBoxView, _super);
 	    function HBoxView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Public constructor
@@ -32463,7 +33150,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	var VBoxView = (function (_super) {
 	    __extends(VBoxView, _super);
 	    function VBoxView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Public constructor
@@ -32477,11 +33164,11 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_box.js', function (module, 
 	exports.VBoxView = VBoxView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_box.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_box.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/searching.js **/
-jupyter.define('phosphor@0.7.0/lib/algorithm/searching.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/algorithm/searching.js **/
+jupyter.define('phosphor@0.7.1/lib/algorithm/searching.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
@@ -32490,8 +33177,8 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/searching.js', function (module, ex
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
-	var sequence_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/sequence.js');
+	var iteration_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/iteration.js');
+	var sequence_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/sequence.js');
 	/**
 	 * Find the first value in an iterable which matches a predicate.
 	 *
@@ -33071,11 +33758,11 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/searching.js', function (module, ex
 	})(StringSearch = exports.StringSearch || (exports.StringSearch = {}));
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/searching.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/algorithm/searching.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/sequence.js **/
-jupyter.define('phosphor@0.7.0/lib/algorithm/sequence.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/algorithm/sequence.js **/
+jupyter.define('phosphor@0.7.1/lib/algorithm/sequence.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -33089,7 +33776,7 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/sequence.js', function (module, exp
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
+	var iteration_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/iteration.js');
 	/**
 	 * Cast a sequence or array-like object to a sequence.
 	 *
@@ -33195,7 +33882,7 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/sequence.js', function (module, exp
 	var MutableArraySequence = (function (_super) {
 	    __extends(MutableArraySequence, _super);
 	    function MutableArraySequence() {
-	        _super.apply(this, arguments);
+	        return _super !== null && _super.apply(this, arguments) || this;
 	    }
 	    /**
 	     * Set the value at the specified index.
@@ -33215,11 +33902,11 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/sequence.js', function (module, exp
 	exports.MutableArraySequence = MutableArraySequence;
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/sequence.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/algorithm/sequence.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/ui/panel.js **/
-jupyter.define('phosphor@0.7.0/lib/ui/panel.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/ui/panel.js **/
+jupyter.define('phosphor@0.7.1/lib/ui/panel.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -33233,12 +33920,12 @@ jupyter.define('phosphor@0.7.0/lib/ui/panel.js', function (module, exports, __ju
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
-	var mutation_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/mutation.js');
-	var searching_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/searching.js');
-	var vector_1 = __jupyter_require__('phosphor@0.7.0/lib/collections/vector.js');
-	var messaging_1 = __jupyter_require__('phosphor@0.7.0/lib/core/messaging.js');
-	var widget_1 = __jupyter_require__('phosphor@0.7.0/lib/ui/widget.js');
+	var iteration_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/iteration.js');
+	var mutation_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/mutation.js');
+	var searching_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/searching.js');
+	var vector_1 = __jupyter_require__('phosphor@0.7.1/lib/collections/vector.js');
+	var messaging_1 = __jupyter_require__('phosphor@0.7.1/lib/core/messaging.js');
+	var widget_1 = __jupyter_require__('phosphor@0.7.1/lib/ui/widget.js');
 	/**
 	 * The class name added to Panel instances.
 	 */
@@ -33262,9 +33949,10 @@ jupyter.define('phosphor@0.7.0/lib/ui/panel.js', function (module, exports, __ju
 	     */
 	    function Panel(options) {
 	        if (options === void 0) { options = {}; }
-	        _super.call(this);
-	        this.addClass(PANEL_CLASS);
-	        this.layout = Private.createLayout(options);
+	        var _this = _super.call(this) || this;
+	        _this.addClass(PANEL_CLASS);
+	        _this.layout = Private.createLayout(options);
+	        return _this;
 	    }
 	    Object.defineProperty(Panel.prototype, "widgets", {
 	        /**
@@ -33317,8 +34005,9 @@ jupyter.define('phosphor@0.7.0/lib/ui/panel.js', function (module, exports, __ju
 	var PanelLayout = (function (_super) {
 	    __extends(PanelLayout, _super);
 	    function PanelLayout() {
-	        _super.apply(this, arguments);
-	        this._widgets = new vector_1.Vector();
+	        var _this = _super !== null && _super.apply(this, arguments) || this;
+	        _this._widgets = new vector_1.Vector();
+	        return _this;
 	    }
 	    /**
 	     * Dispose of the resources held by the layout.
@@ -33572,11 +34261,11 @@ jupyter.define('phosphor@0.7.0/lib/ui/panel.js', function (module, exports, __ju
 	})(Private || (Private = {}));
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/ui/panel.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/ui/panel.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/mutation.js **/
-jupyter.define('phosphor@0.7.0/lib/algorithm/mutation.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/algorithm/mutation.js **/
+jupyter.define('phosphor@0.7.1/lib/algorithm/mutation.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
@@ -33585,7 +34274,7 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/mutation.js', function (module, exp
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var sequence_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/sequence.js');
+	var sequence_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/sequence.js');
 	/**
 	 * Move an element in a sequence from one index to another.
 	 *
@@ -33725,11 +34414,11 @@ jupyter.define('phosphor@0.7.0/lib/algorithm/mutation.js', function (module, exp
 	exports.rotate = rotate;
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/algorithm/mutation.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/algorithm/mutation.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/collections/vector.js **/
-jupyter.define('phosphor@0.7.0/lib/collections/vector.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/collections/vector.js **/
+jupyter.define('phosphor@0.7.1/lib/collections/vector.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
@@ -33738,7 +34427,7 @@ jupyter.define('phosphor@0.7.0/lib/collections/vector.js', function (module, exp
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
+	var iteration_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/iteration.js');
 	/**
 	 * A generic vector data structure.
 	 */
@@ -34041,11 +34730,11 @@ jupyter.define('phosphor@0.7.0/lib/collections/vector.js', function (module, exp
 	exports.Vector = Vector;
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/collections/vector.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/collections/vector.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_image.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_image.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_image.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_image.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -34054,12 +34743,13 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_image.js', function (module
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var ImageModel = (function (_super) {
 	    __extends(ImageModel, _super);
 	    function ImageModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ImageModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34072,12 +34762,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_image.js', function (module
 	        });
 	    };
 	    return ImageModel;
-	}(widget_1.DOMWidgetModel));
+	}(widget_core_1.CoreDOMWidgetModel));
 	exports.ImageModel = ImageModel;
 	var ImageView = (function (_super) {
 	    __extends(ImageView, _super);
 	    function ImageView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ImageView.prototype.render = function () {
 	        /**
@@ -34133,11 +34823,11 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_image.js', function (module
 	exports.ImageView = ImageView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_image.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_image.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_color.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_color.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_color.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_color.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -34146,12 +34836,13 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_color.js', function (module
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var ColorPickerModel = (function (_super) {
 	    __extends(ColorPickerModel, _super);
 	    function ColorPickerModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ColorPickerModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34162,12 +34853,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_color.js', function (module
 	        });
 	    };
 	    return ColorPickerModel;
-	}(widget_1.LabeledDOMWidgetModel));
+	}(widget_core_1.CoreLabeledDOMWidgetModel));
 	exports.ColorPickerModel = ColorPickerModel;
 	var ColorPickerView = (function (_super) {
 	    __extends(ColorPickerView, _super);
 	    function ColorPickerView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ColorPickerView.prototype.render = function () {
 	        _super.prototype.render.call(this);
@@ -34247,15 +34938,131 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_color.js', function (module
 	}
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_color.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_color.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/services-shim.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/services-shim.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_date.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_date.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
+	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
+	function serialize_datetime(value, manager) {
+	    if (value === null) {
+	        return null;
+	    }
+	    else {
+	        value = new Date(value);
+	        return {
+	            year: value.getFullYear(),
+	            month: value.getMonth(),
+	            date: value.getDate(),
+	            hours: value.getHours(),
+	            minutes: value.getMinutes(),
+	            seconds: value.getSeconds(),
+	            milliseconds: value.getMilliseconds()
+	        };
+	    }
+	}
+	exports.serialize_datetime = serialize_datetime;
+	;
+	function deserialize_datetime(value, manager) {
+	    if (value === null) {
+	        return null;
+	    }
+	    else {
+	        return new Date(value.year, value.month, value.date, value.hours, value.minutes, value.seconds, value.milliseconds);
+	    }
+	}
+	exports.deserialize_datetime = deserialize_datetime;
+	;
+	function createDateAsUTC(date) {
+	    if (date === null) {
+	        return null;
+	    }
+	    else {
+	        return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+	    }
+	}
+	function convertDateToUTC(date) {
+	    if (date === null) {
+	        return null;
+	    }
+	    else {
+	        return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+	    }
+	}
+	var DatePickerModel = (function (_super) {
+	    __extends(DatePickerModel, _super);
+	    function DatePickerModel() {
+	        _super.apply(this, arguments);
+	    }
+	    DatePickerModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            value: null,
+	            _model_name: 'DatePickerModel',
+	            _view_name: 'DatePickerView'
+	        });
+	    };
+	    DatePickerModel.serializers = _.extend({
+	        value: {
+	            serialize: serialize_datetime,
+	            deserialize: deserialize_datetime
+	        }
+	    }, widget_core_1.CoreLabeledDOMWidgetModel.serializers);
+	    return DatePickerModel;
+	}(widget_core_1.CoreLabeledDOMWidgetModel));
+	exports.DatePickerModel = DatePickerModel;
+	var DatePickerView = (function (_super) {
+	    __extends(DatePickerView, _super);
+	    function DatePickerView() {
+	        _super.apply(this, arguments);
+	    }
+	    DatePickerView.prototype.render = function () {
+	        _super.prototype.render.call(this);
+	        this.el.classList.add('jupyter-widgets');
+	        this.el.classList.add('widget-inline-hbox');
+	        this.el.classList.add('widget-datepicker');
+	        this._datepicker = document.createElement('input');
+	        this._datepicker.setAttribute('type', 'date');
+	        this.el.appendChild(this._datepicker);
+	        this.listenTo(this.model, 'change:value', this._update_value);
+	        this._update_value();
+	    };
+	    DatePickerView.prototype.events = function () {
+	        return {
+	            'change [type="date"]': '_picker_change',
+	        };
+	    };
+	    DatePickerView.prototype._update_value = function () {
+	        var value = this.model.get('value');
+	        this._datepicker.valueAsDate = createDateAsUTC(value);
+	    };
+	    DatePickerView.prototype._picker_change = function () {
+	        this.model.set('value', convertDateToUTC(this._datepicker.valueAsDate));
+	        this.touch();
+	    };
+	    return DatePickerView;
+	}(widget_1.LabeledDOMWidgetView));
+	exports.DatePickerView = DatePickerView;
+	
+})
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_date.js **/
+
+
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/services-shim.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/services-shim.js', function (module, exports, __jupyter_require__) {
+	// Copyright (c) Jupyter Development Team.
+	// Distributed under the terms of the Modified BSD License.
+	"use strict";
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/utils.js');
 	var shims;
 	(function (shims) {
 	    var services;
@@ -34477,11 +35284,11 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/services-shim.js', function (modul
 	})(shims = exports.shims || (exports.shims = {}));
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/services-shim.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/services-shim.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_int.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_int.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_int.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -34490,7 +35297,9 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_style_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_style.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
 	var $ = __jupyter_require__('jquery@^3.1.1/dist/jquery.js');
 	__jupyter_require__('jquery-ui@^1.12.1/ui/widgets/slider.js');
@@ -34498,7 +35307,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	var IntModel = (function (_super) {
 	    __extends(IntModel, _super);
 	    function IntModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    IntModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34508,12 +35317,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	        });
 	    };
 	    return IntModel;
-	}(widget_1.LabeledDOMWidgetModel));
+	}(widget_core_1.CoreLabeledDOMWidgetModel));
 	exports.IntModel = IntModel;
 	var BoundedIntModel = (function (_super) {
 	    __extends(BoundedIntModel, _super);
 	    function BoundedIntModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    BoundedIntModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34526,10 +35335,30 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	    return BoundedIntModel;
 	}(IntModel));
 	exports.BoundedIntModel = BoundedIntModel;
+	var SliderStyleModel = (function (_super) {
+	    __extends(SliderStyleModel, _super);
+	    function SliderStyleModel() {
+	        _super.apply(this, arguments);
+	    }
+	    SliderStyleModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _model_name: 'SliderStyleModel',
+	        });
+	    };
+	    SliderStyleModel.styleProperties = {
+	        handle_color: {
+	            selector: '.ui-slider-handle',
+	            attribute: 'background-color',
+	            default: null
+	        }
+	    };
+	    return SliderStyleModel;
+	}(widget_style_1.StyleModel));
+	exports.SliderStyleModel = SliderStyleModel;
 	var IntSliderModel = (function (_super) {
 	    __extends(IntSliderModel, _super);
 	    function IntSliderModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    IntSliderModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34539,8 +35368,8 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	            _range: false,
 	            readout: true,
 	            readout_format: 'd',
-	            slider_color: null,
-	            continuous_update: true
+	            continuous_update: true,
+	            style: void 0
 	        });
 	    };
 	    IntSliderModel.prototype.initialize = function (attributes, options) {
@@ -34557,10 +35386,9 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	var IntSliderView = (function (_super) {
 	    __extends(IntSliderView, _super);
 	    function IntSliderView() {
-	        var _this = _super.apply(this, arguments) || this;
-	        _this._parse_value = parseInt;
-	        _this._range_regex = /^\s*([+-]?\d+)\s*[-:]\s*([+-]?\d+)/;
-	        return _this;
+	        _super.apply(this, arguments);
+	        this._parse_value = parseInt;
+	        this._range_regex = /^\s*([+-]?\d+)\s*[-:]\s*([+-]?\d+)/;
 	    }
 	    IntSliderView.prototype.render = function () {
 	        _super.prototype.render.call(this);
@@ -34584,10 +35412,6 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	        this.readout.classList.add('widget-readout');
 	        this.readout.contentEditable = 'true';
 	        this.readout.style.display = 'none';
-	        this.listenTo(this.model, 'change:slider_color', function (sender, value) {
-	            this.$slider.find('a').css('background', value);
-	        });
-	        this.$slider.find('a').css('background', this.model.get('slider_color'));
 	        // Set defaults.
 	        this.update();
 	    };
@@ -34855,7 +35679,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	var IntTextModel = (function (_super) {
 	    __extends(IntTextModel, _super);
 	    function IntTextModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    IntTextModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34869,9 +35693,8 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	var IntTextView = (function (_super) {
 	    __extends(IntTextView, _super);
 	    function IntTextView() {
-	        var _this = _super.apply(this, arguments) || this;
-	        _this._parse_value = parseInt;
-	        return _this;
+	        _super.apply(this, arguments);
+	        this._parse_value = parseInt;
 	    }
 	    IntTextView.prototype.render = function () {
 	        _super.prototype.render.call(this);
@@ -34983,7 +35806,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	var ProgressModel = (function (_super) {
 	    __extends(ProgressModel, _super);
 	    function ProgressModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ProgressModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -34999,14 +35822,18 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	var ProgressView = (function (_super) {
 	    __extends(ProgressView, _super);
 	    function ProgressView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
+	    ProgressView.prototype.initialize = function (parameters) {
+	        _super.prototype.initialize.call(this, parameters);
+	        this.listenTo(this.model, 'change:bar_style', this.update_bar_style);
+	        this.pWidget.addClass('jupyter-widgets');
+	    };
 	    ProgressView.prototype.render = function () {
 	        _super.prototype.render.call(this);
 	        var orientation = this.model.get('orientation');
-	        var className = orientation === 'horizontal' ? 'widget-hprogress'
-	            : 'widget-vprogress';
-	        this.el.classList.add('jupyter-widgets');
+	        var className = orientation === 'horizontal' ?
+	            'widget-hprogress' : 'widget-vprogress';
 	        this.el.classList.add(className);
 	        this.progress = document.createElement('div');
 	        this.progress.classList.add('progress');
@@ -35020,8 +35847,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	        this.progress.appendChild(this.bar);
 	        // Set defaults.
 	        this.update();
-	        this.listenTo(this.model, 'change:bar_style', this.update_bar_style);
-	        this.update_bar_style();
+	        this.set_bar_style();
 	    };
 	    ProgressView.prototype.update = function () {
 	        /**
@@ -35054,13 +35880,16 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	        return _super.prototype.update.call(this);
 	    };
 	    ProgressView.prototype.update_bar_style = function () {
-	        var class_map = {
-	            success: ['progress-bar-success'],
-	            info: ['progress-bar-info'],
-	            warning: ['progress-bar-warning'],
-	            danger: ['progress-bar-danger']
-	        };
-	        this.update_mapped_classes(class_map, 'bar_style', this.bar);
+	        this.update_mapped_classes(ProgressView.class_map, 'bar_style', this.bar);
+	    };
+	    ProgressView.prototype.set_bar_style = function () {
+	        this.set_mapped_classes(ProgressView.class_map, 'bar_style', this.bar);
+	    };
+	    ProgressView.class_map = {
+	        success: ['progress-bar-success'],
+	        info: ['progress-bar-info'],
+	        warning: ['progress-bar-warning'],
+	        danger: ['progress-bar-danger']
 	    };
 	    return ProgressView;
 	}(widget_1.LabeledDOMWidgetView));
@@ -35068,7 +35897,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	var PlayModel = (function (_super) {
 	    __extends(PlayModel, _super);
 	    function PlayModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    PlayModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -35119,7 +35948,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	var PlayView = (function (_super) {
 	    __extends(PlayView, _super);
 	    function PlayView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    PlayView.prototype.render = function () {
 	        _super.prototype.render.call(this);
@@ -35166,7 +35995,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_int.js', function (module, 
 	exports.PlayView = PlayView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_int.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_int.js **/
 
 
 /** START DEFINE BLOCK for jquery-ui@1.12.1/ui/widgets/slider.js **/
@@ -37507,8 +38336,8 @@ jupyter.define('d3-format@0.5.1/build/d3-format.js', function (module, exports, 
 /** END DEFINE BLOCK for d3-format@0.5.1/build/d3-format.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_float.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_float.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_float.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_float.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -37517,14 +38346,14 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_float.js', function (module
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var widget_int_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_int.js');
+	var widget_int_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_int.js');
 	var d3format = __jupyter_require__('d3-format@^0.5.1/build/d3-format.js').format;
 	var FloatModel = (function (_super) {
 	    __extends(FloatModel, _super);
 	    function FloatModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    FloatModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37534,12 +38363,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_float.js', function (module
 	        });
 	    };
 	    return FloatModel;
-	}(widget_1.LabeledDOMWidgetModel));
+	}(widget_core_1.CoreLabeledDOMWidgetModel));
 	exports.FloatModel = FloatModel;
 	var BoundedFloatModel = (function (_super) {
 	    __extends(BoundedFloatModel, _super);
 	    function BoundedFloatModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    BoundedFloatModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37555,7 +38384,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_float.js', function (module
 	var FloatSliderModel = (function (_super) {
 	    __extends(FloatSliderModel, _super);
 	    function FloatSliderModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    FloatSliderModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37583,11 +38412,10 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_float.js', function (module
 	var FloatSliderView = (function (_super) {
 	    __extends(FloatSliderView, _super);
 	    function FloatSliderView() {
-	        var _this = _super.apply(this, arguments) || this;
-	        _this._parse_value = parseFloat;
+	        _super.apply(this, arguments);
+	        this._parse_value = parseFloat;
 	        // matches: whitespace?, float, whitespace?, [-:], whitespace?, float
-	        _this._range_regex = /^\s*([+-]?(?:\d*\.?\d+|\d+\.)(?:[eE][+-]?\d+)?)\s*[-:]\s*([+-]?(?:\d*\.?\d+|\d+\.)(?:[eE][+-]?\d+)?)/;
-	        return _this;
+	        this._range_regex = /^\s*([+-]?(?:\d*\.?\d+|\d+\.)(?:[eE][+-]?\d+)?)\s*[-:]\s*([+-]?(?:\d*\.?\d+|\d+\.)(?:[eE][+-]?\d+)?)/;
 	    }
 	    /**
 	     * Validate the value of the slider before sending it to the back-end
@@ -37602,7 +38430,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_float.js', function (module
 	var FloatTextModel = (function (_super) {
 	    __extends(FloatTextModel, _super);
 	    function FloatTextModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    FloatTextModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37616,20 +38444,19 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_float.js', function (module
 	var FloatTextView = (function (_super) {
 	    __extends(FloatTextView, _super);
 	    function FloatTextView() {
-	        var _this = _super.apply(this, arguments) || this;
-	        _this._parse_value = parseFloat;
-	        return _this;
+	        _super.apply(this, arguments);
+	        this._parse_value = parseFloat;
 	    }
 	    return FloatTextView;
 	}(widget_int_1.IntTextView));
 	exports.FloatTextView = FloatTextView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_float.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_float.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_controller.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_controller.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_controller.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -37638,13 +38465,14 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (m
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/utils.js');
 	var ControllerButtonModel = (function (_super) {
 	    __extends(ControllerButtonModel, _super);
 	    function ControllerButtonModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ControllerButtonModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37655,7 +38483,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (m
 	        });
 	    };
 	    return ControllerButtonModel;
-	}(widget_1.DOMWidgetModel));
+	}(widget_core_1.CoreDOMWidgetModel));
 	exports.ControllerButtonModel = ControllerButtonModel;
 	/**
 	 * Very simple view for a gamepad button.
@@ -37663,7 +38491,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (m
 	var ControllerButtonView = (function (_super) {
 	    __extends(ControllerButtonView, _super);
 	    function ControllerButtonView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ControllerButtonView.prototype.render = function () {
 	        this.el.classList.add('jupyter-widgets');
@@ -37697,7 +38525,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (m
 	var ControllerAxisModel = (function (_super) {
 	    __extends(ControllerAxisModel, _super);
 	    function ControllerAxisModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ControllerAxisModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37707,7 +38535,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (m
 	        });
 	    };
 	    return ControllerAxisModel;
-	}(widget_1.DOMWidgetModel));
+	}(widget_core_1.CoreDOMWidgetModel));
 	exports.ControllerAxisModel = ControllerAxisModel;
 	/**
 	 * Very simple view for a gamepad axis.
@@ -37715,7 +38543,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (m
 	var ControllerAxisView = (function (_super) {
 	    __extends(ControllerAxisView, _super);
 	    function ControllerAxisView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ControllerAxisView.prototype.render = function () {
 	        this.el.classList.add('jupyter-widgets');
@@ -37752,7 +38580,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (m
 	var ControllerModel = (function (_super) {
 	    __extends(ControllerModel, _super);
 	    function ControllerModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ControllerModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -37917,12 +38745,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (m
 	            return model;
 	        });
 	    };
+	    ControllerModel.serializers = _.extend({
+	        buttons: { deserialize: widget_1.unpack_models },
+	        axes: { deserialize: widget_1.unpack_models }
+	    }, widget_core_1.CoreDOMWidgetModel.serializers);
 	    return ControllerModel;
-	}(widget_1.DOMWidgetModel));
-	ControllerModel.serializers = _.extend({
-	    buttons: { deserialize: widget_1.unpack_models },
-	    axes: { deserialize: widget_1.unpack_models }
-	}, widget_1.DOMWidgetModel.serializers);
+	}(widget_core_1.CoreDOMWidgetModel));
 	exports.ControllerModel = ControllerModel;
 	/**
 	 * A simple view for a gamepad.
@@ -37930,7 +38758,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (m
 	var ControllerView = (function (_super) {
 	    __extends(ControllerView, _super);
 	    function ControllerView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ControllerView.prototype.initialize = function (parameters) {
 	        _super.prototype.initialize.call(this, parameters);
@@ -37997,11 +38825,11 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_controller.js', function (m
 	exports.ControllerView = ControllerView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_controller.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_controller.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_selection.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_selection.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_selection.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -38010,9 +38838,10 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
+	var widget_core_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_core.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/utils.js');
 	var $ = __jupyter_require__('jquery@^3.1.1/dist/jquery.js');
 	function scrollIfNeeded(area, elem) {
 	    var ar = area.getBoundingClientRect();
@@ -38027,7 +38856,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	var SelectionModel = (function (_super) {
 	    __extends(SelectionModel, _super);
 	    function SelectionModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    SelectionModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38038,12 +38867,94 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	        });
 	    };
 	    return SelectionModel;
-	}(widget_1.LabeledDOMWidgetModel));
+	}(widget_core_1.CoreLabeledDOMWidgetModel));
 	exports.SelectionModel = SelectionModel;
+	var SelectModel = (function (_super) {
+	    __extends(SelectModel, _super);
+	    function SelectModel() {
+	        _super.apply(this, arguments);
+	    }
+	    SelectModel.prototype.defaults = function () {
+	        return _.extend(_super.prototype.defaults.call(this), {
+	            _model_name: 'SelectModel',
+	            _view_name: 'SelectView'
+	        });
+	    };
+	    return SelectModel;
+	}(SelectionModel));
+	exports.SelectModel = SelectModel;
+	var SelectView = (function (_super) {
+	    __extends(SelectView, _super);
+	    function SelectView() {
+	        _super.apply(this, arguments);
+	    }
+	    /**
+	     * Public constructor.
+	     */
+	    SelectView.prototype.initialize = function (parameters) {
+	        var _this = this;
+	        _super.prototype.initialize.call(this, parameters);
+	        this.listenTo(this.model, 'change:_options_labels', function () { return _this._updateOptions(); });
+	    };
+	    /**
+	     * Called when view is rendered.
+	     */
+	    SelectView.prototype.render = function () {
+	        _super.prototype.render.call(this);
+	        this.el.classList.add('jupyter-widgets');
+	        this.el.classList.add('widget-inline-hbox');
+	        this.el.classList.add('widget-select');
+	        var selectWrapper = document.createElement('div');
+	        selectWrapper.className = 'jp-Dialog-selectWrapper';
+	        this.listbox = document.createElement('select');
+	        selectWrapper.appendChild(this.listbox);
+	        this.el.appendChild(selectWrapper);
+	        this._updateOptions();
+	        this.update();
+	    };
+	    /**
+	     * Update the contents of this view
+	     */
+	    SelectView.prototype.update = function () {
+	        // Disable listbox if needed
+	        this.listbox.disabled = this.model.get('disabled');
+	        // Select the correct element
+	        var value = this.model.get('value');
+	        this.listbox.selectedIndex = this.model.get('_options_labels').indexOf(value);
+	        return _super.prototype.update.call(this);
+	    };
+	    SelectView.prototype._updateOptions = function () {
+	        this.listbox.textContent = '';
+	        var items = this.model.get('_options_labels');
+	        for (var i = 0; i < items.length; i++) {
+	            var item = items[i];
+	            var option = document.createElement('option');
+	            option.textContent = item.replace(/ /g, '\xa0'); // space -> &nbsp;
+	            option.setAttribute('data-value', encodeURIComponent(item));
+	            option.value = item;
+	            this.listbox.appendChild(option);
+	        }
+	    };
+	    SelectView.prototype.events = function () {
+	        return {
+	            'change select': '_handle_change'
+	        };
+	    };
+	    /**
+	     * Handle when a new value is selected.
+	     */
+	    SelectView.prototype._handle_change = function () {
+	        var value = this.listbox.options[this.listbox.selectedIndex].value;
+	        this.model.set('value', value);
+	        this.touch();
+	    };
+	    return SelectView;
+	}(widget_1.LabeledDOMWidgetView));
+	exports.SelectView = SelectView;
 	var DropdownModel = (function (_super) {
 	    __extends(DropdownModel, _super);
 	    function DropdownModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    DropdownModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38055,26 +38966,41 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	    return DropdownModel;
 	}(SelectionModel));
 	exports.DropdownModel = DropdownModel;
+	// TODO: Make a phosphor dropdown control, wrapped in DropdownView. Also, fix
+	// bugs in keyboard handling. See
+	// https://github.com/ipython/ipywidgets/issues/1055 and
+	// https://github.com/ipython/ipywidgets/issues/1049
+	// For now, we subclass SelectView below to provide DropdownView
+	// See the comment above DropdownViewNew
 	var DropdownView = (function (_super) {
 	    __extends(DropdownView, _super);
 	    function DropdownView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
-	    DropdownView.prototype.initialize = function (options) {
+	    return DropdownView;
+	}(SelectView));
+	exports.DropdownView = DropdownView;
+	var DropdownViewNew = (function (_super) {
+	    __extends(DropdownViewNew, _super);
+	    function DropdownViewNew() {
+	        _super.apply(this, arguments);
+	    }
+	    DropdownViewNew.prototype.initialize = function (options) {
+	        _super.prototype.initialize.call(this, options);
 	        this.onKeydown = this._handle_keydown.bind(this);
 	        this.onDismiss = this._handle_dismiss.bind(this);
 	        this.onHover = this._handle_hover.bind(this);
-	        _super.prototype.initialize.call(this, options);
+	        this.listenTo(this.model, 'change:button_style', this.update_button_style);
+	        this.pWidget.addClass('jupyter-widgets');
+	        this.pWidget.addClass('widget-dropdown');
 	    };
-	    DropdownView.prototype.remove = function () {
+	    DropdownViewNew.prototype.remove = function () {
 	        document.body.removeChild(this.droplist);
 	        _super.prototype.remove.call(this);
 	    };
-	    DropdownView.prototype.render = function () {
+	    DropdownViewNew.prototype.render = function () {
 	        _super.prototype.render.call(this);
-	        this.el.classList.add('jupyter-widgets');
 	        this.el.classList.add('widget-inline-hbox');
-	        this.el.classList.add('widget-dropdown');
 	        this.toggle = document.createElement('div');
 	        this.toggle.className = 'widget-dropdown-toggle';
 	        this.toggle.tabIndex = 0;
@@ -38092,12 +39018,11 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	        // container they were instantiated in.
 	        this.droplist = document.createElement('ul');
 	        this.droplist.className = 'widget-dropdown-droplist';
-	        document.body.appendChild(this.droplist);
 	        this.droplist.addEventListener('click', this._handle_click.bind(this));
-	        this.listenTo(this.model, 'change:button_style', this.update_button_style);
-	        this.update_button_style();
+	        document.body.appendChild(this.droplist);
 	        // Set defaults.
 	        this.update();
+	        this.set_button_style();
 	    };
 	    /**
 	     * Update the contents of this view
@@ -38105,7 +39030,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	     * Called when the model is changed.  The model may have been
 	     * changed by another view or by a state update from the back-end.
 	     */
-	    DropdownView.prototype.update = function (options) {
+	    DropdownViewNew.prototype.update = function (options) {
 	        var view = this;
 	        var items = this.model.get('_options_labels');
 	        var links = _.pluck(this.droplist.querySelectorAll('a'), 'textContent');
@@ -38138,23 +39063,19 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	        }
 	        return _super.prototype.update.call(this, options);
 	    };
-	    DropdownView.prototype.update_button_style = function () {
-	        var class_map = {
-	            primary: ['mod-primary'],
-	            success: ['mod-success'],
-	            info: ['mod-info'],
-	            warning: ['mod-warning'],
-	            danger: ['mod-danger']
-	        };
-	        this.update_mapped_classes(class_map, 'button_style', this.toggle);
+	    DropdownViewNew.prototype.update_button_style = function () {
+	        this.update_mapped_classes(DropdownViewNew.class_map, 'button_style', this.toggle);
 	    };
-	    DropdownView.prototype.events = function () {
+	    DropdownViewNew.prototype.set_button_style = function () {
+	        this.set_mapped_classes(DropdownViewNew.class_map, 'button_style', this.toggle);
+	    };
+	    DropdownViewNew.prototype.events = function () {
 	        return {
 	            'click .widget-dropdown-toggle': '_toggle',
 	            'keydown .widget-dropdown-toggle': '_activate'
 	        };
 	    };
-	    DropdownView.prototype._dismiss = function () {
+	    DropdownViewNew.prototype._dismiss = function () {
 	        // If some error condition has caused this listener to still be active
 	        // despite the drop list being invisible, remove all global listeners.
 	        if (!this.droplist.classList.contains('mod-active')) {
@@ -38177,7 +39098,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	        this._check_droplist_events();
 	        return;
 	    };
-	    DropdownView.prototype._add_droplist_events = function () {
+	    DropdownViewNew.prototype._add_droplist_events = function () {
 	        // Add a global keydown listener for drop list events.
 	        document.addEventListener('keydown', this.onKeydown, true);
 	        // Add a global mousedown listener to dismiss drop list.
@@ -38187,7 +39108,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	        // Add a hover listener for drop list events.
 	        this.droplist.addEventListener('mousemove', this.onHover, true);
 	    };
-	    DropdownView.prototype._check_droplist_events = function () {
+	    DropdownViewNew.prototype._check_droplist_events = function () {
 	        // If some error condition has caused this listener to still be active
 	        // despite the drop list being invisible, remove all global listeners.
 	        if (!this.droplist.classList.contains('mod-active')) {
@@ -38203,7 +39124,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	     *
 	     * Changes the active element.
 	     */
-	    DropdownView.prototype._handle_hover = function (event) {
+	    DropdownViewNew.prototype._handle_hover = function (event) {
 	        // Find the option that was hovered over
 	        var items = this.droplist.querySelectorAll('.widget-dropdown-item');
 	        for (var i = 0; i < items.length; i++) {
@@ -38224,7 +39145,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	     * Calling model.set will trigger all of the other views of the
 	     * model to update.
 	     */
-	    DropdownView.prototype._handle_click = function (event) {
+	    DropdownViewNew.prototype._handle_click = function (event) {
 	        event.stopPropagation();
 	        event.preventDefault();
 	        if (this.model.get('disabled')) {
@@ -38239,7 +39160,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	    /**
 	     * Handles browser events that cause a dismissal of the drop list.
 	     */
-	    DropdownView.prototype._handle_dismiss = function (event) {
+	    DropdownViewNew.prototype._handle_dismiss = function (event) {
 	        // Check if the event came from the drop list itself.
 	        if (this.droplist.contains(event.target) ||
 	            this.toggle.contains(event.target)) {
@@ -38250,7 +39171,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	    /**
 	     * Handles keydown events for navigating the drop list.
 	     */
-	    DropdownView.prototype._handle_keydown = function (event) {
+	    DropdownViewNew.prototype._handle_keydown = function (event) {
 	        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || this.model.get('disabled')) {
 	            return;
 	        }
@@ -38320,7 +39241,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	     * If the drop button is focused and the user presses enter, up, or down,
 	     * activate the drop list.
 	     */
-	    DropdownView.prototype._activate = function (event) {
+	    DropdownViewNew.prototype._activate = function (event) {
 	        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
 	            return;
 	        }
@@ -38340,7 +39261,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	     * If the dropdown list doesn't fit below the dropdown label, this will
 	     * cause the dropdown to be dropped 'up'.
 	     */
-	    DropdownView.prototype._toggle = function () {
+	    DropdownViewNew.prototype._toggle = function () {
 	        this.toggle.blur();
 	        if (this.droplist.classList.contains('mod-active')) {
 	            this._dismiss();
@@ -38378,25 +39299,25 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	        // If the drop list fits below, render below.
 	        if (droplistRect.height <= availableHeightBelow) {
 	            top = buttongroupRect.bottom;
-	            this.droplist.style.top = Math.ceil(top) + 'px';
+	            this.droplist.style.top = top + 'px';
 	            this.droplist.classList.add('below');
 	            this.droplist.classList.remove('above');
 	        }
 	        else if (droplistRect.height <= availableHeightAbove) {
 	            top = buttongroupRect.top - droplistRect.height;
-	            this.droplist.style.top = Math.floor(top) + 'px';
+	            this.droplist.style.top = top + 'px';
 	            this.droplist.classList.remove('below');
 	            this.droplist.classList.add('above');
 	        }
 	        else if (availableHeightBelow >= availableHeightAbove) {
 	            top = buttongroupRect.bottom;
-	            this.droplist.style.top = Math.ceil(top) + 'px';
+	            this.droplist.style.top = top + 'px';
 	            this.droplist.classList.add('below');
 	            this.droplist.classList.remove('above');
 	        }
 	        else {
 	            top = buttongroupRect.top - droplistRect.height;
-	            this.droplist.style.top = Math.floor(top) + 'px';
+	            this.droplist.style.top = top + 'px';
 	            this.droplist.classList.remove('below');
 	            this.droplist.classList.add('above');
 	        }
@@ -38405,13 +39326,19 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	            scrollIfNeeded(this.droplist, items[selectedIndex]);
 	        }
 	    };
-	    return DropdownView;
+	    DropdownViewNew.class_map = {
+	        primary: ['mod-primary'],
+	        success: ['mod-success'],
+	        info: ['mod-info'],
+	        warning: ['mod-warning'],
+	        danger: ['mod-danger']
+	    };
+	    return DropdownViewNew;
 	}(widget_1.LabeledDOMWidgetView));
-	exports.DropdownView = DropdownView;
 	var RadioButtonsModel = (function (_super) {
 	    __extends(RadioButtonsModel, _super);
 	    function RadioButtonsModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    RadioButtonsModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38428,7 +39355,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	var RadioButtonsView = (function (_super) {
 	    __extends(RadioButtonsView, _super);
 	    function RadioButtonsView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -38508,7 +39435,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	var ToggleButtonsModel = (function (_super) {
 	    __extends(ToggleButtonsModel, _super);
 	    function ToggleButtonsModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ToggleButtonsModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38522,11 +39449,12 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	var ToggleButtonsView = (function (_super) {
 	    __extends(ToggleButtonsView, _super);
 	    function ToggleButtonsView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    ToggleButtonsView.prototype.initialize = function (options) {
 	        this._css_state = {};
 	        _super.prototype.initialize.call(this, options);
+	        this.listenTo(this.model, 'change:button_style', this.update_button_style);
 	    };
 	    /**
 	     * Called when view is rendered.
@@ -38538,8 +39466,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	        this.el.classList.add('widget-toggle-buttons');
 	        this.buttongroup = document.createElement('div');
 	        this.el.appendChild(this.buttongroup);
-	        this.listenTo(this.model, 'change:button_style', this.update_button_style);
-	        this.update_button_style();
+	        this.set_button_style();
 	        this.update();
 	    };
 	    /**
@@ -38635,10 +39562,17 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	        }
 	    };
 	    ToggleButtonsView.prototype.update_button_style = function () {
-	        var view = this;
+	        var _this = this;
 	        var buttons = this.buttongroup.querySelectorAll('button');
 	        _.each(buttons, function (button) {
-	            view.update_mapped_classes(ToggleButtonsView.classMap, 'button_style', button);
+	            _this.update_mapped_classes(ToggleButtonsView.classMap, 'button_style', button);
+	        });
+	    };
+	    ToggleButtonsView.prototype.set_button_style = function () {
+	        var _this = this;
+	        var buttons = this.buttongroup.querySelectorAll('button');
+	        _.each(buttons, function (button) {
+	            _this.set_mapped_classes(ToggleButtonsView.classMap, 'button_style', button);
 	        });
 	    };
 	    ToggleButtonsView.prototype.events = function () {
@@ -38660,6 +39594,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	    return ToggleButtonsView;
 	}(widget_1.LabeledDOMWidgetView));
 	exports.ToggleButtonsView = ToggleButtonsView;
+	var ToggleButtonsView;
 	(function (ToggleButtonsView) {
 	    ToggleButtonsView.classMap = {
 	        primary: ['mod-primary'],
@@ -38669,107 +39604,10 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	        danger: ['mod-danger']
 	    };
 	})(ToggleButtonsView = exports.ToggleButtonsView || (exports.ToggleButtonsView = {}));
-	exports.ToggleButtonsView = ToggleButtonsView;
-	var SelectModel = (function (_super) {
-	    __extends(SelectModel, _super);
-	    function SelectModel() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    SelectModel.prototype.defaults = function () {
-	        return _.extend(_super.prototype.defaults.call(this), {
-	            _model_name: 'SelectModel',
-	            _view_name: 'SelectView'
-	        });
-	    };
-	    return SelectModel;
-	}(SelectionModel));
-	exports.SelectModel = SelectModel;
-	var SelectView = (function (_super) {
-	    __extends(SelectView, _super);
-	    function SelectView() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    /**
-	     * Called when view is rendered.
-	     */
-	    SelectView.prototype.render = function () {
-	        _super.prototype.render.call(this);
-	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-inline-hbox');
-	        this.el.classList.add('widget-select');
-	        this.listbox = document.createElement('select');
-	        this.el.appendChild(this.listbox);
-	        this.update();
-	    };
-	    /**
-	     * Update the contents of this view
-	     *
-	     * Called when the model is changed.  The model may have been
-	     * changed by another view or by a state update from the back-end.
-	     */
-	    SelectView.prototype.update = function (options) {
-	        var view = this;
-	        var items = this.model.get('_options_labels');
-	        var selectoptions = _.pluck(this.listbox.options, 'value');
-	        var stale = false;
-	        for (var i = 0, len = items.length; i < len; ++i) {
-	            if (selectoptions[i] !== items[i]) {
-	                stale = true;
-	                break;
-	            }
-	        }
-	        if (stale && (options === undefined || options.updated_view !== this)) {
-	            // Add items to the DOM.
-	            this.listbox.textContent = '';
-	            _.each(items, function (item, index) {
-	                var item_query = 'option[data-value="' +
-	                    encodeURIComponent(item) + '"]';
-	                var item_exists = view.listbox
-	                    .querySelectorAll(item_query).length !== 0;
-	                var option;
-	                if (!item_exists) {
-	                    option = document.createElement('option');
-	                    option.textContent = item.replace ?
-	                        item.replace(/ /g, '\xa0') : item;
-	                    option.setAttribute('data-value', encodeURIComponent(item));
-	                    option.value = item;
-	                    view.listbox.appendChild(option);
-	                }
-	            });
-	            // Disable listbox if needed
-	            this.listbox.disabled = this.model.get('disabled');
-	            // Select the correct element
-	            var value = view.model.get('value');
-	            view.listbox.selectedIndex = items.indexOf(value);
-	        }
-	        return _super.prototype.update.call(this, options);
-	    };
-	    SelectView.prototype.events = function () {
-	        return {
-	            'change select': '_handle_change'
-	        };
-	    };
-	    /**
-	     * Handle when a new value is selected.
-	     *
-	     * Calling model.set will trigger all of the other views of the
-	     * model to update.
-	     */
-	    SelectView.prototype._handle_change = function () {
-	        // TODO: typecasting not needed in Typescript 2.0
-	        // (see https://github.com/Microsoft/TypeScript/issues/9334 and
-	        // https://github.com/Microsoft/TypeScript/issues/8220)
-	        var value = this.listbox.options[this.listbox.selectedIndex].value;
-	        this.model.set('value', value, { updated_view: this });
-	        this.touch();
-	    };
-	    return SelectView;
-	}(widget_1.LabeledDOMWidgetView));
-	exports.SelectView = SelectView;
 	var SelectionSliderModel = (function (_super) {
 	    __extends(SelectionSliderModel, _super);
 	    function SelectionSliderModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    SelectionSliderModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38786,7 +39624,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	var SelectionSliderView = (function (_super) {
 	    __extends(SelectionSliderView, _super);
 	    function SelectionSliderView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    /**
 	     * Called when view is rendered.
@@ -38919,7 +39757,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	var MultipleSelectionModel = (function (_super) {
 	    __extends(MultipleSelectionModel, _super);
 	    function MultipleSelectionModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    MultipleSelectionModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38932,7 +39770,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	var SelectMultipleModel = (function (_super) {
 	    __extends(SelectMultipleModel, _super);
 	    function SelectMultipleModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    SelectMultipleModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -38946,32 +39784,55 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	var SelectMultipleView = (function (_super) {
 	    __extends(SelectMultipleView, _super);
 	    function SelectMultipleView() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
+	    /**
+	     * Public constructor.
+	     */
+	    SelectMultipleView.prototype.initialize = function (parameters) {
+	        var _this = this;
+	        _super.prototype.initialize.call(this, parameters);
+	        this.listenTo(this.model, 'change:_options_labels', function () { return _this._updateOptions(); });
+	    };
 	    /**
 	     * Called when view is rendered.
 	     */
 	    SelectMultipleView.prototype.render = function () {
 	        _super.prototype.render.call(this);
-	        this.el.classList.remove('widget-select');
+	        this.el.classList.add('jupyter-widgets');
+	        this.el.classList.add('widget-inline-hbox');
 	        this.el.classList.add('widget-select-multiple');
+	        this.listbox = document.createElement('select');
 	        this.listbox.multiple = true;
+	        this.el.appendChild(this.listbox);
+	        this._updateOptions();
 	        this.update();
 	    };
 	    /**
 	     * Update the contents of this view
-	     *
-	     * Called when the model is changed.  The model may have been
-	     * changed by another view or by a state update from the back-end.
 	     */
 	    SelectMultipleView.prototype.update = function () {
 	        _super.prototype.update.call(this);
+	        this.listbox.disabled = this.model.get('disabled');
+	        // Set selected values
 	        var selected = this.model.get('value') || [];
 	        var values = _.map(selected, encodeURIComponent);
 	        var options = this.listbox.options;
 	        for (var i = 0, len = options.length; i < len; ++i) {
 	            var value = options[i].getAttribute('data-value');
 	            options[i].selected = _.contains(values, value);
+	        }
+	    };
+	    SelectMultipleView.prototype._updateOptions = function () {
+	        this.listbox.textContent = '';
+	        var items = this.model.get('_options_labels');
+	        for (var i = 0; i < items.length; i++) {
+	            var item = items[i];
+	            var option = document.createElement('option');
+	            option.textContent = item.replace(/ /g, '\xa0'); // space -> &nbsp;
+	            option.setAttribute('data-value', encodeURIComponent(item));
+	            option.value = item;
+	            this.listbox.appendChild(option);
 	        }
 	    };
 	    SelectMultipleView.prototype.events = function () {
@@ -38981,9 +39842,6 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	    };
 	    /**
 	     * Handle when a new value is selected.
-	     *
-	     * Calling model.set will trigger all of the other views of the
-	     * model to update.
 	     */
 	    SelectMultipleView.prototype._handle_change = function () {
 	        // In order to preserve type information correctly, we need to map
@@ -38993,19 +39851,19 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selection.js', function (mo
 	            .call(this.listbox.selectedOptions || [], function (option) {
 	            return items[option.index];
 	        });
-	        this.model.set('value', values, { updated_view: this });
+	        this.model.set('value', values);
 	        this.touch();
 	    };
 	    return SelectMultipleView;
-	}(SelectView));
+	}(widget_1.LabeledDOMWidgetView));
 	exports.SelectMultipleView = SelectMultipleView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_selection.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_selection.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_selectioncontainer.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/widget_selectioncontainer.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -39014,20 +39872,22 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', fun
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
-	var widget_box_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget_box.js');
-	var tabbar_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/tabbar.js');
-	var panel_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/panel.js');
-	var title_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/title.js');
+	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget.js');
+	var widget_box_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/widget_box.js');
+	var tabpanel_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/phosphor/tabpanel.js');
+	var accordion_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/phosphor/accordion.js');
+	var widget_2 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
 	var iteration_1 = __jupyter_require__('phosphor@^0.7.0/lib/algorithm/iteration.js');
+	var mutation_1 = __jupyter_require__('phosphor@^0.7.0/lib/algorithm/mutation.js');
 	var searching_1 = __jupyter_require__('phosphor@^0.7.0/lib/algorithm/searching.js');
+	var messaging_1 = __jupyter_require__('phosphor@^0.7.0/lib/core/messaging.js');
 	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var utils = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/utils.js');
+	var utils = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/utils.js');
 	var $ = __jupyter_require__('jquery@^3.1.1/dist/jquery.js');
 	var SelectionContainerModel = (function (_super) {
 	    __extends(SelectionContainerModel, _super);
 	    function SelectionContainerModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    SelectionContainerModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -39042,7 +39902,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', fun
 	var AccordionModel = (function (_super) {
 	    __extends(AccordionModel, _super);
 	    function AccordionModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    AccordionModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -39053,116 +39913,149 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', fun
 	    return AccordionModel;
 	}(SelectionContainerModel));
 	exports.AccordionModel = AccordionModel;
+	// We implement our own tab widget since Phoshpor's TabPanel uses an absolute
+	// positioning BoxLayout, but we want a more an html/css-based Panel layout.
+	var JupyterPhosphorAccordionWidget = (function (_super) {
+	    __extends(JupyterPhosphorAccordionWidget, _super);
+	    function JupyterPhosphorAccordionWidget(options) {
+	        var view = options.view;
+	        delete options.view;
+	        _super.call(this, options);
+	        this._view = view;
+	    }
+	    /**
+	     * Process the phosphor message.
+	     *
+	     * Any custom phosphor widget used inside a Jupyter widget should override
+	     * the processMessage function like this.
+	     */
+	    JupyterPhosphorAccordionWidget.prototype.processMessage = function (msg) {
+	        _super.prototype.processMessage.call(this, msg);
+	        this._view.processPhosphorMessage(msg);
+	    };
+	    /**
+	     * Dispose the widget.
+	     *
+	     * This causes the view to be destroyed as well with 'remove'
+	     */
+	    JupyterPhosphorAccordionWidget.prototype.dispose = function () {
+	        if (this.isDisposed) {
+	            return;
+	        }
+	        _super.prototype.dispose.call(this);
+	        if (this._view) {
+	            this._view.remove();
+	        }
+	        this._view = null;
+	    };
+	    return JupyterPhosphorAccordionWidget;
+	}(accordion_1.Accordion));
+	exports.JupyterPhosphorAccordionWidget = JupyterPhosphorAccordionWidget;
 	var AccordionView = (function (_super) {
 	    __extends(AccordionView, _super);
 	    function AccordionView() {
-	        var _this = _super.apply(this, arguments) || this;
-	        _this.pages = [];
-	        _this.view_pages = Object.create(null);
-	        return _this;
+	        _super.apply(this, arguments);
 	    }
+	    AccordionView.prototype._createElement = function (tagName) {
+	        this.pWidget = new JupyterPhosphorAccordionWidget({ view: this });
+	        return this.pWidget.node;
+	    };
+	    AccordionView.prototype._setElement = function (el) {
+	        if (this.el || el !== this.pWidget.node) {
+	            // Accordions don't allow setting the element beyond the initial creation.
+	            throw new Error('Cannot reset the DOM element.');
+	        }
+	        this.el = this.pWidget.node;
+	        this.$el = $(this.pWidget.node);
+	    };
 	    AccordionView.prototype.initialize = function (parameters) {
 	        var _this = this;
 	        _super.prototype.initialize.call(this, parameters);
 	        this.children_views = new widget_1.ViewList(this.add_child_view, this.remove_child_view, this);
-	        this.listenTo(this.model, 'change:children', function (model, value, options) {
-	            _this.children_views.update(value);
-	        });
+	        this.listenTo(this.model, 'change:children', function () { return _this.updateChildren(); });
+	        this.listenTo(this.model, 'change:selected_index', function () { return _this.update_selected_index(); });
+	        this.listenTo(this.model, 'change:_titles', function () { return _this.update_titles(); });
 	    };
 	    /**
 	     * Called when view is rendered.
 	     */
 	    AccordionView.prototype.render = function () {
-	        this.el.className = 'jupyter-widgets widget-container widget-accordion';
-	        this.listenTo(this.model, 'change:selected_index', function (model, value, options) {
-	            this.update_selected_index(options);
-	        });
-	        this.listenTo(this.model, 'change:_titles', function (model, value, options) {
-	            this.update_titles(options);
+	        var _this = this;
+	        _super.prototype.render.call(this);
+	        var accordion = this.pWidget;
+	        accordion.addClass('jupyter-widgets');
+	        accordion.addClass('widget-accordion');
+	        accordion.addClass('widget-container');
+	        accordion.selection.selectionChanged.connect(function (sender) {
+	            if (!_this.updatingChildren) {
+	                _this.model.set('selected_index', accordion.selection.index);
+	                _this.touch();
+	            }
 	        });
 	        this.children_views.update(this.model.get('children'));
 	        this.update_titles();
 	        this.update_selected_index();
 	    };
 	    /**
+	     * Update children
+	     */
+	    AccordionView.prototype.updateChildren = function () {
+	        // While we are updating, the index may not be valid, so deselect the
+	        // tabs before updating so we don't get spurious changes in the index,
+	        // which would then set off another sync cycle.
+	        this.updatingChildren = true;
+	        this.pWidget.selection.index = -1;
+	        this.children_views.update(this.model.get('children'));
+	        this.update_selected_index();
+	        this.updatingChildren = false;
+	    };
+	    /**
 	     * Set header titles
 	     */
 	    AccordionView.prototype.update_titles = function () {
+	        var widgets = this.pWidget.widgets;
 	        var titles = this.model.get('_titles');
-	        for (var i = 0; i < this.pages.length; i++) {
+	        for (var i = 0; i < widgets.length; i++) {
 	            if (titles[i] !== void 0) {
-	                this.pages[i].firstChild.textContent = titles[i];
+	                widgets.at(i).title.label = titles[i];
 	            }
 	        }
 	    };
 	    /**
 	     * Make the rendering and selected index consistent.
 	     */
-	    AccordionView.prototype.update_selected_index = function (options) {
-	        var new_index = this.model.get('selected_index');
-	        this.pages.forEach(function (page, index) {
-	            if (index === new_index) {
-	                page.classList.add('accordion-active');
-	                // TODO: use CSS transitions?
-	                $(page.lastElementChild).slideDown('fast');
-	            }
-	            else {
-	                page.classList.remove('accordion-active');
-	                $(page.lastElementChild).slideUp('fast');
-	            }
-	        });
+	    AccordionView.prototype.update_selected_index = function () {
+	        this.pWidget.selection.index = this.model.get('selected_index');
 	    };
 	    /**
 	     * Called when a child is removed from children list.
 	     */
 	    AccordionView.prototype.remove_child_view = function (view) {
-	        var page = this.view_pages[view.cid];
-	        this.pages.splice(this.pages.indexOf(page), 1);
-	        delete this.view_pages[view.cid];
-	        page.parentNode.removeChild(page);
+	        this.pWidget.removeWidget(view.pWidget);
 	        view.remove();
 	    };
 	    /**
 	     * Called when a child is added to children list.
 	     */
-	    AccordionView.prototype.add_child_view = function (model) {
-	        var _this = this;
-	        var page = document.createElement('div');
-	        page.classList.add('accordion-page');
-	        var header = document.createElement('div');
-	        header.classList.add('accordion-header');
-	        header.textContent = "Page " + this.pages.length;
-	        header.onclick = function () {
-	            var index = _this.pages.indexOf(page);
-	            _this.model.set('selected_index', index);
-	            _this.touch();
-	        };
-	        var content = document.createElement('div');
-	        content.classList.add('accordion-content');
-	        page.appendChild(header);
-	        page.appendChild(content);
-	        this.pages.push(page);
-	        this.el.appendChild(page);
-	        this.update_titles();
-	        this.update_selected_index;
+	    AccordionView.prototype.add_child_view = function (model, index) {
+	        // Placeholder widget to keep our position in the tab panel while we create the view.
+	        var accordion = this.pWidget;
+	        var placeholder = new widget_2.Widget();
+	        placeholder.title.label = this.model.get('_titles')[index] || '';
+	        ;
+	        accordion.addWidget(placeholder);
 	        return this.create_child_view(model).then(function (view) {
-	            _this.view_pages[view.cid] = page;
-	            content.appendChild(view.el);
-	            // Trigger the displayed event of the child view.
-	            _this.displayed.then(function () {
-	                view.trigger('displayed', _this);
-	            });
+	            var widget = view.pWidget;
+	            widget.title.label = placeholder.title.label;
+	            var collapse = accordion.collapseWidgets.at(accordion.indexOf(placeholder));
+	            collapse.widget = widget;
+	            placeholder.dispose();
 	            return view;
 	        }).catch(utils.reject('Could not add child view to box', true));
 	    };
-	    /**
-	     * We remove this widget before removing the children as an optimization
-	     * we want to remove the entire container from the DOM first before
-	     * removing each individual child separately.
-	     */
 	    AccordionView.prototype.remove = function () {
+	        this.children_views = null;
 	        _super.prototype.remove.call(this);
-	        this.children_views.remove();
 	    };
 	    return AccordionView;
 	}(widget_1.DOMWidgetView));
@@ -39170,7 +40063,7 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', fun
 	var TabModel = (function (_super) {
 	    __extends(TabModel, _super);
 	    function TabModel() {
-	        return _super.apply(this, arguments) || this;
+	        _super.apply(this, arguments);
 	    }
 	    TabModel.prototype.defaults = function () {
 	        return _.extend(_super.prototype.defaults.call(this), {
@@ -39183,15 +40076,52 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', fun
 	exports.TabModel = TabModel;
 	// We implement our own tab widget since Phoshpor's TabPanel uses an absolute
 	// positioning BoxLayout, but we want a more an html/css-based Panel layout.
+	var JupyterPhosphorTabPanelWidget = (function (_super) {
+	    __extends(JupyterPhosphorTabPanelWidget, _super);
+	    function JupyterPhosphorTabPanelWidget(options) {
+	        var _this = this;
+	        var view = options.view;
+	        delete options.view;
+	        _super.call(this, options);
+	        this._view = view;
+	        // We want the view's messages to be the messages the tabContents panel
+	        // gets.
+	        messaging_1.installMessageHook(this.tabContents, function (handler, msg) {
+	            // There may be times when we want the view's handler to be called
+	            // *after* the message has been processed by the widget, in which
+	            // case we'll need to revisit using a message hook.
+	            _this._view.processPhosphorMessage(msg);
+	            return true;
+	        });
+	    }
+	    /**
+	     * Dispose the widget.
+	     *
+	     * This causes the view to be destroyed as well with 'remove'
+	     */
+	    JupyterPhosphorTabPanelWidget.prototype.dispose = function () {
+	        if (this.isDisposed) {
+	            return;
+	        }
+	        _super.prototype.dispose.call(this);
+	        if (this._view) {
+	            this._view.remove();
+	        }
+	        this._view = null;
+	    };
+	    return JupyterPhosphorTabPanelWidget;
+	}(tabpanel_1.TabPanel));
+	exports.JupyterPhosphorTabPanelWidget = JupyterPhosphorTabPanelWidget;
 	var TabView = (function (_super) {
 	    __extends(TabView, _super);
 	    function TabView() {
-	        var _this = _super.apply(this, arguments) || this;
-	        _this.updatingTabs = false;
-	        return _this;
+	        _super.apply(this, arguments);
+	        this.updatingTabs = false;
 	    }
 	    TabView.prototype._createElement = function (tagName) {
-	        this.pWidget = new widget_box_1.JupyterPhosphorPanelWidget({ view: this });
+	        this.pWidget = new JupyterPhosphorTabPanelWidget({
+	            view: this,
+	        });
 	        return this.pWidget.node;
 	    };
 	    TabView.prototype._setElement = function (el) {
@@ -39216,17 +40146,18 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', fun
 	     * Called when view is rendered.
 	     */
 	    TabView.prototype.render = function () {
-	        this.pWidget.addClass('jupyter-widgets');
-	        this.pWidget.addClass('widget-container');
-	        this.pWidget.addClass('widget-tab');
-	        this.tabBar = new tabbar_1.TabBar({ insertBehavior: 'none' });
-	        this.tabBar.tabsMovable = false;
-	        this.tabBar.addClass('widget-tab-bar');
-	        this.tabBar.currentChanged.connect(this._onTabChanged, this);
-	        this.tabContents = new panel_1.Panel();
-	        this.tabContents.addClass('widget-tab-contents');
-	        this.pWidget.addWidget(this.tabBar);
-	        this.pWidget.addWidget(this.tabContents);
+	        _super.prototype.render.call(this);
+	        var tabs = this.pWidget;
+	        tabs.addClass('jupyter-widgets');
+	        tabs.addClass('widget-container');
+	        tabs.addClass('widget-tab');
+	        tabs.tabBar.insertBehavior = 'none'; // needed for insert behavior, see below.
+	        tabs.tabBar.currentChanged.connect(this._onTabChanged, this);
+	        tabs.tabBar.tabMoved.connect(this._onTabMoved, this);
+	        tabs.tabBar.addClass('widget-tab-bar');
+	        tabs.tabContents.addClass('widget-tab-contents');
+	        // TODO: expose this option in python
+	        tabs.tabBar.tabsMovable = false;
 	        this.updateTabs();
 	        this.update();
 	    };
@@ -39235,49 +40166,34 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', fun
 	     */
 	    TabView.prototype.updateTabs = function () {
 	        // While we are updating, the index may not be valid, so deselect the
-	        // tabs before updating so we don't get spurious changes in the index.
+	        // tabs before updating so we don't get spurious changes in the index,
+	        // which would then set off another sync cycle.
 	        this.updatingTabs = true;
-	        var oldTitle = this.tabBar.currentTitle;
-	        this.tabBar.currentIndex = -1;
+	        this.pWidget.currentIndex = -1;
 	        this.childrenViews.update(this.model.get('children'));
-	        this.tabBar.currentIndex = this.model.get('selected_index');
-	        var newTitle = this.tabBar.currentTitle;
-	        if (oldTitle !== newTitle) {
-	            if (oldTitle && oldTitle.owner) {
-	                oldTitle.owner.hide();
-	            }
-	            if (newTitle && newTitle.owner) {
-	                newTitle.owner.show();
-	            }
-	        }
+	        this.pWidget.currentIndex = this.model.get('selected_index');
 	        this.updatingTabs = false;
 	    };
 	    /**
 	     * Called when a child is added to children list.
 	     */
 	    TabView.prototype.addChildView = function (model, index) {
-	        var _this = this;
-	        // Placeholder title to keep our position in the tab bar while we create the view.
-	        var label = this.model.get('_titles')[index] || (index + 1).toString();
-	        var tempTitle = new title_1.Title({ label: label });
-	        this.tabBar.addTab(tempTitle);
+	        // Placeholder widget to keep our position in the tab panel while we create the view.
+	        var label = this.model.get('_titles')[index] || '';
+	        var tabs = this.pWidget;
+	        var placeholder = new widget_2.Widget();
+	        placeholder.title.label = label;
+	        tabs.addWidget(placeholder);
 	        return this.create_child_view(model).then(function (view) {
 	            var widget = view.pWidget;
-	            widget.hide();
-	            widget.addClass('widget-tab-child');
-	            _this.tabContents.addWidget(widget);
-	            var title = widget.title;
-	            title.closable = false;
-	            title.label = tempTitle.label;
-	            var i = searching_1.indexOf(_this.tabBar.titles, tempTitle);
-	            // insert after tempTitle so that if tempTitle is selected,
-	            // after this the replacement title will be selected.
-	            _this.tabBar.insertTab(i + 1, title);
-	            _this.tabBar.removeTab(tempTitle);
-	            view.on('remove', function () { return _this.tabBar.removeTab(title); });
-	            if (_this.tabBar.currentTitle === title) {
-	                widget.show();
-	            }
+	            widget.title.label = placeholder.title.label;
+	            widget.title.closable = true;
+	            var i = searching_1.indexOf(tabs.widgets, placeholder);
+	            // insert after placeholder so that if placholder is selected, the
+	            // real widget will be selected now (this depends on the tab bar
+	            // insert behavior)
+	            tabs.insertWidget(i + 1, widget);
+	            placeholder.dispose();
 	            return view;
 	        }).catch(utils.reject('Could not add child view to box', true));
 	    };
@@ -39299,43 +40215,20 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', fun
 	     */
 	    TabView.prototype.updateTitles = function () {
 	        var titles = this.model.get('_titles') || {};
-	        iteration_1.each(iteration_1.enumerate(this.tabBar.titles), function (_a) {
-	            var i = _a[0], title = _a[1];
-	            title.label = titles[i] || (i + 1).toString();
+	        iteration_1.each(iteration_1.enumerate(this.pWidget.widgets), function (_a) {
+	            var i = _a[0], widget = _a[1];
+	            widget.title.label = titles[i] || '';
 	        });
 	    };
 	    /**
 	     * Updates the selected index.
 	     */
 	    TabView.prototype.updateSelectedIndex = function () {
-	        var current = this.model.get('selected_index');
-	        var previous = this.model.previous('selected_index');
-	        if (current === void 0) {
-	            current = 0;
-	        }
-	        var titles = this.tabBar.titles;
-	        if (0 <= current && current < titles.length) {
-	            if (previous !== void 0 && previous !== current) {
-	                var previousTitle = titles.at(previous);
-	                var previousWidget = previousTitle ? previousTitle.owner : null;
-	                if (previousWidget) {
-	                    previousWidget.hide();
-	                }
-	            }
-	            this.tabBar.currentIndex = current;
-	            var currentWidget = this.tabBar.currentTitle.owner;
-	            if (currentWidget) {
-	                currentWidget.show();
-	            }
-	        }
+	        this.pWidget.currentIndex = this.model.get('selected_index');
 	    };
 	    TabView.prototype.remove = function () {
-	        this.tabBar = null;
-	        this.tabContents = null;
-	        // Remove this widget before children so that the entire container
-	        // leaves the DOM at once.
+	        this.childrenViews = null;
 	        _super.prototype.remove.call(this);
-	        this.childrenViews.remove();
 	    };
 	    TabView.prototype._onTabChanged = function (sender, args) {
 	        if (!this.updatingTabs) {
@@ -39343,16 +40236,421 @@ jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js', fun
 	            this.touch();
 	        }
 	    };
+	    /**
+	     * Handle the `tabMoved` signal from the tab bar.
+	     */
+	    TabView.prototype._onTabMoved = function (sender, args) {
+	        var children = this.model.get('children').slice();
+	        mutation_1.move(children, args.fromIndex, args.toIndex);
+	        this.model.set('children', children);
+	        this.touch();
+	    };
 	    return TabView;
 	}(widget_1.DOMWidgetView));
 	exports.TabView = TabView;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_selectioncontainer.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/widget_selectioncontainer.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/ui/tabbar.js **/
-jupyter.define('phosphor@0.7.0/lib/ui/tabbar.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/phosphor/tabpanel.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/phosphor/tabpanel.js', function (module, exports, __jupyter_require__) {
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var signaling_1 = __jupyter_require__('phosphor@^0.7.0/lib/core/signaling.js');
+	var panel_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/panel.js');
+	var tabbar_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/tabbar.js');
+	var widget_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
+	/**
+	 * The class name added to TabPanel instances.
+	 */
+	var TAB_PANEL_CLASS = 'p-TabPanel';
+	/**
+	 * The class name added to a TabPanel's tab bar.
+	 */
+	var TAB_BAR_CLASS = 'p-TabPanel-tabBar';
+	/**
+	 * The class name added to a TabPanel's stacked panel.
+	 */
+	var TAB_CONTENTS_CLASS = 'p-TabPanel-tabContents';
+	/**
+	 * The class name added to a StackedPanel child.
+	 */
+	var CHILD_CLASS = 'p-TabPanel-child';
+	/**
+	 * A panel where visible widgets are stacked atop one another.
+	 *
+	 * #### Notes
+	 * This class provides a convenience wrapper around a [[StackedLayout]].
+	 */
+	var EventedPanel = (function (_super) {
+	    __extends(EventedPanel, _super);
+	    /**
+	     * Construct a new stacked panel.
+	     *
+	     * @param options - The options for initializing the panel.
+	     */
+	    function EventedPanel(options) {
+	        if (options === void 0) { options = {}; }
+	        _super.call(this);
+	        this.addClass(TAB_CONTENTS_CLASS);
+	    }
+	    /**
+	     * A message handler invoked on a `'child-added'` message.
+	     */
+	    EventedPanel.prototype.onChildAdded = function (msg) {
+	        msg.child.addClass(CHILD_CLASS);
+	    };
+	    /**
+	     * A message handler invoked on a `'child-removed'` message.
+	     */
+	    EventedPanel.prototype.onChildRemoved = function (msg) {
+	        msg.child.removeClass(CHILD_CLASS);
+	        this.widgetRemoved.emit(msg.child);
+	    };
+	    return EventedPanel;
+	}(panel_1.Panel));
+	exports.EventedPanel = EventedPanel;
+	// Define the signals for the `EventedPanel` class.
+	signaling_1.defineSignal(EventedPanel.prototype, 'widgetRemoved');
+	/**
+	 * A widget which combines a `TabBar` and a `EventedPanel`.
+	 *
+	 * #### Notes
+	 * This is a simple panel which handles the common case of a tab bar
+	 * placed next to a content area. The selected tab controls the widget
+	 * which is shown in the content area.
+	 *
+	 * For use cases which require more control than is provided by this
+	 * panel, the `TabBar` widget may be used independently.
+	 *
+	 * TODO: Support setting the direction??
+	 */
+	var TabPanel = (function (_super) {
+	    __extends(TabPanel, _super);
+	    /**
+	     * Construct a new tab panel.
+	     *
+	     * @param options - The options for initializing the tab panel.
+	     */
+	    function TabPanel(options) {
+	        if (options === void 0) { options = {}; }
+	        _super.call(this);
+	        this.addClass(TAB_PANEL_CLASS);
+	        // Create the tab bar and stacked panel.
+	        this._tabBar = new tabbar_1.TabBar(options);
+	        this._tabBar.tabsMovable = true;
+	        this._tabBar.addClass(TAB_BAR_CLASS);
+	        this._tabContents = new EventedPanel();
+	        this._tabContents.addClass(TAB_CONTENTS_CLASS);
+	        // Connect the tab bar signal handlers.
+	        this._tabBar.tabMoved.connect(this._onTabMoved, this);
+	        this._tabBar.currentChanged.connect(this._onCurrentChanged, this);
+	        this._tabBar.tabCloseRequested.connect(this._onTabCloseRequested, this);
+	        // Connect the stacked panel signal handlers.
+	        this._tabContents.widgetRemoved.connect(this._onWidgetRemoved, this);
+	        // Get the data related to the placement.
+	        this._tabPlacement = options.tabPlacement || 'top';
+	        var direction = Private.directionFromPlacement(this._tabPlacement);
+	        var orientation = Private.orientationFromPlacement(this._tabPlacement);
+	        // Configure the tab bar for the placement.
+	        this._tabBar.orientation = orientation;
+	        this._tabBar.addClass("p-mod-" + this._tabPlacement);
+	        // Create the box layout.
+	        var layout = new panel_1.PanelLayout();
+	        // Add the child widgets to the layout.
+	        layout.addWidget(this._tabBar);
+	        layout.addWidget(this._tabContents);
+	        // Install the layout on the tab panel.
+	        this.layout = layout;
+	    }
+	    /**
+	     * Dispose of the resources held by the widget.
+	     */
+	    TabPanel.prototype.dispose = function () {
+	        this._tabBar = null;
+	        this._tabContents = null;
+	        _super.prototype.dispose.call(this);
+	    };
+	    Object.defineProperty(TabPanel.prototype, "currentIndex", {
+	        /**
+	         * Get the index of the currently selected tab.
+	         *
+	         * #### Notes
+	         * This will be `-1` if no tab is selected.
+	         */
+	        get: function () {
+	            return this._tabBar.currentIndex;
+	        },
+	        /**
+	         * Set the index of the currently selected tab.
+	         *
+	         * #### Notes
+	         * If the index is out of range, it will be set to `-1`.
+	         */
+	        set: function (value) {
+	            this._tabBar.currentIndex = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TabPanel.prototype, "currentWidget", {
+	        /**
+	         * Get the currently selected widget.
+	         *
+	         * #### Notes
+	         * This will be `null` if there is no selected tab.
+	         */
+	        get: function () {
+	            var title = this._tabBar.currentTitle;
+	            return title ? title.owner : null;
+	        },
+	        /**
+	         * Set the currently selected widget.
+	         *
+	         * #### Notes
+	         * If the widget is not in the panel, it will be set to `null`.
+	         */
+	        set: function (value) {
+	            this._tabBar.currentTitle = value ? value.title : null;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TabPanel.prototype, "tabsMovable", {
+	        /**
+	         * Get the whether the tabs are movable by the user.
+	         *
+	         * #### Notes
+	         * Tabs can always be moved programmatically.
+	         */
+	        get: function () {
+	            return this._tabBar.tabsMovable;
+	        },
+	        /**
+	         * Set the whether the tabs are movable by the user.
+	         *
+	         * #### Notes
+	         * Tabs can always be moved programmatically.
+	         */
+	        set: function (value) {
+	            this._tabBar.tabsMovable = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TabPanel.prototype, "tabPlacement", {
+	        /**
+	         * Get the tab placement for the tab panel.
+	         *
+	         * #### Notes
+	         * This controls the position of the tab bar relative to the content.
+	         */
+	        get: function () {
+	            return this._tabPlacement;
+	        },
+	        /**
+	         * Set the tab placement for the tab panel.
+	         *
+	         * #### Notes
+	         * This controls the position of the tab bar relative to the content.
+	         */
+	        set: function (value) {
+	            // Bail if the placement does not change.
+	            if (this._tabPlacement === value) {
+	                return;
+	            }
+	            // Swap the internal values.
+	            var old = this._tabPlacement;
+	            this._tabPlacement = value;
+	            // Get the values related to the placement.
+	            var direction = Private.directionFromPlacement(value);
+	            var orientation = Private.orientationFromPlacement(value);
+	            // Configure the tab bar for the placement.
+	            this._tabBar.orientation = orientation;
+	            this._tabBar.removeClass("p-mod-" + old);
+	            this._tabBar.addClass("p-mod-" + value);
+	            // Update the layout direction.
+	            this.layout.direction = direction;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TabPanel.prototype, "tabBar", {
+	        /**
+	         * The tab bar associated with the tab panel.
+	         *
+	         * #### Notes
+	         * Modifying the tab bar directly can lead to undefined behavior.
+	         *
+	         * This is a read-only property.
+	         */
+	        get: function () {
+	            return this._tabBar;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TabPanel.prototype, "tabContents", {
+	        /**
+	         * The stacked panel associated with the tab panel.
+	         *
+	         * #### Notes
+	         * Modifying the stack directly can lead to undefined behavior.
+	         *
+	         * This is a read-only property.
+	         */
+	        get: function () {
+	            return this._tabContents;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TabPanel.prototype, "widgets", {
+	        /**
+	         * A read-only sequence of the widgets in the panel.
+	         *
+	         * #### Notes
+	         * This is a read-only property.
+	         */
+	        get: function () {
+	            return this._tabContents.widgets;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * Add a widget to the end of the tab panel.
+	     *
+	     * @param widget - The widget to add to the tab panel.
+	     *
+	     * #### Notes
+	     * If the widget is already contained in the panel, it will be moved.
+	     *
+	     * The widget's `title` is used to populate the tab.
+	     */
+	    TabPanel.prototype.addWidget = function (widget) {
+	        this.insertWidget(this.widgets.length, widget);
+	    };
+	    /**
+	     * Insert a widget into the tab panel at a specified index.
+	     *
+	     * @param index - The index at which to insert the widget.
+	     *
+	     * @param widget - The widget to insert into to the tab panel.
+	     *
+	     * #### Notes
+	     * If the widget is already contained in the panel, it will be moved.
+	     *
+	     * The widget's `title` is used to populate the tab.
+	     */
+	    TabPanel.prototype.insertWidget = function (index, widget) {
+	        if (widget !== this.currentWidget) {
+	            widget.hide();
+	        }
+	        this._tabContents.insertWidget(index, widget);
+	        this._tabBar.insertTab(index, widget.title);
+	    };
+	    /**
+	     * Handle the `currentChanged` signal from the tab bar.
+	     */
+	    TabPanel.prototype._onCurrentChanged = function (sender, args) {
+	        // Extract the previous and current title from the args.
+	        var previousIndex = args.previousIndex, previousTitle = args.previousTitle, currentIndex = args.currentIndex, currentTitle = args.currentTitle;
+	        // Extract the widgets from the titles.
+	        var previousWidget = previousTitle ? previousTitle.owner : null;
+	        var currentWidget = currentTitle ? currentTitle.owner : null;
+	        // Hide the previous widget.
+	        if (previousWidget) {
+	            previousWidget.hide();
+	        }
+	        // Show the current widget.
+	        if (currentWidget) {
+	            currentWidget.show();
+	        }
+	        // Emit the `currentChanged` signal for the tab panel.
+	        this.currentChanged.emit({
+	            previousIndex: previousIndex, previousWidget: previousWidget, currentIndex: currentIndex, currentWidget: currentWidget
+	        });
+	    };
+	    /**
+	     * Handle the `tabActivateRequested` signal from the tab bar.
+	     */
+	    TabPanel.prototype._onTabActivateRequested = function (sender, args) {
+	        args.title.owner.activate();
+	    };
+	    /**
+	     * Handle the `tabCloseRequested` signal from the tab bar.
+	     */
+	    TabPanel.prototype._onTabCloseRequested = function (sender, args) {
+	        args.title.owner.close();
+	    };
+	    /**
+	     * Handle the `tabMoved` signal from the tab bar.
+	     */
+	    TabPanel.prototype._onTabMoved = function (sender, args) {
+	        this._tabContents.insertWidget(args.toIndex, args.title.owner);
+	    };
+	    /**
+	     * Handle the `widgetRemoved` signal from the stacked panel.
+	     */
+	    TabPanel.prototype._onWidgetRemoved = function (sender, widget) {
+	        this._tabBar.removeTab(widget.title);
+	    };
+	    return TabPanel;
+	}(widget_1.Widget));
+	exports.TabPanel = TabPanel;
+	// Define the signals for the `TabPanel` class.
+	signaling_1.defineSignal(TabPanel.prototype, 'currentChanged');
+	/**
+	 * The namespace for the private module data.
+	 */
+	var Private;
+	(function (Private) {
+	    /**
+	     * Convert a tab placement to tab bar orientation.
+	     */
+	    function orientationFromPlacement(plc) {
+	        return placementToOrientationMap[plc];
+	    }
+	    Private.orientationFromPlacement = orientationFromPlacement;
+	    /**
+	     * Convert a tab placement to a box layout direction.
+	     */
+	    function directionFromPlacement(plc) {
+	        return placementToDirectionMap[plc];
+	    }
+	    Private.directionFromPlacement = directionFromPlacement;
+	    /**
+	     * A mapping of tab placement to tab bar orientation.
+	     */
+	    var placementToOrientationMap = {
+	        'top': 'horizontal',
+	        'left': 'vertical',
+	        'right': 'vertical',
+	        'bottom': 'horizontal'
+	    };
+	    /**
+	     * A mapping of tab placement to box layout direction.
+	     */
+	    var placementToDirectionMap = {
+	        'top': 'top-to-bottom',
+	        'left': 'left-to-right',
+	        'right': 'right-to-left',
+	        'bottom': 'bottom-to-top'
+	    };
+	})(Private || (Private = {}));
+	
+})
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/phosphor/tabpanel.js **/
+
+
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/ui/tabbar.js **/
+jupyter.define('phosphor@0.7.1/lib/ui/tabbar.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -39366,17 +40664,17 @@ jupyter.define('phosphor@0.7.0/lib/ui/tabbar.js', function (module, exports, __j
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
-	var mutation_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/mutation.js');
-	var searching_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/searching.js');
-	var vector_1 = __jupyter_require__('phosphor@0.7.0/lib/collections/vector.js');
-	var messaging_1 = __jupyter_require__('phosphor@0.7.0/lib/core/messaging.js');
-	var signaling_1 = __jupyter_require__('phosphor@0.7.0/lib/core/signaling.js');
-	var cursor_1 = __jupyter_require__('phosphor@0.7.0/lib/dom/cursor.js');
-	var query_1 = __jupyter_require__('phosphor@0.7.0/lib/dom/query.js');
-	var title_1 = __jupyter_require__('phosphor@0.7.0/lib/ui/title.js');
-	var vdom_1 = __jupyter_require__('phosphor@0.7.0/lib/ui/vdom.js');
-	var widget_1 = __jupyter_require__('phosphor@0.7.0/lib/ui/widget.js');
+	var iteration_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/iteration.js');
+	var mutation_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/mutation.js');
+	var searching_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/searching.js');
+	var vector_1 = __jupyter_require__('phosphor@0.7.1/lib/collections/vector.js');
+	var messaging_1 = __jupyter_require__('phosphor@0.7.1/lib/core/messaging.js');
+	var signaling_1 = __jupyter_require__('phosphor@0.7.1/lib/core/signaling.js');
+	var cursor_1 = __jupyter_require__('phosphor@0.7.1/lib/dom/cursor.js');
+	var query_1 = __jupyter_require__('phosphor@0.7.1/lib/dom/query.js');
+	var title_1 = __jupyter_require__('phosphor@0.7.1/lib/ui/title.js');
+	var vdom_1 = __jupyter_require__('phosphor@0.7.1/lib/ui/vdom.js');
+	var widget_1 = __jupyter_require__('phosphor@0.7.1/lib/ui/widget.js');
 	/**
 	 * The class name added to TabBar instances.
 	 */
@@ -39442,20 +40740,21 @@ jupyter.define('phosphor@0.7.0/lib/ui/tabbar.js', function (module, exports, __j
 	     */
 	    function TabBar(options) {
 	        if (options === void 0) { options = {}; }
-	        _super.call(this, { node: vdom_1.realize(TAB_BAR_NODE) });
-	        this._currentIndex = -1;
-	        this._previousTitle = null;
-	        this._titles = new vector_1.Vector();
-	        this._dragData = null;
-	        this.addClass(TAB_BAR_CLASS);
-	        this.setFlag(widget_1.WidgetFlag.DisallowLayout);
-	        this._tabsMovable = options.tabsMovable || false;
-	        this._allowDeselect = options.allowDeselect || false;
-	        this._orientation = options.orientation || 'horizontal';
-	        this._renderer = options.renderer || TabBar.defaultRenderer;
-	        this._insertBehavior = options.insertBehavior || 'select-tab-if-needed';
-	        this._removeBehavior = options.removeBehavior || 'select-tab-after';
-	        this.addClass("p-mod-" + this._orientation);
+	        var _this = _super.call(this, { node: vdom_1.realize(TAB_BAR_NODE) }) || this;
+	        _this._currentIndex = -1;
+	        _this._previousTitle = null;
+	        _this._titles = new vector_1.Vector();
+	        _this._dragData = null;
+	        _this.addClass(TAB_BAR_CLASS);
+	        _this.setFlag(widget_1.WidgetFlag.DisallowLayout);
+	        _this._tabsMovable = options.tabsMovable || false;
+	        _this._allowDeselect = options.allowDeselect || false;
+	        _this._orientation = options.orientation || 'horizontal';
+	        _this._renderer = options.renderer || TabBar.defaultRenderer;
+	        _this._insertBehavior = options.insertBehavior || 'select-tab-if-needed';
+	        _this._removeBehavior = options.removeBehavior || 'select-tab-after';
+	        _this.addClass("p-mod-" + _this._orientation);
+	        return _this;
 	    }
 	    /**
 	     * Dispose of the resources held by the widget.
@@ -40301,7 +41600,6 @@ jupyter.define('phosphor@0.7.0/lib/ui/tabbar.js', function (module, exports, __j
 	/**
 	 * The namespace for the `TabBar` class statics.
 	 */
-	var TabBar;
 	(function (TabBar) {
 	    /**
 	     * The default implementation of `IRenderer`.
@@ -40423,6 +41721,7 @@ jupyter.define('phosphor@0.7.0/lib/ui/tabbar.js', function (module, exports, __j
 	     */
 	    TabBar.defaultRenderer = new Renderer();
 	})(TabBar = exports.TabBar || (exports.TabBar = {}));
+	exports.TabBar = TabBar;
 	/**
 	 * The namespace for the private module data.
 	 */
@@ -40578,11 +41877,11 @@ jupyter.define('phosphor@0.7.0/lib/ui/tabbar.js', function (module, exports, __j
 	            var layout = data.tabLayout[i];
 	            var threshold = layout.pos + (layout.size >> 1);
 	            if (i < data.index && targetPos < threshold) {
-	                pxPos = (data.tabSize + data.tabLayout[i + 1].margin) + "px";
+	                pxPos = data.tabSize + data.tabLayout[i + 1].margin + "px";
 	                targetIndex = Math.min(targetIndex, i);
 	            }
 	            else if (i > data.index && targetEnd > threshold) {
-	                pxPos = (-data.tabSize - layout.margin) + "px";
+	                pxPos = -data.tabSize - layout.margin + "px";
 	                targetIndex = Math.max(targetIndex, i);
 	            }
 	            else if (i === data.index) {
@@ -40656,11 +41955,11 @@ jupyter.define('phosphor@0.7.0/lib/ui/tabbar.js', function (module, exports, __j
 	})(Private || (Private = {}));
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/ui/tabbar.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/ui/tabbar.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/dom/cursor.js **/
-jupyter.define('phosphor@0.7.0/lib/dom/cursor.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/dom/cursor.js **/
+jupyter.define('phosphor@0.7.1/lib/dom/cursor.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
@@ -40669,7 +41968,7 @@ jupyter.define('phosphor@0.7.0/lib/dom/cursor.js', function (module, exports, __
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var disposable_1 = __jupyter_require__('phosphor@0.7.0/lib/core/disposable.js');
+	var disposable_1 = __jupyter_require__('phosphor@0.7.1/lib/core/disposable.js');
 	/**
 	 * The class name added to the document body during cursor override.
 	 */
@@ -40721,11 +42020,11 @@ jupyter.define('phosphor@0.7.0/lib/dom/cursor.js', function (module, exports, __
 	})(Private || (Private = {}));
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/dom/cursor.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/dom/cursor.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/core/disposable.js **/
-jupyter.define('phosphor@0.7.0/lib/core/disposable.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/core/disposable.js **/
+jupyter.define('phosphor@0.7.1/lib/core/disposable.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
@@ -40734,7 +42033,7 @@ jupyter.define('phosphor@0.7.0/lib/core/disposable.js', function (module, export
 	|
 	| The full license is in the file LICENSE, distributed with this software.
 	|----------------------------------------------------------------------------*/
-	var iteration_1 = __jupyter_require__('phosphor@0.7.0/lib/algorithm/iteration.js');
+	var iteration_1 = __jupyter_require__('phosphor@0.7.1/lib/algorithm/iteration.js');
 	/**
 	 * A disposable object which delegates to a callback function.
 	 */
@@ -40867,11 +42166,11 @@ jupyter.define('phosphor@0.7.0/lib/core/disposable.js', function (module, export
 	exports.DisposableSet = DisposableSet;
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/core/disposable.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/core/disposable.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/dom/query.js **/
-jupyter.define('phosphor@0.7.0/lib/dom/query.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/dom/query.js **/
+jupyter.define('phosphor@0.7.1/lib/dom/query.js', function (module, exports, __jupyter_require__) {
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
 	|
@@ -40986,11 +42285,11 @@ jupyter.define('phosphor@0.7.0/lib/dom/query.js', function (module, exports, __j
 	exports.scrollIntoViewIfNeeded = scrollIntoViewIfNeeded;
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/dom/query.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/dom/query.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/ui/vdom.js **/
-jupyter.define('phosphor@0.7.0/lib/ui/vdom.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/ui/vdom.js **/
+jupyter.define('phosphor@0.7.1/lib/ui/vdom.js', function (module, exports, __jupyter_require__) {
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
 	|
@@ -41081,7 +42380,6 @@ jupyter.define('phosphor@0.7.0/lib/ui/vdom.js', function (module, exports, __jup
 	/**
 	 * The namespace for the `h()` function statics.
 	 */
-	var h;
 	(function (h) {
 	    h.a = h.bind(void 0, 'a');
 	    h.abbr = h.bind(void 0, 'abbr');
@@ -41704,357 +43002,611 @@ jupyter.define('phosphor@0.7.0/lib/ui/vdom.js', function (module, exports, __jup
 	})(Private || (Private = {}));
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/ui/vdom.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/ui/vdom.js **/
 
 
-/** START DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_string.js **/
-jupyter.define('jupyter-js-widgets@2.0.17/lib/widget_string.js', function (module, exports, __jupyter_require__) {
-	// Copyright (c) Jupyter Development Team.
-	// Distributed under the terms of the Modified BSD License.
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/phosphor/accordion.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/phosphor/accordion.js', function (module, exports, __jupyter_require__) {
 	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var widget_1 = __jupyter_require__('jupyter-js-widgets@2.0.17/lib/widget.js');
-	var _ = __jupyter_require__('underscore@^1.8.3/underscore.js');
-	var StringModel = (function (_super) {
-	    __extends(StringModel, _super);
-	    function StringModel() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    StringModel.prototype.defaults = function () {
-	        return _.extend(_super.prototype.defaults.call(this), {
-	            value: '',
-	            disabled: false,
-	            placeholder: '\u200b',
-	            _model_name: 'StringModel'
-	        });
-	    };
-	    return StringModel;
-	}(widget_1.LabeledDOMWidgetModel));
-	exports.StringModel = StringModel;
-	var HTMLModel = (function (_super) {
-	    __extends(HTMLModel, _super);
-	    function HTMLModel() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    HTMLModel.prototype.defaults = function () {
-	        return _.extend(_super.prototype.defaults.call(this), {
-	            _view_name: 'HTMLView',
-	            _model_name: 'HTMLModel'
-	        });
-	    };
-	    return HTMLModel;
-	}(StringModel));
-	exports.HTMLModel = HTMLModel;
-	var HTMLView = (function (_super) {
-	    __extends(HTMLView, _super);
-	    function HTMLView() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    /**
-	     * Called when view is rendered.
-	     */
-	    HTMLView.prototype.render = function () {
-	        _super.prototype.render.call(this);
-	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-html');
-	        this.update(); // Set defaults.
-	    };
-	    /**
-	     * Update the contents of this view
-	     *
-	     * Called when the model is changed.  The model may have been
-	     * changed by another view or by a state update from the back-end.
-	     */
-	    HTMLView.prototype.update = function () {
-	        this.el.innerHTML = this.model.get('value');
-	        return _super.prototype.update.call(this);
-	    };
-	    return HTMLView;
-	}(widget_1.LabeledDOMWidgetView));
-	exports.HTMLView = HTMLView;
-	var LabelModel = (function (_super) {
-	    __extends(LabelModel, _super);
-	    function LabelModel() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    LabelModel.prototype.defaults = function () {
-	        return _.extend(_super.prototype.defaults.call(this), {
-	            _view_name: 'LabelView',
-	            _model_name: 'LabelModel'
-	        });
-	    };
-	    return LabelModel;
-	}(StringModel));
-	exports.LabelModel = LabelModel;
-	var LabelView = (function (_super) {
-	    __extends(LabelView, _super);
-	    function LabelView() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    /**
-	     * Called when view is rendered.
-	     */
-	    LabelView.prototype.render = function () {
-	        _super.prototype.render.call(this);
-	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-label');
-	        this.update(); // Set defaults.
-	    };
-	    /**
-	     * Update the contents of this view
-	     *
-	     * Called when the model is changed.  The model may have been
-	     * changed by another view or by a state update from the back-end.
-	     */
-	    LabelView.prototype.update = function () {
-	        this.typeset(this.el, this.model.get('value'));
-	        return _super.prototype.update.call(this);
-	    };
-	    return LabelView;
-	}(widget_1.LabeledDOMWidgetView));
-	exports.LabelView = LabelView;
-	var TextareaModel = (function (_super) {
-	    __extends(TextareaModel, _super);
-	    function TextareaModel() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    TextareaModel.prototype.defaults = function () {
-	        return _.extend(_super.prototype.defaults.call(this), {
-	            _view_name: 'TextareaView',
-	            _model_name: 'TextareaModel'
-	        });
-	    };
-	    return TextareaModel;
-	}(StringModel));
-	exports.TextareaModel = TextareaModel;
-	var TextareaView = (function (_super) {
-	    __extends(TextareaView, _super);
-	    function TextareaView() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    /**
-	     * Called when view is rendered.
-	     */
-	    TextareaView.prototype.render = function () {
-	        var _this = this;
-	        _super.prototype.render.call(this);
-	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-inline-hbox');
-	        this.el.classList.add('widget-textarea');
-	        this.textbox = document.createElement('textarea');
-	        this.textbox.setAttribute('rows', '5');
-	        this.el.appendChild(this.textbox);
-	        this.update(); // Set defaults.
-	        this.listenTo(this.model, 'msg:custom', function (content) {
-	            _this._handle_textarea_msg(content);
-	        });
-	        this.listenTo(this.model, 'change:placeholder', function (model, value, options) {
-	            this.update_placeholder(value);
-	        });
-	        this.update_placeholder();
-	    };
-	    /**
-	     * Handle when a custom msg is recieved from the back-end.
-	     */
-	    TextareaView.prototype._handle_textarea_msg = function (content) {
-	        if (content.method == 'scroll_to_bottom') {
-	            this.scroll_to_bottom();
+	var signaling_1 = __jupyter_require__('phosphor@^0.7.0/lib/core/signaling.js');
+	var panel_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/panel.js');
+	var widget_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
+	var currentselection_1 = __jupyter_require__('jupyter-js-widgets@2.0.30/lib/phosphor/currentselection.js');
+	var searching_1 = __jupyter_require__('phosphor@^0.7.0/lib/algorithm/searching.js');
+	/**
+	 * The class name added to Collapse instances.
+	 */
+	var COLLAPSE_CLASS = 'p-Collapse';
+	/**
+	 * The class name added to a Collapse's header.
+	 */
+	var COLLAPSE_HEADER_CLASS = 'p-Collapse-header';
+	/**
+	 * The class name added to a Collapse's contents.
+	 */
+	var COLLAPSE_CONTENTS_CLASS = 'p-Collapse-contents';
+	/**
+	 * The class name added to a Collapse when it is opened
+	 */
+	var COLLAPSE_CLASS_OPEN = 'p-Collapse-open';
+	/**
+	 * A panel that supports a collapsible header, made from the widget's title.
+	 * Clicking on the title expands or contracts the widget.
+	 */
+	var Collapse = (function (_super) {
+	    __extends(Collapse, _super);
+	    function Collapse(options) {
+	        _super.call(this, options);
+	        this.addClass(COLLAPSE_CLASS);
+	        this._header = new widget_1.Widget();
+	        this._header.addClass(COLLAPSE_HEADER_CLASS);
+	        this._header.node.addEventListener('click', this);
+	        this._content = new panel_1.Panel();
+	        this._content.addClass(COLLAPSE_CONTENTS_CLASS);
+	        var layout = new panel_1.PanelLayout();
+	        this.layout = layout;
+	        layout.addWidget(this._header);
+	        layout.addWidget(this._content);
+	        if (options.widget) {
+	            this.widget = options.widget;
 	        }
-	    };
-	    TextareaView.prototype.update_placeholder = function (value) {
-	        value = value || this.model.get('placeholder');
-	        this.textbox.setAttribute('placeholder', value.toString());
-	    };
-	    /**
-	     * Scroll the text-area view to the bottom.
-	     */
-	    TextareaView.prototype.scroll_to_bottom = function () {
-	        //this.$textbox.scrollTop(this.$textbox[0].scrollHeight); // DW TODO
-	    };
-	    /**
-	     * Update the contents of this view
-	     *
-	     * Called when the model is changed.  The model may have been
-	     * changed by another view or by a state update from the back-end.
-	     */
-	    TextareaView.prototype.update = function (options) {
-	        if (options === undefined || options.updated_view != this) {
-	            this.textbox.value = this.model.get('value');
-	            var disabled = this.model.get('disabled');
-	            this.textbox.disabled = disabled;
-	        }
-	        return _super.prototype.update.call(this);
-	    };
-	    TextareaView.prototype.events = function () {
-	        return {
-	            // Dictionary of events and their handlers.
-	            'keydown textarea': 'handleKeyDown',
-	            'keypress textarea': 'handleKeypress',
-	            'keyup textarea': 'handleChanging',
-	            'paste textarea': 'handleChanging',
-	            'cut textarea': 'handleChanging'
-	        };
-	    };
-	    /**
-	     * Handle key down
-	     *
-	     * Stop propagation so the event isn't sent to the application.
-	     */
-	    TextareaView.prototype.handleKeyDown = function (e) {
-	        e.stopPropagation();
-	    };
-	    /**
-	     * Handles key press
-	     *
-	     * Stop propagation so the keypress isn't sent to the application.
-	     */
-	    TextareaView.prototype.handleKeypress = function (e) {
-	        e.stopPropagation();
-	    };
-	    /**
-	     * Handles and validates user input.
-	     *
-	     * Calling model.set will trigger all of the other views of the
-	     * model to update.
-	     */
-	    TextareaView.prototype.handleChanging = function (e) {
-	        this.model.set('value', e.target.value, { updated_view: this });
-	        this.touch();
-	    };
-	    return TextareaView;
-	}(widget_1.LabeledDOMWidgetView));
-	exports.TextareaView = TextareaView;
-	var TextModel = (function (_super) {
-	    __extends(TextModel, _super);
-	    function TextModel() {
-	        return _super.apply(this, arguments) || this;
+	        this.collapsed = false;
 	    }
-	    TextModel.prototype.defaults = function () {
-	        return _.extend(_super.prototype.defaults.call(this), {
-	            _view_name: 'TextView',
-	            _model_name: 'TextModel'
-	        });
-	    };
-	    return TextModel;
-	}(StringModel));
-	exports.TextModel = TextModel;
-	var TextView = (function (_super) {
-	    __extends(TextView, _super);
-	    function TextView() {
-	        return _super.apply(this, arguments) || this;
-	    }
-	    /**
-	     * Called when view is rendered.
-	     */
-	    TextView.prototype.render = function () {
-	        _super.prototype.render.call(this);
-	        this.el.classList.add('jupyter-widgets');
-	        this.el.classList.add('widget-inline-hbox');
-	        this.el.classList.add('widget-text');
-	        this.textbox = document.createElement('input');
-	        this.textbox.setAttribute('type', 'text');
-	        this.el.appendChild(this.textbox);
-	        this.update(); // Set defaults.
-	        this.listenTo(this.model, 'change:placeholder', function (model, value, options) {
-	            this.update_placeholder(value);
-	        });
-	        this.update_placeholder();
-	    };
-	    TextView.prototype.update_placeholder = function (value) {
-	        if (!value) {
-	            value = this.model.get('placeholder');
+	    Collapse.prototype.dispose = function () {
+	        if (this.isDisposed) {
+	            return;
 	        }
-	        this.textbox.setAttribute('placeholder', value);
+	        _super.prototype.dispose.call(this);
+	        this._header = null;
+	        this._widget = null;
+	        this._content = null;
 	    };
-	    TextView.prototype.update = function (options) {
-	        /**
-	         * Update the contents of this view
-	         *
-	         * Called when the model is changed.  The model may have been
-	         * changed by another view or by a state update from the back-end.
-	         */
-	        if (options === undefined || options.updated_view != this) {
-	            if (this.textbox.value != this.model.get('value')) {
-	                this.textbox.value = this.model.get('value');
+	    Object.defineProperty(Collapse.prototype, "widget", {
+	        get: function () {
+	            return this._widget;
+	        },
+	        set: function (widget) {
+	            var oldWidget = this._widget;
+	            if (oldWidget) {
+	                oldWidget.disposed.disconnect(this._onChildDisposed, this);
+	                oldWidget.title.changed.disconnect(this._onTitleChanged, this);
+	                this._content.layout.removeWidget(oldWidget);
 	            }
-	            var disabled = this.model.get('disabled');
-	            this.textbox.disabled = disabled;
-	        }
-	        return _super.prototype.update.call(this);
+	            this._widget = widget;
+	            widget.disposed.connect(this._onChildDisposed, this);
+	            widget.title.changed.connect(this._onTitleChanged, this);
+	            this._onTitleChanged(widget.title);
+	            this._content.addWidget(widget);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Collapse.prototype, "collapsed", {
+	        get: function () {
+	            return this._collapsed;
+	        },
+	        set: function (value) {
+	            // TODO: should we have this check here?
+	            if (value === this._collapsed) {
+	                return;
+	            }
+	            if (value) {
+	                this._collapse();
+	            }
+	            else {
+	                this._uncollapse();
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Collapse.prototype.toggle = function () {
+	        this.collapsed = !this.collapsed;
 	    };
-	    TextView.prototype.events = function () {
-	        return {
-	            // Dictionary of events and their handlers.
-	            'keydown input': 'handleKeyDown',
-	            'keypress input': 'handleKeypress',
-	            'keyup input': 'handleChanging',
-	            'paste input': 'handleChanging',
-	            'cut input': 'handleChanging',
-	            'blur input': 'handleBlur',
-	            'focusout input': 'handleFocusOut'
-	        };
+	    Collapse.prototype._collapse = function () {
+	        this._collapsed = true;
+	        if (this._content) {
+	            this._content.hide();
+	        }
+	        this.removeClass(COLLAPSE_CLASS_OPEN);
+	        this.collapseChanged.emit(void 0);
+	    };
+	    Collapse.prototype._uncollapse = function () {
+	        this._collapsed = false;
+	        if (this._content) {
+	            this._content.show();
+	        }
+	        this.addClass(COLLAPSE_CLASS_OPEN);
+	        this.collapseChanged.emit(void 0);
 	    };
 	    /**
-	     * Handle key down
+	     * Handle the DOM events for the Collapse widget.
 	     *
-	     * Stop propagation so the keypress isn't sent to the application.
-	     */
-	    TextView.prototype.handleKeyDown = function (e) {
-	        e.stopPropagation();
-	    };
-	    /**
-	     * Handles text submission
-	     */
-	    TextView.prototype.handleKeypress = function (e) {
-	        e.stopPropagation();
-	        if (e.keyCode == 13) {
-	            this.send({ event: 'submit' });
-	            e.preventDefault();
-	        }
-	    };
-	    /**
-	     * Handles user input.
+	     * @param event - The DOM event sent to the panel.
 	     *
-	     * Calling model.set will trigger all of the other views of the
-	     * model to update.
+	     * #### Notes
+	     * This method implements the DOM `EventListener` interface and is
+	     * called in response to events on the panel's DOM node. It should
+	     * not be called directly by user code.
 	     */
-	    TextView.prototype.handleChanging = function (e) {
-	        e.stopPropagation();
-	        this.model.set('value', e.target.value, { updated_view: this });
-	        this.touch();
-	    };
-	    /**
-	     * Prevent a blur from firing if the blur was not user intended.
-	     * This is a workaround for the return-key focus loss bug.
-	     * TODO: Is the original bug actually a fault of the keyboard
-	     * manager?
-	     */
-	    TextView.prototype.handleBlur = function (e) {
-	        if (e.relatedTarget === null) {
-	            e.stopPropagation();
-	            e.preventDefault();
+	    Collapse.prototype.handleEvent = function (event) {
+	        switch (event.type) {
+	            case 'click':
+	                this._evtClick(event);
+	                break;
+	            default:
+	                break;
 	        }
 	    };
+	    Collapse.prototype._evtClick = function (event) {
+	        this.toggle();
+	    };
 	    /**
-	     * Prevent a blur from firing if the blur was not user intended.
-	     * This is a workaround for the return-key focus loss bug.
+	     * Handle the `changed` signal of a title object.
 	     */
-	    TextView.prototype.handleFocusOut = function (e) {
-	        if (e.relatedTarget === null) {
-	            e.stopPropagation();
-	            e.preventDefault();
+	    Collapse.prototype._onTitleChanged = function (sender) {
+	        this._header.node.textContent = this._widget.title.label;
+	    };
+	    Collapse.prototype._onChildDisposed = function (sender) {
+	        this.dispose();
+	    };
+	    return Collapse;
+	}(widget_1.Widget));
+	exports.Collapse = Collapse;
+	// Define the signals for the `Widget` class.
+	signaling_1.defineSignal(Collapse.prototype, 'collapseChanged');
+	/**
+	 * The class name added to Accordion instances.
+	 */
+	var ACCORDION_CLASS = 'p-Accordion';
+	/**
+	 * The class name added to an Accordion child.
+	 */
+	var ACCORDION_CHILD_CLASS = 'p-Accordion-child';
+	var ACCORDION_CHILD_ACTIVE_CLASS = 'p-Accordion-child-active';
+	/**
+	 * A panel that supports a collapsible header, made from the widget's title.
+	 * Clicking on the title expands or contracts the widget.
+	 */
+	var Accordion = (function (_super) {
+	    __extends(Accordion, _super);
+	    function Accordion(options) {
+	        _super.call(this, options);
+	        this._selection = new currentselection_1.Selection(this.widgets);
+	        this._selection.selectionChanged.connect(this._onSelectionChanged, this);
+	        this.addClass(ACCORDION_CLASS);
+	    }
+	    Object.defineProperty(Accordion.prototype, "collapseWidgets", {
+	        /**
+	         * A read-only sequence of the widgets in the panel.
+	         *
+	         * #### Notes
+	         * This is a read-only property.
+	         */
+	        /*  get widgets(): ISequence<Widget> {
+	            return new ArraySequence(toArray(map((this.layout as PanelLayout).widgets, (w: Collapse) => w.widget)));
+	          }
+	        */
+	        get: function () {
+	            return this.layout.widgets;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Accordion.prototype, "selection", {
+	        get: function () {
+	            return this._selection;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Accordion.prototype.indexOf = function (widget) {
+	        return searching_1.findIndex(this.collapseWidgets, function (w) { return w.widget === widget; });
+	    };
+	    /**
+	     * Add a widget to the end of the accordion.
+	     *
+	     * @param widget - The widget to add to the accordion.
+	     *
+	     * @returns The Collapse widget wrapping the added widget.
+	     * #### Notes
+	     * The widget will be wrapped in a CollapsedWidget.
+	     */
+	    Accordion.prototype.addWidget = function (widget) {
+	        var collapse = this._wrapWidget(widget);
+	        collapse.collapsed = true;
+	        _super.prototype.addWidget.call(this, collapse);
+	        this._selection.adjustSelectionForInsert(this.widgets.length - 1, collapse);
+	        return collapse;
+	    };
+	    /**
+	     * Insert a widget at the specified index.
+	     *
+	     * @param index - The index at which to insert the widget.
+	     *
+	     * @param widget - The widget to insert into to the accordion.
+	     *
+	     * #### Notes
+	     * If the widget is already contained in the panel, it will be moved.
+	     */
+	    Accordion.prototype.insertWidget = function (index, widget) {
+	        var collapse = this._wrapWidget(widget);
+	        collapse.collapsed = true;
+	        _super.prototype.insertWidget.call(this, index, collapse);
+	        this._selection.adjustSelectionForInsert(index, collapse);
+	    };
+	    Accordion.prototype.removeWidget = function (widget) {
+	        var index = this.indexOf(widget);
+	        var collapse = this.collapseWidgets.at(index);
+	        collapse.removeClass(ACCORDION_CHILD_CLASS);
+	        var layout = this.layout;
+	        layout.removeWidgetAt(index);
+	        this._selection.adjustSelectionForRemove(index, collapse);
+	    };
+	    Accordion.prototype._wrapWidget = function (widget) {
+	        var collapse = new Collapse({ widget: widget });
+	        collapse.addClass(ACCORDION_CHILD_CLASS);
+	        collapse.collapseChanged.connect(this._onCollapseChange, this);
+	        return collapse;
+	    };
+	    Accordion.prototype._onCollapseChange = function (sender) {
+	        if (!sender.collapsed) {
+	            this._selection.value = sender;
+	        }
+	        else if (this._selection.value === sender && sender.collapsed) {
+	            this._selection.value = null;
 	        }
 	    };
-	    return TextView;
-	}(widget_1.LabeledDOMWidgetView));
-	exports.TextView = TextView;
+	    Accordion.prototype._onSelectionChanged = function (sender, change) {
+	        // Collapse previous widget, open current widget
+	        var pv = change.previousValue;
+	        var cv = change.currentValue;
+	        if (pv) {
+	            pv.collapsed = true;
+	            pv.removeClass(ACCORDION_CHILD_ACTIVE_CLASS);
+	        }
+	        if (cv) {
+	            cv.collapsed = false;
+	            cv.addClass(ACCORDION_CHILD_ACTIVE_CLASS);
+	        }
+	    };
+	    return Accordion;
+	}(panel_1.Panel));
+	exports.Accordion = Accordion;
 	
 })
-/** END DEFINE BLOCK for jupyter-js-widgets@2.0.17/lib/widget_string.js **/
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/phosphor/accordion.js **/
+
+
+/** START DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/phosphor/currentselection.js **/
+jupyter.define('jupyter-js-widgets@2.0.30/lib/phosphor/currentselection.js', function (module, exports, __jupyter_require__) {
+	/**
+	 * A variety of convenience methods for maintaining a current selection
+	 */
+	"use strict";
+	var searching_1 = __jupyter_require__('phosphor@^0.7.0/lib/algorithm/searching.js');
+	var signaling_1 = __jupyter_require__('phosphor@^0.7.0/lib/core/signaling.js');
+	var Selection = (function () {
+	    function Selection(sequence, options) {
+	        if (options === void 0) { options = {}; }
+	        this._sequence = null;
+	        this._value = null;
+	        this._previousValue = null;
+	        this._sequence = sequence;
+	        this._insertBehavior = options.insertBehavior || 'select-item-if-needed';
+	        this._removeBehavior = options.removeBehavior || 'select-item-after';
+	    }
+	    /**
+	     * Adjust for setting an item.
+	     *
+	     * This should be called *after* the set.
+	     *
+	     * @param index - The index set.
+	     * @param oldValue - The old value at the index.
+	     */
+	    Selection.prototype.adjustSelectionForSet = function (index) {
+	        // We just need to send a signal if the currentValue changed.
+	        // Get the current index and value.
+	        var pi = this.index;
+	        var pv = this.value;
+	        // Exit early if this doesn't affect the selection
+	        if (index !== pi) {
+	            return;
+	        }
+	        this._updateSelectedValue();
+	        var cv = this.value;
+	        // The previous item is now null, since it is no longer in the array.
+	        this._previousValue = null;
+	        // Send signal if there was a change
+	        if (pv !== cv) {
+	            // Emit the current changed signal.
+	            this.selectionChanged.emit({
+	                previousIndex: pi, previousValue: pv,
+	                currentIndex: pi, currentValue: cv
+	            });
+	        }
+	    };
+	    Object.defineProperty(Selection.prototype, "value", {
+	        /**
+	         * Get the currently selected item.
+	         *
+	         * #### Notes
+	         * This will be `null` if no item is selected.
+	         */
+	        get: function () {
+	            return this._value;
+	        },
+	        /**
+	         * Set the currently selected item.
+	         *
+	         * #### Notes
+	         * If the item does not exist in the vector, the currentValue will be set to
+	         * `null`. This selects the first entry equal to the desired item.
+	         */
+	        set: function (value) {
+	            if (value === null) {
+	                this.index = -1;
+	            }
+	            else {
+	                this.index = searching_1.indexOf(this._sequence, value);
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Selection.prototype, "index", {
+	        /**
+	         * Get the index of the currently selected item.
+	         *
+	         * #### Notes
+	         * This will be `-1` if no item is selected.
+	         */
+	        get: function () {
+	            return this._index;
+	        },
+	        /**
+	         * Set the index of the currently selected tab.
+	         *
+	         * @param index - The index to select.
+	         *
+	         * #### Notes
+	         * If the value is out of range, the index will be set to `-1`, which
+	         * indicates no item is selected.
+	         */
+	        set: function (index) {
+	            // Coerce the value to an index.
+	            var i = Math.floor(index);
+	            if (i < 0 || i >= this._sequence.length) {
+	                i = -1;
+	            }
+	            // Bail early if the index will not change.
+	            if (this._index === i) {
+	                return;
+	            }
+	            // Look up the previous index and item.
+	            var pi = this._index;
+	            var pv = this._value;
+	            // Update the state
+	            this._index = i;
+	            this._updateSelectedValue();
+	            this._previousValue = pv;
+	            // Emit the current changed signal.
+	            this.selectionChanged.emit({
+	                previousIndex: pi, previousValue: pv,
+	                currentIndex: i, currentValue: this._value
+	            });
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Selection.prototype, "insertBehavior", {
+	        /**
+	         * Get the selection behavior when inserting a tab.
+	         */
+	        get: function () {
+	            return this._insertBehavior;
+	        },
+	        /**
+	         * Set the selection behavior when inserting a tab.
+	         */
+	        set: function (value) {
+	            this._insertBehavior = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Selection.prototype, "removeBehavior", {
+	        /**
+	         * Get the selection behavior when removing a tab.
+	         */
+	        get: function () {
+	            return this._removeBehavior;
+	        },
+	        /**
+	         * Set the selection behavior when removing a tab.
+	         */
+	        set: function (value) {
+	            this._removeBehavior = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * Adjust the current index for a tab insert operation.
+	     *
+	     * @param i - The new index of the inserted item.
+	     * @param j - The inserted item.
+	     *
+	     * #### Notes
+	     * This method accounts for the tab bar's insertion behavior when adjusting
+	     * the current index and emitting the changed signal. This should be called
+	     * after the insertion.
+	     */
+	    Selection.prototype.adjustSelectionForInsert = function (i, item) {
+	        // Lookup commonly used variables.
+	        var cv = this._value;
+	        var ci = this._index;
+	        var bh = this._insertBehavior;
+	        // Handle the behavior where the new item is always selected,
+	        // or the behavior where the new item is selected if needed.
+	        if (bh === 'select-item' || (bh === 'select-item-if-needed' && ci === -1)) {
+	            this._index = i;
+	            this._value = item;
+	            this._previousValue = cv;
+	            this.selectionChanged.emit({
+	                previousIndex: ci, previousValue: cv,
+	                currentIndex: i, currentValue: item
+	            });
+	            return;
+	        }
+	        // Otherwise, silently adjust the current index if needed.
+	        if (ci >= i) {
+	            this._index++;
+	        }
+	    };
+	    /**
+	     * Adjust the current index for move operation.
+	     *
+	     * @param i - The previous index of the item.
+	     * @param j - The new index of the item.
+	     *
+	     * #### Notes
+	     * This method will not cause the actual current item to change. It silently
+	     * adjusts the current index to account for the given move.
+	     */
+	    Selection.prototype.adjustSelectionForMove = function (i, j) {
+	        if (this._index === i) {
+	            this._index = j;
+	        }
+	        else if (this._index < i && this._index >= j) {
+	            this._index++;
+	        }
+	        else if (this._index > i && this._index <= j) {
+	            this._index--;
+	        }
+	    };
+	    /**
+	     * Clear the selection and history.
+	     */
+	    Selection.prototype.clearSelection = function () {
+	        // Get the current index and item.
+	        var pi = this._index;
+	        var pv = this._value;
+	        // Reset the current index and previous item.
+	        this._index = -1;
+	        this._value = null;
+	        this._previousValue = null;
+	        // If no item was selected, there's nothing else to do.
+	        if (pi === -1) {
+	            return;
+	        }
+	        // Emit the current changed signal.
+	        this.selectionChanged.emit({
+	            previousIndex: pi, previousValue: pv,
+	            currentIndex: -1, currentValue: null
+	        });
+	    };
+	    /**
+	     * Adjust the current index for an item remove operation.
+	     *
+	     * @param i - The former index of the removed item.
+	     * @param item - The removed item.
+	     *
+	     * #### Notes
+	     * This method accounts for the remove behavior when adjusting the current
+	     * index and emitting the changed signal. It should be called after the item
+	     * is removed.
+	     */
+	    Selection.prototype.adjustSelectionForRemove = function (i, item) {
+	        // Lookup commonly used variables.
+	        var ci = this._index;
+	        var bh = this._removeBehavior;
+	        // Silently adjust the index if the current item is not removed.
+	        if (ci !== i) {
+	            if (ci > i) {
+	                this._index--;
+	            }
+	            return;
+	        }
+	        // No item gets selected if the vector is empty.
+	        if (this._sequence.length === 0) {
+	            // Reset the current index and previous item.
+	            this._index = -1;
+	            this._value = null;
+	            this._previousValue = null;
+	            this.selectionChanged.emit({
+	                previousIndex: i, previousValue: item,
+	                currentIndex: -1, currentValue: null
+	            });
+	            return;
+	        }
+	        // Handle behavior where the next sibling item is selected.
+	        if (bh === 'select-item-after') {
+	            this._index = Math.min(i, this._sequence.length - 1);
+	            this._updateSelectedValue();
+	            this._previousValue = null;
+	            this.selectionChanged.emit({
+	                previousIndex: i, previousValue: item,
+	                currentIndex: this._index, currentValue: this._value
+	            });
+	            return;
+	        }
+	        // Handle behavior where the previous sibling item is selected.
+	        if (bh === 'select-item-before') {
+	            this._index = Math.max(0, i - 1);
+	            this._updateSelectedValue();
+	            this._previousValue = null;
+	            this.selectionChanged.emit({
+	                previousIndex: i, previousValue: item,
+	                currentIndex: this._index, currentValue: this._value
+	            });
+	            return;
+	        }
+	        // Handle behavior where the previous history item is selected.
+	        if (bh === 'select-previous-item') {
+	            if (this._previousValue) {
+	                this.value = this._previousValue;
+	            }
+	            else {
+	                this._index = Math.min(i, this._sequence.length - 1);
+	                this._updateSelectedValue();
+	            }
+	            this._previousValue = null;
+	            this.selectionChanged.emit({
+	                previousIndex: i, previousValue: item,
+	                currentIndex: this._index, currentValue: this.value
+	            });
+	            return;
+	        }
+	        // Otherwise, no item gets selected.
+	        this._index = -1;
+	        this._value = null;
+	        this._previousValue = null;
+	        this.selectionChanged.emit({
+	            previousIndex: i, previousValue: item,
+	            currentIndex: -1, currentValue: null
+	        });
+	    };
+	    /**
+	     * Set the current value based on the current index.
+	     */
+	    Selection.prototype._updateSelectedValue = function () {
+	        var i = this._index;
+	        this._value = i !== -1 ? this._sequence.at(i) : null;
+	    };
+	    return Selection;
+	}());
+	exports.Selection = Selection;
+	// Define the signals for the `TabBar` class.
+	signaling_1.defineSignal(Selection.prototype, 'selectionChanged');
+	
+})
+/** END DEFINE BLOCK for jupyter-js-widgets@2.0.30/lib/phosphor/currentselection.js **/
 
 
 /** START DEFINE BLOCK for ngl@0.10.0-dev.3/dist/ngl.js **/
@@ -47731,8 +49283,8 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/package.json', function (module, 
 /** END DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/package.json **/
 
 
-/** START DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.4/lib/index.js **/
-jupyter.define('@jupyterlab/nbwidgets@0.6.4/lib/index.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.13/lib/index.js **/
+jupyter.define('@jupyterlab/nbwidgets@0.6.13/lib/index.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -47741,11 +49293,11 @@ jupyter.define('@jupyterlab/nbwidgets@0.6.4/lib/index.js', function (module, exp
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var jupyter_js_widgets_1 = __jupyter_require__('jupyter-js-widgets@^2.0.12/lib/index.js');
+	var jupyter_js_widgets_1 = __jupyter_require__('jupyter-js-widgets@~2.0.30/lib/index.js');
 	var panel_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/panel.js');
 	var token_1 = __jupyter_require__('phosphor@^0.7.0/lib/core/token.js');
 	var widget_1 = __jupyter_require__('phosphor@^0.7.0/lib/ui/widget.js');
-	var semvercache_1 = __jupyter_require__('@jupyterlab/nbwidgets@0.6.4/lib/semvercache.js');
+	var semvercache_1 = __jupyter_require__('@jupyterlab/nbwidgets@0.6.13/lib/semvercache.js');
 	/**
 	 * The token identifying the JupyterLab plugin.
 	 */
@@ -47978,11 +49530,11 @@ jupyter.define('@jupyterlab/nbwidgets@0.6.4/lib/index.js', function (module, exp
 	exports.WidgetRenderer = WidgetRenderer;
 	
 })
-/** END DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.4/lib/index.js **/
+/** END DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.13/lib/index.js **/
 
 
-/** START DEFINE BLOCK for phosphor@0.7.0/lib/core/token.js **/
-jupyter.define('phosphor@0.7.0/lib/core/token.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for phosphor@0.7.1/lib/core/token.js **/
+jupyter.define('phosphor@0.7.1/lib/core/token.js', function (module, exports, __jupyter_require__) {
 	/*-----------------------------------------------------------------------------
 	| Copyright (c) 2014-2016, PhosphorJS Contributors
 	|
@@ -48043,11 +49595,11 @@ jupyter.define('phosphor@0.7.0/lib/core/token.js', function (module, exports, __
 	exports.Token = Token;
 	
 })
-/** END DEFINE BLOCK for phosphor@0.7.0/lib/core/token.js **/
+/** END DEFINE BLOCK for phosphor@0.7.1/lib/core/token.js **/
 
 
-/** START DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.4/lib/semvercache.js **/
-jupyter.define('@jupyterlab/nbwidgets@0.6.4/lib/semvercache.js', function (module, exports, __jupyter_require__) {
+/** START DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.13/lib/semvercache.js **/
+jupyter.define('@jupyterlab/nbwidgets@0.6.13/lib/semvercache.js', function (module, exports, __jupyter_require__) {
 	// Copyright (c) Jupyter Development Team.
 	// Distributed under the terms of the Modified BSD License.
 	"use strict";
@@ -48079,4 +49631,4 @@ jupyter.define('@jupyterlab/nbwidgets@0.6.4/lib/semvercache.js', function (modul
 	exports.SemVerCache = SemVerCache;
 	
 })
-/** END DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.4/lib/semvercache.js **/
+/** END DEFINE BLOCK for @jupyterlab/nbwidgets@0.6.13/lib/semvercache.js **/
