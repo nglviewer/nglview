@@ -366,6 +366,10 @@ Website
 - http://arose.github.io/nglview/latest
 - http://arose.github.io/nglview/dev
 
+Talks
+=====
+[Talks about NGL and nglview](./talks.md)
+
 Projects using NGLView
 ======================
 
