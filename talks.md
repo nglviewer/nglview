@@ -1,0 +1,5 @@
+- 2017
+    - [AMBER developer meeting, Hai Nguyen](http://hainm.github.io/talks/amber_meeting_2017/)
+- 2016
+    - [ngl-3dsig, Alexander Rose](http://arose.github.io/talks/ngl-3dsig/)
+    - [ngl-web3d, Alexander Rose](http://arose.github.io/talks/ngl-web3d)
