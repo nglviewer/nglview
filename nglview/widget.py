@@ -268,8 +268,9 @@ class NGLWidget(DOMWidget):
                     reprlist_choices.value = reprlist_choices.options[repr_slider.value]
                 except IndexError:
                     if repr_slider.value == 0:
-                        reprlist_choices.options = tuple(['',])
-                        reprlist_choices.value = ''
+                        # works fine with ipywidgets 5.2.2
+                        reprlist_choices.options = tuple([' ',])
+                        reprlist_choices.value = ' '
                     else:
                         reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
 
