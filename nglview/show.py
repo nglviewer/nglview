@@ -17,7 +17,8 @@ from .adaptor import (
     PyTrajTrajectory,
     ParmEdTrajectory,
     MDAnalysisTrajectory,
-    HTMDTrajectory)
+    HTMDTrajectory,
+    ASETrajectory)
 
 __all__ = [
     'demo',
@@ -25,6 +26,7 @@ __all__ = [
     'show_url',
     'show_text',
     'show_ase',
+    'show_asetraj',
     'show_simpletraj',
     'show_mdtraj',
     'show_pytraj',
@@ -73,6 +75,21 @@ def show_ase(ase_atoms, **kwargs):
     """
     structure = ASEStructure(ase_atoms)
     return NGLWidget(structure, **kwargs)
+
+def show_asetraj(ase_traj, **kwargs):
+    '''Show ase trajectory and structure file.
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> from ase.io.trajectory import Trajectory
+    >>> traj = Trajectory(nv.datafiles.ASE_Traj)
+    >>> view = nv.show_asetraj(traj)
+    >>> view.add_spacefill()
+    >>> view # doctest: +SKIP
+    '''
+    trajectory = ASETrajectory(ase_traj)
+    return NGLWidget(trajectory, **kwargs)
 
 def show_structure_file(path, **kwargs):
     '''Show structure file. Allowed are text-based structure
