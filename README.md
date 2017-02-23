@@ -143,6 +143,7 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
 | `show_rdkit(mol)`                        | Shows `rdkit` rdkit.Chem.rdchem.Mol                   |
 | `show_ase(atoms)`                        | Shows `ase` Atoms                                     |
+| `show_asetraj(traj)`                     | Shows `ase` trajectory `traj`                         |
 | `show_htmd(mol)`                         | Shows `HTMD` Molecules                                |
 
 

@@ -352,7 +352,7 @@ class HTMDTrajectory(Trajectory):
         return pdb_string
 
 
-@register_backend('asetraj')
+@register_backend('ase')
 class ASETrajectory(Trajectory, Structure):
     '''asetraj adaptor.
 
@@ -360,9 +360,10 @@ class ASETrajectory(Trajectory, Structure):
     --------
     >>> import nglview as nv
     >>> from ase.io.trajectory import Trajectory
-    >>> traj = Trajectory('example.traj')
+    >>> traj = Trajectory(nv.datafiles.ASE_Traj)
     >>> t = nv.ASETrajectory(traj)
     >>> w = nv.NGLWidget(t)
+    >>> w.add_spacefill()
     >>> w
     '''
 

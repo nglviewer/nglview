@@ -83,8 +83,9 @@ def show_asetraj(ase_traj, **kwargs):
     --------
     >>> import nglview as nv
     >>> from ase.io.trajectory import Trajectory
-    >>> traj = Trajectory('example.traj')
+    >>> traj = Trajectory(nv.datafiles.ASE_Traj)
     >>> view = nv.show_asetraj(traj)
+    >>> view.add_spacefill()
     >>> view # doctest: +SKIP
     '''
     trajectory = ASETrajectory(ase_traj)
