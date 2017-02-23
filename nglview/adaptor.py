@@ -32,6 +32,7 @@ __all__ = [
     'ParmEdTrajectory',
     'MDAnalysisTrajectory',
     'HTMDTrajectory',
+    'ASETrajectory',
     'register_backend'
 ]
 
@@ -349,3 +350,36 @@ class HTMDTrajectory(Trajectory):
         pdb_string = os.fdopen(fd).read()
         # os.close( fd )
         return pdb_string
+
+
+@register_backend('asetraj')
+class ASETrajectory(Trajectory, Structure):
+    '''asetraj adaptor.
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> from ase.io.trajectory import Trajectory
+    >>> traj = Trajectory('example.traj')
+    >>> t = nv.ASETrajectory(traj)
+    >>> w = nv.NGLWidget(t)
+    >>> w
+    '''
+
+    def __init__(self, ase_traj):
+        self.ext = 'pdb'
+        self.params = {}
+        self.trajectory = ase_traj
+        self.id = str(uuid.uuid4())
+
+    def get_coordinates(self, index):
+        return self.trajectory[index].positions
+
+    def get_structure_string(self):
+        with tempfolder():
+            self.trajectory[0].write('tmp.pdb')
+            return open('tmp.pdb').read()
+
+    @property
+    def n_frames(self):
+        return len(self.trajectory)
