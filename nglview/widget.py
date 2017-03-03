@@ -6,7 +6,7 @@ import uuid
 import json
 import numpy as np 
 from IPython.display import display
-from ipywidgets import DOMWidget, widget_image, PlaceProxy
+from ipywidgets import DOMWidget, widget_image
 from traitlets import (Unicode, Bool, Dict, List, Int, observe,
                        CaselessStrEnum)
 
@@ -165,7 +165,6 @@ class NGLWidget(DOMWidget):
         self._set_unsync_camera()
         selector = 'nglviewHolder' + str(id(self))
         self._remote_call('setSelector', target='Widget', args=[selector,])
-        self._place_proxy = PlaceProxy(child=None, selector=selector)
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
@@ -356,8 +355,6 @@ class NGLWidget(DOMWidget):
             self._remote_call('cleanOutput',
                               target='Widget')
 
-        # self._place_proxy._ipython_display_()
-
     def display(self, gui=False, use_box=False):
         if gui:
             if use_box:
@@ -368,7 +365,6 @@ class NGLWidget(DOMWidget):
             else:
                 display(self)
                 display(self.player._display())
-                # display(self._place_proxy)
                 return None
         else:
             return self
@@ -388,27 +384,6 @@ class NGLWidget(DOMWidget):
         '''
         self._remote_call('setSize', target='Widget',
                 args=[w, h])
-
-    def _set_place_proxy(self, widget):
-        """
-
-        Parameters
-        ----------
-        widget : instance of ipywidgets.DOMWidget (or derived class)
-
-        Examples
-        --------
-        >>> from ipywidgets import IntSlider
-        >>> slider = IntSlider()
-        >>> import nglview
-        >>> view = nglview.demo()
-        >>> view
-        >>> view._set_place_proxy(slider)
-        >>> view._place_proxy
-        >>> # TODO: _place_proxy only has effect (adding widget to NGLWidget)
-        >>> # if it was displayed (should fix)
-        """
-        self._place_proxy.child = widget
 
     def _set_draggable(self, yes=True):
         if yes:
