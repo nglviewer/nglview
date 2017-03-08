@@ -59,6 +59,24 @@ watch 'python setup.py build --npm' js/src/
 nglview demo
 ```
 
+Using `NGL` locally
+===================
+
+1. Change 
+`var NGL = require('ngl');` to `var NGL = require('./ngl');`
+https://github.com/arose/nglview/blob/master/js/src/widget_ngl.js#L2
+
+2. Then, [build NGL](https://github.com/arose/ngl/blob/master/DEVELOPMENT.md#building), then copy `ngl.js` (or `ngl.dev.js`) to `nglview/js/src/`
+
+3. Rebuild js code
+```
+cd nglview (root folder having setup.py file)
+python setup.py install --npm
+```
+
+You need to install `nodejs` (which includes `npm`).
+Tips: `conda install nodejs -c conda-forge` (and so on)
+
 Test notebook
 =============
 
