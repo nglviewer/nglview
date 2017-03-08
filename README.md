@@ -40,7 +40,6 @@ with JupyterLab.
 - Available on `bioconda` channel
 
     ```bash
-    conda config --add channels conda-forge
     conda install nglview -c bioconda
     # might need: jupyter-nbextension enable nglview --py --user
 
