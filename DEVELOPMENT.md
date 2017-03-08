@@ -46,9 +46,6 @@ python setup.py build --npm
 
 # then python setup.py install or pip install -e . # development
 
-# you can install `watch` to autobuild if the js source code is changed.
-npm install watch -g
-watch 'python setup.py build --npm' js/src/
 # tips
 # - Use private browser mode to avoid cache
 # - After changing js code:
