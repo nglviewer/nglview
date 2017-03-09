@@ -7,7 +7,7 @@ import json
 import numpy as np 
 from IPython.display import display
 from ipywidgets import DOMWidget, widget_image
-from traitlets import (Unicode, Bool, Dict, List, Int, observe,
+from traitlets import (Unicode, Bool, Dict, List, Int, Integer, observe,
                        CaselessStrEnum)
 
 from .utils import py_utils, js_utils, widget_utils
@@ -78,8 +78,9 @@ class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
-    frame = Int().tag(sync=True)
-    count = Int(1).tag(sync=True)
+    # use Integer here, because mdtraj uses a long datatype here on Python-2.7
+    frame = Integer().tag(sync=True)
+    count = Integer(1).tag(sync=True)
     background = Unicode('white').tag(sync=True)
     loaded = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
