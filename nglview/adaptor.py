@@ -3,7 +3,6 @@ from __future__ import print_function, absolute_import
 import os
 import os.path
 import uuid
-import tempfile
 import numpy as np
 
 try:
@@ -187,10 +186,11 @@ class MDTrajTrajectory(Trajectory, Structure):
         return self.trajectory.n_frames
 
     def get_structure_string(self):
-        fd, fname = tempfile.mkstemp()
-        self.trajectory[0].save_pdb(fname)
-        pdb_string = os.fdopen(fd).read()
-        # os.close( fd )
+        with tempfolder():
+            fname = 'tmp.pdb'
+            self.trajectory[0].save_pdb(fname)
+            pdb_string = os.fdopen(fd).read()
+            # os.close( fd )
         return pdb_string
 
 
@@ -222,10 +222,10 @@ class PyTrajTrajectory(Trajectory, Structure):
         return self.trajectory.n_frames
 
     def get_structure_string(self):
-        fd, fname = tempfile.mkstemp(suffix=".pdb")
-        self.trajectory[:1].save(fname, format="pdb", overwrite=True)
-        pdb_string = os.fdopen(fd).read()
-        # os.close( fd )
+        fname = 'tmp.pdb'
+        with tempfolder():
+            self.trajectory[:1].save(fname, format="pdb", overwrite=True)
+            pdb_string = os.fdopen(fd).read()
         return pdb_string
 
 
@@ -251,16 +251,16 @@ class ParmEdTrajectory(Trajectory, Structure):
         return len(self._xyz)
 
     def get_structure_string(self):
-        fd, fname = tempfile.mkstemp(suffix=".pdb")
         # only write 1st model
-        if self.only_save_1st_model:
-            self.trajectory.save(
-                fname, overwrite=True,
-                coordinates=self.trajectory.coordinates)
-        else:
-            self.trajectory.save(fname, overwrite=True)
-        pdb_string = os.fdopen(fd).read()
-        # os.close( fd )
+        fname = 'tmp.pdb'
+        with tempfolder():
+            if self.only_save_1st_model:
+                self.trajectory.save(
+                    fname, overwrite=True,
+                    coordinates=self.trajectory.coordinates)
+            else:
+                self.trajectory.save(fname, overwrite=True)
+            pdb_string = os.fdopen(fd).read()
         return pdb_string
 
 
@@ -344,11 +344,10 @@ class HTMDTrajectory(Trajectory):
         return self.mol.numFrames
 
     def get_structure_string(self):
-        import tempfile
-        fd, fname = tempfile.mkstemp(suffix='.pdb')
-        self.mol.write(fname)
-        pdb_string = os.fdopen(fd).read()
-        # os.close( fd )
+        fname = 'tmp.pdb'
+        with tempfolder():
+            self.mol.write(fname)
+            pdb_string = os.fdopen(fd).read()
         return pdb_string
 
 
