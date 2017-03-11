@@ -21,9 +21,11 @@ $('#nglview_style').appendTo('head');
 </script>
 """
 
+
 def _get_theme(css_file):
     from IPython.display import HTML
     return HTML(_get_css_content(css_file))
+
 
 def _get_css_content(css_file):
     dirname = os.path.dirname(os.path.abspath(__file__))
@@ -31,8 +33,10 @@ def _get_css_content(css_file):
     css = open(css_file).read()
     return style.format(css)
 
+
 def oceans16():
     return _get_theme('oceans16.css')
+
 
 def reset(hide_toolbar=False):
     from IPython.display import Javascript, display

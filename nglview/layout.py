@@ -3,36 +3,40 @@
 from __future__ import absolute_import
 from ipywidgets import Layout, Button, ToggleButton, Box, Label, Tab
 
+
 def make_form_item_layout():
     # protect nglview if it is not used in notebook (wheen there is not `comm`
     return Layout(
         display='flex',
         flex_flow='row',
-        justify_content='space-between',
-    )
+        justify_content='space-between', )
 
-def _make_box_layout(width='100%'): 
+
+def _make_box_layout(width='100%'):
     return Layout(
-        display='flex',
-        flex_flow='column',
-        align_items='stretch',
-        width=width)
+        display='flex', flex_flow='column', align_items='stretch', width=width)
+
 
 def _relayout(box, form_item_layout):
     form_items = []
     for kid in box.children:
-        if hasattr(kid, 'description') and not isinstance(kid, (Button, ToggleButton)):
+        if hasattr(kid, 'description') and not isinstance(kid, (Button,
+                                                                ToggleButton)):
             label_value = kid.description
             kid.description = ''
         else:
             label_value = ''
         if isinstance(kid, Button):
-            box2 = Box([kid,], layout=form_item_layout)
+            box2 = Box([
+                kid,
+            ], layout=form_item_layout)
         else:
-            box2 = Box([Label(value=label_value), kid], layout=form_item_layout)
+            box2 = Box([Label(value=label_value), kid],
+                       layout=form_item_layout)
         form_items.append(box2)
 
     return form_items
+
 
 def _relayout_master(box, width='20%'):
     """make nicer layout for box.
@@ -46,6 +50,7 @@ def _relayout_master(box, width='20%'):
     form._ngl_children = old_children
     return form
 
+
 def _make_autofit(box):
     '''
 
@@ -58,11 +63,11 @@ def _make_autofit(box):
     -------
     relayouted box
     '''
-    items_layout = Layout(flex='1 1 auto',
-                          width='auto')  
+    items_layout = Layout(flex='1 1 auto', width='auto')
 
     box.layout = items_layout
     return box
+
 
 def _make_delay_tab(box_factory, selected_index=0):
     """
@@ -86,7 +91,9 @@ def _make_delay_tab(box_factory, selected_index=0):
         index = change['new']
         if not tab.children[index].children:
             # make widget on demand
-            tab.children[index].children = [box_factory[index][0](),]
+            tab.children[index].children = [
+                box_factory[index][0](),
+            ]
 
     tab.observe(on_update_selected_index, names='selected_index')
 

@@ -9,14 +9,14 @@ from contextlib import contextmanager
 import tempfile
 from shutil import rmtree
 
-
-__all__ = ['encode_base64', 'decode_base64',
-           'seq_to_string', '_camelize',
-           '_camelize_dict', 'get_colors_from_b64',
-           'display_gif']
+__all__ = [
+    'encode_base64', 'decode_base64', 'seq_to_string', '_camelize',
+    '_camelize_dict', 'get_colors_from_b64', 'display_gif'
+]
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
+
 
 def get_positive_index(index, size):
     """Used for negative indexing"""
@@ -28,30 +28,37 @@ def get_positive_index(index, size):
         raise ValueError("index is out of range")
     return index
 
+
 def click(button):
     button._handle_button_msg(None, dict(event='click'), None)
 
+
 def submit(widget_text):
     widget_text._handle_string_msg(None, dict(event='submit'), None)
+
 
 def _update_url(func):
     from nglview.default import NGL_BASE_URL
     func.__doc__ = func.__doc__.format(ngl_url=NGL_BASE_URL)
     return func
 
+
 if PY3:
     string_types = str
 else:
     string_types = basestring
 
+
 def encode_base64(arr, dtype='f4'):
     arr = arr.astype(dtype)
     return base64.b64encode(arr.data).decode('utf8')
+
 
 def decode_base64(data, shape, dtype='f4'):
     import numpy as np
     decoded_str = base64.b64decode(data)
     return np.frombuffer(decoded_str, dtype=dtype).reshape(shape)
+
 
 def get_name(obj, kwargs):
     name = kwargs.pop('name', str(obj))
@@ -59,20 +66,22 @@ def get_name(obj, kwargs):
         name = name.split()[0].strip('<')
     return name
 
+
 def display_gif(fn):
     from IPython import display
     return display.HTML('<img src="{}">'.format(fn))
 
+
 @contextmanager
 def tempfolder():
-  """run everything in temp folder
+    """run everything in temp folder
   """
-  my_temp = tempfile.mkdtemp()
-  cwd = os.getcwd()
-  os.chdir(my_temp)
-  yield
-  os.chdir(cwd)
-  rmtree(my_temp)
+    my_temp = tempfile.mkdtemp()
+    cwd = os.getcwd()
+    os.chdir(my_temp)
+    yield
+    os.chdir(cwd)
+    rmtree(my_temp)
 
 
 def get_repr_names_from_dict(repr_dict, component):
@@ -84,7 +93,10 @@ def get_repr_names_from_dict(repr_dict, component):
 
     try:
         this_repr_dict = repr_dict['c' + str(component)]
-        return [this_repr_dict[str(key)]['name'] for key in sorted(this_repr_dict.keys())]
+        return [
+            this_repr_dict[str(key)]['name']
+            for key in sorted(this_repr_dict.keys())
+        ]
     except KeyError:
         return []
 
@@ -122,6 +134,7 @@ def seq_to_string(seq):
         # assume 1D array
         return "@" + ",".join(str(s) for s in seq)
 
+
 def _camelize(snake):
     """
     
@@ -134,6 +147,7 @@ def _camelize(snake):
     """
     words = snake.split('_')
     return words[0] + "".join(x.title() for x in words[1:])
+
 
 def _camelize_dict(kwargs):
     return dict((_camelize(k), v) for k, v in kwargs.items())
@@ -153,6 +167,7 @@ class FileManager(object):
         user can specify if the given file is compressed or not.
         if None, FileManager will detect based on file extension
     """
+
     def __init__(self, src, compressed=None, ext=None):
         self.src = src
         self.cwd = os.getcwd()
@@ -167,7 +182,8 @@ class FileManager(object):
             return self.src
         else:
             if self.compressed_ext:
-                return self.unzip_backend[self.compressed_ext].open(self.src).read()
+                return self.unzip_backend[self.compressed_ext].open(
+                    self.src).read()
             elif hasattr(self.src, 'read'):
                 return self.src.read()
             else:
@@ -182,8 +198,7 @@ class FileManager(object):
         '''
         if self._compressed is None:
             if self.is_filename or self.is_url:
-                return (self.src.endswith('gz') or
-                        self.src.endswith('zip') or
+                return (self.src.endswith('gz') or self.src.endswith('zip') or
                         self.src.endswith('bz2'))
             else:
                 return False
@@ -213,8 +228,11 @@ class FileManager(object):
         if self._ext is not None:
             return self._ext
         else:
-            if hasattr(self.src, 'read') or (not self.is_filename and not self.is_url):
-                raise ValueError("you must provide file extension if using file-like object or text content")
+            if hasattr(self.src, 'read') or (not self.is_filename and
+                                             not self.is_url):
+                raise ValueError(
+                    "you must provide file extension if using file-like object or text content"
+                )
             if self.is_compressed:
                 return self.src.split('.')[-2]
             else:
@@ -234,8 +252,5 @@ class FileManager(object):
 
     @property
     def is_url(self):
-        return (isinstance(self.src, string_types) and
-                ((self.src.startswith('http') or
-                self.src.startswith('rcsb://'))))
-
-
+        return (isinstance(self.src, string_types) and (
+            (self.src.startswith('http') or self.src.startswith('rcsb://'))))

@@ -6,6 +6,7 @@ from ipywidgets import Box, interactive
 from .color import COLOR_SCHEMES
 from .utils import py_utils
 
+
 class RepresentationControl(Box):
     parameters = Dict().tag(sync=False)
     name = Any().tag(sync=False)
@@ -13,9 +14,15 @@ class RepresentationControl(Box):
     component_index = Int().tag(sync=False)
     _disable_update_parameters = Bool(False).tag(sync=False)
 
-    def __init__(self, view, component_index, repr_index, name=None, *args, **kwargs):
+    def __init__(self,
+                 view,
+                 component_index,
+                 repr_index,
+                 name=None,
+                 *args,
+                 **kwargs):
         super(RepresentationControl, self).__init__(*args, **kwargs)
-        self.component_index = component_index   
+        self.component_index = component_index
         self.repr_index = repr_index
         self._view = view
         self.children = self._make_widget().children
@@ -32,9 +39,10 @@ class RepresentationControl(Box):
         if not self._disable_update_parameters:
             parameters = change['new']
 
-            self._view.update_representation(component=self.component_index,
-                    repr_index=self.repr_index,
-                    **parameters)
+            self._view.update_representation(
+                component=self.component_index,
+                repr_index=self.repr_index,
+                **parameters)
 
     @observe('name')
     def _on_name_changed(self, change):
@@ -50,7 +58,8 @@ class RepresentationControl(Box):
 
     def _get_name_and_repr_dict(self, c_string, r_string):
         try:
-            _repr_dict = self._view._repr_dict[c_string][r_string]['parameters']
+            _repr_dict = self._view._repr_dict[c_string][r_string][
+                'parameters']
             name = self._view._repr_dict[c_string][r_string]['name']
         except KeyError:
             _repr_dict = dict()
@@ -100,23 +109,28 @@ class RepresentationControl(Box):
                  cutoff=_repr_dict.get('cutoff', 0)):
             pass
 
-        widget = interactive(func, opacity=(0., 1., 0.1),
-                                 color_scheme=COLOR_SCHEMES,
-                                 assembly=assembly_list,
-                                 probe_radius=(0., 5., 0.1),
-                                 isolevel=(0., 10., 0.1),
-                                 smooth=(0, 10, 1),
-                                 surface_type=surface_types,
-                                 box_size=(0, 100, 2),
-                                 cutoff=(0., 100, 0.1),
-                                 continuous_update=False)
+        widget = interactive(
+            func,
+            opacity=(0., 1., 0.1),
+            color_scheme=COLOR_SCHEMES,
+            assembly=assembly_list,
+            probe_radius=(0., 5., 0.1),
+            isolevel=(0., 10., 0.1),
+            smooth=(0, 10, 1),
+            surface_type=surface_types,
+            box_size=(0, 100, 2),
+            cutoff=(0., 100, 0.1),
+            continuous_update=False)
         for kid in widget.children:
             try:
                 setattr(kid, '_ngl_description', kid.description)
             except AttributeError:
                 # ipywidgets.Output does not have `description` attribute
                 setattr(kid, '_ngl_description', '')
-            if kid._ngl_description in ['probe_radius', 'smooth', 'surface_type', 'box_size', 'cutoff']:
+            if kid._ngl_description in [
+                    'probe_radius', 'smooth', 'surface_type', 'box_size',
+                    'cutoff'
+            ]:
                 setattr(kid, '_ngl_type', 'surface')
             else:
                 setattr(kid, '_ngl_type', 'basic')

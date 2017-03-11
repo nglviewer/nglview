@@ -20,20 +20,12 @@ from .utils.py_utils import FileManager, tempfolder
 from . import config
 
 __all__ = [
-    'FileStructure',
-    'TextStructure',
-    'RdkitStructure',
-    'PdbIdStructure',
-    'ASEStructure',
-    'SimpletrajTrajectory',
-    'MDTrajTrajectory',
-    'PyTrajTrajectory',
-    'ParmEdTrajectory',
-    'MDAnalysisTrajectory',
-    'HTMDTrajectory',
-    'ASETrajectory',
-    'register_backend'
+    'FileStructure', 'TextStructure', 'RdkitStructure', 'PdbIdStructure',
+    'ASEStructure', 'SimpletrajTrajectory', 'MDTrajTrajectory',
+    'PyTrajTrajectory', 'ParmEdTrajectory', 'MDAnalysisTrajectory',
+    'HTMDTrajectory', 'ASETrajectory', 'register_backend'
 ]
+
 
 class register_backend(object):
     def __init__(self, package_name):
@@ -44,8 +36,8 @@ class register_backend(object):
         config.BACKENDS[self.package_name] = cls
         return cls
 
-class FileStructure(Structure):
 
+class FileStructure(Structure):
     def __init__(self, path):
         super(FileStructure, self).__init__()
         self.fm = FileManager(path)
@@ -58,7 +50,6 @@ class FileStructure(Structure):
 
 
 class TextStructure(Structure):
-
     def __init__(self, text, ext='pdb', params={}):
         super(TextStructure, self).__init__()
         self.path = ''
@@ -71,7 +62,6 @@ class TextStructure(Structure):
 
 
 class RdkitStructure(Structure):
-
     def __init__(self, rdkit_mol, ext="pdb"):
         super(RdkitStructure, self).__init__()
         self.path = ''
@@ -86,7 +76,6 @@ class RdkitStructure(Structure):
 
 
 class PdbIdStructure(Structure):
-
     def __init__(self, pdbid):
         super(PdbIdStructure, self).__init__()
         self.pdbid = pdbid
@@ -99,7 +88,6 @@ class PdbIdStructure(Structure):
 
 
 class ASEStructure(Structure):
-
     def __init__(self, ase_atoms, ext='pdb', params={}):
         super(ASEStructure, self).__init__()
         self.path = ''
@@ -130,8 +118,7 @@ class SimpletrajTrajectory(Trajectory, Structure):
             import simpletraj
         except ImportError as e:
             raise ImportError(
-                "'SimpletrajTrajectory' requires the 'simpletraj' package"
-            )
+                "'SimpletrajTrajectory' requires the 'simpletraj' package")
         self.traj_cache = simpletraj.trajectory.TrajectoryCache()
         self.path = path
         self._structure_path = structure_path
@@ -257,7 +244,8 @@ class ParmEdTrajectory(Trajectory, Structure):
         with tempfolder():
             if self.only_save_1st_model:
                 self.trajectory.save(
-                    fname, overwrite=True,
+                    fname,
+                    overwrite=True,
                     coordinates=self.trajectory.coordinates)
             else:
                 self.trajectory.save(fname, overwrite=True)
@@ -303,8 +291,7 @@ class MDAnalysisTrajectory(Trajectory, Structure):
             import MDAnalysis as mda
         except ImportError:
             raise ImportError(
-                "'MDAnalysisTrajectory' requires the 'MDAnalysis' package"
-            )
+                "'MDAnalysisTrajectory' requires the 'MDAnalysis' package")
         u = self.atomgroup.universe
         u.trajectory[0]
         f = mda.lib.util.NamedStream(StringIO(), 'tmp.pdb')
@@ -332,6 +319,7 @@ class HTMDTrajectory(Trajectory):
     >>> w = nv.NGLWidget(t)
     >>> w
     '''
+
     def __init__(self, mol):
         self.mol = mol
         self.ext = "pdb"

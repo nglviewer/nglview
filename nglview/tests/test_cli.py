@@ -9,6 +9,7 @@ import pytest
 this_path = os.path.dirname(os.path.abspath(__file__))
 using_travis = '/home/travis' in this_path
 
+
 def test_cli():
     # no argument 
     command = 'nglview --test'
@@ -24,9 +25,11 @@ def test_cli():
 
     # raises
     command = 'nglview demo --test --dummy-args'
+
     def func():
         print('raise error for "{}"'.format(command))
         subprocess.check_call(command.split())
+
     pytest.raises(subprocess.CalledProcessError, func)
 
     # single pdb
@@ -55,7 +58,8 @@ def test_cli():
     subprocess.check_call(command.split())
 
     # remote
-    command = 'nglview {} -c {} --remote --test'.format(datafiles.PDB, datafiles.XTC)
+    command = 'nglview {} -c {} --remote --test'.format(datafiles.PDB,
+                                                        datafiles.XTC)
     subprocess.check_call(command.split())
 
     # python script
@@ -68,7 +72,9 @@ def test_cli():
     command = 'nglview {nbfile} --test'.format(nbfile=nbfile)
     subprocess.check_call(command.split())
 
-@unittest.skipIf(using_travis, 'not test install nglview_main.js extension on travis')
+
+@unittest.skipIf(using_travis,
+                 'not test install nglview_main.js extension on travis')
 def test_install():
     jupyter = sys.prefix + '/bin/jupyter'
     install_nbextension(jupyter)

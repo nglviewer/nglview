@@ -25,7 +25,6 @@ from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
 from nglview import interpolate
 
-
 try:
     import simpletraj
     has_simpletraj = True
@@ -79,9 +78,11 @@ except ImportError:
 # local
 from utils import get_fn, repr_dict as REPR_DICT
 
+
 def default_view():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     return nv.show_pytraj(traj)
+
 
 #-----------------------------------------------------------------------------
 # Utility stuff from ipywidgets tests
@@ -90,6 +91,7 @@ def default_view():
 # Distributed under the terms of the Modified BSD License.
 
 #-----------------------------------------------------------------------------
+
 
 class DummyComm(Comm):
     comm_id = 'a-b-c-d'
@@ -103,17 +105,22 @@ class DummyComm(Comm):
     def close(self, *args, **kwargs):
         pass
 
+
 _widget_attrs = {}
 displayed = []
 undefined = object()
 
+
 def setup():
-    _widget_attrs['_comm_default'] = getattr(Widget, '_comm_default', undefined)
+    _widget_attrs['_comm_default'] = getattr(Widget, '_comm_default',
+                                             undefined)
     Widget._comm_default = lambda self: DummyComm()
     _widget_attrs['_ipython_display_'] = Widget._ipython_display_
+
     def raise_not_implemented(*args, **kwargs):
         raise NotImplementedError()
-    Widget._ipython_display_ = lambda _ : _
+
+    Widget._ipython_display_ = lambda _: _
 
 
 def teardown():
@@ -123,20 +130,35 @@ def teardown():
         else:
             setattr(Widget, attr, value)
 
+
 #-----------------------------------------------------------------------------
 # NGLView stuff
 #-----------------------------------------------------------------------------
 
-DEFAULT_REPR = [{'params': {'sele': 'polymer'}, 'type': 'cartoon'},
-                {'params': {'sele': 'hetero OR mol'}, 'type': 'ball+stick'},
-                {"type": "ball+stick", "params": {"sele": "not protein and not nucleic"}}
-                ]
+DEFAULT_REPR = [{
+    'params': {
+        'sele': 'polymer'
+    },
+    'type': 'cartoon'
+}, {
+    'params': {
+        'sele': 'hetero OR mol'
+    },
+    'type': 'ball+stick'
+}, {
+    "type": "ball+stick",
+    "params": {
+        "sele": "not protein and not nucleic"
+    }
+}]
+
 
 def _assert_dict_list_equal(listdict0, listdict1):
     for (dict0, dict1) in zip(listdict0, listdict1):
         for (key0, key1) in zip(sorted(dict0.keys()), sorted(dict1.keys())):
             assert key0 == key1
             assert dict0.get(key0) == dict1.get(key1)
+
 
 def test_API_promise_to_have():
 
@@ -267,7 +289,9 @@ def test_API_promise_to_have():
     msg = dict(type='request_frame', data=dict())
 
     view.loaded = True
-    view.show_only([0,])
+    view.show_only([
+        0,
+    ])
     view._js_console()
     view._get_full_params()
     view.detach(split=False)
@@ -275,8 +299,9 @@ def test_API_promise_to_have():
     # view._set_place_proxy(HBox())
 
     # iter
-    for c in view: 
+    for c in view:
         assert isinstance(c, nv.widget.ComponentViewer)
+
 
 @unittest.skipUnless(has_pytraj, 'skip if not having pytraj')
 @unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
@@ -311,11 +336,14 @@ def test_add_trajectory():
         else:
             assert len(view.coordinates_dict.keys()) == 3
 
+
 def test_API_promise_to_have_add_more_backend():
     @nv.register_backend('dummy')
     class MyLovelyClass(nv.Structure, nv.Trajectory):
         pass
+
     assert 'dummy' in nv.BACKENDS
+
 
 def test_handling_n_components_changed():
     view = nv.NGLWidget()
@@ -329,6 +357,7 @@ def test_handling_n_components_changed():
     # fake updating n_components from front-end
     view._repr_dict = {'c0': {}}
     view.n_components = 0
+
 
 def test_base_adaptor():
     # abstract base class
@@ -345,6 +374,7 @@ def test_base_adaptor():
     pytest.raises(NotImplementedError, func_1)
     pytest.raises(NotImplementedError, func_2)
 
+
 def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     view = nv.show_pytraj(traj)
@@ -357,6 +387,7 @@ def test_coordinates_dict():
     view.coordinates_dict = {0: coords}
     # increase coverage for IndexError: make index=1000 (which is larger than n_frames)
     view._set_coordinates(1000)
+
 
 def test_load_data():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -380,6 +411,7 @@ def test_load_data():
     # load current folder
     view._load_data(get_fn('tz2.pdb'))
 
+
 def test_representations():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     assert view.representations == DEFAULT_REPR
@@ -401,6 +433,7 @@ def test_representations():
     representation_widget
     representation_widget._on_parameters_changed(change=dict(new=dict()))
 
+
 def test_representation_control():
     view = nv.demo()
     repr_control = view._display_repr()
@@ -409,6 +442,7 @@ def test_representation_control():
     repr_control.name = 'cartoon'
     repr_control.repr_index = 1
     repr_control.component_index = 1
+
 
 def test_add_repr_shortcut():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
@@ -426,14 +460,16 @@ def test_add_repr_shortcut():
     view.remove_cartoon()
     view.remove_rope()
 
+
 def test_add_new_shape():
     view = nv.NGLWidget()
     sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
-    arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
+    arrow = ('arrow', [1, 2, 7], [30, 3, 3], [1, 0, 1], 1.0)
     view._add_shape([sphere, arrow], name='my_shape')
 
     # Shape
-    view.shape.add_arrow([1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
+    view.shape.add_arrow([1, 2, 7], [30, 3, 3], [1, 0, 1], 1.0)
+
 
 def test_remote_call():
     # how to test JS?
@@ -442,7 +478,11 @@ def test_remote_call():
 
     fn = 'notebooks/tz2.pdb'
     kwargs = {'defaultRepresentation': True}
-    view._remote_call('loadFile', target='stage', args=[fn,], kwargs=kwargs)
+    view._remote_call(
+        'loadFile', target='stage', args=[
+            fn,
+        ], kwargs=kwargs)
+
 
 def test_download_image():
     """just make sure it can be called
@@ -450,20 +490,23 @@ def test_download_image():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
     view.download_image('myname.png', 2, False, False, True)
 
+
 def test_show_structure_file():
     view = nv.show_structure_file(nv.datafiles.PDB)
+
 
 def test_show_text():
     text = open(nv.datafiles.PDB).read()
     nv.show_text(text)
 
+
 @unittest.skipUnless(has_ase, 'skip if not having ase')
 def test_show_ase():
     from ase import Atom, Atoms
-    dimer = Atoms([Atom('X', (0, 0, 0)),
-                   Atom('X', (0, 0, 1))])
+    dimer = Atoms([Atom('X', (0, 0, 0)), Atom('X', (0, 0, 1))])
     dimer.set_positions([(1, 2, 3), (4, 5, 6.2)])
     nv.show_ase(dimer)
+
 
 @unittest.skipUnless(has_simpletraj, 'skip if not having simpletraj')
 def test_show_simpletraj():
@@ -472,13 +515,15 @@ def test_show_simpletraj():
     view
     view.frame = 3
 
+
 @unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
 def test_show_mdtraj():
     import mdtraj as md
     from mdtraj.testing import get_fn
-    fn = nv.datafiles.PDB 
+    fn = nv.datafiles.PDB
     traj = md.load(fn)
     view = nv.show_mdtraj(traj)
+
 
 @unittest.skipUnless(has_HTMD, 'skip if not having HTMD')
 def test_show_htmd():
@@ -493,6 +538,7 @@ def test_show_htmd():
     xyz_htmd = np.squeeze(traj.coords[:, :, index])
     aa_eq(view.coordinates_dict[0], xyz_htmd)
 
+
 @unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
 def test_show_MDAnalysis():
     from MDAnalysis import Universe
@@ -500,10 +546,11 @@ def test_show_MDAnalysis():
     u = Universe(fn, tn)
     view = nv.show_mdanalysis(u)
 
+
 @unittest.skipUnless(has_parmed, 'skip if not having ParmEd')
 def test_show_parmed():
     import parmed as pmd
-    fn = nv.datafiles.PDB 
+    fn = nv.datafiles.PDB
     parm = pmd.load_file(fn)
     view = nv.show_parmed(parm)
 
@@ -511,17 +558,21 @@ def test_show_parmed():
     ngl_traj.only_save_1st_model = False
     ngl_traj.get_structure_string()
 
-@unittest.skipUnless(has_rdkit,
-                    'must have rdkit')
+
+@unittest.skipUnless(has_rdkit, 'must have rdkit')
 def test_show_rdkit():
-    rdkit_mol = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4')) 
-    AllChem.EmbedMultipleConfs(rdkit_mol, useExpTorsionAnglePrefs=True, useBasicKnowledge=True) 
+    rdkit_mol = Chem.AddHs(
+        Chem.MolFromSmiles(
+            'COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4'))
+    AllChem.EmbedMultipleConfs(
+        rdkit_mol, useExpTorsionAnglePrefs=True, useBasicKnowledge=True)
     view = nv.show_rdkit(rdkit_mol, parmed=False)
     assert not view._trajlist
-    view = nv.show_rdkit(rdkit_mol, parmed=True) 
+    view = nv.show_rdkit(rdkit_mol, parmed=True)
     assert view._trajlist
 
     view = nv.RdkitStructure(rdkit_mol)
+
 
 def test_encode_and_decode():
     xyz = np.arange(100).astype('f4')
@@ -529,12 +580,15 @@ def test_encode_and_decode():
 
     b64_str = encode_base64(xyz)
     new_xyz = decode_base64(b64_str, dtype='f4', shape=shape)
-    aa_eq(xyz, new_xyz) 
+    aa_eq(xyz, new_xyz)
+
 
 @unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
 def test_coordinates_meta():
     from mdtraj.testing import get_fn
-    fn, tn = [get_fn('frame0.pdb'),] * 2
+    fn, tn = [
+        get_fn('frame0.pdb'),
+    ] * 2
     trajs = [pt.load(fn, tn), md.load(fn, top=tn), pmd.load_file(tn, fn)]
 
     N_FRAMES = trajs[0].n_frames
@@ -543,30 +597,36 @@ def test_coordinates_meta():
     u = Universe(tn, fn)
     trajs.append(Universe(tn, fn))
 
-    views = [nv.show_pytraj(trajs[0]), nv.show_mdtraj(trajs[1]), nv.show_parmed(trajs[2])]
+    views = [
+        nv.show_pytraj(trajs[0]), nv.show_mdtraj(trajs[1]), nv.show_parmed(
+            trajs[2])
+    ]
     views.append(nv.show_mdanalysis(trajs[3]))
 
     for index, (view, traj) in enumerate(zip(views, trajs)):
         view.frame = 3
-        
+
         assert view._trajlist[0].n_frames == N_FRAMES
+
 
 def test_structure_file():
     for fn in [get_fn('tz2.pdb'), nv.datafiles.GRO]:
         content = open(fn, 'rb').read()
         fs1 = nv.FileStructure(fn)
         assert content == fs1.get_structure_string()
-    
+
     # gz
     fn = get_fn('tz2_2.pdb.gz')
     fs2 = nv.FileStructure(fn)
     content = gzip.open(fn).read()
     assert content == fs2.get_structure_string()
 
+
 def test_camelize_parameters():
     view = nv.NGLWidget()
     view.parameters = dict(background_color='black')
     assert 'backgroundColor' in view._parameters
+
 
 def test_component_for_duck_typing():
     view = NGLWidget()
@@ -575,7 +635,7 @@ def test_component_for_duck_typing():
     view.add_component(get_fn('tz2_2.pdb.gz'))
     view.add_trajectory(nv.PyTrajTrajectory(traj))
     view.component_0.add_representation('cartoon')
-    
+
     c0 = view[0]
     c1 = view[1]
     assert hasattr(view, 'component_0')
@@ -593,6 +653,7 @@ def test_component_for_duck_typing():
 
     # negative indexing
     assert view[-1]._index == c1._index
+
 
 def test_trajectory_show_hide_sending_cooridnates():
     view = NGLWidget()
@@ -613,11 +674,13 @@ def test_trajectory_show_hide_sending_cooridnates():
         return dict((k, v.copy()) for k, v in view.coordinates_dict.items())
 
     coordinates_dict = copy_coordinate_dict(view)
-    aa_eq(coordinates_dict[0], traj0[1].xyz) 
-    aa_eq(coordinates_dict[1], traj1[1].xyz) 
+    aa_eq(coordinates_dict[0], traj0[1].xyz)
+    aa_eq(coordinates_dict[1], traj1[1].xyz)
 
     # hide 0
-    view.hide([0,])
+    view.hide([
+        0,
+    ])
     assert not view._trajlist[0].shown
     assert view._trajlist[1].shown
 
@@ -649,7 +712,9 @@ def test_trajectory_show_hide_sending_cooridnates():
     view[1].show()
     view[0].show()
     view.show(indices='all')
-    view.show(indices=[0,])
+    view.show(indices=[
+        0,
+    ])
     view.show(indices=[0, 1])
     view.frame = 1
     assert view._trajlist[1].shown
@@ -667,19 +732,23 @@ def test_trajectory_show_hide_sending_cooridnates():
     assert coordinates_dict[0].shape[0] == 0
     assert coordinates_dict[1].shape[0] == 0
 
+
 def test_existing_js_files():
     from glob import glob
     jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*js'))
-    mapfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*map'))
+    mapfiles = glob(
+        os.path.join(os.path.dirname(nv.__file__), 'static', '*map'))
 
     assert len(jsfiles) == 2
     assert len(mapfiles) == 1
+
 
 def test_add_structure():
     view = nv.NGLWidget()
     with pytest.raises(ValueError):
         # raise if not is instance of nv.Structure
         view.add_structure(nv.datafiles.PDB)
+
 
 def test_add_struture_then_trajectory():
     view = nv.show_structure_file(get_fn('tz2.pdb'))
@@ -691,6 +760,7 @@ def test_add_struture_then_trajectory():
     aa_eq(coords, traj[3].xyz)
     view.loaded = False
     view.add_trajectory(traj)
+
 
 def test_loaded_attribute():
     traj = pt.datafiles.load_tz2()
@@ -732,6 +802,7 @@ def test_loaded_attribute():
     view.add_trajectory(traj)
     view._ipython_display_()
 
+
 def test_player_simple():
     traj = pt.datafiles.load_tz2()
     view = nv.show_pytraj(traj)
@@ -747,7 +818,7 @@ def test_player_simple():
     player.camera = 'perspective'
     player.camera = 'orthographic'
     player.frame
-    player.frame = 10 
+    player.frame = 10
     player.count
     player.sync_frame = False
     player.sync_frame = True
@@ -814,10 +885,12 @@ def test_player_simple():
     player.widget_repr_name.value = 'surface'
     player.widget_repr_name.value = 'cartoon'
 
+
 def test_player_submit_text():
     """ test_player_click_button """
     view = nv.demo(gui=True)
     submit(view.player._make_command_box())
+
 
 def test_player_click_button():
     """ test_player_click_button """
@@ -830,18 +903,23 @@ def test_player_click_button():
         view.player.widget_repr_control_buttons.children,
         view.player.widget_theme.children,
         view.player.widget_drag.children,
-        [view.player._show_download_image(),
-         view.player._make_button_url("", ""),
-         view.player._make_button_center(),
-         view.player._make_button_qtconsole(),
-         view.player.widget_export_image.children[0].children[0],
-         view.player.widget_repr_add.children[0],
-         ],
+        [
+            view.player._show_download_image(),
+            view.player._make_button_url("", ""),
+            view.player._make_button_center(),
+            view.player._make_button_qtconsole(),
+            view.player.widget_export_image.children[0].children[0],
+            view.player.widget_repr_add.children[0],
+        ],
         view.player.widget_drag.children,
-        [w for w in view.player.widget_preference.children if isinstance(w, Button)],
+        [
+            w for w in view.player.widget_preference.children
+            if isinstance(w, Button)
+        ],
     ])
     for button in button_iter:
         click(button)
+
 
 def test_player_link_to_ipywidgets():
     traj = pt.datafiles.load_tz2()
@@ -859,9 +937,10 @@ def test_player_link_to_ipywidgets():
     float_text.value = 100
     assert view.player.delay == 100
 
-    float_text.value= 0.00
+    float_text.value = 0.00
     # we set min=10
     assert view.player.delay == 10
+
 
 def test_player_interpolation():
     view = default_view()
@@ -870,12 +949,14 @@ def test_player_interpolation():
     assert view.player.iparams.get('type') == 'linear'
     assert view.player.iparams.get('step') == 1
 
+
 def test_player_picked():
     view = nv.demo()
     s = dict(x=3)
     view.player.widget_picked = view.player._make_text_picked()
     view.picked = s
     assert view.player.widget_picked.value == '{"x": 3}'
+
 
 def test_layout_BoxNGL():
     view = nv.demo()
@@ -886,12 +967,14 @@ def test_layout_BoxNGL():
     box._gui_style = 'column'
     box._gui_style = 'row'
 
+
 def test_layout_DraggableBox():
     view = nv.demo()
     box = nv.widget_box.DraggableBox([view])
     box._ipython_display_()
     box._dialog = 'on'
     box._dialog = 'off'
+
 
 def test_widget_utils():
     box = HBox()
@@ -911,15 +994,18 @@ def test_widget_utils():
     assert widget_utils.get_widget_by_name(box, 'i100') is None
     assert widget_utils.get_widget_by_name(None, 'i100') is None
 
+
 def test_adaptor_raise():
     with pytest.raises(ValueError):
         nv.FileStructure('hellotheredda.pdb')
+
 
 def test_theme():
     from nglview import theme
     theme.oceans16()
     theme.reset()
     theme._get_theme('oceans16.css')
+
 
 def test_player_click_tab():
     view = nv.demo()
@@ -933,14 +1019,17 @@ def test_player_click_tab():
         except TraitError:
             pass
 
+
 def test_interpolate():
     # dummy test
     traj = pt.datafiles.load_tz2()
     ngl_traj = nv.PyTrajTrajectory(traj)
     interpolate.linear(0, 0.4, ngl_traj, step=1)
 
+
 def dummy_test_to_increase_coverage():
     nv.__version__
+
 
 def test_widget_box():
     # empty
@@ -958,6 +1047,7 @@ def test_widget_box():
     box._beautify()
     box._is_beautified = False
     box._beautify()
+
 
 def test_sandbox():
     from nglview.sandbox import amber

@@ -6,6 +6,7 @@ import threading
 
 from .base import BaseMD
 
+
 class AmberMD(BaseMD):
     # TODO: doc
     '''
@@ -21,6 +22,7 @@ class AmberMD(BaseMD):
     >>> amber_view.update(every=1, timeout=3000)
     >>> # do other stuff
     '''
+
     def __init__(self, top=None, restart=None, reference=None):
         self.top = top
         assert os.path.exists(restart), '{} must exists'.format(restart)
@@ -49,6 +51,7 @@ class AmberMD(BaseMD):
         """
         # always reset
         self.event = threading.Event()
+
         def _update(event):
             start = time.time()
             while time.time() - start <= timeout and not event.is_set():
@@ -60,8 +63,9 @@ class AmberMD(BaseMD):
                     mask = '@C,N,O,CA,P'
                     pt.superpose(traj, mask=mask, ref=self.reference_traj)
                 self._update_coordinates(traj[0].xyz)
+
         # non-blocking so we can use other Jupyter's cells
-        self.thread = threading.Thread(target=_update, args=(self.event,))
+        self.thread = threading.Thread(target=_update, args=(self.event, ))
         self.thread.daemon = True
         self.thread.start()
 

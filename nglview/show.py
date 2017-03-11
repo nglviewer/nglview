@@ -8,17 +8,10 @@ except ImportError:
 from .widget import NGLWidget
 from . import datafiles
 
-from .adaptor import (
-    FileStructure,
-    TextStructure,
-    PdbIdStructure,
-    ASEStructure,
-    MDTrajTrajectory,
-    PyTrajTrajectory,
-    ParmEdTrajectory,
-    MDAnalysisTrajectory,
-    HTMDTrajectory,
-    ASETrajectory)
+from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
+                      ASEStructure, MDTrajTrajectory, PyTrajTrajectory,
+                      ParmEdTrajectory, MDAnalysisTrajectory, HTMDTrajectory,
+                      ASETrajectory)
 
 __all__ = [
     'demo',
@@ -34,7 +27,9 @@ __all__ = [
     'show_parmed',
     'show_rdkit',
     'show_structure_file',
-    'show_htmd',]
+    'show_htmd',
+]
+
 
 def show_pdbid(pdbid, **kwargs):
     '''Show PDB entry.
@@ -48,17 +43,20 @@ def show_pdbid(pdbid, **kwargs):
     structure = PdbIdStructure(pdbid)
     return NGLWidget(structure, **kwargs)
 
+
 def show_url(url, **kwargs):
     kwargs2 = dict((k, v) for k, v in kwargs.items())
     view = NGLWidget()
     view.add_component(url, **kwargs2)
     return view
 
+
 def show_text(text, **kwargs):
     """for development
     """
     structure = TextStructure(text)
     return NGLWidget(structure, **kwargs)
+
 
 def show_ase(ase_atoms, **kwargs):
     """
@@ -76,6 +74,7 @@ def show_ase(ase_atoms, **kwargs):
     structure = ASEStructure(ase_atoms)
     return NGLWidget(structure, **kwargs)
 
+
 def show_asetraj(ase_traj, **kwargs):
     '''Show ase trajectory and structure file.
 
@@ -90,6 +89,7 @@ def show_asetraj(ase_traj, **kwargs):
     '''
     trajectory = ASETrajectory(ase_traj)
     return NGLWidget(trajectory, **kwargs)
+
 
 def show_structure_file(path, **kwargs):
     '''Show structure file. Allowed are text-based structure
@@ -145,7 +145,10 @@ def show_pytraj(pytraj_trajectory, **kwargs):
     >>> w = nv.show_pytraj(t)
     >>> w # doctest: +SKIP
     '''
-    trajlist = pytraj_trajectory if isinstance(pytraj_trajectory, (list, tuple)) else [pytraj_trajectory,]
+    trajlist = pytraj_trajectory if isinstance(pytraj_trajectory,
+                                               (list, tuple)) else [
+                                                   pytraj_trajectory,
+                                               ]
 
     trajlist = [PyTrajTrajectory(traj) for traj in trajlist]
     return NGLWidget(trajlist, **kwargs)
@@ -164,6 +167,7 @@ def show_parmed(parmed_structure, **kwargs):
     '''
     structure_trajectory = ParmEdTrajectory(parmed_structure)
     return NGLWidget(structure_trajectory, **kwargs)
+
 
 def show_rdkit(rdkit_mol, **kwargs):
     '''Show rdkit's Mol.
@@ -219,6 +223,7 @@ def show_rdkit(rdkit_mol, **kwargs):
         # parm_nv.params = dict(firstModelOnly=True)
         return NGLWidget(parm_nv, **kwargs)
 
+
 def show_mdanalysis(atomgroup, **kwargs):
     '''Show NGL widget with MDAnalysis AtomGroup.
 
@@ -236,6 +241,7 @@ def show_mdanalysis(atomgroup, **kwargs):
     structure_trajectory = MDAnalysisTrajectory(atomgroup)
     return NGLWidget(structure_trajectory, **kwargs)
 
+
 def show_htmd(mol, **kwargs):
     '''Show NGL widget with HTMD Molecule.
 
@@ -252,6 +258,7 @@ def show_htmd(mol, **kwargs):
     '''
     structure_trajectory = HTMDTrajectory(mol)
     return NGLWidget(structure_trajectory, **kwargs)
+
 
 def demo(*args, **kwargs):
     '''

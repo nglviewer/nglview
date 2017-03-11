@@ -4,16 +4,15 @@ import time
 import base64
 import uuid
 import json
-import numpy as np 
+import numpy as np
 from IPython.display import display
 from ipywidgets import DOMWidget, widget_image
 from traitlets import (Unicode, Bool, Dict, List, Int, Integer, observe,
                        CaselessStrEnum)
 
 from .utils import py_utils, js_utils, widget_utils
-from .utils.py_utils import (seq_to_string, _camelize_dict,
-                             FileManager, get_repr_names_from_dict,
-                             encode_base64,
+from .utils.py_utils import (seq_to_string, _camelize_dict, FileManager,
+                             get_repr_names_from_dict, encode_base64,
                              _update_url)
 from .player import TrajectoryPlayer
 from . import interpolate
@@ -34,10 +33,13 @@ def _add_repr_method_shortcut(self, other):
     def make_func_add(rep):
         """return a new function object
         """
+
         def func(this, selection='all', **kwargs):
             """
             """
-            self.add_representation(repr_type=rep[1], selection=selection, **kwargs)
+            self.add_representation(
+                repr_type=rep[1], selection=selection, **kwargs)
+
         func.__doc__ = """Shortcut for `add_representation` method
 
         Examples
@@ -51,28 +53,33 @@ def _add_repr_method_shortcut(self, other):
     def make_func_remove(rep):
         """return a new function object
         """
+
         def func(this, **kwargs):
             """
             """
             self._remove_representations_by_name(repr_name=rep[1], **kwargs)
+
         return func
 
     def make_func_update(rep):
         """return a new function object
         """
+
         def func(this, **kwargs):
             """
             """
             self._update_representations_by_name(repr_name=rep[1], **kwargs)
+
         return func
 
     for rep in REPRESENTATION_NAME_PAIRS:
         for make_func, root_fn in [(make_func_add, 'add'),
-                                   (make_func_update, 'update'), 
+                                   (make_func_update, 'update'),
                                    (make_func_remove, 'remove')]:
-            func= make_func(rep)
+            func = make_func(rep)
             fn = '_'.join((root_fn, rep[0]))
             setattr(self, fn, MethodType(func, other))
+
 
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
@@ -94,7 +101,8 @@ class NGLWidget(DOMWidget):
     _full_stage_parameters = Dict().tag(sync=True)
     _original_stage_parameters = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
-    _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
+    _camera_str = CaselessStrEnum(
+        ['perspective', 'orthographic'],
         default_value='orthographic').tag(sync=True)
     _repr_dict = Dict().tag(sync=False)
     _ngl_component_ids = List().tag(sync=False)
@@ -105,7 +113,11 @@ class NGLWidget(DOMWidget):
     _init_gui = Bool(False).tag(sync=False)
     _hold_image = Bool(False).tag(sync=False)
 
-    def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
+    def __init__(self,
+                 structure=None,
+                 representations=None,
+                 parameters=None,
+                 **kwargs):
         super(NGLWidget, self).__init__(**kwargs)
 
         self._gui = None
@@ -120,13 +132,13 @@ class NGLWidget(DOMWidget):
         self._ngl_displayed_callbacks_after_loaded = []
         _add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
-        self._handle_msg_thread = threading.Thread(target=self.on_msg,
-                args=(self._ngl_handle_msg,))
+        self._handle_msg_thread = threading.Thread(
+            target=self.on_msg, args=(self._ngl_handle_msg, ))
         # # register to get data from JS side
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
-        self._remote_call_thread = RemoteCallThread(self,
-                registered_funcs=['loadFile', 'replaceStructure'])
+        self._remote_call_thread = RemoteCallThread(
+            self, registered_funcs=['loadFile', 'replaceStructure'])
         self._remote_call_thread.start()
         self._trajlist = []
         self._ngl_component_ids = []
@@ -147,17 +159,22 @@ class NGLWidget(DOMWidget):
         if representations:
             self._init_representations = representations
         else:
-            self._init_representations = [
-                {"type": "cartoon", "params": {
+            self._init_representations = [{
+                "type": "cartoon",
+                "params": {
                     "sele": "polymer"
-                }},
-                {"type": "ball+stick", "params": {
+                }
+            }, {
+                "type": "ball+stick",
+                "params": {
                     "sele": "hetero OR mol"
-                }},
-                {"type": "ball+stick", "params": {
+                }
+            }, {
+                "type": "ball+stick",
+                "params": {
                     "sele": "not protein and not nucleic"
-                }}
-            ]
+                }
+            }]
 
         # keep track but making copy
         if structure is not None:
@@ -165,7 +182,10 @@ class NGLWidget(DOMWidget):
 
         self._set_unsync_camera()
         selector = 'nglviewHolder' + str(id(self))
-        self._remote_call('setSelector', target='Widget', args=[selector,])
+        self._remote_call(
+            'setSelector', target='Widget', args=[
+                selector,
+            ])
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
@@ -177,7 +197,10 @@ class NGLWidget(DOMWidget):
     def parameters(self, params):
         params = _camelize_dict(params)
         self._parameters = params
-        self._remote_call('setParameters', target='Widget', args=[params,])
+        self._remote_call(
+            'setParameters', target='Widget', args=[
+                params,
+            ])
 
     @property
     def camera(self):
@@ -194,20 +217,20 @@ class NGLWidget(DOMWidget):
         self._camera_str = value
         # use _remote_call so this function can be called right after
         # self is displayed
-        self._remote_call("setParameters",
-                target='Stage',
-                kwargs=dict(cameraType=self._camera_str))
+        self._remote_call(
+            "setParameters",
+            target='Stage',
+            kwargs=dict(cameraType=self._camera_str))
 
     def _request_stage_parameters(self):
-        self._remote_call('requestUpdateStageParameters',
-                target='Widget')
+        self._remote_call('requestUpdateStageParameters', target='Widget')
 
     @observe('picked')
     def _on_picked(self, change):
         picked = change['new']
         if self.player.widget_picked is not None:
-           self.player.widget_picked.value = json.dumps(picked)
-        
+            self.player.widget_picked.value = json.dumps(picked)
+
     @observe('background')
     def _update_background_color(self, change):
         color = change['new']
@@ -221,12 +244,14 @@ class NGLWidget(DOMWidget):
     @observe('n_components')
     def _handle_n_components_changed(self, change):
         if self.player.widget_repr is not None:
-            component_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'component_slider')
+            component_slider = widget_utils.get_widget_by_name(
+                self.player.widget_repr, 'component_slider')
 
             if change['new'] - 1 >= component_slider.min:
                 component_slider.max = change['new'] - 1
 
-            component_dropdown = widget_utils.get_widget_by_name(self.player.widget_repr, 'component_dropdown')
+            component_dropdown = widget_utils.get_widget_by_name(
+                self.player.widget_repr, 'component_dropdown')
             component_dropdown.options = tuple(self._ngl_component_names)
 
             if change['new'] == 0:
@@ -235,53 +260,71 @@ class NGLWidget(DOMWidget):
 
                 component_slider.max = 0
 
-                reprlist_choices = widget_utils.get_widget_by_name(self.player.widget_repr, 'reprlist_choices')
+                reprlist_choices = widget_utils.get_widget_by_name(
+                    self.player.widget_repr, 'reprlist_choices')
                 reprlist_choices.options = tuple([' '])
 
-                repr_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_slider')
+                repr_slider = widget_utils.get_widget_by_name(
+                    self.player.widget_repr, 'repr_slider')
                 repr_slider.max = 0
 
-                repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
-                repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
+                repr_name_text = widget_utils.get_widget_by_name(
+                    self.player.widget_repr, 'repr_name_text')
+                repr_selection = widget_utils.get_widget_by_name(
+                    self.player.widget_repr, 'repr_selection')
                 repr_name_text.value = ' '
                 repr_selection.value = ' '
 
     @observe('_repr_dict')
     def _handle_repr_dict_changed(self, change):
         if self.player.widget_repr is not None:
-            repr_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_slider')
-            component_slider = widget_utils.get_widget_by_name(self.player.widget_repr, 'component_slider')
+            repr_slider = widget_utils.get_widget_by_name(
+                self.player.widget_repr, 'repr_slider')
+            component_slider = widget_utils.get_widget_by_name(
+                self.player.widget_repr, 'component_slider')
 
-            repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
-            repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
+            repr_name_text = widget_utils.get_widget_by_name(
+                self.player.widget_repr, 'repr_name_text')
+            repr_selection = widget_utils.get_widget_by_name(
+                self.player.widget_repr, 'repr_selection')
 
-            reprlist_choices = widget_utils.get_widget_by_name(self.player.widget_repr, 'reprlist_choices')
-            repr_names = get_repr_names_from_dict(self._repr_dict, component_slider.value)
+            reprlist_choices = widget_utils.get_widget_by_name(
+                self.player.widget_repr, 'reprlist_choices')
+            repr_names = get_repr_names_from_dict(self._repr_dict,
+                                                  component_slider.value)
 
             if change['new'] == {'c0': {}}:
                 repr_selection.value = ''
 
             else:
-                reprlist_choices.options = tuple([str(i) + '-' + name for (i, name) in enumerate(repr_names)])
+                reprlist_choices.options = tuple([
+                    str(i) + '-' + name for (i, name) in enumerate(repr_names)
+                ])
 
                 try:
-                    reprlist_choices.value = reprlist_choices.options[repr_slider.value]
+                    reprlist_choices.value = reprlist_choices.options[
+                        repr_slider.value]
                 except IndexError:
                     if repr_slider.value == 0:
                         # works fine with ipywidgets 5.2.2
-                        reprlist_choices.options = tuple([' ',])
+                        reprlist_choices.options = tuple([
+                            ' ',
+                        ])
                         reprlist_choices.value = ' '
                     else:
-                        reprlist_choices.value = reprlist_choices.options[repr_slider.value-1]
+                        reprlist_choices.value = reprlist_choices.options[
+                            repr_slider.value - 1]
 
                 # e.g: 0-cartoon
                 repr_name_text.value = reprlist_choices.value.split('-')[-1]
 
-                repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
+                repr_slider.max = len(repr_names) - 1 if len(
+                    repr_names) >= 1 else len(repr_names)
 
     def _update_count(self):
-         self.count = max(traj.n_frames for traj in self._trajlist if hasattr(traj,
-                         'n_frames'))
+        self.count = max(
+            traj.n_frames for traj in self._trajlist
+            if hasattr(traj, 'n_frames'))
 
     def _wait_until_finished(self, timeout=0.0001):
         # NGL need to send 'finished' signal to
@@ -299,7 +342,9 @@ class NGLWidget(DOMWidget):
     def _run_on_another_thread(self, func, *args):
         # use `event` to singal
         # func(*args)
-        thread = threading.Thread(target=func, args=args,)
+        thread = threading.Thread(
+            target=func,
+            args=args, )
         thread.daemon = True
         thread.start()
         return thread
@@ -318,8 +363,9 @@ class NGLWidget(DOMWidget):
                 callback(self)
                 if callback._method_name == 'loadFile':
                     self._wait_until_finished()
+
         self._run_on_another_thread(_call, self._event)
-            
+
     def _refresh_render(self):
         """useful when you update coordinates for a single structure.
 
@@ -328,7 +374,7 @@ class NGLWidget(DOMWidget):
         If you are visualizing a trajectory with more than 1 frame, you can use the
         player slider to trigger the refreshing.
         """
-        current_frame = self.frame 
+        current_frame = self.frame
         self.frame = int(1E6)
         self.frame = current_frame
 
@@ -353,8 +399,7 @@ class NGLWidget(DOMWidget):
         if self._theme in ['dark', 'oceans16']:
             from nglview import theme
             display(theme.oceans16())
-            self._remote_call('cleanOutput',
-                              target='Widget')
+            self._remote_call('cleanOutput', target='Widget')
 
     def display(self, gui=False, use_box=False):
         if gui:
@@ -383,19 +428,20 @@ class NGLWidget(DOMWidget):
         >>> view._set_size('100px', '100px')
         >>> view._set_size('50%', '50%')
         '''
-        self._remote_call('setSize', target='Widget',
-                args=[w, h])
+        self._remote_call('setSize', target='Widget', args=[w, h])
 
     def _set_draggable(self, yes=True):
         if yes:
-            self._remote_call('setDraggable',
-                             target='Widget',
-                             args=['',])
+            self._remote_call(
+                'setDraggable', target='Widget', args=[
+                    '',
+                ])
 
         else:
-            self._remote_call('setDraggable',
-                             target='Widget',
-                             args=['destroy',])
+            self._remote_call(
+                'setDraggable', target='Widget', args=[
+                    'destroy',
+                ])
 
     def _set_sync_frame(self):
         self._remote_call("setSyncFrame", target="Widget")
@@ -408,27 +454,30 @@ class NGLWidget(DOMWidget):
 
     def _set_unsync_camera(self):
         self._remote_call("setUnSyncCamera", target="Widget")
-        
+
     def _set_delay(self, delay):
         """unit of millisecond
         """
-        self._remote_call("setDelay", target="Widget", args=[delay,])
+        self._remote_call(
+            "setDelay", target="Widget", args=[
+                delay,
+            ])
 
     def _set_spin(self, axis, angle):
-        self._remote_call('setSpin',
-                          target='Stage',
-                          args=[axis, angle])
+        self._remote_call('setSpin', target='Stage', args=[axis, angle])
+
     def _set_selection(self, selection, component=0, repr_index=0):
-        self._remote_call("setSelection",
-                         target='Representation',
-                         args=[selection],
-                         kwargs=dict(component_index=component,
-                                     repr_index=repr_index))
-        
+        self._remote_call(
+            "setSelection",
+            target='Representation',
+            args=[selection],
+            kwargs=dict(component_index=component, repr_index=repr_index))
+
     def _set_color_by_residue(self, colors, component_index=0, repr_index=0):
-        self._remote_call('setColorByResidue',
-                           target='Widget',
-                           args=[colors, component_index, repr_index])
+        self._remote_call(
+            'setColorByResidue',
+            target='Widget',
+            args=[colors, component_index, repr_index])
 
     def color_by(self, color_scheme, component=0):
         '''update color for all representations of given component
@@ -454,8 +503,10 @@ class NGLWidget(DOMWidget):
         repr_names = get_repr_names_from_dict(self._repr_dict, component)
 
         for index, _ in enumerate(repr_names):
-            self.update_representation(component=component,
-                    repr_index=index, color_scheme=color_scheme)
+            self.update_representation(
+                component=component,
+                repr_index=index,
+                color_scheme=color_scheme)
 
     @property
     def representations(self):
@@ -479,15 +530,12 @@ class NGLWidget(DOMWidget):
         parameters : dict
         """
         parameters = _camelize_dict(parameters)
-        kwargs = dict(component_index=component,
-                      repr_index=repr_index)
+        kwargs = dict(component_index=component, repr_index=repr_index)
         kwargs.update(parameters)
 
-        self._remote_call('setParameters',
-                 target='Representation',
-                 kwargs=kwargs)
-        self._remote_call('requestReprsInfo',
-                 target='Widget')
+        self._remote_call(
+            'setParameters', target='Representation', kwargs=kwargs)
+        self._remote_call('requestReprsInfo', target='Widget')
 
     def set_representations(self, representations, component=0):
         """
@@ -502,28 +550,35 @@ class NGLWidget(DOMWidget):
             assert isinstance(params, dict), 'params must be a dict'
             kwargs = params['params']
             kwargs.update({'component_index': component})
-            self._remote_call('addRepresentation',
-                              target='compList',
-                              args=[params['type'],],
-                              kwargs=kwargs)
+            self._remote_call(
+                'addRepresentation',
+                target='compList',
+                args=[
+                    params['type'],
+                ],
+                kwargs=kwargs)
 
     def _remove_representation(self, component=0, repr_index=0):
-        self._remote_call('removeRepresentation',
-                          target='Widget',
-                          args=[component, repr_index])
+        self._remote_call(
+            'removeRepresentation',
+            target='Widget',
+            args=[component, repr_index])
 
     def _remove_representations_by_name(self, repr_name, component=0):
-        self._remote_call('removeRepresentationsByName',
-                          target='Widget',
-                          args=[repr_name, component])
+        self._remote_call(
+            'removeRepresentationsByName',
+            target='Widget',
+            args=[repr_name, component])
 
-    def _update_representations_by_name(self, repr_name, component=0, **kwargs):
+    def _update_representations_by_name(self, repr_name, component=0,
+                                        **kwargs):
         kwargs = _camelize_dict(kwargs)
 
-        self._remote_call('updateRepresentationsByName',
-                          target='Widget',
-                          args=[repr_name, component],
-                          kwargs=kwargs)
+        self._remote_call(
+            'updateRepresentationsByName',
+            target='Widget',
+            args=[repr_name, component],
+            kwargs=kwargs)
 
     def _display_repr(self, component=0, repr_index=0, name=None):
         c = 'c' + str(component)
@@ -549,12 +604,14 @@ class NGLWidget(DOMWidget):
                         if self.player.interpolate:
                             t = self.player.iparams.get('t', 0.5)
                             step = self.player.iparams.get('step', 1)
-                            coordinates_dict[traj_index] = interpolate.linear(index,
-                                        t=t, traj=trajectory, step=step)
+                            coordinates_dict[traj_index] = interpolate.linear(
+                                index, t=t, traj=trajectory, step=step)
                         else:
-                            coordinates_dict[traj_index] = trajectory.get_coordinates(index)
+                            coordinates_dict[
+                                traj_index] = trajectory.get_coordinates(index)
                     else:
-                        coordinates_dict[traj_index] = np.empty((0), dtype='f4')
+                        coordinates_dict[traj_index] = np.empty(
+                            (0), dtype='f4')
                 except (IndexError, ValueError):
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
 
@@ -579,11 +636,15 @@ class NGLWidget(DOMWidget):
 
         if not self._send_binary:
             # send base64
-            encoded_coordinates_dict = dict((k, encode_base64(v))
-                                 for (k, v) in self._coordinates_dict.items())
+            encoded_coordinates_dict = dict(
+                (k, encode_base64(v))
+                for (k, v) in self._coordinates_dict.items())
             mytime = time.time() * 1000
-            self.send({'type': 'base64_single', 'data': encoded_coordinates_dict,
-                'mytime': mytime})
+            self.send({
+                'type': 'base64_single',
+                'data': encoded_coordinates_dict,
+                'mytime': mytime
+            })
         else:
             # send binary
             buffers = []
@@ -592,8 +653,13 @@ class NGLWidget(DOMWidget):
                 buffers.append(arr.astype('f4').tobytes())
                 coordinates_meta[index] = index
             mytime = time.time() * 1000
-            self.send({'type': 'binary_single', 'data': coordinates_meta,
-                'mytime': mytime}, buffers=buffers)
+            self.send(
+                {
+                    'type': 'binary_single',
+                    'data': coordinates_meta,
+                    'mytime': mytime
+                },
+                buffers=buffers)
 
     @observe('frame')
     def on_frame_changed(self, change):
@@ -615,9 +681,10 @@ class NGLWidget(DOMWidget):
         component : int, default 0 (first model)
             You need to keep track how many components you added.
         '''
-        self._remote_call("clearRepresentations",
-                target='compList',
-                kwargs={'component_index': component})
+        self._remote_call(
+            "clearRepresentations",
+            target='compList',
+            kwargs={'component_index': component})
 
     @_update_url
     def _add_shape(self, shapes, name='shape'):
@@ -646,8 +713,7 @@ class NGLWidget(DOMWidget):
         >>> view._add_shape([sphere, arrow], name='my_shape')
         """
 
-        self._remote_call('addShape', target='Widget',
-                args=[name, shapes])
+        self._remote_call('addShape', target='Widget', args=[name, shapes])
 
     @_update_url
     def add_representation(self, repr_type, selection='all', **kwargs):
@@ -708,11 +774,13 @@ class NGLWidget(DOMWidget):
 
         params = d['params']
         params.update({'component_index': component})
-        self._remote_call('addRepresentation',
-                          target='compList',
-                          args=[d['type'],],
-                          kwargs=params)
-
+        self._remote_call(
+            'addRepresentation',
+            target='compList',
+            args=[
+                d['type'],
+            ],
+            kwargs=params)
 
     def center(self, *args, **kwargs):
         """alias of `center_view`
@@ -726,9 +794,11 @@ class NGLWidget(DOMWidget):
         --------
         view.center_view(selection='1-4')
         """
-        self._remote_call('centerView', target='compList',
-                          args=[zoom, selection],
-                          kwargs={'component_index': component})
+        self._remote_call(
+            'centerView',
+            target='compList',
+            args=[zoom, selection],
+            kwargs={'component_index': component})
 
     @observe('_image_data')
     def _on_render_image(self, change):
@@ -742,7 +812,8 @@ class NGLWidget(DOMWidget):
         if self._hold_image:
             self._image_array.append(change['new'])
 
-    def render_image(self, frame=None,
+    def render_image(self,
+                     frame=None,
                      factor=4,
                      antialias=True,
                      trim=False,
@@ -774,15 +845,15 @@ class NGLWidget(DOMWidget):
         """
         if frame is not None:
             self.frame = frame
-        params = dict(factor=factor,
-                      antialias=antialias,
-                      trim=trim,
-                      transparent=transparent)
-        self._remote_call('_exportImage',
-                          target='Widget',
-                          kwargs=params)
+        params = dict(
+            factor=factor,
+            antialias=antialias,
+            trim=trim,
+            transparent=transparent)
+        self._remote_call('_exportImage', target='Widget', kwargs=params)
 
-    def download_image(self, filename='screenshot.png',
+    def download_image(self,
+                       filename='screenshot.png',
                        factor=4,
                        antialias=True,
                        trim=False,
@@ -798,14 +869,18 @@ class NGLWidget(DOMWidget):
         trim : bool, default False
         transparent : bool, default False
         """
-        params = dict(factor=factor,
-                      antialias=antialias,
-                      trim=trim,
-                      transparent=transparent)
-        self._remote_call('_downloadImage',
-                          target='Widget',
-                          args=[filename,],
-                          kwargs=params)
+        params = dict(
+            factor=factor,
+            antialias=antialias,
+            trim=trim,
+            transparent=transparent)
+        self._remote_call(
+            '_downloadImage',
+            target='Widget',
+            args=[
+                filename,
+            ],
+            kwargs=params)
 
     def _get_movie_maker(self, in_memory=True, **kwargs):
         ''' create MovieMaker object
@@ -830,7 +905,7 @@ class NGLWidget(DOMWidget):
         from nglview.contrib.movie import MovieMaker
 
         if 'in_memory' not in kwargs:
-            kwargs['in_memory'] = in_memory 
+            kwargs['in_memory'] = in_memory
 
         movie_maker = MovieMaker(self, **kwargs)
         return movie_maker
@@ -854,13 +929,16 @@ class NGLWidget(DOMWidget):
             name = data_dict.pop('name') + '\n'
             selection = data_dict.get('sele', '') + '\n'
             # json change True to true
-            data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
+            data_dict_json = json.dumps(data_dict).replace(
+                'true', 'True').replace('false', 'False')
             data_dict_json = data_dict_json.replace('null', '"null"')
 
             if self.player.widget_repr is not None:
                 # TODO: refactor
-                repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
-                repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
+                repr_name_text = widget_utils.get_widget_by_name(
+                    self.player.widget_repr, 'repr_name_text')
+                repr_selection = widget_utils.get_widget_by_name(
+                    self.player.widget_repr, 'repr_selection')
                 repr_name_text.value = name
                 repr_selection.value = selection
 
@@ -879,10 +957,10 @@ class NGLWidget(DOMWidget):
                 self._event.set()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
-        self._remote_call('requestReprParameters',
-                target='Widget',
-                args=[component,
-                      repr_index])
+        self._remote_call(
+            'requestReprParameters',
+            target='Widget',
+            args=[component, repr_index])
 
     def add_structure(self, structure, **kwargs):
         '''add structure to view
@@ -903,11 +981,12 @@ class NGLWidget(DOMWidget):
         nglview.NGLWidget.add_component
         '''
         if not isinstance(structure, Structure):
-            raise ValueError('{} is not an instance of Structure'.format(structure))
+            raise ValueError(
+                '{} is not an instance of Structure'.format(structure))
         self._load_data(structure, **kwargs)
         self._ngl_component_ids.append(structure.id)
         if self.n_components > 1:
-            self.center_view(component=len(self._ngl_component_ids)-1)
+            self.center_view(component=len(self._ngl_component_ids) - 1)
         self._update_component_auto_completion()
 
     def add_trajectory(self, trajectory, **kwargs):
@@ -1010,9 +1089,10 @@ class NGLWidget(DOMWidget):
                 passing_buffer = True
                 binary = False
             else:
-                fh = FileManager(obj,
-                                 ext=kwargs.get('ext'),
-                                 compressed=kwargs.get('compressed'))
+                fh = FileManager(
+                    obj,
+                    ext=kwargs.get('ext'),
+                    compressed=kwargs.get('compressed'))
                 # assume passing string
                 blob = fh.read()
                 passing_buffer = not fh.use_filename
@@ -1028,19 +1108,17 @@ class NGLWidget(DOMWidget):
                 # send base64
                 blob = base64.b64encode(blob).decode('utf8')
             blob_type = 'blob' if passing_buffer else 'path'
-            args=[{'type': blob_type, 'data': blob, 'binary': binary}]
+            args = [{'type': blob_type, 'data': blob, 'binary': binary}]
         else:
             # is_url
             blob_type = 'url'
             url = obj
-            args=[{'type': blob_type, 'data': url, 'binary': False}]
+            args = [{'type': blob_type, 'data': url, 'binary': False}]
 
         name = py_utils.get_name(obj, kwargs2)
         self._ngl_component_names.append(name)
-        self._remote_call("loadFile",
-                target='Stage',
-                args=args,
-                kwargs=kwargs2)
+        self._remote_call(
+            "loadFile", target='Stage', args=args, kwargs=kwargs2)
 
     def remove_component(self, component_id):
         """remove component by its uuid
@@ -1062,13 +1140,18 @@ class NGLWidget(DOMWidget):
         self._ngl_component_ids.remove(component_id)
         self._ngl_component_names.pop(component_index)
 
-        self._remote_call('removeComponent',
-                target='Stage',
-                args=[component_index,])
-        
+        self._remote_call(
+            'removeComponent', target='Stage', args=[
+                component_index,
+            ])
+
         self._update_component_auto_completion()
 
-    def _remote_call(self, method_name, target='Widget', args=None, kwargs=None):
+    def _remote_call(self,
+                     method_name,
+                     target='Widget',
+                     args=None,
+                     kwargs=None):
         """call NGL's methods from Python.
         
         Parameters
@@ -1111,6 +1194,7 @@ class NGLWidget(DOMWidget):
 
         def callback(widget, msg=msg):
             widget.send(msg)
+
         callback._method_name = method_name
 
         if self.loaded:
@@ -1140,10 +1224,13 @@ class NGLWidget(DOMWidget):
             if comp_id in traj_ids:
                 traj = self._get_traj_by_id(comp_id)
                 traj.shown = False
-            self._remote_call("setVisibility",
-                    target='compList',
-                    args=[False,],
-                    kwargs={'component_index': index})
+            self._remote_call(
+                "setVisibility",
+                target='compList',
+                args=[
+                    False,
+                ],
+                kwargs={'component_index': index})
 
     def show(self, **kwargs):
         """shortcut of `show_only`
@@ -1170,18 +1257,23 @@ class NGLWidget(DOMWidget):
             else:
                 traj = None
             if index in indices_:
-                args = [True,]
+                args = [
+                    True,
+                ]
                 if traj is not None:
                     traj.shown = True
             else:
-                args = [False,]
+                args = [
+                    False,
+                ]
                 if traj is not None:
                     traj.shown = False
 
-            self._remote_call("setVisibility",
-                    target='compList',
-                    args=args,
-                    kwargs={'component_index': index})
+            self._remote_call(
+                "setVisibility",
+                target='compList',
+                args=args,
+                kwargs={'component_index': index})
 
     def _js_console(self):
         self.send(dict(type='get', data='any'))
@@ -1204,7 +1296,7 @@ class NGLWidget(DOMWidget):
         trajids = [traj.id for traj in self._trajlist]
 
         for index, cid in enumerate(self._ngl_component_ids):
-            comp = ComponentViewer(self, index) 
+            comp = ComponentViewer(self, index)
             name = 'component_' + str(index)
             setattr(self, name, comp)
 
@@ -1215,8 +1307,9 @@ class NGLWidget(DOMWidget):
     def __getitem__(self, index):
         """return ComponentViewer
         """
-        postive_index = py_utils.get_positive_index(index, len(self._ngl_component_ids))
-        return ComponentViewer(self, postive_index) 
+        postive_index = py_utils.get_positive_index(
+            index, len(self._ngl_component_ids))
+        return ComponentViewer(self, postive_index)
 
     def __iter__(self):
         """return ComponentViewer
@@ -1261,17 +1354,11 @@ class ComponentViewer(object):
         self._view = view
         self._index = index
         _add_repr_method_shortcut(self, self._view)
-        self._borrow_attribute(self._view, ['clear_representations',
-                                            '_remove_representations_by_name',
-                                            '_update_representations_by_name',
-                                            'center_view',
-                                            'center',
-                                            'clear',
-                                            'set_representations'],
-
-                                            ['get_structure_string',
-                                             'get_coordinates',
-                                             'n_frames'])
+        self._borrow_attribute(self._view, [
+            'clear_representations', '_remove_representations_by_name',
+            '_update_representations_by_name', 'center_view', 'center',
+            'clear', 'set_representations'
+        ], ['get_structure_string', 'get_coordinates', 'n_frames'])
 
     @property
     def id(self):
@@ -1280,10 +1367,13 @@ class ComponentViewer(object):
     def hide(self):
         """set invisibility for given components (by their indices)
         """
-        self._view._remote_call("setVisibility",
-                target='compList',
-                args=[False,],
-                kwargs={'component_index': self._index})
+        self._view._remote_call(
+            "setVisibility",
+            target='compList',
+            args=[
+                False,
+            ],
+            kwargs={'component_index': self._index})
         traj = self._view._get_traj_by_id(self.id)
         if traj is not None:
             traj.shown = False
@@ -1291,10 +1381,13 @@ class ComponentViewer(object):
     def show(self):
         """set invisibility for given components (by their indices)
         """
-        self._view._remote_call("setVisibility",
-                target='compList',
-                args=[True,],
-                kwargs={'component_index': self._index})
+        self._view._remote_call(
+            "setVisibility",
+            target='compList',
+            args=[
+                True,
+            ],
+            kwargs={'component_index': self._index})
 
         traj = self._view._get_traj_by_id(self.id)
         if traj is not None:
@@ -1302,7 +1395,8 @@ class ComponentViewer(object):
 
     def add_representation(self, repr_type, selection='all', **kwargs):
         kwargs['component'] = self._index
-        self._view.add_representation(repr_type=repr_type, selection=selection, **kwargs)
+        self._view.add_representation(
+            repr_type=repr_type, selection=selection, **kwargs)
 
     def _borrow_attribute(self, view, attributes, trajectory_atts=None):
         from functools import partial
@@ -1314,9 +1408,9 @@ class ComponentViewer(object):
             view_att = getattr(view, attname)
             setattr(self, '_' + attname, MethodType(view_att, view))
             self_att = partial(getattr(view, attname), component=self._index)
-            setattr(self, attname, self_att) 
+            setattr(self, attname, self_att)
 
         if traj is not None and trajectory_atts is not None:
             for attname in trajectory_atts:
                 traj_att = getattr(traj, attname)
-                setattr(self, attname, traj_att) 
+                setattr(self, attname, traj_att)

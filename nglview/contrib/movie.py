@@ -3,6 +3,7 @@ import time
 import moviepy.editor as mpy
 import threading
 
+
 class MovieMaker(object):
     """ Unstable API
 
@@ -75,7 +76,7 @@ class MovieMaker(object):
         conda install freeimage
 
     """
-    
+
     def __init__(self,
                  view,
                  download_folder=None,
@@ -124,32 +125,38 @@ class MovieMaker(object):
                         self.view.frame = i
                         time.sleep(self.timeout)
                         if not self.in_memory:
-                            self.view.download_image(self.prefix + '.' + str(i) + '.png',
-                                    **self.render_params)
+                            self.view.download_image(
+                                self.prefix + '.' + str(i) + '.png',
+                                **self.render_params)
                         else:
                             self.view.render_image(**self.render_params)
                         time.sleep(self.timeout)
                         if self.in_memory:
-                            rgb = self._base64_to_ndarray(self.view._image_data)
+                            rgb = self._base64_to_ndarray(
+                                self.view._image_data)
                             self._image_array.append(rgb)
                 if not self.in_memory:
                     template = "{}/{}.{}.png"
-                    image_files = [image_dir for image_dir in 
-                                      (template.format(self.download_folder,
-                                                               self.prefix,
-                                                               str(i))
-                                       for i in self._time_range)
-                                   if os.path.exists(image_dir)]
+                    image_files = [
+                        image_dir
+                        for image_dir in (template.format(self.download_folder,
+                                                          self.prefix, str(i))
+                                          for i in self._time_range)
+                        if os.path.exists(image_dir)
+                    ]
                 else:
                     image_files = self._image_array
             if not self._event.is_set():
                 clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
                 if self.output.endswith('.gif'):
-                    clip.write_gif(self.output, fps=self.fps, **self.moviepy_params)
+                    clip.write_gif(
+                        self.output, fps=self.fps, **self.moviepy_params)
                 else:
-                    clip.write_videofile(self.output, fps=self.fps, **self.moviepy_params)
+                    clip.write_videofile(
+                        self.output, fps=self.fps, **self.moviepy_params)
                 self._image_array = []
-        self.thread = threading.Thread(target=_make, args=(self._event,))
+
+        self.thread = threading.Thread(target=_make, args=(self._event, ))
         self.thread.daemon = True
         self.thread.start()
 

@@ -1,8 +1,9 @@
-
 __all__ = ['linear']
+
 
 def lerp(a, b, t):
     return (b - a) * t + a
+
 
 def linear(index, t, traj, step=1):
     """
@@ -18,7 +19,7 @@ def linear(index, t, traj, step=1):
     # need to copy coordinates to avoid early memory free
     # in pytraj
     c = traj.get_coordinates(index).copy()
-    cp = traj.get_coordinates(min(index + step, traj.n_frames-1)).copy()
+    cp = traj.get_coordinates(min(index + step, traj.n_frames - 1)).copy()
 
     coords = lerp(cp, c, t)
     return coords
