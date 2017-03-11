@@ -1,5 +1,6 @@
 from .utils.py_utils import _update_url
 
+
 class Shape(object):
     """TODO: doc
 
@@ -31,8 +32,11 @@ class Shape(object):
 
         def make_func(name):
             def func(this, *args):
-                args_with_name = [name, ] + list(args)
+                args_with_name = [
+                    name,
+                ] + list(args)
                 self.add(*args_with_name)
+
             func.__doc__ = 'check `add` method'
             return func
 
@@ -54,4 +58,6 @@ class Shape(object):
         {ngl_url}
         """
 
-        self.view._add_shape([args,])
+        self.view._add_shape([
+            args,
+        ])

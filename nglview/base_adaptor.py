@@ -1,6 +1,5 @@
 from __future__ import print_function, absolute_import
 import uuid
-
 """abstract base class.
 """
 
@@ -34,6 +33,7 @@ class Trajectory(object):
     @property
     def n_frames(self):
         raise NotImplementedError()
+
 
 __doc__ = """
 Extend NGLView classes

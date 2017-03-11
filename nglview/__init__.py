@@ -8,7 +8,6 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
 
-
 # Register nbextension
 
 
@@ -20,11 +19,13 @@ def _jupyter_nbextension_paths():
         'require': 'nglview-js-widgets/extension'
     }]
 
+
 def _jupyter_labextension_paths():
     return [{
         'name': 'nglview-js-widgets',
         'src': 'staticlab',
     }]
+
 
 # call install after defining
 # _jupyter_nbextension_paths and _jupyter_labextension_paths methods

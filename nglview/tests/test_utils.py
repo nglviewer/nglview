@@ -10,18 +10,23 @@ import gzip
 # local
 from utils import get_fn
 
+
 def assert_equal(x, y):
     assert x == y
+
 
 def test_get_name():
     fn = nglview.datafiles.PDB
     assert_equal(py_utils.get_name(object, dict(name='hello')), 'hello')
-    assert_equal(py_utils.get_name(nglview.FileStructure(fn), dict()),
-            'nglview.adaptor.FileStructure')
+    assert_equal(
+        py_utils.get_name(nglview.FileStructure(fn), dict()),
+        'nglview.adaptor.FileStructure')
+
 
 def test_seq_to_string():
     assert_equal(seq_to_string([1, 2, 3]), '@1,2,3')
     assert_equal(seq_to_string('@1,2,3'), '@1,2,3')
+
 
 def test_camelize():
     assert_equal(_camelize('remote_call'), 'remoteCall')
@@ -45,10 +50,12 @@ def test_camelize():
     assert_equal(_camelize('maxDistance'), 'maxDistance')
     assert_equal(_camelize('color'), 'color')
 
+
 def test_dict():
     kwargs = dict(default_representation=True)
     kwargs2 = _camelize_dict(kwargs)
     assert 'defaultRepresentation' in kwargs2
+
 
 def test_file_manager_use_url():
     fh = FileManager('rcsb://1tsu.pdb')
@@ -64,6 +71,7 @@ def test_file_manager_use_url():
     assert fh.is_url
     assert_equal(fh.ext, 'pdb')
     assert fh.is_compressed
+
 
 def test_file_not_use_filename():
     src = os.path.join(os.path.dirname(nglview.__file__), '__init__.py')
@@ -104,12 +112,13 @@ def test_file_current_folder():
         assert fh_content != src2.read()
 
     fh3 = FileManager(src)
-    content = open(src, 'rb').read() 
+    content = open(src, 'rb').read()
     assert_equal(fh3.read(force_buffer=True), content)
 
     # blob
     fh4 = FileManager(content)
     assert_equal(fh4.read(force_buffer=True), content)
+
 
 def test_file_gz():
     src = get_fn('tz2_2.pdb.gz')
@@ -140,8 +149,9 @@ def test_file_gz():
     fh4 = FileManager(src, compressed=True)
     assert fh4.is_compressed
 
-    content = gzip.open(src).read() 
+    content = gzip.open(src).read()
     assert_equal(fh4.read(force_buffer=True), content)
+
 
 def test_file_passing_blob():
     src = get_fn('tz2.pdb')
@@ -151,6 +161,7 @@ def test_file_passing_blob():
     assert not fm.is_filename
     with pytest.raises(ValueError):
         fm.ext
+
 
 def test_file_passing_blob_from_gzip():
     import gzip
@@ -163,15 +174,25 @@ def test_file_passing_blob_from_gzip():
     with pytest.raises(ValueError):
         fm.ext
 
-def test_get_repr_names_from_dict():
-    fake_repr_dict = dict(c0={'0': {'name': 'cartoon'},
-                              '1': {'name': 'licorice'}},
-                          c1={'0': {'name': 'base'}})
 
-    assert_equal(py_utils.get_repr_names_from_dict(fake_repr_dict, 0),
-                    ['cartoon', 'licorice'])
-    assert_equal(py_utils.get_repr_names_from_dict(fake_repr_dict, 1),
-                    ['base'])
+def test_get_repr_names_from_dict():
+    fake_repr_dict = dict(
+        c0={'0': {
+            'name': 'cartoon'
+        },
+            '1': {
+                'name': 'licorice'
+            }},
+        c1={'0': {
+            'name': 'base'
+        }})
+
+    assert_equal(
+        py_utils.get_repr_names_from_dict(fake_repr_dict, 0),
+        ['cartoon', 'licorice'])
+    assert_equal(
+        py_utils.get_repr_names_from_dict(fake_repr_dict, 1), ['base'])
+
 
 def test_js_utils():
     js_utils.launch_qtconsole()

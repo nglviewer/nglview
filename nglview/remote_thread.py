@@ -1,6 +1,7 @@
 import time
 import threading
 
+
 class RemoteCallThread(threading.Thread):
     def __init__(self, view, timeout=0.1, registered_funcs=['loadFile']):
         '''
