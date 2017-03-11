@@ -511,8 +511,8 @@ def test_show_parmed():
     ngl_traj.only_save_1st_model = False
     ngl_traj.get_structure_string()
 
-@unittest.skipUnless(has_rdkit and not sys.platform.startswith('darwin'),
-                    'must have rdkit and linux')
+@unittest.skipUnless(has_rdkit,
+                    'must have rdkit')
 def test_show_rdkit():
     rdkit_mol = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4')) 
     AllChem.EmbedMultipleConfs(rdkit_mol, useExpTorsionAnglePrefs=True, useBasicKnowledge=True) 
