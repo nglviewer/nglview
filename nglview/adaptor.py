@@ -189,8 +189,8 @@ class MDTrajTrajectory(Trajectory, Structure):
         with tempfolder():
             fname = 'tmp.pdb'
             self.trajectory[0].save_pdb(fname)
-            pdb_string = os.fdopen(fd).read()
-            # os.close( fd )
+            with open(fname) as fh:
+                pdb_string = fh.read()
         return pdb_string
 
 
@@ -225,7 +225,8 @@ class PyTrajTrajectory(Trajectory, Structure):
         fname = 'tmp.pdb'
         with tempfolder():
             self.trajectory[:1].save(fname, format="pdb", overwrite=True)
-            pdb_string = os.fdopen(fd).read()
+            with open(fname) as fh:
+                pdb_string = fh.read()
         return pdb_string
 
 
@@ -260,7 +261,8 @@ class ParmEdTrajectory(Trajectory, Structure):
                     coordinates=self.trajectory.coordinates)
             else:
                 self.trajectory.save(fname, overwrite=True)
-            pdb_string = os.fdopen(fd).read()
+            with open(fname) as fh:
+                pdb_string = fh.read()
         return pdb_string
 
 
@@ -347,7 +349,8 @@ class HTMDTrajectory(Trajectory):
         fname = 'tmp.pdb'
         with tempfolder():
             self.mol.write(fname)
-            pdb_string = os.fdopen(fd).read()
+            with open(fname) as fh:
+                pdb_string = fh.read()
         return pdb_string
 
 
