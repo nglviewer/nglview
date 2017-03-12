@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.theme.theme &#8212; NGLView 0.6.2.3 documentation</title>
+    <title>nglview.theme.theme &#8212; NGLView 0.6.2.3+8.gd5331cc documentation</title>
     
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.6.2.3',
+        VERSION:     '0.6.2.3+8.gd5331cc',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.2.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.2.3+8.gd5331cc documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -72,9 +72,11 @@
 <span class="s2">&lt;/script&gt;</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
+
 <span class="k">def</span> <span class="nf">_get_theme</span><span class="p">(</span><span class="n">css_file</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">HTML</span>
     <span class="k">return</span> <span class="n">HTML</span><span class="p">(</span><span class="n">_get_css_content</span><span class="p">(</span><span class="n">css_file</span><span class="p">))</span>
+
 
 <span class="k">def</span> <span class="nf">_get_css_content</span><span class="p">(</span><span class="n">css_file</span><span class="p">):</span>
     <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
@@ -82,8 +84,10 @@
     <span class="n">css</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">css_file</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">css</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="oceans16"><a class="viewcode-back" href="../../../_api/nglview.theme.html#nglview.theme.theme.oceans16">[docs]</a><span class="k">def</span> <span class="nf">oceans16</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">_get_theme</span><span class="p">(</span><span class="s1">&#39;oceans16.css&#39;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="reset"><a class="viewcode-back" href="../../../_api/nglview.theme.html#nglview.theme.theme.reset">[docs]</a><span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="n">hide_toolbar</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">display</span>
@@ -125,7 +129,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.2.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.2.3+8.gd5331cc documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
