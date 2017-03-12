@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nglview.utils.js_utils &#8212; NGLView 0.6.2.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.6.2.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.2.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for nglview.utils.js_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">HTML</span>
+
+<span class="n">__alll__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;clean_error_output&#39;</span><span class="p">,</span> <span class="s1">&#39;launch_qtconsole&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;clean_empty_output_area&#39;</span><span class="p">,</span> <span class="s1">&#39;open_url_template&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;_set_ipython_cell&#39;</span><span class="p">,</span> <span class="s1">&#39;ngl_demo&#39;</span><span class="p">,</span> <span class="s1">&#39;init_funcs&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;_move_notebook_to_the_right&#39;</span><span class="p">,</span> <span class="s1">&#39;_move_notebook_to_the_left&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;_reset_notebook&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;_set_notebook_draggable&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../_api/nglview.jsutils.html#nglview.utils.js_utils.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="n">command</span><span class="p">))</span></div>
+
+<span class="c1"># cell.clear_output()</span>
+<div class="viewcode-block" id="hide_toolbar"><a class="viewcode-back" href="../../../_api/nglview.jsutils.html#nglview.utils.js_utils.hide_toolbar">[docs]</a><span class="k">def</span> <span class="nf">hide_toolbar</span><span class="p">():</span>
+    <span class="n">run</span><span class="p">(</span><span class="s2">&quot;$(&#39;#maintoolbar&#39;).hide()&quot;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s2">&quot;$(&#39;#header-container&#39;).hide()&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="show_toolbar"><a class="viewcode-back" href="../../../_api/nglview.jsutils.html#nglview.utils.js_utils.show_toolbar">[docs]</a><span class="k">def</span> <span class="nf">show_toolbar</span><span class="p">():</span>
+    <span class="n">run</span><span class="p">(</span><span class="s2">&quot;$(&#39;#maintoolbar&#39;).show()&quot;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s2">&quot;$(&#39;#header-container&#39;).show()&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="execute"><a class="viewcode-back" href="../../../_api/nglview.jsutils.html#nglview.utils.js_utils.execute">[docs]</a><span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+    <span class="n">run</span><span class="p">(</span><span class="s1">&#39;Jupyter.notebook.kernel.execute(&quot;</span><span class="si">{}</span><span class="s1">&quot;)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="p">))</span></div>
+
+<span class="k">def</span> <span class="nf">_set_notebook_width</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="s1">&#39;20%&#39;</span><span class="p">,</span> <span class="n">left_padding</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    var cb = Jupyter.notebook.container;</span>
+
+<span class="s2">    cb.width(&#39;</span><span class="si">{width}</span><span class="s2">&#39;);</span>
+
+<span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">left_padding</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">offset_str</span> <span class="o">=</span> <span class="s2">&quot;cb.offset({{&#39;left&#39;: </span><span class="si">{}</span><span class="s2">}})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">left_padding</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">offset_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">script_template</span> <span class="o">+</span> <span class="n">offset_str</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_set_notebook_draggable</span><span class="p">(</span><span class="n">yes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    var x = $(&#39;#notebook-container&#39;);</span>
+<span class="s2">    x.draggable(</span><span class="si">{args}</span><span class="s2">);</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">yes</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">(</span><span class="n">script_template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{args}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">run</span><span class="p">(</span><span class="n">script_template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{args}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&quot;destroy&quot;&#39;</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">_move_notebook_to_the_right</span><span class="p">():</span>
+    <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    var x = $(&#39;#notebook-container&#39;);</span>
+<span class="s2">    x.css({position: &quot;relative&quot;, left: &quot;20%&quot;});</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">script_template</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_move_notebook_to_the_left</span><span class="p">():</span>
+    <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    var cb = Jupyter.notebook.container;</span>
+
+<span class="s2">    cb.offset({&#39;left&#39;: 0})</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">script_template</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_reset_notebook</span><span class="p">():</span>
+    <span class="n">script_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    var x = $(&#39;#notebook-container&#39;);</span>
+<span class="s2">    x.width(&#39;30%&#39;);</span>
+<span class="s2">    x.css({position: &quot;relative&quot;, left: &quot;0%&quot;});</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">script_template</span><span class="p">)</span>
+
+
+<span class="n">clean_empty_output_area</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">var output_area = $(&quot;.output_area&quot;);</span>
+
+<span class="s2">for (var i=0; i &lt; output_area.length; i++){</span>
+<span class="s2">    if (!output_area[i].innerText){</span>
+<span class="s2">        output_area[i].remove();</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+
+<span class="n">launch_qtconsole</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Jupyter.notebook.kernel.execute(&#39;%qtconsole&#39;)</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+
+<span class="n">open_url_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">window.open(</span><span class="si">{url}</span><span class="s2">);</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">clean_error_output</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">var cells = Jupyter.notebook.get_cells();</span>
+
+<span class="s2">for (var i = 0; i &lt; cells.length; i++){</span>
+<span class="s2">    var cell = cells[i];</span>
+<span class="s2">    if (cell.output_area.outputs.length &gt; 0) {</span>
+<span class="s2">        var out = cell.output_area.outputs[0];</span>
+<span class="s2">        if (out.output_type == &#39;error&#39;) {</span>
+<span class="s2">            cell.clear_output();</span>
+<span class="s2">        }</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_set_ipython_cell</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="s1">&#39;#67a9cf&#39;</span><span class="p">):</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    var setIPythonLikeCell = function(){</span>
+<span class="s2">        //var cell = Jupyter.notebook.insert_cell_at_bottom();</span>
+<span class="s2">        var cell = Jupyter.notebook.get_selected_cell();</span>
+<span class="s2">        var $el = cell.element;</span>
+<span class="s2">        cell.set_text(&#39;&#39;);</span>
+<span class="s2">        $el.css({&#39;background&#39;: &#39;</span><span class="si">%s</span><span class="s2">&#39;});</span>
+
+<span class="s2">        var handler = function(event) {</span>
+<span class="s2">            var selected_cell = Jupyter.notebook.get_selected_cell();</span>
+<span class="s2">            if (selected_cell.cell_id === cell.cell_id){</span>
+<span class="s2">                selected_cell.execute();</span>
+<span class="s2">                selected_cell.set_text(&#39;&#39;);</span>
+<span class="s2">            }</span>
+<span class="s2">            return false;</span>
+<span class="s2">        };</span>
+
+<span class="s2">        var action = {</span>
+<span class="s2">            help: &#39;run cell&#39;,</span>
+<span class="s2">            help_index: &#39;zz&#39;,</span>
+<span class="s2">            handler: handler</span>
+<span class="s2">        };</span>
+
+<span class="s2">        Jupyter.keyboard_manager.edit_shortcuts.add_shortcut(&#39;enter&#39;, action); </span>
+<span class="s2">    };</span>
+
+<span class="s2">    setIPythonLikeCell()</span>
+<span class="s2">    &quot;&quot;&quot;</span> <span class="o">%</span> <span class="n">background</span>
+
+    <span class="n">cm2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    var cell = Jupyter.notebook.get_selected_cell();</span>
+<span class="s2">    cell.element.draggable().resizable();</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">cm2</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ngl_demo"><a class="viewcode-back" href="../../../_api/nglview.jsutils.html#nglview.utils.js_utils.ngl_demo">[docs]</a><span class="k">def</span> <span class="nf">ngl_demo</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;make a viewport, create stage object and populate NGL namespace</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;div id=&#39;viewport&#39;&gt;&lt;/div&gt;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">        $(&#39;#viewport&#39;).width(</span><span class="si">%s</span><span class="s2">).height(</span><span class="si">%s</span><span class="s2">);</span>
+<span class="s2">    &lt;/script&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+
+    <span class="n">command2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">        var NGL = require(&#39;nbextensions/nglview/index&#39;).NGL;</span>
+<span class="s2">        var stage = new NGL.Stage(&#39;viewport&#39;)</span>
+<span class="s2">    &lt;/script&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">command2</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="init_funcs"><a class="viewcode-back" href="../../../_api/nglview.jsutils.html#nglview.utils.js_utils.init_funcs">[docs]</a><span class="k">def</span> <span class="nf">init_funcs</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;print</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">        var print = function(x){</span>
+<span class="s2">            for (var i in x){</span>
+<span class="s2">                console.log(i)</span>
+<span class="s2">            }</span>
+<span class="s2">        }</span>
+<span class="s2">    &lt;/script&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">command</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 0.6.2.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
+      Last updated on Mar 12, 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>
