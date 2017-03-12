@@ -54,7 +54,7 @@ with JupyterLab.
 
     `pip install nglview`
 
-- Bugs: There is [a bug](https://github.com/ipython/ipywidgets/issues/1044) in `ipywidgets 6.0.0`, so we suggest to use `ipywidgets 5.2.2` for now.
+- Bugs: There is [a bug](https://github.com/ipython/ipywidgets/issues/1044#issuecomment-276458101) in `ipywidgets 6.0.0`, so we suggest to use `ipywidgets 5.2.2` for now.
 
 Development version
 -------------------
