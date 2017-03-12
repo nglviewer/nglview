@@ -6,29 +6,27 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Table of contents &#8212; NGLView 0.6.2.1+16.g9d243d7 documentation</title>
+    <title>Table of contents &#8212; NGLView 0.6.2.3 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6.2.1+16.g9d243d7',
+        VERSION:     '0.6.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/jupyter-js-widgets@^2.0.13/dist/embed.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="NGLView 0.6.2.1+16.g9d243d7 documentation" href="#" /> 
+    <link rel="search" title="Search" href="search.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -40,7 +38,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.6.2.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -69,6 +67,8 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <a class="reference external" href="https://www.htmd.org">HTMD</a></p>
 <p>Should work with Python 2 and 3. If you experience problems, please file
 an <a class="reference external" href="https://github.com/arose/nglview/issues">issue</a>.</p>
+<p>Ask question about usage? Please post
+<a class="reference external" href="https://github.com/arose/nglview/issues/589">here</a></p>
 <div class="figure" id="id1">
 <img alt="membrane" src="https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true" />
 <p class="caption"><span class="caption-text">membrane</span></p>
@@ -98,8 +98,7 @@ an <a class="reference external" href="https://github.com/arose/nglview/issues">
 This version will not work with JupyterLab.</p>
 <ul>
 <li><p class="first">Available on <code class="docutils literal"><span class="pre">bioconda</span></code> channel</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">add</span> <span class="n">channels</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>
-<span class="n">conda</span> <span class="n">install</span> <span class="n">nglview</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="n">nglview</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span>
 <span class="c1"># might need: jupyter-nbextension enable nglview --py --user</span>
 
 <span class="c1"># if you already installed nglview, you can `upgrade`</span>
@@ -186,7 +185,7 @@ contribute.</p>
 </pre></div>
 </div>
 <p>and issue</p>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
 <span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">show_pdbid</span><span class="p">(</span><span class="s2">&quot;3pqr&quot;</span><span class="p">)</span>  <span class="c1"># load &quot;3pqr&quot; from RCSB PDB and display viewer widget</span>
 <span class="n">view</span>
 </pre></div>
@@ -212,13 +211,16 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">show_structure_file(path)</span></code></td>
-<td>Shows structure (pdb, gro, mol2, sdf) in <code class="docutils literal"><span class="pre">path</span></code></td>
+<td>Shows structure (pdb, gro, mol2, sdf) in
+<code class="docutils literal"><span class="pre">path</span></code></td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_pdbid(pdbid)</span></code></td>
 <td>Shows <code class="docutils literal"><span class="pre">pdbid</span></code> fetched from RCSB PDB</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_simpletraj(struc_path,</span> <span class="pre">traj_path)</span></code></td>
-<td>Shows structure &amp; trajectory loaded with <code class="docutils literal"><span class="pre">simpletraj</span></code></td>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_simpletraj(struc_path,</span> <span class="pre">t</span>
+<span class="pre">raj_path)</span></code></td>
+<td>Shows structure &amp; trajectory loaded with
+<code class="docutils literal"><span class="pre">simpletraj</span></code></td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_mdtraj(traj)</span></code></td>
 <td>Shows <code class="docutils literal"><span class="pre">MDTraj</span></code> trajectory <code class="docutils literal"><span class="pre">traj</span></code></td>
@@ -230,7 +232,8 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <td>Shows <code class="docutils literal"><span class="pre">ParmEd</span></code> structure</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">show_mdanalysis(univ)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">MDAnalysis</span></code> Universe or AtomGroup <code class="docutils literal"><span class="pre">univ</span></code></td>
+<td>Shows <code class="docutils literal"><span class="pre">MDAnalysis</span></code> Universe or
+AtomGroup <code class="docutils literal"><span class="pre">univ</span></code></td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_rdkit(mol)</span></code></td>
 <td>Shows <code class="docutils literal"><span class="pre">rdkit</span></code> rdkit.Chem.rdchem.Mol</td>
@@ -238,7 +241,10 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">show_ase(atoms)</span></code></td>
 <td>Shows <code class="docutils literal"><span class="pre">ase</span></code> Atoms</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_htmd(mol)</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_asetraj(traj)</span></code></td>
+<td>Shows <code class="docutils literal"><span class="pre">ase</span></code> trajectory <code class="docutils literal"><span class="pre">traj</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_htmd(mol)</span></code></td>
 <td>Shows <code class="docutils literal"><span class="pre">HTMD</span></code> Molecules</td>
 </tr>
 </tbody>
@@ -276,7 +282,7 @@ website</a></p>
 <code class="docutils literal"><span class="pre">representations</span></code> property of the widget instance <code class="docutils literal"><span class="pre">view</span></code>. The
 available <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">params</span></code> are described in the NGL Viewer
 <a class="reference external" href="http://arose.github.io/ngl/api/index.html">documentation</a>.</p>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;residueindex&quot;</span>
     <span class="p">}},</span>
@@ -287,7 +293,7 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </pre></div>
 </div>
 <p>The widget constructor also accepts a <code class="docutils literal"><span class="pre">representation</span></code> argument:</p>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;sstruc&quot;</span>
     <span class="p">}}</span>
@@ -300,11 +306,11 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 <div class="section" id="properties">
 <h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
 <span class="n">view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="mi">100</span>
 </pre></div>
 </div>
-<div class="code Python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
 <span class="n">view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># &quot;percentages, &quot;dist&quot; is distance too camera in Angstrom</span>
     <span class="s2">&quot;clipNear&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;clipFar&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;clipDist&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -452,6 +458,10 @@ versions</a></li>
 <li><a class="reference external" href="http://arose.github.io/nglview/dev">http://arose.github.io/nglview/dev</a></li>
 </ul>
 </div>
+<div class="section" id="talks">
+<h1>Talks<a class="headerlink" href="#talks" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="./talks.md">Talks about NGL and nglview</a></p>
+</div>
 <div class="section" id="projects-using-nglview">
 <h1>Projects using NGLView<a class="headerlink" href="#projects-using-nglview" title="Permalink to this headline">¶</a></h1>
 <p>(Feel free to make a PR to add/remove your project here)</p>
@@ -462,12 +472,17 @@ dynamics simulations of proteins and nucleic acids</li>
 component based molecule builder</li>
 <li><a class="reference external" href="https://github.com/deepchem/deepchem">deepchem</a> - Deep-learning
 models for Drug Discovery and Quantum Chemistry</li>
-<li><a class="reference external" href="https://github.com/insilichem/pychimera">pychimera</a> - Use UCSF
-Chimera Python API in a standard interpreter</li>
 <li><a class="reference external" href="https://github.com/Acellera/htmd">htmd</a> - High throughput
 molecular dynamics simulations</li>
-<li>[<a class="reference external" href="https://github.com/kbsezginel/Moleidoscope">https://github.com/kbsezginel/Moleidoscope</a>]
-(<a class="reference external" href="https://github.com/kbsezginel/Moleidoscope">https://github.com/kbsezginel/Moleidoscope</a>) - Molecular kaleidoscope</li>
+<li>[Moleidoscope] (<a class="reference external" href="https://github.com/kbsezginel/Moleidoscope">https://github.com/kbsezginel/Moleidoscope</a>) -
+Molecular kaleidoscope</li>
+<li><a class="reference external" href="https://github.com/nmih/ssbio">ssbio</a> - Tools for enabling
+structural systems biology</li>
+<li><a class="reference external" href="https://github.com/martin-hunt/hublib">hublib</a> - hublib is a
+Python library for the <a class="reference external" href="https://hubzero.org/">HUBzero</a> science
+gateway platform.</li>
+<li><a class="reference external" href="https://github.com/markovmodel/molPX">molPX</a>: ipython API to
+visualize MD-trajectories along projected trajectories</li>
 </ul>
 </div>
 <div class="section" id="acknowledgment">
@@ -522,6 +537,7 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
 <li><a class="reference internal" href="#command-line">Command line</a></li>
 <li><a class="reference internal" href="#faq">FAQ</a></li>
 <li><a class="reference internal" href="#website">Website</a></li>
+<li><a class="reference internal" href="#talks">Talks</a></li>
 <li><a class="reference internal" href="#projects-using-nglview">Projects using NGLView</a></li>
 <li><a class="reference internal" href="#acknowledgment">Acknowledgment</a></li>
 <li><a class="reference internal" href="#license">License</a></li>
@@ -530,7 +546,7 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/index.txt"
+      <li><a href="_sources/index.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -557,13 +573,13 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 0.6.2.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Jan 09, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.
+      Last updated on Mar 12, 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>

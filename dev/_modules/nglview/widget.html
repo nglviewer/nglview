@@ -6,30 +6,27 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.widget &#8212; NGLView 0.6.2.1+16.g9d243d7 documentation</title>
+    <title>nglview.widget &#8212; NGLView 0.6.2.3 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.6.2.1+16.g9d243d7',
+        VERSION:     '0.6.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/jupyter-js-widgets@^2.0.13/dist/embed.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="NGLView 0.6.2.1+16.g9d243d7 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -41,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -53,16 +50,15 @@
             
   <h1>Source code for nglview.widget</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span>
-
+<span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span>
-<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">DOMWidget</span><span class="p">,</span> <span class="n">widget_image</span><span class="p">,</span> <span class="n">PlaceProxy</span>
-<span class="kn">from</span> <span class="nn">traitlets</span> <span class="k">import</span> <span class="p">(</span><span class="n">Unicode</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">observe</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">DOMWidget</span><span class="p">,</span> <span class="n">widget_image</span>
+<span class="kn">from</span> <span class="nn">traitlets</span> <span class="k">import</span> <span class="p">(</span><span class="n">Unicode</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">observe</span><span class="p">,</span>
                        <span class="n">CaselessStrEnum</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">py_utils</span><span class="p">,</span> <span class="n">js_utils</span><span class="p">,</span> <span class="n">widget_utils</span>
@@ -78,6 +74,7 @@
 <span class="kn">from</span> <span class="nn">.adaptor</span> <span class="k">import</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">Trajectory</span>
 <span class="kn">from</span> <span class="nn">.config</span> <span class="k">import</span> <span class="n">BACKENDS</span>
 <span class="kn">from</span> <span class="nn">.parameters</span> <span class="k">import</span> <span class="n">REPRESENTATION_NAME_PAIRS</span>
+<span class="kn">from</span> <span class="nn">.remote_thread</span> <span class="k">import</span> <span class="n">RemoteCallThread</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NGLWidget&#39;</span><span class="p">,</span> <span class="s1">&#39;ComponentViewer&#39;</span><span class="p">]</span>
 
@@ -128,42 +125,13 @@
             <span class="n">fn</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">root_fn</span><span class="p">,</span> <span class="n">rep</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">other</span><span class="p">))</span>
 
-<span class="k">class</span> <span class="nc">RemoteCallThread</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">view</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">RemoteCallThread</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># this `run` method will be called if `start` the thread</span>
-        <span class="c1"># How does this work?</span>
-        <span class="c1"># First, try to pop all callbacks and execute them, if loadFile</span>
-        <span class="c1"># then wait until getting &#39;ok&#39; signal from NGL. Calling those callbacks</span>
-        <span class="c1"># will block execution from other threads. This is why we let this thread</span>
-        <span class="c1"># run forever in background. This thread is usually sleeping all the time</span>
-        <span class="c1"># and let other threads do the work. It &quot;wake up&quot; only if its &#39;q&#39; is added more</span>
-        <span class="c1"># callbacks</span>
-
-        <span class="c1"># This class is needed if use call </span>
-        <span class="c1"># add_trajectory, clear, add_representation, ... in the same notebook cell</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">callback</span><span class="o">.</span><span class="n">_method_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;loadFile&#39;</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">_wait_until_finished</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
-
 <div class="viewcode-block" id="NGLWidget"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget">[docs]</a><span class="k">class</span> <span class="nc">NGLWidget</span><span class="p">(</span><span class="n">DOMWidget</span><span class="p">):</span>
     <span class="n">_view_name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;NGLView&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_view_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;nglview-js-widgets&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_image_data</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">selector</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">frame</span> <span class="o">=</span> <span class="n">Int</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># use Integer here, because mdtraj uses a long datatype here on Python-2.7</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">Integer</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">background</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">loaded</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">picked</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -172,8 +140,6 @@
     <span class="n">_first_time_loaded</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># hack to always display movie</span>
     <span class="n">_n_dragged_files</span> <span class="o">=</span> <span class="n">Int</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">_init_representations</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">_init_structures_sync</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># TODO: remove _parameters?</span>
     <span class="n">_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">_full_stage_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -210,12 +176,11 @@
         <span class="c1"># # register to get data from JS side</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call_thread</span> <span class="o">=</span> <span class="n">RemoteCallThread</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call_thread</span> <span class="o">=</span> <span class="n">RemoteCallThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">registered_funcs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;loadFile&#39;</span><span class="p">,</span> <span class="s1">&#39;replaceStructure&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span> <span class="o">=</span> <span class="p">[]</span>
-
         <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">Trajectory</span><span class="p">):</span>
@@ -230,8 +195,6 @@
             <span class="k">if</span> <span class="n">structure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="c1"># call before setting representations</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_initial_structure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">representations</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_representations</span> <span class="o">=</span> <span class="n">representations</span>
         <span class="k">else</span><span class="p">:</span>
@@ -252,10 +215,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_representations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_representations</span><span class="p">[:]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_unsync_camera</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">selector</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setSelector&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">,])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">selector</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector</span> <span class="c1"># for PlaceProxy</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_place_proxy</span> <span class="o">=</span> <span class="n">PlaceProxy</span><span class="p">(</span><span class="n">child</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">selector</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">)</span>
+        <span class="n">selector</span> <span class="o">=</span> <span class="s1">&#39;nglviewHolder&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setSelector&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">selector</span><span class="p">,])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="n">TrajectoryPlayer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_already_constructed</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -358,8 +319,9 @@
                     <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,])</span>
-                        <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                        <span class="c1"># works fine with ipywidgets 5.2.2</span>
+                        <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="s1">&#39; &#39;</span><span class="p">,])</span>
+                        <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">reprlist_choices</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
@@ -445,8 +407,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;cleanOutput&#39;</span><span class="p">,</span>
                               <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_place_proxy</span><span class="o">.</span><span class="n">_ipython_display_</span><span class="p">()</span>
-
 <div class="viewcode-block" id="NGLWidget.display"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gui</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_box</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">gui</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">use_box</span><span class="p">:</span>
@@ -457,31 +417,25 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                 <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">_display</span><span class="p">())</span>
-                <span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_place_proxy</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">_set_place_proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_set_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        widget : instance of ipywidgets.DOMWidget (or derived class)</span>
+<span class="sd">        w, h : float or str</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; from ipywidgets import IntSlider</span>
-<span class="sd">        &gt;&gt;&gt; slider = IntSlider()</span>
-<span class="sd">        &gt;&gt;&gt; import nglview</span>
-<span class="sd">        &gt;&gt;&gt; view = nglview.demo()</span>
-<span class="sd">        &gt;&gt;&gt; view</span>
-<span class="sd">        &gt;&gt;&gt; view._set_place_proxy(slider)</span>
-<span class="sd">        &gt;&gt;&gt; view._place_proxy</span>
-<span class="sd">        &gt;&gt;&gt; # TODO: _place_proxy only has effect (adding widget to NGLWidget)</span>
-<span class="sd">        &gt;&gt;&gt; # if it was displayed (should fix)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_place_proxy</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="n">widget</span>
+<span class="sd">        &gt;&gt;&gt; view._set_size(100, 100)</span>
+<span class="sd">        &gt;&gt;&gt; view._set_size(&#39;100px&#39;, &#39;100px&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; view._set_size(&#39;50%&#39;, &#39;50%&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setSize&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">_set_draggable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">yes</span><span class="p">:</span>
@@ -627,28 +581,11 @@
         <span class="n">r</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">repr_index</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repr_dict</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">r</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repr_dict</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">r</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
         <span class="k">return</span> <span class="n">RepresentationControl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">repr_index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_set_initial_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structures</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;initialize structures for Widget</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        structures : list</span>
-<span class="sd">            list of Structure or Trajectory</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">_init_structures_sync</span> <span class="o">=</span> <span class="n">structures</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="k">else</span> <span class="p">[</span><span class="n">structures</span><span class="p">,]</span>
-        <span class="k">if</span> <span class="n">_init_structures_sync</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures_sync</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">get_structure_string</span><span class="p">(),</span>
-                         <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">ext</span><span class="p">,</span>
-                         <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
-                         <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">_structure</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
-                    <span class="k">for</span> <span class="n">_structure</span> <span class="ow">in</span> <span class="n">_init_structures_sync</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_set_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;update coordinates for all trajectories at index-th frame</span>
@@ -921,6 +858,34 @@
                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">filename</span><span class="p">,],</span>
                           <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">_get_movie_maker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; create MovieMaker object</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; movie = view._get_movie_maker(output=&#39;my.gif&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; movie.make()</span>
+
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        We only test with imageio 1.6 and moviepy 0.2.2.11</span>
+<span class="sd">        Good luck.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">moviepy</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You must install moviepy and ffmeg&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pip install moviepy==0.2.2.11&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pip install imageio==1.6&quot;</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">nglview.contrib.movie</span> <span class="k">import</span> <span class="n">MovieMaker</span>
+
+        <span class="k">if</span> <span class="s1">&#39;in_memory&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;in_memory&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_memory</span> 
+
+        <span class="n">movie_maker</span> <span class="o">=</span> <span class="n">MovieMaker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">movie_maker</span>
+
     <span class="k">def</span> <span class="nf">_ngl_handle_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">buffers</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;store message sent from Javascript.</span>
 
@@ -956,7 +921,7 @@
                 <span class="c1"># so two viewers can have the same representations</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;all_reprs_info&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;repr_dict&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_repr_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;stage_parameters&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_full_stage_parameters</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
@@ -990,15 +955,10 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not an instance of Structure&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">structure</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_already_constructed</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># update via structure_list</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">py_utils</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_auto_completion</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="NGLWidget.add_trajectory"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.add_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">add_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1033,13 +993,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_already_constructed</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># update via _init_structures_sync</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_init_structures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">py_utils</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="s1">&#39;shown&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_count</span><span class="p">()</span>
@@ -1447,14 +1401,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Jan 09, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.
+      Last updated on Mar 12, 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>

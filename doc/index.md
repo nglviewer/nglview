@@ -10,6 +10,8 @@ An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular
 
 Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
+Ask question about usage? Please post [here](https://github.com/arose/nglview/issues/589)
+
 ![membrane](https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true)
 
 Table of contents
@@ -40,7 +42,6 @@ with JupyterLab.
 - Available on `bioconda` channel
 
     ```bash
-    conda config --add channels conda-forge
     conda install nglview -c bioconda
     # might need: jupyter-nbextension enable nglview --py --user
 
@@ -143,6 +144,7 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
 | `show_rdkit(mol)`                        | Shows `rdkit` rdkit.Chem.rdchem.Mol                   |
 | `show_ase(atoms)`                        | Shows `ase` Atoms                                     |
+| `show_asetraj(traj)`                     | Shows `ase` trajectory `traj`                         |
 | `show_htmd(mol)`                         | Shows `HTMD` Molecules                                |
 
 
@@ -366,6 +368,10 @@ Website
 - http://arose.github.io/nglview/latest
 - http://arose.github.io/nglview/dev
 
+Talks
+=====
+[Talks about NGL and nglview](./talks.md)
+
 Projects using NGLView
 ======================
 
@@ -374,9 +380,11 @@ Projects using NGLView
 - [AMBER](http://ambermd.org/) -  A package of programs for molecular dynamics simulations of proteins and nucleic acids
 - [mbuild](https://github.com/iModels/mbuild) - A hierarchical, component based molecule builder
 - [deepchem](https://github.com/deepchem/deepchem) - Deep-learning models for Drug Discovery and Quantum Chemistry
-- [pychimera](https://github.com/insilichem/pychimera) - Use UCSF Chimera Python API in a standard interpreter
 - [htmd](https://github.com/Acellera/htmd) - High throughput molecular dynamics simulations
-- [https://github.com/kbsezginel/Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
+- [Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
+- [ssbio](https://github.com/nmih/ssbio) - Tools for enabling structural systems biology
+- [hublib](https://github.com/martin-hunt/hublib) - hublib is a Python library for the [HUBzero](https://hubzero.org/) science gateway platform.
+- [molPX](https://github.com/markovmodel/molPX): ipython API to visualize MD-trajectories along projected trajectories
 
 Acknowledgment
 ==============

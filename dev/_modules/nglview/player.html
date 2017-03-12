@@ -6,30 +6,27 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.player &#8212; NGLView 0.6.2.1+16.g9d243d7 documentation</title>
+    <title>nglview.player &#8212; NGLView 0.6.2.3 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.6.2.1+16.g9d243d7',
+        VERSION:     '0.6.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/jupyter-js-widgets@^2.0.13/dist/embed.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="NGLView 0.6.2.1+16.g9d243d7 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -41,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -143,6 +140,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_widget_built</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;widget_repr_parameters&#39;</span><span class="p">,</span>
             <span class="s1">&#39;widget_repr&#39;</span><span class="p">,</span>
             <span class="s1">&#39;widget_preference&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_movie_maker</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_on_widget_built</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="n">widget</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
@@ -263,7 +261,6 @@
                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_widget_preference</span><span class="p">,</span> <span class="s1">&#39;Preference&#39;</span><span class="p">),</span>
                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_theme_box</span><span class="p">,</span> <span class="s1">&#39;Theme&#39;</span><span class="p">),</span>
                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_extra_box</span><span class="p">,</span> <span class="s1">&#39;Extra&#39;</span><span class="p">),</span>
-                       <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_hide_tab_with_place_proxy</span><span class="p">,</span> <span class="s1">&#39;Hide&#39;</span><span class="p">),</span>
                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_website</span><span class="p">,</span> <span class="s1">&#39;Help&#39;</span><span class="p">)]</span>
 
         <span class="n">tab</span> <span class="o">=</span> <span class="n">_make_delay_tab</span><span class="p">(</span><span class="n">box_factory</span><span class="p">,</span> <span class="n">selected_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
@@ -277,9 +274,6 @@
 
     <span class="k">def</span> <span class="nf">_make_widget_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_make_hide_tab_with_place_proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Box</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_place_proxy</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">_make_button_center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39; Center&#39;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s1">&#39;fa-bullseye&#39;</span><span class="p">)</span>
@@ -991,14 +985,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.1+16.g9d243d7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Jan 09, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.
+      Last updated on Mar 12, 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>
