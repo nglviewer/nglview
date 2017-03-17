@@ -11,7 +11,7 @@ from . import datafiles
 from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
                       ASEStructure, MDTrajTrajectory, PyTrajTrajectory,
                       ParmEdTrajectory, MDAnalysisTrajectory, HTMDTrajectory,
-                      ASETrajectory)
+                      ASETrajectory, SchrodingerStructure)
 
 __all__ = [
     'demo',
@@ -28,6 +28,7 @@ __all__ = [
     'show_rdkit',
     'show_structure_file',
     'show_htmd',
+    'show_schrodinger_structure',
 ]
 
 
@@ -257,6 +258,26 @@ def show_htmd(mol, **kwargs):
     ... w
     '''
     structure_trajectory = HTMDTrajectory(mol)
+    return NGLWidget(structure_trajectory, **kwargs)
+
+
+def show_schrodinger_structure(mol, **kwargs):
+    '''Show NGL widget with Schrodinger's Structure
+
+    Notes
+    -----
+    EXPERIMENTAL
+
+    Examples
+    --------
+    >>> import nglview as nv # doctest: +SKIP
+    ... from schrodinger.structure import StructureReader
+    ... for s in StructureReader(fn):
+    ...    break
+    ... w = nv.show_schrodinger_structure(s)
+    ... w
+    '''
+    structure_trajectory = SchrodingerStructure(mol)
     return NGLWidget(structure_trajectory, **kwargs)
 
 

@@ -75,6 +75,25 @@ class RdkitStructure(Structure):
         return fh.read()
 
 
+class SchrodingerStructure(Structure):
+    '''Only read first structure
+    '''
+    def __init__(self, structure, ext="pdb"):
+        super(SchrodingerStructure, self).__init__()
+        self.path = ''
+        self.ext = ext
+        self.params = {}
+        self._schrodinger_structure = structure
+
+    def get_structure_string(self):
+        with tempfolder():
+            pdb_fn = 'tmp.pdb'
+            self._schrodinger_structure.write(pdb_fn)
+            with open(pdb_fn) as fh:
+                content = fh.read()
+        return content
+
+
 class PdbIdStructure(Structure):
     def __init__(self, pdbid):
         super(PdbIdStructure, self).__init__()
