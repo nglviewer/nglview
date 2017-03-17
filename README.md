@@ -36,7 +36,7 @@ Installation
 
 Released version
 ----------------
-**Note**: The released version only works with `ipywidgets >= 5.2.2`. This version will not work
+**Note**: The released version only works with `ipywidgets >= 5.2.2` and works best with `5.2.2` version. This version will not work
 with JupyterLab.
 
 - Available on `bioconda` channel
