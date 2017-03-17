@@ -19,6 +19,8 @@ exclude_lines =
     except ImportError
     except Exception as e: 
 
+    schrodinger
+
 omit = 
     
     *_version.py
