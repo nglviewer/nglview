@@ -787,7 +787,7 @@ class NGLWidget(DOMWidget):
         """
         self.center_view(*args, **kwargs)
 
-    def center_view(self, zoom=True, selection='*', component=0):
+    def center_view(self, selection='*', duration=0, component=0):
         """center view for given atom selection
 
         Examples
@@ -795,9 +795,9 @@ class NGLWidget(DOMWidget):
         view.center_view(selection='1-4')
         """
         self._remote_call(
-            'centerView',
+            'autoView',
             target='compList',
-            args=[zoom, selection],
+            args=[selection, duration],
             kwargs={'component_index': component})
 
     @observe('_image_data')
@@ -1168,12 +1168,15 @@ class NGLWidget(DOMWidget):
         view._remote_call('loadFile', args=['1L2Y.pdb'],
                           target='Stage', kwargs={'defaultRepresentation': True})
 
-        # perform centerView for 1-th component
+        # perform autoView for 1st component
+        # JS code
         # component = Stage.compList[1];
-        # component.centerView(true, "1-12");
-        view._remote_call('centerView',
+        # component.autoView('*', 200)
+
+        # python
+        view._remote_call('autoView',
                           target='component',
-                          args=[True, "1-12"],
+                          args=['*', 200],
                           kwargs={'component_index': 1})
         """
         args = [] if args is None else args
