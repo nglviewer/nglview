@@ -787,7 +787,7 @@ class NGLWidget(DOMWidget):
         """
         self.center_view(*args, **kwargs)
 
-    def center_view(self, selection='*', component=0):
+    def center_view(self, selection='*', duration=0, component=0):
         """center view for given atom selection
 
         Examples
@@ -797,7 +797,7 @@ class NGLWidget(DOMWidget):
         self._remote_call(
             'autoView',
             target='compList',
-            args=[selection],
+            args=[selection, duration],
             kwargs={'component_index': component})
 
     @observe('_image_data')
