@@ -795,7 +795,7 @@ class NGLWidget(DOMWidget):
         view.center_view(selection='1-4')
         """
         self._remote_call(
-            'centerView',
+            'autoView',
             target='compList',
             args=[zoom, selection],
             kwargs={'component_index': component})
@@ -1168,10 +1168,10 @@ class NGLWidget(DOMWidget):
         view._remote_call('loadFile', args=['1L2Y.pdb'],
                           target='Stage', kwargs={'defaultRepresentation': True})
 
-        # perform centerView for 1-th component
+        # perform autoView for 1-th component
         # component = Stage.compList[1];
-        # component.centerView(true, "1-12");
-        view._remote_call('centerView',
+        # component.autoView(true, "1-12");
+        view._remote_call('autoView',
                           target='component',
                           args=[True, "1-12"],
                           kwargs={'component_index': 1})

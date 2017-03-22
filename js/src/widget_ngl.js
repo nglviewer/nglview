@@ -77,7 +77,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             this.requestUpdateStageParameters();
         }.bind(this));
 
-        this.stage.viewer.controls.addEventListener("change", function() {
+        this.stage.viewerControls.signals.changed.add(function() {
             if (this.sync_camera) {
                 this.model.set('camera_str', JSON.stringify(this.stage.viewer.camera));
                 this.model.set('orientation', this.stage.viewer.getOrientation());
@@ -315,7 +315,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
 
         if (this.stage.compList.length < 2) {
-            o.centerView();
+            o.autoView();
         }
     },
 
