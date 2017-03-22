@@ -386,7 +386,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        });
 	
 	        if (this.stage.compList.length < 2) {
-	            o.autoView();
+	            o.autoView(100);
 	        }
 	    },
 	
@@ -881,6 +881,11 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	                    var viewer = this.stage.viewer;
 	                    func = this.stage.viewer[msg.methodName];
 	                    func.apply(viewer, new_args);
+	                    break;
+	                case 'viewerControls':
+	                    var controls = this.stage.viewerControls;
+	                    func = controls[msg.methodName];
+	                    func.apply(controls, new_args);
 	                    break;
 	                case 'compList':
 	                    index = msg['component_index'];
