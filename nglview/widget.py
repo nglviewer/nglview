@@ -1168,12 +1168,15 @@ class NGLWidget(DOMWidget):
         view._remote_call('loadFile', args=['1L2Y.pdb'],
                           target='Stage', kwargs={'defaultRepresentation': True})
 
-        # perform autoView for 1-th component
+        # perform autoView for 1st component
+        # JS code
         # component = Stage.compList[1];
-        # component.autoView(true, "1-12");
+        # component.autoView('*', 200)
+
+        # python
         view._remote_call('autoView',
                           target='component',
-                          args=[True, "1-12"],
+                          args=['*', 200],
                           kwargs={'component_index': 1})
         """
         args = [] if args is None else args
