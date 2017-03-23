@@ -17,6 +17,7 @@ from .utils.py_utils import (seq_to_string, _camelize_dict, FileManager,
 from .player import TrajectoryPlayer
 from . import interpolate
 from .shape import Shape
+from .viewer_control import ViewerControl
 from .representation import RepresentationControl
 
 from .adaptor import Structure, Trajectory
@@ -132,6 +133,7 @@ class NGLWidget(DOMWidget):
         self._ngl_displayed_callbacks_after_loaded = []
         _add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
+        self.control = ViewerControl(view=self)
         self._handle_msg_thread = threading.Thread(
             target=self.on_msg, args=(self._ngl_handle_msg, ))
         # # register to get data from JS side

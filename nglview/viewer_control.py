@@ -1,0 +1,100 @@
+
+class Control(object):
+    """EXPERIMENTAL. Create viewer controls (rotate, zoom, translation, ...)
+
+    Parameters
+    ----------
+    view : nglview.NGLWidget
+
+    Notes
+    -----
+    Unstable feature
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> view = nv.NGLWidget()
+    >>> view
+    >>> control = nv.Control(view=view)
+    >>> # TODO: add example
+    >>> control.zoom(0.1)
+    """
+
+    def __init__(self, view):
+        self.view = view
+
+    def _call(self, funcname, args):
+        self.view._remote_call(target='viewerControls', args=[args, ])
+    
+    def align(self, basis):
+        '''
+        
+        Parameters
+        ----------
+        basis : List[float], len=16
+        '''
+        self._call('align', basis)
+
+    def apply_matrix(self, basis):
+        '''
+        
+        Parameters
+        ----------
+        basis : List[float], len=16
+        '''
+        self._call('applyMatrix', basis)
+
+    def center(self, vector):
+        '''
+        
+        Parameters
+        ----------
+        vector: List[float], len=3
+        '''
+        self._call('center', basis)
+
+    def orient(self, basis):
+        '''
+        
+        Parameters
+        ----------
+        basis : List[float], len=16
+        '''
+        self._call('orient', basis)
+
+    def rotate(self, basis):
+        '''
+        
+        Parameters
+        ----------
+        basis : List[float], len=16
+        '''
+        self._call('rotate', basis)
+
+    def translate(self, basis):
+        '''
+        
+        Parameters
+        ----------
+        basis : List[float], len=3
+        '''
+        self._call('translate', basis)
+
+    def spin(self, axis, angle):
+        '''
+        
+        Parameters
+        ----------
+        axis: List[float], len=3
+        angle : float
+        '''
+        self._call('spin', [axis, angle])
+
+    def zoom(self, delta):
+        '''
+        
+        Parameters
+        ----------
+        delta : float
+        '''
+        self._call('zoom', basis)
