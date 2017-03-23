@@ -2,7 +2,7 @@ import sys
 import unittest
 import doctest
 import nglview
-from nglview import widget, show
+from nglview import widget, show, viewer_control
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -58,5 +58,23 @@ def test_nglview_show_module():
     """
     """
     assert not get_total_errors([
-        show,
+        show
+    ])
+
+
+@unittest.skipUnless(PY3, 'doctest with py3 only')
+def test_nglview_viewer_control():
+    """
+    """
+    assert not get_total_errors([
+        viewer_control
+    ])
+
+
+@unittest.skipUnless(PY3, 'doctest with py3 only')
+def test_nglview_widget():
+    """
+    """
+    assert not get_total_errors([
+        widget
     ])

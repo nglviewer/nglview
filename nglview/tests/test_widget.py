@@ -1049,5 +1049,28 @@ def test_widget_box():
     box._beautify()
 
 
+def test_viewer_control():
+    view = nv.demo()
+    view
+
+    mat = [11, 12, 13, 14,
+           21, 22, 23, 24,
+           31, 32, 33, 34,
+           41, 42, 43, 44]
+ 
+    vector = [0, 1, 2]
+
+    view.control.align(mat)
+    view.control.rotate(mat)
+    view.control.translate(vector)
+    view.control.apply_matrix(mat)
+    view.control.center(vector)
+    view.control.orient(mat)
+    view.control.zoom(0.3)
+    view.control.rotate(mat)
+    view.control.spin(vector, 0.1)
+
+
+
 def test_sandbox():
     from nglview.sandbox import amber
