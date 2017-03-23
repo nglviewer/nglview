@@ -1,5 +1,5 @@
 
-class Control(object):
+class ViewerControl(object):
     """EXPERIMENTAL. Create viewer controls (rotate, zoom, translation, ...)
 
     Parameters
@@ -23,8 +23,8 @@ class Control(object):
     def __init__(self, view):
         self.view = view
 
-    def _call(self, funcname, args):
-        self.view._remote_call(target='viewerControls', args=[args, ])
+    def _call(self, funcname, *args):
+        self.view._remote_call(funcname, target='viewerControls', args=args)
     
     def align(self, basis):
         '''
@@ -51,7 +51,7 @@ class Control(object):
         ----------
         vector: List[float], len=3
         '''
-        self._call('center', basis)
+        self._call('center', vector)
 
     def orient(self, basis):
         '''
@@ -71,14 +71,14 @@ class Control(object):
         '''
         self._call('rotate', basis)
 
-    def translate(self, basis):
+    def translate(self, vector):
         '''
         
         Parameters
         ----------
         basis : List[float], len=3
         '''
-        self._call('translate', basis)
+        self._call('translate', vector)
 
     def spin(self, axis, angle):
         '''
@@ -88,7 +88,7 @@ class Control(object):
         axis: List[float], len=3
         angle : float
         '''
-        self._call('spin', [axis, angle])
+        self._call('spin', axis, angle)
 
     def zoom(self, delta):
         '''
@@ -97,4 +97,4 @@ class Control(object):
         ----------
         delta : float
         '''
-        self._call('zoom', basis)
+        self._call('zoom', delta)
