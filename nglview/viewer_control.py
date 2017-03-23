@@ -1,4 +1,3 @@
-
 class ViewerControl(object):
     """EXPERIMENTAL. Create viewer controls (rotate, zoom, translation, ...)
 
@@ -25,7 +24,7 @@ class ViewerControl(object):
 
     def _call(self, funcname, *args):
         self.view._remote_call(funcname, target='viewerControls', args=args)
-    
+
     def align(self, basis):
         '''
         
