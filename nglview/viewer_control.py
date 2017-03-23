@@ -15,7 +15,7 @@ class ViewerControl(object):
     >>> import nglview as nv
     >>> from nglview.viewer_control import ViewerControl
     >>> view = nv.NGLWidget()
-    >>> view
+    >>> view # doctest: +SKIP
     >>> control = ViewerControl(view=view)
     >>> control.zoom(0.1)
     """

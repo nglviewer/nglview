@@ -426,6 +426,7 @@ class NGLWidget(DOMWidget):
 
         Examples
         --------
+        >>> import nglview; view = nglview.demo()
         >>> view._set_size(100, 100)
         >>> view._set_size('100px', '100px')
         >>> view._set_size('50%', '50%')
@@ -496,6 +497,8 @@ class NGLWidget(DOMWidget):
 
         Examples
         --------
+        >>> import nglview
+        >>> view = nglview.demo()
         >>> # component 0
         >>> view.color_by('atomindex')
 
@@ -710,6 +713,8 @@ class NGLWidget(DOMWidget):
 
         Examples
         --------
+        >>> import nglview
+        >>> view = nglview.demo()
         >>> sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
         >>> arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
         >>> view._add_shape([sphere, arrow], name='my_shape')
@@ -732,18 +737,18 @@ class NGLWidget(DOMWidget):
         Example
         -------
         >>> import nglview as nv
-        >>> 
-        >>> t = (pt.datafiles.load_dpdp()[:].supej = pt.load(membrane_pdb)
-                trajrpose('@CA'))
+        >>> import pytraj 
+        >>> t = pytraj.datafiles.load_tz2()
         >>> w = nv.show_pytraj(t)
         >>> w.add_representation('cartoon', selection='protein', color='blue')
         >>> w.add_representation('licorice', selection=[3, 8, 9, 11], color='red')
-        >>> w
+        >>> w # doctest: +SKIP
 
         Notes
         -----
         User can also use shortcut
 
+        >>> selection = 'protein'
         >>> w.add_cartoon(selection) # w.add_representation('cartoon', selection)
         '''
         if repr_type == 'surface':
@@ -889,8 +894,8 @@ class NGLWidget(DOMWidget):
 
         Examples
         --------
-        >>> movie = view._get_movie_maker(output='my.gif')
-        >>> movie.make()
+        >>> movie = view._get_movie_maker(output='my.gif') # doctest: +SKIP
+        ... movie.make()
 
 
         Notes
@@ -973,10 +978,10 @@ class NGLWidget(DOMWidget):
 
         Examples
         --------
-        >>> view.add_trajectory(traj0)
-        >>> view.add_trajectory(traj1)
-        >>> # then add Structure
-        >>> view.add_structure(...)
+        >>> view.add_trajectory(traj0) # doctest: +SKIP
+        ... view.add_trajectory(traj1)
+        ... # then add Structure
+        ... view.add_structure(s)
 
         See Also
         --------
@@ -1007,9 +1012,9 @@ class NGLWidget(DOMWidget):
         --------
         >>> import nglview as nv, pytraj as pt
         >>> traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
-        >>> view = nv.show_pytraj(view)
+        >>> view = nv.show_pytraj(traj)
         >>> # show view first
-        >>> view
+        >>> view # doctest: +SKIP
         >>> # add new Trajectory
         >>> traj2 = pt.datafiles.load_tz2()
         >>> view.add_trajectory(traj2)
@@ -1035,6 +1040,7 @@ class NGLWidget(DOMWidget):
 
         Examples
         --------
+        >>> import nglview
         >>> view = nglview.NGLWidget()
         >>> view.add_pdbid('1tsu')
         >>> # which is equal to 
@@ -1052,9 +1058,11 @@ class NGLWidget(DOMWidget):
 
         Examples
         --------
-        >>> view = nglview.Widget()
-        >>> view
-        >>> view.add_component(filename)
+        >>> import nglview
+        >>> view = nglview.NGLWidget()
+        >>> view # doctest: +SKIP
+        ... filename = 'somefile.ccp4'
+        ... view.add_component(filename)
 
         Notes
         -----
@@ -1127,11 +1135,11 @@ class NGLWidget(DOMWidget):
 
         Examples
         --------
-        >>> view.add_trajectory(traj0)
-        >>> view.add_trajectory(traj1)
-        >>> view.add_struture(structure)
-        >>> # remove last component
-        >>> view.remove_component(view._ngl_component_ids[-1])
+        >>> view.add_trajectory(traj0) # doctest: +SKIP
+        ... view.add_trajectory(traj1)
+        ... view.add_struture(structure)
+        ... # remove last component
+        ... view.remove_component(view._ngl_component_ids[-1])
         """
         self._clear_component_auto_completion()
         if self._trajlist:
@@ -1346,13 +1354,13 @@ class ComponentViewer(object):
 
     Examples
     --------
-    >>> view = nv.NGLWidget()
-    >>> view.add_trajectory(traj) # traj is a component 0
-    >>> view.add_component(filename) # component 1
-    >>> view.component_0.clear_representations()
-    >>> view.component_0.add_cartoon()
-    >>> view.component_1.add_licorice()
-    >>> view.remove_component(view.comp1.id)
+    >>> view = nv.NGLWidget() # doctest: +SKIP
+    ... view.add_trajectory(traj) # traj is a component 0
+    ... view.add_component(filename) # component 1
+    ... view.component_0.clear_representations()
+    ... view.component_0.add_cartoon()
+    ... view.component_1.add_licorice()
+    ... view.remove_component(view.comp1.id)
     """
 
     def __init__(self, view, index):

@@ -181,22 +181,22 @@ def show_rdkit(rdkit_mol, **kwargs):
     Examples
     --------
     >>> import nglview as nv
-    >>> from rdkit import Chem
-    >>> from rdkit.Chem import AllChem
-    >>> m = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4'))
-    >>> _ = AllChem.EmbedMultipleConfs(m, useExpTorsionAnglePrefs=True, useBasicKnowledge=True)
-    >>> view = nv.show_rdkit(m)
-    >>> view # doctest: +SKIP
+    >>> from rdkit import Chem # doctest: +SKIP
+    ... from rdkit.Chem import AllChem
+    ... m = Chem.AddHs(Chem.MolFromSmiles('COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4'))
+    ... _ = AllChem.EmbedMultipleConfs(m, useExpTorsionAnglePrefs=True, useBasicKnowledge=True)
+    ... view = nv.show_rdkit(m)
+    ... view # doctest: +SKIP
 
     >>> # add component m2
     >>> # create file-like object
     >>> from nglview.show import StringIO
-    >>> m2 = Chem.AddHs(Chem.MolFromSmiles('N[C@H](C)C(=O)O'))
-    >>> fh = StringIO(Chem.MolToPDBBlock(m2))
-    >>> view.add_component(fh, ext='pdb')
+    >>> m2 = Chem.AddHs(Chem.MolFromSmiles('N[C@H](C)C(=O)O')) # doctest: +SKIP
+    ... fh = StringIO(Chem.MolToPDBBlock(m2))
+    ... view.add_component(fh, ext='pdb')
 
     >>> # load as trajectory, need to have ParmEd
-    >>> view = nv.show_rdkit(m, parmed=True)
+    >>> view = nv.show_rdkit(m, parmed=True) # doctest: +SKIP
     '''
     from rdkit import Chem
     fh = StringIO(Chem.MolToPDBBlock(rdkit_mol))
