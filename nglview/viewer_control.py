@@ -13,10 +13,10 @@ class ViewerControl(object):
     Examples
     --------
     >>> import nglview as nv
+    >>> from nglview.viewer_control import ViewerControl
     >>> view = nv.NGLWidget()
     >>> view
-    >>> control = nv.Control(view=view)
-    >>> # TODO: add example
+    >>> control = ViewerControl(view=view)
     >>> control.zoom(0.1)
     """
 
