@@ -94,6 +94,8 @@ class NGLWidget(DOMWidget):
     picked = Dict().tag(sync=True)
     n_components = Int(0).tag(sync=True)
     orientation = List().tag(sync=True)
+    _scene_position = Dict().tag(sync=True)
+    _scene_rotation = Dict().tag(sync=True)
     _first_time_loaded = Bool(True).tag(sync=False)
     # hack to always display movie
     _n_dragged_files = Int().tag(sync=True)

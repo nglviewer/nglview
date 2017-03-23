@@ -150,8 +150,8 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	
 	        this.stage.viewerControls.signals.changed.add(function() {
 	            if (this.sync_camera) {
-	                this.model.set('camera_str', JSON.stringify(this.stage.viewer.camera));
-	                this.model.set('orientation', this.stage.viewer.getOrientation());
+	                this.model.set('_scene_position', this.stage.viewerControls.position)
+	                this.model.set('_scene_rotation', this.stage.viewerControls.rotation)
 	                this.touch();
 	            }
 	        }.bind(this));
@@ -598,11 +598,10 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	         params.defaultRepresentation = false;
 	         var comp = this.stage.compList[0];
 	         var representations = comp.reprList.slice();
-	         console.log('representations', representations);
-	         var old_orientation = this.stage.getOrientation();
+	         var old_orientation = this.stage.viewerControls.getOrientation();
 	         var that = this;
 	         this.stage.loadFile(blob, params).then(function(component) {
-	             that.stage.setOrientation(old_orientation);
+	             that.stage.viewerControls.orient(old_orientation);
 	             representations.forEach(function(repr) {
 	                 var repr_name = repr.name;
 	                 var repr_params = repr.repr.getParameters();
@@ -786,8 +785,10 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	    },
 	
 	    orientationChanged: function() {
-	        var orientation = this.model.get("orientation");
-	        this.stage.viewer.setOrientation(orientation);
+	        var orientation_list = this.model.get("orientation");
+	        var mat4 = this.stage.viewerControls.getOrientation();
+	        mat4.set(orientation_list);
+	        this.stage.viewerControls.orient(mat4);
 	    },
 	
 	    _downloadImage: function(filename, params) {
