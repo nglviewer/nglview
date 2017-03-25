@@ -52,7 +52,11 @@ with JupyterLab.
 
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
-    `pip install nglview`
+```bash
+   pip install ipywidgets==5.2.2 # if you don't have ipywidgets yet
+   pip install nglview
+   # might need: jupyter-nbextension enable nglview --py --user 
+```
 
 - Bugs: There is [a bug](https://github.com/ipython/ipywidgets/issues/1044#issuecomment-276458101) in `ipywidgets 6.0.0`, so we suggest to use `ipywidgets 5.2.2` for now.
 
