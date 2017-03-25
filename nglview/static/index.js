@@ -18762,7 +18762,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 			"test": "mocha"
 		},
 		"devDependencies": {
-			"@jupyterlab/extension-builder": "^0.8.1",
+			"@jupyterlab/extension-builder": "^0.10.0",
 			"babel-eslint": "^7.0.0",
 			"babel-register": "^6.11.6",
 			"eslint": "^3.2.2",
@@ -18774,9 +18774,9 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 		"dependencies": {
 			"jquery": "^2.1.4",
 			"jquery-ui": "^1.12.1",
-			"jupyter-js-widgets": "^2.0.6",
-			"@jupyterlab/nbwidgets": "^0.6.0",
-			"underscore": "^1.8.3"
+			"underscore": "^1.8.3",
+			"jupyter-js-widgets": "~2.1.4",
+			"@jupyterlab/nbwidgets": "^0.6.15"
 		}
 	};
 
