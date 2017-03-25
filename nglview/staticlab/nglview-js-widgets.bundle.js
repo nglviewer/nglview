@@ -2,7 +2,7 @@
 jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/labplugin.js', function (module, exports, __jupyter_require__) {
 	var nglview = __jupyter_require__('nglview-js-widgets@0.5.4-dev.1/src/index.js');
 	
-	var jupyterlab_widgets = __jupyter_require__('@jupyterlab/nbwidgets@^0.6.0/lib/index.js');
+	var jupyterlab_widgets = __jupyter_require__('@jupyterlab/nbwidgets@^0.6.15/lib/index.js');
 	
 	/**
 	 * The widget manager provider.
@@ -52,7 +52,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/index.js', function (module, 
 
 /** START DEFINE BLOCK for nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js **/
 jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (module, exports, __jupyter_require__) {
-	var widgets = __jupyter_require__('jupyter-js-widgets@^2.0.6/lib/index.js');
+	var widgets = __jupyter_require__('jupyter-js-widgets@~2.1.4/lib/index.js');
 	var NGL = __jupyter_require__('ngl@0.10.0-dev.8/dist/ngl.js');
 	var $ = __jupyter_require__('jquery@^2.1.4/dist/jquery.js');
 	__jupyter_require__('jquery-ui@^1.12.1/ui/widgets/draggable.js');
@@ -31930,21 +31930,20 @@ jupyter.define('jupyter-js-widgets@2.1.4/package.json', function (module, export
 		"_args": [
 			[
 				{
-					"raw": "jupyter-js-widgets@^2.0.6",
+					"raw": "jupyter-js-widgets@~2.1.4",
 					"scope": null,
 					"escapedName": "jupyter-js-widgets",
 					"name": "jupyter-js-widgets",
-					"rawSpec": "^2.0.6",
-					"spec": ">=2.0.6 <3.0.0",
+					"rawSpec": "~2.1.4",
+					"spec": ">=2.1.4 <2.2.0",
 					"type": "range"
 				},
 				"/Users/haichit/programs/3d/nglview/js"
 			]
 		],
-		"_from": "jupyter-js-widgets@>=2.0.6 <3.0.0",
+		"_from": "jupyter-js-widgets@>=2.1.4 <2.2.0",
 		"_id": "jupyter-js-widgets@2.1.4",
 		"_inCache": true,
-		"_installable": true,
 		"_location": "/jupyter-js-widgets",
 		"_nodeVersion": "6.9.0",
 		"_npmOperationalInternal": {
@@ -31958,12 +31957,12 @@ jupyter.define('jupyter-js-widgets@2.1.4/package.json', function (module, export
 		"_npmVersion": "3.10.8",
 		"_phantomChildren": {},
 		"_requested": {
-			"raw": "jupyter-js-widgets@^2.0.6",
+			"raw": "jupyter-js-widgets@~2.1.4",
 			"scope": null,
 			"escapedName": "jupyter-js-widgets",
 			"name": "jupyter-js-widgets",
-			"rawSpec": "^2.0.6",
-			"spec": ">=2.0.6 <3.0.0",
+			"rawSpec": "~2.1.4",
+			"spec": ">=2.1.4 <2.2.0",
 			"type": "range"
 		},
 		"_requiredBy": [
@@ -31973,7 +31972,7 @@ jupyter.define('jupyter-js-widgets@2.1.4/package.json', function (module, export
 		"_resolved": "https://registry.npmjs.org/jupyter-js-widgets/-/jupyter-js-widgets-2.1.4.tgz",
 		"_shasum": "a2c8c19d706d79feb202e6dc3221bffc9d1d8edf",
 		"_shrinkwrap": null,
-		"_spec": "jupyter-js-widgets@^2.0.6",
+		"_spec": "jupyter-js-widgets@~2.1.4",
 		"_where": "/Users/haichit/programs/3d/nglview/js",
 		"author": {
 			"name": "Project Jupyter"
@@ -48866,7 +48865,7 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/package.json', function (module, 
 			"test": "mocha"
 		},
 		"devDependencies": {
-			"@jupyterlab/extension-builder": "^0.8.1",
+			"@jupyterlab/extension-builder": "^0.10.0",
 			"babel-eslint": "^7.0.0",
 			"babel-register": "^6.11.6",
 			"eslint": "^3.2.2",
@@ -48878,9 +48877,9 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/package.json', function (module, 
 		"dependencies": {
 			"jquery": "^2.1.4",
 			"jquery-ui": "^1.12.1",
-			"jupyter-js-widgets": "^2.0.6",
-			"@jupyterlab/nbwidgets": "^0.6.0",
-			"underscore": "^1.8.3"
+			"underscore": "^1.8.3",
+			"jupyter-js-widgets": "~2.1.4",
+			"@jupyterlab/nbwidgets": "^0.6.15"
 		}
 	};
 })
