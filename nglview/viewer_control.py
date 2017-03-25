@@ -66,7 +66,8 @@ class ViewerControl(object):
         
         Parameters
         ----------
-        basis : List[float], len=16
+        basis : List[float], len=4
+            quaternion
         '''
         self._call('rotate', basis)
 
