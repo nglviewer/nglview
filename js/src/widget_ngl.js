@@ -759,32 +759,31 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
     
     _handle_stage_loadFile: function(msg){
-        if (msg.methodName == 'loadFile') {
             // args = [{'type': ..., 'data': ...}]
-            var args0 = msg.args[0];
-            var that = this;
-            if (args0.type == 'blob') {
-                var blob;
-                if (args0.binary) {
-                    var decoded_data = this.decode_base64(args0.data);
-                    blob = new Blob([decoded_data], {
-                        type: "application/octet-binary"
-                    });
-                } else {
-                    blob = new Blob([args0.data], {
-                        type: "text/plain"
-                    });
-                }
-                this.stage.loadFile(blob, msg.kwargs).then(function(o){
-                     that._handle_loading_file_finished();
-                     o; // to pass eslint; ack;
-                });
-            } else {
-                this.stage.loadFile(msg.args[0].data, msg.kwargs).then(function(o){
-                     that._handle_loading_file_finished();
-                     o; // to pass eslint; ack;
-                });
-            }
+         var args0 = msg.args[0];
+         var that = this;
+         if (args0.type == 'blob') {
+             var blob;
+             if (args0.binary) {
+                 var decoded_data = this.decode_base64(args0.data);
+                 blob = new Blob([decoded_data], {
+                     type: "application/octet-binary"
+                 });
+             } else {
+                 blob = new Blob([args0.data], {
+                     type: "text/plain"
+                 });
+             }
+             this.stage.loadFile(blob, msg.kwargs).then(function(o){
+                  that._handle_loading_file_finished();
+                  o; // to pass eslint; ack;
+             });
+         } else {
+             this.stage.loadFile(msg.args[0].data, msg.kwargs).then(function(o){
+                  that._handle_loading_file_finished();
+                  o; // to pass eslint; ack;
+             });
+         }
     },
 
     on_msg: function(msg) {
@@ -804,11 +803,10 @@ var NGLView = widgets.DOMWidgetView.extend({
                         index = msg.args[0];
                         component = this.stage.compList[index];
                         this.stage.removeComponent(component);
-                    } else {
+                    } else if (msg.methodName == 'loadFile') {
                         this._handle_stage_loadFile(msg);
-                        } else {
+                    } else {
                             stage_func.apply(stage, new_args);
-                        }
                     }
                     break;
                 case 'Viewer':
