@@ -43,8 +43,14 @@ Update Javascript build
 
 # build
 python setup.py build --npm
+# or cd js && npm install
 
-# then python setup.py install or pip install -e . # development
+# known working versions:
+# node: v6.6.0
+# npm: 4.4.4
+
+
+# then python setup.py install or pip install -e . # development, you can edit the source code without re-installing
 
 # tips
 # - Use private browser mode to avoid cache
