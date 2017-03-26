@@ -20,6 +20,9 @@ conda create -y -n myenv python=$PYTHON_VERSION jupyter notebook nose numpy mock
 
 source activate myenv
 
+# mock
+pip install mock
+
 # 6.0.0 seems unstable
 conda install ipywidgets=5.2.2 -y
 
