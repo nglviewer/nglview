@@ -10,7 +10,7 @@ warnings.filterwarnings('ignore')
 PY3 = sys.version_info[0] == 3
 
 try:
-    from make_dump_comm import *
+    from make_dummy_comm import *
 except ImportError:
     has_nglview = False
     nglview = Comm = DummyComm = _widget_attrs = displayed = undefined = Widget = None

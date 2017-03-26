@@ -25,7 +25,7 @@ from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
 from nglview import interpolate
 
-from make_dump_comm import * # to initialize
+from make_dummy_comm import * # to initialize
 
 try:
     import simpletraj
