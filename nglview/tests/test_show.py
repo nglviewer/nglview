@@ -1,5 +1,5 @@
 import subprocess
-from mock import MagicMock, patch
+from mock import MagicMock
 import nglview
 import numpy as np
 
