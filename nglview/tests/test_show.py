@@ -5,15 +5,15 @@ import numpy as np
 
 # local
 from make_dummy_comm import *
+
 # TODO : add more show_xxx
 # (check test_widgets.py)
 
+
 def _write(*args, **kargs):
     # fake write method
-    subprocess.check_call([
-        'cp', nglview.datafiles.PDB,
-        'tmp.pdb'
-    ])
+    subprocess.check_call(['cp', nglview.datafiles.PDB, 'tmp.pdb'])
+
 
 def test_show_schrodinger_structure():
     s = MagicMock()

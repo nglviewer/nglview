@@ -58,8 +58,8 @@ def test_cli():
     subprocess.check_call(command.split())
 
     # remote
-    command = 'nglview {} -c {} --remote --test'.format(datafiles.PDB,
-                                                        datafiles.XTC)
+    command = 'nglview {} -c {} --remote --test'.format(
+        datafiles.PDB, datafiles.XTC)
     subprocess.check_call(command.split())
 
     # python script

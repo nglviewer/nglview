@@ -119,6 +119,7 @@ class MovieMaker(object):
         self._event = threading.Event()
 
         def _make(event):
+            image_files = []
             if not self.skip_render:
                 for i in self._time_range:
                     if not event.is_set():
@@ -165,7 +166,8 @@ class MovieMaker(object):
         if self._event is not None:
             self._event.set()
 
-    def _base64_to_ndarray(self, value):
+    @classmethod
+    def _base64_to_ndarray(cls, value):
         import io
         import base64
         import matplotlib.image as mpimg
