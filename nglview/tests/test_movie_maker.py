@@ -29,6 +29,9 @@ def test_movie_maker(ImageSequenceClip):
     movie._event._event_set = True
     movie.make()
 
+    movie._event._event_set = False
+    movie.make()
+
     movie = MovieMaker(view, in_memory=False)
     movie.skip_render = True
     movie.make()
@@ -36,6 +39,8 @@ def test_movie_maker(ImageSequenceClip):
     movie.output = 'hello.mp4'
     movie.make()
 
+    movie.interupt()
+    movie._event = None
     movie.interupt()
 
     movie.in_memory = True
