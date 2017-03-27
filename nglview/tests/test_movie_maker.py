@@ -51,3 +51,8 @@ def test_movie_maker(ImageSequenceClip):
         moviepy_params={},
         stop=2)
     movie.make()
+
+def test_movie_maker_base64_to_ndarray():
+    from nglview.contrib.movie import MovieMaker
+    s = 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+    MovieMaker._base64_to_ndarray(s)
