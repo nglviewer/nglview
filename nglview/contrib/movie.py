@@ -166,7 +166,8 @@ class MovieMaker(object):
         if self._event is not None:
             self._event.set()
 
-    def _base64_to_ndarray(self, value):
+    @classmethod
+    def _base64_to_ndarray(cls, value):
         import io
         import base64
         import matplotlib.image as mpimg
