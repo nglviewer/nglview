@@ -119,6 +119,7 @@ class MovieMaker(object):
         self._event = threading.Event()
 
         def _make(event):
+            image_files = []
             if not self.skip_render:
                 for i in self._time_range:
                     if not event.is_set():
