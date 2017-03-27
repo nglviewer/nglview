@@ -24,24 +24,18 @@ def get_total_errors(modules):
 def test_nglview_show_module():
     """
     """
-    assert not get_total_errors([
-        show
-    ])
+    assert not get_total_errors([show])
 
 
 @unittest.skipUnless(PY3, 'doctest with py3 only')
 def test_nglview_viewer_control():
     """
     """
-    assert not get_total_errors([
-        viewer_control
-    ])
+    assert not get_total_errors([viewer_control])
 
 
 @unittest.skipUnless(PY3, 'doctest with py3 only')
 def test_nglview_widget():
     """
     """
-    assert not get_total_errors([
-        widget
-    ])
+    assert not get_total_errors([widget])

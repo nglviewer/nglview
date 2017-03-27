@@ -7,9 +7,11 @@ from mock import patch, MagicMock
 
 from make_dummy_comm import *
 
+
 class FakeEvent(object):
     def is_set(self):
         return self._event_set
+
 
 @patch('moviepy.editor.ImageSequenceClip')
 def test_movie_maker(ImageSequenceClip):
@@ -23,7 +25,7 @@ def test_movie_maker(ImageSequenceClip):
     movie.download_folder = os.path.join(os.path.dirname(__file__), 'data')
 
     # fake _event
-    movie._event = FakeEvent() 
+    movie._event = FakeEvent()
     movie._event._event_set = True
     movie.make()
 
@@ -42,8 +44,10 @@ def test_movie_maker(ImageSequenceClip):
     movie._event._event_set = False
     movie.make()
 
-    movie = MovieMaker(view, download_folder='here',
-            render_params=dict(factor=4),
-            moviepy_params={},
-            stop=2)
+    movie = MovieMaker(
+        view,
+        download_folder='here',
+        render_params=dict(factor=4),
+        moviepy_params={},
+        stop=2)
     movie.make()

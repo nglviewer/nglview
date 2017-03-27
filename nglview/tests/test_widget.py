@@ -25,7 +25,7 @@ from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
 from nglview import interpolate
 
-from make_dummy_comm import * # to initialize
+from make_dummy_comm import *  # to initialize
 
 try:
     import simpletraj
@@ -553,8 +553,8 @@ def test_coordinates_meta():
     trajs.append(Universe(tn, fn))
 
     views = [
-        nv.show_pytraj(trajs[0]), nv.show_mdtraj(trajs[1]), nv.show_parmed(
-            trajs[2])
+        nv.show_pytraj(trajs[0]), nv.show_mdtraj(trajs[1]),
+        nv.show_parmed(trajs[2])
     ]
     views.append(nv.show_mdanalysis(trajs[3]))
 
@@ -1008,11 +1008,8 @@ def test_viewer_control():
     view = nv.demo()
     view
 
-    mat = [11, 12, 13, 14,
-           21, 22, 23, 24,
-           31, 32, 33, 34,
-           41, 42, 43, 44]
- 
+    mat = [11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44]
+
     vector = [0, 1, 2]
 
     view.control.align(mat)
@@ -1024,7 +1021,6 @@ def test_viewer_control():
     view.control.zoom(0.3)
     view.control.rotate(mat)
     view.control.spin(vector, 0.1)
-
 
 
 def test_sandbox():

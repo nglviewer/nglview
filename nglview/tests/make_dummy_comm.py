@@ -1,7 +1,6 @@
 from ipywidgets import Widget
 from ipykernel.comm import Comm
 
-
 #-----------------------------------------------------------------------------
 # Utility stuff from ipywidgets tests
 # 
@@ -9,6 +8,7 @@ from ipykernel.comm import Comm
 # Distributed under the terms of the Modified BSD License.
 
 #-----------------------------------------------------------------------------
+
 
 class DummyComm(Comm):
     comm_id = 'a-b-c-d'
