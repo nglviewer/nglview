@@ -379,6 +379,12 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        this.sync_camera = false;
 	    },
 	
+	    viewXZPlane: function() {
+	        var m = new NGL.Matrix4().makeRotationX( Math.PI / 2 );
+	        var q = new NGL.Quaternion().setFromRotationMatrix( m );
+	        this.stage.viewerControls.rotate( q );
+	    },
+	
 	    makeDefaultRepr: function(o) {
 	        var reprDefList = this.model.get("_init_representations");
 	        reprDefList.forEach(function(reprDef) {

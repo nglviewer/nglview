@@ -25,6 +25,9 @@ class ViewerControl(object):
     def _call(self, funcname, *args):
         self.view._remote_call(funcname, target='viewerControls', args=args)
 
+    def _view_xz_plane(self):
+        self.view._remote_call('viewXZPlane', target='Widget')
+
     def align(self, basis):
         '''
         
