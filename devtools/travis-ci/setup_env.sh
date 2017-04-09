@@ -23,6 +23,7 @@ source activate myenv
 # mock
 pip install mock
 
+pip install matplotlib==2.0.0
 pip install moviepy==0.2.2.11
 pip install imageio==1.6
 
