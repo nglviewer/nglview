@@ -362,6 +362,12 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	        this.sync_camera = false;
 	    },
 	
+	    viewXZPlane: function() {
+	        var m = new NGL.Matrix4().makeRotationX( Math.PI / 2 );
+	        var q = new NGL.Quaternion().setFromRotationMatrix( m );
+	        this.stage.viewerControls.rotate( q );
+	    },
+	
 	    makeDefaultRepr: function(o) {
 	        var reprDefList = this.model.get("_init_representations");
 	        reprDefList.forEach(function(reprDef) {
