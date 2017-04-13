@@ -85,6 +85,8 @@ def _add_repr_method_shortcut(self, other):
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _model_name = Unicode("DOMWidgetModel").tag(sync=True)
+    _model_module = Unicode("jupyter-js-widgets").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
     # use Integer here, because mdtraj uses a long datatype here on Python-2.7
     frame = Integer().tag(sync=True)
