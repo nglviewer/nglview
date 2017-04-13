@@ -9,7 +9,7 @@ from ipywidgets import (DOMWidget, Box, HBox, VBox, Checkbox, ColorPicker,
                         Text, Textarea, IntText, FloatText, Label, interactive,
                         Layout, Tab)
 
-from traitlets import Any, Int, Bool, Dict, Float, CaselessStrEnum
+from traitlets import Any, Int, Bool, Dict, Float, CaselessStrEnum, HasTraits
 from traitlets import observe, link
 
 from .parameters import REPRESENTATION_NAMES
@@ -19,49 +19,49 @@ from .layout import (make_form_item_layout, _relayout, _make_autofit,
                      _relayout_master, _make_delay_tab, _make_box_layout)
 
 
-class TrajectoryPlayer(DOMWidget):
+class TrajectoryPlayer(HasTraits):
     # should set default values here different from desired defaults
     # so `observe` can be triggered
-    step = Int(0).tag(sync=True)
-    sync_frame = Bool(True).tag(sync=True)
-    interpolate = Bool(False).tag(sync=False)
-    delay = Float(0.0).tag(sync=True)
-    parameters = Dict().tag(sync=True)
-    iparams = Dict().tag(sync=False)
-    _interpolation_t = Float().tag(sync=False)
-    _iterpolation_type = CaselessStrEnum(['linear', 'spline']).tag(sync=False)
-    spin = Bool(False).tag(sync=False)
-    _spin_x = Int(1).tag(sync=False)
-    _spin_y = Int(0).tag(sync=False)
-    _spin_z = Int(0).tag(sync=False)
-    _spin_speed = Float(0.005).tag(sync=False)
+    step = Int(0)
+    sync_frame = Bool(True)
+    interpolate = Bool(False)
+    delay = Float(0.0)
+    parameters = Dict()
+    iparams = Dict()
+    _interpolation_t = Float()
+    _iterpolation_type = CaselessStrEnum(['linear', 'spline'])
+    spin = Bool(False)
+    _spin_x = Int(1)
+    _spin_y = Int(0)
+    _spin_z = Int(0)
+    _spin_speed = Float(0.005)
     camera = CaselessStrEnum(
         ['perspective', 'orthographic'],
-        default_value='perspective').tag(sync=False)
-    _render_params = Dict().tag(sync=False)
-    _real_time_update = Bool(False).tag(sync=False)
+        default_value='perspective')
+    _render_params = Dict()
+    _real_time_update = Bool(False)
 
-    widget_tab = Any(None).tag(sync=False)
-    widget_repr = Any(None).tag(sync=False)
-    widget_repr_parameters = Any(None).tag(sync=False)
-    widget_quick_repr = Any(None).tag(sync=False)
-    widget_general = Any(None).tag(sync=False)
-    widget_picked = Any(None).tag(sync=False)
-    widget_preference = Any(None).tag(sync=False)
-    widget_extra = Any(None).tag(sync=False)
-    widget_theme = Any(None).tag(sync=False)
-    widget_help = Any(None).tag(sync=False)
-    widget_export_image = Any(None).tag(sync=False)
-    widget_component_slider = Any(None).tag(sync=False)
-    widget_repr_slider = Any(None).tag(sync=False)
-    widget_repr_choices = Any(None).tag(sync=False)
-    widget_repr_control_buttons = Any(None).tag(sync=False)
-    widget_repr_add = Any(None).tag(sync=False)
-    widget_accordion_repr_parameters = Any(None).tag(sync=False)
-    widget_repr_parameters_dialog = Any(None).tag(sync=False)
-    widget_repr_name = Any(None).tag(sync=False)
-    widget_component_dropdown = Any(None).tag(sync=False)
-    widget_drag = Any(None).tag(sync=False)
+    widget_tab = Any(None)
+    widget_repr = Any(None)
+    widget_repr_parameters = Any(None)
+    widget_quick_repr = Any(None)
+    widget_general = Any(None)
+    widget_picked = Any(None)
+    widget_preference = Any(None)
+    widget_extra = Any(None)
+    widget_theme = Any(None)
+    widget_help = Any(None)
+    widget_export_image = Any(None)
+    widget_component_slider = Any(None)
+    widget_repr_slider = Any(None)
+    widget_repr_choices = Any(None)
+    widget_repr_control_buttons = Any(None)
+    widget_repr_add = Any(None)
+    widget_accordion_repr_parameters = Any(None)
+    widget_repr_parameters_dialog = Any(None)
+    widget_repr_name = Any(None)
+    widget_component_dropdown = Any(None)
+    widget_drag = Any(None)
 
     def __init__(self, view, step=1, delay=100, sync_frame=False,
                  min_delay=40):
