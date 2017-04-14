@@ -6,7 +6,7 @@ import uuid
 import json
 import numpy as np
 from IPython.display import display
-from ipywidgets import DOMWidget, widget_image
+from ipywidgets import Box, DOMWidget, widget_image
 from traitlets import (Unicode, Bool, Dict, List, Int, Integer, observe,
                        CaselessStrEnum)
 
@@ -85,6 +85,8 @@ def _add_repr_method_shortcut(self, other):
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _model_name = Unicode("DOMWidgetModel").tag(sync=True)
+    _model_module = Unicode("jupyter-js-widgets").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
     # use Integer here, because mdtraj uses a long datatype here on Python-2.7
     frame = Integer().tag(sync=True)
@@ -408,8 +410,7 @@ class NGLWidget(DOMWidget):
     def display(self, gui=False, use_box=False):
         if gui:
             if use_box:
-                from nglview.widget_box import BoxNGL
-                box = BoxNGL([self, self.player._display()])
+                box = Box([self, self.player._display()])
                 box._gui_style = 'row'
                 return box
             else:
@@ -905,12 +906,6 @@ class NGLWidget(DOMWidget):
         We only test with imageio 1.6 and moviepy 0.2.2.11
         Good luck.
         '''
-        try:
-            import moviepy
-        except ImportError:
-            print("You must install moviepy and ffmeg")
-            print("pip install moviepy==0.2.2.11")
-            print("pip install imageio==1.6")
         from nglview.contrib.movie import MovieMaker
 
         if 'in_memory' not in kwargs:
