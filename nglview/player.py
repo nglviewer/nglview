@@ -758,12 +758,15 @@ class TrajectoryPlayer(HasTraits):
             " ",
         ])
 
-        def on_chose(change):
-            repr_name = change['new']
-            repr_index = repr_choices.options.index(repr_name)
-            repr_slider.value = repr_index
+        def on_chosen(change):
+            repr_name = change.get('new', " ")
+            try:
+                repr_index = repr_choices.options.index(repr_name)
+                repr_slider.value = repr_index
+            except ValueError:
+                pass
 
-        repr_choices.observe(on_chose, names='value')
+        repr_choices.observe(on_chosen, names='value')
         repr_choices.layout.width = default.DEFAULT_TEXT_WIDTH
 
         self.widget_repr_choices = repr_choices
