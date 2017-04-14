@@ -1,6 +1,12 @@
+try:
+    import moviepy.editor as mpy
+except ImportError:
+    print("You have to install moviepy, imageio and ffmeg")
+    print("pip install moviepy==0.2.2.11")
+    print("pip install imageio==1.6")
+
 import os
 import time
-import moviepy.editor as mpy
 import threading
 
 

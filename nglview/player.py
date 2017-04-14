@@ -4,7 +4,7 @@ from __future__ import absolute_import
 import time
 import json
 from IPython.display import display, Javascript
-from ipywidgets import (DOMWidget, Box, HBox, VBox, Checkbox, ColorPicker,
+from ipywidgets import (Box, HBox, VBox, Checkbox, ColorPicker,
                         IntSlider, FloatSlider, Dropdown, Button, ToggleButton,
                         Text, Textarea, IntText, FloatText, Label, interactive,
                         Layout, Tab)

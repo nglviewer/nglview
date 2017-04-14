@@ -907,12 +907,6 @@ class NGLWidget(DOMWidget):
         We only test with imageio 1.6 and moviepy 0.2.2.11
         Good luck.
         '''
-        try:
-            import moviepy
-        except ImportError:
-            print("You must install moviepy and ffmeg")
-            print("pip install moviepy==0.2.2.11")
-            print("pip install imageio==1.6")
         from nglview.contrib.movie import MovieMaker
 
         if 'in_memory' not in kwargs:
