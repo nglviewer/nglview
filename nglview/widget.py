@@ -6,7 +6,7 @@ import uuid
 import json
 import numpy as np
 from IPython.display import display
-from ipywidgets import DOMWidget, widget_image
+from ipywidgets import Box, DOMWidget, widget_image
 from traitlets import (Unicode, Bool, Dict, List, Int, Integer, observe,
                        CaselessStrEnum)
 
@@ -410,8 +410,7 @@ class NGLWidget(DOMWidget):
     def display(self, gui=False, use_box=False):
         if gui:
             if use_box:
-                from nglview.widget_box import BoxNGL
-                box = BoxNGL([self, self.player._display()])
+                box = Box([self, self.player._display()])
                 box._gui_style = 'row'
                 return box
             else:
