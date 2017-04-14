@@ -78,17 +78,6 @@ class TrajectoryPlayer(HasTraits):
             factor=4, antialias=True, trim=False, transparent=False)
 
         self._widget_names = [w for w in dir(self) if w.startswith('wiget_')]
-        self.observe(
-            self._on_widget_built,
-            names=[
-                'widget_repr_parameters', 'widget_repr', 'widget_preference'
-            ])
-        self._movie_maker = None
-
-    def _on_widget_built(self, change):
-        widget = change['new']
-        if widget is not None:
-            widget.layout.padding = '5%'
 
     def _update_padding(self, padding=default.DEFAULT_PADDING):
         widget_collection = [
