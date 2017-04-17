@@ -1,4 +1,5 @@
 from __future__ import print_function
+import subprocess
 from setuptools import setup, find_packages, Command
 from setuptools.command.egg_info import egg_info
 from subprocess import check_call
@@ -44,14 +45,17 @@ def enable_extentions():
         # enable_nbextension_python does not exist in older notebook
         # use try ... except in case users do not have notebook yet
         from notebook.nbextensions import enable_nbextension_python
-        from nglview.install import install_nglview_js_widgets
-        from nglview.install import enable_nglview_js_widgets
         enable_nbextension_python('widgetsnbextension')
 
-        # user=True
-        # TODO: sys_prefix? Using user specified option? (--user)
-        install_nglview_js_widgets(user=True, debug=True)
-        enable_nglview_js_widgets(user=True)
+        subprocess.check_call([
+            'jupyter', 'nbextension', 'install', '--py',
+            '--sys-prefix', 'nglview'
+        ])
+
+        subprocess.check_call([
+            'jupyter', 'nbextension', 'enable', '--py',
+            '--sys-prefix', 'nglview'
+        ])
         print("Seems OK")
     except (ImportError, OSError) as e: 
         # TODO: add type of exception here?
