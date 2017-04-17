@@ -170,13 +170,19 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
         action='store_true',
         help='delete temp file after closing notebook')
     parser.add_argument(
-        '--disable-autorun',
+        '--auto',
         action='store_true',
-        help='do not run 1st cell right after openning notebook')
+        help='Run 1st cell right after openning notebook')
     parser.add_argument('--test', action='store_true', help='test')
     args = parser.parse_args(cmd_arg)
 
     command = args.command
+    if command in ['install', 'enable']:
+        subprocess.check_call([
+            'jupyter', 'nbextension', command, '--py',
+            '--sys-prefix', 'nglview'
+        ])
+        sys.exit(0)
 
     crd = args.traj if args.traj is not None else args.crd
     if crd is None:
@@ -246,7 +252,7 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
         print('NOTE: make sure to open {0} in your local machine\n'.format(
             notebook_name))
 
-    if args.disable_autorun or command is None:
+    if not args.auto or command is None:
         try:
             disable_extension(jupyter=args.jexe)
         except CalledProcessError:
@@ -265,7 +271,7 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
         if args.clean and create_new_nb:
             print("deleting {}".format(notebook_name))
             os.remove(notebook_name)
-        if not args.disable_autorun:
+        if args.auto:
             disable_extension(jupyter=args.jexe)
 
 
