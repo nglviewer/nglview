@@ -57,14 +57,13 @@ def enable_extentions():
             '--sys-prefix', 'nglview'
         ])
         print("Seems OK")
-    except (ImportError, OSError) as e: 
+    except (ImportError, OSError, subprocess.CalledProcessError) as e:
         # TODO: add type of exception here?
         # Case: 
         #    - notebook is not installed before nglview
         #    - permission denied? 
         print('Failed to enable extensions.')
-        print(e)
-        print('Skip')
+        print('Skip. Tips: Do it yourself')
 
 def js_prerelease(command, strict=False):
     """decorator for building minified js/css prior to another command"""
