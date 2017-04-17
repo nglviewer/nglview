@@ -43,11 +43,11 @@ with JupyterLab.
 
     ```bash
     conda install nglview -c bioconda
-    # might need: jupyter-nbextension enable nglview --py --user
+    # might need: jupyter-nbextension enable nglview --py --sys-prefix
 
     # if you already installed nglview, you can `upgrade`
     conda upgrade nglview --force
-    # might need: jupyter-nbextension enable nglview --py --user
+    # might need: jupyter-nbextension enable nglview --py --sys-prefix
     ```
 
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
