@@ -37,7 +37,7 @@ def test_cli():
     subprocess.check_call(command.split())
 
     # single pdb, disable-autorun
-    command = 'nglview {} --disable-autorun --test'.format(datafiles.PDB)
+    command = 'nglview {} --auto --test'.format(datafiles.PDB)
     subprocess.check_call(command.split())
 
     # single pdb, specify browser
