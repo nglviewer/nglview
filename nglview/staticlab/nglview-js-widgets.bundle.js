@@ -899,6 +899,15 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	                        console.log('can not create func for ' + msg.methodName);
 	                    }
 	                    break;
+	                case 'player':
+	                    func = this.$player[msg.methodName];
+	                    if (func) {
+	                        func.apply(this.$player, new_args);
+	                    } else {
+	                        // send error message to Python?
+	                        console.log('can not create func for ' + msg.methodName);
+	                    }
+	                    break;
 	                case 'Representation':
 	                    var component_index = msg['component_index'];
 	                    var repr_index = msg['repr_index'];
