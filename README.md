@@ -55,7 +55,7 @@ with JupyterLab.
 ```bash
    pip install ipywidgets==5.2.2 # if you don't have ipywidgets yet
    pip install nglview
-   # might need: jupyter-nbextension enable nglview --py --user 
+   # might need: jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
 - Bugs: There is [a bug](https://github.com/ipython/ipywidgets/issues/1044#issuecomment-276458101) in `ipywidgets 6.0.0`, so we suggest to use `ipywidgets 5.2.2` for now.
@@ -78,9 +78,9 @@ The development version can be installed directly from github:
     python setup.py install --npm
 
     # probably need to activate widgetsnbextension
-    # python -m ipykernel install --user
-    # jupyter nbextension enable --py --user widgetsnbextension
-    # jupyter nbextension enable --py --user nglview
+    # python -m ipykernel install --sys-prefix
+    # jupyter nbextension enable --py --sys-prefix widgetsnbextension
+    # jupyter nbextension enable --py --sys-prefix nglview
     
     # tested with ipywidgets 5.2.2, notebook 4.2.1
 ```
