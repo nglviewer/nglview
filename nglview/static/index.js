@@ -193,19 +193,21 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	        this.$notebook_text.hide();
 	
 	        this.stage.signals.clicked.add(function(pd) {
-	            var pd2 = {};
-	            if (pd.atom) pd2.atom = pd.atom.toObject();
-	            if (pd.bond) pd2.bond = pd.bond.toObject();
-	            if (pd.instance) pd2.instance = pd.instance;
-	            this.model.set("picked", pd2);
-	            this.touch();
-	            var pickingText = "";
-	            if (pd.atom) {
-	                pickingText = "Atom: " + pd.atom.qualifiedName();
-	            } else if (pd.bond) {
-	                pickingText = "Bond: " + pd.bond.atom1.qualifiedName() + " - " + pd.bond.atom2.qualifiedName();
+	            if (pd) {
+	                var pd2 = {};
+	                if (pd.atom) pd2.atom = pd.atom.toObject();
+	                if (pd.bond) pd2.bond = pd.bond.toObject();
+	                if (pd.instance) pd2.instance = pd.instance;
+	                this.model.set("picked", pd2);
+	                this.touch();
+	                var pickingText = "";
+	                if (pd.atom) {
+	                    pickingText = "Atom: " + pd.atom.qualifiedName();
+	                } else if (pd.bond) {
+	                    pickingText = "Bond: " + pd.bond.atom1.qualifiedName() + " - " + pd.bond.atom2.qualifiedName();
+	                }
+	                this.$pickingInfo.text(pickingText);
 	            }
-	            this.$pickingInfo.text(pickingText);
 	        }, this);
 	
 	        this.initPlayer();
