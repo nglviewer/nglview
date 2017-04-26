@@ -176,19 +176,21 @@ jupyter.define('nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js', function (mod
 	        this.$notebook_text.hide();
 	
 	        this.stage.signals.clicked.add(function(pd) {
-	            var pd2 = {};
-	            if (pd.atom) pd2.atom = pd.atom.toObject();
-	            if (pd.bond) pd2.bond = pd.bond.toObject();
-	            if (pd.instance) pd2.instance = pd.instance;
-	            this.model.set("picked", pd2);
-	            this.touch();
-	            var pickingText = "";
-	            if (pd.atom) {
-	                pickingText = "Atom: " + pd.atom.qualifiedName();
-	            } else if (pd.bond) {
-	                pickingText = "Bond: " + pd.bond.atom1.qualifiedName() + " - " + pd.bond.atom2.qualifiedName();
+	            if (pd) {
+	                var pd2 = {};
+	                if (pd.atom) pd2.atom = pd.atom.toObject();
+	                if (pd.bond) pd2.bond = pd.bond.toObject();
+	                if (pd.instance) pd2.instance = pd.instance;
+	                this.model.set("picked", pd2);
+	                this.touch();
+	                var pickingText = "";
+	                if (pd.atom) {
+	                    pickingText = "Atom: " + pd.atom.qualifiedName();
+	                } else if (pd.bond) {
+	                    pickingText = "Bond: " + pd.bond.atom1.qualifiedName() + " - " + pd.bond.atom2.qualifiedName();
+	                }
+	                this.$pickingInfo.text(pickingText);
 	            }
-	            this.$pickingInfo.text(pickingText);
 	        }, this);
 	
 	        this.initPlayer();
@@ -32071,7 +32073,8 @@ jupyter.define('jupyter-js-widgets@2.1.4/package.json', function (module, export
 		],
 		"name": "jupyter-js-widgets",
 		"optionalDependencies": {},
-		"readme": "ERROR: No README data found!",
+		"readme": "Jupyter JS Widgets\n==================\n\nInteractive widgets for the Jupyter notebook.\n\nThis packages contains the implementation of the core Jupyter interactive\nwidgets.\n\nThe reference Python backend, `ipywidgets` is available\n[here](https://github.com/ipython/ipywidgets), with more examples.\n\nPackage Install\n---------------\n\n**Prerequisites**\n- [node](http://nodejs.org/)\n\nRun the following command **at the root of this repository**.\n\n```bash\nnpm install --save jupyter-js-widgets\n```\n",
+		"readmeFilename": "README.md",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/ipython/ipywidgets.git"
