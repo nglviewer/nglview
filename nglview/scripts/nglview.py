@@ -173,15 +173,22 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
         '--auto',
         action='store_true',
         help='Run 1st cell right after openning notebook')
+    parser.add_argument(
+        '--symlink',
+        action='store_true',
+        help='Create symlink for nglview-js-widgets (developer mode)')
     parser.add_argument('--test', action='store_true', help='test')
     args = parser.parse_args(cmd_arg)
 
     command = args.command
-    if command in ['install', 'enable']:
-        subprocess.check_call([
+    if command in ['install', 'enable', 'uninstall']:
+        cmds = [
             'jupyter', 'nbextension', command, '--py',
             '--sys-prefix', 'nglview'
-        ])
+        ]
+        if args.symlink:
+            cmds.append('--symlink')
+        subprocess.check_call(cmds)
         sys.exit(0)
 
     crd = args.traj if args.traj is not None else args.crd
