@@ -36,7 +36,7 @@
     "eslint": "^3.2.2",
     "eslint-config-google": "^0.7.1",
     "json-loader": "^0.5.4",
-    "ngl": "0.10.0-dev.11",
+    "ngl": "0.10.0-dev.14",
     "webpack": "^1.12.14"
   },
   "dependencies": {
