@@ -399,6 +399,7 @@ Acknowledgment
 - Many thanks to `nglview` [contributors](https://github.com/arose/nglview/graphs/contributors)
 - [dunovank/jupyter-themes](https://github.com/dunovank/jupyter-themes): for `oceans16` theme
 - [base64-arraybuffer](https://github.com/niklasvh/base64-arraybuffer)
+- [ipywidgets](https://github.com/jupyter-widgets/ipywidgets): 
 
 License
 =======
