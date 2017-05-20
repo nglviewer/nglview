@@ -36,14 +36,14 @@
     "eslint": "^3.2.2",
     "eslint-config-google": "^0.7.1",
     "json-loader": "^0.5.4",
-    "ngl": "0.10.0-dev.14",
+    "ngl": "0.10.0-dev.24",
     "webpack": "^1.12.14"
   },
   "dependencies": {
     "jquery": "^2.1.4",
     "jquery-ui": "^1.12.1",
     "underscore": "^1.8.3",
-    "jupyter-js-widgets": "~2.1.4",
+    "jupyter-js-widgets": "3.0.0-alpha.6",
     "@jupyterlab/nbwidgets": "^0.6.15"
   }
 }

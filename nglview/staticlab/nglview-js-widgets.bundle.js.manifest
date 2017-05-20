@@ -1,6 +1,6 @@
 {
-	"entry": "nglview-js-widgets@0.5.4-dev.1/src/labplugin.js",
-	"hash": "0873e6b3776aa2a90f6a03a1c9d24d4d",
+	"entry": "nglview-js-widgets@0.5.4-dev.2/src/labplugin.js",
+	"hash": "7e302cfe0dde0de9c4f5333286f01cb8",
 	"id": 0,
 	"name": "nglview-js-widgets",
 	"files": [
@@ -8,72 +8,68 @@
 		"nglview-js-widgets.css"
 	],
 	"modules": {
-		"nglview-js-widgets@0.5.4-dev.1/src/labplugin.js": [
-			"nglview-js-widgets@0.5.4-dev.1/src/index.js",
+		"nglview-js-widgets@0.5.4-dev.2/src/labplugin.js": [
+			"nglview-js-widgets@0.5.4-dev.2/src/index.js",
 			"@jupyterlab/nbwidgets@^0.6.15/lib/index.js"
 		],
-		"nglview-js-widgets@0.5.4-dev.1/src/index.js": [
-			"nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js",
-			"nglview-js-widgets@0.5.4-dev.1/package.json"
+		"nglview-js-widgets@0.5.4-dev.2/src/index.js": [
+			"nglview-js-widgets@0.5.4-dev.2/src/widget_ngl.js",
+			"nglview-js-widgets@0.5.4-dev.2/package.json"
 		],
-		"nglview-js-widgets@0.5.4-dev.1/src/widget_ngl.js": [
-			"jupyter-js-widgets@~2.1.4/lib/index.js",
-			"ngl@0.10.0-dev.14/dist/ngl.js",
+		"nglview-js-widgets@0.5.4-dev.2/src/widget_ngl.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/index.js",
+			"ngl@0.10.0-dev.24/dist/ngl.js",
 			"jquery@^2.1.4/dist/jquery.js",
 			"jquery-ui@^1.12.1/ui/widgets/draggable.js",
 			"jquery-ui@^1.12.1/ui/widgets/slider.js",
 			"jquery-ui@^1.12.1/ui/widgets/dialog.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/index.js": [
-			"jupyter-js-widgets@2.1.4/lib/manager-base.js",
-			"jupyter-js-widgets@2.1.4/lib/utils.js",
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_layout.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_style.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_link.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_bool.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_button.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_box.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_image.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_color.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_date.js",
-			"jupyter-js-widgets@2.1.4/lib/services-shim.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_int.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_float.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_controller.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_selection.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_selectioncontainer.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_string.js",
-			"jupyter-js-widgets@2.1.4/package.json"
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/index.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/manager-base.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/utils.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_layout.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_style.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_link.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_bool.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_button.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_box.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_image.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_color.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_date.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/services-shim.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_int.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_float.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_controller.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_selection.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_selectioncontainer.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_string.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/package.json"
 		],
-		"jupyter-js-widgets@2.1.4/lib/manager-base.js": [
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/manager-base.js": [
 			"underscore@^1.8.3/underscore.js",
-			"jupyter-js-widgets@2.1.4/lib/utils.js",
-			"semver@^5.1.0/semver.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_string.js",
-			"jupyter-js-widgets@2.1.4/package.json"
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/utils.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_string.js"
 		],
 		"underscore@1.8.3/underscore.js": [],
-		"jupyter-js-widgets@2.1.4/lib/utils.js": [
-			"jupyter-js-widgets@2.1.4/lib/index.js",
-			"jupyter-js-widgets@2.1.4/lib/index.js"
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/utils.js": [
+			"underscore@^1.8.3/underscore.js",
+			"base64-js@1.2.0/index.js"
 		],
-		"semver@5.3.0/semver.js": [],
-		"process@0.11.10/browser.js": [],
-		"jupyter-js-widgets@2.1.4/lib/widget_string.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
+		"base64-js@1.2.0/index.js": [],
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_string.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
 			"underscore@^1.8.3/underscore.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget.js": [
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js": [
 			"backbone@1.2.0/backbone.js",
 			"underscore@^1.8.3/underscore.js",
-			"jupyter-js-widgets@2.1.4/lib/utils.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/utils.js",
 			"jquery@^3.1.1/dist/jquery.js",
-			"jupyter-js-widgets@2.1.4/lib/nativeview.js",
-			"phosphor@^0.7.0/lib/ui/widget.js",
-			"phosphor@^0.7.0/lib/core/messaging.js",
-			"phosphor@^0.7.0/lib/ui/widget.js"
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/nativeview.js",
+			"@phosphor/widgets@^1.2.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js"
 		],
 		"backbone@1.2.0/backbone.js": [
 			"underscore@>=1.7.0/underscore.js",
@@ -81,119 +77,349 @@
 		],
 		"jquery@2.2.4/dist/jquery.js": [],
 		"jquery@3.2.1/dist/jquery.js": [],
-		"jupyter-js-widgets@2.1.4/lib/nativeview.js": [
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/nativeview.js": [
 			"backbone@1.2.0/backbone.js"
 		],
-		"phosphor@0.7.1/lib/ui/widget.js": [
-			"phosphor@0.7.1/lib/algorithm/iteration.js",
-			"phosphor@0.7.1/lib/core/messaging.js",
-			"phosphor@0.7.1/lib/core/properties.js",
-			"phosphor@0.7.1/lib/core/signaling.js",
-			"phosphor@0.7.1/lib/ui/title.js"
+		"@phosphor/widgets@1.2.0/lib/index.js": [
+			"@phosphor/widgets@1.2.0/lib/boxengine.js",
+			"@phosphor/widgets@1.2.0/lib/boxlayout.js",
+			"@phosphor/widgets@1.2.0/lib/boxpanel.js",
+			"@phosphor/widgets@1.2.0/lib/commandpalette.js",
+			"@phosphor/widgets@1.2.0/lib/contextmenu.js",
+			"@phosphor/widgets@1.2.0/lib/docklayout.js",
+			"@phosphor/widgets@1.2.0/lib/dockpanel.js",
+			"@phosphor/widgets@1.2.0/lib/focustracker.js",
+			"@phosphor/widgets@1.2.0/lib/layout.js",
+			"@phosphor/widgets@1.2.0/lib/menu.js",
+			"@phosphor/widgets@1.2.0/lib/menubar.js",
+			"@phosphor/widgets@1.2.0/lib/panel.js",
+			"@phosphor/widgets@1.2.0/lib/panellayout.js",
+			"@phosphor/widgets@1.2.0/lib/splitlayout.js",
+			"@phosphor/widgets@1.2.0/lib/splitpanel.js",
+			"@phosphor/widgets@1.2.0/lib/stackedlayout.js",
+			"@phosphor/widgets@1.2.0/lib/stackedpanel.js",
+			"@phosphor/widgets@1.2.0/lib/tabbar.js",
+			"@phosphor/widgets@1.2.0/lib/tabpanel.js",
+			"@phosphor/widgets@1.2.0/lib/title.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
 		],
-		"phosphor@0.7.1/lib/algorithm/iteration.js": [],
-		"phosphor@0.7.1/lib/core/messaging.js": [
-			"phosphor@0.7.1/lib/algorithm/iteration.js",
-			"phosphor@0.7.1/lib/collections/queue.js"
+		"@phosphor/widgets@1.2.0/lib/boxengine.js": [],
+		"@phosphor/widgets@1.2.0/lib/boxlayout.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/properties@^1.1.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/boxengine.js",
+			"@phosphor/widgets@1.2.0/lib/layout.js",
+			"@phosphor/widgets@1.2.0/lib/panellayout.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/algorithm@1.1.0/lib/index.js": [
+			"@phosphor/algorithm@1.1.0/lib/array.js",
+			"@phosphor/algorithm@1.1.0/lib/chain.js",
+			"@phosphor/algorithm@1.1.0/lib/empty.js",
+			"@phosphor/algorithm@1.1.0/lib/filter.js",
+			"@phosphor/algorithm@1.1.0/lib/find.js",
+			"@phosphor/algorithm@1.1.0/lib/iter.js",
+			"@phosphor/algorithm@1.1.0/lib/map.js",
+			"@phosphor/algorithm@1.1.0/lib/range.js",
+			"@phosphor/algorithm@1.1.0/lib/reduce.js",
+			"@phosphor/algorithm@1.1.0/lib/repeat.js",
+			"@phosphor/algorithm@1.1.0/lib/retro.js",
+			"@phosphor/algorithm@1.1.0/lib/sort.js",
+			"@phosphor/algorithm@1.1.0/lib/stride.js",
+			"@phosphor/algorithm@1.1.0/lib/string.js",
+			"@phosphor/algorithm@1.1.0/lib/take.js",
+			"@phosphor/algorithm@1.1.0/lib/zip.js"
+		],
+		"@phosphor/algorithm@1.1.0/lib/array.js": [],
+		"@phosphor/algorithm@1.1.0/lib/chain.js": [
+			"@phosphor/algorithm@1.1.0/lib/iter.js"
+		],
+		"@phosphor/algorithm@1.1.0/lib/iter.js": [],
+		"@phosphor/algorithm@1.1.0/lib/empty.js": [],
+		"@phosphor/algorithm@1.1.0/lib/filter.js": [
+			"@phosphor/algorithm@1.1.0/lib/iter.js"
+		],
+		"@phosphor/algorithm@1.1.0/lib/find.js": [
+			"@phosphor/algorithm@1.1.0/lib/iter.js"
+		],
+		"@phosphor/algorithm@1.1.0/lib/map.js": [
+			"@phosphor/algorithm@1.1.0/lib/iter.js"
+		],
+		"@phosphor/algorithm@1.1.0/lib/range.js": [],
+		"@phosphor/algorithm@1.1.0/lib/reduce.js": [
+			"@phosphor/algorithm@1.1.0/lib/iter.js"
+		],
+		"@phosphor/algorithm@1.1.0/lib/repeat.js": [],
+		"@phosphor/algorithm@1.1.0/lib/retro.js": [],
+		"@phosphor/algorithm@1.1.0/lib/sort.js": [
+			"@phosphor/algorithm@1.1.0/lib/iter.js"
+		],
+		"@phosphor/algorithm@1.1.0/lib/stride.js": [
+			"@phosphor/algorithm@1.1.0/lib/iter.js"
+		],
+		"@phosphor/algorithm@1.1.0/lib/string.js": [],
+		"@phosphor/algorithm@1.1.0/lib/take.js": [
+			"@phosphor/algorithm@1.1.0/lib/iter.js"
+		],
+		"@phosphor/algorithm@1.1.0/lib/zip.js": [
+			"@phosphor/algorithm@1.1.0/lib/iter.js"
+		],
+		"@phosphor/domutils@1.1.0/lib/index.js": [
+			"@phosphor/domutils@1.1.0/lib/element.js",
+			"@phosphor/domutils@1.1.0/lib/platform.js",
+			"@phosphor/domutils@1.1.0/lib/selector.js"
+		],
+		"@phosphor/domutils@1.1.0/lib/element.js": [],
+		"@phosphor/domutils@1.1.0/lib/platform.js": [],
+		"@phosphor/domutils@1.1.0/lib/selector.js": [],
+		"@phosphor/messaging@1.2.0/lib/index.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/collections@^1.1.0/lib/index.js"
 		],
 		"timers-browserify@2.0.2/main.js": [
 			"setimmediate@^1.0.4/setImmediate.js"
 		],
 		"setimmediate@1.0.5/setImmediate.js": [],
-		"phosphor@0.7.1/lib/collections/queue.js": [
-			"phosphor@0.7.1/lib/algorithm/iteration.js"
+		"process@0.11.10/browser.js": [],
+		"@phosphor/collections@1.1.0/lib/index.js": [
+			"@phosphor/collections@1.1.0/lib/linkedlist.js"
 		],
-		"phosphor@0.7.1/lib/core/properties.js": [],
-		"phosphor@0.7.1/lib/core/signaling.js": [],
-		"phosphor@0.7.1/lib/ui/title.js": [
-			"phosphor@0.7.1/lib/core/signaling.js"
+		"@phosphor/collections@1.1.0/lib/linkedlist.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_core.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"underscore@^1.8.3/underscore.js",
-			"jupyter-js-widgets@2.1.4/package.json"
+		"@phosphor/properties@1.1.0/lib/index.js": [],
+		"@phosphor/widgets@1.2.0/lib/layout.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/properties@^1.1.0/lib/index.js",
+			"@phosphor/signaling@^1.2.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
 		],
-		"jupyter-js-widgets@2.1.4/package.json": [],
-		"jupyter-js-widgets@2.1.4/lib/widget_layout.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
+		"@phosphor/signaling@1.2.0/lib/index.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/widget.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/properties@^1.1.0/lib/index.js",
+			"@phosphor/signaling@^1.2.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/title.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/title.js": [
+			"@phosphor/signaling@^1.2.0/lib/index.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/panellayout.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/layout.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/boxpanel.js": [
+			"@phosphor/widgets@1.2.0/lib/boxlayout.js",
+			"@phosphor/widgets@1.2.0/lib/panel.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/panel.js": [
+			"@phosphor/widgets@1.2.0/lib/panellayout.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/commandpalette.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/coreutils@^1.1.0/lib/index.js",
+			"@phosphor/commands@^1.2.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/virtualdom@^1.1.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/coreutils@1.1.0/lib/index.js": [
+			"@phosphor/coreutils@1.1.0/lib/json.js",
+			"@phosphor/coreutils@1.1.0/lib/mime.js",
+			"@phosphor/coreutils@1.1.0/lib/promise.js",
+			"@phosphor/coreutils@1.1.0/lib/token.js"
+		],
+		"@phosphor/coreutils@1.1.0/lib/json.js": [],
+		"@phosphor/coreutils@1.1.0/lib/mime.js": [],
+		"@phosphor/coreutils@1.1.0/lib/promise.js": [],
+		"@phosphor/coreutils@1.1.0/lib/token.js": [],
+		"@phosphor/commands@1.2.0/lib/index.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/coreutils@^1.1.0/lib/index.js",
+			"@phosphor/disposable@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/keyboard@^1.1.0/lib/index.js",
+			"@phosphor/signaling@^1.2.0/lib/index.js"
+		],
+		"@phosphor/disposable@1.1.0/lib/index.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js"
+		],
+		"@phosphor/keyboard@1.1.0/lib/index.js": [],
+		"@phosphor/virtualdom@1.1.0/lib/index.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/contextmenu.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/disposable@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/menu.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/menu.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/commands@^1.2.0/lib/index.js",
+			"@phosphor/coreutils@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/keyboard@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/signaling@^1.2.0/lib/index.js",
+			"@phosphor/virtualdom@^1.1.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/docklayout.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/boxengine.js",
+			"@phosphor/widgets@1.2.0/lib/layout.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/dockpanel.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/coreutils@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/dragdrop@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/properties@^1.1.0/lib/index.js",
+			"@phosphor/signaling@^1.2.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/docklayout.js",
+			"@phosphor/widgets@1.2.0/lib/tabbar.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/dragdrop@1.1.0/lib/index.js": [
+			"@phosphor/disposable@^1.1.0/lib/index.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/tabbar.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/dragdrop@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/signaling@^1.2.0/lib/index.js",
+			"@phosphor/virtualdom@^1.1.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/title.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/focustracker.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/signaling@^1.2.0/lib/index.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/menubar.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/keyboard@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/virtualdom@^1.1.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/splitlayout.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/properties@^1.1.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/boxengine.js",
+			"@phosphor/widgets@1.2.0/lib/layout.js",
+			"@phosphor/widgets@1.2.0/lib/panellayout.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/splitpanel.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/dragdrop@^1.1.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/panel.js",
+			"@phosphor/widgets@1.2.0/lib/splitlayout.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/stackedlayout.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/layout.js",
+			"@phosphor/widgets@1.2.0/lib/panellayout.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/stackedpanel.js": [
+			"@phosphor/signaling@^1.2.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/panel.js",
+			"@phosphor/widgets@1.2.0/lib/stackedlayout.js"
+		],
+		"@phosphor/widgets@1.2.0/lib/tabpanel.js": [
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/signaling@^1.2.0/lib/index.js",
+			"@phosphor/widgets@1.2.0/lib/boxlayout.js",
+			"@phosphor/widgets@1.2.0/lib/stackedpanel.js",
+			"@phosphor/widgets@1.2.0/lib/tabbar.js",
+			"@phosphor/widgets@1.2.0/lib/widget.js"
+		],
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
 			"underscore@^1.8.3/underscore.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_style.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_layout.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
 			"underscore@^1.8.3/underscore.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_link.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_style.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
 			"underscore@^1.8.3/underscore.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_bool.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_link.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
 			"underscore@^1.8.3/underscore.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_button.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_style.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_bool.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
 			"underscore@^1.8.3/underscore.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_box.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
-			"jupyter-js-widgets@2.1.4/lib/utils.js",
-			"phosphor@^0.7.0/lib/algorithm/searching.js",
-			"phosphor@^0.7.0/lib/core/messaging.js",
-			"phosphor@^0.7.0/lib/ui/panel.js",
-			"phosphor@^0.7.0/lib/ui/widget.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_button.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_style.js",
+			"underscore@^1.8.3/underscore.js"
+		],
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_box.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/utils.js",
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/widgets@^1.2.0/lib/index.js",
 			"underscore@^1.8.3/underscore.js",
 			"jquery@^3.1.1/dist/jquery.js"
 		],
-		"phosphor@0.7.1/lib/algorithm/searching.js": [
-			"phosphor@0.7.1/lib/algorithm/iteration.js",
-			"phosphor@0.7.1/lib/algorithm/sequence.js"
-		],
-		"phosphor@0.7.1/lib/algorithm/sequence.js": [
-			"phosphor@0.7.1/lib/algorithm/iteration.js"
-		],
-		"phosphor@0.7.1/lib/ui/panel.js": [
-			"phosphor@0.7.1/lib/algorithm/iteration.js",
-			"phosphor@0.7.1/lib/algorithm/mutation.js",
-			"phosphor@0.7.1/lib/algorithm/searching.js",
-			"phosphor@0.7.1/lib/collections/vector.js",
-			"phosphor@0.7.1/lib/core/messaging.js",
-			"phosphor@0.7.1/lib/ui/widget.js"
-		],
-		"phosphor@0.7.1/lib/algorithm/mutation.js": [
-			"phosphor@0.7.1/lib/algorithm/sequence.js"
-		],
-		"phosphor@0.7.1/lib/collections/vector.js": [
-			"phosphor@0.7.1/lib/algorithm/iteration.js"
-		],
-		"jupyter-js-widgets@2.1.4/lib/widget_image.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_image.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
 			"underscore@^1.8.3/underscore.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_color.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_color.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
 			"underscore@^1.8.3/underscore.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_date.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_date.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
 			"underscore@^1.8.3/underscore.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/services-shim.js": [
-			"jupyter-js-widgets@2.1.4/lib/utils.js"
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/services-shim.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/utils.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_int.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_style.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_int.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_style.js",
 			"underscore@^1.8.3/underscore.js",
 			"jquery@^3.1.1/dist/jquery.js",
 			"jquery-ui@^1.12.1/ui/widgets/slider.js",
@@ -228,78 +454,55 @@
 			"jquery-ui@1.12.1/ui/version.js"
 		],
 		"d3-format@0.5.1/build/d3-format.js": [],
-		"jupyter-js-widgets@2.1.4/lib/widget_float.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_float.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
 			"underscore@^1.8.3/underscore.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_int.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_int.js",
 			"d3-format@^0.5.1/build/d3-format.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_controller.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_controller.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
 			"underscore@^1.8.3/underscore.js",
-			"jupyter-js-widgets@2.1.4/lib/utils.js"
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/utils.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_selection.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget_core.js",
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_selection.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_core.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
 			"underscore@^1.8.3/underscore.js",
-			"jupyter-js-widgets@2.1.4/lib/utils.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/utils.js",
 			"jquery@^3.1.1/dist/jquery.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/widget_selectioncontainer.js": [
-			"jupyter-js-widgets@2.1.4/lib/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/widget_box.js",
-			"jupyter-js-widgets@2.1.4/lib/phosphor/tabpanel.js",
-			"jupyter-js-widgets@2.1.4/lib/phosphor/accordion.js",
-			"phosphor@^0.7.0/lib/ui/widget.js",
-			"phosphor@^0.7.0/lib/algorithm/iteration.js",
-			"phosphor@^0.7.0/lib/algorithm/mutation.js",
-			"phosphor@^0.7.0/lib/algorithm/searching.js",
-			"phosphor@^0.7.0/lib/core/messaging.js",
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_selectioncontainer.js": [
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/widget_box.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/phosphor/tabpanel.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/phosphor/accordion.js",
+			"@phosphor/widgets@^1.2.0/lib/index.js",
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/messaging@^1.2.0/lib/index.js",
 			"underscore@^1.8.3/underscore.js",
-			"jupyter-js-widgets@2.1.4/lib/utils.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/utils.js",
 			"jquery@^3.1.1/dist/jquery.js"
 		],
-		"jupyter-js-widgets@2.1.4/lib/phosphor/tabpanel.js": [
-			"phosphor@^0.7.0/lib/core/signaling.js",
-			"phosphor@^0.7.0/lib/ui/panel.js",
-			"phosphor@^0.7.0/lib/ui/tabbar.js",
-			"phosphor@^0.7.0/lib/ui/widget.js"
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/phosphor/tabpanel.js": [
+			"@phosphor/messaging@^1.2.0/lib/index.js",
+			"@phosphor/signaling@1.2.0/lib/index.js",
+			"@phosphor/domutils@^1.1.0/lib/index.js",
+			"@phosphor/widgets@^1.2.0/lib/index.js"
 		],
-		"phosphor@0.7.1/lib/ui/tabbar.js": [
-			"phosphor@0.7.1/lib/algorithm/iteration.js",
-			"phosphor@0.7.1/lib/algorithm/mutation.js",
-			"phosphor@0.7.1/lib/algorithm/searching.js",
-			"phosphor@0.7.1/lib/collections/vector.js",
-			"phosphor@0.7.1/lib/core/messaging.js",
-			"phosphor@0.7.1/lib/core/signaling.js",
-			"phosphor@0.7.1/lib/dom/cursor.js",
-			"phosphor@0.7.1/lib/dom/query.js",
-			"phosphor@0.7.1/lib/ui/title.js",
-			"phosphor@0.7.1/lib/ui/vdom.js",
-			"phosphor@0.7.1/lib/ui/widget.js"
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/phosphor/accordion.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/signaling@1.2.0/lib/index.js",
+			"@phosphor/widgets@^1.2.0/lib/index.js",
+			"jupyter-js-widgets@3.0.0-alpha.6/lib/phosphor/currentselection.js"
 		],
-		"phosphor@0.7.1/lib/dom/cursor.js": [
-			"phosphor@0.7.1/lib/core/disposable.js"
+		"jupyter-js-widgets@3.0.0-alpha.6/lib/phosphor/currentselection.js": [
+			"@phosphor/algorithm@^1.1.0/lib/index.js",
+			"@phosphor/signaling@1.2.0/lib/index.js"
 		],
-		"phosphor@0.7.1/lib/core/disposable.js": [
-			"phosphor@0.7.1/lib/algorithm/iteration.js"
-		],
-		"phosphor@0.7.1/lib/dom/query.js": [],
-		"phosphor@0.7.1/lib/ui/vdom.js": [],
-		"jupyter-js-widgets@2.1.4/lib/phosphor/accordion.js": [
-			"phosphor@^0.7.0/lib/core/signaling.js",
-			"phosphor@^0.7.0/lib/ui/panel.js",
-			"phosphor@^0.7.0/lib/ui/widget.js",
-			"jupyter-js-widgets@2.1.4/lib/phosphor/currentselection.js",
-			"phosphor@^0.7.0/lib/algorithm/searching.js"
-		],
-		"jupyter-js-widgets@2.1.4/lib/phosphor/currentselection.js": [
-			"phosphor@^0.7.0/lib/algorithm/searching.js",
-			"phosphor@^0.7.0/lib/core/signaling.js"
-		],
-		"ngl@0.10.0-dev.14/dist/ngl.js": [],
+		"jupyter-js-widgets@3.0.0-alpha.6/package.json": [],
+		"ngl@0.10.0-dev.24/dist/ngl.js": [],
 		"jquery-ui@1.12.1/ui/widgets/draggable.js": [
 			"jquery-ui@1.12.1/ui/widgets/mouse.js",
 			"jquery-ui@1.12.1/ui/data.js",
@@ -412,7 +615,7 @@
 			"jquery@2.2.4/dist/jquery.js",
 			"jquery-ui@1.12.1/ui/version.js"
 		],
-		"nglview-js-widgets@0.5.4-dev.1/package.json": [],
+		"nglview-js-widgets@0.5.4-dev.2/package.json": [],
 		"@jupyterlab/nbwidgets@0.6.17/lib/index.js": [
 			"jupyter-js-widgets@3.0.0-alpha.0/lib/index.js",
 			"@phosphor/coreutils@^1.0.0/lib/index.js",
@@ -451,7 +654,6 @@
 			"underscore@^1.8.3/underscore.js",
 			"base64-js@1.2.0/index.js"
 		],
-		"base64-js@1.2.0/index.js": [],
 		"jupyter-js-widgets@3.0.0-alpha.0/lib/widget_string.js": [
 			"jupyter-js-widgets@3.0.0-alpha.0/lib/widget.js",
 			"jupyter-js-widgets@3.0.0-alpha.0/lib/widget_core.js",
@@ -860,6 +1062,7 @@
 		"@jupyterlab/nbwidgets@0.6.17/lib/semvercache.js": [
 			"semver@5.3.0/semver.js"
 		],
+		"semver@5.3.0/semver.js": [],
 		"@jupyterlab/nbwidgets@0.6.17/lib/plugin.js": [
 			"@jupyterlab/docregistry@^0.3.0/lib/index.js",
 			"@phosphor/disposable@^1.0.0/lib/index.js",
@@ -1549,16 +1752,12 @@
 		"@jupyterlab/coreutils@0.3.1/lib/url.js": [
 			"url-parse@^1.1.8/index.js"
 		],
-		"url-parse@1.1.8/index.js": [
+		"url-parse@1.1.9/index.js": [
 			"requires-port@1.0.x/index.js",
-			"url-parse@1.1.8/lolcation.js",
-			"querystringify@0.0.x/index.js"
+			"querystringify@~1.0.0/index.js"
 		],
 		"requires-port@1.0.0/index.js": [],
-		"url-parse@1.1.8/lolcation.js": [
-			"url-parse@1.1.8/index.js"
-		],
-		"querystringify@0.0.4/index.js": [],
+		"querystringify@1.0.0/index.js": [],
 		"@jupyterlab/coreutils@0.3.1/lib/uuid.js": [],
 		"@jupyterlab/coreutils@0.3.1/lib/modeldb.js": [
 			"@phosphor/disposable@^1.0.0/lib/index.js",
@@ -1776,15 +1975,15 @@
 		"htmlparser2@3.9.2/lib/ProxyHandler.js": [
 			"htmlparser2@3.9.2/lib/index.js"
 		],
-		"domutils@1.5.1/index.js": [
-			"domutils@1.5.1/lib/stringify.js",
-			"domutils@1.5.1/lib/traversal.js",
-			"domutils@1.5.1/lib/manipulation.js",
-			"domutils@1.5.1/lib/querying.js",
-			"domutils@1.5.1/lib/legacy.js",
-			"domutils@1.5.1/lib/helpers.js"
+		"domutils@1.6.0/index.js": [
+			"domutils@1.6.0/lib/stringify.js",
+			"domutils@1.6.0/lib/traversal.js",
+			"domutils@1.6.0/lib/manipulation.js",
+			"domutils@1.6.0/lib/querying.js",
+			"domutils@1.6.0/lib/legacy.js",
+			"domutils@1.6.0/lib/helpers.js"
 		],
-		"domutils@1.5.1/lib/stringify.js": [
+		"domutils@1.6.0/lib/stringify.js": [
 			"domelementtype@1/index.js",
 			"dom-serializer@0/index.js"
 		],
@@ -1807,15 +2006,15 @@
 			"entities@1.1.1/maps/xml.json",
 			"entities@1.1.1/lib/decode_codepoint.js"
 		],
-		"domutils@1.5.1/lib/traversal.js": [],
-		"domutils@1.5.1/lib/manipulation.js": [],
-		"domutils@1.5.1/lib/querying.js": [
+		"domutils@1.6.0/lib/traversal.js": [],
+		"domutils@1.6.0/lib/manipulation.js": [],
+		"domutils@1.6.0/lib/querying.js": [
 			"domelementtype@1/index.js"
 		],
-		"domutils@1.5.1/lib/legacy.js": [
+		"domutils@1.6.0/lib/legacy.js": [
 			"domelementtype@1/index.js"
 		],
-		"domutils@1.5.1/lib/helpers.js": [],
+		"domutils@1.6.0/lib/helpers.js": [],
 		"htmlparser2@3.9.2/lib/CollectingHandler.js": [
 			"htmlparser2@3.9.2/lib/index.js"
 		],
