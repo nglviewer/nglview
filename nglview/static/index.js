@@ -255,7 +255,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	
 	        // for callbacks from Python
 	        // must be after initializing NGL.Stage
-	        this.model.send({
+	        this.send({
 	            'type': 'request_loaded',
 	            'data': true
 	        })
