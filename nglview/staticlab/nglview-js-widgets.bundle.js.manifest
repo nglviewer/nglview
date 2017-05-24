@@ -1,6 +1,6 @@
 {
 	"entry": "nglview-js-widgets@0.5.4-dev.2/src/labplugin.js",
-	"hash": "7e302cfe0dde0de9c4f5333286f01cb8",
+	"hash": "461cb3e2736e0224c2f0fc5db875b72a",
 	"id": 0,
 	"name": "nglview-js-widgets",
 	"files": [
@@ -671,279 +671,6 @@
 		"jupyter-js-widgets@3.0.0-alpha.0/lib/nativeview.js": [
 			"backbone@1.2.0/backbone.js"
 		],
-		"@phosphor/widgets@1.1.0/lib/index.js": [
-			"@phosphor/widgets@1.1.0/lib/boxengine.js",
-			"@phosphor/widgets@1.1.0/lib/boxlayout.js",
-			"@phosphor/widgets@1.1.0/lib/boxpanel.js",
-			"@phosphor/widgets@1.1.0/lib/commandpalette.js",
-			"@phosphor/widgets@1.1.0/lib/contextmenu.js",
-			"@phosphor/widgets@1.1.0/lib/docklayout.js",
-			"@phosphor/widgets@1.1.0/lib/dockpanel.js",
-			"@phosphor/widgets@1.1.0/lib/focustracker.js",
-			"@phosphor/widgets@1.1.0/lib/layout.js",
-			"@phosphor/widgets@1.1.0/lib/menu.js",
-			"@phosphor/widgets@1.1.0/lib/menubar.js",
-			"@phosphor/widgets@1.1.0/lib/panel.js",
-			"@phosphor/widgets@1.1.0/lib/panellayout.js",
-			"@phosphor/widgets@1.1.0/lib/splitlayout.js",
-			"@phosphor/widgets@1.1.0/lib/splitpanel.js",
-			"@phosphor/widgets@1.1.0/lib/stackedlayout.js",
-			"@phosphor/widgets@1.1.0/lib/stackedpanel.js",
-			"@phosphor/widgets@1.1.0/lib/tabbar.js",
-			"@phosphor/widgets@1.1.0/lib/tabpanel.js",
-			"@phosphor/widgets@1.1.0/lib/title.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/boxengine.js": [],
-		"@phosphor/widgets@1.1.0/lib/boxlayout.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/properties@^1.0.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/boxengine.js",
-			"@phosphor/widgets@1.1.0/lib/layout.js",
-			"@phosphor/widgets@1.1.0/lib/panellayout.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/algorithm@1.0.0/lib/index.js": [
-			"@phosphor/algorithm@1.0.0/lib/array.js",
-			"@phosphor/algorithm@1.0.0/lib/chain.js",
-			"@phosphor/algorithm@1.0.0/lib/empty.js",
-			"@phosphor/algorithm@1.0.0/lib/filter.js",
-			"@phosphor/algorithm@1.0.0/lib/find.js",
-			"@phosphor/algorithm@1.0.0/lib/iter.js",
-			"@phosphor/algorithm@1.0.0/lib/map.js",
-			"@phosphor/algorithm@1.0.0/lib/range.js",
-			"@phosphor/algorithm@1.0.0/lib/reduce.js",
-			"@phosphor/algorithm@1.0.0/lib/repeat.js",
-			"@phosphor/algorithm@1.0.0/lib/retro.js",
-			"@phosphor/algorithm@1.0.0/lib/sort.js",
-			"@phosphor/algorithm@1.0.0/lib/stride.js",
-			"@phosphor/algorithm@1.0.0/lib/string.js",
-			"@phosphor/algorithm@1.0.0/lib/take.js",
-			"@phosphor/algorithm@1.0.0/lib/zip.js"
-		],
-		"@phosphor/algorithm@1.0.0/lib/array.js": [],
-		"@phosphor/algorithm@1.0.0/lib/chain.js": [
-			"@phosphor/algorithm@1.0.0/lib/iter.js"
-		],
-		"@phosphor/algorithm@1.0.0/lib/iter.js": [],
-		"@phosphor/algorithm@1.0.0/lib/empty.js": [],
-		"@phosphor/algorithm@1.0.0/lib/filter.js": [
-			"@phosphor/algorithm@1.0.0/lib/iter.js"
-		],
-		"@phosphor/algorithm@1.0.0/lib/find.js": [
-			"@phosphor/algorithm@1.0.0/lib/iter.js"
-		],
-		"@phosphor/algorithm@1.0.0/lib/map.js": [
-			"@phosphor/algorithm@1.0.0/lib/iter.js"
-		],
-		"@phosphor/algorithm@1.0.0/lib/range.js": [],
-		"@phosphor/algorithm@1.0.0/lib/reduce.js": [
-			"@phosphor/algorithm@1.0.0/lib/iter.js"
-		],
-		"@phosphor/algorithm@1.0.0/lib/repeat.js": [],
-		"@phosphor/algorithm@1.0.0/lib/retro.js": [],
-		"@phosphor/algorithm@1.0.0/lib/sort.js": [
-			"@phosphor/algorithm@1.0.0/lib/iter.js"
-		],
-		"@phosphor/algorithm@1.0.0/lib/stride.js": [
-			"@phosphor/algorithm@1.0.0/lib/iter.js"
-		],
-		"@phosphor/algorithm@1.0.0/lib/string.js": [],
-		"@phosphor/algorithm@1.0.0/lib/take.js": [
-			"@phosphor/algorithm@1.0.0/lib/iter.js"
-		],
-		"@phosphor/algorithm@1.0.0/lib/zip.js": [
-			"@phosphor/algorithm@1.0.0/lib/iter.js"
-		],
-		"@phosphor/domutils@1.0.0/lib/index.js": [
-			"@phosphor/domutils@1.0.0/lib/element.js",
-			"@phosphor/domutils@1.0.0/lib/platform.js",
-			"@phosphor/domutils@1.0.0/lib/selector.js"
-		],
-		"@phosphor/domutils@1.0.0/lib/element.js": [],
-		"@phosphor/domutils@1.0.0/lib/platform.js": [],
-		"@phosphor/domutils@1.0.0/lib/selector.js": [],
-		"@phosphor/messaging@1.1.0/lib/index.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/collections@^1.0.0/lib/index.js"
-		],
-		"@phosphor/collections@1.0.0/lib/index.js": [
-			"@phosphor/collections@1.0.0/lib/linkedlist.js"
-		],
-		"@phosphor/collections@1.0.0/lib/linkedlist.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js"
-		],
-		"@phosphor/properties@1.0.0/lib/index.js": [],
-		"@phosphor/widgets@1.1.0/lib/layout.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/properties@^1.0.0/lib/index.js",
-			"@phosphor/signaling@^1.1.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/signaling@1.1.0/lib/index.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/widget.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/properties@^1.0.0/lib/index.js",
-			"@phosphor/signaling@^1.1.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/title.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/title.js": [
-			"@phosphor/signaling@^1.1.0/lib/index.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/panellayout.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/layout.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/boxpanel.js": [
-			"@phosphor/widgets@1.1.0/lib/boxlayout.js",
-			"@phosphor/widgets@1.1.0/lib/panel.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/panel.js": [
-			"@phosphor/widgets@1.1.0/lib/panellayout.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/commandpalette.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/coreutils@^1.0.0/lib/index.js",
-			"@phosphor/commands@^1.1.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/virtualdom@^1.0.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/coreutils@1.0.0/lib/index.js": [
-			"@phosphor/coreutils@1.0.0/lib/json.js",
-			"@phosphor/coreutils@1.0.0/lib/mime.js",
-			"@phosphor/coreutils@1.0.0/lib/promise.js",
-			"@phosphor/coreutils@1.0.0/lib/token.js"
-		],
-		"@phosphor/coreutils@1.0.0/lib/json.js": [],
-		"@phosphor/coreutils@1.0.0/lib/mime.js": [],
-		"@phosphor/coreutils@1.0.0/lib/promise.js": [],
-		"@phosphor/coreutils@1.0.0/lib/token.js": [],
-		"@phosphor/commands@1.1.0/lib/index.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/coreutils@^1.0.0/lib/index.js",
-			"@phosphor/disposable@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/keyboard@^1.0.0/lib/index.js",
-			"@phosphor/signaling@^1.1.0/lib/index.js"
-		],
-		"@phosphor/disposable@1.0.0/lib/index.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js"
-		],
-		"@phosphor/keyboard@1.0.0/lib/index.js": [],
-		"@phosphor/virtualdom@1.0.0/lib/index.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/contextmenu.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/disposable@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/menu.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/menu.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/commands@^1.1.0/lib/index.js",
-			"@phosphor/coreutils@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/keyboard@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/signaling@^1.1.0/lib/index.js",
-			"@phosphor/virtualdom@^1.0.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/docklayout.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/boxengine.js",
-			"@phosphor/widgets@1.1.0/lib/layout.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/dockpanel.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/coreutils@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/dragdrop@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/properties@^1.0.0/lib/index.js",
-			"@phosphor/signaling@^1.1.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/docklayout.js",
-			"@phosphor/widgets@1.1.0/lib/tabbar.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/dragdrop@1.0.0/lib/index.js": [
-			"@phosphor/disposable@^1.0.0/lib/index.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/tabbar.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/dragdrop@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/signaling@^1.1.0/lib/index.js",
-			"@phosphor/virtualdom@^1.0.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/title.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/focustracker.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/signaling@^1.1.0/lib/index.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/menubar.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/keyboard@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/virtualdom@^1.0.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/splitlayout.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/properties@^1.0.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/boxengine.js",
-			"@phosphor/widgets@1.1.0/lib/layout.js",
-			"@phosphor/widgets@1.1.0/lib/panellayout.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/splitpanel.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/dragdrop@^1.0.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/panel.js",
-			"@phosphor/widgets@1.1.0/lib/splitlayout.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/stackedlayout.js": [
-			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/layout.js",
-			"@phosphor/widgets@1.1.0/lib/panellayout.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/stackedpanel.js": [
-			"@phosphor/signaling@^1.1.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/panel.js",
-			"@phosphor/widgets@1.1.0/lib/stackedlayout.js"
-		],
-		"@phosphor/widgets@1.1.0/lib/tabpanel.js": [
-			"@phosphor/domutils@^1.0.0/lib/index.js",
-			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/signaling@^1.1.0/lib/index.js",
-			"@phosphor/widgets@1.1.0/lib/boxlayout.js",
-			"@phosphor/widgets@1.1.0/lib/stackedpanel.js",
-			"@phosphor/widgets@1.1.0/lib/tabbar.js",
-			"@phosphor/widgets@1.1.0/lib/widget.js"
-		],
 		"jupyter-js-widgets@3.0.0-alpha.0/lib/widget_core.js": [
 			"jupyter-js-widgets@3.0.0-alpha.0/lib/widget.js",
 			"underscore@^1.8.3/underscore.js"
@@ -1044,19 +771,19 @@
 		],
 		"jupyter-js-widgets@3.0.0-alpha.0/lib/phosphor/tabpanel.js": [
 			"@phosphor/messaging@^1.1.0/lib/index.js",
-			"@phosphor/signaling@1.1.0/lib/index.js",
+			"@phosphor/signaling@1.2.0/lib/index.js",
 			"@phosphor/domutils@^1.0.0/lib/index.js",
 			"@phosphor/widgets@^1.1.0/lib/index.js"
 		],
 		"jupyter-js-widgets@3.0.0-alpha.0/lib/phosphor/accordion.js": [
 			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/signaling@1.1.0/lib/index.js",
+			"@phosphor/signaling@1.2.0/lib/index.js",
 			"@phosphor/widgets@^1.1.0/lib/index.js",
 			"jupyter-js-widgets@3.0.0-alpha.0/lib/phosphor/currentselection.js"
 		],
 		"jupyter-js-widgets@3.0.0-alpha.0/lib/phosphor/currentselection.js": [
 			"@phosphor/algorithm@^1.0.0/lib/index.js",
-			"@phosphor/signaling@1.1.0/lib/index.js"
+			"@phosphor/signaling@1.2.0/lib/index.js"
 		],
 		"jupyter-js-widgets@3.0.0-alpha.0/package.json": [],
 		"@jupyterlab/nbwidgets@0.6.17/lib/semvercache.js": [
@@ -1848,15 +1575,15 @@
 		"entities@1.1.1/maps/xml.json": [],
 		"inherits@2.0.3/inherits_browser.js": [],
 		"events@1.1.1/events.js": [],
-		"domhandler@2.3.0/index.js": [
+		"domhandler@2.4.1/index.js": [
 			"domelementtype@1/index.js",
-			"domhandler@2.3.0/lib/node.js",
-			"domhandler@2.3.0/lib/element.js"
+			"domhandler@2.4.1/lib/node.js",
+			"domhandler@2.4.1/lib/element.js"
 		],
 		"domelementtype@1.3.0/index.js": [],
-		"domhandler@2.3.0/lib/node.js": [],
-		"domhandler@2.3.0/lib/element.js": [
-			"domhandler@2.3.0/lib/node.js"
+		"domhandler@2.4.1/lib/node.js": [],
+		"domhandler@2.4.1/lib/element.js": [
+			"domhandler@2.4.1/lib/node.js"
 		],
 		"htmlparser2@3.9.2/lib/FeedHandler.js": [
 			"htmlparser2@3.9.2/lib/index.js",
@@ -1871,7 +1598,7 @@
 			"htmlparser2@3.9.2/lib/Parser.js",
 			"stream-browserify@2.0.1/index.js",
 			"__ignored__",
-			"string_decoder@1.0.0/lib/string_decoder.js",
+			"string_decoder@1.0.1/lib/string_decoder.js",
 			"buffer@4.9.1/index.js",
 			"inherits@^2.0.1/inherits_browser.js"
 		],
@@ -1946,9 +1673,11 @@
 			"readable-stream@2.2.9/lib/_stream_duplex.js"
 		],
 		"util-deprecate@1.0.2/browser.js": [],
-		"string_decoder@1.0.0/lib/string_decoder.js": [
-			"buffer@4.9.1/index.js",
-			"buffer-shims@~1.0.0/index.js"
+		"string_decoder@1.0.1/lib/string_decoder.js": [
+			"safe-buffer@^5.0.1/browser.js"
+		],
+		"safe-buffer@5.0.1/browser.js": [
+			"buffer@4.9.1/index.js"
 		],
 		"readable-stream@2.2.9/lib/_stream_transform.js": [
 			"readable-stream@2.2.9/lib/_stream_duplex.js",
@@ -1975,15 +1704,15 @@
 		"htmlparser2@3.9.2/lib/ProxyHandler.js": [
 			"htmlparser2@3.9.2/lib/index.js"
 		],
-		"domutils@1.6.0/index.js": [
-			"domutils@1.6.0/lib/stringify.js",
-			"domutils@1.6.0/lib/traversal.js",
-			"domutils@1.6.0/lib/manipulation.js",
-			"domutils@1.6.0/lib/querying.js",
-			"domutils@1.6.0/lib/legacy.js",
-			"domutils@1.6.0/lib/helpers.js"
+		"domutils@1.6.2/index.js": [
+			"domutils@1.6.2/lib/stringify.js",
+			"domutils@1.6.2/lib/traversal.js",
+			"domutils@1.6.2/lib/manipulation.js",
+			"domutils@1.6.2/lib/querying.js",
+			"domutils@1.6.2/lib/legacy.js",
+			"domutils@1.6.2/lib/helpers.js"
 		],
-		"domutils@1.6.0/lib/stringify.js": [
+		"domutils@1.6.2/lib/stringify.js": [
 			"domelementtype@1/index.js",
 			"dom-serializer@0/index.js"
 		],
@@ -2006,15 +1735,15 @@
 			"entities@1.1.1/maps/xml.json",
 			"entities@1.1.1/lib/decode_codepoint.js"
 		],
-		"domutils@1.6.0/lib/traversal.js": [],
-		"domutils@1.6.0/lib/manipulation.js": [],
-		"domutils@1.6.0/lib/querying.js": [
+		"domutils@1.6.2/lib/traversal.js": [],
+		"domutils@1.6.2/lib/manipulation.js": [],
+		"domutils@1.6.2/lib/querying.js": [
 			"domelementtype@1/index.js"
 		],
-		"domutils@1.6.0/lib/legacy.js": [
+		"domutils@1.6.2/lib/legacy.js": [
 			"domelementtype@1/index.js"
 		],
-		"domutils@1.6.0/lib/helpers.js": [],
+		"domutils@1.6.2/lib/helpers.js": [],
 		"htmlparser2@3.9.2/lib/CollectingHandler.js": [
 			"htmlparser2@3.9.2/lib/index.js"
 		],
@@ -2169,7 +1898,7 @@
 		"@jupyterlab/codeeditor@0.3.1/lib/jsoneditor.js": [
 			"@phosphor/coreutils@^1.0.0/lib/index.js",
 			"@phosphor/widgets@^1.0.0/lib/index.js",
-			"@phosphor/virtualdom@1.0.0/lib/index.js",
+			"@phosphor/virtualdom@1.1.0/lib/index.js",
 			"@jupyterlab/codeeditor@0.3.1/lib/index.js"
 		],
 		"@jupyterlab/codeeditor@0.3.1/lib/widget.js": [

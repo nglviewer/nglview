@@ -184,7 +184,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
         // for callbacks from Python
         // must be after initializing NGL.Stage
-        this.model.send({
+        this.send({
             'type': 'request_loaded',
             'data': true
         })
