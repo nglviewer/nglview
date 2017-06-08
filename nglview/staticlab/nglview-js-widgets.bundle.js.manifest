@@ -1,6 +1,6 @@
 {
 	"entry": "nglview-js-widgets@0.5.4-dev.2/src/labplugin.js",
-	"hash": "461cb3e2736e0224c2f0fc5db875b72a",
+	"hash": "4cd9ad49a9ce1e41488111e3c829ca09",
 	"id": 0,
 	"name": "nglview-js-widgets",
 	"files": [
@@ -18,7 +18,7 @@
 		],
 		"nglview-js-widgets@0.5.4-dev.2/src/widget_ngl.js": [
 			"jupyter-js-widgets@3.0.0-alpha.6/lib/index.js",
-			"ngl@0.10.0-dev.24/dist/ngl.js",
+			"ngl@0.10.1/dist/ngl.js",
 			"jquery@^2.1.4/dist/jquery.js",
 			"jquery-ui@^1.12.1/ui/widgets/draggable.js",
 			"jquery-ui@^1.12.1/ui/widgets/slider.js",
@@ -502,7 +502,7 @@
 			"@phosphor/signaling@1.2.0/lib/index.js"
 		],
 		"jupyter-js-widgets@3.0.0-alpha.6/package.json": [],
-		"ngl@0.10.0-dev.24/dist/ngl.js": [],
+		"ngl@0.10.1/dist/ngl.js": [],
 		"jquery-ui@1.12.1/ui/widgets/draggable.js": [
 			"jquery-ui@1.12.1/ui/widgets/mouse.js",
 			"jquery-ui@1.12.1/ui/data.js",
@@ -1598,7 +1598,7 @@
 			"htmlparser2@3.9.2/lib/Parser.js",
 			"stream-browserify@2.0.1/index.js",
 			"__ignored__",
-			"string_decoder@1.0.1/lib/string_decoder.js",
+			"string_decoder@1.0.2/lib/string_decoder.js",
 			"buffer@4.9.1/index.js",
 			"inherits@^2.0.1/inherits_browser.js"
 		],
@@ -1611,33 +1611,35 @@
 			"readable-stream@^2.0.2/transform.js",
 			"readable-stream@^2.0.2/passthrough.js"
 		],
-		"readable-stream@2.2.9/readable-browser.js": [
-			"readable-stream@2.2.9/lib/_stream_readable.js",
-			"readable-stream@2.2.9/lib/_stream_writable.js",
-			"readable-stream@2.2.9/lib/_stream_duplex.js",
-			"readable-stream@2.2.9/lib/_stream_transform.js",
-			"readable-stream@2.2.9/lib/_stream_passthrough.js"
+		"readable-stream@2.2.11/readable-browser.js": [
+			"readable-stream@2.2.11/lib/_stream_readable.js",
+			"readable-stream@2.2.11/lib/_stream_writable.js",
+			"readable-stream@2.2.11/lib/_stream_duplex.js",
+			"readable-stream@2.2.11/lib/_stream_transform.js",
+			"readable-stream@2.2.11/lib/_stream_passthrough.js"
 		],
-		"readable-stream@2.2.9/lib/_stream_readable.js": [
+		"readable-stream@2.2.11/lib/_stream_readable.js": [
 			"process-nextick-args@~1.0.6/index.js",
 			"isarray@~1.0.0/index.js",
 			"events@1.1.1/events.js",
-			"readable-stream@2.2.9/lib/internal/streams/stream-browser.js",
-			"buffer@4.9.1/index.js",
-			"buffer-shims@~1.0.0/index.js",
+			"readable-stream@2.2.11/lib/internal/streams/stream-browser.js",
+			"safe-buffer@~5.0.1/browser.js",
 			"core-util-is@~1.0.0/lib/util.js",
 			"inherits@~2.0.1/inherits_browser.js",
 			"__ignored__",
-			"readable-stream@2.2.9/lib/internal/streams/BufferList.js",
-			"readable-stream@2.2.9/lib/_stream_duplex.js",
+			"readable-stream@2.2.11/lib/internal/streams/BufferList.js",
+			"readable-stream@2.2.11/lib/_stream_duplex.js",
 			"string_decoder@~1.0.0/lib/string_decoder.js",
-			"readable-stream@2.2.9/lib/_stream_duplex.js",
+			"readable-stream@2.2.11/lib/_stream_duplex.js",
 			"string_decoder@~1.0.0/lib/string_decoder.js"
 		],
 		"process-nextick-args@1.0.7/index.js": [],
 		"isarray@1.0.0/index.js": [],
-		"readable-stream@2.2.9/lib/internal/streams/stream-browser.js": [
+		"readable-stream@2.2.11/lib/internal/streams/stream-browser.js": [
 			"events@1.1.1/events.js"
+		],
+		"safe-buffer@5.0.1/browser.js": [
+			"buffer@4.9.1/index.js"
 		],
 		"buffer@4.9.1/index.js": [
 			"base64-js@^1.0.2/index.js",
@@ -1645,61 +1647,53 @@
 			"isarray@^1.0.0/index.js"
 		],
 		"ieee754@1.1.8/index.js": [],
-		"buffer-shims@1.0.0/index.js": [
-			"buffer@4.9.1/index.js"
-		],
 		"core-util-is@1.0.2/lib/util.js": [],
 		"__ignored__": [],
-		"readable-stream@2.2.9/lib/internal/streams/BufferList.js": [
-			"buffer@4.9.1/index.js",
-			"buffer-shims@~1.0.0/index.js"
+		"readable-stream@2.2.11/lib/internal/streams/BufferList.js": [
+			"safe-buffer@~5.0.1/browser.js"
 		],
-		"readable-stream@2.2.9/lib/_stream_duplex.js": [
+		"readable-stream@2.2.11/lib/_stream_duplex.js": [
 			"process-nextick-args@~1.0.6/index.js",
 			"core-util-is@~1.0.0/lib/util.js",
 			"inherits@~2.0.1/inherits_browser.js",
-			"readable-stream@2.2.9/lib/_stream_readable.js",
-			"readable-stream@2.2.9/lib/_stream_writable.js"
+			"readable-stream@2.2.11/lib/_stream_readable.js",
+			"readable-stream@2.2.11/lib/_stream_writable.js"
 		],
-		"readable-stream@2.2.9/lib/_stream_writable.js": [
+		"readable-stream@2.2.11/lib/_stream_writable.js": [
 			"process-nextick-args@~1.0.6/index.js",
 			"core-util-is@~1.0.0/lib/util.js",
 			"inherits@~2.0.1/inherits_browser.js",
 			"util-deprecate@~1.0.1/browser.js",
-			"readable-stream@2.2.9/lib/internal/streams/stream-browser.js",
-			"buffer@4.9.1/index.js",
-			"buffer-shims@~1.0.0/index.js",
-			"readable-stream@2.2.9/lib/_stream_duplex.js",
-			"readable-stream@2.2.9/lib/_stream_duplex.js"
+			"readable-stream@2.2.11/lib/internal/streams/stream-browser.js",
+			"safe-buffer@~5.0.1/browser.js",
+			"readable-stream@2.2.11/lib/_stream_duplex.js",
+			"readable-stream@2.2.11/lib/_stream_duplex.js"
 		],
 		"util-deprecate@1.0.2/browser.js": [],
-		"string_decoder@1.0.1/lib/string_decoder.js": [
-			"safe-buffer@^5.0.1/browser.js"
+		"string_decoder@1.0.2/lib/string_decoder.js": [
+			"safe-buffer@~5.0.1/browser.js"
 		],
-		"safe-buffer@5.0.1/browser.js": [
-			"buffer@4.9.1/index.js"
-		],
-		"readable-stream@2.2.9/lib/_stream_transform.js": [
-			"readable-stream@2.2.9/lib/_stream_duplex.js",
+		"readable-stream@2.2.11/lib/_stream_transform.js": [
+			"readable-stream@2.2.11/lib/_stream_duplex.js",
 			"core-util-is@~1.0.0/lib/util.js",
 			"inherits@~2.0.1/inherits_browser.js"
 		],
-		"readable-stream@2.2.9/lib/_stream_passthrough.js": [
-			"readable-stream@2.2.9/lib/_stream_transform.js",
+		"readable-stream@2.2.11/lib/_stream_passthrough.js": [
+			"readable-stream@2.2.11/lib/_stream_transform.js",
 			"core-util-is@~1.0.0/lib/util.js",
 			"inherits@~2.0.1/inherits_browser.js"
 		],
-		"readable-stream@2.2.9/writable-browser.js": [
-			"readable-stream@2.2.9/lib/_stream_writable.js"
+		"readable-stream@2.2.11/writable-browser.js": [
+			"readable-stream@2.2.11/lib/_stream_writable.js"
 		],
-		"readable-stream@2.2.9/duplex-browser.js": [
-			"readable-stream@2.2.9/lib/_stream_duplex.js"
+		"readable-stream@2.2.11/duplex-browser.js": [
+			"readable-stream@2.2.11/lib/_stream_duplex.js"
 		],
-		"readable-stream@2.2.9/transform.js": [
-			"readable-stream@2.2.9/readable-browser.js"
+		"readable-stream@2.2.11/transform.js": [
+			"readable-stream@2.2.11/readable-browser.js"
 		],
-		"readable-stream@2.2.9/passthrough.js": [
-			"readable-stream@2.2.9/readable-browser.js"
+		"readable-stream@2.2.11/passthrough.js": [
+			"readable-stream@2.2.11/readable-browser.js"
 		],
 		"htmlparser2@3.9.2/lib/ProxyHandler.js": [
 			"htmlparser2@3.9.2/lib/index.js"
@@ -1790,7 +1784,7 @@
 			"codemirror@^5.24.2/addon/comment/comment.js",
 			"codemirror@^5.24.2/keymap/vim.js"
 		],
-		"codemirror@5.25.2/lib/codemirror.js": [],
+		"codemirror@5.26.0/lib/codemirror.js": [],
 		"@jupyterlab/codemirror@0.3.1/lib/mode.js": [
 			"codemirror@^5.24.2/lib/codemirror.js",
 			"codemirror@^5.24.2/mode/meta.js",
@@ -1803,19 +1797,19 @@
 			"codemirror@^5.24.2/mode/r/r.js",
 			"codemirror@^5.24.2/mode/markdown/markdown.js"
 		],
-		"codemirror@5.25.2/mode/meta.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/mode/meta.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/addon/runmode/runmode.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/addon/runmode/runmode.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
 		"@jupyterlab/codemirror@0.3.1/lib/codemirror-ipython.js": [
 			"codemirror@^5.24.2/lib/codemirror.js",
 			"codemirror@^5.24.2/mode/meta.js",
 			"codemirror@^5.24.2/mode/python/python.js"
 		],
-		"codemirror@5.25.2/mode/python/python.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/mode/python/python.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
 		"@jupyterlab/codemirror@0.3.1/lib/codemirror-ipythongfm.js": [
 			"codemirror@^5.24.2/lib/codemirror.js",
@@ -1823,60 +1817,60 @@
 			"codemirror@^5.24.2/mode/gfm/gfm.js",
 			"codemirror@^5.24.2/addon/mode/multiplex.js"
 		],
-		"codemirror@5.25.2/mode/stex/stex.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/mode/stex/stex.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/mode/gfm/gfm.js": [
-			"codemirror@5.25.2/lib/codemirror.js",
-			"codemirror@5.25.2/mode/markdown/markdown.js",
-			"codemirror@5.25.2/addon/mode/overlay.js"
+		"codemirror@5.26.0/mode/gfm/gfm.js": [
+			"codemirror@5.26.0/lib/codemirror.js",
+			"codemirror@5.26.0/mode/markdown/markdown.js",
+			"codemirror@5.26.0/addon/mode/overlay.js"
 		],
-		"codemirror@5.25.2/mode/markdown/markdown.js": [
-			"codemirror@5.25.2/lib/codemirror.js",
-			"codemirror@5.25.2/mode/xml/xml.js",
-			"codemirror@5.25.2/mode/meta.js"
+		"codemirror@5.26.0/mode/markdown/markdown.js": [
+			"codemirror@5.26.0/lib/codemirror.js",
+			"codemirror@5.26.0/mode/xml/xml.js",
+			"codemirror@5.26.0/mode/meta.js"
 		],
-		"codemirror@5.25.2/mode/xml/xml.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/mode/xml/xml.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/addon/mode/overlay.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/addon/mode/overlay.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/addon/mode/multiplex.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/addon/mode/multiplex.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/mode/javascript/javascript.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/mode/javascript/javascript.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/mode/css/css.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/mode/css/css.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/mode/julia/julia.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/mode/julia/julia.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/mode/r/r.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/mode/r/r.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/addon/edit/matchbrackets.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/addon/edit/matchbrackets.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/addon/edit/closebrackets.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/addon/edit/closebrackets.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/addon/comment/comment.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/addon/comment/comment.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/keymap/vim.js": [
-			"codemirror@5.25.2/lib/codemirror.js",
-			"codemirror@5.25.2/addon/search/searchcursor.js",
-			"codemirror@5.25.2/addon/dialog/dialog.js",
-			"codemirror@5.25.2/addon/edit/matchbrackets.js"
+		"codemirror@5.26.0/keymap/vim.js": [
+			"codemirror@5.26.0/lib/codemirror.js",
+			"codemirror@5.26.0/addon/search/searchcursor.js",
+			"codemirror@5.26.0/addon/dialog/dialog.js",
+			"codemirror@5.26.0/addon/edit/matchbrackets.js"
 		],
-		"codemirror@5.25.2/addon/search/searchcursor.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/addon/search/searchcursor.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
-		"codemirror@5.25.2/addon/dialog/dialog.js": [
-			"codemirror@5.25.2/lib/codemirror.js"
+		"codemirror@5.26.0/addon/dialog/dialog.js": [
+			"codemirror@5.26.0/lib/codemirror.js"
 		],
 		"@jupyterlab/codemirror@0.3.1/lib/mimetype.js": [
 			"codemirror@^5.24.2/lib/codemirror.js",
