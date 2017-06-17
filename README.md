@@ -393,6 +393,7 @@ Projects using NGLView
 - [molPX](https://github.com/markovmodel/molPX): ipython API to visualize MD-trajectories along projected trajectories
 - [nanoribbon](https://github.com/oschuett/nanoribbon)
 - [ase](https://github.com/rosswhitfield/ase): Atomic Simulation Environment
+- [pida](https://github.com/jharman25/pida): Software for analyzing multiple protein-protein interaction docking solutions,
 
 Acknowledgment
 ==============
