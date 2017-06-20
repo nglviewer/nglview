@@ -712,7 +712,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.stage.setParameters(parameters);
 
         // do not set _full_stage_parameters here
-        // or parameters will be never updated (not sure why) 
+        // or parameters will be never updated (not sure why)
         // use observe in python side
         var updated_params = this.stage.getParameters();
         this.send({
@@ -739,8 +739,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             var reader = new FileReader();
             var arr_str;
             reader.onload = function() {
-                arr_str = reader.result.replace("data:image/png;base64,", "");
-                this.model.set("_image_data", arr_str);
+                //arr_str = reader.result.replace("data:image/png;base64,", "");
+                this.model.set("_image_data", reader.result);
                 this.touch();
             }.bind(this);
             reader.readAsDataURL(blob);
@@ -765,7 +765,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     _handle_loading_file_finished: function() {
         this.send({'type': 'async_message', 'data': 'ok'});
     },
-    
+
     _handle_stage_loadFile: function(msg){
             // args = [{'type': ..., 'data': ...}]
          var args0 = msg.args[0];
