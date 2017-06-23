@@ -1,6 +1,6 @@
 {
 	"entry": "nglview-js-widgets@0.5.4-dev.2/src/labplugin.js",
-	"hash": "4cd9ad49a9ce1e41488111e3c829ca09",
+	"hash": "25bd1a163472164223c83275a8d99be1",
 	"id": 0,
 	"name": "nglview-js-widgets",
 	"files": [
@@ -18,7 +18,7 @@
 		],
 		"nglview-js-widgets@0.5.4-dev.2/src/widget_ngl.js": [
 			"jupyter-js-widgets@3.0.0-alpha.6/lib/index.js",
-			"ngl@0.10.1/dist/ngl.js",
+			"ngl@0.10.3/dist/ngl.js",
 			"jquery@^2.1.4/dist/jquery.js",
 			"jquery-ui@^1.12.1/ui/widgets/draggable.js",
 			"jquery-ui@^1.12.1/ui/widgets/slider.js",
@@ -502,7 +502,7 @@
 			"@phosphor/signaling@1.2.0/lib/index.js"
 		],
 		"jupyter-js-widgets@3.0.0-alpha.6/package.json": [],
-		"ngl@0.10.1/dist/ngl.js": [],
+		"ngl@0.10.3/dist/ngl.js": [],
 		"jquery-ui@1.12.1/ui/widgets/draggable.js": [
 			"jquery-ui@1.12.1/ui/widgets/mouse.js",
 			"jquery-ui@1.12.1/ui/data.js",
