@@ -504,7 +504,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     addShape: function(name, shapes) {
-        // shapes: list of tuple
+        // shapes: List[Tuple[str, ...]]
         // e.g: [('sphere', ...), ('cone', ...)]
         var shape = new NGL.Shape(name);
         var shape_dict = {
@@ -513,7 +513,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             'cylinder': shape.addCylinder,
             'cone': shape.addCone,
             'mesh': shape.addMesh,
-            'arrow': shape.addArrow
+            'arrow': shape.addArrow,
+            'label': shape.addLabel
         };
         for (var i = 0; i < shapes.length; i++) {
             var shapes_i = shapes[i]
@@ -522,7 +523,9 @@ var NGLView = widgets.DOMWidgetView.extend({
             // e.g params = ('sphere', [ 0, 0, 9 ], [ 1, 0, 0 ], 1.5)
 
             var func = shape_dict[shape_type];
-            func.apply(this, params);
+            console.log('func', func);
+            func.apply(shape, params);
+            // shape.func(params);
         }
         var shapeComp = this.stage.addComponentFromObject(shape);
         shapeComp.addRepresentation("buffer");
