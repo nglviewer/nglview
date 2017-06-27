@@ -169,7 +169,7 @@ def ngl_demo(width=400, height=400):
 
     command2 = """
     <script>
-        var NGL = require('nbextensions/nglview/index').NGL;
+        var NGL = require('nbextensions/nglview-js-widgets/index').NGL;
         var stage = new NGL.Stage('viewport')
     </script>
     """
