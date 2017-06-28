@@ -426,6 +426,12 @@ def test_add_new_shape():
     view.shape.add_arrow([1, 2, 7], [30, 3, 3], [1, 0, 1], 1.0)
 
 
+def test_add_new_shape():
+    view = nv.demo()
+    view
+    view.stage.set_parameters(mousePreset='default')
+
+
 def test_remote_call():
     # how to test JS?
     view = nv.show_pytraj(pt.datafiles.load_tz2())
