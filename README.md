@@ -280,6 +280,12 @@ view.add_component('rcsb://1tsu.pdb')
 # NOTE: Trajectory is a special case of component.
 ```
 
+Mouse
+-----
+```python
+view.parameters = dict(mousePreset='coot') # or 'default'
+```
+
 Display more than two widgets
 -----------------------------
 
