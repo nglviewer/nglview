@@ -393,7 +393,7 @@ Projects using NGLView
 - [mbuild](https://github.com/iModels/mbuild) - A hierarchical, component based molecule builder
 - [deepchem](https://github.com/deepchem/deepchem) - Deep-learning models for Drug Discovery and Quantum Chemistry
 - [htmd](https://github.com/Acellera/htmd) - High throughput molecular dynamics simulations
-- [Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
+- [Moleidoscope](https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
 - [ssbio](https://github.com/nmih/ssbio) - Tools for enabling structural systems biology
 - [hublib](https://github.com/martin-hunt/hublib) - hublib is a Python library for the [HUBzero](https://hubzero.org/) science gateway platform.
 - [molPX](https://github.com/markovmodel/molPX): ipython API to visualize MD-trajectories along projected trajectories
