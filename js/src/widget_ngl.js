@@ -1,4 +1,4 @@
-var widgets = require("jupyter-js-widgets");
+var widgets = require("@jupyter-widgets/base");
 var NGL = require('ngl');
 var $ = require('jquery');
 require('jquery-ui/ui/widgets/draggable');
