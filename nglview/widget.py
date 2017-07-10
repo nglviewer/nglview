@@ -692,7 +692,7 @@ class NGLWidget(DOMWidget):
             You need to keep track how many components you added.
         '''
         self._remote_call(
-            "clearRepresentations",
+            "removeAllRepresentations",
             target='compList',
             kwargs={'component_index': component})
 
