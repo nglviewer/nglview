@@ -1,8 +1,16 @@
 ipywidgets==7.0.0b0
-ase
+
 mock
+coverage
+pytest
+pytest-cov
+coveralls
+
+ase
 parmed
 simpletraj
 pytraj==2.0.2
+
+matplotlib==2.0.2
 moviepy==0.2.2.11
 imageio==1.6

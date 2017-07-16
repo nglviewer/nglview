@@ -1,5 +1,0 @@
-#!/bin/sh
-
-conda install mdanalysis -c kain88-de --yes
-conda install mdtraj -c omnia --yes
-conda install rdkit -c rdkit --yes

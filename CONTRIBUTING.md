@@ -4,6 +4,13 @@ General
 
 * Please follow [pep8](https://www.python.org/dev/peps/pep-0008/) to format Python code.
 
+Install all required packages for testing
+=========================================
+
+```bash
+pip install -r requirements
+sh conda-requirements.sh
+```
 
 Making a Release
 ================
@@ -24,12 +31,20 @@ python setup.py sdist
 # Upload with twine:
 twine upload dist/*
 ```
+
 Install
 =======
 Install developer mode so you don't need to  re-install after chaning your code.
 
 ```python
 pip install -e .
+```
+
+Test
+====
+
+```bash
+pytest -vs nglview/tests/
 ```
 
 Update Javascript build
