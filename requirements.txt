@@ -2,10 +2,12 @@ ipywidgets==7.0.0b0
 
 mock
 coverage
+nose # for mdtraj's get_fn
 pytest
 pytest-cov
 coveralls
 
+numpy
 ase
 parmed
 simpletraj

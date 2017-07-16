@@ -8,7 +8,7 @@ Install all required packages for testing
 =========================================
 
 ```bash
-pip install -r requirements
+pip install -r requirements.txt
 sh conda-requirements.sh
 ```
 
