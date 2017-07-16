@@ -554,7 +554,7 @@ class TrajectoryPlayer(HasTraits):
 
         def on_change_component_dropdown(change):
             choice = change['new']
-            if choice:
+            if choice and choice.strip(): # bool(" ") is True
                 self.widget_component_slider.value = self._view._ngl_component_names.index(
                     choice)
 
