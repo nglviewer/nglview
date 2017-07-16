@@ -192,7 +192,7 @@ class TrajectoryPlayer(HasTraits):
                        (self._make_extra_box, 'Extra'),
                        (self._show_website, 'Help')]
 
-        tab = _make_delay_tab(box_factory, selected_index=-1)
+        tab = _make_delay_tab(box_factory, selected_index=0)
         # tab = _make_autofit(tab)
         tab.layout.align_self = 'center'
         tab.layout.align_items = 'stretch'

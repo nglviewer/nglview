@@ -85,7 +85,7 @@ def _make_delay_tab(box_factory, selected_index=0):
 
     # trick
     if not tab.children[selected_index].children:
-        tab.selected_index = -1
+        tab.selected_index = 1
 
     def on_update_selected_index(change):
         index = change['new']
