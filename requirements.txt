@@ -13,6 +13,7 @@ ase
 parmed
 pytraj
 
+# movie making
 matplotlib==2.0.2
 moviepy==0.2.2.11
 imageio==1.6
