@@ -1,0 +1,20 @@
+traitlets==4.3.2
+ipywidgets==7.0.0b0
+
+mock
+coverage
+nose # for mdtraj's get_fn
+pytest
+pytest-cov
+coveralls
+
+numpy
+ase
+parmed
+pytraj
+
+# movie making
+matplotlib==2.0.2
+moviepy==0.2.2.11
+imageio==1.6
+pillow==4.2.1
