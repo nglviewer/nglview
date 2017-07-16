@@ -10,7 +10,6 @@ coveralls
 numpy
 ase
 parmed
-simpletraj
 pytraj==2.0.2
 
 matplotlib==2.0.2
