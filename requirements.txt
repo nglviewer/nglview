@@ -10,8 +10,9 @@ coveralls
 numpy
 ase
 parmed
-pytraj==2.0.2
+pytraj
 
 matplotlib==2.0.2
 moviepy==0.2.2.11
 imageio==1.6
+pillow==4.2.1
