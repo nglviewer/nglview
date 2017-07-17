@@ -1,6 +1,7 @@
-var widgets = require("jupyter-js-widgets");
+var widgets = require("@jupyter-widgets/base");
 var NGL = require('ngl');
 var $ = require('jquery');
+var _ = require('underscore');
 require('jquery-ui/ui/widgets/draggable');
 require('jquery-ui/ui/widgets/slider');
 require('jquery-ui/ui/widgets/dialog');
@@ -13,6 +14,12 @@ if (typeof window !== 'undefined') {
 }
 
 var NGLView = widgets.DOMWidgetView.extend({
+    defaults: function() {
+        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+            _view_name: "NGLView",
+            _view_module: "nglview-js-widgets",
+        });
+    },
 
     render: function() {
 

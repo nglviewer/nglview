@@ -53,7 +53,7 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['jupyter-js-widgets']
+        externals: ['@jupyter-widgets/base']
     },
     {// Embeddable nglview bundle
      //
@@ -80,6 +80,6 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['jupyter-js-widgets']
+        externals: ['@jupyter-widgets/base']
     }
 ];

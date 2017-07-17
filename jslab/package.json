@@ -1,0 +1,25 @@
+{
+  "name": "nglview-jupyterlab",
+  "version": "0.0.1",
+  "description": "A JupyterLab extension exposing nglview",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arose/nglview.git"
+  },
+  "author": {
+    "name": "NGLview Development team",
+    "email": "hainm.comp@gmail.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@jupyter-widgets/jupyterlab-manager": "^0.24.0",
+    "nglview-js-widgets": "0.5.4-dev.4"
+  },
+  "jupyterlab": {
+    "extension": true
+  }
+}
