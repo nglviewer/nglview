@@ -75,8 +75,8 @@ def _add_repr_method_shortcut(self, other):
         return func
 
     for rep in REPRESENTATION_NAME_PAIRS:
-        for make_func, root_fn in [(make_func_add, 'add'),
-                                   (make_func_update, 'update'),
+        for make_func, root_fn in [(make_func_add, 'add'), (make_func_update,
+                                                            'update'),
                                    (make_func_remove, 'remove')]:
             func = make_func(rep)
             fn = '_'.join((root_fn, rep[0]))
@@ -108,8 +108,8 @@ class NGLWidget(DOMWidget):
     _original_stage_parameters = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
     _camera_str = CaselessStrEnum(
-        ['perspective', 'orthographic'],
-        default_value='orthographic').tag(sync=True)
+        ['perspective', 'orthographic'], default_value='orthographic').tag(
+            sync=True)
     _repr_dict = Dict().tag(sync=False)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
@@ -290,12 +290,10 @@ class NGLWidget(DOMWidget):
                 self.player.widget_repr, 'repr_slider')
             component_slider = widget_utils.get_widget_by_name(
                 self.player.widget_repr, 'component_slider')
-
             repr_name_text = widget_utils.get_widget_by_name(
                 self.player.widget_repr, 'repr_name_text')
             repr_selection = widget_utils.get_widget_by_name(
                 self.player.widget_repr, 'repr_selection')
-
             reprlist_choices = widget_utils.get_widget_by_name(
                 self.player.widget_repr, 'reprlist_choices')
             repr_names = get_repr_names_from_dict(self._repr_dict,
@@ -303,15 +301,17 @@ class NGLWidget(DOMWidget):
 
             if change['new'] == {'c0': {}}:
                 repr_selection.value = ''
-
             else:
-                reprlist_choices.options = tuple([
-                    str(i) + '-' + name for (i, name) in enumerate(repr_names)
-                ])
+                options = tuple(
+                    str(i) + '-' + name for (i, name) in enumerate(repr_names))
+                reprlist_choices.options = options
 
                 try:
-                    reprlist_choices.value = reprlist_choices.options[
-                        repr_slider.value]
+                    value = reprlist_choices.options[repr_slider.value]
+                    if isinstance(value, tuple):
+                        # https://github.com/jupyter-widgets/ipywidgets/issues/1512
+                        value = value[0]
+                    reprlist_choices.value = value
                 except IndexError:
                     if repr_slider.value == 0:
                         # works fine with ipywidgets 5.2.2
@@ -339,7 +339,7 @@ class NGLWidget(DOMWidget):
         # backend
         self._event.clear()
         while True:
-            # idle to make room for waiting for 
+            # idle to make room for waiting for
             # "finished" event sent from JS
             time.sleep(timeout)
             if self._event.is_set():
@@ -692,7 +692,7 @@ class NGLWidget(DOMWidget):
             You need to keep track how many components you added.
         '''
         self._remote_call(
-            "clearRepresentations",
+            "removeAllRepresentations",
             target='compList',
             kwargs={'component_index': component})
 

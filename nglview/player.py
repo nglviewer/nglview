@@ -192,7 +192,7 @@ class TrajectoryPlayer(HasTraits):
                        (self._make_extra_box, 'Extra'),
                        (self._show_website, 'Help')]
 
-        tab = _make_delay_tab(box_factory, selected_index=-1)
+        tab = _make_delay_tab(box_factory, selected_index=0)
         # tab = _make_autofit(tab)
         tab.layout.align_self = 'center'
         tab.layout.align_items = 'stretch'
@@ -554,7 +554,7 @@ class TrajectoryPlayer(HasTraits):
 
         def on_change_component_dropdown(change):
             choice = change['new']
-            if choice:
+            if choice and choice.strip(): # bool(" ") is True
                 self.widget_component_slider.value = self._view._ngl_component_names.index(
                     choice)
 
