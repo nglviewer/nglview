@@ -54,7 +54,6 @@ define(function() { return /******/ (function(modules) { // webpackBootstrap
 	        map: {
 	            "*" : {
 	                "nglview-js-widgets": "nbextensions/nglview-js-widgets/index",
-	                "jupyter-js-widgets": "nbextensions/jupyter-js-widgets/extension"
 	            }
 	        }
 	    });

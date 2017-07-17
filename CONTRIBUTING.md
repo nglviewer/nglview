@@ -88,8 +88,10 @@ https://github.com/arose/nglview/blob/master/js/src/widget_ngl.js#L2
 
 3. Rebuild js code
 ```
-cd nglview (root folder having setup.py file)
-python setup.py install --npm
+cd nglview/js
+npm install
+nglview install # install updated js code
+nglview enable # enable again, (not sure if needed)
 ```
 
 You need to install `nodejs` (which includes `npm`).

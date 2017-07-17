@@ -13,6 +13,12 @@ if (typeof window !== 'undefined') {
 }
 
 var NGLView = widgets.DOMWidgetView.extend({
+    defaults: function() {
+        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+            _view_name: "NGLView",
+            _view_module: "nglview-js-widgets",
+        });
+    },
 
     render: function() {
 

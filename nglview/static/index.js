@@ -1,4 +1,4 @@
-define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return /******/ (function(modules) { // webpackBootstrap
+define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -84,6 +84,12 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 	}
 	
 	var NGLView = widgets.DOMWidgetView.extend({
+	    defaults: function() {
+	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+	            _view_name: "NGLView",
+	            _view_module: "nglview-js-widgets",
+	        });
+	    },
 	
 	    render: function() {
 	
@@ -18770,7 +18776,7 @@ define(["jupyter-js-widgets"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return 
 			"jquery": "^2.1.4",
 			"jquery-ui": "^1.12.1",
 			"underscore": "^1.8.3",
-			"jupyter-js-widgets": "3.0.0-alpha.6",
+			"@jupyter-widgets/base": "^0.5.2",
 			"@jupyterlab/nbwidgets": "^0.6.15"
 		}
 	};
