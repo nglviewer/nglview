@@ -18733,7 +18733,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 	module.exports = {
 		"name": "nglview-js-widgets",
-		"version": "0.5.4-dev.2",
+		"version": "0.5.4-dev.4",
 		"description": "nglview-js-widgets",
 		"author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
 		"license": "MIT",
