@@ -3,7 +3,9 @@ import os
 import sys
 from itertools import chain
 
+from mock import patch, MagicMock
 import gzip
+import time
 import unittest
 import pytest
 from numpy.testing import assert_almost_equal as aa_eq
@@ -76,6 +78,7 @@ try:
     has_ase = True
 except ImportError:
     has_ase = False
+
 
 # local
 from utils import get_fn, repr_dict as REPR_DICT
@@ -1027,5 +1030,21 @@ def test_viewer_control():
     view.control.spin(vector, 0.1)
 
 
-def test_sandbox():
+def test_ambermd():
     from nglview.sandbox import amber
+    with patch("pytraj.load") as mock_pytraj_load, \
+         patch("pytraj.superpose") as mock_pytraj_superpose, \
+         patch("os.path.exists") as mock_exists:
+         ambermd = amber.AmberMD(top='hey.parm7', restart='hey.rst7',
+                 reference='hey.ref')
+         view = ambermd.initialize()
+         ambermd.event = MagicMock()
+         ambermd.event.is_set = MagicMock()
+         ambermd.event.is_set.return_value = False
+         ambermd.update(timeout=2)
+         time.sleep(5)
+
+         assert mock_pytraj_load.called
+         assert mock_pytraj_superpose.called
+
+         ambermd.stop()
