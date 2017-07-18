@@ -64,6 +64,8 @@ def enable_extentions():
         #    - permission denied? 
         print('Failed to enable extensions.')
         print('Skip. Tips: Do it yourself')
+        print('    nglview install')
+        print('    nglview enable')
 
 def js_prerelease(command, strict=False):
     """decorator for building minified js/css prior to another command"""
@@ -182,6 +184,9 @@ setup_args = {
     ],
     'tests_require': [
         'pytest'
+    ],
+    'install_requires': [
+        'ipywidgets>=7.0.b0',
     ],
     'extras_require': {
         "ipywidgets": ["ipywidgets"],
