@@ -4,7 +4,7 @@ matrix:
   include:
      - { os: linux, env: PYTHON_VERSION=2.7 }
      - { os: linux, env: PYTHON_VERSION=3.4 }
-     - { os: linux, env: PYTHON_VERSION=3.5 CONDA_BUILD=True}
+       # - { os: linux, env: PYTHON_VERSION=3.5 CONDA_BUILD=True} # turn on if ipywidgets=7 is built
      - { os: linux, env: PYTHON_VERSION=3.5 TESTJS=True}
 
 sudo: true
