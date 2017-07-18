@@ -102,17 +102,49 @@ Test notebook
 
 - [edit to add more notebooks] and update notebook files
 ```bash
-python ./devtools/make_test_js.py
+python ./devtools/make_test_js.py --api
 ```
 
-- run
+- install chromedriver: https://chromedriver.storage.googleapis.com/index.html?path=2.30/
 
-```bash
+    Download, unzip and copy chromedriver to /use/local/bin or anywhere in your PATH
+    (tested on MacOS 10.12.5)
+
+- install nightwatch
+
+```
+npm install -g nightwatch
+```
+
+- install notebook runner
+
+```
 source devtools/travis-ci/clone_nbtest.sh # only once
+```
+
+- (may be): 
+
+To avoid entering notebook token or password, you might want to update
+
+    c.NotebookApp.token = '' in $HOME/.jupyter/jupyter_notebook_config.py
+
+- Run notebook server
+
+```
 jupyter notebook --port=8889 &
-# npm install -g nightwatch
+```
+
+- Run all tests
+```bash
 nightwatch
 ```
+
+- Run a single test
+```bash
+# nightwatch /path/to/your/file.js
+nightwatch nglview/tests/js/render_image.js
+```
+
 
 More stuff
 ==========

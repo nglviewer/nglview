@@ -2,44 +2,8 @@
 module.exports = {
 
 
-    "nglview/tests/notebooks/api/binary_vs_base64.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/binary_vs_base64.ipynb");
-        browser.restartKernel(2000);
-        for ( var i = 0; i < 34; i++) {
-           browser.executeCell(i)
-                  .pause(3000)
-                  .cellHasError(i);
-        }
-        browser.end();
-    },
-
-
     "nglview/tests/notebooks/api/render_image.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/api/render_image.ipynb");
-        browser.restartKernel(2000);
-        for ( var i = 0; i < 12; i++) {
-           browser.executeCell(i)
-                  .pause(3000)
-                  .cellHasError(i);
-        }
-        browser.end();
-    },
-
-
-    "nglview/tests/notebooks/api/test_2_widget_views.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/test_2_widget_views.ipynb");
-        browser.restartKernel(2000);
-        for ( var i = 0; i < 8; i++) {
-           browser.executeCell(i)
-                  .pause(3000)
-                  .cellHasError(i);
-        }
-        browser.end();
-    },
-
-
-    "nglview/tests/notebooks/api/test_2_widget_views_fist_time_loaded.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/test_2_widget_views_fist_time_loaded.ipynb");
         browser.restartKernel(2000);
         for ( var i = 0; i < 12; i++) {
            browser.executeCell(i)
@@ -53,7 +17,7 @@ module.exports = {
     "nglview/tests/notebooks/api/test_add_shape.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/api/test_add_shape.ipynb");
         browser.restartKernel(2000);
-        for ( var i = 0; i < 10; i++) {
+        for ( var i = 0; i < 6; i++) {
            browser.executeCell(i)
                   .pause(3000)
                   .cellHasError(i);
@@ -65,7 +29,7 @@ module.exports = {
     "nglview/tests/notebooks/api/test_add_structure_then_trajectory.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/api/test_add_structure_then_trajectory.ipynb");
         browser.restartKernel(2000);
-        for ( var i = 0; i < 8; i++) {
+        for ( var i = 0; i < 6; i++) {
            browser.executeCell(i)
                   .pause(3000)
                   .cellHasError(i);
@@ -74,22 +38,10 @@ module.exports = {
     },
 
 
-    "nglview/tests/notebooks/api/test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/test_auto_detect_pytraj_mdtraj_mdanalysis_parmed.ipynb");
+    "nglview/tests/notebooks/api/test_callbacks.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_callbacks.ipynb");
         browser.restartKernel(2000);
-        for ( var i = 0; i < 82; i++) {
-           browser.executeCell(i)
-                  .pause(3000)
-                  .cellHasError(i);
-        }
-        browser.end();
-    },
-
-
-    "nglview/tests/notebooks/api/test_automatically_added_attributes_0.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/test_automatically_added_attributes_0.ipynb");
-        browser.restartKernel(2000);
-        for ( var i = 0; i < 32; i++) {
+        for ( var i = 0; i < 22; i++) {
            browser.executeCell(i)
                   .pause(3000)
                   .cellHasError(i);
@@ -122,8 +74,8 @@ module.exports = {
     },
 
 
-    "nglview/tests/notebooks/api/test_detach.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/test_detach.ipynb");
+    "nglview/tests/notebooks/api/test_movie_making.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_movie_making.ipynb");
         browser.restartKernel(2000);
         for ( var i = 0; i < 8; i++) {
            browser.executeCell(i)
