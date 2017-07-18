@@ -112,6 +112,9 @@ python ./devtools/make_test_js.py
 # (tested on MacOS 10.12.5)
 # after download, unzip and copy chromedriver to /use/local/bin or anywhere in your PATH
 source devtools/travis-ci/clone_nbtest.sh # only once
+# You might want to update
+# c.NotebookApp.token = '' in $HOME/.jupyter/jupyter_notebook_config.py
+# to avoid entering token or password.
 jupyter notebook --port=8889 &
 # npm install -g nightwatch
 nightwatch
