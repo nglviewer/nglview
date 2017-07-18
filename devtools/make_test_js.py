@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import subprocess
 from glob import glob
 from random import shuffle
@@ -78,3 +79,11 @@ if __name__ == '__main__':
     fn = 'nglview/tests/js/test.js'
     with open(fn, 'w') as fh:
         fh.write(head + all_notebooks + tail)
+
+    for nb_abspath, n_cells in notebooks_with_cell_lengths:
+        basename = os.path.basename(nb_abspath)
+        js_fn = os.path.join('nglview/tests/js',
+                os.path.splitext(basename)[0] + '.js')
+        with open(js_fn, 'w') as fh:
+            body = body_template % (nb_abspath, nb_abspath, n_cells)
+            fh.write(head + body + tail)

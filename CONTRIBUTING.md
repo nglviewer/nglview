@@ -108,6 +108,9 @@ python ./devtools/make_test_js.py
 - run
 
 ```bash
+# install chromedriver: https://chromedriver.storage.googleapis.com/index.html?path=2.30/
+# (tested on MacOS 10.12.5)
+# after download, unzip and copy chromedriver to /use/local/bin or anywhere in your PATH
 source devtools/travis-ci/clone_nbtest.sh # only once
 jupyter notebook --port=8889 &
 # npm install -g nightwatch
