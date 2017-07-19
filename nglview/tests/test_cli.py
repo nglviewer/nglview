@@ -5,80 +5,110 @@ import subprocess
 from nglview import datafiles
 from nglview.scripts.nglview import install_nbextension
 import pytest
+from nglview.scripts.nglview import main, get_remote_port
+from mock import patch, mock_open
 
 this_path = os.path.dirname(os.path.abspath(__file__))
-using_travis = '/home/travis' in this_path
+PY2 = sys.version_info[0] == 2
 
-
-def test_cli():
+@patch('subprocess.check_call')
+@patch('nglview.scripts.nglview.install_nbextension')
+def test_cli(_, mock_call):
     # no argument 
-    command = 'nglview --test'
-    subprocess.check_call(command.split())
+    command = []
+    # subprocess.check_call(command.split())
+    main(cmd=command)
 
     # only nglview and --clean
-    command = 'nglview --test --clean'
-    subprocess.check_call(command.split())
+    command = ['--clean']
+    main(cmd=command)
 
     # demo
-    command = 'nglview demo --test'
-    subprocess.check_call(command.split())
-
-    # raises
-    command = 'nglview demo --test --dummy-args'
-
-    def func():
-        print('raise error for "{}"'.format(command))
-        subprocess.check_call(command.split())
-
-    pytest.raises(subprocess.CalledProcessError, func)
+    command = ['demo']
+    main(cmd=command)
 
     # single pdb
-    command = 'nglview {} --test'.format(datafiles.PDB)
-    subprocess.check_call(command.split())
+    command = [datafiles.PDB]
+    main(cmd=command)
 
     # single pdb, disable-autorun
-    command = 'nglview {} --auto --test'.format(datafiles.PDB)
-    subprocess.check_call(command.split())
+    command = [datafiles.PDB, '--auto']
+    main(cmd=command)
 
     # single pdb, specify browser
-    command = 'nglview {} --browser=google-chrome --test'.format(datafiles.PDB)
+    command = 'nglview {} --browser=google-chrome'.format(datafiles.PDB)
     subprocess.check_call(command.split())
 
     # single pdb, does not exists
-    command = 'nglview test_hellooooo.pdb --test'
-    pytest.raises(subprocess.CalledProcessError, func)
+    command = ['test_hellooooo.pdb']
+    with pytest.raises(AssertionError):
+        main(cmd=command)
 
     # density data
     densityfile = os.path.join(this_path, 'data/volmap.dx')
-    command = 'nglview {} --test'.format(densityfile)
-    subprocess.check_call(command.split())
+    command = [densityfile]
+    main(cmd=command)
+
+    # python script
+    command = ['my.py']
+    if PY2:
+        with patch('__builtins__.open'), patch('json.dumps'):
+            main(cmd=command)
+    else:
+        with patch('builtins.open'), patch('json.dumps'):
+            main(cmd=command)
 
     # pytraj
-    command = 'nglview {} -c {} --test'.format(datafiles.PDB, datafiles.XTC)
+    command = 'nglview {} -c {}'.format(datafiles.PDB, datafiles.XTC)
     subprocess.check_call(command.split())
 
     # remote
-    command = 'nglview {} -c {} --remote --test'.format(
+    command = 'nglview {} -c {} --remote'.format(
         datafiles.PDB, datafiles.XTC)
     subprocess.check_call(command.split())
 
     # python script
     pyfile = os.path.join(this_path, 'test_widget.py')
-    command = 'nglview {pyfile} --test'.format(pyfile=pyfile)
+    command = 'nglview {pyfile}'.format(pyfile=pyfile)
     subprocess.check_call(command.split())
 
     # notebook (.ipynb)
     nbfile = os.path.join(this_path, 'notebooks/api/test_detach.ipynb')
-    command = 'nglview {nbfile} --test'.format(nbfile=nbfile)
-    subprocess.check_call(command.split())
+    command = [nbfile]
+    main(cmd=command)
+
+    # install
+    command = ['install', '--symlink']
+    with pytest.raises(SystemExit):
+        main(cmd=command)
+    mock_call.assert_called_with(
+            ['jupyter', 'nbextension', 'install', '--py', '--sys-prefix', 'nglview', '--symlink'])
+
+    # enable
+    command = ['enable']
+    with pytest.raises(SystemExit):
+        main(cmd=command)
+    mock_call.assert_called_with(
+            ['jupyter', 'nbextension', 'enable', '--py', '--sys-prefix', 'nglview'])
+
+    # remote
+    with patch('nglview.scripts.nglview.get_remote_port') as mock_remote:
+        command = ['--remote']
+        main(cmd=command)
+        mock_remote.assert_called_with(None, 'tmpnb_ngl.ipynb')
 
 
-@unittest.skipIf(using_travis,
-                 'not test install nglview_main.js extension on travis')
-def test_install():
-    jupyter = sys.prefix + '/bin/jupyter'
-    install_nbextension(jupyter)
+@patch('subprocess.check_call')
+def test_install_nbextension(mock_call):
+    install_nbextension('jupyter')
+    assert mock_call.called
 
 
-if __name__ == '__main__':
-    test_cli()
+@patch('nglview.scripts.app.NGLViewApp.get_port')
+@patch('os.getlogin')
+@patch('socket.gethostname')
+def test_get_port(mock_gethostname, mock_getlogin, mock_get_port):
+    mock_gethostname.return_value = 'myhost'
+    mock_getlogin.return_value = 'mylogin'
+    mock_get_port.return_value = 9999
+    get_remote_port(None, 'my.ipynb')

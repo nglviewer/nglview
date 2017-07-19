@@ -137,7 +137,8 @@ def get_remote_port(port=None, notebook_path=''):
     return port
 
 
-def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
+def main(notebook_dict=notebook_dict, cmd=None):
+    # typte: (Dict, List[str]) -> None
     PY3 = sys.version_info[0] == 3
     pyv_full_string = ','.join(str(i) for i in sys.version_info)
     pyv_short_string = str(sys.version_info[0])
@@ -177,8 +178,7 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
         '--symlink',
         action='store_true',
         help='Create symlink for nglview-js-widgets (developer mode)')
-    parser.add_argument('--test', action='store_true', help='test')
-    args = parser.parse_args(cmd_arg)
+    args = parser.parse_args(cmd)
 
     command = args.command
     if command in ['install', 'enable', 'uninstall']:
@@ -264,16 +264,9 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
             disable_extension(jupyter=args.jexe)
         except CalledProcessError:
             pass
-    else:
-        if not args.test:
-            install_nbextension(jupyter=args.jexe)
 
     try:
-        if args.test:
-            # for testing cli
-            pass
-        else:
-            subprocess.check_call(cm.split())
+        subprocess.check_call(cm.split())
     except KeyboardInterrupt:
         if args.clean and create_new_nb:
             print("deleting {}".format(notebook_name))
@@ -283,4 +276,4 @@ def main(notebook_dict=notebook_dict, cmd_arg=sys.argv[1:]):
 
 
 if __name__ == '__main__':
-    main(cmd_arg=sys.argv[1:])
+    main(cmd=sys.argv[1:])
