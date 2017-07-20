@@ -15,9 +15,13 @@ if (typeof window !== 'undefined') {
 
 var NGLView = widgets.DOMWidgetView.extend({
     defaults: function() {
+        // _view_module_version must be synced with nglview/widget.py and 
+        // js/package.json
+        // FIXME: avoid manual sync?
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
             _view_name: "NGLView",
             _view_module: "nglview-js-widgets",
+            _view_module_version: "0.5.4-dev.8",
         });
     },
 
