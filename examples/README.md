@@ -23,6 +23,7 @@ Examples
 - [render and export image for publication](notebooks/export_image.ipynb)
 - [membrane](images/membrane.gif)
 - [display ccp4 file](images/display_ccp4_file.md)
+- [protein mutation and minimization with AmberTools](notebooks/protein_mutation_pdb4amber.ipynb)
 
 Animations
 ----------
