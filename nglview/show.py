@@ -5,6 +5,10 @@ try:
 except ImportError:
     from io import StringIO
 
+from StringIO import StringIO as StringIOOld
+
+from Bio.PDB import PDBIO
+
 from .widget import NGLWidget
 from . import datafiles
 
@@ -29,6 +33,7 @@ __all__ = [
     'show_structure_file',
     'show_htmd',
     'show_schrodinger_structure',
+    'show_biopython',
 ]
 
 
@@ -279,6 +284,29 @@ def show_schrodinger_structure(mol, **kwargs):
     '''
     structure_trajectory = SchrodingerStructure(mol)
     return NGLWidget(structure_trajectory, **kwargs)
+
+
+def show_biopython(mol, **kwargs):
+    '''Show NGL widget with Biopython structural entity.
+
+    Takes a Structure, Model, Chain, Residue or Atom
+    from Bio.PDB as its data input.
+
+    Examples
+    --------
+    >>> import nglview as nv # doctest: +SKIP
+    ... from Bio.PDB import PDBParser
+    ... parser = PDBParser()
+    ... structure = parser.get_structure("protein", "protein.pdb")
+    ... w = nv.show_biopython(structure[0]["A"])
+    ... w
+    '''
+    io_pdb = PDBIO()
+    io_pdb.set_structure(mol)
+    io_str = StringIOOld()
+    io_pdb.save(io_str)
+    prot_str = io_str.getvalue()
+    return show_text(prot_str, **kwargs)
 
 
 def demo(*args, **kwargs):
