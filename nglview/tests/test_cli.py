@@ -52,7 +52,7 @@ def test_cli(_, mock_call):
     # python script
     command = ['my.py']
     if PY2:
-        with patch('__builtins__.open'), patch('json.dumps'):
+        with patch('__builtin__.open'), patch('json.dumps'):
             main(cmd=command)
     else:
         with patch('builtins.open'), patch('json.dumps'):
