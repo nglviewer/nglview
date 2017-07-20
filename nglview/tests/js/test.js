@@ -98,6 +98,18 @@ module.exports = {
     },
 
 
+    "nglview/tests/notebooks/api/test_representations.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_representations.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 20; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
     "nglview/tests/notebooks/api/test_simple_gui_by_clicking.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/api/test_simple_gui_by_clicking.ipynb");
         browser.restartKernel(2000);
