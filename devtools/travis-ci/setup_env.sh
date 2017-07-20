@@ -18,7 +18,7 @@ conda install --yes conda-build jinja2 anaconda-client pip
 conda create -y -n myenv python=$PYTHON_VERSION
 source activate myenv
 
-pip install -r $TRAVIS_BUILD_DIR/requirements-test.txt
+pip install -r $TRAVIS_BUILD_DIR/pip-requirements-test.txt
 sh $TRAVIS_BUILD_DIR/conda-requirements-test.sh
 
 if [ "$TEST_NOTEBOOK" = "yes" ]; then
