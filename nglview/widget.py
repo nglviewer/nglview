@@ -27,6 +27,7 @@ from .parameters import REPRESENTATION_NAME_PAIRS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
+__frontend_version__ = '0.5.4-dev.8' # must match to js/package.json and js/src/widget_ngl.js
 
 
 def _add_repr_method_shortcut(self, other):
@@ -86,6 +87,7 @@ def _add_repr_method_shortcut(self, other):
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     # _model_name = Unicode("NGLView").tag(sync=True)
     # _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _image_data = Unicode().tag(sync=True)
