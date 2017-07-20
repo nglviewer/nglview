@@ -5,10 +5,6 @@ try:
 except ImportError:
     from io import StringIO
 
-from StringIO import StringIO as StringIOOld
-
-from Bio.PDB import PDBIO
-
 from .widget import NGLWidget
 from . import datafiles
 
@@ -301,9 +297,11 @@ def show_biopython(mol, **kwargs):
     ... w = nv.show_biopython(structure[0]["A"])
     ... w
     '''
+    from Bio.PDB import PDBIO
+    from StringIO import StringIO
     io_pdb = PDBIO()
     io_pdb.set_structure(mol)
-    io_str = StringIOOld()
+    io_str = StringIO()
     io_pdb.save(io_str)
     prot_str = io_str.getvalue()
     return show_text(prot_str, **kwargs)
