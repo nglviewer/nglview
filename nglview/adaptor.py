@@ -21,9 +21,10 @@ from . import config
 
 __all__ = [
     'FileStructure', 'TextStructure', 'RdkitStructure', 'PdbIdStructure',
-    'ASEStructure', 'SimpletrajTrajectory', 'MDTrajTrajectory',
-    'PyTrajTrajectory', 'ParmEdTrajectory', 'MDAnalysisTrajectory',
-    'HTMDTrajectory', 'ASETrajectory', 'register_backend'
+    'ASEStructure', 'BiopythonStructure', 'SimpletrajTrajectory',
+    'MDTrajTrajectory', 'PyTrajTrajectory', 'ParmEdTrajectory',
+    'MDAnalysisTrajectory', 'HTMDTrajectory', 'ASETrajectory',
+    'register_backend',
 ]
 
 
@@ -118,6 +119,24 @@ class ASEStructure(Structure):
         with tempfolder():
             self._ase_atoms.write('tmp.pdb')
             return open('tmp.pdb').read()
+
+
+class BiopythonStructure(Structure):
+    def __init__(self, entity, ext='pdb', params={}):
+        super(BiopythonStructure, self).__init__()
+        self.path = ''
+        self.ext = ext
+        self.params = params
+        self._entity = entity
+
+    def get_structure_string(self):
+        from Bio.PDB import PDBIO
+        from StringIO import StringIO
+        io_pdb = PDBIO()
+        io_pdb.set_structure(self._entity)
+        io_str = StringIO()
+        io_pdb.save(io_str)
+        return io_str.getvalue()
 
 
 @register_backend('simpletraj')

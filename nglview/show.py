@@ -9,9 +9,9 @@ from .widget import NGLWidget
 from . import datafiles
 
 from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
-                      ASEStructure, MDTrajTrajectory, PyTrajTrajectory,
-                      ParmEdTrajectory, MDAnalysisTrajectory, HTMDTrajectory,
-                      ASETrajectory, SchrodingerStructure)
+                      ASEStructure, BiopythonStructure, MDTrajTrajectory,
+                      PyTrajTrajectory, ParmEdTrajectory, MDAnalysisTrajectory,
+                      HTMDTrajectory, ASETrajectory, SchrodingerStructure)
 
 __all__ = [
     'demo',
@@ -282,7 +282,7 @@ def show_schrodinger_structure(mol, **kwargs):
     return NGLWidget(structure_trajectory, **kwargs)
 
 
-def show_biopython(mol, **kwargs):
+def show_biopython(entity, **kwargs):
     '''Show NGL widget with Biopython structural entity.
 
     Takes a Structure, Model, Chain, Residue or Atom
@@ -297,14 +297,8 @@ def show_biopython(mol, **kwargs):
     ... w = nv.show_biopython(structure[0]["A"])
     ... w
     '''
-    from Bio.PDB import PDBIO
-    from StringIO import StringIO
-    io_pdb = PDBIO()
-    io_pdb.set_structure(mol)
-    io_str = StringIO()
-    io_pdb.save(io_str)
-    prot_str = io_str.getvalue()
-    return show_text(prot_str, **kwargs)
+    entity = BiopythonStructure(entity)
+    return show_text(entity.get_structure_string(), **kwargs)
 
 
 def demo(*args, **kwargs):
