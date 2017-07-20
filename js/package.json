@@ -1,10 +1,10 @@
 {
   "name": "nglview-js-widgets",
-  "version": "0.5.4-dev.4",
+  "version": "0.5.4-dev.8",
   "description": "nglview-js-widgets",
   "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
   "license": "MIT",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arose/nglview.git"
@@ -36,7 +36,7 @@
     "eslint": "^3.2.2",
     "eslint-config-google": "^0.7.1",
     "json-loader": "^0.5.4",
-    "ngl": "0.10.3",
+    "ngl": "0.10.4",
     "webpack": "^1.12.14"
   },
   "dependencies": {
@@ -44,7 +44,8 @@
     "jquery-ui": "^1.12.1",
     "underscore": "^1.8.3",
     "@jupyter-widgets/base": "^0.5.2",
-    "@jupyterlab/nbwidgets": "^0.6.15"
+    "@jupyterlab/nbwidgets": "^0.6.15",
+    "ngl": "0.10.4"
   },
   "homepage": "https://github.com/arose/nglview#readme",
   "directories": {

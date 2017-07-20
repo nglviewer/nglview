@@ -1,6 +1,6 @@
 {
-	"entry": "nglview-js-widgets@0.5.4-dev.4/src/labplugin.js",
-	"hash": "914e246bddf9de4aa5333c9434bdad81",
+	"entry": "nglview-js-widgets@0.5.4-dev.8/src/labplugin.js",
+	"hash": "2add6acf93265fc4012a8fdc1a73e484",
 	"id": 0,
 	"name": "nglview-js-widgets",
 	"files": [
@@ -8,18 +8,19 @@
 		"nglview-js-widgets.css"
 	],
 	"modules": {
-		"nglview-js-widgets@0.5.4-dev.4/src/labplugin.js": [
-			"nglview-js-widgets@0.5.4-dev.4/src/index.js",
+		"nglview-js-widgets@0.5.4-dev.8/src/labplugin.js": [
+			"nglview-js-widgets@0.5.4-dev.8/src/index.js",
 			"@jupyterlab/nbwidgets@^0.6.15/lib/index.js"
 		],
-		"nglview-js-widgets@0.5.4-dev.4/src/index.js": [
-			"nglview-js-widgets@0.5.4-dev.4/src/widget_ngl.js",
-			"nglview-js-widgets@0.5.4-dev.4/package.json"
+		"nglview-js-widgets@0.5.4-dev.8/src/index.js": [
+			"nglview-js-widgets@0.5.4-dev.8/src/widget_ngl.js",
+			"nglview-js-widgets@0.5.4-dev.8/package.json"
 		],
-		"nglview-js-widgets@0.5.4-dev.4/src/widget_ngl.js": [
+		"nglview-js-widgets@0.5.4-dev.8/src/widget_ngl.js": [
 			"@jupyter-widgets/base@^0.5.2/lib/index.js",
-			"ngl@0.10.3/dist/ngl.js",
+			"ngl@0.10.4/dist/ngl.js",
 			"jquery@^2.1.4/dist/jquery.js",
+			"underscore@^1.8.3/underscore.js",
 			"jquery-ui@^1.12.1/ui/widgets/draggable.js",
 			"jquery-ui@^1.12.1/ui/widgets/slider.js",
 			"jquery-ui@^1.12.1/ui/widgets/dialog.js"
@@ -249,19 +250,19 @@
 		],
 		"__ignored__": [],
 		"crypto-browserify@3.3.0/create-hash.js": [
-			"nglview-js-widgets@0.5.4-dev.4/index.js",
+			"nglview-js-widgets@0.5.4-dev.8/index.js",
 			"crypto-browserify@3.3.0/md5.js",
 			"ripemd160@0.2.0/lib/ripemd160.js"
 		],
-		"nglview-js-widgets@0.5.4-dev.4/index.js": [
+		"nglview-js-widgets@0.5.4-dev.8/index.js": [
 			"buffer@4.9.1/index.js",
-			"nglview-js-widgets@0.5.4-dev.4/hash.js",
-			"nglview-js-widgets@0.5.4-dev.4/sha1.js",
-			"nglview-js-widgets@0.5.4-dev.4/sha256.js",
-			"nglview-js-widgets@0.5.4-dev.4/sha512.js"
+			"nglview-js-widgets@0.5.4-dev.8/hash.js",
+			"nglview-js-widgets@0.5.4-dev.8/sha1.js",
+			"nglview-js-widgets@0.5.4-dev.8/sha256.js",
+			"nglview-js-widgets@0.5.4-dev.8/sha512.js"
 		],
-		"nglview-js-widgets@0.5.4-dev.4/hash.js": [],
-		"nglview-js-widgets@0.5.4-dev.4/sha1.js": [
+		"nglview-js-widgets@0.5.4-dev.8/hash.js": [],
+		"nglview-js-widgets@0.5.4-dev.8/sha1.js": [
 			"util@0.10.3/util.js"
 		],
 		"util@0.10.3/util.js": [
@@ -270,10 +271,10 @@
 		],
 		"util@0.10.3/support/isBufferBrowser.js": [],
 		"inherits@2.0.1/inherits_browser.js": [],
-		"nglview-js-widgets@0.5.4-dev.4/sha256.js": [
+		"nglview-js-widgets@0.5.4-dev.8/sha256.js": [
 			"util@0.10.3/util.js"
 		],
-		"nglview-js-widgets@0.5.4-dev.4/sha512.js": [
+		"nglview-js-widgets@0.5.4-dev.8/sha512.js": [
 			"util@0.10.3/util.js"
 		],
 		"crypto-browserify@3.3.0/md5.js": [
@@ -583,7 +584,7 @@
 		],
 		"@jupyter-widgets/base@0.5.2/lib/services-shim.js": [],
 		"@jupyter-widgets/base@0.5.2/lib/viewlist.js": [],
-		"ngl@0.10.3/dist/ngl.js": [],
+		"ngl@0.10.4/dist/ngl.js": [],
 		"jquery-ui@1.12.1/ui/widgets/draggable.js": [
 			"jquery-ui@1.12.1/ui/widgets/mouse.js",
 			"jquery-ui@1.12.1/ui/data.js",
@@ -724,7 +725,7 @@
 			"jquery@2.2.4/dist/jquery.js",
 			"jquery-ui@1.12.1/ui/version.js"
 		],
-		"nglview-js-widgets@0.5.4-dev.4/package.json": [],
+		"nglview-js-widgets@0.5.4-dev.8/package.json": [],
 		"@jupyterlab/nbwidgets@0.6.17/lib/index.js": [
 			"jupyter-js-widgets@3.0.0-alpha.0/lib/index.js",
 			"@phosphor/coreutils@^1.0.0/lib/index.js",
