@@ -1,7 +1,7 @@
 #!/bin/sh
 
 nglview_src=.
-env=ipywidgets_test
+env=jupyterlab_0252
 
 conda create -n $env python=3.6 numpy -y
 source activate $env
@@ -13,7 +13,6 @@ conda install jupyterlab==0.25.2 -c conda-forge -y
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
 cd $nglview_src
-git pull
 
 # nglview-js-widgets
 cd js
