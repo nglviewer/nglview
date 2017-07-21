@@ -298,7 +298,8 @@ def show_biopython(entity, **kwargs):
     ... w
     '''
     entity = BiopythonStructure(entity)
-    return show_text(entity.get_structure_string(), **kwargs)
+    structure = TextStructure(entity.get_structure_string())
+    return NGLWidget(structure, **kwargs)
 
 
 def demo(*args, **kwargs):
