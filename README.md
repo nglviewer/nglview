@@ -63,7 +63,7 @@ with JupyterLab.
 Development version
 -------------------
 
-Requirement: `ipywidgets >= 5.2.2`, `notebook >= 4.2`
+Requirement: `ipywidgets >= 7.0.0`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
 
@@ -74,8 +74,9 @@ The development version can be installed directly from github:
     cd nglview
     python setup.py install
     
-    # if you edit files in ./js folder, make sure to add --npm flag (require npm)
-    python setup.py install --npm
+    # if you edit files in ./js folder, make sure to rebuild the code
+    cd js
+    npm install
 
     # probably need to activate widgetsnbextension
     # python -m ipykernel install --sys-prefix
@@ -88,13 +89,10 @@ The development version can be installed directly from github:
 ### jupyterlab user
 
 **Note**: jupyterlab is in its alpha version, so the instruction below might or might now work.
-Make sure to install development versions of `ipywidgets`, `jupyterlab`. Please see their corresponding
-websites for further information.
-
-Next, install `nglview`
 
 ```bash
-sh devtools/install-dev.sh
+# Make sure to view below file before executing it.
+sh devtools/nglview-jupyterlab.sh
 ```
 
 ### Docker user
