@@ -10,7 +10,7 @@ pip install ipywidgets==7.0.0b0
 jupyter nbextension enable --py --sys-prefix widgetsnbextension
 
 conda install jupyterlab==0.25.2 -c conda-forge -y
-jupyter labextension install @jupyter-widgets/jupyterlab-manager
+jupyter labextension install @jupyter-widgets/jupyterlab-manager # 0.24.7
 
 cd $nglview_src
 
