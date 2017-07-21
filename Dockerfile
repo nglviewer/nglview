@@ -1,23 +1,28 @@
-FROM  jupyter/notebook
+# docker build . -t hainm/nglview:1.0.a0
+FROM  continuumio/miniconda
 
-# 2.7
-RUN python -m pip install pip --upgrade
-RUN python -m pip install numpy
-RUN python -m pip install nglview==0.6.2.3
-RUN python -m pip install ipywidgets==5.2.2
-RUN python -m pip install pytraj==1.0.9
-RUN python -m jupyter nbextension enable --py --sys-prefix widgetsnbextension
-RUN python -m jupyter nbextension install --py --sys-prefix nglview
-RUN python -m jupyter nbextension enable --py --sys-prefix nglview
+ADD . /opt/app/nglview
 
-# 3.4
-RUN python3 -m pip install pip --upgrade
-RUN python3 -m pip install numpy
-RUN python3 -m pip install nglview==0.6.2.3
-RUN python3 -m pip install ipywidgets==5.2.2
-RUN python3 -m pip install pytraj==1.0.9
-RUN python3 -m jupyter nbextension enable --py --sys-prefix widgetsnbextension
-RUN python3 -m jupyter nbextension install --py --sys-prefix nglview
-RUN python3 -m jupyter nbextension enable --py --sys-prefix nglview
+RUN conda install notebook -c conda-forge -y
+RUN pip install ipywidgets==7.0.0b0
+RUN jupyter nbextension enable --py --sys-prefix widgetsnbextension
 
-CMD ["jupyter", "notebook", "--no-browse"]
+RUN conda install nodejs -c conda-forge -y
+RUN conda install jupyterlab==0.25.2 -c conda-forge -y
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager # 0.24.7
+
+# nglview-js-widgets
+RUN cd /opt/app/nglview/js
+RUN npm install --save
+RUN cd /opt/app/nglview
+
+# nglview
+RUN python setup.py install
+
+# nglview-jupyterlab
+RUN jupyter-labextension install jslab
+
+# Expose Jupyter port & cmd
+EXPOSE 8888
+RUN mkdir -p /opt/app/data
+CMD jupyter lab --ip=* --port=8888 --no-browser --notebook-dir=/opt/app/data
