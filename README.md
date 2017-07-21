@@ -36,8 +36,6 @@ Installation
 
 Released version
 ----------------
-**Note**: The released version only works with `ipywidgets >= 5.2.2` and works best with `5.2.2` version. This version will not work
-with JupyterLab.
 
 - Available on `bioconda` channel
 
@@ -58,7 +56,13 @@ with JupyterLab.
    # might need: jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
-- Bugs: There is [a bug](https://github.com/ipython/ipywidgets/issues/1044#issuecomment-276458101) in `ipywidgets 6.0.0`, so we suggest to use `ipywidgets 5.2.2` for now.
+Version Compatibility
+
+| nglview | ipywidgets | jupyterlab
+| --------|:----------:| ---------:|
+| < 1.0   | 5.2.2      | None
+| 1.0 - ? | 7.x        | 0.25.2
+
 
 Development version
 -------------------
