@@ -131,7 +131,10 @@ class BiopythonStructure(Structure):
 
     def get_structure_string(self):
         from Bio.PDB import PDBIO
-        from StringIO import StringIO
+        try:
+            from StringIO import StringIO
+        except ImportError:
+            from io import StringIO
         io_pdb = PDBIO()
         io_pdb.set_structure(self._entity)
         io_str = StringIO()
