@@ -92,7 +92,7 @@ The development version can be installed directly from github:
 
 ```bash
 # Make sure to view below file before executing it.
-sh devtools/nglview-jupyterlab.sh
+source devtools/nglview-jupyterlab.sh
 ```
 
 ### Docker user
