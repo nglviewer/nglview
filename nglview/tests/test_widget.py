@@ -79,6 +79,12 @@ try:
 except ImportError:
     has_ase = False
 
+try:
+    import Bio.PDB
+    has_bio = True
+except ImportError:
+    has_bio = False
+
 
 # local
 from utils import get_fn, repr_dict as REPR_DICT
@@ -470,6 +476,14 @@ def test_show_ase():
     dimer = Atoms([Atom('X', (0, 0, 0)), Atom('X', (0, 0, 1))])
     dimer.set_positions([(1, 2, 3), (4, 5, 6.2)])
     nv.show_ase(dimer)
+
+
+@unittest.skipUnless(has_bio, 'skip if not having biopython')
+def test_show_biopython():
+    from Bio.PDB import PDBParser
+    parser = PDBParser()
+    structure = parser.get_structure('protein', nv.datafiles.PDB)
+    nv.show_biopython(structure)
 
 
 @unittest.skipUnless(has_simpletraj, 'skip if not having simpletraj')

@@ -148,12 +148,13 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_simpletraj(struc_path, traj_path)` | Shows structure & trajectory loaded with `simpletraj` |
 | `show_mdtraj(traj)`                      | Shows `MDTraj` trajectory `traj`                      |
 | `show_pytraj(traj)`                      | Shows `PyTraj` trajectory `traj`                      |
-| `show_parmed(structure)`                 | Shows `ParmEd` structure
+| `show_parmed(structure)`                 | Shows `ParmEd` structure                              |
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
 | `show_rdkit(mol)`                        | Shows `rdkit` rdkit.Chem.rdchem.Mol                   |
 | `show_ase(atoms)`                        | Shows `ase` Atoms                                     |
 | `show_asetraj(traj)`                     | Shows `ase` trajectory `traj`                         |
 | `show_htmd(mol)`                         | Shows `HTMD` Molecules                                |
+| `show_biopython(mol)`                    | Shows `Biopython` structural entities                 |
 
 
 API
