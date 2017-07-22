@@ -15,7 +15,7 @@ if (typeof window !== 'undefined') {
 
 var NGLView = widgets.DOMWidgetView.extend({
     defaults: function() {
-        // _view_module_version must be synced with nglview/widget.py and 
+        // _view_module_version must be synced with nglview/widget.py and
         // js/package.json
         // FIXME: avoid manual sync?
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
