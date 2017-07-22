@@ -177,10 +177,6 @@ setup_args = {
          'nglview/static/index.js',
          'nglview/static/index.js.map',
         ]),
-        ('share/jupyter/labextensions/nglview-js-widgets', [
-         'nglview/staticlab/nglview-js-widgets.bundle.js',
-         'nglview/staticlab/nglview-js-widgets.bundle.js.manifest',
-        ]),
     ],
     'tests_require': [
         'pytest'
