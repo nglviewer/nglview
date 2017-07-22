@@ -4,8 +4,9 @@ machine:
 
 dependencies:
   override:
-    - docker pull condaforge/linux-anvil
+    - docker pull continuumio/miniconda
 
 test:
   override:
-    - docker build -t nglview:dev .
+    - docker build . -f Dockerfile-jupyterlab -t hainm/juypterlab-dev
+    - docker build . -t nglview:dev
