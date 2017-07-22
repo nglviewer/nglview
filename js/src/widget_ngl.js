@@ -42,6 +42,8 @@ var NGLView = widgets.DOMWidgetView.extend({
         // init orientation handling
         this.model.on("change:orientation", this.orientationChanged, this);
 
+        this.model.set('_ngl_version', NGL.Version);
+
         // for player
         this.delay = 100;
         this.sync_frame = false;
