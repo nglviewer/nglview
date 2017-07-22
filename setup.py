@@ -166,7 +166,6 @@ setup_args = {
          "nglview.scripts": ["*"],
          "nglview.theme": ["*"],
          "nglview.static": ["*"],
-         "nglview.staticlab": ["*"]
      },
     'entry_points': {'console_scripts':
           ['nglview = nglview.scripts.nglview:main',]
@@ -198,7 +197,6 @@ setup_args = {
     'packages': set(find_packages() + 
                 ['nglview',
                  'nglview.static',
-                 'nglview.staticlab',
                  'nglview.theme',
                  'nglview.datafiles',
                  'nglview.utils',
