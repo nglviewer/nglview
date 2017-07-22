@@ -18,13 +18,6 @@ def _jupyter_nbextension_paths():
     }]
 
 
-def _jupyter_labextension_paths():
-    return [{
-        'name': 'nglview-js-widgets',
-        'src': 'staticlab',
-    }]
-
-
 # TODO: do not use import *
 # interface
 from .config import BACKENDS

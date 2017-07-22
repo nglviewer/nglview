@@ -86,6 +86,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	var NGLView = widgets.DOMWidgetView.extend({
 	    defaults: function() {
+	        // _view_module_version must be synced with nglview/widget.py and 
+	        // js/package.json
+	        // FIXME: avoid manual sync?
 	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
 	            _view_name: "NGLView",
 	            _view_module: "nglview-js-widgets",
@@ -109,6 +112,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	        // init orientation handling
 	        this.model.on("change:orientation", this.orientationChanged, this);
+	
+	        this.model.set('_ngl_version', NGL.Version);
 	
 	        // for player
 	        this.delay = 100;
@@ -20214,60 +20219,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 35 */
 /***/ (function(module, exports) {
 
-	module.exports = {
-		"name": "nglview-js-widgets",
-		"version": "0.5.4-dev.8",
-		"description": "nglview-js-widgets",
-		"author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
-		"license": "MIT",
-		"main": "dist/index.js",
-		"repository": {
-			"type": "git",
-			"url": "git+https://github.com/arose/nglview.git"
-		},
-		"bugs": {
-			"url": "https://github.com/arose/nglview/issues"
-		},
-		"files": [
-			"dist"
-		],
-		"keywords": [
-			"molecular graphics",
-			"molecular structure",
-			"jupyter",
-			"widgets",
-			"ipython",
-			"ipywidgets",
-			"science"
-		],
-		"scripts": {
-			"lint": "eslint src test",
-			"prepublish": "webpack",
-			"test": "mocha"
-		},
-		"devDependencies": {
-			"@jupyterlab/extension-builder": "^0.10.0",
-			"babel-eslint": "^7.0.0",
-			"babel-register": "^6.11.6",
-			"eslint": "^3.2.2",
-			"eslint-config-google": "^0.7.1",
-			"json-loader": "^0.5.4",
-			"ngl": "0.10.4",
-			"webpack": "^1.12.14"
-		},
-		"dependencies": {
-			"jquery": "^2.1.4",
-			"jquery-ui": "^1.12.1",
-			"underscore": "^1.8.3",
-			"@jupyter-widgets/base": "^0.5.2",
-			"@jupyterlab/nbwidgets": "^0.6.15",
-			"ngl": "0.10.4"
-		},
-		"homepage": "https://github.com/arose/nglview#readme",
-		"directories": {
-			"test": "test"
-		}
-	};
+	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.8","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"@jupyterlab/extension-builder":"^0.10.0","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","ngl":"0.10.4","webpack":"^1.12.14"},"dependencies":{"jquery":"^2.1.4","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"0.10.4"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}};
 
 /***/ })
 /******/ ])});;

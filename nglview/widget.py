@@ -88,6 +88,7 @@ class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _ngl_version = Unicode().tag(sync=True)
     # _model_name = Unicode("NGLView").tag(sync=True)
     # _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _image_data = Unicode().tag(sync=True)

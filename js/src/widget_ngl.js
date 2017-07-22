@@ -15,7 +15,7 @@ if (typeof window !== 'undefined') {
 
 var NGLView = widgets.DOMWidgetView.extend({
     defaults: function() {
-        // _view_module_version must be synced with nglview/widget.py and 
+        // _view_module_version must be synced with nglview/widget.py and
         // js/package.json
         // FIXME: avoid manual sync?
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
@@ -41,6 +41,8 @@ var NGLView = widgets.DOMWidgetView.extend({
 
         // init orientation handling
         this.model.on("change:orientation", this.orientationChanged, this);
+
+        this.model.set('_ngl_version', NGL.Version);
 
         // for player
         this.delay = 100;
