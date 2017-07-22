@@ -1,6 +1,6 @@
 {
 	"entry": "nglview-js-widgets@0.5.4-dev.8/src/labplugin.js",
-	"hash": "f963de077a370a2167589a737e84e97d",
+	"hash": "9b7a6d52403b4693d7fa44e0bda6b31f",
 	"id": 0,
 	"name": "nglview-js-widgets",
 	"files": [
@@ -1798,7 +1798,7 @@
 			"codemirror@^5.24.2/addon/comment/comment.js",
 			"codemirror@^5.24.2/keymap/vim.js"
 		],
-		"codemirror@5.27.4/lib/codemirror.js": [],
+		"codemirror@5.28.0/lib/codemirror.js": [],
 		"@jupyterlab/codemirror@0.3.1/lib/mode.js": [
 			"codemirror@^5.24.2/lib/codemirror.js",
 			"codemirror@^5.24.2/mode/meta.js",
@@ -1811,19 +1811,19 @@
 			"codemirror@^5.24.2/mode/r/r.js",
 			"codemirror@^5.24.2/mode/markdown/markdown.js"
 		],
-		"codemirror@5.27.4/mode/meta.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/mode/meta.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/addon/runmode/runmode.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/addon/runmode/runmode.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
 		"@jupyterlab/codemirror@0.3.1/lib/codemirror-ipython.js": [
 			"codemirror@^5.24.2/lib/codemirror.js",
 			"codemirror@^5.24.2/mode/meta.js",
 			"codemirror@^5.24.2/mode/python/python.js"
 		],
-		"codemirror@5.27.4/mode/python/python.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/mode/python/python.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
 		"@jupyterlab/codemirror@0.3.1/lib/codemirror-ipythongfm.js": [
 			"codemirror@^5.24.2/lib/codemirror.js",
@@ -1831,60 +1831,60 @@
 			"codemirror@^5.24.2/mode/gfm/gfm.js",
 			"codemirror@^5.24.2/addon/mode/multiplex.js"
 		],
-		"codemirror@5.27.4/mode/stex/stex.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/mode/stex/stex.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/mode/gfm/gfm.js": [
-			"codemirror@5.27.4/lib/codemirror.js",
-			"codemirror@5.27.4/mode/markdown/markdown.js",
-			"codemirror@5.27.4/addon/mode/overlay.js"
+		"codemirror@5.28.0/mode/gfm/gfm.js": [
+			"codemirror@5.28.0/lib/codemirror.js",
+			"codemirror@5.28.0/mode/markdown/markdown.js",
+			"codemirror@5.28.0/addon/mode/overlay.js"
 		],
-		"codemirror@5.27.4/mode/markdown/markdown.js": [
-			"codemirror@5.27.4/lib/codemirror.js",
-			"codemirror@5.27.4/mode/xml/xml.js",
-			"codemirror@5.27.4/mode/meta.js"
+		"codemirror@5.28.0/mode/markdown/markdown.js": [
+			"codemirror@5.28.0/lib/codemirror.js",
+			"codemirror@5.28.0/mode/xml/xml.js",
+			"codemirror@5.28.0/mode/meta.js"
 		],
-		"codemirror@5.27.4/mode/xml/xml.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/mode/xml/xml.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/addon/mode/overlay.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/addon/mode/overlay.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/addon/mode/multiplex.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/addon/mode/multiplex.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/mode/javascript/javascript.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/mode/javascript/javascript.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/mode/css/css.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/mode/css/css.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/mode/julia/julia.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/mode/julia/julia.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/mode/r/r.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/mode/r/r.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/addon/edit/matchbrackets.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/addon/edit/matchbrackets.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/addon/edit/closebrackets.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/addon/edit/closebrackets.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/addon/comment/comment.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/addon/comment/comment.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/keymap/vim.js": [
-			"codemirror@5.27.4/lib/codemirror.js",
-			"codemirror@5.27.4/addon/search/searchcursor.js",
-			"codemirror@5.27.4/addon/dialog/dialog.js",
-			"codemirror@5.27.4/addon/edit/matchbrackets.js"
+		"codemirror@5.28.0/keymap/vim.js": [
+			"codemirror@5.28.0/lib/codemirror.js",
+			"codemirror@5.28.0/addon/search/searchcursor.js",
+			"codemirror@5.28.0/addon/dialog/dialog.js",
+			"codemirror@5.28.0/addon/edit/matchbrackets.js"
 		],
-		"codemirror@5.27.4/addon/search/searchcursor.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/addon/search/searchcursor.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
-		"codemirror@5.27.4/addon/dialog/dialog.js": [
-			"codemirror@5.27.4/lib/codemirror.js"
+		"codemirror@5.28.0/addon/dialog/dialog.js": [
+			"codemirror@5.28.0/lib/codemirror.js"
 		],
 		"@jupyterlab/codemirror@0.3.1/lib/mimetype.js": [
 			"codemirror@^5.24.2/lib/codemirror.js",
