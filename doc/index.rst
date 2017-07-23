@@ -17,7 +17,8 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `ParmEd <http://parmed.github.io/ParmEd/>`__,
 `rdkit <https://github.com/rdkit/rdkit>`__,
 `ase <https://wiki.fysik.dtu.dk/ase/>`__,
-`HTMD <https://www.htmd.org>`__
+`HTMD <https://www.htmd.org>`__,
+`biopython <https://github.com/biopython/biopython.github.io/>`__
 
 Should work with Python 2 and 3. If you experience problems, please file
 an `issue <https://github.com/arose/nglview/issues>`__.
@@ -52,33 +53,51 @@ Installation
 Released version
 ----------------
 
-**Note**: The released version only works with ``ipywidgets >= 5.2.2``.
-This version will not work with JupyterLab.
-
 -  Available on ``bioconda`` channel
 
    .. code:: bash
 
        conda install nglview -c bioconda
-       # might need: jupyter-nbextension enable nglview --py --user
+       # might need: jupyter-nbextension enable nglview --py --sys-prefix
 
        # if you already installed nglview, you can `upgrade`
        conda upgrade nglview --force
-       # might need: jupyter-nbextension enable nglview --py --user
+       # might need: jupyter-nbextension enable nglview --py --sys-prefix
 
 -  Available on `PyPI <https://pypi.python.org/pypi/nglview/>`__
 
-   ``pip install nglview``
+.. code:: bash
 
--  Bugs: There is `a
-   bug <https://github.com/ipython/ipywidgets/issues/1044#issuecomment-276458101>`__
-   in ``ipywidgets 6.0.0``, so we suggest to use ``ipywidgets 5.2.2``
-   for now.
+       pip install ipywidgets==5.2.2 # if you don't have ipywidgets yet
+       pip install nglview
+       # might need: jupyter-nbextension enable nglview --py --sys-prefix
+
+Version Compatibility
+---------------------
+
++-----------+--------------+--------------+
+| nglview   | ipywidgets   | jupyterlab   |
++===========+==============+==============+
+| < 1.0     | 5.2.2        | None         |
++-----------+--------------+--------------+
+| 1.0       | 7.0          | 0.25.2       |
++-----------+--------------+--------------+
+
+Notes
+-----
+
+If you are using ``notebook`` v5.0, you need to increase the
+``iopub_data_rate_limit`` to `visualize big structure (e.g: solvated
+system) <https://github.com/arose/nglview/issues/633>`__
+
+::
+
+    jupyter notebook --NotebookApp.iopub_data_rate_limit=10000000
 
 Development version
 -------------------
 
-Requirement: ``ipywidgets >= 5.2.2``, ``notebook >= 4.2``
+Requirement: ``ipywidgets >= 7.0.0``, ``notebook >= 4.2``
 
 The development version can be installed directly from github:
 
@@ -91,13 +110,14 @@ notebook user
         cd nglview
         python setup.py install
         
-        # if you edit files in ./js folder, make sure to add --npm flag (require npm)
-        python setup.py install --npm
+        # if you edit files in ./js folder, make sure to rebuild the code
+        cd js
+        npm install
 
         # probably need to activate widgetsnbextension
-        # python -m ipykernel install --user
-        # jupyter nbextension enable --py --user widgetsnbextension
-        # jupyter nbextension enable --py --user nglview
+        # python -m ipykernel install --sys-prefix
+        # jupyter nbextension enable --py --sys-prefix widgetsnbextension
+        # jupyter nbextension enable --py --sys-prefix nglview
         
         # tested with ipywidgets 5.2.2, notebook 4.2.1
 
@@ -105,30 +125,22 @@ jupyterlab user
 ~~~~~~~~~~~~~~~
 
 **Note**: jupyterlab is in its alpha version, so the instruction below
-might or might now work. Make sure to install development versions of
-``ipywidgets``, ``jupyterlab``. Please see their corresponding websites
-for further information.
-
-Next, install ``nglview``
+might or might now work.
 
 .. code:: bash
 
-    sh devtools/install-dev.sh
+    # Make sure to view below file before executing it.
+    source devtools/nglview-jupyterlab.sh
 
 Docker user
 ~~~~~~~~~~~
 
--  First, run
+.. code:: bash
 
-   .. code:: bash
+    docker pull hainm/nglview:1.0.a0 # only do once
+    docker run -it --rm -p 8888:8888 hainm/nglview:1.0.a0
 
-       docker run -it -p 8888:8888 hainm/nglview
-
--  Then open web browser, paste
-
-   .. code:: bash
-
-       localhost:8888
+    # Then follow the instruction in your screen.
 
 `How does ``nglview`` look like in
 jupyterlab? <examples/jupyterlab.md>`__
@@ -172,7 +184,8 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `mdanalysis <http://www.mdanalysis.org/>`__,
 `ParmEd <http://parmed.github.io/ParmEd/>`__,
 `rdkit <https://github.com/rdkit/rdkit>`__,
-`HTMD <https://github.com/Acellera/htmd>`__.
+`HTMD <https://github.com/Acellera/htmd>`__,
+`biopython <https://github.com/biopython/biopython.github.io/>`__.
 
 +---------------------------------+------------------------------------------+
 | Function                        | Description                              |
@@ -201,6 +214,8 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 | ``show_asetraj(traj)``          | Shows ``ase`` trajectory ``traj``        |
 +---------------------------------+------------------------------------------+
 | ``show_htmd(mol)``              | Shows ``HTMD`` Molecules                 |
++---------------------------------+------------------------------------------+
+| ``show_biopython(mol)``         | Shows ``Biopython`` structural entities  |
 +---------------------------------+------------------------------------------+
 
 API
@@ -331,6 +346,13 @@ Add extra component
     view.add_component('rcsb://1tsu.pdb')
     # NOTE: Trajectory is a special case of component.
 
+Mouse
+-----
+
+.. code:: python
+
+    view.parameters = dict(mousePreset='coot') # or 'default'
+
 Display more than two widgets
 -----------------------------
 
@@ -447,7 +469,7 @@ Projects using NGLView
    models for Drug Discovery and Quantum Chemistry
 -  `htmd <https://github.com/Acellera/htmd>`__ - High throughput
    molecular dynamics simulations
--  [Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) -
+-  `Moleidoscope <https://github.com/kbsezginel/Moleidoscope>`__ -
    Molecular kaleidoscope
 -  `ssbio <https://github.com/nmih/ssbio>`__ - Tools for enabling
    structural systems biology
@@ -456,6 +478,11 @@ Projects using NGLView
    gateway platform.
 -  `molPX <https://github.com/markovmodel/molPX>`__: ipython API to
    visualize MD-trajectories along projected trajectories
+-  `nanoribbon <https://github.com/oschuett/nanoribbon>`__
+-  `ase <https://github.com/rosswhitfield/ase>`__: Atomic Simulation
+   Environment
+-  `pida <https://github.com/jharman25/pida>`__: Software for analyzing
+   multiple protein-protein interaction docking solutions,
 
 Acknowledgment
 ==============
@@ -466,6 +493,8 @@ Acknowledgment
    `contributors <https://github.com/arose/nglview/graphs/contributors>`__
 -  `dunovank/jupyter-themes <https://github.com/dunovank/jupyter-themes>`__:
    for ``oceans16`` theme
+-  `base64-arraybuffer <https://github.com/niklasvh/base64-arraybuffer>`__
+-  `ipywidgets <https://github.com/jupyter-widgets/ipywidgets>`__
 
 License
 =======

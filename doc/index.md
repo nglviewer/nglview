@@ -6,7 +6,7 @@
 [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
 [![Coverage Status](https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master)](https://coveralls.io/github/arose/nglview)
 
-An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [ase](https://wiki.fysik.dtu.dk/ase/), [HTMD](https://www.htmd.org)
+An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [ase](https://wiki.fysik.dtu.dk/ase/), [HTMD](https://www.htmd.org), [biopython](https://github.com/biopython/biopython.github.io/)
 
 Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
@@ -36,30 +36,46 @@ Installation
 
 Released version
 ----------------
-**Note**: The released version only works with `ipywidgets >= 5.2.2`. This version will not work
-with JupyterLab.
 
 - Available on `bioconda` channel
 
     ```bash
     conda install nglview -c bioconda
-    # might need: jupyter-nbextension enable nglview --py --user
+    # might need: jupyter-nbextension enable nglview --py --sys-prefix
 
     # if you already installed nglview, you can `upgrade`
     conda upgrade nglview --force
-    # might need: jupyter-nbextension enable nglview --py --user
+    # might need: jupyter-nbextension enable nglview --py --sys-prefix
     ```
 
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
-    `pip install nglview`
+```bash
+   pip install ipywidgets==5.2.2 # if you don't have ipywidgets yet
+   pip install nglview
+   # might need: jupyter-nbextension enable nglview --py --sys-prefix
+```
 
-- Bugs: There is [a bug](https://github.com/ipython/ipywidgets/issues/1044#issuecomment-276458101) in `ipywidgets 6.0.0`, so we suggest to use `ipywidgets 5.2.2` for now.
+## Version Compatibility
+
+| nglview | ipywidgets | jupyterlab
+| --------|:----------:| ---------:|
+| < 1.0   | 5.2.2      | None
+| 1.0     | 7.0        | 0.25.2
+
+## Notes
+
+If you are using `notebook` v5.0, you need to increase the `iopub_data_rate_limit`
+to [visualize big structure (e.g: solvated system)](https://github.com/arose/nglview/issues/633)
+
+```
+jupyter notebook --NotebookApp.iopub_data_rate_limit=10000000
+```
 
 Development version
 -------------------
 
-Requirement: `ipywidgets >= 5.2.2`, `notebook >= 4.2`
+Requirement: `ipywidgets >= 7.0.0`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
 
@@ -70,13 +86,14 @@ The development version can be installed directly from github:
     cd nglview
     python setup.py install
     
-    # if you edit files in ./js folder, make sure to add --npm flag (require npm)
-    python setup.py install --npm
+    # if you edit files in ./js folder, make sure to rebuild the code
+    cd js
+    npm install
 
     # probably need to activate widgetsnbextension
-    # python -m ipykernel install --user
-    # jupyter nbextension enable --py --user widgetsnbextension
-    # jupyter nbextension enable --py --user nglview
+    # python -m ipykernel install --sys-prefix
+    # jupyter nbextension enable --py --sys-prefix widgetsnbextension
+    # jupyter nbextension enable --py --sys-prefix nglview
     
     # tested with ipywidgets 5.2.2, notebook 4.2.1
 ```
@@ -84,25 +101,19 @@ The development version can be installed directly from github:
 ### jupyterlab user
 
 **Note**: jupyterlab is in its alpha version, so the instruction below might or might now work.
-Make sure to install development versions of `ipywidgets`, `jupyterlab`. Please see their corresponding
-websites for further information.
-
-Next, install `nglview`
 
 ```bash
-sh devtools/install-dev.sh
+# Make sure to view below file before executing it.
+source devtools/nglview-jupyterlab.sh
 ```
 
 ### Docker user
 
-- First, run
 ```bash
-docker run -it -p 8888:8888 hainm/nglview
-```
+docker pull hainm/nglview:1.0.a0 # only do once
+docker run -it --rm -p 8888:8888 hainm/nglview:1.0.a0
 
-- Then open web browser, paste
-```bash
-localhost:8888
+# Then follow the instruction in your screen.
 ```
 
 [How does `nglview` look like in jupyterlab?](examples/jupyterlab.md)
@@ -133,7 +144,7 @@ view
 ```
 
 A number of convenience functions are available to quickly display data from
-the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [HTMD](https://github.com/Acellera/htmd).
+the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [HTMD](https://github.com/Acellera/htmd), [biopython](https://github.com/biopython/biopython.github.io/).
 
 | Function                                 | Description                                           |
 |------------------------------------------|-------------------------------------------------------|
@@ -142,12 +153,13 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_simpletraj(struc_path, traj_path)` | Shows structure & trajectory loaded with `simpletraj` |
 | `show_mdtraj(traj)`                      | Shows `MDTraj` trajectory `traj`                      |
 | `show_pytraj(traj)`                      | Shows `PyTraj` trajectory `traj`                      |
-| `show_parmed(structure)`                 | Shows `ParmEd` structure
+| `show_parmed(structure)`                 | Shows `ParmEd` structure                              |
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
 | `show_rdkit(mol)`                        | Shows `rdkit` rdkit.Chem.rdchem.Mol                   |
 | `show_ase(atoms)`                        | Shows `ase` Atoms                                     |
 | `show_asetraj(traj)`                     | Shows `ase` trajectory `traj`                         |
 | `show_htmd(mol)`                         | Shows `HTMD` Molecules                                |
+| `show_biopython(mol)`                    | Shows `Biopython` structural entities                 |
 
 
 API
@@ -276,6 +288,12 @@ view.add_component('rcsb://1tsu.pdb')
 # NOTE: Trajectory is a special case of component.
 ```
 
+Mouse
+-----
+```python
+view.parameters = dict(mousePreset='coot') # or 'default'
+```
+
 Display more than two widgets
 -----------------------------
 
@@ -383,16 +401,21 @@ Projects using NGLView
 - [mbuild](https://github.com/iModels/mbuild) - A hierarchical, component based molecule builder
 - [deepchem](https://github.com/deepchem/deepchem) - Deep-learning models for Drug Discovery and Quantum Chemistry
 - [htmd](https://github.com/Acellera/htmd) - High throughput molecular dynamics simulations
-- [Moleidoscope] (https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
+- [Moleidoscope](https://github.com/kbsezginel/Moleidoscope) - Molecular kaleidoscope
 - [ssbio](https://github.com/nmih/ssbio) - Tools for enabling structural systems biology
 - [hublib](https://github.com/martin-hunt/hublib) - hublib is a Python library for the [HUBzero](https://hubzero.org/) science gateway platform.
 - [molPX](https://github.com/markovmodel/molPX): ipython API to visualize MD-trajectories along projected trajectories
+- [nanoribbon](https://github.com/oschuett/nanoribbon)
+- [ase](https://github.com/rosswhitfield/ase): Atomic Simulation Environment
+- [pida](https://github.com/jharman25/pida): Software for analyzing multiple protein-protein interaction docking solutions,
 
 Acknowledgment
 ==============
 - Funding: Hai Nguyen is supported by NIH Grant GM103297, "The Center for HIV RNA Studies" (2015 to 02-2017).
 - Many thanks to `nglview` [contributors](https://github.com/arose/nglview/graphs/contributors)
 - [dunovank/jupyter-themes](https://github.com/dunovank/jupyter-themes): for `oceans16` theme
+- [base64-arraybuffer](https://github.com/niklasvh/base64-arraybuffer)
+- [ipywidgets](https://github.com/jupyter-widgets/ipywidgets)
 
 License
 =======

@@ -6,15 +6,16 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.adaptor &#8212; NGLView 0.6.2.3+8.gd5331cc documentation</title>
+    <title>nglview.adaptor &#8212; NGLView 1.0.a0+11.gda233f4 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.6.2.3+8.gd5331cc',
+        VERSION:     '1.0.a0+11.gda233f4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,6 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/index.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -38,7 +40,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3+8.gd5331cc documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+11.gda233f4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -72,9 +74,10 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;FileStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;TextStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;RdkitStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;PdbIdStructure&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ASEStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpletrajTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;MDTrajTrajectory&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;PyTrajTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;ParmEdTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;MDAnalysisTrajectory&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;HTMDTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;ASETrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;register_backend&#39;</span>
+    <span class="s1">&#39;ASEStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;BiopythonStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpletrajTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MDTrajTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;PyTrajTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;ParmEdTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MDAnalysisTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;HTMDTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;ASETrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;register_backend&#39;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -83,14 +86,14 @@
         <span class="c1"># package_name must match exactly to your Python package</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">package_name</span> <span class="o">=</span> <span class="n">package_name</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cls</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">BACKENDS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">package_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cls</span>
-        <span class="k">return</span> <span class="n">cls</span></div>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">BACKENDS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">package_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
+        <span class="k">return</span> <span class="bp">cls</span></div>
 
 
 <div class="viewcode-block" id="FileStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.FileStructure">[docs]</a><span class="k">class</span> <span class="nc">FileStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">FileStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FileStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fm</span> <span class="o">=</span> <span class="n">FileManager</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fm</span><span class="o">.</span><span class="n">ext</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -102,7 +105,7 @@
 
 <div class="viewcode-block" id="TextStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.TextStructure">[docs]</a><span class="k">class</span> <span class="nc">TextStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">TextStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TextStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
@@ -114,7 +117,7 @@
 
 <div class="viewcode-block" id="RdkitStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.RdkitStructure">[docs]</a><span class="k">class</span> <span class="nc">RdkitStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdkit_mol</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;pdb&quot;</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">RdkitStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RdkitStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -126,9 +129,28 @@
         <span class="k">return</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div></div>
 
 
+<span class="k">class</span> <span class="nc">SchrodingerStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Only read first structure</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;pdb&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SchrodingerStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schrodinger_structure</span> <span class="o">=</span> <span class="n">structure</span>
+
+    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfolder</span><span class="p">():</span>
+            <span class="n">pdb_fn</span> <span class="o">=</span> <span class="s1">&#39;tmp.pdb&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_schrodinger_structure</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">content</span>
+
+
 <div class="viewcode-block" id="PdbIdStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.PdbIdStructure">[docs]</a><span class="k">class</span> <span class="nc">PdbIdStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdbid</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">PdbIdStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PdbIdStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pdbid</span> <span class="o">=</span> <span class="n">pdbid</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;cif&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -140,7 +162,7 @@
 
 <div class="viewcode-block" id="ASEStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ASEStructure">[docs]</a><span class="k">class</span> <span class="nc">ASEStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ase_atoms</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ASEStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ASEStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
@@ -150,6 +172,27 @@
         <span class="k">with</span> <span class="n">tempfolder</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ase_atoms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;tmp.pdb&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;tmp.pdb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="BiopythonStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.BiopythonStructure">[docs]</a><span class="k">class</span> <span class="nc">BiopythonStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BiopythonStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entity</span> <span class="o">=</span> <span class="n">entity</span>
+
+<div class="viewcode-block" id="BiopythonStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.BiopythonStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">Bio.PDB</span> <span class="k">import</span> <span class="n">PDBIO</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">StringIO</span> <span class="k">import</span> <span class="n">StringIO</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
+        <span class="n">io_pdb</span> <span class="o">=</span> <span class="n">PDBIO</span><span class="p">()</span>
+        <span class="n">io_pdb</span><span class="o">.</span><span class="n">set_structure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity</span><span class="p">)</span>
+        <span class="n">io_str</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">io_pdb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">io_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">io_str</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div></div>
 
 
 <span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;simpletraj&#39;</span><span class="p">)</span>
@@ -455,13 +498,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3+8.gd5331cc documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+11.gda233f4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Mar 12, 2017.
+      Last updated on Jul 23, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>

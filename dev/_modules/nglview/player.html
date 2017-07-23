@@ -6,15 +6,16 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.player &#8212; NGLView 0.6.2.3+8.gd5331cc documentation</title>
+    <title>nglview.player &#8212; NGLView 1.0.a0+11.gda233f4 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.6.2.3+8.gd5331cc',
+        VERSION:     '1.0.a0+11.gda233f4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,6 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/index.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -38,7 +40,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3+8.gd5331cc documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+11.gda233f4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -55,12 +57,12 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Javascript</span>
-<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">DOMWidget</span><span class="p">,</span> <span class="n">Box</span><span class="p">,</span> <span class="n">HBox</span><span class="p">,</span> <span class="n">VBox</span><span class="p">,</span> <span class="n">Checkbox</span><span class="p">,</span> <span class="n">ColorPicker</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">Box</span><span class="p">,</span> <span class="n">HBox</span><span class="p">,</span> <span class="n">VBox</span><span class="p">,</span> <span class="n">Checkbox</span><span class="p">,</span> <span class="n">ColorPicker</span><span class="p">,</span>
                         <span class="n">IntSlider</span><span class="p">,</span> <span class="n">FloatSlider</span><span class="p">,</span> <span class="n">Dropdown</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">ToggleButton</span><span class="p">,</span>
                         <span class="n">Text</span><span class="p">,</span> <span class="n">Textarea</span><span class="p">,</span> <span class="n">IntText</span><span class="p">,</span> <span class="n">FloatText</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">interactive</span><span class="p">,</span>
                         <span class="n">Layout</span><span class="p">,</span> <span class="n">Tab</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">traitlets</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">CaselessStrEnum</span>
+<span class="kn">from</span> <span class="nn">traitlets</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">CaselessStrEnum</span><span class="p">,</span> <span class="n">HasTraits</span>
 <span class="kn">from</span> <span class="nn">traitlets</span> <span class="k">import</span> <span class="n">observe</span><span class="p">,</span> <span class="n">link</span>
 
 <span class="kn">from</span> <span class="nn">.parameters</span> <span class="k">import</span> <span class="n">REPRESENTATION_NAMES</span>
@@ -70,49 +72,49 @@
                      <span class="n">_relayout_master</span><span class="p">,</span> <span class="n">_make_delay_tab</span><span class="p">,</span> <span class="n">_make_box_layout</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TrajectoryPlayer"><a class="viewcode-back" href="../../_api/nglview.player.html#nglview.player.TrajectoryPlayer">[docs]</a><span class="k">class</span> <span class="nc">TrajectoryPlayer</span><span class="p">(</span><span class="n">DOMWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="TrajectoryPlayer"><a class="viewcode-back" href="../../_api/nglview.player.html#nglview.player.TrajectoryPlayer">[docs]</a><span class="k">class</span> <span class="nc">TrajectoryPlayer</span><span class="p">(</span><span class="n">HasTraits</span><span class="p">):</span>
     <span class="c1"># should set default values here different from desired defaults</span>
     <span class="c1"># so `observe` can be triggered</span>
-    <span class="n">step</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">sync_frame</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">interpolate</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">delay</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">iparams</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">_interpolation_t</span> <span class="o">=</span> <span class="n">Float</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">_iterpolation_type</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">([</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;spline&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">spin</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">_spin_x</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">_spin_y</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">_spin_z</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">_spin_speed</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">0.005</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">sync_frame</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">interpolate</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">delay</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span>
+    <span class="n">iparams</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span>
+    <span class="n">_interpolation_t</span> <span class="o">=</span> <span class="n">Float</span><span class="p">()</span>
+    <span class="n">_iterpolation_type</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">([</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;spline&#39;</span><span class="p">])</span>
+    <span class="n">spin</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_spin_x</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">_spin_y</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">_spin_z</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">_spin_speed</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">0.005</span><span class="p">)</span>
     <span class="n">camera</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">(</span>
         <span class="p">[</span><span class="s1">&#39;perspective&#39;</span><span class="p">,</span> <span class="s1">&#39;orthographic&#39;</span><span class="p">],</span>
-        <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;perspective&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">_render_params</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">_real_time_update</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;perspective&#39;</span><span class="p">)</span>
+    <span class="n">_render_params</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span>
+    <span class="n">_real_time_update</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">widget_tab</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_repr</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_repr_parameters</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_quick_repr</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_general</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_picked</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_preference</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_extra</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_theme</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_help</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_export_image</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_component_slider</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_repr_slider</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_repr_choices</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_repr_control_buttons</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_repr_add</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_accordion_repr_parameters</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_repr_parameters_dialog</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_repr_name</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_component_dropdown</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">widget_drag</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">widget_tab</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_repr</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_repr_parameters</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_quick_repr</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_general</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_picked</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_preference</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_extra</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_theme</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_help</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_export_image</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_component_slider</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_repr_slider</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_repr_choices</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_repr_control_buttons</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_repr_add</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_accordion_repr_parameters</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_repr_parameters_dialog</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_repr_name</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_component_dropdown</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">widget_drag</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">sync_frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">min_delay</span><span class="o">=</span><span class="mi">40</span><span class="p">):</span>
@@ -129,17 +131,6 @@
             <span class="n">factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">antialias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_widget_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="n">w</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;wiget_&#39;</span><span class="p">)]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_on_widget_built</span><span class="p">,</span>
-            <span class="n">names</span><span class="o">=</span><span class="p">[</span>
-                <span class="s1">&#39;widget_repr_parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;widget_repr&#39;</span><span class="p">,</span> <span class="s1">&#39;widget_preference&#39;</span>
-            <span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_movie_maker</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="nf">_on_widget_built</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
-        <span class="n">widget</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">widget</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="s1">&#39;5%&#39;</span>
 
     <span class="k">def</span> <span class="nf">_update_padding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">default</span><span class="o">.</span><span class="n">DEFAULT_PADDING</span><span class="p">):</span>
         <span class="n">widget_collection</span> <span class="o">=</span> <span class="p">[</span>
@@ -254,7 +245,7 @@
                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_extra_box</span><span class="p">,</span> <span class="s1">&#39;Extra&#39;</span><span class="p">),</span>
                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_website</span><span class="p">,</span> <span class="s1">&#39;Help&#39;</span><span class="p">)]</span>
 
-        <span class="n">tab</span> <span class="o">=</span> <span class="n">_make_delay_tab</span><span class="p">(</span><span class="n">box_factory</span><span class="p">,</span> <span class="n">selected_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">tab</span> <span class="o">=</span> <span class="n">_make_delay_tab</span><span class="p">(</span><span class="n">box_factory</span><span class="p">,</span> <span class="n">selected_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="c1"># tab = _make_autofit(tab)</span>
         <span class="n">tab</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">align_self</span> <span class="o">=</span> <span class="s1">&#39;center&#39;</span>
         <span class="n">tab</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">align_items</span> <span class="o">=</span> <span class="s1">&#39;stretch&#39;</span>
@@ -616,7 +607,7 @@
 
         <span class="k">def</span> <span class="nf">on_change_component_dropdown</span><span class="p">(</span><span class="n">change</span><span class="p">):</span>
             <span class="n">choice</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">choice</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">choice</span> <span class="ow">and</span> <span class="n">choice</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span> <span class="c1"># bool(&quot; &quot;) is True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">widget_component_slider</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_ngl_component_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span>
                     <span class="n">choice</span><span class="p">)</span>
 
@@ -820,12 +811,15 @@
             <span class="s2">&quot; &quot;</span><span class="p">,</span>
         <span class="p">])</span>
 
-        <span class="k">def</span> <span class="nf">on_chose</span><span class="p">(</span><span class="n">change</span><span class="p">):</span>
-            <span class="n">repr_name</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
-            <span class="n">repr_index</span> <span class="o">=</span> <span class="n">repr_choices</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">repr_name</span><span class="p">)</span>
-            <span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">repr_index</span>
+        <span class="k">def</span> <span class="nf">on_chosen</span><span class="p">(</span><span class="n">change</span><span class="p">):</span>
+            <span class="n">repr_name</span> <span class="o">=</span> <span class="n">change</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;new&#39;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">repr_index</span> <span class="o">=</span> <span class="n">repr_choices</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">repr_name</span><span class="p">)</span>
+                <span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">repr_index</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
 
-        <span class="n">repr_choices</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">on_chose</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+        <span class="n">repr_choices</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">on_chosen</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
         <span class="n">repr_choices</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">default</span><span class="o">.</span><span class="n">DEFAULT_TEXT_WIDTH</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">widget_repr_choices</span> <span class="o">=</span> <span class="n">repr_choices</span>
@@ -1052,13 +1046,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3+8.gd5331cc documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+11.gda233f4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Mar 12, 2017.
+      Last updated on Jul 23, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>

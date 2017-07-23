@@ -6,15 +6,16 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.show &#8212; NGLView 0.6.2.3+8.gd5331cc documentation</title>
+    <title>nglview.show &#8212; NGLView 1.0.a0+11.gda233f4 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.6.2.3+8.gd5331cc',
+        VERSION:     '1.0.a0+11.gda233f4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,6 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/index.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -38,7 +40,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3+8.gd5331cc documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+11.gda233f4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -60,9 +62,9 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">datafiles</span>
 
 <span class="kn">from</span> <span class="nn">.adaptor</span> <span class="k">import</span> <span class="p">(</span><span class="n">FileStructure</span><span class="p">,</span> <span class="n">TextStructure</span><span class="p">,</span> <span class="n">PdbIdStructure</span><span class="p">,</span>
-                      <span class="n">ASEStructure</span><span class="p">,</span> <span class="n">MDTrajTrajectory</span><span class="p">,</span> <span class="n">PyTrajTrajectory</span><span class="p">,</span>
-                      <span class="n">ParmEdTrajectory</span><span class="p">,</span> <span class="n">MDAnalysisTrajectory</span><span class="p">,</span> <span class="n">HTMDTrajectory</span><span class="p">,</span>
-                      <span class="n">ASETrajectory</span><span class="p">)</span>
+                      <span class="n">ASEStructure</span><span class="p">,</span> <span class="n">BiopythonStructure</span><span class="p">,</span> <span class="n">MDTrajTrajectory</span><span class="p">,</span>
+                      <span class="n">PyTrajTrajectory</span><span class="p">,</span> <span class="n">ParmEdTrajectory</span><span class="p">,</span> <span class="n">MDAnalysisTrajectory</span><span class="p">,</span>
+                      <span class="n">HTMDTrajectory</span><span class="p">,</span> <span class="n">ASETrajectory</span><span class="p">,</span> <span class="n">SchrodingerStructure</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;demo&#39;</span><span class="p">,</span>
@@ -79,6 +81,8 @@
     <span class="s1">&#39;show_rdkit&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_structure_file&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_htmd&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;show_schrodinger_structure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;show_biopython&#39;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -231,22 +235,22 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
-<span class="sd">    &gt;&gt;&gt; from rdkit import Chem</span>
-<span class="sd">    &gt;&gt;&gt; from rdkit.Chem import AllChem</span>
-<span class="sd">    &gt;&gt;&gt; m = Chem.AddHs(Chem.MolFromSmiles(&#39;COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4&#39;))</span>
-<span class="sd">    &gt;&gt;&gt; _ = AllChem.EmbedMultipleConfs(m, useExpTorsionAnglePrefs=True, useBasicKnowledge=True)</span>
-<span class="sd">    &gt;&gt;&gt; view = nv.show_rdkit(m)</span>
-<span class="sd">    &gt;&gt;&gt; view # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; from rdkit import Chem # doctest: +SKIP</span>
+<span class="sd">    ... from rdkit.Chem import AllChem</span>
+<span class="sd">    ... m = Chem.AddHs(Chem.MolFromSmiles(&#39;COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4&#39;))</span>
+<span class="sd">    ... _ = AllChem.EmbedMultipleConfs(m, useExpTorsionAnglePrefs=True, useBasicKnowledge=True)</span>
+<span class="sd">    ... view = nv.show_rdkit(m)</span>
+<span class="sd">    ... view # doctest: +SKIP</span>
 
 <span class="sd">    &gt;&gt;&gt; # add component m2</span>
 <span class="sd">    &gt;&gt;&gt; # create file-like object</span>
 <span class="sd">    &gt;&gt;&gt; from nglview.show import StringIO</span>
-<span class="sd">    &gt;&gt;&gt; m2 = Chem.AddHs(Chem.MolFromSmiles(&#39;N[C@H](C)C(=O)O&#39;))</span>
-<span class="sd">    &gt;&gt;&gt; fh = StringIO(Chem.MolToPDBBlock(m2))</span>
-<span class="sd">    &gt;&gt;&gt; view.add_component(fh, ext=&#39;pdb&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; m2 = Chem.AddHs(Chem.MolFromSmiles(&#39;N[C@H](C)C(=O)O&#39;)) # doctest: +SKIP</span>
+<span class="sd">    ... fh = StringIO(Chem.MolToPDBBlock(m2))</span>
+<span class="sd">    ... view.add_component(fh, ext=&#39;pdb&#39;)</span>
 
 <span class="sd">    &gt;&gt;&gt; # load as trajectory, need to have ParmEd</span>
-<span class="sd">    &gt;&gt;&gt; view = nv.show_rdkit(m, parmed=True)</span>
+<span class="sd">    &gt;&gt;&gt; view = nv.show_rdkit(m, parmed=True) # doctest: +SKIP</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="kn">from</span> <span class="nn">rdkit</span> <span class="k">import</span> <span class="n">Chem</span>
     <span class="n">fh</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolToPDBBlock</span><span class="p">(</span><span class="n">rdkit_mol</span><span class="p">))</span>
@@ -282,12 +286,12 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
-<span class="sd">    &gt;&gt;&gt; import MDAnalysis as mda</span>
-<span class="sd">    &gt;&gt;&gt; u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)</span>
-<span class="sd">    &gt;&gt;&gt; prot = u.select_atoms(&#39;protein&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; w = nv.show_mdanalysis(prot)</span>
-<span class="sd">    &gt;&gt;&gt; w # doctest: +SKIP</span>
+<span class="sd">        import nglview as nv</span>
+<span class="sd">        import MDAnalysis as mda</span>
+<span class="sd">        u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)</span>
+<span class="sd">        prot = u.select_atoms(&#39;protein&#39;)</span>
+<span class="sd">        w = nv.show_mdanalysis(prot)</span>
+<span class="sd">        w # doctest: +SKIP</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">structure_trajectory</span> <span class="o">=</span> <span class="n">MDAnalysisTrajectory</span><span class="p">(</span><span class="n">atomgroup</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -309,6 +313,45 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">structure_trajectory</span> <span class="o">=</span> <span class="n">HTMDTrajectory</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="show_schrodinger_structure"><a class="viewcode-back" href="../../api.html#nglview.show_schrodinger_structure">[docs]</a><span class="k">def</span> <span class="nf">show_schrodinger_structure</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Show NGL widget with Schrodinger&#39;s Structure</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    EXPERIMENTAL</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv # doctest: +SKIP</span>
+<span class="sd">    ... from schrodinger.structure import StructureReader</span>
+<span class="sd">    ... for s in StructureReader(fn):</span>
+<span class="sd">    ...    break</span>
+<span class="sd">    ... w = nv.show_schrodinger_structure(s)</span>
+<span class="sd">    ... w</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">structure_trajectory</span> <span class="o">=</span> <span class="n">SchrodingerStructure</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="show_biopython"><a class="viewcode-back" href="../../api.html#nglview.show_biopython">[docs]</a><span class="k">def</span> <span class="nf">show_biopython</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Show NGL widget with Biopython structural entity.</span>
+
+<span class="sd">    Takes a Structure, Model, Chain, Residue or Atom</span>
+<span class="sd">    from Bio.PDB as its data input.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv # doctest: +SKIP</span>
+<span class="sd">    ... from Bio.PDB import PDBParser</span>
+<span class="sd">    ... parser = PDBParser()</span>
+<span class="sd">    ... structure = parser.get_structure(&quot;protein&quot;, &quot;protein.pdb&quot;)</span>
+<span class="sd">    ... w = nv.show_biopython(structure[0][&quot;A&quot;])</span>
+<span class="sd">    ... w</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">BiopythonStructure</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="demo"><a class="viewcode-back" href="../../api.html#nglview.demo">[docs]</a><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -352,13 +395,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3+8.gd5331cc documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+11.gda233f4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Mar 12, 2017.
+      Last updated on Jul 23, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
