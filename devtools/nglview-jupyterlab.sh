@@ -6,6 +6,7 @@ env=jupyterlab_0252
 conda create -n $env python=3.6 numpy -y
 source activate $env
 
+conda install notebook==5.0.0 -c conda-forge
 pip install ipywidgets==7.0.0b0
 jupyter nbextension enable --py --sys-prefix widgetsnbextension
 
