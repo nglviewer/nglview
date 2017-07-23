@@ -56,13 +56,21 @@ Released version
    # might need: jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
-Version Compatibility
+## Version Compatibility
 
 | nglview | ipywidgets | jupyterlab
 | --------|:----------:| ---------:|
 | < 1.0   | 5.2.2      | None
 | 1.0 - ? | 7.x        | 0.25.2
 
+## Notes
+
+If you are using `notebook` v5.0, you need to increase the `iopub_data_rate_limit`
+to [visualize big structure (e.g: solvated system)](https://github.com/arose/nglview/issues/633)
+
+```
+jupyter notebook --NotebookApp.iopub_data_rate_limit=10000000
+```
 
 Development version
 -------------------
