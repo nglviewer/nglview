@@ -36,7 +36,7 @@
     "eslint": "^3.2.2",
     "eslint-config-google": "^0.7.1",
     "json-loader": "^0.5.4",
-    "ngl": "0.10.4",
+    "ngl": "0.10.5-13",
     "webpack": "^1.12.14"
   },
   "dependencies": {
@@ -45,7 +45,7 @@
     "underscore": "^1.8.3",
     "@jupyter-widgets/base": "^0.5.2",
     "@jupyterlab/nbwidgets": "^0.6.15",
-    "ngl": "0.10.4"
+    "ngl": "0.10.5-13"
   },
   "homepage": "https://github.com/arose/nglview#readme",
   "directories": {
