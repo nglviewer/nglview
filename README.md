@@ -6,7 +6,7 @@
 [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
 [![Coverage Status](https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master)](https://coveralls.io/github/arose/nglview)
 
-An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [ase](https://wiki.fysik.dtu.dk/ase/), [HTMD](https://www.htmd.org)
+An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [ase](https://wiki.fysik.dtu.dk/ase/), [HTMD](https://www.htmd.org), [biopython](https://github.com/biopython/biopython.github.io/)
 
 Should work with Python 2 and 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
@@ -56,13 +56,21 @@ Released version
    # might need: jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
-Version Compatibility
+## Version Compatibility
 
 | nglview | ipywidgets | jupyterlab
 | --------|:----------:| ---------:|
 | < 1.0   | 5.2.2      | None
 | 1.0 - ? | 7.x        | 0.25.2
 
+## Notes
+
+If you are using `notebook` v5.0, you need to increase the `iopub_data_rate_limit`
+to [visualize big structure (e.g: solvated system)](https://github.com/arose/nglview/issues/633)
+
+```
+jupyter notebook --NotebookApp.iopub_data_rate_limit=10000000
+```
 
 Development version
 -------------------
@@ -139,7 +147,7 @@ view
 ```
 
 A number of convenience functions are available to quickly display data from
-the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [HTMD](https://github.com/Acellera/htmd).
+the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [HTMD](https://github.com/Acellera/htmd), [biopython](https://github.com/biopython/biopython.github.io/).
 
 | Function                                 | Description                                           |
 |------------------------------------------|-------------------------------------------------------|
@@ -148,12 +156,13 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_simpletraj(struc_path, traj_path)` | Shows structure & trajectory loaded with `simpletraj` |
 | `show_mdtraj(traj)`                      | Shows `MDTraj` trajectory `traj`                      |
 | `show_pytraj(traj)`                      | Shows `PyTraj` trajectory `traj`                      |
-| `show_parmed(structure)`                 | Shows `ParmEd` structure
+| `show_parmed(structure)`                 | Shows `ParmEd` structure                              |
 | `show_mdanalysis(univ)`                  | Shows `MDAnalysis` Universe or AtomGroup `univ`       |
 | `show_rdkit(mol)`                        | Shows `rdkit` rdkit.Chem.rdchem.Mol                   |
 | `show_ase(atoms)`                        | Shows `ase` Atoms                                     |
 | `show_asetraj(traj)`                     | Shows `ase` trajectory `traj`                         |
 | `show_htmd(mol)`                         | Shows `HTMD` Molecules                                |
+| `show_biopython(mol)`                    | Shows `Biopython` structural entities                 |
 
 
 API

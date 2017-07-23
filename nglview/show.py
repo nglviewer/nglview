@@ -9,9 +9,9 @@ from .widget import NGLWidget
 from . import datafiles
 
 from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
-                      ASEStructure, MDTrajTrajectory, PyTrajTrajectory,
-                      ParmEdTrajectory, MDAnalysisTrajectory, HTMDTrajectory,
-                      ASETrajectory, SchrodingerStructure)
+                      ASEStructure, BiopythonStructure, MDTrajTrajectory,
+                      PyTrajTrajectory, ParmEdTrajectory, MDAnalysisTrajectory,
+                      HTMDTrajectory, ASETrajectory, SchrodingerStructure)
 
 __all__ = [
     'demo',
@@ -29,6 +29,7 @@ __all__ = [
     'show_structure_file',
     'show_htmd',
     'show_schrodinger_structure',
+    'show_biopython',
 ]
 
 
@@ -279,6 +280,25 @@ def show_schrodinger_structure(mol, **kwargs):
     '''
     structure_trajectory = SchrodingerStructure(mol)
     return NGLWidget(structure_trajectory, **kwargs)
+
+
+def show_biopython(entity, **kwargs):
+    '''Show NGL widget with Biopython structural entity.
+
+    Takes a Structure, Model, Chain, Residue or Atom
+    from Bio.PDB as its data input.
+
+    Examples
+    --------
+    >>> import nglview as nv # doctest: +SKIP
+    ... from Bio.PDB import PDBParser
+    ... parser = PDBParser()
+    ... structure = parser.get_structure("protein", "protein.pdb")
+    ... w = nv.show_biopython(structure[0]["A"])
+    ... w
+    '''
+    entity = BiopythonStructure(entity)
+    return NGLWidget(entity, **kwargs)
 
 
 def demo(*args, **kwargs):
