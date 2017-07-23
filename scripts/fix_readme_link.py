@@ -44,4 +44,5 @@ subprocess.check_call('pandoc ../nglview/doc/interface_classes.md  -o doc/interf
 for fn in md_files:
     rst_fn = os.path.splitext(fn)[0].lower() + '.rst'
     cmd = 'pandoc ../nglview/{}  -o doc/{}'.format(fn, rst_fn)
+    print(cmd)
     subprocess.check_call(cmd, shell=True)
