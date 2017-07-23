@@ -21,6 +21,7 @@ Table of contents
 * [Example](#example)
 * [Showcase from users](#showcase-from-users)
 * [Usage](#usage)
+* [Contributing](#contributing)
 * [Command line](#command-line)
 * [API doc](#api-doc)
 * [Interface classes](doc/interface_classes.md)
@@ -391,6 +392,11 @@ Website
 Talks
 =====
 [Talks about NGL and nglview](./talks.md)
+
+Contributing
+============
+
+[Join us here](./CONTRIBUTING.md)
 
 Projects using NGLView
 ======================
