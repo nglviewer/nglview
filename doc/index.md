@@ -390,7 +390,7 @@ Website
 
 Talks
 =====
-[Talks about NGL and nglview](./talks.md)
+[Talks about NGL and nglview](./talks.html)
 
 Projects using NGLView
 ======================

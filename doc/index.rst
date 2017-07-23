@@ -454,7 +454,7 @@ Website
 Talks
 =====
 
-`Talks about NGL and nglview <./talks.md>`__
+`Talks about NGL and nglview <./talks.html>`__
 
 Projects using NGLView
 ======================
