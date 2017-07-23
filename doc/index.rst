@@ -41,7 +41,7 @@ Table of contents
 -  `Command line <#command-line>`__
 -  `API doc <#api-doc>`__
 -  `Interface classes <interface_classes.html>`__
--  `Changelog <CHANGELOG.html>`__
+-  `Changelog <changelog.html>`__
 -  `FAQ <#faq>`__
 -  `Website <#website>`__
 -  `Acknowledgment <#acknowledgment>`__

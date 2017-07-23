@@ -5,7 +5,7 @@ import subprocess
 
 readme_file = sys.argv[1]
 nglview_dir = '../nglview'
-md_files = ('CHANGELOG.md', 'talks.md')
+md_files = ('CHANGELOG.md', 'talks.md', 'CONTRIBUTING.md')
 
 if os.path.abspath(readme_file) == os.path.abspath('./README'):
     print("wrong README file {}".format(readme_file))
@@ -32,7 +32,7 @@ for word in words:
 readme = readme.replace('doc/interface_classes.md', 'interface_classes.html')
 
 for fn in md_files:
-    html_fn = os.path.splitext(fn)[0] + '.html'
+    html_fn = os.path.splitext(fn)[0].lower() + '.html'
     readme = readme.replace(fn, html_fn)
 
 with open('doc/index.md', 'w') as fh:
@@ -42,6 +42,6 @@ subprocess.check_call('pandoc doc/index.md -o doc/index.rst', shell=True)
 subprocess.check_call('pandoc ../nglview/doc/interface_classes.md  -o doc/interface_classes.rst', shell=True)
 
 for fn in md_files:
-    rst_fn = os.path.splitext(fn)[0] + '.rst'
+    rst_fn = os.path.splitext(fn)[0].lower() + '.rst'
     cmd = 'pandoc ../nglview/{}  -o doc/{}'.format(fn, rst_fn)
     subprocess.check_call(cmd, shell=True)

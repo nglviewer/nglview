@@ -24,7 +24,7 @@ Table of contents
 * [Command line](#command-line)
 * [API doc](#api-doc)
 * [Interface classes](interface_classes.html)
-* [Changelog](CHANGELOG.html)
+* [Changelog](changelog.html)
 * [FAQ](#faq)
 * [Website](#website)
 * [Acknowledgment](#acknowledgment)
