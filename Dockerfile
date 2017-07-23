@@ -5,9 +5,10 @@
 # docker -it --rm -p 8888:8888 hainm/nglview:1.0.a0
 
 FROM  hainm/jupyterlab:0.25.2
+RUN pip install numpy
+RUN pip install pytraj
 
 ADD . /opt/app/nglview
-RUN pip install numpy
 
 # nglview-js-widgets
 RUN cd /opt/app/nglview/js && npm install . --save
