@@ -9,8 +9,8 @@ Install all required packages for testing
 
 .. code:: bash
 
-    pip install -r requirements.txt
-    sh conda-requirements.sh
+    pip install -r pip-requirements-test.txt
+    sh conda-requirements-test.sh
 
 Making a Release
 ================
@@ -27,16 +27,10 @@ The tag should be of the form vX.Y or vX.Y.Z and generally follow
     git tag  -a vX.Y -m "version X.Y"
     git push
     git push origin --tags
-    python setup.py sdist upload -r pypi  # better use twine for uploading, see below
 
-To ensure a secure upload use ``twine``:
-
-.. code:: bash
-
-    # Create some distributions in the normal way:
     python setup.py sdist
     # Upload with twine:
-    twine upload dist/*
+    twine upload dist/nglview*gz
 
 Install
 =======

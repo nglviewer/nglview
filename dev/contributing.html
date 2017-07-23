@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>General &#8212; NGLView 1.0.a0+11.gda233f4 documentation</title>
+    <title>General &#8212; NGLView 1.0.a0+11.g1e1015e.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.a0+11.gda233f4',
+        VERSION:     '1.0.a0+11.g1e1015e.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0.a0+11.gda233f4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0.a0+11.g1e1015e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -58,8 +58,8 @@ format Python code.</li>
 </div>
 <div class="section" id="install-all-required-packages-for-testing">
 <h1>Install all required packages for testing<a class="headerlink" href="#install-all-required-packages-for-testing" title="Permalink to this headline">¶</a></h1>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
-<span class="n">sh</span> <span class="n">conda</span><span class="o">-</span><span class="n">requirements</span><span class="o">.</span><span class="n">sh</span>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">pip</span><span class="o">-</span><span class="n">requirements</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">sh</span> <span class="n">conda</span><span class="o">-</span><span class="n">requirements</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
 </div>
 </div>
@@ -74,14 +74,10 @@ The tag should be of the form vX.Y or vX.Y.Z and generally follow
 <div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">tag</span>  <span class="o">-</span><span class="n">a</span> <span class="n">vX</span><span class="o">.</span><span class="n">Y</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;version X.Y&quot;</span>
 <span class="n">git</span> <span class="n">push</span>
 <span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="o">--</span><span class="n">tags</span>
-<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">sdist</span> <span class="n">upload</span> <span class="o">-</span><span class="n">r</span> <span class="n">pypi</span>  <span class="c1"># better use twine for uploading, see below</span>
-</pre></div>
-</div>
-<p>To ensure a secure upload use <code class="docutils literal"><span class="pre">twine</span></code>:</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Create some distributions in the normal way:</span>
+
 <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">sdist</span>
 <span class="c1"># Upload with twine:</span>
-<span class="n">twine</span> <span class="n">upload</span> <span class="n">dist</span><span class="o">/*</span>
+<span class="n">twine</span> <span class="n">upload</span> <span class="n">dist</span><span class="o">/</span><span class="n">nglview</span><span class="o">*</span><span class="n">gz</span>
 </pre></div>
 </div>
 </div>
@@ -258,7 +254,7 @@ in your PATH (tested on MacOS 10.12.5)</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0.a0+11.gda233f4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0.a0+11.g1e1015e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
