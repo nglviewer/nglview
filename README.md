@@ -61,7 +61,7 @@ Released version
 | nglview | ipywidgets | jupyterlab
 | --------|:----------:| ---------:|
 | < 1.0   | 5.2.2      | None
-| 1.0 - ? | 7.x        | 0.25.2
+| 1.0     | 7.0        | 0.25.2
 
 ## Notes
 
@@ -109,14 +109,11 @@ source devtools/nglview-jupyterlab.sh
 
 ### Docker user
 
-- First, run
 ```bash
-docker run -it -p 8888:8888 hainm/nglview
-```
+docker pull hainm/nglview:1.0.a0 # only do once
+docker run -it --rm -p 8888:8888 hainm/nglview:1.0.a0
 
-- Then open web browser, paste
-```bash
-localhost:8888
+# Then follow the instruction in your screen.
 ```
 
 [How does `nglview` look like in jupyterlab?](examples/jupyterlab.md)
