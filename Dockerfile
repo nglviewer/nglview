@@ -2,7 +2,7 @@
 # docker build . -t hainm/nglview:1.0.a0
 
 # How to run?
-# docker -it --rm -p 8888:8888 hainm/nglview:1.0.a0
+# docker run -it --rm -p 8888:8888 hainm/nglview:1.0.a0
 
 FROM hainm/jupyterlab:0.25.2
 ADD ./jslab /opt/jslab
