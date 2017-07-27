@@ -15,6 +15,11 @@ def _write(*args, **kargs):
     subprocess.check_call(['cp', nglview.datafiles.PDB, 'tmp.pdb'])
 
 
+class MockStructure:
+    def as_pdb_string(self):
+        with open(nglview.datafiles.PDB) as fh:
+            return fh.read()
+
 def test_show_schrodinger_structure():
     s = MagicMock()
     s.write = _write
@@ -29,3 +34,8 @@ def test_show_htmd():
     mol.numFrames = n_frames
     view = nglview.show_htmd(mol)
     view
+
+
+def test_show_iotbx():
+    mol = MockStructure()
+    nglview.show_iotbx(mol)

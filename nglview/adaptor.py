@@ -21,7 +21,8 @@ from . import config
 
 __all__ = [
     'FileStructure', 'TextStructure', 'RdkitStructure', 'PdbIdStructure',
-    'ASEStructure', 'BiopythonStructure', 'SimpletrajTrajectory',
+    'ASEStructure', 'BiopythonStructure', 'IOTBXStructure',
+    'SimpletrajTrajectory',
     'MDTrajTrajectory', 'PyTrajTrajectory', 'ParmEdTrajectory',
     'MDAnalysisTrajectory', 'HTMDTrajectory', 'ASETrajectory',
     'register_backend',
@@ -140,6 +141,21 @@ class BiopythonStructure(Structure):
         io_str = StringIO()
         io_pdb.save(io_str)
         return io_str.getvalue()
+
+
+class IOTBXStructure(Structure):
+    def __init__(self, obj, ext='pdb', params={}):
+        """
+        obj must have as_pdb_string method
+        """
+        super(IOTBXStructure, self).__init__()
+        self.path = ''
+        self.ext = ext
+        self.params = params
+        self._mol = obj
+
+    def get_structure_string(self):
+        return self._mol.as_pdb_string()
 
 
 @register_backend('simpletraj')

@@ -7,9 +7,9 @@ except ImportError:
 
 from .widget import NGLWidget
 from . import datafiles
-
 from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
-                      ASEStructure, BiopythonStructure, MDTrajTrajectory,
+                      ASEStructure, BiopythonStructure, IOTBXStructure,
+                      MDTrajTrajectory,
                       PyTrajTrajectory, ParmEdTrajectory, MDAnalysisTrajectory,
                       HTMDTrajectory, ASETrajectory, SchrodingerStructure)
 
@@ -19,6 +19,7 @@ __all__ = [
     'show_url',
     'show_text',
     'show_ase',
+    'show_iotbx',
     'show_asetraj',
     'show_simpletraj',
     'show_mdtraj',
@@ -74,6 +75,21 @@ def show_ase(ase_atoms, **kwargs):
     >>> w # doctest: +SKIP
     """
     structure = ASEStructure(ase_atoms)
+    return NGLWidget(structure, **kwargs)
+
+
+def show_iotbx(mol, **kwargs):
+    """
+
+    Examples
+    --------
+    >>> import iotbx.pdb
+    ... x = iotbx.pdb.hierarchy.input('file.pdb')
+    ... mol = x.construct_hierarchy()
+    ... view = nglview.show_iotbx(hi)
+    ... view # doctest: +SKIP
+    """
+    structure = IOTBXStructure(mol)
     return NGLWidget(structure, **kwargs)
 
 
