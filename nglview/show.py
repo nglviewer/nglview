@@ -86,7 +86,8 @@ def show_iotbx(mol, **kwargs):
     >>> import iotbx.pdb
     ... x = iotbx.pdb.hierarchy.input('file.pdb')
     ... mol = x.construct_hierarchy()
-    ... nglview.show_iotbx(hi)
+    ... view = nglview.show_iotbx(hi)
+    ... view # doctest: +SKIP
     """
     structure = IOTBXStructure(mol)
     return NGLWidget(structure, **kwargs)
