@@ -20,6 +20,11 @@ class MockStructure:
         with open(nglview.datafiles.PDB) as fh:
             return fh.read()
 
+class MockRosettaPose:
+    def dump_pdb(self, _):
+        _write()
+
+
 def test_show_schrodinger_structure():
     s = MagicMock()
     s.write = _write
@@ -34,6 +39,11 @@ def test_show_htmd():
     mol.numFrames = n_frames
     view = nglview.show_htmd(mol)
     view
+
+
+def test_show_rosetta():
+    pose = MockRosettaPose()
+    view = nglview.show_rosetta(pose)
 
 
 def test_show_iotbx():

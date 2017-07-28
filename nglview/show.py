@@ -9,6 +9,7 @@ from .widget import NGLWidget
 from . import datafiles
 from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
                       ASEStructure, BiopythonStructure, IOTBXStructure,
+                      RosettaStructure,
                       MDTrajTrajectory,
                       PyTrajTrajectory, ParmEdTrajectory, MDAnalysisTrajectory,
                       HTMDTrajectory, ASETrajectory, SchrodingerStructure)
@@ -20,6 +21,7 @@ __all__ = [
     'show_text',
     'show_ase',
     'show_iotbx',
+    'show_rosetta',
     'show_asetraj',
     'show_simpletraj',
     'show_mdtraj',
@@ -90,6 +92,21 @@ def show_iotbx(mol, **kwargs):
     ... view # doctest: +SKIP
     """
     structure = IOTBXStructure(mol)
+    return NGLWidget(structure, **kwargs)
+
+
+def show_rosetta(pose, **kwargs):
+    """
+
+    Examples
+    --------
+    >>> from pyrosetta import pose_from_sequence, init
+    ... init()
+    ... pose = pose_from_sequence('AAAAAA')
+    ... view = nglview.show_rosetta(pose)
+    ... view # doctest: +SKIP
+    """
+    structure = RosettaStructure(pose)
     return NGLWidget(structure, **kwargs)
 
 
