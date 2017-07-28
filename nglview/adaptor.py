@@ -22,6 +22,7 @@ from . import config
 __all__ = [
     'FileStructure', 'TextStructure', 'RdkitStructure', 'PdbIdStructure',
     'ASEStructure', 'BiopythonStructure', 'IOTBXStructure',
+    'RosettaStructure',
     'SimpletrajTrajectory',
     'MDTrajTrajectory', 'PyTrajTrajectory', 'ParmEdTrajectory',
     'MDAnalysisTrajectory', 'HTMDTrajectory', 'ASETrajectory',
@@ -156,6 +157,21 @@ class IOTBXStructure(Structure):
 
     def get_structure_string(self):
         return self._mol.as_pdb_string()
+
+
+class RosettaStructure(Structure):
+    def __init__(self, pose, ext='pdb', params={}):
+        # type: (pyrosetta.rosetta.core.pose.Pose, str, Dict) -> None
+        super(RosettaStructure, self).__init__()
+        self.path = ''
+        self.ext = ext
+        self.params = params
+        self._mol = pose
+
+    def get_structure_string(self):
+        with tempfolder():
+            self._mol.dump_pdb('tmp.pdb')
+            return open('tmp.pdb').read()
 
 
 @register_backend('simpletraj')
