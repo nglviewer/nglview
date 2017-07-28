@@ -31,7 +31,7 @@ __all__ = [
     'show_rdkit',
     'show_structure_file',
     'show_htmd',
-    'show_schrodinger_structure',
+    'show_schrodinger',
     'show_biopython',
 ]
 
@@ -295,7 +295,7 @@ def show_htmd(mol, **kwargs):
     return NGLWidget(structure_trajectory, **kwargs)
 
 
-def show_schrodinger_structure(mol, **kwargs):
+def show_schrodinger(mol, **kwargs):
     '''Show NGL widget with Schrodinger's Structure
 
     Notes
@@ -308,7 +308,7 @@ def show_schrodinger_structure(mol, **kwargs):
     ... from schrodinger.structure import StructureReader
     ... for s in StructureReader(fn):
     ...    break
-    ... w = nv.show_schrodinger_structure(s)
+    ... w = nv.show_schrodinger(s)
     ... w
     '''
     structure_trajectory = SchrodingerStructure(mol)

@@ -25,10 +25,10 @@ class MockRosettaPose:
         _write()
 
 
-def test_show_schrodinger_structure():
+def test_show_schrodinger():
     s = MagicMock()
     s.write = _write
-    nglview.show_schrodinger_structure(s)
+    nglview.show_schrodinger(s)
 
 
 def test_show_htmd():
