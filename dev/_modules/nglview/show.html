@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.show &#8212; NGLView 1.0.a0+12.g06a6aaa documentation</title>
+    <title>nglview.show &#8212; NGLView 1.0.a0+17.g211186c.dirty documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0.a0+12.g06a6aaa',
+        VERSION:     '1.0.a0+17.g211186c.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+12.g06a6aaa documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+17.g211186c.dirty documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -60,9 +60,10 @@
 
 <span class="kn">from</span> <span class="nn">.widget</span> <span class="k">import</span> <span class="n">NGLWidget</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">datafiles</span>
-
 <span class="kn">from</span> <span class="nn">.adaptor</span> <span class="k">import</span> <span class="p">(</span><span class="n">FileStructure</span><span class="p">,</span> <span class="n">TextStructure</span><span class="p">,</span> <span class="n">PdbIdStructure</span><span class="p">,</span>
-                      <span class="n">ASEStructure</span><span class="p">,</span> <span class="n">BiopythonStructure</span><span class="p">,</span> <span class="n">MDTrajTrajectory</span><span class="p">,</span>
+                      <span class="n">ASEStructure</span><span class="p">,</span> <span class="n">BiopythonStructure</span><span class="p">,</span> <span class="n">IOTBXStructure</span><span class="p">,</span>
+                      <span class="n">RosettaStructure</span><span class="p">,</span>
+                      <span class="n">MDTrajTrajectory</span><span class="p">,</span>
                       <span class="n">PyTrajTrajectory</span><span class="p">,</span> <span class="n">ParmEdTrajectory</span><span class="p">,</span> <span class="n">MDAnalysisTrajectory</span><span class="p">,</span>
                       <span class="n">HTMDTrajectory</span><span class="p">,</span> <span class="n">ASETrajectory</span><span class="p">,</span> <span class="n">SchrodingerStructure</span><span class="p">)</span>
 
@@ -72,6 +73,8 @@
     <span class="s1">&#39;show_url&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_text&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_ase&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;show_iotbx&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;show_rosetta&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_asetraj&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_simpletraj&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_mdtraj&#39;</span><span class="p">,</span>
@@ -81,7 +84,7 @@
     <span class="s1">&#39;show_rdkit&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_structure_file&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_htmd&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;show_schrodinger_structure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;show_schrodinger&#39;</span><span class="p">,</span>
     <span class="s1">&#39;show_biopython&#39;</span><span class="p">,</span>
 <span class="p">]</span>
 
@@ -127,6 +130,36 @@
 <span class="sd">    &gt;&gt;&gt; w # doctest: +SKIP</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">structure</span> <span class="o">=</span> <span class="n">ASEStructure</span><span class="p">(</span><span class="n">ase_atoms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="show_iotbx"><a class="viewcode-back" href="../../api.html#nglview.show_iotbx">[docs]</a><span class="k">def</span> <span class="nf">show_iotbx</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import iotbx.pdb</span>
+<span class="sd">    ... x = iotbx.pdb.hierarchy.input(&#39;file.pdb&#39;)</span>
+<span class="sd">    ... mol = x.construct_hierarchy()</span>
+<span class="sd">    ... view = nglview.show_iotbx(hi)</span>
+<span class="sd">    ... view # doctest: +SKIP</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">structure</span> <span class="o">=</span> <span class="n">IOTBXStructure</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="show_rosetta"><a class="viewcode-back" href="../../api.html#nglview.show_rosetta">[docs]</a><span class="k">def</span> <span class="nf">show_rosetta</span><span class="p">(</span><span class="n">pose</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from pyrosetta import pose_from_sequence, init</span>
+<span class="sd">    ... init()</span>
+<span class="sd">    ... pose = pose_from_sequence(&#39;AAAAAA&#39;)</span>
+<span class="sd">    ... view = nglview.show_rosetta(pose)</span>
+<span class="sd">    ... view # doctest: +SKIP</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">structure</span> <span class="o">=</span> <span class="n">RosettaStructure</span><span class="p">(</span><span class="n">pose</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -315,7 +348,7 @@
     <span class="k">return</span> <span class="n">NGLWidget</span><span class="p">(</span><span class="n">structure_trajectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="show_schrodinger_structure"><a class="viewcode-back" href="../../api.html#nglview.show_schrodinger_structure">[docs]</a><span class="k">def</span> <span class="nf">show_schrodinger_structure</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="show_schrodinger"><a class="viewcode-back" href="../../api.html#nglview.show_schrodinger">[docs]</a><span class="k">def</span> <span class="nf">show_schrodinger</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Show NGL widget with Schrodinger&#39;s Structure</span>
 
 <span class="sd">    Notes</span>
@@ -328,7 +361,7 @@
 <span class="sd">    ... from schrodinger.structure import StructureReader</span>
 <span class="sd">    ... for s in StructureReader(fn):</span>
 <span class="sd">    ...    break</span>
-<span class="sd">    ... w = nv.show_schrodinger_structure(s)</span>
+<span class="sd">    ... w = nv.show_schrodinger(s)</span>
 <span class="sd">    ... w</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">structure_trajectory</span> <span class="o">=</span> <span class="n">SchrodingerStructure</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
@@ -395,13 +428,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+12.g06a6aaa documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+17.g211186c.dirty documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Jul 23, 2017.
+      Last updated on Jul 28, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>

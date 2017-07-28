@@ -18,7 +18,10 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `rdkit <https://github.com/rdkit/rdkit>`__,
 `ase <https://wiki.fysik.dtu.dk/ase/>`__,
 `HTMD <https://www.htmd.org>`__,
-`biopython <https://github.com/biopython/biopython.github.io/>`__
+`biopython <https://github.com/biopython/biopython.github.io/>`__,
+`cctbx <https://cci.lbl.gov/cctbx_docs/iotbx/>`__,
+`pyrosetta <http://pyrosetta.org>`__, `schrodinger's
+Structure <http://content.schrodinger.com/Docs/r2015-4/python_api/api/schrodinger.structure.Structure-class.html>`__
 
 Should work with Python 2 and 3. If you experience problems, please file
 an `issue <https://github.com/arose/nglview/issues>`__.
@@ -217,6 +220,10 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 | ``show_htmd(mol)``              | Shows ``HTMD`` Molecules                 |
 +---------------------------------+------------------------------------------+
 | ``show_biopython(mol)``         | Shows ``Biopython`` structural entities  |
++---------------------------------+------------------------------------------+
+| ``show_iotbx(mol)``             | Shows ``cctbx's iotbx`` structure        |
++---------------------------------+------------------------------------------+
+| ``show_rosetta(pose)``          | Shows ``pyrosetta's Pose``               |
 +---------------------------------+------------------------------------------+
 
 API

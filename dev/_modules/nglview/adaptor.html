@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nglview.adaptor &#8212; NGLView 1.0.a0+12.g06a6aaa documentation</title>
+    <title>nglview.adaptor &#8212; NGLView 1.0.a0+17.g211186c.dirty documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0.a0+12.g06a6aaa',
+        VERSION:     '1.0.a0+17.g211186c.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+12.g06a6aaa documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+17.g211186c.dirty documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -74,7 +74,9 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;FileStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;TextStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;RdkitStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;PdbIdStructure&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ASEStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;BiopythonStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpletrajTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ASEStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;BiopythonStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;IOTBXStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;RosettaStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SimpletrajTrajectory&#39;</span><span class="p">,</span>
     <span class="s1">&#39;MDTrajTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;PyTrajTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;ParmEdTrajectory&#39;</span><span class="p">,</span>
     <span class="s1">&#39;MDAnalysisTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;HTMDTrajectory&#39;</span><span class="p">,</span> <span class="s1">&#39;ASETrajectory&#39;</span><span class="p">,</span>
     <span class="s1">&#39;register_backend&#39;</span><span class="p">,</span>
@@ -193,6 +195,36 @@
         <span class="n">io_str</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
         <span class="n">io_pdb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">io_str</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">io_str</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="IOTBXStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.IOTBXStructure">[docs]</a><span class="k">class</span> <span class="nc">IOTBXStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        obj must have as_pdb_string method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">IOTBXStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span> <span class="o">=</span> <span class="n">obj</span>
+
+<div class="viewcode-block" id="IOTBXStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.IOTBXStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span><span class="o">.</span><span class="n">as_pdb_string</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="RosettaStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.RosettaStructure">[docs]</a><span class="k">class</span> <span class="nc">RosettaStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="c1"># type: (pyrosetta.rosetta.core.pose.Pose, str, Dict) -&gt; None</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RosettaStructure</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span> <span class="o">=</span> <span class="n">pose</span>
+
+<div class="viewcode-block" id="RosettaStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.RosettaStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfolder</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span><span class="o">.</span><span class="n">dump_pdb</span><span class="p">(</span><span class="s1">&#39;tmp.pdb&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;tmp.pdb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div></div>
 
 
 <span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;simpletraj&#39;</span><span class="p">)</span>
@@ -498,13 +530,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+12.g06a6aaa documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+17.g211186c.dirty documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Jul 23, 2017.
+      Last updated on Jul 28, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
