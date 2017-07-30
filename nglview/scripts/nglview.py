@@ -186,6 +186,8 @@ def main(notebook_dict=notebook_dict, cmd=None):
             'jupyter', 'nbextension', command, '--py',
             '--sys-prefix', 'nglview'
         ]
+        if command == 'install':
+            cmds.append('--overwrite')
         if args.symlink:
             cmds.append('--symlink')
         subprocess.check_call(cmds)

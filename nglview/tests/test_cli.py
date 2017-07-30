@@ -82,7 +82,8 @@ def test_cli(_, mock_call):
     with pytest.raises(SystemExit):
         main(cmd=command)
     mock_call.assert_called_with(
-            ['jupyter', 'nbextension', 'install', '--py', '--sys-prefix', 'nglview', '--symlink'])
+            ['jupyter', 'nbextension', 'install', '--py', '--sys-prefix', 'nglview',
+             '--overwrite', '--symlink'])
 
     # enable
     command = ['enable']
