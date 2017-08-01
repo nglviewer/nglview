@@ -548,7 +548,15 @@ class NGLWidget(DOMWidget):
 
         self._remote_call(
             'setParameters', target='Representation', kwargs=kwargs)
-        self._remote_call('requestReprsInfo', target='Widget')
+        self._update_repr_dict()
+
+    def _update_repr_dict(self):
+        """ Send a request to fronend to send representation parameters
+        back.
+
+        # TODO: sync or async
+        """
+        self._remote_call('request_repr_dict', target='Widget')
 
     def set_representations(self, representations, component=0):
         """
@@ -586,7 +594,6 @@ class NGLWidget(DOMWidget):
     def _update_representations_by_name(self, repr_name, component=0,
                                         **kwargs):
         kwargs = _camelize_dict(kwargs)
-
         self._remote_call(
             'updateRepresentationsByName',
             target='Widget',
@@ -957,7 +964,7 @@ class NGLWidget(DOMWidget):
                 # so two viewers can have the same representations
                 self.loaded = False
             self.loaded = msg.get('data')
-        elif msg_type == 'repr_dict':
+        elif msg_type == 'request_repr_dict':
             self._repr_dict = self._ngl_msg.get('data')
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
