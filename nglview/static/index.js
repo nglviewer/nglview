@@ -254,10 +254,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            this.touch();
 	            var comp = this.stage.compList[len - 1];
 	            comp.signals.representationRemoved.add(function() {
-	                that.requestReprDict();
+	                that.request_repr_dict();
 	            });
 	            comp.signals.representationAdded.add(function() {
-	                that.requestReprDict();
+	                that.request_repr_dict();
 	            });
 	        }, this);
 	
@@ -346,7 +346,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	    },
 	
-	    requestReprDict: function() {
+	    request_repr_dict: function() {
 	        var n_components = this.stage.compList.length;
 	        var msg = {};
 	
@@ -362,7 +362,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }
 	        }
 	        this.send({
-	            'type': 'repr_dict',
+	            'type': 'request_repr_dict',
 	            'data': msg
 	        });
 	    },
@@ -521,7 +521,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	        if (repr) {
 	            component.removeRepresentation(repr);
-	            repr.dispose();
 	        }
 	    },
 	
@@ -532,7 +531,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            component.reprList.forEach(function(repr) {
 	                if (repr.name == repr_name) {
 	                    component.removeRepresentation(repr);
-	                    repr.dispose();
 	                }
 	            })
 	        }
@@ -540,19 +538,25 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    updateRepresentationForComponent: function(repr_index, component_index, params) {
 	        var component = this.stage.compList[component_index];
+	        var that = this;
+	        console.log('component', component);
 	        var repr = component.reprList[repr_index];
 	        if (repr) {
 	            repr.setParameters(params);
+	            that.request_repr_dict();
 	        }
 	    },
 	
 	    updateRepresentationsByName: function(repr_name, component_index, params) {
 	        var component = this.stage.compList[component_index];
+	        var that = this;
 	
 	        if (component) {
+	            console.log('updateRepresentationsByName');
 	            component.reprList.forEach(function(repr) {
 	                if (repr.name == repr_name) {
 	                    repr.setParameters(params);
+	                    that.request_repr_dict();
 	                }
 	            })
 	        }
@@ -561,6 +565,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    setRepresentation: function(name, params, component_index, repr_index) {
 	        var component = this.stage.compList[component_index];
 	        var repr = component.reprList[repr_index];
+	        var that = this;
 	
 	        if (repr) {
 	            params['useWorker'] = false;
@@ -570,7 +575,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                repr.setRepresentation(new_repr);
 	                repr.name = name;
 	                component.reprList[repr_index] = repr;
-	                this.requestReprDict();
+	                that.request_repr_dict();
 	            }
 	        }
 	    },
@@ -946,8 +951,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                case 'Representation':
 	                    var component_index = msg['component_index'];
 	                    var repr_index = msg['repr_index'];
+	                    var component = this.stage.compList[component_index];
 	                    var repr = component.reprList[repr_index];
-	                    component = this.stage.compList[component_index];
 	                    func = repr[msg.methodName];
 	                    if (repr && func) {
 	                        func.apply(repr, new_args);
