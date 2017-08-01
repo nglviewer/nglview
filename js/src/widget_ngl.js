@@ -880,7 +880,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                 case 'Representation':
                     var component_index = msg['component_index'];
                     var repr_index = msg['repr_index'];
-                    var component = this.stage.compList[component_index];
+                    component = this.stage.compList[component_index];
                     var repr = component.reprList[repr_index];
                     func = repr[msg.methodName];
                     if (repr && func) {
