@@ -148,8 +148,8 @@ def show_file(path, **kwargs):
     Examples
     --------
     >>> import nglview as nv
-    >>> w = nv.show_file('my.dx')
-    >>> w # doctest: +SKIP
+    ... w = nv.show_file('my.dx')
+    ... w # doctest: +SKIP
     '''
     view = NGLWidget()
     view.add_component(path, **kwargs)
