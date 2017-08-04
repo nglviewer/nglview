@@ -465,6 +465,10 @@ def test_show_structure_file():
     view = nv.show_structure_file(nv.datafiles.PDB)
 
 
+def test_show_file():
+    view = nv.show_file(nv.datafiles.PDB)
+
+
 def test_show_text():
     text = open(nv.datafiles.PDB).read()
     nv.show_text(text)
