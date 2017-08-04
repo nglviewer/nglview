@@ -30,6 +30,7 @@ __all__ = [
     'show_parmed',
     'show_rdkit',
     'show_structure_file',
+    'show_file',
     'show_htmd',
     'show_schrodinger',
     'show_biopython',
@@ -139,6 +140,20 @@ def show_structure_file(path, **kwargs):
     '''
     structure = FileStructure(path)
     return NGLWidget(structure, **kwargs)
+
+
+def show_file(path, **kwargs):
+    '''Show any supported file format (e.g: .gro, .dx, ...)
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> w = nv.show_file('my.dx')
+    >>> w # doctest: +SKIP
+    '''
+    view = NGLWidget()
+    view.add_component(path, **kwargs)
+    return view
 
 
 def show_simpletraj(traj, **kwargs):
