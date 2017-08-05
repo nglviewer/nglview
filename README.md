@@ -294,7 +294,8 @@ view.add_component('rcsb://1tsu.pdb')
 Mouse
 -----
 ```python
-view.parameters = dict(mousePreset='coot') # or 'default'
+# coot mouse style (https://en.wikipedia.org/wiki/Coot_(software))
+view.stage.set_parameters(mouse_preset='coot')
 ```
 
 Display more than two widgets
