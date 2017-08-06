@@ -131,7 +131,7 @@ class TrajectoryPlayer(HasTraits):
             self._view._set_unsync_frame()
 
     @observe("delay")
-    def update_delay(self, change):
+    def _update_delay(self, change):
         delay = change['new']
         self._view._set_delay(delay)
 
@@ -147,7 +147,7 @@ class TrajectoryPlayer(HasTraits):
         self.iparams['t'] = change['new']
 
     @observe('spin')
-    def on_spin_changed(self, change):
+    def _on_spin_changed(self, change):
         self.spin = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
@@ -157,28 +157,28 @@ class TrajectoryPlayer(HasTraits):
             self._view._set_spin(None, None)
 
     @observe('_spin_x')
-    def on_spin_x_changed(self, change):
+    def _on_spin_x_changed(self, change):
         self._spin_x = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
                                  self._spin_speed)
 
     @observe('_spin_y')
-    def on_spin_y_changed(self, change):
+    def _on_spin_y_changed(self, change):
         self._spin_y = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
                                  self._spin_speed)
 
     @observe('_spin_z')
-    def on_spin_z_changed(self, change):
+    def _on_spin_z_changed(self, change):
         self._spin_z = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
                                  self._spin_speed)
 
     @observe('_spin_speed')
-    def on_spin_speed_changed(self, change):
+    def _on_spin_speed_changed(self, change):
         self._spin_speed = change['new']
         if self.spin:
             self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
