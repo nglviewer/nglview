@@ -281,8 +281,8 @@ var NGLView = widgets.DOMWidgetView.extend({
 
         for (var i = 0; i < n_components; i++) {
             var comp = this.stage.compList[i];
-            msg['c' + i] = {};
-            var msgi = msg['c' + i];
+            msg[i] = {};
+            var msgi = msg[i];
             for (var j = 0; j < comp.reprList.length; j++) {
                 var repr = comp.reprList[j];
                 msgi[j] = {};
@@ -291,6 +291,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
         }
         this.send({
+            // make sure we are using "request_repr_dict" name
+            // in backend too.
             'type': 'request_repr_dict',
             'data': msg
         });
