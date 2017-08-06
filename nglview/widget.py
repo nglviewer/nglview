@@ -374,7 +374,6 @@ class NGLWidget(DOMWidget):
                 callback(self)
                 if callback._method_name == 'loadFile':
                     self._wait_until_finished()
-
         self._run_on_another_thread(_call, self._event)
 
     def _refresh_render(self):
@@ -401,6 +400,7 @@ class NGLWidget(DOMWidget):
         if self._first_time_loaded:
             self._first_time_loaded = False
         else:
+            time.sleep(0.1)
             self.sync_view()
         if self._init_gui:
             if self._gui is None:

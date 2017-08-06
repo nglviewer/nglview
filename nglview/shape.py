@@ -25,7 +25,7 @@ class Shape(object):
     def __init__(self, view):
         self.view = view
         names = ['mesh', 'sphere', 'ellipsoid', 'cylinder', 'cone', 'arrow',
-                'label']
+                'label', 'text']
         self._make_func(names)
 
     def _make_func(self, names):

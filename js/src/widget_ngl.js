@@ -524,6 +524,8 @@ var NGLView = widgets.DOMWidgetView.extend({
     addShape: function(name, shapes) {
         // shapes: List[Tuple[str, ...]]
         // e.g: [('sphere', ...), ('cone', ...)]
+        console.log('shapes', shapes);
+        console.log('name', name);
         var shape = new NGL.Shape(name);
         var shape_dict = {
             'sphere': shape.addSphere,
@@ -532,7 +534,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             'cone': shape.addCone,
             'mesh': shape.addMesh,
             'arrow': shape.addArrow,
-            'label': shape.addLabel
+            'text': shape.addText,
+            'label': shape.addText
         };
         for (var i = 0; i < shapes.length; i++) {
             var shapes_i = shapes[i]
