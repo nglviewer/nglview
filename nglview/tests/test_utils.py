@@ -5,6 +5,9 @@ import pytest
 import nglview
 from nglview.utils import py_utils, js_utils
 from nglview.utils.py_utils import seq_to_string, _camelize, _camelize_dict, FileManager
+
+# local
+from utils import repr_dict as repr_dict_example
 import gzip
 
 # local
@@ -176,22 +179,9 @@ def test_file_passing_blob_from_gzip():
 
 
 def test_get_repr_names_from_dict():
-    fake_repr_dict = dict(
-        c0={'0': {
-            'name': 'cartoon'
-        },
-            '1': {
-                'name': 'licorice'
-            }},
-        c1={'0': {
-            'name': 'base'
-        }})
-
     assert_equal(
-        py_utils.get_repr_names_from_dict(fake_repr_dict, 0),
-        ['cartoon', 'licorice'])
-    assert_equal(
-        py_utils.get_repr_names_from_dict(fake_repr_dict, 1), ['base'])
+        py_utils.get_repr_names_from_dict(repr_dict_example, 0),
+        ['cartoon', 'base', 'ball+stick'])
 
 
 def test_js_utils():
