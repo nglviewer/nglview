@@ -327,7 +327,7 @@ class NGLWidget(DOMWidget):
                             repr_slider.value - 1]
 
                 # e.g: 0-cartoon
-                repr_name_text.value = reprlist_choices.value.split('-')[-1]
+                repr_name_text.value = reprlist_choices.value.split('-')[-1].strip()
 
                 repr_slider.max = len(repr_names) - 1 if len(
                     repr_names) >= 1 else len(repr_names)
