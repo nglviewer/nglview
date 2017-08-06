@@ -595,6 +595,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    addShape: function(name, shapes) {
 	        // shapes: List[Tuple[str, ...]]
 	        // e.g: [('sphere', ...), ('cone', ...)]
+	        console.log('shapes', shapes);
+	        console.log('name', name);
 	        var shape = new NGL.Shape(name);
 	        var shape_dict = {
 	            'sphere': shape.addSphere,
@@ -603,7 +605,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            'cone': shape.addCone,
 	            'mesh': shape.addMesh,
 	            'arrow': shape.addArrow,
-	            'label': shape.addLabel
+	            'text': shape.addText,
+	            'label': shape.addText
 	        };
 	        for (var i = 0; i < shapes.length; i++) {
 	            var shapes_i = shapes[i]
@@ -951,7 +954,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                case 'Representation':
 	                    var component_index = msg['component_index'];
 	                    var repr_index = msg['repr_index'];
-	                    var component = this.stage.compList[component_index];
+	                    component = this.stage.compList[component_index];
 	                    var repr = component.reprList[repr_index];
 	                    func = repr[msg.methodName];
 	                    if (repr && func) {
