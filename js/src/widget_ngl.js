@@ -202,7 +202,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             'data': true
         })
         var state_params = this.stage.getParameters();
-        this.model.set('_original_stage_parameters', state_params);
+        this.model.set('_ngl_original_stage_parameters', state_params);
         this.touch();
     },
 
@@ -257,7 +257,8 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     requestUpdateStageParameters: function() {
         var updated_params = this.stage.getParameters();
-        this.model.set('_full_stage_parameters', updated_params);
+        console.log('updated_params', updated_params);
+        this.model.set('_ngl_full_stage_parameters', updated_params);
         this.touch();
     },
 
@@ -737,7 +738,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     setParameters: function(parameters) {
         this.stage.setParameters(parameters);
 
-        // do not set _full_stage_parameters here
+        // do not set _ngl_full_stage_parameters here
         // or parameters will be never updated (not sure why) 
         // use observe in python side
         var updated_params = this.stage.getParameters();

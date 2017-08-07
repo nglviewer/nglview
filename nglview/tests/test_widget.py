@@ -175,7 +175,7 @@ def test_API_promise_to_have():
     view.camera
     view.camera = 'perspective'
     view._request_stage_parameters()
-    view._repr_dict = REPR_DICT
+    view._ngl_repr_dict = REPR_DICT
     view._handle_repr_dict_changed(dict(new=dict(c0={})))
 
     # dummy
@@ -314,12 +314,12 @@ def test_handling_n_components_changed():
     n_traj = nv.PyTrajTrajectory(pt.load(nv.datafiles.PDB))
     view.add_trajectory(n_traj)
     # fake updating n_components and _repr_dict from front-end
-    view._repr_dict = REPR_DICT
+    view._ngl_repr_dict = REPR_DICT
     view.n_components = 1
     view.player.widget_repr = view.player._make_widget_repr()
     view.remove_component(n_traj.id)
     # fake updating n_components from front-end
-    view._repr_dict = {'c0': {}}
+    view._ngl_repr_dict = {'c0': {}}
     view.n_components = 0
 
 
@@ -387,12 +387,12 @@ def test_representations():
     # Representations
     # make fake params
     try:
-        view._repr_dict = {'c0': {'0': {'parameters': {}}}}
+        view._ngl_repr_dict = {'c0': {'0': {'parameters': {}}}}
     except (KeyError, TraitError):
         # in real application, we are not allowed to assign values
         pass
 
-    view._repr_dict = REPR_DICT
+    view._ngl_repr_dict = REPR_DICT
     representation_widget = RepresentationControl(view, 0, 0)
     representation_widget
     representation_widget._on_parameters_changed(change=dict(new=dict()))
@@ -876,7 +876,7 @@ def test_player_click_button():
     """ test_player_click_button """
     view = nv.demo(gui=True)
     view._ipython_display_()
-    view._repr_dict = REPR_DICT
+    view._ngl_repr_dict = REPR_DICT
     view.player._create_all_widgets()
     view.player.widget_export_image = view.player._make_button_export_image()
     button_iter = chain.from_iterable([

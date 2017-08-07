@@ -253,7 +253,7 @@ class TrajectoryPlayer(HasTraits):
 
     def _make_widget_preference(self, width='100%'):
         def make_func():
-            parameters = self._view._full_stage_parameters
+            parameters = self._view._ngl_full_stage_parameters
 
             def func(pan_speed=parameters.get('panSpeed', 0.8),
                      rotate_speed=parameters.get('rotateSpeed', 2),
@@ -317,7 +317,7 @@ class TrajectoryPlayer(HasTraits):
             @reset_button.on_click
             def on_click(reset_button):
                 self._view.parameters = self._view._original_stage_parameters
-                self._view._full_stage_parameters = self._view._original_stage_parameters
+                self._view._ngl_full_stage_parameters = self._view._original_stage_parameters
                 widget_sliders.children = [
                     reset_button,
                 ] + list(make_widget_box().children)
@@ -381,7 +381,7 @@ class TrajectoryPlayer(HasTraits):
             component=component_slider.value, repr_index=repr_slider.value)
         self._view._update_repr_dict()
         self._view._handle_repr_dict_changed(change=dict(
-            new=self._view._repr_dict))
+            new=self._view._ngl_repr_dict))
 
     def _make_button_repr_control(self, component_slider, repr_slider,
                                   repr_selection):
