@@ -58,9 +58,9 @@ class RepresentationControl(Box):
 
     def _get_name_and_repr_dict(self, c_string, r_string):
         try:
-            _repr_dict = self._view._repr_dict[c_string][r_string][
+            _repr_dict = self._view._ngl_repr_dict[c_string][r_string][
                 'parameters']
-            name = self._view._repr_dict[c_string][r_string]['name']
+            name = self._view._ngl_repr_dict[c_string][r_string]['name']
         except KeyError:
             _repr_dict = dict()
             name = ''

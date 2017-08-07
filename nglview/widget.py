@@ -113,7 +113,7 @@ class NGLWidget(DOMWidget):
     _camera_str = CaselessStrEnum(
         ['perspective', 'orthographic'], default_value='orthographic').tag(
             sync=True)
-    _repr_dict = Dict().tag(sync=False)
+    _ngl_repr_dict = Dict().tag(sync=False)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
     _already_constructed = Bool(False).tag(sync=False)
@@ -286,7 +286,7 @@ class NGLWidget(DOMWidget):
                 repr_name_text.value = ' '
                 repr_selection.value = ' '
 
-    @observe('_repr_dict')
+    @observe('_ngl_repr_dict')
     def _handle_repr_dict_changed(self, change):
         if self.player.widget_repr is not None:
             repr_slider = widget_utils.get_widget_by_name(
@@ -299,7 +299,7 @@ class NGLWidget(DOMWidget):
                 self.player.widget_repr, 'repr_selection')
             reprlist_choices = widget_utils.get_widget_by_name(
                 self.player.widget_repr, 'reprlist_choices')
-            repr_names = get_repr_names_from_dict(self._repr_dict,
+            repr_names = get_repr_names_from_dict(self._ngl_repr_dict,
                                                   component_slider.value)
 
             if change['new'] == {0: {}}:
@@ -513,7 +513,7 @@ class NGLWidget(DOMWidget):
         >>> # component 1
         >>> view.color_by('atomindex', component=1)
         '''
-        repr_names = get_repr_names_from_dict(self._repr_dict, component)
+        repr_names = get_repr_names_from_dict(self._ngl_repr_dict, component)
 
         for index, _ in enumerate(repr_names):
             self.update_representation(
@@ -605,7 +605,7 @@ class NGLWidget(DOMWidget):
         r = str(repr_index)
 
         try:
-            name = self._repr_dict[c][r]['type']
+            name = self._ngl_repr_dict[c][r]['type']
         except KeyError:
             name = ''
 
@@ -976,7 +976,7 @@ class NGLWidget(DOMWidget):
         elif msg_type == 'request_repr_dict':
             # update _repr_dict will trigger other things
             # see _handle_repr_dict_changed
-            self._repr_dict = self._ngl_msg.get('data')
+            self._ngl_repr_dict = self._ngl_msg.get('data')
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')
         elif msg_type == 'async_message':

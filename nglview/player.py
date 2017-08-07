@@ -381,7 +381,7 @@ class TrajectoryPlayer(HasTraits):
             component=component_slider.value, repr_index=repr_slider.value)
         self._view._update_repr_dict()
         self._view._handle_repr_dict_changed(change=dict(
-            new=self._view._repr_dict))
+            new=self._view._ngl_repr_dict))
 
     def _make_button_repr_control(self, component_slider, repr_slider,
                                   repr_selection):
