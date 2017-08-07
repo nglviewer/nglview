@@ -157,6 +157,17 @@ def _camelize_dict(kwargs):
     return dict((_camelize(k), v) for k, v in kwargs.items())
 
 
+def snakify(from_camel):
+    """ 
+    
+    Examples
+    --------
+    >>> snakify("heyThere") -> "hey_there"
+    """
+    import re
+    return re.sub('([A-Z]{1})', r'_\1', from_camel).lower()
+
+
 class FileManager(object):
     """FileManager is for internal use.
 
