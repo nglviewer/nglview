@@ -157,7 +157,7 @@ def _camelize_dict(kwargs):
     return dict((_camelize(k), v) for k, v in kwargs.items())
 
 
-def snake(from_camel):
+def snakify(from_camel):
     """ 
     
     Examples
