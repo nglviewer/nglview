@@ -107,8 +107,8 @@ class NGLWidget(DOMWidget):
     _n_dragged_files = Int().tag(sync=True)
     # TODO: remove _parameters?
     _parameters = Dict().tag(sync=False)
-    _full_stage_parameters = Dict().tag(sync=True)
-    _original_stage_parameters = Dict().tag(sync=True)
+    _ngl_full_stage_parameters = Dict().tag(sync=True)
+    _ngl_original_stage_parameters = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
     _camera_str = CaselessStrEnum(
         ['perspective', 'orthographic'], default_value='orthographic').tag(
@@ -978,7 +978,7 @@ class NGLWidget(DOMWidget):
             # see _handle_repr_dict_changed
             self._ngl_repr_dict = self._ngl_msg.get('data')
         elif msg_type == 'stage_parameters':
-            self._full_stage_parameters = msg.get('data')
+            self._ngl_full_stage_parameters = msg.get('data')
         elif msg_type == 'async_message':
             if msg.get('data') == 'ok':
                 self._event.set()
