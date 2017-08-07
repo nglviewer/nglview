@@ -302,7 +302,7 @@ class NGLWidget(DOMWidget):
             repr_names = get_repr_names_from_dict(self._repr_dict,
                                                   component_slider.value)
 
-            if change['new'] == {'c0': {}}:
+            if change['new'] == {0: {}}:
                 repr_selection.value = ''
             else:
                 options = tuple(
@@ -327,7 +327,7 @@ class NGLWidget(DOMWidget):
                             repr_slider.value - 1]
 
                 # e.g: 0-cartoon
-                repr_name_text.value = reprlist_choices.value.split('-')[-1]
+                repr_name_text.value = reprlist_choices.value.split('-')[-1].strip()
 
                 repr_slider.max = len(repr_names) - 1 if len(
                     repr_names) >= 1 else len(repr_names)
@@ -652,9 +652,16 @@ class NGLWidget(DOMWidget):
 
     @coordinates_dict.setter
     def coordinates_dict(self, arr_dict):
+        """Used for update coordinates of a given trajectory
+        >>> # arr: numpy array, ndim=2
+        >>> # update coordinates of 1st trajectory
+        >>> view.coordinates_dict = {0: arr} # doctest: +SKIP
+        """
         self._coordinates_dict = arr_dict
 
         if not self._send_binary:
+            # DEPRECATED: This is not efficient, cause lots of lagging.
+            # should send binary
             # send base64
             encoded_coordinates_dict = dict(
                 (k, encode_base64(v))
@@ -682,7 +689,7 @@ class NGLWidget(DOMWidget):
                 buffers=buffers)
 
     @observe('frame')
-    def on_frame_changed(self, change):
+    def _on_frame_changed(self, change):
         """set and send coordinates at current frame
         """
         self._set_coordinates(self.frame)
@@ -930,6 +937,9 @@ class NGLWidget(DOMWidget):
         """store message sent from Javascript.
 
         How? use view.on_msg(get_msg)
+
+        Notes: message format should be {'type': type, 'data': data}
+        _ngl_handle_msg will call appropriate function to handle message "type"
         """
         self._ngl_msg = msg
 
@@ -957,7 +967,6 @@ class NGLWidget(DOMWidget):
                     self.player.widget_repr, 'repr_selection')
                 repr_name_text.value = name
                 repr_selection.value = selection
-
         elif msg_type == 'request_loaded':
             if not self.loaded:
                 # trick to trigger observe loaded
@@ -965,6 +974,8 @@ class NGLWidget(DOMWidget):
                 self.loaded = False
             self.loaded = msg.get('data')
         elif msg_type == 'request_repr_dict':
+            # update _repr_dict will trigger other things
+            # see _handle_repr_dict_changed
             self._repr_dict = self._ngl_msg.get('data')
         elif msg_type == 'stage_parameters':
             self._full_stage_parameters = msg.get('data')

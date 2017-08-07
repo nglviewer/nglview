@@ -89,12 +89,16 @@ def get_repr_names_from_dict(repr_dict, component):
     
     Parameters
     ----------
+    repr_dict : dict
+        see view._repr_dict
+    component : int
+        component index
     """
 
     try:
-        this_repr_dict = repr_dict['c' + str(component)]
+        this_repr_dict = repr_dict[str(component)]
         return [
-            this_repr_dict[str(key)]['name']
+            this_repr_dict[str(key)]['type']
             for key in sorted(this_repr_dict.keys())
         ]
     except KeyError:
