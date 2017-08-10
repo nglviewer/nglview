@@ -77,7 +77,7 @@ pip install -e .
 # Now you can start changing Python source code.
 
 # make symlink the js code (nglview/static/*js)
-# to $PREFIX/miniconda3/share/jupyter/nbextensions
+# to $PREFIX/share/jupyter/nbextensions
 # Example of $PREFIX: $HOME/miniconda3/
 # Double-check
 # $ ll $HOME/miniconda3/share/jupyter/nbextensions/
