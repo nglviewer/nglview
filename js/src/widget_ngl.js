@@ -21,7 +21,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
             _view_name: "NGLView",
             _view_module: "nglview-js-widgets",
-            _view_module_version: "0.5.4-dev.8",
+            _view_module_version: require("../package.json").version,
         });
     },
 
