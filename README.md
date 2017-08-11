@@ -298,6 +298,11 @@ Mouse
 view.stage.set_parameters(mouse_preset='coot')
 ```
 
+Interaction controls
+--------------------
+- [Mouse](https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#mouse)
+- [Keyboard](https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#keyboard)
+
 Display more than two widgets
 -----------------------------
 
