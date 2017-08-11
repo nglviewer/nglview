@@ -402,9 +402,6 @@ class TrajectoryPlayer(HasTraits):
             description=' Remove',
             icon='fa-trash',
             tooltip='Remove current representation')
-        button_repr_parameter_dialog = Button(
-            description=' Dialog',
-            tooltip='Pop up representation parameters control dialog')
 
         @button_refresh.on_click
         def on_click_refresh(button):
@@ -412,7 +409,7 @@ class TrajectoryPlayer(HasTraits):
 
         @button_center_selection.on_click
         def on_click_center(center_selection):
-            self._view.center_view(
+            self._view.center(
                 selection=repr_selection.value,
                 component=component_slider.value)
 
@@ -440,19 +437,10 @@ class TrajectoryPlayer(HasTraits):
             self._view._request_repr_parameters(
                 component=component_slider.value, repr_index=repr_slider.value)
 
-        @button_repr_parameter_dialog.on_click
-        def on_click_repr_dialog(_):
-            from nglview.widget_box import DraggableBox
-            if self.widget_repr_parameters is not None and self.widget_repr_choices:
-                self.widget_repr_parameters_dialog = DraggableBox(
-                    [self.widget_repr_choices, self.widget_repr_parameters])
-                self.widget_repr_parameters_dialog._ipython_display_()
-                self.widget_repr_parameters_dialog._dialog = 'on'
-
         bbox = _make_autofit(
             HBox([
                 button_refresh, button_center_selection, button_hide,
-                button_remove, button_repr_parameter_dialog
+                button_remove
             ]))
         return bbox
 

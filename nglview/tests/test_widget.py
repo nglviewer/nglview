@@ -948,14 +948,6 @@ def test_layout_BoxNGL():
     box._gui_style = 'row'
 
 
-def test_layout_DraggableBox():
-    view = nv.demo()
-    box = nv.widget_box.DraggableBox([view])
-    box._ipython_display_()
-    box._dialog = 'on'
-    box._dialog = 'off'
-
-
 def test_widget_utils():
     box = HBox()
     i0 = IntText()

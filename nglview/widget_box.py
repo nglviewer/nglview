@@ -37,10 +37,3 @@ class BoxNGL(Box):
             js_utils._set_notebook_width('60%', left_padding=None)
             self._update_size()
             self._is_beautified = True
-
-
-class DraggableBox(Box):
-    _view_name = Unicode("NGLBox").tag(sync=True)
-    _view_module = Unicode("nglview").tag(sync=True)
-    _dialog = Unicode('off').tag(sync=True)
-    _ngl_command = Unicode().tag(sync=True)
