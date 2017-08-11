@@ -1473,3 +1473,19 @@ class ComponentViewer(object):
             for attname in trajectory_atts:
                 traj_att = getattr(traj, attname)
                 setattr(self, attname, traj_att)
+
+    def _call(self, method, *args, **kwargs):
+        """
+
+        >>> c = view.add_component('file.pdb') # doctest: +SKIP
+        ... c._call('setPosition', [10, 20, 0])
+        ... c._call("setRotation", [1, 2, 0])
+        """
+        kwargs2 = {}
+        kwargs2.update(kwargs)
+        kwargs2['component_index'] = self._index
+        self._view._remote_call(
+                method,
+                target='compList',
+                args=args,
+                kwargs=kwargs2)
