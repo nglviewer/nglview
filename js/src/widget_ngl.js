@@ -538,7 +538,10 @@ var NGLView = widgets.DOMWidgetView.extend({
             'mesh': shape.addMesh,
             'arrow': shape.addArrow,
             'text': shape.addText,
-            'label': shape.addText
+            'label': shape.addText,
+            'tetrahedron': shape.addTetrahedron,
+            'octahedron': shape.addOctahedron,
+            'torus': shape.addTorus
         };
         for (var i = 0; i < shapes.length; i++) {
             var shapes_i = shapes[i]

@@ -43,6 +43,21 @@ SHAPE_EXAMPLES = {
     """
 # add_text(position, color, size, text)
 >>> shape.add_text( [ 10, -2, 4 ], [ 0.2, 0.5, 0.8 ], 0.5, "Hello" )
+""",
+    'tetrahedron':
+"""
+# add_tetrahedron
+>>> shape.add_tetrahedron([ 27, 0, 1 ], [ 0, 1, 0 ], 2, [ 0, 1, 1 ], [ 1, 0, 1 ])
+""",
+   'octahedron':
+"""
+# add_octahedron
+>>> shape.add_octahedron([ 8, 5, 14 ], [ 0, 1, 0 ], 2, [ 0, 1, 1 ], [ 1, 0, 1 ])
+""",
+   'torus':
+"""
+# add_torus
+>>> shape.add_torus([ 16, 5, 14 ], [ 0, 1, 0 ], 2, [ 0, 1, 1 ], [ 1, 0, 1 ])
 """
 }
 
