@@ -30,6 +30,17 @@ __all__ = ['NGLWidget', 'ComponentViewer']
 __frontend_version__ = '0.5.4-dev.8' # must match to js/package.json and js/src/widget_ngl.js
 
 
+import logging
+
+def _deprecated(msg):
+    def wrap_1(func):
+        def wrap_2(*args, **kwargs):
+            logging.warn(msg)
+            return func(*args, **kwargs)
+        return wrap_2
+    return wrap_1
+
+
 def _add_repr_method_shortcut(self, other):
     from types import MethodType
 
@@ -811,12 +822,13 @@ class NGLWidget(DOMWidget):
             ],
             kwargs=params)
 
-    def center(self, *args, **kwargs):
+    @_deprecated("DEPRECATED: Please use 'center' method")
+    def center_view(self, *args, **kwargs):
         """alias of `center_view`
         """
-        self.center_view(*args, **kwargs)
+        self.center(*args, **kwargs)
 
-    def center_view(self, selection='*', duration=0, component=0):
+    def center(self, selection='*', duration=0, component=0):
         """center view for given atom selection
 
         Examples
@@ -1015,6 +1027,7 @@ class NGLWidget(DOMWidget):
         if self.n_components > 1:
             self.center_view(component=len(self._ngl_component_ids) - 1)
         self._update_component_auto_completion()
+        return self[-1]
 
     def add_trajectory(self, trajectory, **kwargs):
         '''add new trajectory to `view`
@@ -1037,7 +1050,7 @@ class NGLWidget(DOMWidget):
         >>> view # doctest: +SKIP
         >>> # add new Trajectory
         >>> traj2 = pt.datafiles.load_tz2()
-        >>> view.add_trajectory(traj2)
+        >>> c = view.add_trajectory(traj2)
         '''
         backends = BACKENDS
 
@@ -1054,6 +1067,7 @@ class NGLWidget(DOMWidget):
         self._update_count()
         self._ngl_component_ids.append(trajectory.id)
         self._update_component_auto_completion()
+        return self[-1]
 
     def add_pdbid(self, pdbid):
         '''add new Structure view by fetching pdb id from rcsb
@@ -1062,11 +1076,11 @@ class NGLWidget(DOMWidget):
         --------
         >>> import nglview
         >>> view = nglview.NGLWidget()
-        >>> view.add_pdbid('1tsu')
+        >>> c = view.add_pdbid('1tsu')
         >>> # which is equal to 
         >>> # view.add_component('rcsb://1tsu.pdb')
         '''
-        self.add_component('rcsb://{}.pdb'.format(pdbid))
+        return self.add_component('rcsb://{}.pdb'.format(pdbid))
 
     def add_component(self, filename, **kwargs):
         '''add component from file/trajectory/struture
@@ -1093,6 +1107,7 @@ class NGLWidget(DOMWidget):
         # assign an ID
         self._ngl_component_ids.append(str(uuid.uuid4()))
         self._update_component_auto_completion()
+        return self[-1]
 
     def _load_data(self, obj, **kwargs):
         '''
@@ -1150,17 +1165,28 @@ class NGLWidget(DOMWidget):
         self._remote_call(
             "loadFile", target='Stage', args=args, kwargs=kwargs2)
 
-    def remove_component(self, component_id):
-        """remove component by its uuid
+    def remove_component(self, c):
+        """remove component by its uuid.
+        If isinstance(c, ComponentViewer), `c` won't be associated with `self`
+
+        Parameters
+        ----------
+        c : Union[int, ComponentViewer]
 
         Examples
         --------
-        >>> view.add_trajectory(traj0) # doctest: +SKIP
-        ... view.add_trajectory(traj1)
-        ... view.add_struture(structure)
+        >>> c0 = view.add_trajectory(traj0) # doctest: +SKIP
+        ... c1 = view.add_trajectory(traj1)
+        ... c2 = view.add_struture(structure)
         ... # remove last component
-        ... view.remove_component(view._ngl_component_ids[-1])
+        ... view.remove_component(c2)
+        ... assert c2._view is None
         """
+        if isinstance(c, ComponentViewer):
+            component_id = c.id
+            c._view = None
+        else:
+            component_id = c
         self._clear_component_auto_completion()
         if self._trajlist:
             for traj in self._trajlist:
@@ -1376,11 +1402,11 @@ class ComponentViewer(object):
     --------
     >>> view = nv.NGLWidget() # doctest: +SKIP
     ... view.add_trajectory(traj) # traj is a component 0
-    ... view.add_component(filename) # component 1
-    ... view.component_0.clear_representations()
-    ... view.component_0.add_cartoon()
-    ... view.component_1.add_licorice()
-    ... view.remove_component(view.comp1.id)
+    ... c = view.add_component(filename) # component 1
+    ... c.clear()
+    ... c.add_cartoon()
+    ... c.add_licorice()
+    ... view.remove_component(c)
     """
 
     def __init__(self, view, index):
