@@ -612,7 +612,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            'label': shape.addText,
 	            'tetrahedron': shape.addTetrahedron,
 	            'octahedron': shape.addOctahedron,
-	            'torus': shape.addTorus
+	            'torus': shape.addTorus,
+	            'box': shape.addBox
 	        };
 	        for (var i = 0; i < shapes.length; i++) {
 	            var shapes_i = shapes[i]
