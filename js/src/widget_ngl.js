@@ -26,7 +26,6 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     render: function() {
-
         // init representations handling
         this.model.on("change:_init_representations", this.representationsChanged, this);
 
@@ -257,7 +256,6 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     requestUpdateStageParameters: function() {
         var updated_params = this.stage.getParameters();
-        console.log('updated_params', updated_params);
         this.model.set('_ngl_full_stage_parameters', updated_params);
         this.touch();
     },
@@ -471,7 +469,6 @@ var NGLView = widgets.DOMWidgetView.extend({
     updateRepresentationForComponent: function(repr_index, component_index, params) {
         var component = this.stage.compList[component_index];
         var that = this;
-        console.log('component', component);
         var repr = component.reprList[repr_index];
         if (repr) {
             repr.setParameters(params);
@@ -484,7 +481,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         var that = this;
 
         if (component) {
-            console.log('updateRepresentationsByName');
             component.reprList.forEach(function(repr) {
                 if (repr.name == repr_name) {
                     repr.setParameters(params);
@@ -527,8 +523,6 @@ var NGLView = widgets.DOMWidgetView.extend({
     addShape: function(name, shapes) {
         // shapes: List[Tuple[str, ...]]
         // e.g: [('sphere', ...), ('cone', ...)]
-        console.log('shapes', shapes);
-        console.log('name', name);
         var shape = new NGL.Shape(name);
         var shape_dict = {
             'sphere': shape.addSphere,
@@ -550,7 +544,6 @@ var NGLView = widgets.DOMWidgetView.extend({
             // e.g params = ('sphere', [ 0, 0, 9 ], [ 1, 0, 0 ], 1.5)
 
             var func = shape_dict[shape_type];
-            console.log('func', func);
             func.apply(shape, params);
             // shape.func(params);
         }
