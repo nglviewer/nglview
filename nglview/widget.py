@@ -447,6 +447,14 @@ class NGLWidget(DOMWidget):
             target='Widget',
             args=[colors, component_index, repr_index])
 
+    def _show_notebook_command_box(self):
+        self._remote_call('showNotebookCommandBox',
+                target='Widget')
+
+    def _hide_notebook_command_box(self):
+        self._remote_call('hideNotebookCommandBox',
+                target='Widget')
+
     def color_by(self, color_scheme, component=0):
         '''update color for all representations of given component
 

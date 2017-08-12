@@ -113,7 +113,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             .css("opacity", "0.7")
             .appendTo(this.$container);
 
-        var $inputNotebookCommand = $('<input id="input_notebook_command" type="text"></input>');
+        var $inputNotebookCommand = $('<input id="input_notebook_command" type="text" style="border:1px solid skyblue" size="50"></input>');
         var that = this;
 
         $inputNotebookCommand.keypress(function(e) {
