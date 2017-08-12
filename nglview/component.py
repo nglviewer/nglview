@@ -29,6 +29,15 @@ class ComponentViewer(object):
     def id(self):
         return self._view._ngl_component_ids[self._index]
 
+    def set_coordinates(self, coordinates):
+        """
+
+        Parameters
+        ----------
+        coordinates : numpy.ndarray, shape=(3, n_atoms)
+        """
+        self._view.set_coordinates({self._index: coordinates})
+
     def hide(self):
         """set invisibility for given components (by their indices)
         """
