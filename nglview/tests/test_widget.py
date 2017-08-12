@@ -143,7 +143,7 @@ def test_API_promise_to_have():
 
     nv.NGLWidget.add_component
     nv.NGLWidget.add_trajectory
-    nv.NGLWidget.coordinates_dict
+    nv.NGLWidget._coordinates_dict
     nv.NGLWidget.set_representations
     nv.NGLWidget.clear
     nv.NGLWidget.center
@@ -282,13 +282,13 @@ def test_add_trajectory():
     view.add_trajectory(m_traj)
     # trigger updating coordinates
     update_coords()
-    assert len(view.coordinates_dict.keys()) == 2
+    assert len(view._coordinates_dict.keys()) == 2
     if has_MDAnalysis:
         from MDAnalysis import Universe
         mda_traj = Universe(nv.datafiles.PDB, nv.datafiles.TRR)
         view.add_trajectory(mda_traj)
         update_coords()
-        assert len(view.coordinates_dict.keys()) == 3
+        assert len(view._coordinates_dict.keys()) == 3
     if has_HTMD:
         from htmd import Molecule
         htmd_traj = Molecule(nv.datafiles.PDB)
@@ -296,9 +296,9 @@ def test_add_trajectory():
         view.add_trajectory(htmd_traj)
         update_coords()
         if has_MDAnalysis:
-            assert len(view.coordinates_dict.keys()) == 4
+            assert len(view._coordinates_dict.keys()) == 4
         else:
-            assert len(view.coordinates_dict.keys()) == 3
+            assert len(view._coordinates_dict.keys()) == 3
 
 
 def test_API_promise_to_have_add_more_backend():
@@ -343,12 +343,12 @@ def test_coordinates_dict():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
     view = nv.show_pytraj(traj)
     view.frame = 1
-    coords = view.coordinates_dict[0]
+    coords = view._coordinates_dict[0]
     aa_eq(coords, traj[1].xyz)
 
     # dummy
     view._send_binary = False
-    view.coordinates_dict = {0: coords}
+    view._coordinates_dict = {0: coords}
     # increase coverage for IndexError: make index=1000 (which is larger than n_frames)
     view._set_coordinates(1000)
 
@@ -518,7 +518,7 @@ def test_show_htmd():
     index = 0
     view.frame = index
     xyz_htmd = np.squeeze(traj.coords[:, :, index])
-    aa_eq(view.coordinates_dict[0], xyz_htmd)
+    aa_eq(view._coordinates_dict[0], xyz_htmd)
 
 
 @unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
@@ -653,7 +653,7 @@ def test_trajectory_show_hide_sending_cooridnates():
 
     def copy_coordinate_dict(view):
         # make copy to avoid memory free
-        return dict((k, v.copy()) for k, v in view.coordinates_dict.items())
+        return dict((k, v.copy()) for k, v in view._coordinates_dict.items())
 
     coordinates_dict = copy_coordinate_dict(view)
     aa_eq(coordinates_dict[0], traj0[1].xyz)
@@ -738,7 +738,7 @@ def test_add_struture_then_trajectory():
     traj = pt.datafiles.load_trpcage()
     view.add_trajectory(traj)
     view.frame = 3
-    coords = view.coordinates_dict[1].copy()
+    coords = view._coordinates_dict[1].copy()
     aa_eq(coords, traj[3].xyz)
     view.loaded = False
     view.add_trajectory(traj)

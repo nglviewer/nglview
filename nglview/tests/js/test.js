@@ -62,6 +62,18 @@ module.exports = {
     },
 
 
+    "nglview/tests/notebooks/api/test_gui_get_representation.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_gui_get_representation.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 14; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
     "nglview/tests/notebooks/api/test_movie_making.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/api/test_movie_making.ipynb");
         browser.restartKernel(2000);
@@ -110,10 +122,22 @@ module.exports = {
     },
 
 
+    "nglview/tests/notebooks/api/test_set_coordinates_for_structure_or_trajectory.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_set_coordinates_for_structure_or_trajectory.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 18; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
     "nglview/tests/notebooks/api/test_set_represetation_via_gui.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/api/test_set_represetation_via_gui.ipynb");
         browser.restartKernel(2000);
-        for ( var i = 0; i < 22; i++) {
+        for ( var i = 0; i < 24; i++) {
            browser.executeCell(i)
                   .pause(3000)
                   .cellHasError(i);
@@ -138,6 +162,18 @@ module.exports = {
         browser.openNotebook("nglview/tests/notebooks/api/test_sync_n_components.ipynb");
         browser.restartKernel(2000);
         for ( var i = 0; i < 12; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/api/test_update_representation_dict.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_update_representation_dict.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 20; i++) {
            browser.executeCell(i)
                   .pause(3000)
                   .cellHasError(i);
