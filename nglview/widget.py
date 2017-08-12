@@ -17,13 +17,13 @@ from .utils.py_utils import (seq_to_string, _camelize_dict, FileManager,
 from .player import TrajectoryPlayer
 from . import interpolate
 from .stage import Stage
+from .component import ComponentViewer
 from .shape import Shape
 from .viewer_control import ViewerControl
 from .representation import RepresentationControl
 
 from .adaptor import Structure, Trajectory
 from .config import BACKENDS
-from .parameters import REPRESENTATION_NAME_PAIRS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
@@ -39,60 +39,6 @@ def _deprecated(msg):
             return func(*args, **kwargs)
         return wrap_2
     return wrap_1
-
-
-def _add_repr_method_shortcut(self, other):
-    from types import MethodType
-
-    def make_func_add(rep):
-        """return a new function object
-        """
-
-        def func(this, selection='all', **kwargs):
-            """
-            """
-            self.add_representation(
-                repr_type=rep[1], selection=selection, **kwargs)
-
-        func.__doc__ = """Shortcut for `add_representation` method
-
-        Examples
-        --------
-        >>> view.add_{name}()
-        >>> # is equal to
-        >>> view.add_representation('{name}')
-        """.format(name=rep[0])
-        return func
-
-    def make_func_remove(rep):
-        """return a new function object
-        """
-
-        def func(this, **kwargs):
-            """
-            """
-            self._remove_representations_by_name(repr_name=rep[1], **kwargs)
-
-        return func
-
-    def make_func_update(rep):
-        """return a new function object
-        """
-
-        def func(this, **kwargs):
-            """
-            """
-            self._update_representations_by_name(repr_name=rep[1], **kwargs)
-
-        return func
-
-    for rep in REPRESENTATION_NAME_PAIRS:
-        for make_func, root_fn in [(make_func_add, 'add'), (make_func_update,
-                                                            'update'),
-                                   (make_func_remove, 'remove')]:
-            func = make_func(rep)
-            fn = '_'.join((root_fn, rep[0]))
-            setattr(self, fn, MethodType(func, other))
 
 
 class NGLWidget(DOMWidget):
@@ -150,7 +96,7 @@ class NGLWidget(DOMWidget):
         self._event = threading.Event()
         self._ngl_displayed_callbacks_before_loaded = []
         self._ngl_displayed_callbacks_after_loaded = []
-        _add_repr_method_shortcut(self, self)
+        widget_utils._add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
         self.stage = Stage(view=self)
         self.control = ViewerControl(view=self)
@@ -646,27 +592,16 @@ class NGLWidget(DOMWidget):
                 except (IndexError, ValueError):
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
 
-            self.coordinates_dict = coordinates_dict
+            self.set_coordinates(coordinates_dict)
         else:
             print("no trajectory available")
 
-    @property
-    def coordinates_dict(self):
-        """
-
-        Returns
-        -------
-        out : dict of numpy 3D-array, dtype='f4'
-            coordinates of trajectories at current frame
-        """
-        return self._coordinates_dict
-
-    @coordinates_dict.setter
-    def coordinates_dict(self, arr_dict):
+    def set_coordinates(self, arr_dict):
+        # type: (Dict[int, np.ndarray]) -> None
         """Used for update coordinates of a given trajectory
         >>> # arr: numpy array, ndim=2
         >>> # update coordinates of 1st trajectory
-        >>> view.coordinates_dict = {0: arr} # doctest: +SKIP
+        >>> view.set_coordinates({0: arr})# doctest: +SKIP
         """
         self._coordinates_dict = arr_dict
 
@@ -1393,99 +1328,3 @@ class NGLWidget(DOMWidget):
             # rename
             js_utils._move_notebook_to_the_right()
         self._remote_call('setDialog', target='Widget')
-
-
-class ComponentViewer(object):
-    """Convenient attribute for NGLWidget. See example below.
-
-    Examples
-    --------
-    >>> view = nv.NGLWidget() # doctest: +SKIP
-    ... view.add_trajectory(traj) # traj is a component 0
-    ... c = view.add_component(filename) # component 1
-    ... c.clear()
-    ... c.add_cartoon()
-    ... c.add_licorice()
-    ... view.remove_component(c)
-    """
-
-    def __init__(self, view, index):
-        self._view = view
-        self._index = index
-        _add_repr_method_shortcut(self, self._view)
-        self._borrow_attribute(self._view, [
-            'clear_representations', '_remove_representations_by_name',
-            '_update_representations_by_name', 'center_view', 'center',
-            'clear', 'set_representations'
-        ], ['get_structure_string', 'get_coordinates', 'n_frames'])
-
-    @property
-    def id(self):
-        return self._view._ngl_component_ids[self._index]
-
-    def hide(self):
-        """set invisibility for given components (by their indices)
-        """
-        self._view._remote_call(
-            "setVisibility",
-            target='compList',
-            args=[
-                False,
-            ],
-            kwargs={'component_index': self._index})
-        traj = self._view._get_traj_by_id(self.id)
-        if traj is not None:
-            traj.shown = False
-
-    def show(self):
-        """set invisibility for given components (by their indices)
-        """
-        self._view._remote_call(
-            "setVisibility",
-            target='compList',
-            args=[
-                True,
-            ],
-            kwargs={'component_index': self._index})
-
-        traj = self._view._get_traj_by_id(self.id)
-        if traj is not None:
-            traj.shown = True
-
-    def add_representation(self, repr_type, selection='all', **kwargs):
-        kwargs['component'] = self._index
-        self._view.add_representation(
-            repr_type=repr_type, selection=selection, **kwargs)
-
-    def _borrow_attribute(self, view, attributes, trajectory_atts=None):
-        from functools import partial
-        from types import MethodType
-
-        traj = view._get_traj_by_id(self.id)
-
-        for attname in attributes:
-            view_att = getattr(view, attname)
-            setattr(self, '_' + attname, MethodType(view_att, view))
-            self_att = partial(getattr(view, attname), component=self._index)
-            setattr(self, attname, self_att)
-
-        if traj is not None and trajectory_atts is not None:
-            for attname in trajectory_atts:
-                traj_att = getattr(traj, attname)
-                setattr(self, attname, traj_att)
-
-    def _call(self, method, *args, **kwargs):
-        """
-
-        >>> c = view.add_component('file.pdb') # doctest: +SKIP
-        ... c._call('setPosition', [10, 20, 0])
-        ... c._call("setRotation", [1, 2, 0])
-        """
-        kwargs2 = {}
-        kwargs2.update(kwargs)
-        kwargs2['component_index'] = self._index
-        self._view._remote_call(
-                method,
-                target='compList',
-                args=args,
-                kwargs=kwargs2)
