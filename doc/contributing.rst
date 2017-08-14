@@ -57,28 +57,53 @@ Update Javascript build
     # install nodejs
     # conda install -c javascript nodejs
 
-    # if you want to update ngl code
-    # cp /dir/to/ngl/dist/ngl.js js/src/
-
-    # build
-    python setup.py build --npm
-    # or cd js && npm install
+    cd js
+    npm install
 
     # known working versions:
     # node: v6.6.0
     # npm: 4.4.4
 
-
     # then python setup.py install or pip install -e . # development, you can edit the source code without re-installing
 
-    # tips
-    # - Use private browser mode to avoid cache
+    # Tips
     # - After changing js code:
     #     - Kernel --> Restart and Clear Output
     #     - Refresh webpage (F5)
 
     # run quick test in terminal
     nglview demo
+
+My (Hai) workflow
+=================
+
+.. code:: bash
+
+    cd /nglview/root/folder
+
+    # install development version for Python code
+    # so we can update Python source code without reinstall
+    pip install -e .
+    # Now you can start changing Python source code.
+
+    # make symlink the js code (nglview/static/*js)
+    # to $PREFIX/share/jupyter/nbextensions
+    # Example of $PREFIX: $HOME/miniconda3/
+    # Double-check
+    # $ ll $HOME/miniconda3/share/jupyter/nbextensions/
+    # Will see something like 
+    # nglview-js-widgets@ -> $HOME/3d/nglview/nglview/static
+
+    nglview install --symlink
+    nglview enable
+
+    # Now, you can update JS code in js/src folder
+    cd js
+    npm install
+
+    # If your notebook is openning and you did above step, you need to clear the web cache via two steps
+    - Restart your notebook (Kernel -> Restart and Clear Output)
+    - Refresh browser (F5)
 
 Using ``NGL`` locally
 =====================
@@ -95,7 +120,7 @@ Using ``NGL`` locally
 
    ::
 
-       cd nglview/js
+       cd js
        npm install
        nglview install # install updated js code
        nglview enable # enable again, (not sure if needed)

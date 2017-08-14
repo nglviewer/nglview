@@ -194,7 +194,8 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 +---------------------------------+------------------------------------------+
 | Function                        | Description                              |
 +=================================+==========================================+
-| ``show_structure_file(path)``   | Shows structure (pdb, gro, mol2, sdf) in |
+| ``show_file(path)``             | Shows any NGL supported file formats     |
+|                                 | (pdb, gro, mol2, sdf, dx, ..) in         |
 |                                 | ``path``                                 |
 +---------------------------------+------------------------------------------+
 | ``show_pdbid(pdbid)``           | Shows ``pdbid`` fetched from RCSB PDB    |
@@ -359,7 +360,14 @@ Mouse
 
 .. code:: python
 
-    view.parameters = dict(mousePreset='coot') # or 'default'
+    # coot mouse style (https://en.wikipedia.org/wiki/Coot_(software))
+    view.stage.set_parameters(mouse_preset='coot')
+
+Interaction controls
+--------------------
+
+-  `Mouse <https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#mouse>`__
+-  `Keyboard <https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#keyboard>`__
 
 Display more than two widgets
 -----------------------------

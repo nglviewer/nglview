@@ -1,21 +1,18 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>nglview.adaptor &#8212; NGLView 1.0.a0+17.g211186c.dirty documentation</title>
-    
+    <title>nglview.adaptor &#8212; NGLView 1.0.a3 documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0.a0+17.g211186c.dirty',
+        VERSION:     '1.0.a3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -25,12 +22,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/index.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.6.0/dist/embed.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -40,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+17.g211186c.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -227,8 +224,8 @@
             <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;tmp.pdb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div></div>
 
 
-<span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;simpletraj&#39;</span><span class="p">)</span>
-<div class="viewcode-block" id="SimpletrajTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SimpletrajTrajectory">[docs]</a><span class="k">class</span> <span class="nc">SimpletrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpletrajTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SimpletrajTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;simpletraj&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SimpletrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;simpletraj adaptor.</span>
 
 <span class="sd">    Examples</span>
@@ -271,8 +268,8 @@
         <span class="k">return</span> <span class="n">traj</span><span class="o">.</span><span class="n">numframes</span></div>
 
 
-<span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;mdtraj&#39;</span><span class="p">)</span>
-<div class="viewcode-block" id="MDTrajTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.MDTrajTrajectory">[docs]</a><span class="k">class</span> <span class="nc">MDTrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="MDTrajTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.MDTrajTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;mdtraj&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">MDTrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;mdtraj adaptor.</span>
 
 <span class="sd">    Example</span>
@@ -307,8 +304,8 @@
         <span class="k">return</span> <span class="n">pdb_string</span></div></div>
 
 
-<span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;pytraj&#39;</span><span class="p">)</span>
-<div class="viewcode-block" id="PyTrajTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.PyTrajTrajectory">[docs]</a><span class="k">class</span> <span class="nc">PyTrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="PyTrajTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.PyTrajTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;pytraj&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">PyTrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;PyTraj adaptor.</span>
 
 <span class="sd">    Example</span>
@@ -343,8 +340,8 @@
         <span class="k">return</span> <span class="n">pdb_string</span></div></div>
 
 
-<span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;parmed&#39;</span><span class="p">)</span>
-<div class="viewcode-block" id="ParmEdTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ParmEdTrajectory">[docs]</a><span class="k">class</span> <span class="nc">ParmEdTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="ParmEdTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ParmEdTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;parmed&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ParmEdTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;ParmEd adaptor.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
@@ -380,8 +377,8 @@
         <span class="k">return</span> <span class="n">pdb_string</span></div></div>
 
 
-<span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;MDAnalysis&#39;</span><span class="p">)</span>
-<div class="viewcode-block" id="MDAnalysisTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.MDAnalysisTrajectory">[docs]</a><span class="k">class</span> <span class="nc">MDAnalysisTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="MDAnalysisTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.MDAnalysisTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;MDAnalysis&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">MDAnalysisTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;MDAnalysis adaptor.</span>
 
 <span class="sd">    Can take either a Universe or AtomGroup.</span>
@@ -430,8 +427,8 @@
         <span class="k">return</span> <span class="n">pdb_string</span></div></div>
 
 
-<span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;htmd&#39;</span><span class="p">)</span>
-<div class="viewcode-block" id="HTMDTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.HTMDTrajectory">[docs]</a><span class="k">class</span> <span class="nc">HTMDTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMDTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.HTMDTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;htmd&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">HTMDTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;HTMD adaptor.</span>
 
 <span class="sd">    Takes a Molecule object.</span>
@@ -468,8 +465,8 @@
         <span class="k">return</span> <span class="n">pdb_string</span></div></div>
 
 
-<span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;ase&#39;</span><span class="p">)</span>
-<div class="viewcode-block" id="ASETrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ASETrajectory">[docs]</a><span class="k">class</span> <span class="nc">ASETrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+<div class="viewcode-block" id="ASETrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ASETrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;ase&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ASETrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;asetraj adaptor.</span>
 
 <span class="sd">    Examples</span>
@@ -530,14 +527,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+17.g211186c.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Jul 28, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Last updated on Aug 13, 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

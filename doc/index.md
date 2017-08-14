@@ -149,7 +149,7 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 
 | Function                                 | Description                                           |
 |------------------------------------------|-------------------------------------------------------|
-| `show_structure_file(path)`              | Shows structure (pdb, gro, mol2, sdf) in `path`       |
+| `show_file(path)`                        | Shows any NGL supported file formats (pdb, gro, mol2, sdf, dx, ..) in `path`       |
 | `show_pdbid(pdbid)`                      | Shows `pdbid` fetched from RCSB PDB                   |
 | `show_simpletraj(struc_path, traj_path)` | Shows structure & trajectory loaded with `simpletraj` |
 | `show_mdtraj(traj)`                      | Shows `MDTraj` trajectory `traj`                      |
@@ -294,8 +294,14 @@ view.add_component('rcsb://1tsu.pdb')
 Mouse
 -----
 ```python
-view.parameters = dict(mousePreset='coot') # or 'default'
+# coot mouse style (https://en.wikipedia.org/wiki/Coot_(software))
+view.stage.set_parameters(mouse_preset='coot')
 ```
+
+Interaction controls
+--------------------
+- [Mouse](https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#mouse)
+- [Keyboard](https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#keyboard)
 
 Display more than two widgets
 -----------------------------

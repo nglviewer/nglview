@@ -1,21 +1,18 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>nglview.player &#8212; NGLView 1.0.a0+17.g211186c.dirty documentation</title>
-    
+    <title>nglview.player &#8212; NGLView 1.0.a3 documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0.a0+17.g211186c.dirty',
+        VERSION:     '1.0.a3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -25,12 +22,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/index.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.6.0/dist/embed.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -40,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+17.g211186c.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -184,7 +181,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_unsync_frame</span><span class="p">()</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s2">&quot;delay&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">update_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_update_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="n">delay</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_delay</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
 
@@ -200,7 +197,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">iparams</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;spin&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">on_spin_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_on_spin_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spin</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">],</span>
@@ -210,28 +207,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_spin_x&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">on_spin_x_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_on_spin_x_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">],</span>
                                  <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span><span class="p">)</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_spin_y&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">on_spin_y_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_on_spin_y_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">],</span>
                                  <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span><span class="p">)</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_spin_z&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">on_spin_z_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_on_spin_z_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">],</span>
                                  <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span><span class="p">)</span>
 
     <span class="nd">@observe</span><span class="p">(</span><span class="s1">&#39;_spin_speed&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">on_spin_speed_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_on_spin_speed_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spin_speed</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_set_spin</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_spin_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spin_z</span><span class="p">],</span>
@@ -306,7 +303,7 @@
 
     <span class="k">def</span> <span class="nf">_make_widget_preference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">make_func</span><span class="p">():</span>
-            <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_full_stage_parameters</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_ngl_full_stage_parameters</span>
 
             <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">pan_speed</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;panSpeed&#39;</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span>
                      <span class="n">rotate_speed</span><span class="o">=</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rotateSpeed&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
@@ -370,7 +367,7 @@
             <span class="nd">@reset_button</span><span class="o">.</span><span class="n">on_click</span>
             <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="n">reset_button</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_original_stage_parameters</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_full_stage_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_original_stage_parameters</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_ngl_full_stage_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_original_stage_parameters</span>
                 <span class="n">widget_sliders</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">reset_button</span><span class="p">,</span>
                 <span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">make_widget_box</span><span class="p">()</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
@@ -432,9 +429,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_request_repr_parameters</span><span class="p">(</span>
             <span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;requestReprInfo&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_update_repr_dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_handle_repr_dict_changed</span><span class="p">(</span><span class="n">change</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">new</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_repr_dict</span><span class="p">))</span>
+            <span class="n">new</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_ngl_repr_dict</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_make_button_repr_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_slider</span><span class="p">,</span> <span class="n">repr_slider</span><span class="p">,</span>
                                   <span class="n">repr_selection</span><span class="p">):</span>
@@ -455,9 +452,6 @@
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39; Remove&#39;</span><span class="p">,</span>
             <span class="n">icon</span><span class="o">=</span><span class="s1">&#39;fa-trash&#39;</span><span class="p">,</span>
             <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Remove current representation&#39;</span><span class="p">)</span>
-        <span class="n">button_repr_parameter_dialog</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39; Dialog&#39;</span><span class="p">,</span>
-            <span class="n">tooltip</span><span class="o">=</span><span class="s1">&#39;Pop up representation parameters control dialog&#39;</span><span class="p">)</span>
 
         <span class="nd">@button_refresh</span><span class="o">.</span><span class="n">on_click</span>
         <span class="k">def</span> <span class="nf">on_click_refresh</span><span class="p">(</span><span class="n">button</span><span class="p">):</span>
@@ -465,7 +459,7 @@
 
         <span class="nd">@button_center_selection</span><span class="o">.</span><span class="n">on_click</span>
         <span class="k">def</span> <span class="nf">on_click_center</span><span class="p">(</span><span class="n">center_selection</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">center_view</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">center</span><span class="p">(</span>
                 <span class="n">selection</span><span class="o">=</span><span class="n">repr_selection</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
@@ -493,19 +487,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="o">.</span><span class="n">_request_repr_parameters</span><span class="p">(</span>
                 <span class="n">component</span><span class="o">=</span><span class="n">component_slider</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">repr_index</span><span class="o">=</span><span class="n">repr_slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
-        <span class="nd">@button_repr_parameter_dialog</span><span class="o">.</span><span class="n">on_click</span>
-        <span class="k">def</span> <span class="nf">on_click_repr_dialog</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">nglview.widget_box</span> <span class="k">import</span> <span class="n">DraggableBox</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget_repr_parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget_repr_choices</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">widget_repr_parameters_dialog</span> <span class="o">=</span> <span class="n">DraggableBox</span><span class="p">(</span>
-                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">widget_repr_choices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget_repr_parameters</span><span class="p">])</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">widget_repr_parameters_dialog</span><span class="o">.</span><span class="n">_ipython_display_</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">widget_repr_parameters_dialog</span><span class="o">.</span><span class="n">_dialog</span> <span class="o">=</span> <span class="s1">&#39;on&#39;</span>
-
         <span class="n">bbox</span> <span class="o">=</span> <span class="n">_make_autofit</span><span class="p">(</span>
             <span class="n">HBox</span><span class="p">([</span>
                 <span class="n">button_refresh</span><span class="p">,</span> <span class="n">button_center_selection</span><span class="p">,</span> <span class="n">button_hide</span><span class="p">,</span>
-                <span class="n">button_remove</span><span class="p">,</span> <span class="n">button_repr_parameter_dialog</span>
+                <span class="n">button_remove</span>
             <span class="p">]))</span>
         <span class="k">return</span> <span class="n">bbox</span>
 
@@ -1046,14 +1031,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a0+17.g211186c.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Jul 28, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Last updated on Aug 13, 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>
