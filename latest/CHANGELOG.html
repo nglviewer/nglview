@@ -1,20 +1,18 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Changelog &#8212; NGLView 0.6.2.3 documentation</title>
-    
+    <title>Changelog &#8212; NGLView 1.0.a3 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6.2.3',
+        VERSION:     '1.0.a3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,11 +22,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.6.0/dist/embed.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -38,7 +37,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 0.6.2.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0.a3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -77,7 +76,7 @@
 <ul class="simple">
 <li>ADD: basic use of binary messages for faster coordinate data transfer</li>
 <li>ADD: updated to newer <code class="docutils literal"><span class="pre">NGL</span></code> version, (e.g. orthographic camera,
-anti-aliasing, much faster rendering, ...)</li>
+anti-aliasing, much faster rendering, …)</li>
 <li>ADD: <code class="docutils literal"><span class="pre">view.delay</span></code> property to adjust trajectory playback</li>
 <li>ADD: <code class="docutils literal"><span class="pre">show_url</span></code> function for loading &amp; viewing from an url</li>
 <li>ADD: <code class="docutils literal"><span class="pre">view.hide()</span></code> and <code class="docutils literal"><span class="pre">view.show_only()</span></code> convenience methods</li>
@@ -86,7 +85,7 @@ anti-aliasing, much faster rendering, ...)</li>
 <li>ADD: <code class="docutils literal"><span class="pre">view.add_unitcell()</span></code>, support for the new NGL unitcell
 representation</li>
 <li>ADD: automatic creation of attributes: <code class="docutils literal"><span class="pre">view.trajectory_0</span></code>,
-<code class="docutils literal"><span class="pre">view.trajectory_1</span></code>, <code class="docutils literal"><span class="pre">view.component_0</span></code>, ...</li>
+<code class="docutils literal"><span class="pre">view.trajectory_1</span></code>, <code class="docutils literal"><span class="pre">view.component_0</span></code>, …</li>
 <li>ADD: specify <code class="docutils literal"><span class="pre">component</span></code> index in <code class="docutils literal"><span class="pre">view.add_representations</span></code>,
 <code class="docutils literal"><span class="pre">view.clear_representations</span></code></li>
 <li>ADD: drag and drop files into widget</li>
@@ -106,7 +105,7 @@ notebook</li>
 <li>ADD: <code class="docutils literal"><span class="pre">view.center_view()</span></code> to center</li>
 <li>ADD: select atoms by their indices, given as a List</li>
 <li>ADD: shortcuts for view.add_representation (view.add_cartoon,
-view.add_rope, ...)</li>
+view.add_rope, …)</li>
 <li>ADD: <code class="docutils literal"><span class="pre">ParmEdTrajectory</span></code> adaptor and <code class="docutils literal"><span class="pre">show_parmed</span></code> function to
 view ParmEd objects</li>
 <li>ENH: <code class="docutils literal"><span class="pre">view.add_trajectory</span></code> now accept <code class="docutils literal"><span class="pre">pytraj.Trajectory</span></code>,
@@ -131,7 +130,7 @@ snake_case and CamelCase</li>
 <li>ADD: <code class="docutils literal"><span class="pre">PyTrajTrajectory</span></code> adaptor</li>
 <li>ADD: <code class="docutils literal"><span class="pre">MDAnalysisTrajectory</span></code> adaptor</li>
 <li>ADD: <code class="docutils literal"><span class="pre">NGLWidget.add_representation()</span></code> method</li>
-<li>ADD: append a &#8220;WebGL not supported message&#8221; to widget if so</li>
+<li>ADD: append a “WebGL not supported message” to widget if so</li>
 <li>ADD: <code class="docutils literal"><span class="pre">parameters</span></code> widget property, passed to NGL stage object</li>
 <li>ADD: <code class="docutils literal"><span class="pre">params</span></code> property for <code class="docutils literal"><span class="pre">Structure</span></code>, dict passed to NGL</li>
 <li>CODE: be less noisy when importing nglview</li>
@@ -196,7 +195,7 @@ snake_case and CamelCase</li>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/CHANGELOG.rst.txt"
+      <li><a href="_sources/changelog.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -223,13 +222,13 @@ snake_case and CamelCase</li>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 0.6.2.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0.a3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Mar 12, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Last updated on Aug 13, 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

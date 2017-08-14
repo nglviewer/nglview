@@ -1,20 +1,18 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>nglview.layout &#8212; NGLView 0.6.2.3 documentation</title>
-    
+    <title>nglview.layout &#8212; NGLView 1.0.a3 documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.6.2.3',
+        VERSION:     '1.0.a3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,11 +22,12 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.6.0/dist/embed.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -38,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -54,36 +53,40 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">Layout</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">ToggleButton</span><span class="p">,</span> <span class="n">Box</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Tab</span>
 
+
 <div class="viewcode-block" id="make_form_item_layout"><a class="viewcode-back" href="../../_api/nglview.layout.html#nglview.layout.make_form_item_layout">[docs]</a><span class="k">def</span> <span class="nf">make_form_item_layout</span><span class="p">():</span>
     <span class="c1"># protect nglview if it is not used in notebook (wheen there is not `comm`</span>
     <span class="k">return</span> <span class="n">Layout</span><span class="p">(</span>
         <span class="n">display</span><span class="o">=</span><span class="s1">&#39;flex&#39;</span><span class="p">,</span>
         <span class="n">flex_flow</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">,</span>
-        <span class="n">justify_content</span><span class="o">=</span><span class="s1">&#39;space-between&#39;</span><span class="p">,</span>
-    <span class="p">)</span></div>
+        <span class="n">justify_content</span><span class="o">=</span><span class="s1">&#39;space-between&#39;</span><span class="p">,</span> <span class="p">)</span></div>
 
-<span class="k">def</span> <span class="nf">_make_box_layout</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">):</span> 
+
+<span class="k">def</span> <span class="nf">_make_box_layout</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">Layout</span><span class="p">(</span>
-        <span class="n">display</span><span class="o">=</span><span class="s1">&#39;flex&#39;</span><span class="p">,</span>
-        <span class="n">flex_flow</span><span class="o">=</span><span class="s1">&#39;column&#39;</span><span class="p">,</span>
-        <span class="n">align_items</span><span class="o">=</span><span class="s1">&#39;stretch&#39;</span><span class="p">,</span>
-        <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+        <span class="n">display</span><span class="o">=</span><span class="s1">&#39;flex&#39;</span><span class="p">,</span> <span class="n">flex_flow</span><span class="o">=</span><span class="s1">&#39;column&#39;</span><span class="p">,</span> <span class="n">align_items</span><span class="o">=</span><span class="s1">&#39;stretch&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+
 
 <span class="k">def</span> <span class="nf">_relayout</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">form_item_layout</span><span class="p">):</span>
     <span class="n">form_items</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">kid</span> <span class="ow">in</span> <span class="n">box</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kid</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kid</span><span class="p">,</span> <span class="p">(</span><span class="n">Button</span><span class="p">,</span> <span class="n">ToggleButton</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kid</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kid</span><span class="p">,</span> <span class="p">(</span><span class="n">Button</span><span class="p">,</span>
+                                                                <span class="n">ToggleButton</span><span class="p">)):</span>
             <span class="n">label_value</span> <span class="o">=</span> <span class="n">kid</span><span class="o">.</span><span class="n">description</span>
             <span class="n">kid</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">label_value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kid</span><span class="p">,</span> <span class="n">Button</span><span class="p">):</span>
-            <span class="n">box2</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([</span><span class="n">kid</span><span class="p">,],</span> <span class="n">layout</span><span class="o">=</span><span class="n">form_item_layout</span><span class="p">)</span>
+            <span class="n">box2</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([</span>
+                <span class="n">kid</span><span class="p">,</span>
+            <span class="p">],</span> <span class="n">layout</span><span class="o">=</span><span class="n">form_item_layout</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">box2</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([</span><span class="n">Label</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">label_value</span><span class="p">),</span> <span class="n">kid</span><span class="p">],</span> <span class="n">layout</span><span class="o">=</span><span class="n">form_item_layout</span><span class="p">)</span>
+            <span class="n">box2</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([</span><span class="n">Label</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">label_value</span><span class="p">),</span> <span class="n">kid</span><span class="p">],</span>
+                       <span class="n">layout</span><span class="o">=</span><span class="n">form_item_layout</span><span class="p">)</span>
         <span class="n">form_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">box2</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">form_items</span>
+
 
 <span class="k">def</span> <span class="nf">_relayout_master</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">&#39;20%&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;make nicer layout for box.</span>
@@ -97,6 +100,7 @@
     <span class="n">form</span><span class="o">.</span><span class="n">_ngl_children</span> <span class="o">=</span> <span class="n">old_children</span>
     <span class="k">return</span> <span class="n">form</span>
 
+
 <span class="k">def</span> <span class="nf">_make_autofit</span><span class="p">(</span><span class="n">box</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 
@@ -109,11 +113,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    relayouted box</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">items_layout</span> <span class="o">=</span> <span class="n">Layout</span><span class="p">(</span><span class="n">flex</span><span class="o">=</span><span class="s1">&#39;1 1 auto&#39;</span><span class="p">,</span>
-                          <span class="n">width</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>  
+    <span class="n">items_layout</span> <span class="o">=</span> <span class="n">Layout</span><span class="p">(</span><span class="n">flex</span><span class="o">=</span><span class="s1">&#39;1 1 auto&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
 
     <span class="n">box</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">items_layout</span>
     <span class="k">return</span> <span class="n">box</span>
+
 
 <span class="k">def</span> <span class="nf">_make_delay_tab</span><span class="p">(</span><span class="n">box_factory</span><span class="p">,</span> <span class="n">selected_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -131,13 +135,15 @@
 
     <span class="c1"># trick</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">tab</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">selected_index</span><span class="p">]</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-        <span class="n">tab</span><span class="o">.</span><span class="n">selected_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">selected_index</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="k">def</span> <span class="nf">on_update_selected_index</span><span class="p">(</span><span class="n">change</span><span class="p">):</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">change</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">tab</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="c1"># make widget on demand</span>
-            <span class="n">tab</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">box_factory</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">](),]</span>
+            <span class="n">tab</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">box_factory</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">](),</span>
+            <span class="p">]</span>
 
     <span class="n">tab</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">on_update_selected_index</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s1">&#39;selected_index&#39;</span><span class="p">)</span>
 
@@ -175,14 +181,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 0.6.2.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Mar 12, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Last updated on Aug 13, 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>
