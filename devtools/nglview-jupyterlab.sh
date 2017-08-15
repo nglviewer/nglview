@@ -14,8 +14,7 @@ echo "Creating env $env"
 
 conda create -n $env python=${python_version} numpy nomkl -y
 source activate $env
-pip install setuptools --upgrade # will see the failure but ok
-
+conda install setuptools -c conda-forge --force -y
 conda install notebook==${notebook_version} -c conda-forge -y
 pip install ipywidgets==${ipywidgets_version}
 # pip install widgetsnbextension==${widgetsnbextension} --upgrade
