@@ -1,19 +1,24 @@
 #!/bin/sh
 
-nglview_src=.
-env=jupyterlab_0252
-jupyterlab_version=0.25.2
+nglview_src=`pwd`
+env=jupyterlab_0265
+jupyterlab_version=0.26.5
 python_version=3.6
 notebook_version=5.0.0
-ipywidgets_version=7.0.0b0
-lab_manager_version=0.24.7
+ipywidgets_version=7.0.0b12
+lab_manager_version=0.25.11 # need to match to ./jslab/package.json
+# widgetsnbextension_version=3.0.0.b6
+
+echo "nglview root folder: $nglview_src"
+echo "Creating env $env"
 
 conda create -n $env python=${python_version} numpy nomkl -y
 source activate $env
+pip install setuptools --upgrade # will see the failure but ok
 
-conda install notebook==${notebook_version} -c conda-forge
+conda install notebook==${notebook_version} -c conda-forge -y
 pip install ipywidgets==${ipywidgets_version}
-pip install widgetsnbextension==3.0.0b2 --upgrade
+# pip install widgetsnbextension==${widgetsnbextension} --upgrade
 jupyter nbextension install --py --sys-prefix widgetsnbextension
 jupyter nbextension enable --py --sys-prefix widgetsnbextension
 
@@ -22,13 +27,14 @@ jupyter labextension install @jupyter-widgets/jupyterlab-manager@${lab_manager_v
 
 cd $nglview_src
 
-# nglview-js-widgets
-cd js
-npm install --save
-cd ../
+## Developer should do this
+## nglview-js-widgets
+# cd js
+# npm install && npm publish
+# cd ../
 
 # nglview
 python setup.py install
 
 # nglview-jupyterlab
-jupyter-labextension install jslab
+jupyter-labextension install ./jslab

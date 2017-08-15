@@ -27,7 +27,7 @@ from .config import BACKENDS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '0.5.4-dev.8' # must match to js/package.json and js/src/widget_ngl.js
+__frontend_version__ = '0.5.4-dev.9' # must match to js/package.json and js/src/widget_ngl.js
 
 
 import logging
