@@ -59,10 +59,10 @@ Released version
 
 ## Version Compatibility
 
-| nglview | ipywidgets | jupyterlab
-| --------|:----------:| ---------:|
-| < 1.0   | 5.2.2      | None
-| 1.0     | 7.0        | 0.25.2
+| nglview | ipywidgets |
+| --------|:----------:|
+| < 1.0   | 5.2.2      |
+| 1.0     | 7.0        |
 
 ## Notes
 
@@ -98,26 +98,6 @@ The development version can be installed directly from github:
     
     # tested with ipywidgets 5.2.2, notebook 4.2.1
 ```
-
-### jupyterlab user
-
-**Note**: jupyterlab is in its alpha version, so the instruction below might or might now work.
-
-```bash
-# Make sure to view below file before executing it.
-source devtools/nglview-jupyterlab.sh
-```
-
-### Docker user
-
-```bash
-docker pull hainm/nglview:1.0.a0 # only do once
-docker run -it --rm -p 8888:8888 hainm/nglview:1.0.a0
-
-# Then follow the instruction in your screen.
-```
-
-[How does `nglview` look like in jupyterlab?](examples/jupyterlab.md)
 
 Example
 =======
