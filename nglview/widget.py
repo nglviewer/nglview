@@ -325,12 +325,14 @@ class NGLWidget(DOMWidget):
         if change['new']:
             self._fire_callbacks(self._ngl_displayed_callbacks_before_loaded)
 
-    def _fire_callbacks(self, callbacks):
+    def _fire_callbacks(self, callbacks, excluded=None):
+        excluded = excluded or []
         def _call(event):
             for callback in callbacks:
-                callback(self)
-                if callback._method_name == 'loadFile':
-                    self._wait_until_finished()
+                if callback._method_name not in excluded:
+                    callback(self)
+                    if callback._method_name == 'loadFile':
+                        self._wait_until_finished()
         self._run_on_another_thread(_call, self._event)
 
     def _refresh_render(self):
@@ -350,7 +352,9 @@ class NGLWidget(DOMWidget):
 
         Note: unstable feature
         """
-        self._fire_callbacks(self._ngl_displayed_callbacks_after_loaded)
+        self._fire_callbacks(self._ngl_displayed_callbacks_after_loaded,
+                excluded=['_downloadImage']
+                )
 
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
