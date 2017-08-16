@@ -78,6 +78,8 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     _hold_image = Bool(False).tag(sync=False)
+    _ngl_serialize = Bool(False).tag(sync=True)
+    _ngl_msg_archive = List().tag(sync=True)
 
     def __init__(self,
                  structure=None,
@@ -1198,6 +1200,7 @@ class NGLWidget(DOMWidget):
             widget.send(msg)
 
         callback._method_name = method_name
+        callback._ngl_msg = msg
 
         if self.loaded:
             self._remote_call_thread.q.append(callback)

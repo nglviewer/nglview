@@ -150,6 +150,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }.bind(this)
 	        });
 	        this.displayed.then(function() {
+	            console.log("displaying");
+	            var that = this;
 	            var width = this.$el.parent().width() + "px";
 	            var height = "300px";
 	
@@ -158,6 +160,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                "option", "maxWidth", this.$el.parent().width()
 	            );
 	            this.requestUpdateStageParameters();
+	            if (this.model.get("_ngl_serialize")){
+	                var ngl_msg_archive = this.model.get("_ngl_msg_archive");
+	                _.each(ngl_msg_archive, function(msg){
+	                    that.on_msg(msg);
+	                });
+	            }
 	        }.bind(this));
 	
 	        this.stage.viewerControls.signals.changed.add(function() {
