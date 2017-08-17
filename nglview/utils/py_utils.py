@@ -194,7 +194,7 @@ class FileManager(object):
         """prepare content to send to NGL
         """
         if self.use_filename and not force_buffer:
-            return self.src
+            return os.path.relpath(self.src)
         else:
             if self.compressed_ext:
                 return self.unzip_backend[self.compressed_ext].open(
@@ -233,8 +233,8 @@ class FileManager(object):
             return False
         else:
             if self.is_filename:
-                cwd = os.getcwd()
-                root_path = os.path.dirname(os.path.abspath(self.src))
+                cwd = os.path.realpath(os.getcwd())
+                root_path = os.path.realpath(os.path.dirname(os.path.abspath(self.src)))
                 return (cwd in root_path)
             return False
 

@@ -1058,3 +1058,15 @@ def test_ambermd():
          assert mock_pytraj_superpose.called
 
          ambermd.stop()
+
+
+def test_queuing_messages():
+    view = nv.NGLWidget()
+    view.add_component(nv.datafiles.PDB)
+    view.download_image()
+    view
+    assert [f._method_name for f in view._ngl_displayed_callbacks_before_loaded] == \
+           ['setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
+            '_downloadImage', 'loadFile']
+    assert [f._method_name for f in view._ngl_displayed_callbacks_after_loaded] == \
+           ['loadFile']
