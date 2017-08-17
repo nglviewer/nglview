@@ -28,6 +28,10 @@ from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
 __frontend_version__ = '0.5.4-dev.9' # must match to js/package.json and js/src/widget_ngl.js
+_EXCLUDED_CALLBACK_AFTER_FIRING = {
+        'setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
+        '_downloadImage', '_exportImage'
+}
 
 
 import logging
@@ -1206,7 +1210,8 @@ class NGLWidget(DOMWidget):
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks_before_loaded.append(callback)
 
-        self._ngl_displayed_callbacks_after_loaded.append(callback)
+        if callback._method_name not in _EXCLUDED_CALLBACK_AFTER_FIRING:
+            self._ngl_displayed_callbacks_after_loaded.append(callback)
 
     def _get_traj_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object
