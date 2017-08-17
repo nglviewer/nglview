@@ -79,7 +79,6 @@ var NGLView = widgets.DOMWidgetView.extend({
             }.bind(this)
         });
         this.displayed.then(function() {
-            console.log("displaying");
             var that = this;
             var width = this.$el.parent().width() + "px";
             var height = "300px";
