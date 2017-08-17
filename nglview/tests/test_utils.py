@@ -100,7 +100,7 @@ def test_file_current_folder():
 
     assert fh.ext.endswith('pdb')
     assert fh.is_filename
-    assert fh.read() == fh.src
+    assert fh.read() == os.path.relpath(fh.src)
 
     with open(src) as src2:
         fh2 = FileManager(src2)
