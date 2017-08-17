@@ -163,6 +163,11 @@ class NGLWidget(DOMWidget):
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
+    def _set_serialization(self):
+        self._ngl_serialize = True
+        self._ngl_msg_archive = [f._ngl_msg
+                for f in self._ngl_displayed_callbacks_after_loaded]
+
     @property
     def parameters(self):
         return self._parameters
