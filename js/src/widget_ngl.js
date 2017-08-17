@@ -805,9 +805,9 @@ var NGLView = widgets.DOMWidgetView.extend({
     _handle_loading_file_finished: function() {
         this.send({'type': 'async_message', 'data': 'ok'});
     },
-    
-    _handle_stage_loadFile: function(msg){
-            // args = [{'type': ..., 'data': ...}]
+
+    _get_loadFile_promise: function(msg){
+         // args = [{'type': ..., 'data': ...}]
          var args0 = msg.args[0];
          var that = this;
          if (args0.type == 'blob') {
@@ -822,16 +822,19 @@ var NGLView = widgets.DOMWidgetView.extend({
                      type: "text/plain"
                  });
              }
-             this.stage.loadFile(blob, msg.kwargs).then(function(o){
-                  that._handle_loading_file_finished();
-                  o; // to pass eslint; ack;
-             });
+             return this.stage.loadFile(blob, msg.kwargs)
          } else {
-             this.stage.loadFile(msg.args[0].data, msg.kwargs).then(function(o){
-                  that._handle_loading_file_finished();
-                  o; // to pass eslint; ack;
-             });
+             return this.stage.loadFile(msg.args[0].data, msg.kwargs)
          }
+    },
+    
+    _handle_stage_loadFile: function(msg){
+         // args = [{'type': ..., 'data': ...}]
+         var that = this;
+         this._get_loadFile_promise(msg).then(function(o){
+             that._handle_loading_file_finished();
+             o;
+          });
     },
 
     on_msg: function(msg) {
