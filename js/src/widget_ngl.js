@@ -13,12 +13,22 @@ if (typeof window !== 'undefined') {
   Jupyter = Jupyter || {};
 }
 
+var NGLModel = widgets.DOMWidgetModel.extend({
+    defaults: function(){
+        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+            _model_name: 'NGLModel',
+            _model_module: 'nglview-js-widgets',
+            _model_module_version: require("../package.json").version,
+        });
+    }
+})
+
 var NGLView = widgets.DOMWidgetView.extend({
     defaults: function() {
         // _view_module_version must be synced with nglview/widget.py and
         // js/package.json
         // FIXME: avoid manual sync?
-        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+        return _.extend(widgets.DOMWidgetView.prototype.defaults(), {
             _view_name: "NGLView",
             _view_module: "nglview-js-widgets",
             _view_module_version: require("../package.json").version,
@@ -938,5 +948,6 @@ var NGLView = widgets.DOMWidgetView.extend({
 
 module.exports = {
     'NGLView': NGLView,
+    'NGLModel': NGLModel,
     'NGL': NGL,
 };
