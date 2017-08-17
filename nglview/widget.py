@@ -77,7 +77,7 @@ class NGLWidget(DOMWidget):
     _camera_str = CaselessStrEnum(
         ['perspective', 'orthographic'], default_value='orthographic').tag(
             sync=True)
-    _ngl_repr_dict = Dict().tag(sync=False)
+    _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
     _already_constructed = Bool(False).tag(sync=False)

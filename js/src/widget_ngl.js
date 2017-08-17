@@ -99,9 +99,25 @@ var NGLView = widgets.DOMWidgetView.extend({
             );
             this.requestUpdateStageParameters();
             if (this.model.get("_ngl_serialize")){
-                var ngl_msg_archive = this.model.get("_ngl_msg_archive");
+                console.log('test Promise 2');
+                var ngl_msg_archive = that.model.get("_ngl_msg_archive");
+                var loadfile_list = [];
                 _.each(ngl_msg_archive, function(msg){
-                    that.on_msg(msg);
+                    if (msg.methodName == 'loadFile'){
+                        loadfile_list.push(that._get_loadFile_promise(msg));
+                    }
+                });
+                Promise.all(loadfile_list).then(function(compList){
+                    var ngl_repr_dict = that.model.get('_ngl_repr_dict')
+                    for (var index in ngl_repr_dict){
+                        var comp = compList[index];
+                        comp.removeAllRepresentations();
+                        var reprlist = ngl_repr_dict[index]; 
+	                    for (var j in reprlist){
+	                        var repr = reprlist[j];
+	                        comp.addRepresentation(repr.type, repr.params);
+	                    }
+                    }
                 });
             }
         }.bind(this));
@@ -439,6 +455,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     representationsChanged: function() {
         var representations = this.model.get("_init_representations");
+        console.log('_init_representations', representations);
         var component;
 
         for (var i = 0; i < this.stage.compList.length; i++) {

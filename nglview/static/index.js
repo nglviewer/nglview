@@ -170,9 +170,25 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            );
 	            this.requestUpdateStageParameters();
 	            if (this.model.get("_ngl_serialize")){
-	                var ngl_msg_archive = this.model.get("_ngl_msg_archive");
+	                console.log('test Promise 2');
+	                var ngl_msg_archive = that.model.get("_ngl_msg_archive");
+	                var loadfile_list = [];
 	                _.each(ngl_msg_archive, function(msg){
-	                    that.on_msg(msg);
+	                    if (msg.methodName == 'loadFile'){
+	                        loadfile_list.push(that._get_loadFile_promise(msg));
+	                    }
+	                });
+	                Promise.all(loadfile_list).then(function(compList){
+	                    var ngl_repr_dict = that.model.get('_ngl_repr_dict')
+	                    for (var index in ngl_repr_dict){
+	                        var comp = compList[index];
+	                        comp.removeAllRepresentations();
+	                        var reprlist = ngl_repr_dict[index]; 
+		                    for (var j in reprlist){
+		                        var repr = reprlist[j];
+		                        comp.addRepresentation(repr.type, repr.params);
+		                    }
+	                    }
 	                });
 	            }
 	        }.bind(this));
@@ -510,6 +526,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    representationsChanged: function() {
 	        var representations = this.model.get("_init_representations");
+	        console.log('_init_representations', representations);
 	        var component;
 	
 	        for (var i = 0; i < this.stage.compList.length; i++) {
@@ -876,9 +893,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    _handle_loading_file_finished: function() {
 	        this.send({'type': 'async_message', 'data': 'ok'});
 	    },
-	    
-	    _handle_stage_loadFile: function(msg){
-	            // args = [{'type': ..., 'data': ...}]
+	
+	    _get_loadFile_promise: function(msg){
+	         // args = [{'type': ..., 'data': ...}]
 	         var args0 = msg.args[0];
 	         var that = this;
 	         if (args0.type == 'blob') {
@@ -893,16 +910,19 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                     type: "text/plain"
 	                 });
 	             }
-	             this.stage.loadFile(blob, msg.kwargs).then(function(o){
-	                  that._handle_loading_file_finished();
-	                  o; // to pass eslint; ack;
-	             });
+	             return this.stage.loadFile(blob, msg.kwargs)
 	         } else {
-	             this.stage.loadFile(msg.args[0].data, msg.kwargs).then(function(o){
-	                  that._handle_loading_file_finished();
-	                  o; // to pass eslint; ack;
-	             });
+	             return this.stage.loadFile(msg.args[0].data, msg.kwargs)
 	         }
+	    },
+	    
+	    _handle_stage_loadFile: function(msg){
+	         // args = [{'type': ..., 'data': ...}]
+	         var that = this;
+	         this._get_loadFile_promise(msg).then(function(o){
+	             that._handle_loading_file_finished();
+	             o;
+	          });
 	    },
 	
 	    on_msg: function(msg) {
