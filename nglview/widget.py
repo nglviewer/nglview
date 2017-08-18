@@ -27,7 +27,7 @@ from .config import BACKENDS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '0.5.4-dev.9' # must match to js/package.json and js/src/widget_ngl.js
+__frontend_version__ = '0.5.4-dev.12' # must match to js/package.json and js/src/widget_ngl.js
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
         'setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
         '_downloadImage', '_exportImage'
@@ -49,6 +49,9 @@ class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_name = Unicode("NGLModel").tag(sync=True)
+    _model_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
     _ngl_version = Unicode().tag(sync=True)
     # _model_name = Unicode("NGLView").tag(sync=True)
     # _model_module = Unicode("nglview-js-widgets").tag(sync=True)
@@ -74,7 +77,7 @@ class NGLWidget(DOMWidget):
     _camera_str = CaselessStrEnum(
         ['perspective', 'orthographic'], default_value='orthographic').tag(
             sync=True)
-    _ngl_repr_dict = Dict().tag(sync=False)
+    _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
     _already_constructed = Bool(False).tag(sync=False)
@@ -82,6 +85,8 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     _hold_image = Bool(False).tag(sync=False)
+    _ngl_serialize = Bool(False).tag(sync=True)
+    _ngl_msg_archive = List().tag(sync=True)
 
     def __init__(self,
                  structure=None,
@@ -160,6 +165,11 @@ class NGLWidget(DOMWidget):
             ])
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
+
+    def _set_serialization(self):
+        self._ngl_serialize = True
+        self._ngl_msg_archive = [f._ngl_msg
+                for f in self._ngl_displayed_callbacks_after_loaded]
 
     @property
     def parameters(self):
@@ -1202,6 +1212,7 @@ class NGLWidget(DOMWidget):
             widget.send(msg)
 
         callback._method_name = method_name
+        callback._ngl_msg = msg
 
         if self.loaded:
             self._remote_call_thread.q.append(callback)

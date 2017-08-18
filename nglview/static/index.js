@@ -84,12 +84,22 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	  Jupyter = Jupyter || {};
 	}
 	
+	var NGLModel = widgets.DOMWidgetModel.extend({
+	    defaults: function(){
+	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+	            _model_name: 'NGLModel',
+	            _model_module: 'nglview-js-widgets',
+	            _model_module_version: __webpack_require__(39).version,
+	        });
+	    }
+	})
+	
 	var NGLView = widgets.DOMWidgetView.extend({
 	    defaults: function() {
 	        // _view_module_version must be synced with nglview/widget.py and
 	        // js/package.json
 	        // FIXME: avoid manual sync?
-	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+	        return _.extend(widgets.DOMWidgetView.prototype.defaults(), {
 	            _view_name: "NGLView",
 	            _view_module: "nglview-js-widgets",
 	            _view_module_version: __webpack_require__(39).version,
@@ -150,6 +160,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }.bind(this)
 	        });
 	        this.displayed.then(function() {
+	            var that = this;
 	            var width = this.$el.parent().width() + "px";
 	            var height = "300px";
 	
@@ -158,6 +169,28 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                "option", "maxWidth", this.$el.parent().width()
 	            );
 	            this.requestUpdateStageParameters();
+	            if (this.model.get("_ngl_serialize")){
+	                console.log('test Promise 2');
+	                var ngl_msg_archive = that.model.get("_ngl_msg_archive");
+	                var loadfile_list = [];
+	                _.each(ngl_msg_archive, function(msg){
+	                    if (msg.methodName == 'loadFile'){
+	                        loadfile_list.push(that._get_loadFile_promise(msg));
+	                    }
+	                });
+	                Promise.all(loadfile_list).then(function(compList){
+	                    var ngl_repr_dict = that.model.get('_ngl_repr_dict')
+	                    for (var index in ngl_repr_dict){
+	                        var comp = compList[index];
+	                        comp.removeAllRepresentations();
+	                        var reprlist = ngl_repr_dict[index]; 
+		                    for (var j in reprlist){
+		                        var repr = reprlist[j];
+		                        comp.addRepresentation(repr.type, repr.params);
+		                    }
+	                    }
+	                });
+	            }
 	        }.bind(this));
 	
 	        this.stage.viewerControls.signals.changed.add(function() {
@@ -493,6 +526,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    representationsChanged: function() {
 	        var representations = this.model.get("_init_representations");
+	        console.log('_init_representations', representations);
 	        var component;
 	
 	        for (var i = 0; i < this.stage.compList.length; i++) {
@@ -859,9 +893,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    _handle_loading_file_finished: function() {
 	        this.send({'type': 'async_message', 'data': 'ok'});
 	    },
-	    
-	    _handle_stage_loadFile: function(msg){
-	            // args = [{'type': ..., 'data': ...}]
+	
+	    _get_loadFile_promise: function(msg){
+	         // args = [{'type': ..., 'data': ...}]
 	         var args0 = msg.args[0];
 	         var that = this;
 	         if (args0.type == 'blob') {
@@ -876,16 +910,19 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                     type: "text/plain"
 	                 });
 	             }
-	             this.stage.loadFile(blob, msg.kwargs).then(function(o){
-	                  that._handle_loading_file_finished();
-	                  o; // to pass eslint; ack;
-	             });
+	             return this.stage.loadFile(blob, msg.kwargs)
 	         } else {
-	             this.stage.loadFile(msg.args[0].data, msg.kwargs).then(function(o){
-	                  that._handle_loading_file_finished();
-	                  o; // to pass eslint; ack;
-	             });
+	             return this.stage.loadFile(msg.args[0].data, msg.kwargs)
 	         }
+	    },
+	    
+	    _handle_stage_loadFile: function(msg){
+	         // args = [{'type': ..., 'data': ...}]
+	         var that = this;
+	         this._get_loadFile_promise(msg).then(function(o){
+	             that._handle_loading_file_finished();
+	             o;
+	          });
 	    },
 	
 	    on_msg: function(msg) {
@@ -1002,6 +1039,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	module.exports = {
 	    'NGLView': NGLView,
+	    'NGLModel': NGLModel,
 	    'NGL': NGL,
 	};
 
@@ -22243,7 +22281,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 39 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.9","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"@jupyterlab/extension-builder":"^0.10.0","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","ngl":"0.10.5-17","webpack":"^1.12.14"},"dependencies":{"jquery":"^2.1.4","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"0.10.5-17"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.12","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"@jupyterlab/extension-builder":"^0.10.0","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","ngl":"0.10.5-17","webpack":"^1.12.14"},"dependencies":{"jquery":"^2.1.4","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"0.10.5-17"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ })
 /******/ ])});;
