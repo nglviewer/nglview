@@ -113,10 +113,10 @@ var NGLView = widgets.DOMWidgetView.extend({
                         var comp = compList[index];
                         comp.removeAllRepresentations();
                         var reprlist = ngl_repr_dict[index]; 
-	                    for (var j in reprlist){
-	                        var repr = reprlist[j];
-	                        comp.addRepresentation(repr.type, repr.params);
-	                    }
+                        for (var j in reprlist){
+                            var repr = reprlist[j];
+                            comp.addRepresentation(repr.type, repr.params);
+                        }
                     }
                 });
             }
@@ -826,7 +826,6 @@ var NGLView = widgets.DOMWidgetView.extend({
     _get_loadFile_promise: function(msg){
          // args = [{'type': ..., 'data': ...}]
          var args0 = msg.args[0];
-         var that = this;
          if (args0.type == 'blob') {
              var blob;
              if (args0.binary) {
