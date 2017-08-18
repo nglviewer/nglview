@@ -90,22 +90,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            _model_name: 'NGLModel',
 	            _model_module: 'nglview-js-widgets',
 	            _model_module_version: __webpack_require__(39).version,
+	            _view_name: "NGLView",
+	            _view_module: "nglview-js-widgets",
+	            _view_module_version: __webpack_require__(39).version,
 	        });
 	    }
 	})
 	
 	var NGLView = widgets.DOMWidgetView.extend({
-	    defaults: function() {
-	        // _view_module_version must be synced with nglview/widget.py and
-	        // js/package.json
-	        // FIXME: avoid manual sync?
-	        return _.extend(widgets.DOMWidgetView.prototype.defaults(), {
-	            _view_name: "NGLView",
-	            _view_module: "nglview-js-widgets",
-	            _view_module_version: __webpack_require__(39).version,
-	        });
-	    },
-	
 	    render: function() {
 	        // init representations handling
 	        this.model.on("change:_init_representations", this.representationsChanged, this);
@@ -184,10 +176,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                        var comp = compList[index];
 	                        comp.removeAllRepresentations();
 	                        var reprlist = ngl_repr_dict[index]; 
-		                    for (var j in reprlist){
-		                        var repr = reprlist[j];
-		                        comp.addRepresentation(repr.type, repr.params);
-		                    }
+	                        for (var j in reprlist){
+	                            var repr = reprlist[j];
+	                            comp.addRepresentation(repr.type, repr.params);
+	                        }
 	                    }
 	                });
 	            }
@@ -897,7 +889,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    _get_loadFile_promise: function(msg){
 	         // args = [{'type': ..., 'data': ...}]
 	         var args0 = msg.args[0];
-	         var that = this;
 	         if (args0.type == 'blob') {
 	             var blob;
 	             if (args0.binary) {
@@ -22281,7 +22272,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 39 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.12","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"@jupyterlab/extension-builder":"^0.10.0","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","ngl":"0.10.5-17","webpack":"^1.12.14"},"dependencies":{"jquery":"^2.1.4","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"0.10.5-17"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.13","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"@jupyterlab/extension-builder":"^0.10.0","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","ngl":"0.10.5-17","webpack":"^1.12.14"},"dependencies":{"jquery":"^2.1.4","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"0.10.5-17"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ })
 /******/ ])});;
