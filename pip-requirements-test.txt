@@ -1,5 +1,5 @@
 traitlets==4.3.2
-ipywidgets==7.0.0b0
+ipywidgets==7
 
 mock
 coverage
