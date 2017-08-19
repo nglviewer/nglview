@@ -181,7 +181,7 @@ setup_args = {
         'pytest'
     ],
     'install_requires': [
-        'ipywidgets>=7.0.b0',
+        'ipywidgets==7',
     ],
     'extras_require': {
         "ipywidgets": ["ipywidgets"],
