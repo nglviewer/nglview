@@ -182,9 +182,9 @@ setup_args = {
     ],
     'install_requires': [
         'ipywidgets==7',
+        'numpy',
     ],
     'extras_require': {
-        "ipywidgets": ["ipywidgets"],
         "simpletraj": ["simpletraj"],
         "mdtraj": ["mdtraj"],
         "pytraj": ["pytraj"],
