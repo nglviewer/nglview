@@ -5,6 +5,7 @@ var _ = require('underscore');
 require('jquery-ui/ui/widgets/draggable');
 require('jquery-ui/ui/widgets/slider');
 require('jquery-ui/ui/widgets/dialog');
+require('jquery-ui/themes/base/slider.css');
 
 var Jupyter;
 if (typeof window !== 'undefined') {
@@ -29,6 +30,9 @@ var NGLModel = widgets.DOMWidgetModel.extend({
 var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
         // init representations handling
+        for (var x in this.model.widget_manager){
+            console.log(x);
+        }
         this.model.on("change:_init_representations", this.representationsChanged, this);
 
         // init setting of frame
@@ -91,7 +95,6 @@ var NGLView = widgets.DOMWidgetView.extend({
             );
             this.requestUpdateStageParameters();
             if (this.model.get("_ngl_serialize")){
-                console.log('test Promise 2');
                 var ngl_msg_archive = that.model.get("_ngl_msg_archive");
                 var loadfile_list = [];
                 _.each(ngl_msg_archive, function(msg){
@@ -447,7 +450,6 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     representationsChanged: function() {
         var representations = this.model.get("_init_representations");
-        console.log('_init_representations', representations);
         var component;
 
         for (var i = 0; i < this.stage.compList.length; i++) {
@@ -843,6 +845,27 @@ var NGLView = widgets.DOMWidgetView.extend({
              that._handle_loading_file_finished();
              o;
           });
+    },
+
+    get_model: function(model_id){
+        var manager = this.model.widget_manager;
+        var that = this;
+        manager._models[model_id].then(function(o){
+            var key = Object.keys(o.views)[0];
+            console.log('key', key);
+            console.log('views', o.views[key]);
+            o.views[key].then(function(v){
+                console.log('v', v);
+                for (var vp in v){
+                    console.log(vp);
+                }
+                v.$el
+                 .css("margin-left", "70px")
+                 .css("position", "relative")
+                 .css("bottom", "-7px")
+                 .appendTo(that.$container);
+            });
+        })
     },
 
     on_msg: function(msg) {

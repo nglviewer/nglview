@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "0.5.4-dev.13",
+  "version": "0.5.4-dev.14",
   "description": "nglview-js-widgets",
   "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
   "license": "MIT",
@@ -30,17 +30,18 @@
     "test": "mocha"
   },
   "devDependencies": {
-    "@jupyterlab/extension-builder": "^0.10.0",
     "babel-eslint": "^7.0.0",
     "babel-register": "^6.11.6",
     "eslint": "^3.2.2",
     "eslint-config-google": "^0.7.1",
     "json-loader": "^0.5.4",
+    "css-loader": "^0.23.1",
+    "style-loader": "^0.13.1",
     "ngl": "0.10.5-18",
     "webpack": "^1.12.14"
   },
   "dependencies": {
-    "jquery": "^2.1.4",
+    "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "underscore": "^1.8.3",
     "@jupyter-widgets/base": "^0.5.2",

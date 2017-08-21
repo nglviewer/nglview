@@ -4,6 +4,8 @@ var version = require('./package.json').version;
 // stored in a separate local variable.
 var loaders = [
     { test: /\.json$/, loader: 'json-loader' },
+    { test: /\.css$/, loader: "style-loader!css-loader" },
+    { test: /\.less$/, loader: "style-loader!css-loader!less-loader" },
 ];
 
 
@@ -66,6 +68,6 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['@jupyter-widgets/base']
+        externals: ['@jupyter-widgets/base', "jquery-ui"]
     }
 ];

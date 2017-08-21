@@ -7,6 +7,7 @@ import json
 import numpy as np
 from IPython.display import display
 from ipywidgets import Box, DOMWidget, widget_image
+import ipywidgets.embed
 from traitlets import (Unicode, Bool, Dict, List, Int, Integer, observe,
                        CaselessStrEnum)
 
@@ -43,6 +44,47 @@ def _deprecated(msg):
             return func(*args, **kwargs)
         return wrap_2
     return wrap_1
+
+
+def write_html(fp, views):
+    # type: (str, List[NGLWidget]) -> None
+    """EXPERIMENTAL. Likely will be changed.
+
+    Make html file to diplay a list of views. For further options, please
+    check `ipywidgets.embed` module.
+
+    >>> import nglview
+    >>> view = nglview.show_pdbid('1tsu')
+    >>> view # doctest: +SKIP
+    >>> nglview.write_html('index.html', [view]) # doctest: +SKIP
+    """
+    embed = ipywidgets.embed
+    for view in views:
+        if hasattr(view, '_set_serialization'):
+            view._set_serialization()
+        # FIXME: uncomment?
+        # if hasattr(view, 'player') and view.player.widget_tab is not None:
+        #     print("Embeding does not work with player GUI yet. Ignore")
+        #     view.player._create_all_widgets()
+    # FIXME: allow add jquery-ui link?
+    snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
+    snippet += embed.embed_snippet(views)
+    html_code = embed.html_template.format(
+            title='nglview-demo',
+            snippet=snippet)
+
+    # from ipywidgets
+    # Check if fp is writable:
+    if hasattr(fp, 'write'):
+        fp.write(html_code)
+    else:
+        # Assume fp is a filename:
+        with open(fp, "w") as f:
+            f.write(html_code)
+
+    for view in views:
+        if hasattr(view, '_unset_serialization'):
+            view._unset_serialization()
 
 
 class NGLWidget(DOMWidget):
@@ -170,6 +212,10 @@ class NGLWidget(DOMWidget):
         self._ngl_serialize = True
         self._ngl_msg_archive = [f._ngl_msg
                 for f in self._ngl_displayed_callbacks_after_loaded]
+
+    def _unset_serialization(self):
+        self._ngl_serialize = False
+        self._ngl_msg_archive = []
 
     @property
     def parameters(self):
