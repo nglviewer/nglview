@@ -30,9 +30,6 @@ var NGLModel = widgets.DOMWidgetModel.extend({
 var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
         // init representations handling
-        for (var x in this.model.widget_manager){
-            console.log(x);
-        }
         this.model.on("change:_init_representations", this.representationsChanged, this);
 
         // init setting of frame
@@ -95,7 +92,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             );
             this.requestUpdateStageParameters();
             if (this.model.get("_ngl_serialize")){
-                self.handle_embed(that);
+                that.handle_embed();
             }
         }.bind(this));
 
@@ -215,7 +212,9 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.touch();
     },
 
-    handle_embed: function(that){
+    handle_embed: function(){
+        var that = this
+        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
         var loadfile_list = [];
         _.each(ngl_msg_archive, function(msg){
@@ -234,7 +233,62 @@ var NGLView = widgets.DOMWidgetView.extend({
                     comp.addRepresentation(repr.type, repr.params);
                 }
             }
+
+            var frame = 0;
+            var count = that.model.get("count");
+            var play = function(){
+                that.$playerButton.text("pause");
+                playerInterval = setInterval(function(){
+                    frame = frame + 1;
+                    if (frame > count - 1){
+                        frame = 0;
+                    }
+                    that.$playerSlider.slider("option", "value", frame);
+                    that.updateCoordinatesFromDict(ngl_coordinate_resource, frame);
+                }, that.delay)
+            }
+
+            var pause = function() {
+                that.$playerButton.text("play");
+                if (that.playerInterval !== undefined) {
+                    clearInterval(this.playerInterval);
+                }
+            }.bind(that);
+            that.$playerButton.text("pause")
+            console.log('text', that.$playerButton.text());
+
+            that.$playerButton
+                .click(function(event) {
+                    console.log('text', that.$playerButton.text());
+                    if (that.$playerButton.text() === "play") {
+                        play();
+                    } else if (that.$playerButton.text() === "pause") {
+                        pause();
+                    }
+                    event; // to pass eslint
+                }.bind(that));
+
+            that.$playerSlider.slider({
+                slide: function(event, ui) {
+                    pause();
+                    that.updateCoordinatesFromDict(ngl_coordinate_resource, ui.value);
+                }.bind(that)
+            })
         });
+    },
+
+    updateCoordinatesFromDict: function(cdict, frame_index){
+        // update coordinates for given "index"
+        // cdict = Dict[int, List[base64]]
+        var keys = Object.keys(cdict);
+
+        for (var i = 0; i < keys.length; i++) {
+            var traj_index = keys[i];
+            var coordinates = this.decode_base64(cdict[traj_index][frame_index]);
+            if (coordinates && coordinates.byteLength > 0) {
+                this.updateCoordinates(coordinates, traj_index);
+            }
+        }
     },
 
     setSelector: function(selector_id) {
@@ -856,13 +910,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         var that = this;
         manager._models[model_id].then(function(o){
             var key = Object.keys(o.views)[0];
-            console.log('key', key);
-            console.log('views', o.views[key]);
             o.views[key].then(function(v){
-                console.log('v', v);
-                for (var vp in v){
-                    console.log(vp);
-                }
                 v.$el
                  .css("margin-left", "70px")
                  .css("position", "relative")
@@ -955,7 +1003,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             for (var i = 0; i < keys.length; i++) {
                 var traj_index = keys[i];
                 var coordinates = this.decode_base64(coordinatesDict[traj_index]);
-                if (coordinates.byteLength > 0) {
+                if (coordinates && coordinates.byteLength > 0) {
                     this.updateCoordinates(coordinates, traj_index);
                 }
             }

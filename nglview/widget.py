@@ -129,6 +129,7 @@ class NGLWidget(DOMWidget):
     _hold_image = Bool(False).tag(sync=False)
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
+    _ngl_coordinate_resource = Dict().tag(sync=True)
 
     def __init__(self,
                  structure=None,
@@ -212,10 +213,13 @@ class NGLWidget(DOMWidget):
         self._ngl_serialize = True
         self._ngl_msg_archive = [f._ngl_msg
                 for f in self._ngl_displayed_callbacks_after_loaded]
+        self._ngl_coordinate_resource = {0: [encode_base64(self._trajlist[0].get_coordinates(index))
+            for index in range(self.count)]}
 
     def _unset_serialization(self):
         self._ngl_serialize = False
         self._ngl_msg_archive = []
+        self._ngl_coordinate_resource = {}
 
     @property
     def parameters(self):
