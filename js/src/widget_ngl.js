@@ -904,21 +904,6 @@ var NGLView = widgets.DOMWidgetView.extend({
           });
     },
 
-    get_model: function(model_id){
-        var manager = this.model.widget_manager;
-        var that = this;
-        manager._models[model_id].then(function(o){
-            var key = Object.keys(o.views)[0];
-            o.views[key].then(function(v){
-                v.$el
-                 .css("margin-left", "70px")
-                 .css("position", "relative")
-                 .css("bottom", "-7px")
-                 .appendTo(that.$container);
-            });
-        })
-    },
-
     on_msg: function(msg) {
         // TODO: re-organize
         if (msg.type == 'call_method') {
