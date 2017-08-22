@@ -28,7 +28,7 @@ from .config import BACKENDS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '0.5.4-dev.15' # must match to js/package.json and js/src/widget_ngl.js
+__frontend_version__ = '0.5.4-dev.16' # must match to js/package.json and js/src/widget_ngl.js
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
         'setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
         '_downloadImage', '_exportImage'
@@ -117,6 +117,7 @@ class NGLWidget(DOMWidget):
     # TODO: remove _parameters?
     _parameters = Dict().tag(sync=False)
     _ngl_full_stage_parameters = Dict().tag(sync=True)
+    _ngl_full_stage_parameters_embed = Dict().tag(sync=True)
     _ngl_original_stage_parameters = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
     _camera_str = CaselessStrEnum(
@@ -227,12 +228,16 @@ class NGLWidget(DOMWidget):
                     else:
                         resource[t_index].append(encode_base64(
                             np.empty((0), dtype='f4')))
+            resource['n_frames'] = len(resource[0])
+
         self._ngl_coordinate_resource = resource
+        self._ngl_full_stage_parameters_embed = self._ngl_full_stage_parameters
 
     def _unset_serialization(self):
         self._ngl_serialize = False
         self._ngl_msg_archive = []
         self._ngl_coordinate_resource = {}
+        self._ngl_full_stage_parameters_embed = {}
 
     @property
     def parameters(self):
