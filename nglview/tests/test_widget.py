@@ -2,6 +2,10 @@ from __future__ import print_function
 import os
 import sys
 from itertools import chain
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from mock import patch, MagicMock
 import gzip
@@ -1071,3 +1075,18 @@ def test_queuing_messages():
             '_downloadImage']
     assert [f._method_name for f in view._ngl_displayed_callbacks_after_loaded] == \
            ['loadFile']
+
+
+@patch('nglview.NGLWidget._unset_serialization')
+def test_write_html(mock_unset):
+    traj0 = pt.datafiles.load_trpcage()
+    traj1 = pt.datafiles.load_tz2()
+    view = nv.NGLWidget()
+    view.add_trajectory(traj0)
+    view.add_trajectory(traj1)
+    view
+    fp = StringIO()
+    nv.write_html(fp, [view], frame_range=(0, 3))
+    mock_unset.assert_called_with()
+    assert len(view._ngl_coordinate_resource[0]) == 3
+    assert len(view._ngl_coordinate_resource[1]) == 3

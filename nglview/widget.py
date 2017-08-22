@@ -53,19 +53,22 @@ def write_html(fp, views, frame_range=None):
     Make html file to diplay a list of views. For further options, please
     check `ipywidgets.embed` module.
 
+    Parameters
+    ----------
+    fp : str or file handle
+    views : list of Widget or derived class
+    frame_range : None or a tuple of int
+
     >>> import nglview
     >>> view = nglview.show_pdbid('1tsu')
     >>> view # doctest: +SKIP
     >>> nglview.write_html('index.html', [view]) # doctest: +SKIP
+    >>> nglview.write_html('index.html', [view], frame_range=(0, 5)) # doctest: +SKIP
     """
     embed = ipywidgets.embed
     for view in views:
         if hasattr(view, '_set_serialization'):
             view._set_serialization(frame_range=frame_range)
-        # FIXME: uncomment?
-        # if hasattr(view, 'player') and view.player.widget_tab is not None:
-        #     print("Embeding does not work with player GUI yet. Ignore")
-        #     view.player._create_all_widgets()
     # FIXME: allow add jquery-ui link?
     snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
     snippet += embed.embed_snippet(views)
