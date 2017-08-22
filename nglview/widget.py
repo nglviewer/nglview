@@ -7,6 +7,7 @@ import json
 import numpy as np
 from IPython.display import display
 from ipywidgets import Box, DOMWidget, widget_image
+import ipywidgets.embed
 from traitlets import (Unicode, Bool, Dict, List, Int, Integer, observe,
                        CaselessStrEnum)
 
@@ -27,7 +28,7 @@ from .config import BACKENDS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '0.5.4-dev.13' # must match to js/package.json and js/src/widget_ngl.js
+__frontend_version__ = '0.5.4-dev.15' # must match to js/package.json and js/src/widget_ngl.js
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
         'setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
         '_downloadImage', '_exportImage'
@@ -43,6 +44,50 @@ def _deprecated(msg):
             return func(*args, **kwargs)
         return wrap_2
     return wrap_1
+
+
+def write_html(fp, views, frame_range=None):
+    # type: (str, List[NGLWidget]) -> None
+    """EXPERIMENTAL. Likely will be changed.
+
+    Make html file to diplay a list of views. For further options, please
+    check `ipywidgets.embed` module.
+
+    Parameters
+    ----------
+    fp : str or file handle
+    views : list of Widget or derived class
+    frame_range : None or a tuple of int
+
+    >>> import nglview
+    >>> view = nglview.show_pdbid('1tsu')
+    >>> view # doctest: +SKIP
+    >>> nglview.write_html('index.html', [view]) # doctest: +SKIP
+    >>> nglview.write_html('index.html', [view], frame_range=(0, 5)) # doctest: +SKIP
+    """
+    embed = ipywidgets.embed
+    for view in views:
+        if hasattr(view, '_set_serialization'):
+            view._set_serialization(frame_range=frame_range)
+    # FIXME: allow add jquery-ui link?
+    snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
+    snippet += embed.embed_snippet(views)
+    html_code = embed.html_template.format(
+            title='nglview-demo',
+            snippet=snippet)
+
+    # from ipywidgets
+    # Check if fp is writable:
+    if hasattr(fp, 'write'):
+        fp.write(html_code)
+    else:
+        # Assume fp is a filename:
+        with open(fp, "w") as f:
+            f.write(html_code)
+
+    for view in views:
+        if hasattr(view, '_unset_serialization'):
+            view._unset_serialization()
 
 
 class NGLWidget(DOMWidget):
@@ -87,6 +132,7 @@ class NGLWidget(DOMWidget):
     _hold_image = Bool(False).tag(sync=False)
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
+    _ngl_coordinate_resource = Dict().tag(sync=True)
 
     def __init__(self,
                  structure=None,
@@ -166,10 +212,27 @@ class NGLWidget(DOMWidget):
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
-    def _set_serialization(self):
+    def _set_serialization(self, frame_range=None):
         self._ngl_serialize = True
         self._ngl_msg_archive = [f._ngl_msg
                 for f in self._ngl_displayed_callbacks_after_loaded]
+
+        resource = self._ngl_coordinate_resource
+        if frame_range is not None:
+            for t_index, traj in enumerate(self._trajlist):
+                resource[t_index] = []
+                for f_index in range(*frame_range):
+                    if f_index < traj.n_frames:
+                        resource[t_index].append(encode_base64(traj.get_coordinates(f_index)))
+                    else:
+                        resource[t_index].append(encode_base64(
+                            np.empty((0), dtype='f4')))
+        self._ngl_coordinate_resource = resource
+
+    def _unset_serialization(self):
+        self._ngl_serialize = False
+        self._ngl_msg_archive = []
+        self._ngl_coordinate_resource = {}
 
     @property
     def parameters(self):

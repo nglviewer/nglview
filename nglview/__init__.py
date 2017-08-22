@@ -21,7 +21,7 @@ def _jupyter_nbextension_paths():
 # TODO: do not use import *
 # interface
 from .config import BACKENDS
-from .widget import NGLWidget
+from .widget import NGLWidget, write_html
 from .base_adaptor import *
 from .adaptor import *
 from .show import *

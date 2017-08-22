@@ -18,6 +18,7 @@ conda install setuptools -c conda-forge --force -y
 conda install notebook==${notebook_version} -c conda-forge -y
 pip install ipywidgets==${ipywidgets_version}
 pip install widgetsnbextension==${widgetsnbextension_version} --upgrade
+pip install pytraj # comment if using windows
 jupyter nbextension install --py --sys-prefix widgetsnbextension
 jupyter nbextension enable --py --sys-prefix widgetsnbextension
 
