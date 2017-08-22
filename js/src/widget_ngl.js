@@ -238,7 +238,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             var count = that.model.get("count");
             var play = function(){
                 that.$playerButton.text("pause");
-                playerInterval = setInterval(function(){
+                that.playerInterval = setInterval(function(){
                     frame = frame + 1;
                     if (frame > count - 1){
                         frame = 0;
@@ -251,15 +251,13 @@ var NGLView = widgets.DOMWidgetView.extend({
             var pause = function() {
                 that.$playerButton.text("play");
                 if (that.playerInterval !== undefined) {
-                    clearInterval(this.playerInterval);
+                    clearInterval(that.playerInterval);
                 }
             }.bind(that);
-            that.$playerButton.text("pause")
-            console.log('text', that.$playerButton.text());
 
             that.$playerButton
+                .off('click')
                 .click(function(event) {
-                    console.log('text', that.$playerButton.text());
                     if (that.$playerButton.text() === "play") {
                         play();
                     } else if (that.$playerButton.text() === "pause") {
