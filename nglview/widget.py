@@ -46,7 +46,7 @@ def _deprecated(msg):
     return wrap_1
 
 
-def write_html(fp, views):
+def write_html(fp, views, frame_range=None):
     # type: (str, List[NGLWidget]) -> None
     """EXPERIMENTAL. Likely will be changed.
 
@@ -61,7 +61,7 @@ def write_html(fp, views):
     embed = ipywidgets.embed
     for view in views:
         if hasattr(view, '_set_serialization'):
-            view._set_serialization()
+            view._set_serialization(frame_range=frame_range)
         # FIXME: uncomment?
         # if hasattr(view, 'player') and view.player.widget_tab is not None:
         #     print("Embeding does not work with player GUI yet. Ignore")
@@ -210,18 +210,20 @@ class NGLWidget(DOMWidget):
         self._already_constructed = True
 
     def _set_serialization(self, frame_range=None):
-        from collections import defaultdict
         self._ngl_serialize = True
         self._ngl_msg_archive = [f._ngl_msg
                 for f in self._ngl_displayed_callbacks_after_loaded]
 
-        d = defaultdict(list)
         resource = self._ngl_coordinate_resource
         if frame_range is not None:
             for t_index, traj in enumerate(self._trajlist):
                 resource[t_index] = []
                 for f_index in range(*frame_range):
-                    resource[t_index].append(encode_base64(traj.get_coordinates(f_index)))
+                    if f_index < traj.n_frames:
+                        resource[t_index].append(encode_base64(traj.get_coordinates(f_index)))
+                    else:
+                        resource[t_index].append(encode_base64(
+                            np.empty((0), dtype='f4')))
         self._ngl_coordinate_resource = resource
 
     def _unset_serialization(self):

@@ -341,6 +341,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                slide: function(event, ui) {
 	                    pause();
 	                    that.updateCoordinatesFromDict(ngl_coordinate_resource, ui.value);
+	                    frame = ui.value;
 	                }.bind(that)
 	            })
 	        });

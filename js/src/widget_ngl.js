@@ -270,6 +270,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                 slide: function(event, ui) {
                     pause();
                     that.updateCoordinatesFromDict(ngl_coordinate_resource, ui.value);
+                    frame = ui.value;
                 }.bind(that)
             })
         });
