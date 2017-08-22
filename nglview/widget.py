@@ -209,12 +209,20 @@ class NGLWidget(DOMWidget):
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
-    def _set_serialization(self):
+    def _set_serialization(self, frame_range=None):
+        from collections import defaultdict
         self._ngl_serialize = True
         self._ngl_msg_archive = [f._ngl_msg
                 for f in self._ngl_displayed_callbacks_after_loaded]
-        self._ngl_coordinate_resource = {0: [encode_base64(self._trajlist[0].get_coordinates(index))
-            for index in range(self.count)]}
+
+        d = defaultdict(list)
+        resource = self._ngl_coordinate_resource
+        if frame_range is not None:
+            for t_index, traj in enumerate(self._trajlist):
+                resource[t_index] = []
+                for f_index in range(*frame_range):
+                    resource[t_index].append(encode_base64(traj.get_coordinates(f_index)))
+        self._ngl_coordinate_resource = resource
 
     def _unset_serialization(self):
         self._ngl_serialize = False
