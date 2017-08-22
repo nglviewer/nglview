@@ -216,12 +216,17 @@ var NGLView = widgets.DOMWidgetView.extend({
         var that = this
         var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
+        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters_embed');
         var loadfile_list = [];
+
         _.each(ngl_msg_archive, function(msg){
             if (msg.methodName == 'loadFile'){
                 loadfile_list.push(that._get_loadFile_promise(msg));
             }
         });
+
+        console.log('ngl_stage_params', ngl_stage_params);
+
         Promise.all(loadfile_list).then(function(compList){
             var ngl_repr_dict = that.model.get('_ngl_repr_dict')
             for (var index in ngl_repr_dict){
@@ -234,8 +239,12 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             }
 
+            that.stage.setParameters(ngl_stage_params);
+
             var frame = 0;
-            var count = that.model.get("count");
+            var count = ngl_coordinate_resource['n_frames'];
+            delete ngl_coordinate_resource['n_frames'];
+
             var play = function(){
                 that.$playerButton.text("pause");
                 that.playerInterval = setInterval(function(){
@@ -255,24 +264,26 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             }.bind(that);
 
-            that.$playerButton
-                .off('click')
-                .click(function(event) {
-                    if (that.$playerButton.text() === "play") {
-                        play();
-                    } else if (that.$playerButton.text() === "pause") {
+            if (that.$playerButton){
+                that.$playerButton
+                    .off('click')
+                    .click(function(event) {
+                        if (that.$playerButton.text() === "play") {
+                            play();
+                        } else if (that.$playerButton.text() === "pause") {
+                            pause();
+                        }
+                        event; // to pass eslint
+                    }.bind(that));
+                that.$playerSlider.slider({
+                    max : count-1,
+                    slide: function(event, ui) {
                         pause();
-                    }
-                    event; // to pass eslint
-                }.bind(that));
-
-            that.$playerSlider.slider({
-                slide: function(event, ui) {
-                    pause();
-                    that.updateCoordinatesFromDict(ngl_coordinate_resource, ui.value);
-                    frame = ui.value;
-                }.bind(that)
-            })
+                        that.updateCoordinatesFromDict(ngl_coordinate_resource, ui.value);
+                        frame = ui.value;
+                    }.bind(that)
+                })
+           }
         });
     },
 
