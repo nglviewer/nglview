@@ -3,9 +3,9 @@ Changelog
 
 Version 1.0.b
 --------------
-- Support ipywidgets 7.0 and drop ipywidgets 5.2
-- Upgrade `NGL 0.10.5-20`
-- Support Jupyterlab (v0.26.5, )
+- SUPPORT ipywidgets 7.0 and drop ipywidgets 5.2
+- UPGRADE: `NGL 0.10.5-20`
+- SUPPORT: Jupyterlab (v0.26.5, )
 - ADD: `show_biopython`
 - ADD: `show_iotbx `
 - ADD: `show_rosetta`
@@ -14,7 +14,7 @@ Version 1.0.b
 - ADD: movie making
 - ADD: `set_coordinates` for ComponentViewer
 - FIX: `nglview install` always overwrite
-- SUPPORT: wiget serialization and sphinx-jupyter
+- SUPPORT: widget serialization and sphinx-jupyter
 - ADD: `write_html`
 
 Dev
