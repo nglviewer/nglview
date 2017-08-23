@@ -29,20 +29,20 @@ for word in words:
     print(new_word)
     readme = readme.replace(word, new_word)
 
-readme = readme.replace('doc/interface_classes.md', 'interface_classes.html')
+readme = readme.replace('docs/interface_classes.md', 'interface_classes.html')
 
 for fn in md_files:
     html_fn = os.path.splitext(fn)[0].lower() + '.html'
     readme = readme.replace(fn, html_fn)
 
-with open('doc/index.md', 'w') as fh:
+with open('docs/index.md', 'w') as fh:
     fh.write(readme)
 
-subprocess.check_call('pandoc doc/index.md -o doc/index.rst', shell=True)
-subprocess.check_call('pandoc ../nglview/doc/interface_classes.md  -o doc/interface_classes.rst', shell=True)
+subprocess.check_call('pandoc docs/index.md -o docs/index.rst', shell=True)
+subprocess.check_call('pandoc ../nglview/docs/interface_classes.md  -o docs/interface_classes.rst', shell=True)
 
 for fn in md_files:
     rst_fn = os.path.splitext(fn)[0].lower() + '.rst'
-    cmd = 'pandoc ../nglview/{}  -o doc/{}'.format(fn, rst_fn)
+    cmd = 'pandoc ../nglview/{}  -o docs/{}'.format(fn, rst_fn)
     print(cmd)
     subprocess.check_call(cmd, shell=True)

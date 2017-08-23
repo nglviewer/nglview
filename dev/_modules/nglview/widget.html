@@ -5,14 +5,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>nglview.widget &#8212; NGLView 1.0.a3+3.gf9a0d39 documentation</title>
+    <title>nglview.widget &#8212; NGLView 1.0.b1+3.ga87eae7 documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.0.a3+3.gf9a0d39',
+        VERSION:     '1.0.b1+3.ga87eae7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -22,8 +23,9 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.6.0/dist/embed.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.10.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head>
@@ -37,7 +39,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a3+3.gf9a0d39 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.b1+3.ga87eae7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -57,6 +59,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span>
 <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">Box</span><span class="p">,</span> <span class="n">DOMWidget</span><span class="p">,</span> <span class="n">widget_image</span>
+<span class="kn">import</span> <span class="nn">ipywidgets.embed</span>
 <span class="kn">from</span> <span class="nn">traitlets</span> <span class="k">import</span> <span class="p">(</span><span class="n">Unicode</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">observe</span><span class="p">,</span>
                        <span class="n">CaselessStrEnum</span><span class="p">)</span>
 
@@ -77,7 +80,11 @@
 <span class="kn">from</span> <span class="nn">.remote_thread</span> <span class="k">import</span> <span class="n">RemoteCallThread</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NGLWidget&#39;</span><span class="p">,</span> <span class="s1">&#39;ComponentViewer&#39;</span><span class="p">]</span>
-<span class="n">__frontend_version__</span> <span class="o">=</span> <span class="s1">&#39;0.5.4-dev.8&#39;</span> <span class="c1"># must match to js/package.json and js/src/widget_ngl.js</span>
+<span class="n">__frontend_version__</span> <span class="o">=</span> <span class="s1">&#39;0.5.4-dev.17&#39;</span> <span class="c1"># must match to js/package.json and js/src/widget_ngl.js</span>
+<span class="n">_EXCLUDED_CALLBACK_AFTER_FIRING</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;setUnSyncCamera&#39;</span><span class="p">,</span> <span class="s1">&#39;setSelector&#39;</span><span class="p">,</span> <span class="s1">&#39;setUnSyncFrame&#39;</span><span class="p">,</span> <span class="s1">&#39;setDelay&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;_downloadImage&#39;</span><span class="p">,</span> <span class="s1">&#39;_exportImage&#39;</span>
+<span class="p">}</span>
 
 
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -91,10 +98,57 @@
     <span class="k">return</span> <span class="n">wrap_1</span>
 
 
+<span class="k">def</span> <span class="nf">write_html</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">views</span><span class="p">,</span> <span class="n">frame_range</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># type: (str, List[NGLWidget]) -&gt; None</span>
+    <span class="sd">&quot;&quot;&quot;EXPERIMENTAL. Likely will be changed.</span>
+
+<span class="sd">    Make html file to diplay a list of views. For further options, please</span>
+<span class="sd">    check `ipywidgets.embed` module.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fp : str or file handle</span>
+<span class="sd">    views : list of Widget or derived class</span>
+<span class="sd">    frame_range : None or a tuple of int</span>
+
+<span class="sd">    &gt;&gt;&gt; import nglview</span>
+<span class="sd">    &gt;&gt;&gt; view = nglview.show_pdbid(&#39;1tsu&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; view # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; nglview.write_html(&#39;index.html&#39;, [view]) # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; nglview.write_html(&#39;index.html&#39;, [view], frame_range=(0, 5)) # doctest: +SKIP</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">embed</span> <span class="o">=</span> <span class="n">ipywidgets</span><span class="o">.</span><span class="n">embed</span>
+    <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">views</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="s1">&#39;_set_serialization&#39;</span><span class="p">):</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">_set_serialization</span><span class="p">(</span><span class="n">frame_range</span><span class="o">=</span><span class="n">frame_range</span><span class="p">)</span>
+    <span class="c1"># FIXME: allow add jquery-ui link?</span>
+    <span class="n">snippet</span> <span class="o">=</span> <span class="s1">&#39;&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css&quot;&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="n">snippet</span> <span class="o">+=</span> <span class="n">embed</span><span class="o">.</span><span class="n">embed_snippet</span><span class="p">(</span><span class="n">views</span><span class="p">)</span>
+    <span class="n">html_code</span> <span class="o">=</span> <span class="n">embed</span><span class="o">.</span><span class="n">html_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;nglview-demo&#39;</span><span class="p">,</span>
+            <span class="n">snippet</span><span class="o">=</span><span class="n">snippet</span><span class="p">)</span>
+
+    <span class="c1"># from ipywidgets</span>
+    <span class="c1"># Check if fp is writable:</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">):</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html_code</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Assume fp is a filename:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html_code</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">views</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="s1">&#39;_unset_serialization&#39;</span><span class="p">):</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">_unset_serialization</span><span class="p">()</span>
+
+
 <div class="viewcode-block" id="NGLWidget"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget">[docs]</a><span class="k">class</span> <span class="nc">NGLWidget</span><span class="p">(</span><span class="n">DOMWidget</span><span class="p">):</span>
     <span class="n">_view_name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;NGLView&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_view_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;nglview-js-widgets&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_view_module_version</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="n">__frontend_version__</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">_model_name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;NGLModel&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">_model_module</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="s2">&quot;nglview-js-widgets&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">_model_module_version</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">(</span><span class="n">__frontend_version__</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_ngl_version</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># _model_name = Unicode(&quot;NGLView&quot;).tag(sync=True)</span>
     <span class="c1"># _model_module = Unicode(&quot;nglview-js-widgets&quot;).tag(sync=True)</span>
@@ -115,12 +169,13 @@
     <span class="c1"># TODO: remove _parameters?</span>
     <span class="n">_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">_ngl_full_stage_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">_ngl_full_stage_parameters_embed</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_ngl_original_stage_parameters</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_coordinates_dict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">_camera_str</span> <span class="o">=</span> <span class="n">CaselessStrEnum</span><span class="p">(</span>
         <span class="p">[</span><span class="s1">&#39;perspective&#39;</span><span class="p">,</span> <span class="s1">&#39;orthographic&#39;</span><span class="p">],</span> <span class="n">default_value</span><span class="o">=</span><span class="s1">&#39;orthographic&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span>
             <span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">_ngl_repr_dict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_ngl_repr_dict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_ngl_component_ids</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">_ngl_component_names</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">_already_constructed</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -128,6 +183,9 @@
     <span class="n">_send_binary</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">_init_gui</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">_hold_image</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_ngl_serialize</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">_ngl_msg_archive</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">_ngl_coordinate_resource</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">structure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -206,6 +264,32 @@
             <span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="n">TrajectoryPlayer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_already_constructed</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_set_serialization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_range</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_serialize</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_msg_archive</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">_ngl_msg</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks_after_loaded</span><span class="p">]</span>
+
+        <span class="n">resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_coordinate_resource</span>
+        <span class="k">if</span> <span class="n">frame_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">t_index</span><span class="p">,</span> <span class="n">traj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">):</span>
+                <span class="n">resource</span><span class="p">[</span><span class="n">t_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">f_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">frame_range</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">f_index</span> <span class="o">&lt;</span> <span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span><span class="p">:</span>
+                        <span class="n">resource</span><span class="p">[</span><span class="n">t_index</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">encode_base64</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">f_index</span><span class="p">)))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">resource</span><span class="p">[</span><span class="n">t_index</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">encode_base64</span><span class="p">(</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f4&#39;</span><span class="p">)))</span>
+            <span class="n">resource</span><span class="p">[</span><span class="s1">&#39;n_frames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">resource</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_coordinate_resource</span> <span class="o">=</span> <span class="n">resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_full_stage_parameters_embed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_full_stage_parameters</span>
+
+    <span class="k">def</span> <span class="nf">_unset_serialization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_serialize</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_msg_archive</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_coordinate_resource</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_full_stage_parameters_embed</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1248,6 +1332,7 @@
             <span class="n">widget</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">callback</span><span class="o">.</span><span class="n">_method_name</span> <span class="o">=</span> <span class="n">method_name</span>
+        <span class="n">callback</span><span class="o">.</span><span class="n">_ngl_msg</span> <span class="o">=</span> <span class="n">msg</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call_thread</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
@@ -1256,7 +1341,8 @@
             <span class="c1"># all callbacks will be called right after widget is loaded</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks_before_loaded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks_after_loaded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">callback</span><span class="o">.</span><span class="n">_method_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_EXCLUDED_CALLBACK_AFTER_FIRING</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_displayed_callbacks_after_loaded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_traj_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itsid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;return nglview.Trajectory or its derived class object</span>
@@ -1416,13 +1502,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.a3+3.gf9a0d39 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0.b1+3.ga87eae7 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 14, 2017.
+      Last updated on Aug 22, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>

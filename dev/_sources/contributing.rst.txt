@@ -49,6 +49,19 @@ Test
 
     pytest -vs nglview/tests/
 
+Sync versions
+=============
+
+There is not yet an elegant way to sync version in nglview/widget.py;
+js/package.json and jslab/package.json So make sure to update those
+
+.. code:: python
+
+    nglview/wiget.py: __frontend_version__ = '0.5.4-dev.13'
+    js/package.json:              "version": "0.5.4-dev.13",
+    jslab/package.json: "@jupyter-widgets/jupyterlab-manager": "^0.25.11", # make sure this compat with ipywidgets
+    jslab/package.json: "nglview-js-widgets": "0.5.4-dev.13"
+
 Update Javascript build
 =======================
 

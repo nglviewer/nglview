@@ -125,6 +125,16 @@ notebook user
         
         # tested with ipywidgets 5.2.2, notebook 4.2.1
 
+jupyterlab user
+~~~~~~~~~~~~~~~
+
+HIGHLY EXPERIMENTAL. Things might not work as you are expecting.
+
+::
+
+    # Please read its content before running
+    source devtools/nglview-jupyterlab.sh
+
 Example
 =======
 
@@ -342,8 +352,8 @@ Mouse
 Interaction controls
 --------------------
 
--  `Mouse <https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#mouse>`__
--  `Keyboard <https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#keyboard>`__
+-  `Mouse <https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#mouse>`__
+-  `Keyboard <https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#keyboard>`__
 
 Display more than two widgets
 -----------------------------

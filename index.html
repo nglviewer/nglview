@@ -1,12 +1,898 @@
-<!DOCTYPE HTML>
-<html lang="en-US">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="refresh" content="0;url=http://arose.github.io/nglview/dev/index.html">
-        <title>Page Redirection</title>
-    </head>
-    <body>
-        If you are not redirected automatically, <a href="dev/index.html">click here</a>
-    </body>
-</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IPyWidget export</title>
+</head>
+<body>
 
+
+<!-- Load require.js. Delete this if your page already loads require.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.9.0/dist/embed-amd" crossorigin="anonymous"></script>
+
+<script type="application/vnd.jupyter.widget-state+json">
+{
+  "version_major": 2,
+  "version_minor": 0,
+  "state": {
+    "052f1c4e50204c3b963d18f5f69811dd": {
+      "model_name": "LayoutModel",
+      "model_module": "@jupyter-widgets/base",
+      "model_module_version": "1.0.0",
+      "state": {}
+    },
+    "b296922431e7418289e6334ddd378a95": {
+      "model_name": "NGLModel",
+      "model_module": "nglview-js-widgets",
+      "model_module_version": "0.5.4-dev.13",
+      "state": {
+        "_dom_classes": [],
+        "_ngl_full_stage_parameters": {
+          "backgroundColor": "white",
+          "quality": "medium",
+          "sampleLevel": 0,
+          "impostor": true,
+          "workerDefault": true,
+          "rotateSpeed": 2,
+          "zoomSpeed": 1.2,
+          "panSpeed": 1,
+          "clipNear": 0,
+          "clipFar": 100,
+          "clipDist": 10,
+          "fogNear": 50,
+          "fogFar": 100,
+          "cameraType": "perspective",
+          "cameraFov": 40,
+          "lightColor": 14540253,
+          "lightIntensity": 1,
+          "ambientColor": 14540253,
+          "ambientIntensity": 0.2,
+          "hoverTimeout": 0,
+          "tooltip": true,
+          "mousePreset": "default"
+        },
+        "_ngl_msg_archive": [],
+        "_ngl_original_stage_parameters": {
+          "backgroundColor": "white",
+          "quality": "medium",
+          "sampleLevel": 0,
+          "impostor": true,
+          "workerDefault": true,
+          "rotateSpeed": 2,
+          "zoomSpeed": 1.2,
+          "panSpeed": 1,
+          "clipNear": 0,
+          "clipFar": 100,
+          "clipDist": 10,
+          "fogNear": 50,
+          "fogFar": 100,
+          "cameraType": "perspective",
+          "cameraFov": 40,
+          "lightColor": 14540253,
+          "lightIntensity": 1,
+          "ambientColor": 14540253,
+          "ambientIntensity": 0.2,
+          "hoverTimeout": 0,
+          "tooltip": true,
+          "mousePreset": "default"
+        },
+        "_ngl_repr_dict": {
+          "0": {
+            "0": {
+              "type": "cartoon",
+              "params": {
+                "lazy": false,
+                "visible": true,
+                "quality": "high",
+                "aspectRatio": 5,
+                "subdiv": 6,
+                "radialSegments": 20,
+                "tension": null,
+                "capped": true,
+                "smoothSheet": false,
+                "radius": "sstruc",
+                "scale": 0.7,
+                "assembly": "default",
+                "defaultAssembly": "",
+                "clipNear": 0,
+                "clipRadius": 0,
+                "clipCenter": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "flatShaded": false,
+                "opacity": 1,
+                "depthWrite": true,
+                "side": "double",
+                "wireframe": false,
+                "linewidth": 2,
+                "colorScheme": "chainname",
+                "colorScale": "RdYlBu",
+                "colorReverse": false,
+                "colorValue": 9474192,
+                "colorMode": "hcl",
+                "roughness": 0.4,
+                "metalness": 0,
+                "diffuse": 16777215,
+                "matrix": {
+                  "elements": [
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                "disablePicking": false,
+                "sele": ""
+              }
+            },
+            "1": {
+              "type": "base",
+              "params": {
+                "lazy": false,
+                "visible": true,
+                "quality": "high",
+                "sphereDetail": 2,
+                "radialSegments": 20,
+                "openEnded": true,
+                "disableImpostor": false,
+                "aspectRatio": 1,
+                "lineOnly": false,
+                "cylinderOnly": false,
+                "bondScale": 0.4,
+                "radius": 0.3,
+                "scale": 1,
+                "assembly": "default",
+                "defaultAssembly": "",
+                "clipNear": 0,
+                "clipRadius": 0,
+                "clipCenter": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "flatShaded": false,
+                "opacity": 1,
+                "depthWrite": true,
+                "side": "double",
+                "wireframe": false,
+                "linewidth": 2,
+                "colorScheme": "chainname",
+                "colorScale": "RdYlBu",
+                "colorReverse": false,
+                "colorValue": 9474192,
+                "colorMode": "hcl",
+                "roughness": 0.4,
+                "metalness": 0,
+                "diffuse": 16777215,
+                "matrix": {
+                  "elements": [
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                "disablePicking": false,
+                "sele": ""
+              }
+            },
+            "2": {
+              "type": "ball+stick",
+              "params": {
+                "lazy": false,
+                "visible": true,
+                "quality": "high",
+                "sphereDetail": 2,
+                "radialSegments": 20,
+                "openEnded": true,
+                "disableImpostor": false,
+                "aspectRatio": 1.5,
+                "lineOnly": false,
+                "cylinderOnly": false,
+                "multipleBond": "off",
+                "bondScale": 0.3,
+                "bondSpacing": 0.75,
+                "radius": 0.15,
+                "scale": 2,
+                "assembly": "default",
+                "defaultAssembly": "",
+                "clipNear": 0,
+                "clipRadius": 0,
+                "clipCenter": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "flatShaded": false,
+                "opacity": 1,
+                "depthWrite": true,
+                "side": "double",
+                "wireframe": false,
+                "linewidth": 2,
+                "colorScheme": "element",
+                "colorScale": "",
+                "colorReverse": false,
+                "colorValue": 9474192,
+                "colorMode": "hcl",
+                "roughness": 0.4,
+                "metalness": 0,
+                "diffuse": 16777215,
+                "matrix": {
+                  "elements": [
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                "disablePicking": false,
+                "sele": "ligand"
+              }
+            }
+          }
+        },
+        "_ngl_version": "0.10.5-17",
+        "_scene_position": {},
+        "_scene_rotation": {},
+        "layout": "IPY_MODEL_052f1c4e50204c3b963d18f5f69811dd",
+        "n_components": 1,
+        "orientation": [],
+        "picked": {}
+      }
+    },
+    "c6c3c0689c0944e29e36c25b0bcf3dd5": {
+      "model_name": "LayoutModel",
+      "model_module": "@jupyter-widgets/base",
+      "model_module_version": "1.0.0",
+      "state": {}
+    },
+    "432ad24157fa41da8b2d5660b6da1453": {
+      "model_name": "ImageModel",
+      "model_module": "@jupyter-widgets/controls",
+      "model_module_version": "1.0.0",
+      "state": {
+        "_dom_classes": [],
+        "layout": "IPY_MODEL_c6c3c0689c0944e29e36c25b0bcf3dd5",
+        "width": "900.0"
+      }
+    },
+    "90a424f09342419f9e04aa8aae4cc69b": {
+      "model_name": "LayoutModel",
+      "model_module": "@jupyter-widgets/base",
+      "model_module_version": "1.0.0",
+      "state": {}
+    },
+    "830a9e5059244109b80be2ff89d75437": {
+      "model_name": "NGLModel",
+      "model_module": "nglview-js-widgets",
+      "model_module_version": "0.5.4-dev.13",
+      "state": {
+        "_dom_classes": [],
+        "_ngl_full_stage_parameters": {
+          "backgroundColor": "white",
+          "quality": "medium",
+          "sampleLevel": 0,
+          "impostor": true,
+          "workerDefault": true,
+          "rotateSpeed": 2,
+          "zoomSpeed": 1.2,
+          "panSpeed": 1,
+          "clipNear": 0,
+          "clipFar": 100,
+          "clipDist": 10,
+          "fogNear": 50,
+          "fogFar": 100,
+          "cameraType": "perspective",
+          "cameraFov": 40,
+          "lightColor": 14540253,
+          "lightIntensity": 1,
+          "ambientColor": 14540253,
+          "ambientIntensity": 0.2,
+          "hoverTimeout": 0,
+          "tooltip": true,
+          "mousePreset": "default"
+        },
+        "_ngl_msg_archive": [
+          {
+            "target": "Stage",
+            "type": "call_method",
+            "methodName": "loadFile",
+            "args": [
+              {
+                "type": "url",
+                "data": "rcsb://1kx5.pdb",
+                "binary": false
+              }
+            ],
+            "kwargs": {
+              "defaultRepresentation": true
+            }
+          }
+        ],
+        "_ngl_original_stage_parameters": {
+          "backgroundColor": "white",
+          "quality": "medium",
+          "sampleLevel": 0,
+          "impostor": true,
+          "workerDefault": true,
+          "rotateSpeed": 2,
+          "zoomSpeed": 1.2,
+          "panSpeed": 1,
+          "clipNear": 0,
+          "clipFar": 100,
+          "clipDist": 10,
+          "fogNear": 50,
+          "fogFar": 100,
+          "cameraType": "perspective",
+          "cameraFov": 40,
+          "lightColor": 14540253,
+          "lightIntensity": 1,
+          "ambientColor": 14540253,
+          "ambientIntensity": 0.2,
+          "hoverTimeout": 0,
+          "tooltip": true,
+          "mousePreset": "default"
+        },
+        "_ngl_repr_dict": {
+          "0": {
+            "0": {
+              "type": "cartoon",
+              "params": {
+                "lazy": false,
+                "visible": true,
+                "quality": "medium",
+                "aspectRatio": 5,
+                "subdiv": 6,
+                "radialSegments": 10,
+                "tension": null,
+                "capped": true,
+                "smoothSheet": false,
+                "radius": "sstruc",
+                "scale": 0.7,
+                "assembly": "default",
+                "defaultAssembly": "BU1",
+                "clipNear": 0,
+                "clipRadius": 0,
+                "clipCenter": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "flatShaded": false,
+                "opacity": 1,
+                "depthWrite": true,
+                "side": "double",
+                "wireframe": false,
+                "linewidth": 2,
+                "colorScheme": "chainname",
+                "colorScale": "RdYlBu",
+                "colorReverse": false,
+                "colorValue": 9474192,
+                "colorMode": "hcl",
+                "roughness": 0.4,
+                "metalness": 0,
+                "diffuse": 16777215,
+                "matrix": {
+                  "elements": [
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                "disablePicking": false,
+                "sele": ""
+              }
+            },
+            "1": {
+              "type": "base",
+              "params": {
+                "lazy": false,
+                "visible": true,
+                "quality": "medium",
+                "sphereDetail": 1,
+                "radialSegments": 10,
+                "openEnded": true,
+                "disableImpostor": false,
+                "aspectRatio": 1,
+                "lineOnly": false,
+                "cylinderOnly": false,
+                "bondScale": 0.4,
+                "radius": 0.3,
+                "scale": 1,
+                "assembly": "default",
+                "defaultAssembly": "BU1",
+                "clipNear": 0,
+                "clipRadius": 0,
+                "clipCenter": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "flatShaded": false,
+                "opacity": 1,
+                "depthWrite": true,
+                "side": "double",
+                "wireframe": false,
+                "linewidth": 2,
+                "colorScheme": "chainname",
+                "colorScale": "RdYlBu",
+                "colorReverse": false,
+                "colorValue": 9474192,
+                "colorMode": "hcl",
+                "roughness": 0.4,
+                "metalness": 0,
+                "diffuse": 16777215,
+                "matrix": {
+                  "elements": [
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                "disablePicking": false,
+                "sele": ""
+              }
+            },
+            "2": {
+              "type": "ball+stick",
+              "params": {
+                "lazy": false,
+                "visible": true,
+                "quality": "high",
+                "sphereDetail": 2,
+                "radialSegments": 20,
+                "openEnded": true,
+                "disableImpostor": false,
+                "aspectRatio": 1.5,
+                "lineOnly": false,
+                "cylinderOnly": false,
+                "multipleBond": "off",
+                "bondScale": 0.3,
+                "bondSpacing": 0.75,
+                "radius": 0.15,
+                "scale": 2,
+                "assembly": "default",
+                "defaultAssembly": "BU1",
+                "clipNear": 0,
+                "clipRadius": 0,
+                "clipCenter": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "flatShaded": false,
+                "opacity": 1,
+                "depthWrite": true,
+                "side": "double",
+                "wireframe": false,
+                "linewidth": 2,
+                "colorScheme": "element",
+                "colorScale": "",
+                "colorReverse": false,
+                "colorValue": 9474192,
+                "colorMode": "hcl",
+                "roughness": 0.4,
+                "metalness": 0,
+                "diffuse": 16777215,
+                "matrix": {
+                  "elements": [
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                "disablePicking": false,
+                "sele": "ligand"
+              }
+            }
+          }
+        },
+        "_ngl_serialize": true,
+        "_ngl_version": "0.10.5-17",
+        "_scene_position": {},
+        "_scene_rotation": {},
+        "layout": "IPY_MODEL_90a424f09342419f9e04aa8aae4cc69b",
+        "n_components": 1,
+        "orientation": [],
+        "picked": {}
+      }
+    },
+    "0f3609f2449948c3b0438c332ee6f151": {
+      "model_name": "LayoutModel",
+      "model_module": "@jupyter-widgets/base",
+      "model_module_version": "1.0.0",
+      "state": {}
+    },
+    "46dcb7ee91fb47029227ccdc7a6a6d7f": {
+      "model_name": "ImageModel",
+      "model_module": "@jupyter-widgets/controls",
+      "model_module_version": "1.0.0",
+      "state": {
+        "_dom_classes": [],
+        "layout": "IPY_MODEL_0f3609f2449948c3b0438c332ee6f151",
+        "width": "900.0"
+      }
+    },
+    "c13847ac97d24f34aca735a93447b682": {
+      "model_name": "LayoutModel",
+      "model_module": "@jupyter-widgets/base",
+      "model_module_version": "1.0.0",
+      "state": {}
+    },
+    "411f2f34d4ab4b159a94821a22faccd9": {
+      "model_name": "NGLModel",
+      "model_module": "nglview-js-widgets",
+      "model_module_version": "0.5.4-dev.13",
+      "state": {
+        "_dom_classes": [],
+        "_ngl_full_stage_parameters": {
+          "backgroundColor": "white",
+          "quality": "medium",
+          "sampleLevel": 0,
+          "impostor": true,
+          "workerDefault": true,
+          "rotateSpeed": 2,
+          "zoomSpeed": 1.2,
+          "panSpeed": 1,
+          "clipNear": 0,
+          "clipFar": 100,
+          "clipDist": 10,
+          "fogNear": 50,
+          "fogFar": 100,
+          "cameraType": "perspective",
+          "cameraFov": 40,
+          "lightColor": 14540253,
+          "lightIntensity": 1,
+          "ambientColor": 14540253,
+          "ambientIntensity": 0.2,
+          "hoverTimeout": 0,
+          "tooltip": true,
+          "mousePreset": "default"
+        },
+        "_ngl_msg_archive": [
+          {
+            "target": "Stage",
+            "type": "call_method",
+            "methodName": "loadFile",
+            "args": [
+              {
+                "type": "url",
+                "data": "rcsb://1kx5.pdb",
+                "binary": false
+              }
+            ],
+            "kwargs": {
+              "defaultRepresentation": true
+            }
+          }
+        ],
+        "_ngl_original_stage_parameters": {
+          "backgroundColor": "white",
+          "quality": "medium",
+          "sampleLevel": 0,
+          "impostor": true,
+          "workerDefault": true,
+          "rotateSpeed": 2,
+          "zoomSpeed": 1.2,
+          "panSpeed": 1,
+          "clipNear": 0,
+          "clipFar": 100,
+          "clipDist": 10,
+          "fogNear": 50,
+          "fogFar": 100,
+          "cameraType": "perspective",
+          "cameraFov": 40,
+          "lightColor": 14540253,
+          "lightIntensity": 1,
+          "ambientColor": 14540253,
+          "ambientIntensity": 0.2,
+          "hoverTimeout": 0,
+          "tooltip": true,
+          "mousePreset": "default"
+        },
+        "_ngl_repr_dict": {
+          "0": {
+            "0": {
+              "type": "cartoon",
+              "params": {
+                "lazy": false,
+                "visible": true,
+                "quality": "medium",
+                "aspectRatio": 5,
+                "subdiv": 6,
+                "radialSegments": 10,
+                "tension": null,
+                "capped": true,
+                "smoothSheet": false,
+                "radius": "sstruc",
+                "scale": 0.7,
+                "assembly": "default",
+                "defaultAssembly": "BU1",
+                "clipNear": 0,
+                "clipRadius": 0,
+                "clipCenter": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "flatShaded": false,
+                "opacity": 1,
+                "depthWrite": true,
+                "side": "double",
+                "wireframe": false,
+                "linewidth": 2,
+                "colorScheme": "chainname",
+                "colorScale": "RdYlBu",
+                "colorReverse": false,
+                "colorValue": 9474192,
+                "colorMode": "hcl",
+                "roughness": 0.4,
+                "metalness": 0,
+                "diffuse": 16777215,
+                "matrix": {
+                  "elements": [
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                "disablePicking": false,
+                "sele": ""
+              }
+            },
+            "1": {
+              "type": "base",
+              "params": {
+                "lazy": false,
+                "visible": true,
+                "quality": "medium",
+                "sphereDetail": 1,
+                "radialSegments": 10,
+                "openEnded": true,
+                "disableImpostor": false,
+                "aspectRatio": 1,
+                "lineOnly": false,
+                "cylinderOnly": false,
+                "bondScale": 0.4,
+                "radius": 0.3,
+                "scale": 1,
+                "assembly": "default",
+                "defaultAssembly": "BU1",
+                "clipNear": 0,
+                "clipRadius": 0,
+                "clipCenter": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "flatShaded": false,
+                "opacity": 1,
+                "depthWrite": true,
+                "side": "double",
+                "wireframe": false,
+                "linewidth": 2,
+                "colorScheme": "chainname",
+                "colorScale": "RdYlBu",
+                "colorReverse": false,
+                "colorValue": 9474192,
+                "colorMode": "hcl",
+                "roughness": 0.4,
+                "metalness": 0,
+                "diffuse": 16777215,
+                "matrix": {
+                  "elements": [
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                "disablePicking": false,
+                "sele": ""
+              }
+            },
+            "2": {
+              "type": "ball+stick",
+              "params": {
+                "lazy": false,
+                "visible": true,
+                "quality": "high",
+                "sphereDetail": 2,
+                "radialSegments": 20,
+                "openEnded": true,
+                "disableImpostor": false,
+                "aspectRatio": 1.5,
+                "lineOnly": false,
+                "cylinderOnly": false,
+                "multipleBond": "off",
+                "bondScale": 0.3,
+                "bondSpacing": 0.75,
+                "radius": 0.15,
+                "scale": 2,
+                "assembly": "default",
+                "defaultAssembly": "BU1",
+                "clipNear": 0,
+                "clipRadius": 0,
+                "clipCenter": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "flatShaded": false,
+                "opacity": 1,
+                "depthWrite": true,
+                "side": "double",
+                "wireframe": false,
+                "linewidth": 2,
+                "colorScheme": "element",
+                "colorScale": "",
+                "colorReverse": false,
+                "colorValue": 9474192,
+                "colorMode": "hcl",
+                "roughness": 0.4,
+                "metalness": 0,
+                "diffuse": 16777215,
+                "matrix": {
+                  "elements": [
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                "disablePicking": false,
+                "sele": "ligand"
+              }
+            }
+          }
+        },
+        "_ngl_serialize": true,
+        "_ngl_version": "0.10.5-17",
+        "_scene_position": {},
+        "_scene_rotation": {},
+        "layout": "IPY_MODEL_c13847ac97d24f34aca735a93447b682",
+        "n_components": 1,
+        "orientation": [],
+        "picked": {}
+      }
+    },
+    "c80571ce1d3f4024975f8aa445de0cab": {
+      "model_name": "LayoutModel",
+      "model_module": "@jupyter-widgets/base",
+      "model_module_version": "1.0.0",
+      "state": {}
+    },
+    "d5574306939f40d986c276239255a008": {
+      "model_name": "ImageModel",
+      "model_module": "@jupyter-widgets/controls",
+      "model_module_version": "1.0.0",
+      "state": {
+        "_dom_classes": [],
+        "layout": "IPY_MODEL_c80571ce1d3f4024975f8aa445de0cab",
+        "width": "900.0"
+      }
+    }
+  }
+}
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major": 2, "version_minor": 0, "model_id": "411f2f34d4ab4b159a94821a22faccd9"}
+</script>
+
+</body>
+</html>
