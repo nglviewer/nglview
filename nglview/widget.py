@@ -50,7 +50,7 @@ def write_html(fp, views, frame_range=None):
     # type: (str, List[NGLWidget]) -> None
     """EXPERIMENTAL. Likely will be changed.
 
-    Make html file to diplay a list of views. For further options, please
+    Make html file to display a list of views. For further options, please
     check `ipywidgets.embed` module.
 
     Parameters
@@ -59,6 +59,8 @@ def write_html(fp, views, frame_range=None):
     views : list of Widget or derived class
     frame_range : None or a tuple of int
 
+    Examples
+    --------
     >>> import nglview
     >>> view = nglview.show_pdbid('1tsu')
     >>> view # doctest: +SKIP

@@ -33,4 +33,4 @@ from .utils import widget_utils, js_utils
 # for doc
 from . import widget_box, widget, adaptor, show
 
-__all__ = ['NGLWidget'] + widget.__all__ + adaptor.__all__ + show.__all__
+__all__ = ['NGLWidget', 'write_html'] + widget.__all__ + adaptor.__all__ + show.__all__
