@@ -9,9 +9,13 @@ Version 1.0.b
 - ADD: `show_biopython`
 - ADD: `show_iotbx `
 - ADD: `show_rosetta`
+- ADD: `show_file`
 - ADD: `add_slice`
 - ADD: movie making
-- 
+- ADD: `set_coordinates` for ComponentViewer
+- FIX: `nglview install` always overwrite
+- SUPPORT: wiget serialization and sphinx-jupyter
+- ADD: `write_html`
 
 Dev
 ---
