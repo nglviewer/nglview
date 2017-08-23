@@ -1,1 +1,1 @@
-![embed](docs/images/embed.gif)
+![embed](images/embed.gif)
