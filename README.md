@@ -1,4 +1,4 @@
-[Installation](#installation) | [Example](#example) | [Usage](#usage) | [Command line](#command-line) | [API doc](#api-doc) | [Interface classes](doc/interface_classes.md) | [Website](#website) | [GUI](#show-gui) | [Acknowledgment](#acknowledgment)
+[Installation](#installation) | [Example](#example) | [Usage](#usage) | [Command line](#command-line) | [API doc](#api-doc) | [Interface classes](docs/interface_classes.md) | [Website](#website) | [GUI](#show-gui) | [Acknowledgment](#acknowledgment)
 
 [![Binder](http://mybinder.org/assets/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
@@ -24,7 +24,7 @@ Table of contents
 * [Contributing](#contributing)
 * [Command line](#command-line)
 * [API doc](#api-doc)
-* [Interface classes](doc/interface_classes.md)
+* [Interface classes](docs/interface_classes.md)
 * [Changelog](CHANGELOG.md)
 * [FAQ](#faq)
 * [Website](#website)
@@ -286,8 +286,8 @@ view.stage.set_parameters(mouse_preset='coot')
 
 Interaction controls
 --------------------
-- [Mouse](https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#mouse)
-- [Keyboard](https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#keyboard)
+- [Mouse](https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#mouse)
+- [Keyboard](https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#keyboard)
 
 Display more than two widgets
 -----------------------------
