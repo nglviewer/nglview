@@ -321,6 +321,10 @@ movie = MovieMaker(view, output='my.gif')
 movie.make()
 ```
 
+Embed widget
+------------
+[embed](docs/embed.md)
+
 API doc
 =======
 - [Latest version](http://arose.github.io/nglview/latest/api.html)
