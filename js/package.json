@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "0.5.4-dev.17",
+  "version": "0.5.4-dev.18",
   "description": "nglview-js-widgets",
   "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
   "license": "MIT",
@@ -30,6 +30,7 @@
     "test": "mocha"
   },
   "devDependencies": {
+    "file-loader": "^0.8.5",
     "babel-eslint": "^7.0.0",
     "babel-register": "^6.11.6",
     "eslint": "^3.2.2",

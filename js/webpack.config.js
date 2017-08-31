@@ -6,6 +6,7 @@ var loaders = [
     { test: /\.json$/, loader: 'json-loader' },
     { test: /\.css$/, loader: "style-loader!css-loader" },
     { test: /\.less$/, loader: "style-loader!css-loader!less-loader" },
+    { test: /\.(jpg|png|gif)$/, loader: "file" },
 ];
 
 

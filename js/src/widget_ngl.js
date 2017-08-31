@@ -5,7 +5,7 @@ var _ = require('underscore');
 require('jquery-ui/ui/widgets/draggable');
 require('jquery-ui/ui/widgets/slider');
 require('jquery-ui/ui/widgets/dialog');
-require('jquery-ui/themes/base/slider.css');
+require('jquery-ui/themes/base/all.css');
 
 var Jupyter;
 if (typeof window !== 'undefined') {
