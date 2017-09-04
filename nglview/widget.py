@@ -375,7 +375,7 @@ class NGLWidget(DOMWidget):
 
     def _update_count(self):
         self.count = max(
-            traj.n_frames for traj in self._trajlist
+            int(traj.n_frames) for traj in self._trajlist
             if hasattr(traj, 'n_frames'))
 
     def _wait_until_finished(self, timeout=0.0001):
