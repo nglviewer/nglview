@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "0.5.4-dev.18",
+  "version": "0.5.4-dev.19",
   "description": "nglview-js-widgets",
   "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
   "license": "MIT",
@@ -47,7 +47,7 @@
     "underscore": "^1.8.3",
     "@jupyter-widgets/base": "^0.5.2",
     "@jupyterlab/nbwidgets": "^0.6.15",
-    "ngl": "0.10.5-20"
+    "ngl": "0.10.5-22"
   },
   "homepage": "https://github.com/arose/nglview#readme",
   "directories": {
