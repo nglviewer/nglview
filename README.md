@@ -52,9 +52,8 @@ Released version
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
 ```bash
-   pip install ipywidgets==5.2.2 # if you don't have ipywidgets yet
-   pip install nglview
-   # might need: jupyter-nbextension enable nglview --py --sys-prefix
+   pip install nglview==1.0.b2
+   jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
 ## Version Compatibility
