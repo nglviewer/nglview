@@ -212,6 +212,18 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.touch();
     },
 
+    serialize_camera_orientation: function(){
+         var m = this.stage.viewerControls.getOrientation();
+         this.model.set('_camera_orientation', m.elements);
+         this.touch();
+    },
+     
+    set_camera_from_backend: function(){
+        var ar = this.model.get('_camera_orientation');
+        console.log('ar', ar);
+        this.stage.viewerControls.orient(ar);
+    },
+
     handle_embed: function(){
         var that = this
         var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
@@ -240,6 +252,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
 
             that.stage.setParameters(ngl_stage_params);
+            that.set_camera_from_backend();
 
             var frame = 0;
             var count = ngl_coordinate_resource['n_frames'];
