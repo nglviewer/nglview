@@ -660,7 +660,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         shape.addBuffer( sphereBuffer );
         var shapeComp = this.stage.addComponentFromObject( shape );
         shapeComp.addRepresentation( "buffer" );
-    }
+    },
 
     replaceStructure: function(structure){
          var blob = new Blob([structure.data], {type: "text/plain"});

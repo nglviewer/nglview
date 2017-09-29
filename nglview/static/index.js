@@ -718,6 +718,21 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        shapeComp.addRepresentation("buffer");
 	    },
 	
+	    addSphereBuffer: function(position, color, radius){
+	        // position : List[int], len=n_points*3
+	        // color: List[int], len=len(position)
+	        // radius: List[float], len=n_points
+	        var shape = new NGL.Shape( "shape" );
+	        var sphereBuffer = new NGL.SphereBuffer( {
+	            position: new Float32Array( position ),
+	            color: new Float32Array( [ color ] ),
+	            radius: new Float32Array( radius ),
+	        } );
+	        shape.addBuffer( sphereBuffer );
+	        var shapeComp = this.stage.addComponentFromObject( shape );
+	        shapeComp.addRepresentation( "buffer" );
+	    },
+	
 	    replaceStructure: function(structure){
 	         var blob = new Blob([structure.data], {type: "text/plain"});
 	         var params = structure.params || {};
