@@ -89,7 +89,6 @@ try:
 except ImportError:
     has_bio = False
 
-
 # local
 from utils import get_fn, repr_dict as REPR_DICT
 
@@ -439,6 +438,18 @@ def test_add_new_shape():
     view.shape.add_arrow([1, 2, 7], [30, 3, 3], [1, 0, 1], 1.0)
 
 
+def test_add_buffer():
+    view = nv.NGLWidget()
+    view
+    kwargs = {
+        "position": [0, 0, 0, 1, 1, 1],
+        "color": [1, 0, 0, 255, 0, 0],
+        "radius": [1., 2.]
+    }
+
+    view.shape.add_buffer('sphere', **kwargs)
+
+
 def test_add_new_shape():
     view = nv.demo()
     view
@@ -584,7 +595,8 @@ def test_coordinates_meta():
     trajs.append(Universe(tn, fn))
 
     views = [
-        nv.show_pytraj(trajs[0]), nv.show_mdtraj(trajs[1]),
+        nv.show_pytraj(trajs[0]),
+        nv.show_mdtraj(trajs[1]),
         nv.show_parmed(trajs[2])
     ]
     views.append(nv.show_mdanalysis(trajs[3]))
@@ -1049,19 +1061,19 @@ def test_ambermd():
     with patch("pytraj.load") as mock_pytraj_load, \
          patch("pytraj.superpose") as mock_pytraj_superpose, \
          patch("os.path.exists") as mock_exists:
-         ambermd = amber.AmberMD(top='hey.parm7', restart='hey.rst7',
-                 reference='hey.ref')
-         view = ambermd.initialize()
-         ambermd.event = MagicMock()
-         ambermd.event.is_set = MagicMock()
-         ambermd.event.is_set.return_value = False
-         ambermd.update(timeout=2)
-         time.sleep(5)
+        ambermd = amber.AmberMD(
+            top='hey.parm7', restart='hey.rst7', reference='hey.ref')
+        view = ambermd.initialize()
+        ambermd.event = MagicMock()
+        ambermd.event.is_set = MagicMock()
+        ambermd.event.is_set.return_value = False
+        ambermd.update(timeout=2)
+        time.sleep(5)
 
-         assert mock_pytraj_load.called
-         assert mock_pytraj_superpose.called
+        assert mock_pytraj_load.called
+        assert mock_pytraj_superpose.called
 
-         ambermd.stop()
+        ambermd.stop()
 
 
 def test_queuing_messages():
