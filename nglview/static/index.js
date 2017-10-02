@@ -719,35 +719,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    addBuffer: function(name, kwargs){
-	        console.log(name, kwargs, '0');
 	        var class_dict = {
 	            "arrow": NGL.ArrowBuffer,
+	            "box": NGL.BoXbuffer,
 	            "cone": NGL.ConeBuffer,
-	            "conegeometry": NGL.ConeGeometryBuffer,
-	            "contour": NGL.ContourBuffer,
 	            "cylinder": NGL.CylinderBuffer,
-	            "cylindergeometry": NGL.CylinderGeometryBuffer,
-	            "cylinderimpostor": NGL.CylinderImpostorBuffer,
-	            "doublesided": NGL.DoubleSidedBuffer,
 	            "ellipsoid": NGL.EllipsoidBuffer,
-	            "ellipsoidgeometry": NGL.EllipsoidGeometryBuffer,
-	            "hyperballstick": NGL.HyperballStickBuffer,
-	            "hyperballstickimpostor": NGL.HyperballStickImpostorBuffer,
-	            "image": NGL.ImageBuffer,
-	            "line": NGL.LineBuffer,
-	            "mesh": NGL.MeshBuffer,
-	            "point": NGL.PointBuffer,
-	            "ribbon": NGL.RibbonBuffer,
+	            "octahedron": NGL.OctahedronBuffer,
 	            "sphere": NGL.SphereBuffer,
-	            "spheregeometry": NGL.SphereGeometryBuffer,
-	            "sphereimpostor": NGL.SphereImpostorBuffer,
-	            "surface": NGL.SurfaceBuffer,
 	            "text": NGL.TextBuffer,
-	            "trace": NGL.TraceBuffer,
-	            "tubemesh": NGL.TubeMeshBuffer,
-	            "vector": NGL.VectorBuffer,
+	            "tetrahedron": NGL.TetrahedronBuffer,
+	            "torus": NGL.TorusBuffer
 	        };
-	        console.log("class", class_dict[name]);
 	
 	        var params = {};
 	        for (var key in kwargs){
@@ -23521,7 +23504,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 70 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.20","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"file-loader":"^0.8.5","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","css-loader":"^0.23.1","style-loader":"^0.13.1","ngl":"0.10.5-20","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"v1.0.0-beta.1"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.21","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"file-loader":"^0.8.5","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","css-loader":"^0.23.1","style-loader":"^0.13.1","ngl":"0.10.5-20","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"v1.0.0-beta.1"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ })
 /******/ ])});;

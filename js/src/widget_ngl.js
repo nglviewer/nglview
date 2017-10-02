@@ -648,35 +648,18 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     addBuffer: function(name, kwargs){
-        console.log(name, kwargs, '0');
         var class_dict = {
             "arrow": NGL.ArrowBuffer,
+            "box": NGL.BoXbuffer,
             "cone": NGL.ConeBuffer,
-            "conegeometry": NGL.ConeGeometryBuffer,
-            "contour": NGL.ContourBuffer,
             "cylinder": NGL.CylinderBuffer,
-            "cylindergeometry": NGL.CylinderGeometryBuffer,
-            "cylinderimpostor": NGL.CylinderImpostorBuffer,
-            "doublesided": NGL.DoubleSidedBuffer,
             "ellipsoid": NGL.EllipsoidBuffer,
-            "ellipsoidgeometry": NGL.EllipsoidGeometryBuffer,
-            "hyperballstick": NGL.HyperballStickBuffer,
-            "hyperballstickimpostor": NGL.HyperballStickImpostorBuffer,
-            "image": NGL.ImageBuffer,
-            "line": NGL.LineBuffer,
-            "mesh": NGL.MeshBuffer,
-            "point": NGL.PointBuffer,
-            "ribbon": NGL.RibbonBuffer,
+            "octahedron": NGL.OctahedronBuffer,
             "sphere": NGL.SphereBuffer,
-            "spheregeometry": NGL.SphereGeometryBuffer,
-            "sphereimpostor": NGL.SphereImpostorBuffer,
-            "surface": NGL.SurfaceBuffer,
             "text": NGL.TextBuffer,
-            "trace": NGL.TraceBuffer,
-            "tubemesh": NGL.TubeMeshBuffer,
-            "vector": NGL.VectorBuffer,
+            "tetrahedron": NGL.TetrahedronBuffer,
+            "torus": NGL.TorusBuffer
         };
-        console.log("class", class_dict[name]);
 
         var params = {};
         for (var key in kwargs){

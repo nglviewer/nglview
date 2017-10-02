@@ -123,6 +123,17 @@ class Shape(object):
         ])
 
     def add_buffer(self, name, **kwargs):
+        """
+
+        Examples
+        --------
+        >>> view.shape.add_buffer("cone",
+        ...     position1=[0, 0, 0],
+        ...     position2=[1, 1, 1],
+        ...     color=[1, 0, 0],
+        ...     color2=[0, 1, 0],
+        ...     radius= [1])
+        """
         self.view._remote_call("addBuffer",
                 target="Widget",
                 args=[name],
