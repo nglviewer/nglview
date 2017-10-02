@@ -647,19 +647,47 @@ var NGLView = widgets.DOMWidgetView.extend({
         shapeComp.addRepresentation("buffer");
     },
 
-    addSphereBuffer: function(position, color, radius){
-        // position : List[int], len=n_points*3
-        // color: List[int], len=len(position)
-        // radius: List[float], len=n_points
-        var shape = new NGL.Shape( "shape" );
-        var sphereBuffer = new NGL.SphereBuffer( {
-            position: new Float32Array( position ),
-            color: new Float32Array( [ color ] ),
-            radius: new Float32Array( radius ),
-        } );
-        shape.addBuffer( sphereBuffer );
-        var shapeComp = this.stage.addComponentFromObject( shape );
-        shapeComp.addRepresentation( "buffer" );
+    addBuffer: function(name, kwargs){
+        console.log(name, kwargs, '0');
+        var class_dict = {
+            "arrow": NGL.ArrowBuffer,
+            "cone": NGL.ConeBuffer,
+            "conegeometry": NGL.ConeGeometryBuffer,
+            "contour": NGL.ContourBuffer,
+            "cylinder": NGL.CylinderBuffer,
+            "cylindergeometry": NGL.CylinderGeometryBuffer,
+            "cylinderimpostor": NGL.CylinderImpostorBuffer,
+            "doublesided": NGL.DoubleSidedBuffer,
+            "ellipsoid": NGL.EllipsoidBuffer,
+            "ellipsoidgeometry": NGL.EllipsoidGeometryBuffer,
+            "hyperballstick": NGL.HyperballStickBuffer,
+            "hyperballstickimpostor": NGL.HyperballStickImpostorBuffer,
+            "image": NGL.ImageBuffer,
+            "line": NGL.LineBuffer,
+            "mesh": NGL.MeshBuffer,
+            "point": NGL.PointBuffer,
+            "ribbon": NGL.RibbonBuffer,
+            "sphere": NGL.SphereBuffer,
+            "spheregeometry": NGL.SphereGeometryBuffer,
+            "sphereimpostor": NGL.SphereImpostorBuffer,
+            "surface": NGL.SurfaceBuffer,
+            "text": NGL.TextBuffer,
+            "trace": NGL.TraceBuffer,
+            "tubemesh": NGL.TubeMeshBuffer,
+            "vector": NGL.VectorBuffer,
+        };
+        console.log("class", class_dict[name]);
+
+        var params = {};
+        for (var key in kwargs){
+            params[key] = new Float32Array(kwargs[key]);
+        }
+        var shape = new NGL.Shape("shape");
+        var buffer_class = class_dict[name];
+        var buffer = new buffer_class(params);
+        shape.addBuffer(buffer);
+        var shapeComp = this.stage.addComponentFromObject(shape);
+        shapeComp.addRepresentation("buffer");
     },
 
     replaceStructure: function(structure){

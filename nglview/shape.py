@@ -122,15 +122,8 @@ class Shape(object):
             args,
         ])
 
-    def add_sphere_buffer(self, positions, colors, radii): 
-        """
-
-        Parameters
-        ----------
-        positions : List[int], len=n_points*3
-        colors: List[int], len=n_points*3
-        radii : List[float], len=n_points
-        """
-        self.view._remote_call("addSphereBuffer",
+    def add_buffer(self, name, **kwargs):
+        self.view._remote_call("addBuffer",
                 target="Widget",
-                args=[positions, colors, radii])
+                args=[name],
+                kwargs=kwargs)
