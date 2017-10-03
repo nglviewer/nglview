@@ -900,6 +900,11 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     _get_loadFile_promise: function(msg){
          // args = [{'type': ..., 'data': ...}]
+         if (msg.kwargs && msg.kwargs.defaultRepresentation) {
+            // no need to add default representation as all representations
+            // are serialized separately, also it unwantedly sets the orientation
+            msg.kwargs.defaultRepresentation = false
+         }
          var args0 = msg.args[0];
          if (args0.type == 'blob') {
              var blob;
