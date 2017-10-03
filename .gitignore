@@ -12,3 +12,5 @@ build/*
 *.npz
 selenium-debug.log
 nbtests/
+
+js/node_modules/
