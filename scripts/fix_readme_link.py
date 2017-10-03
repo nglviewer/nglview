@@ -3,6 +3,15 @@ import os
 import sys
 import subprocess
 
+
+def md_to_rst(md_files):
+    for fn in md_files:
+        rst_fn = os.path.splitext(fn)[0].lower() + '.rst'
+        cmd = 'pandoc ../nglview/{}  -o docs/{}'.format(fn, rst_fn)
+        print(cmd)
+        subprocess.check_call(cmd, shell=True)
+
+
 readme_file = sys.argv[1]
 nglview_dir = '../nglview'
 md_files = ('CHANGELOG.md', 'talks.md', 'CONTRIBUTING.md')
@@ -41,8 +50,4 @@ with open('docs/index.md', 'w') as fh:
 subprocess.check_call('pandoc docs/index.md -o docs/index.rst', shell=True)
 subprocess.check_call('pandoc ../nglview/docs/interface_classes.md  -o docs/interface_classes.rst', shell=True)
 
-for fn in md_files:
-    rst_fn = os.path.splitext(fn)[0].lower() + '.rst'
-    cmd = 'pandoc ../nglview/{}  -o docs/{}'.format(fn, rst_fn)
-    print(cmd)
-    subprocess.check_call(cmd, shell=True)
+md_to_rst(md_files)
