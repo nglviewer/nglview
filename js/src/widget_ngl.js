@@ -217,11 +217,13 @@ var NGLView = widgets.DOMWidgetView.extend({
          this.model.set('_camera_orientation', m.elements);
          this.touch();
     },
-     
+
     set_camera_from_backend: function(){
         var ar = this.model.get('_camera_orientation');
         console.log('ar', ar);
-        this.stage.viewerControls.orient(ar);
+        if (ar.length > 0){
+            this.stage.viewerControls.orient(ar);
+        }
     },
 
     handle_embed: function(){
@@ -249,7 +251,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             for (var index in ngl_repr_dict){
                 var comp = compList[index];
                 comp.removeAllRepresentations();
-                var reprlist = ngl_repr_dict[index]; 
+                var reprlist = ngl_repr_dict[index];
                 for (var j in reprlist){
                     var repr = reprlist[j];
                     comp.addRepresentation(repr.type, repr.params);
@@ -665,6 +667,32 @@ var NGLView = widgets.DOMWidgetView.extend({
         shapeComp.addRepresentation("buffer");
     },
 
+    addBuffer: function(name, kwargs){
+        var class_dict = {
+            "arrow": NGL.ArrowBuffer,
+            "box": NGL.BoXbuffer,
+            "cone": NGL.ConeBuffer,
+            "cylinder": NGL.CylinderBuffer,
+            "ellipsoid": NGL.EllipsoidBuffer,
+            "octahedron": NGL.OctahedronBuffer,
+            "sphere": NGL.SphereBuffer,
+            "text": NGL.TextBuffer,
+            "tetrahedron": NGL.TetrahedronBuffer,
+            "torus": NGL.TorusBuffer
+        };
+
+        var params = {};
+        for (var key in kwargs){
+            params[key] = new Float32Array(kwargs[key]);
+        }
+        var shape = new NGL.Shape("shape");
+        var buffer_class = class_dict[name];
+        var buffer = new buffer_class(params);
+        shape.addBuffer(buffer);
+        var shapeComp = this.stage.addComponentFromObject(shape);
+        shapeComp.addRepresentation("buffer");
+    },
+
     replaceStructure: function(structure){
          var blob = new Blob([structure.data], {type: "text/plain"});
          var params = structure.params || {};
@@ -849,7 +877,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.stage.setParameters(parameters);
 
         // do not set _ngl_full_stage_parameters here
-        // or parameters will be never updated (not sure why) 
+        // or parameters will be never updated (not sure why)
         // use observe in python side
         var updated_params = this.stage.getParameters();
         this.send({
@@ -923,7 +951,7 @@ var NGLView = widgets.DOMWidgetView.extend({
              return this.stage.loadFile(msg.args[0].data, msg.kwargs)
          }
     },
-    
+
     _handle_stage_loadFile: function(msg){
          // args = [{'type': ..., 'data': ...}]
          var that = this;
