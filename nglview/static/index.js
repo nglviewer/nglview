@@ -288,7 +288,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	         this.model.set('_camera_orientation', m.elements);
 	         this.touch();
 	    },
-	     
+	
 	    set_camera_from_backend: function(){
 	        var ar = this.model.get('_camera_orientation');
 	        console.log('ar', ar);
@@ -306,6 +306,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	        _.each(ngl_msg_archive, function(msg){
 	            if (msg.methodName == 'loadFile'){
+	                if (msg.kwargs && msg.kwargs.defaultRepresentation) {
+	                    // no need to add default representation as all representations
+	                    // are serialized separately, also it unwantedly sets the orientation
+	                    msg.kwargs.defaultRepresentation = false
+	                 }
 	                loadfile_list.push(that._get_loadFile_promise(msg));
 	            }
 	        });
@@ -317,7 +322,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            for (var index in ngl_repr_dict){
 	                var comp = compList[index];
 	                comp.removeAllRepresentations();
-	                var reprlist = ngl_repr_dict[index]; 
+	                var reprlist = ngl_repr_dict[index];
 	                for (var j in reprlist){
 	                    var repr = reprlist[j];
 	                    comp.addRepresentation(repr.type, repr.params);
@@ -943,7 +948,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.stage.setParameters(parameters);
 	
 	        // do not set _ngl_full_stage_parameters here
-	        // or parameters will be never updated (not sure why) 
+	        // or parameters will be never updated (not sure why)
 	        // use observe in python side
 	        var updated_params = this.stage.getParameters();
 	        this.send({
@@ -999,12 +1004,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    _get_loadFile_promise: function(msg){
 	         // args = [{'type': ..., 'data': ...}]
-	         if (msg.kwargs && msg.kwargs.defaultRepresentation) {
-	            // no need to add default representation as all representations
-	            // are serialized separately, also it unwantedly sets the orientation
-	            msg.kwargs.defaultRepresentation = false
-	            console.log("Hello");
-	         }
 	         var args0 = msg.args[0];
 	         if (args0.type == 'blob') {
 	             var blob;
@@ -1023,7 +1022,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	             return this.stage.loadFile(msg.args[0].data, msg.kwargs)
 	         }
 	    },
-	    
+	
 	    _handle_stage_loadFile: function(msg){
 	         // args = [{'type': ..., 'data': ...}]
 	         var that = this;
