@@ -125,6 +125,7 @@ class NGLWidget(DOMWidget):
     _camera_str = CaselessStrEnum(
         ['perspective', 'orthographic'], default_value='orthographic').tag(
             sync=True)
+    _camera_orientation = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
@@ -234,6 +235,8 @@ class NGLWidget(DOMWidget):
 
         self._ngl_coordinate_resource = resource
         self._ngl_full_stage_parameters_embed = self._ngl_full_stage_parameters
+        self._remote_call('serialize_camera_orientation', target='Widget')
+        time.sleep(0.2)
 
     def _unset_serialization(self):
         self._ngl_serialize = False

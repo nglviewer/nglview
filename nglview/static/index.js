@@ -283,6 +283,20 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.touch();
 	    },
 	
+	    serialize_camera_orientation: function(){
+	         var m = this.stage.viewerControls.getOrientation();
+	         this.model.set('_camera_orientation', m.elements);
+	         this.touch();
+	    },
+	     
+	    set_camera_from_backend: function(){
+	        var ar = this.model.get('_camera_orientation');
+	        console.log('ar', ar);
+	        if (ar.length > 0){
+	            this.stage.viewerControls.orient(ar);
+	        }
+	    },
+	
 	    handle_embed: function(){
 	        var that = this
 	        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
@@ -311,6 +325,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }
 	
 	            that.stage.setParameters(ngl_stage_params);
+	            that.set_camera_from_backend();
 	
 	            var frame = 0;
 	            var count = ngl_coordinate_resource['n_frames'];
@@ -984,6 +999,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    _get_loadFile_promise: function(msg){
 	         // args = [{'type': ..., 'data': ...}]
+	         if (msg.kwargs && msg.kwargs.defaultRepresentation) {
+	            // no need to add default representation as all representations
+	            // are serialized separately, also it unwantedly sets the orientation
+	            msg.kwargs.defaultRepresentation = false
+	            console.log("Hello");
+	         }
 	         var args0 = msg.args[0];
 	         if (args0.type == 'blob') {
 	             var blob;
@@ -23504,7 +23525,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 70 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.21","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"file-loader":"^0.8.5","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","css-loader":"^0.23.1","style-loader":"^0.13.1","ngl":"0.10.5-20","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"v1.0.0-beta.1"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.22","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"file-loader":"^0.8.5","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","css-loader":"^0.23.1","style-loader":"^0.13.1","ngl":"0.10.5-20","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"v1.0.0-beta.1"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ })
 /******/ ])});;
