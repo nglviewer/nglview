@@ -217,7 +217,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         console.log("orientation", orientation);
         if (orientation.length > 0){
             this.stage.viewerControls.orient(orientation);
-            var m = this.stage.viewerControls.getOrientation();
             this.serialize_camera_orientation();
         }
     },
