@@ -28,7 +28,7 @@ from .config import BACKENDS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '0.5.4-dev.21' # must match to js/package.json and js/src/widget_ngl.js
+__frontend_version__ = '0.5.4-dev.24' # must match to js/package.json and js/src/widget_ngl.js
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
         'setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
         '_downloadImage', '_exportImage'
@@ -110,7 +110,6 @@ class NGLWidget(DOMWidget):
     loaded = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
     n_components = Int(0).tag(sync=True)
-    orientation = List().tag(sync=True)
     _scene_position = Dict().tag(sync=True)
     _scene_rotation = Dict().tag(sync=True)
     _first_time_loaded = Bool(True).tag(sync=False)
@@ -235,8 +234,6 @@ class NGLWidget(DOMWidget):
 
         self._ngl_coordinate_resource = resource
         self._ngl_full_stage_parameters_embed = self._ngl_full_stage_parameters
-        self._remote_call('serialize_camera_orientation', target='Widget')
-        time.sleep(0.2)
 
     def _unset_serialization(self):
         self._ngl_serialize = False
@@ -276,6 +273,10 @@ class NGLWidget(DOMWidget):
             "setParameters",
             target='Stage',
             kwargs=dict(cameraType=self._camera_str))
+
+    def _set_camera_orientation(self, arr):
+        self._remote_call('set_camera_orientation', target='Widget',
+                args=[arr,])
 
     def _request_stage_parameters(self):
         self._remote_call('requestUpdateStageParameters', target='Widget')

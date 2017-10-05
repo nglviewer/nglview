@@ -41,9 +41,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         // init _parameters handling
         this.model.on("change:_parameters", this.parametersChanged, this);
 
-        // init orientation handling
-        this.model.on("change:orientation", this.orientationChanged, this);
-
         this.model.set('_ngl_version', NGL.Version);
 
         // for player
@@ -90,18 +87,16 @@ var NGLView = widgets.DOMWidgetView.extend({
             this.$container.resizable(
                 "option", "maxWidth", this.$el.parent().width()
             );
-            this.requestUpdateStageParameters();
             if (this.model.get("_ngl_serialize")){
                 that.handle_embed();
+            }else{
+                this.requestUpdateStageParameters();
+                this.serialize_camera_orientation();
             }
         }.bind(this));
 
         this.stage.viewerControls.signals.changed.add(function() {
-            if (this.sync_camera) {
-                this.model.set('_scene_position', this.stage.viewerControls.position)
-                this.model.set('_scene_rotation', this.stage.viewerControls.rotation)
-                this.touch();
-            }
+            this.serialize_camera_orientation();
         }.bind(this));
 
         // init toggle fullscreen
@@ -218,11 +213,12 @@ var NGLView = widgets.DOMWidgetView.extend({
          this.touch();
     },
 
-    set_camera_from_backend: function(){
-        var ar = this.model.get('_camera_orientation');
-        console.log('ar', ar);
-        if (ar.length > 0){
-            this.stage.viewerControls.orient(ar);
+    set_camera_orientation: function(orientation){
+        console.log("orientation", orientation);
+        if (orientation.length > 0){
+            this.stage.viewerControls.orient(orientation);
+            var m = this.stage.viewerControls.getOrientation();
+            this.serialize_camera_orientation();
         }
     },
 
@@ -259,7 +255,9 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
 
             that.stage.setParameters(ngl_stage_params);
-            that.set_camera_from_backend();
+            console.log("handle_embed _camera_orientation");
+            console.log(that.model.get("_camera_orientation"));
+            that.set_camera_orientation(that.model.get("_camera_orientation"));
 
             var frame = 0;
             var count = ngl_coordinate_resource['n_frames'];
@@ -434,6 +432,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     setSyncCamera: function() {
         this.sync_camera = true;
+        this.serialize_camera_orientation();
     },
 
     setUnSyncCamera: function() {
@@ -884,13 +883,6 @@ var NGLView = widgets.DOMWidgetView.extend({
             'type': 'stage_parameters',
             'data': updated_params
         })
-    },
-
-    orientationChanged: function() {
-        var orientation_list = this.model.get("orientation");
-        var mat4 = this.stage.viewerControls.getOrientation();
-        mat4.set(orientation_list);
-        this.stage.viewerControls.orient(mat4);
     },
 
     _downloadImage: function(filename, params) {
