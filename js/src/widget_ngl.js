@@ -41,9 +41,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         // init _parameters handling
         this.model.on("change:_parameters", this.parametersChanged, this);
 
-        // init orientation handling
-        this.model.on("change:orientation", this.orientationChanged, this);
-
         this.model.set('_ngl_version', NGL.Version);
 
         // for player
@@ -90,18 +87,16 @@ var NGLView = widgets.DOMWidgetView.extend({
             this.$container.resizable(
                 "option", "maxWidth", this.$el.parent().width()
             );
-            this.requestUpdateStageParameters();
             if (this.model.get("_ngl_serialize")){
                 that.handle_embed();
+            }else{
+                this.requestUpdateStageParameters();
+                this.serialize_camera_orientation();
             }
         }.bind(this));
 
         this.stage.viewerControls.signals.changed.add(function() {
-            if (this.sync_camera) {
-                this.model.set('_scene_position', this.stage.viewerControls.position)
-                this.model.set('_scene_rotation', this.stage.viewerControls.rotation)
-                this.touch();
-            }
+            this.serialize_camera_orientation();
         }.bind(this));
 
         // init toggle fullscreen
@@ -212,6 +207,20 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.touch();
     },
 
+    serialize_camera_orientation: function(){
+         var m = this.stage.viewerControls.getOrientation();
+         this.model.set('_camera_orientation', m.elements);
+         this.touch();
+    },
+
+    set_camera_orientation: function(orientation){
+        console.log("orientation", orientation);
+        if (orientation.length > 0){
+            this.stage.viewerControls.orient(orientation);
+            this.serialize_camera_orientation();
+        }
+    },
+
     handle_embed: function(){
         var that = this
         var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
@@ -221,6 +230,11 @@ var NGLView = widgets.DOMWidgetView.extend({
 
         _.each(ngl_msg_archive, function(msg){
             if (msg.methodName == 'loadFile'){
+                if (msg.kwargs && msg.kwargs.defaultRepresentation) {
+                    // no need to add default representation as all representations
+                    // are serialized separately, also it unwantedly sets the orientation
+                    msg.kwargs.defaultRepresentation = false
+                 }
                 loadfile_list.push(that._get_loadFile_promise(msg));
             }
         });
@@ -232,7 +246,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             for (var index in ngl_repr_dict){
                 var comp = compList[index];
                 comp.removeAllRepresentations();
-                var reprlist = ngl_repr_dict[index]; 
+                var reprlist = ngl_repr_dict[index];
                 for (var j in reprlist){
                     var repr = reprlist[j];
                     comp.addRepresentation(repr.type, repr.params);
@@ -240,6 +254,9 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
 
             that.stage.setParameters(ngl_stage_params);
+            console.log("handle_embed _camera_orientation");
+            console.log(that.model.get("_camera_orientation"));
+            that.set_camera_orientation(that.model.get("_camera_orientation"));
 
             var frame = 0;
             var count = ngl_coordinate_resource['n_frames'];
@@ -414,6 +431,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     setSyncCamera: function() {
         this.sync_camera = true;
+        this.serialize_camera_orientation();
     },
 
     setUnSyncCamera: function() {
@@ -857,20 +875,13 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.stage.setParameters(parameters);
 
         // do not set _ngl_full_stage_parameters here
-        // or parameters will be never updated (not sure why) 
+        // or parameters will be never updated (not sure why)
         // use observe in python side
         var updated_params = this.stage.getParameters();
         this.send({
             'type': 'stage_parameters',
             'data': updated_params
         })
-    },
-
-    orientationChanged: function() {
-        var orientation_list = this.model.get("orientation");
-        var mat4 = this.stage.viewerControls.getOrientation();
-        mat4.set(orientation_list);
-        this.stage.viewerControls.orient(mat4);
     },
 
     _downloadImage: function(filename, params) {
@@ -931,7 +942,7 @@ var NGLView = widgets.DOMWidgetView.extend({
              return this.stage.loadFile(msg.args[0].data, msg.kwargs)
          }
     },
-    
+
     _handle_stage_loadFile: function(msg){
          // args = [{'type': ..., 'data': ...}]
          var that = this;
