@@ -10,21 +10,14 @@
 
 ### widget not shown?
 
-> try
+- Could not cross validate the widget frontend and backend versions (or similiar)
 
-> ```bash
-> conda install traitlets=4.2.1 ipywidgets==4.1.1 notebook=4.1.0
-> ```
+Double check if you are having two ipywidgets version (e.g: one installed via pip and one installed via conda)
 
-> - try `ipywidgets >= 5.0` and want to go back to `ipywidgets 4.1.1`?
+- Class NGLModel not found in module nglview-js-widgets
 
-> supposed you created `ipywidgets5` conda env to test, then if you want to go back to root env
-> ```bash
-> source deactivate ipywidgets5
-
-> # need to re-enable ipykernel
-> python -m ipykernel install --user
-> ```
+You are likely using older JavaScript distribution of nglview. Check if it is 
+`./.local/share/jupyter/nbextensions/nglview-js-widgets/`, if Yes, delete it.
 
 ### Can I have two MDA.Atomgroups in the same view?
 
