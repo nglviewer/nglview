@@ -91,7 +91,10 @@ var NGLView = widgets.DOMWidgetView.extend({
                 that.handle_embed();
             }else{
                 this.requestUpdateStageParameters();
-                this.serialize_camera_orientation();
+                if (this.model.viewer.length == 1){
+                    this.set_camera_orientation(that.model.get("_camera_orientation"));
+                    this.serialize_camera_orientation();
+                }
             }
         }.bind(this));
 
@@ -953,6 +956,9 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     on_msg: function(msg) {
+        console.log('msg', msg);
+        console.log(this.model);
+        console.log(this.model.views);
         // TODO: re-organize
         if (msg.type == 'call_method') {
             var index, component, func, stage;
@@ -970,6 +976,14 @@ var NGLView = widgets.DOMWidgetView.extend({
                         component = this.stage.compList[index];
                         this.stage.removeComponent(component);
                     } else if (msg.methodName == 'loadFile') {
+                        if (this.model.views.length > 1 && msg.kwargs &&
+                            msg.kwargs.defaultRepresentation) {
+                            // no need to add default representation as all representations
+                            // are serialized separately, also it unwantedly sets the orientation
+                            consolg.log('for real?');
+                            consolg.log(this.model);
+                            msg.kwargs.defaultRepresentation = false
+                        }
                         this._handle_stage_loadFile(msg);
                     } else {
                             stage_func.apply(stage, new_args);
