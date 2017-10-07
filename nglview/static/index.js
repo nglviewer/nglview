@@ -166,7 +166,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                    this.serialize_camera_orientation();
 	                }else{
 	                    console.log("2 views - try 2");
-	                    // this.set_representation_from_backend();
 	                    this.set_camera_orientation(that.model.get("_camera_orientation"));
 	                }
 	            }
@@ -526,19 +525,23 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    _set_representation_from_backend: function(compList){
 	        console.log('compList', compList);
-	        var ngl_repr_dict = this.model.get('_ngl_repr_dict');
-	        console.log('ngl_repr_dict', ngl_repr_dict);
-	        for (var index in ngl_repr_dict){
-	            var comp = compList[index];
-	            comp.removeAllRepresentations();
-	            var reprlist = ngl_repr_dict[index];
-	            console.log('reprlist', reprlist);
-	            for (var j in reprlist){
-	                var repr = reprlist[j];
-	                if (repr){
-	                    comp.addRepresentation(repr.type, repr.params);
+	        if (compList.length > 0){
+	            var ngl_repr_dict = this.model.get('_ngl_repr_dict');
+	            console.log('ngl_repr_dict', ngl_repr_dict);
+	            for (var index in ngl_repr_dict){
+	                var comp = compList[index];
+	                comp.removeAllRepresentations();
+	                var reprlist = ngl_repr_dict[index];
+	                console.log('reprlist', reprlist);
+	                for (var j in reprlist){
+	                    var repr = reprlist[j];
+	                    if (repr){
+	                        comp.addRepresentation(repr.type, repr.params);
+	                    }
 	                }
 	            }
+	        }else{
+	            console.log("compList.length = 0");
 	        }
 	    },
 	
