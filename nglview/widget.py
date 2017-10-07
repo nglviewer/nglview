@@ -440,8 +440,8 @@ class NGLWidget(DOMWidget):
 
         Note: unstable feature
         """
-        # callbacks = self._ngl_displayed_callbacks_after_loaded[:]
-        callbacks = []
+        callbacks = self._ngl_displayed_callbacks_after_loaded[:]
+        # callbacks = []
         for index, c in enumerate(callbacks):
             if (c._method_name == 'loadFile' and
                     'defaultRepresentation' in c._ngl_msg['kwargs']):
