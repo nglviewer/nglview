@@ -463,7 +463,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                     }
                 }
             }
-        }else{
         }
     },
 
@@ -985,8 +984,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                             msg.kwargs.defaultRepresentation) {
                             // no need to add default representation as all representations
                             // are serialized separately, also it unwantedly sets the orientation
-                            consolg.log('for real?');
-                            consolg.log(this.model);
                             msg.kwargs.defaultRepresentation = false
                         }
                         this._handle_stage_loadFile(msg);

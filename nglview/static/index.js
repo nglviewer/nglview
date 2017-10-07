@@ -534,7 +534,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                    }
 	                }
 	            }
-	        }else{
 	        }
 	    },
 	
@@ -1056,8 +1055,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                            msg.kwargs.defaultRepresentation) {
 	                            // no need to add default representation as all representations
 	                            // are serialized separately, also it unwantedly sets the orientation
-	                            consolg.log('for real?');
-	                            consolg.log(this.model);
 	                            msg.kwargs.defaultRepresentation = false
 	                        }
 	                        this._handle_stage_loadFile(msg);
