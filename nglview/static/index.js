@@ -162,7 +162,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                that.handle_embed();
 	            }else{
 	                this.requestUpdateStageParameters();
-	                this.serialize_camera_orientation();
+	                if (this.model.views.length == 1){
+	                    this.serialize_camera_orientation();
+	                }else{
+	                    console.log("2 views - try 2");
+	                    // this.set_representation_from_backend();
+	                    this.set_camera_orientation(that.model.get("_camera_orientation"));
+	                }
 	            }
 	        }.bind(this));
 	
@@ -285,16 +291,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    set_camera_orientation: function(orientation){
-	        console.log("orientation", orientation);
 	        if (orientation.length > 0){
 	            this.stage.viewerControls.orient(orientation);
-	            var m = this.stage.viewerControls.getOrientation();
 	            this.serialize_camera_orientation();
 	        }
 	    },
 	
 	    handle_embed: function(){
-	        var that = this
+	        var that = this;
 	        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
 	        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
 	        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters_embed');
@@ -311,22 +315,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }
 	        });
 	
-	        console.log('ngl_stage_params', ngl_stage_params);
 	
 	        Promise.all(loadfile_list).then(function(compList){
-	            var ngl_repr_dict = that.model.get('_ngl_repr_dict')
-	            for (var index in ngl_repr_dict){
-	                var comp = compList[index];
-	                comp.removeAllRepresentations();
-	                var reprlist = ngl_repr_dict[index];
-	                for (var j in reprlist){
-	                    var repr = reprlist[j];
-	                    comp.addRepresentation(repr.type, repr.params);
-	                }
-	            }
-	
+	            that._set_representation_from_backend(compList);
 	            that.stage.setParameters(ngl_stage_params);
-	            console.log("handle_embed _camera_orientation");
 	            console.log(that.model.get("_camera_orientation"));
 	            that.set_camera_orientation(that.model.get("_camera_orientation"));
 	
@@ -527,6 +519,28 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	    },
 	
+	    set_representation_from_backend: function(){
+	        console.log('set_representation_from_backend');
+	        this._set_representation_from_backend(this.stage.compList);
+	    },
+	
+	    _set_representation_from_backend: function(compList){
+	        console.log('compList', compList);
+	        var ngl_repr_dict = this.model.get('_ngl_repr_dict');
+	        console.log('ngl_repr_dict', ngl_repr_dict);
+	        for (var index in ngl_repr_dict){
+	            var comp = compList[index];
+	            comp.removeAllRepresentations();
+	            var reprlist = ngl_repr_dict[index];
+	            console.log('reprlist', reprlist);
+	            for (var j in reprlist){
+	                var repr = reprlist[j];
+	                if (repr){
+	                    comp.addRepresentation(repr.type, repr.params);
+	                }
+	            }
+	        }
+	    },
 	
 	    initPlayer: function() {
 	        // init player
@@ -1042,6 +1056,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                        component = this.stage.compList[index];
 	                        this.stage.removeComponent(component);
 	                    } else if (msg.methodName == 'loadFile') {
+	                        if (this.model.views.length > 1 && msg.kwargs &&
+	                            msg.kwargs.defaultRepresentation) {
+	                            // no need to add default representation as all representations
+	                            // are serialized separately, also it unwantedly sets the orientation
+	                            consolg.log('for real?');
+	                            consolg.log(this.model);
+	                            msg.kwargs.defaultRepresentation = false
+	                        }
 	                        this._handle_stage_loadFile(msg);
 	                    } else {
 	                            stage_func.apply(stage, new_args);
