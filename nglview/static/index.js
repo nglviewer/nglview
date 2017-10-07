@@ -165,7 +165,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                if (this.model.views.length == 1){
 	                    this.serialize_camera_orientation();
 	                }else{
-	                    console.log("2 views - try 2");
 	                    this.set_camera_orientation(that.model.get("_camera_orientation"));
 	                }
 	            }
@@ -318,7 +317,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        Promise.all(loadfile_list).then(function(compList){
 	            that._set_representation_from_backend(compList);
 	            that.stage.setParameters(ngl_stage_params);
-	            console.log(that.model.get("_camera_orientation"));
 	            that.set_camera_orientation(that.model.get("_camera_orientation"));
 	
 	            var frame = 0;
@@ -519,20 +517,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    set_representation_from_backend: function(){
-	        console.log('set_representation_from_backend');
 	        this._set_representation_from_backend(this.stage.compList);
 	    },
 	
 	    _set_representation_from_backend: function(compList){
-	        console.log('compList', compList);
 	        if (compList.length > 0){
 	            var ngl_repr_dict = this.model.get('_ngl_repr_dict');
-	            console.log('ngl_repr_dict', ngl_repr_dict);
 	            for (var index in ngl_repr_dict){
 	                var comp = compList[index];
 	                comp.removeAllRepresentations();
 	                var reprlist = ngl_repr_dict[index];
-	                console.log('reprlist', reprlist);
 	                for (var j in reprlist){
 	                    var repr = reprlist[j];
 	                    if (repr){
@@ -541,7 +535,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                }
 	            }
 	        }else{
-	            console.log("compList.length = 0");
 	        }
 	    },
 	
