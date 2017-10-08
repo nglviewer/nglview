@@ -79,6 +79,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             }.bind(this)
         });
         this.displayed.then(function() {
+            this.ngl_view_id = this.get_last_child_id();
             var that = this;
             var width = this.$el.parent().width() + "px";
             var height = "300px";
@@ -895,22 +896,26 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     _downloadImage: function(filename, params) {
-        this.stage.makeImage(params).then(function(blob) {
-            NGL.download(blob, filename);
-        })
+        if (this.ngl_view_id == this.get_last_child_id()){
+            this.stage.makeImage(params).then(function(blob) {
+                NGL.download(blob, filename);
+            })
+        }
     },
 
     _exportImage: function(params) {
-        this.stage.makeImage(params).then(function(blob) {
-            var reader = new FileReader();
-            var arr_str;
-            reader.onload = function() {
-                arr_str = reader.result.replace("data:image/png;base64,", "");
-                this.model.set("_image_data", arr_str);
-                this.touch();
-            }.bind(this);
-            reader.readAsDataURL(blob);
-        }.bind(this));
+        if (this.ngl_view_id == this.get_last_child_id()){
+            this.stage.makeImage(params).then(function(blob) {
+                var reader = new FileReader();
+                var arr_str;
+                reader.onload = function() {
+                    arr_str = reader.result.replace("data:image/png;base64,", "");
+                    this.model.set("_image_data", arr_str);
+                    this.touch();
+                }.bind(this);
+                reader.readAsDataURL(blob);
+            }.bind(this));
+        }
     },
 
     cleanOutput: function() {
@@ -953,13 +958,21 @@ var NGLView = widgets.DOMWidgetView.extend({
          }
     },
 
+    get_last_child_id: function(){
+        var keys = Object.keys(this.model.views);
+        return keys[keys.length-1]
+    },
+
     _handle_stage_loadFile: function(msg){
-         // args = [{'type': ..., 'data': ...}]
-         var that = this;
-         this._get_loadFile_promise(msg).then(function(o){
-             that._handle_loading_file_finished();
-             o;
-          });
+        // args = [{'type': ..., 'data': ...}]
+        if (this.ngl_view_id != this.get_last_child_id() && msg.last_child){
+            return
+        }
+        var that = this;
+        this._get_loadFile_promise(msg).then(function(o){
+            that._handle_loading_file_finished();
+            o;
+        });
     },
 
     on_msg: function(msg) {
@@ -1072,9 +1085,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             } else if (msg.data == 'parameters') {
                 this.send(JSON.stringify(this.stage.parameters));
             } else {
-                for (i = 0; i < this.stage.compList.length; i++) {
-                    console.log(this.stage.compList[i]);
-                }
+                console.log("Number of components", this.stage.compList.length);
+                console.log("ngl_view_id", this.ngl_view_id);
             }
         }
     },

@@ -448,20 +448,31 @@ class NGLWidget(DOMWidget):
                 # so subsequent display of `self` won't reset view orientation.
                 c._ngl_msg['kwargs']['defaultRepresentation'] = False
 
+        new_callbacks = []
+        for c in callbacks:
+            msg = c._ngl_msg
+            msg['last_child'] = True
+            def callback(widget, msg=msg):
+                widget.send(msg)
+            callback._method_name = msg['methodName']
+            callback._ngl_msg = msg
+            new_callbacks.append(callback)
+
         msg = {}
         msg['target'] = 'Widget'
         msg['type'] = 'call_method'
         msg['methodName'] = 'set_representation_from_backend'
         msg['args'] = []
         msg['kwargs'] = {}
+        msg['last_child'] = True
 
         def callback(widget, msg=msg):
             widget.send(msg)
         callback._method_name = msg['methodName']
         callback._ngl_msg = msg
 
-        callbacks.append(callback)
-        self._fire_callbacks(callbacks)
+        new_callbacks.append(callback)
+        self._fire_callbacks(new_callbacks)
 
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
