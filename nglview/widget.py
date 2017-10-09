@@ -28,7 +28,7 @@ from .config import BACKENDS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '0.5.4-dev.25' # must match to js/package.json and js/src/widget_ngl.js
+__frontend_version__ = '0.5.4-dev.26' # must match to js/package.json and js/src/widget_ngl.js
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
         'setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
         'autoView',
@@ -440,16 +440,13 @@ class NGLWidget(DOMWidget):
 
         Note: unstable feature
         """
-        callbacks = self._ngl_displayed_callbacks_after_loaded[:]
-        for index, c in enumerate(callbacks):
+        new_callbacks = []
+        for c in self._ngl_displayed_callbacks_after_loaded:
             if (c._method_name == 'loadFile' and
                     'defaultRepresentation' in c._ngl_msg['kwargs']):
                 # set to False to avoid autoView
                 # so subsequent display of `self` won't reset view orientation.
                 c._ngl_msg['kwargs']['defaultRepresentation'] = False
-
-        new_callbacks = []
-        for c in callbacks:
             msg = c._ngl_msg
             msg['last_child'] = True
             def callback(widget, msg=msg):

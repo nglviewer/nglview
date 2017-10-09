@@ -470,6 +470,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     initPlayer: function() {
         // init player
         if (this.model.get("count")) {
+            var frame = this.model.get("frame");
             var play = function() {
                 this.$playerButton.text("pause");
                 this.playerInterval = setInterval(function() {
@@ -510,6 +511,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                 .slider({
                     min: 0,
                     max: this.model.get("count") - 1,
+                    value: frame,
                     slide: function(event, ui) {
                         pause();
                         this.model.set("frame", ui.value);
