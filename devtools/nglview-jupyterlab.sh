@@ -5,7 +5,7 @@ env=jupyterlab_0265
 jupyterlab_version=0.26.5
 python_version=3.6
 notebook_version=5.0.0
-lab_manager_version=0.25.11 # need to match to ./jslab/package.json
+lab_manager_version=0.27.0 # need to match to ./jslab/package.json
 ipywidgets_version=7.0.0
 widgetsnbextension_version=3.0.0
 
