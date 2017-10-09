@@ -3,9 +3,9 @@
 nglview_src=`pwd`
 env=jupyterlab_0270
 jupyterlab_version=0.27.0
+lab_manager_version=${jupyterlab_version} # need to match to ./jslab/package.json too too.
 python_version=3.6
 notebook_version=5.0.0
-lab_manager_version=0.27.0 # need to match to ./jslab/package.json
 ipywidgets_version=7.0.0
 widgetsnbextension_version=3.0.0
 
