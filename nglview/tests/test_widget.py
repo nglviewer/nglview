@@ -1088,6 +1088,11 @@ def test_queuing_messages():
     assert [f._method_name for f in view._ngl_displayed_callbacks_after_loaded] == \
            ['loadFile']
 
+    # display 2nd time
+    view.sync_view()
+    assert [f._method_name for f in view._ngl_displayed_callbacks_after_loaded] == \
+           ['loadFile']
+
 
 @patch('nglview.NGLWidget._unset_serialization')
 def test_write_html(mock_unset):

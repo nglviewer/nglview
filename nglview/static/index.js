@@ -150,6 +150,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }.bind(this)
 	        });
 	        this.displayed.then(function() {
+	            this.ngl_view_id = this.get_last_child_id();
 	            var that = this;
 	            var width = this.$el.parent().width() + "px";
 	            var height = "300px";
@@ -162,7 +163,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                that.handle_embed();
 	            }else{
 	                this.requestUpdateStageParameters();
-	                this.serialize_camera_orientation();
+	                if (this.model.views.length == 1){
+	                    this.serialize_camera_orientation();
+	                }else{
+	                    this.set_camera_orientation(that.model.get("_camera_orientation"));
+	                }
 	            }
 	        }.bind(this));
 	
@@ -285,16 +290,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    set_camera_orientation: function(orientation){
-	        console.log("orientation", orientation);
 	        if (orientation.length > 0){
 	            this.stage.viewerControls.orient(orientation);
-	            var m = this.stage.viewerControls.getOrientation();
 	            this.serialize_camera_orientation();
 	        }
 	    },
 	
 	    handle_embed: function(){
-	        var that = this
+	        var that = this;
 	        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
 	        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
 	        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters_embed');
@@ -311,23 +314,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }
 	        });
 	
-	        console.log('ngl_stage_params', ngl_stage_params);
 	
 	        Promise.all(loadfile_list).then(function(compList){
-	            var ngl_repr_dict = that.model.get('_ngl_repr_dict')
-	            for (var index in ngl_repr_dict){
-	                var comp = compList[index];
-	                comp.removeAllRepresentations();
-	                var reprlist = ngl_repr_dict[index];
-	                for (var j in reprlist){
-	                    var repr = reprlist[j];
-	                    comp.addRepresentation(repr.type, repr.params);
-	                }
-	            }
-	
+	            that._set_representation_from_backend(compList);
 	            that.stage.setParameters(ngl_stage_params);
-	            console.log("handle_embed _camera_orientation");
-	            console.log(that.model.get("_camera_orientation"));
 	            that.set_camera_orientation(that.model.get("_camera_orientation"));
 	
 	            var frame = 0;
@@ -527,10 +517,31 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	    },
 	
+	    set_representation_from_backend: function(){
+	        this._set_representation_from_backend(this.stage.compList);
+	    },
+	
+	    _set_representation_from_backend: function(compList){
+	        if (compList.length > 0){
+	            var ngl_repr_dict = this.model.get('_ngl_repr_dict');
+	            for (var index in ngl_repr_dict){
+	                var comp = compList[index];
+	                comp.removeAllRepresentations();
+	                var reprlist = ngl_repr_dict[index];
+	                for (var j in reprlist){
+	                    var repr = reprlist[j];
+	                    if (repr){
+	                        comp.addRepresentation(repr.type, repr.params);
+	                    }
+	                }
+	            }
+	        }
+	    },
 	
 	    initPlayer: function() {
 	        // init player
 	        if (this.model.get("count")) {
+	            var frame = this.model.get("frame");
 	            var play = function() {
 	                this.$playerButton.text("pause");
 	                this.playerInterval = setInterval(function() {
@@ -571,6 +582,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                .slider({
 	                    min: 0,
 	                    max: this.model.get("count") - 1,
+	                    value: frame,
 	                    slide: function(event, ui) {
 	                        pause();
 	                        this.model.set("frame", ui.value);
@@ -957,22 +969,26 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    _downloadImage: function(filename, params) {
-	        this.stage.makeImage(params).then(function(blob) {
-	            NGL.download(blob, filename);
-	        })
+	        if (this.ngl_view_id == this.get_last_child_id()){
+	            this.stage.makeImage(params).then(function(blob) {
+	                NGL.download(blob, filename);
+	            })
+	        }
 	    },
 	
 	    _exportImage: function(params) {
-	        this.stage.makeImage(params).then(function(blob) {
-	            var reader = new FileReader();
-	            var arr_str;
-	            reader.onload = function() {
-	                arr_str = reader.result.replace("data:image/png;base64,", "");
-	                this.model.set("_image_data", arr_str);
-	                this.touch();
-	            }.bind(this);
-	            reader.readAsDataURL(blob);
-	        }.bind(this));
+	        if (this.ngl_view_id == this.get_last_child_id()){
+	            this.stage.makeImage(params).then(function(blob) {
+	                var reader = new FileReader();
+	                var arr_str;
+	                reader.onload = function() {
+	                    arr_str = reader.result.replace("data:image/png;base64,", "");
+	                    this.model.set("_image_data", arr_str);
+	                    this.touch();
+	                }.bind(this);
+	                reader.readAsDataURL(blob);
+	            }.bind(this));
+	        }
 	    },
 	
 	    cleanOutput: function() {
@@ -1015,13 +1031,21 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	         }
 	    },
 	
+	    get_last_child_id: function(){
+	        var keys = Object.keys(this.model.views);
+	        return keys[keys.length-1]
+	    },
+	
 	    _handle_stage_loadFile: function(msg){
-	         // args = [{'type': ..., 'data': ...}]
-	         var that = this;
-	         this._get_loadFile_promise(msg).then(function(o){
-	             that._handle_loading_file_finished();
-	             o;
-	          });
+	        // args = [{'type': ..., 'data': ...}]
+	        if (this.ngl_view_id != this.get_last_child_id() && msg.last_child){
+	            return
+	        }
+	        var that = this;
+	        this._get_loadFile_promise(msg).then(function(o){
+	            that._handle_loading_file_finished();
+	            o;
+	        });
 	    },
 	
 	    on_msg: function(msg) {
@@ -1042,6 +1066,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                        component = this.stage.compList[index];
 	                        this.stage.removeComponent(component);
 	                    } else if (msg.methodName == 'loadFile') {
+	                        if (this.model.views.length > 1 && msg.kwargs &&
+	                            msg.kwargs.defaultRepresentation) {
+	                            // no need to add default representation as all representations
+	                            // are serialized separately, also it unwantedly sets the orientation
+	                            msg.kwargs.defaultRepresentation = false
+	                        }
 	                        this._handle_stage_loadFile(msg);
 	                    } else {
 	                            stage_func.apply(stage, new_args);
@@ -1128,9 +1158,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            } else if (msg.data == 'parameters') {
 	                this.send(JSON.stringify(this.stage.parameters));
 	            } else {
-	                for (i = 0; i < this.stage.compList.length; i++) {
-	                    console.log(this.stage.compList[i]);
-	                }
+	                console.log("Number of components", this.stage.compList.length);
+	                console.log("ngl_view_id", this.ngl_view_id);
 	            }
 	        }
 	    },
@@ -23516,7 +23545,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 70 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.24","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"file-loader":"^0.8.5","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","css-loader":"^0.23.1","style-loader":"^0.13.1","ngl":"0.10.5-20","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"v1.0.0-beta.3"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.26","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"file-loader":"^0.8.5","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","css-loader":"^0.23.1","style-loader":"^0.13.1","ngl":"0.10.5-20","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"v1.0.0-beta.3"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ })
 /******/ ])});;

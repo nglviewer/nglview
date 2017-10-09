@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "@jupyter-widgets/jupyterlab-manager": "^0.25.11",
-    "nglview-js-widgets": "0.5.4-dev.24"
+    "nglview-js-widgets": "0.5.4-dev.26"
   },
   "jupyterlab": {
     "extension": true

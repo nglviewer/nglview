@@ -79,6 +79,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             }.bind(this)
         });
         this.displayed.then(function() {
+            this.ngl_view_id = this.get_last_child_id();
             var that = this;
             var width = this.$el.parent().width() + "px";
             var height = "300px";
@@ -91,7 +92,11 @@ var NGLView = widgets.DOMWidgetView.extend({
                 that.handle_embed();
             }else{
                 this.requestUpdateStageParameters();
-                this.serialize_camera_orientation();
+                if (this.model.views.length == 1){
+                    this.serialize_camera_orientation();
+                }else{
+                    this.set_camera_orientation(that.model.get("_camera_orientation"));
+                }
             }
         }.bind(this));
 
@@ -214,7 +219,6 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     set_camera_orientation: function(orientation){
-        console.log("orientation", orientation);
         if (orientation.length > 0){
             this.stage.viewerControls.orient(orientation);
             this.serialize_camera_orientation();
@@ -222,7 +226,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     handle_embed: function(){
-        var that = this
+        var that = this;
         var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
         var ngl_stage_params = that.model.get('_ngl_full_stage_parameters_embed');
@@ -239,23 +243,10 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
         });
 
-        console.log('ngl_stage_params', ngl_stage_params);
 
         Promise.all(loadfile_list).then(function(compList){
-            var ngl_repr_dict = that.model.get('_ngl_repr_dict')
-            for (var index in ngl_repr_dict){
-                var comp = compList[index];
-                comp.removeAllRepresentations();
-                var reprlist = ngl_repr_dict[index];
-                for (var j in reprlist){
-                    var repr = reprlist[j];
-                    comp.addRepresentation(repr.type, repr.params);
-                }
-            }
-
+            that._set_representation_from_backend(compList);
             that.stage.setParameters(ngl_stage_params);
-            console.log("handle_embed _camera_orientation");
-            console.log(that.model.get("_camera_orientation"));
             that.set_camera_orientation(that.model.get("_camera_orientation"));
 
             var frame = 0;
@@ -455,10 +446,31 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
+    set_representation_from_backend: function(){
+        this._set_representation_from_backend(this.stage.compList);
+    },
+
+    _set_representation_from_backend: function(compList){
+        if (compList.length > 0){
+            var ngl_repr_dict = this.model.get('_ngl_repr_dict');
+            for (var index in ngl_repr_dict){
+                var comp = compList[index];
+                comp.removeAllRepresentations();
+                var reprlist = ngl_repr_dict[index];
+                for (var j in reprlist){
+                    var repr = reprlist[j];
+                    if (repr){
+                        comp.addRepresentation(repr.type, repr.params);
+                    }
+                }
+            }
+        }
+    },
 
     initPlayer: function() {
         // init player
         if (this.model.get("count")) {
+            var frame = this.model.get("frame");
             var play = function() {
                 this.$playerButton.text("pause");
                 this.playerInterval = setInterval(function() {
@@ -499,6 +511,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                 .slider({
                     min: 0,
                     max: this.model.get("count") - 1,
+                    value: frame,
                     slide: function(event, ui) {
                         pause();
                         this.model.set("frame", ui.value);
@@ -885,22 +898,26 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     _downloadImage: function(filename, params) {
-        this.stage.makeImage(params).then(function(blob) {
-            NGL.download(blob, filename);
-        })
+        if (this.ngl_view_id == this.get_last_child_id()){
+            this.stage.makeImage(params).then(function(blob) {
+                NGL.download(blob, filename);
+            })
+        }
     },
 
     _exportImage: function(params) {
-        this.stage.makeImage(params).then(function(blob) {
-            var reader = new FileReader();
-            var arr_str;
-            reader.onload = function() {
-                arr_str = reader.result.replace("data:image/png;base64,", "");
-                this.model.set("_image_data", arr_str);
-                this.touch();
-            }.bind(this);
-            reader.readAsDataURL(blob);
-        }.bind(this));
+        if (this.ngl_view_id == this.get_last_child_id()){
+            this.stage.makeImage(params).then(function(blob) {
+                var reader = new FileReader();
+                var arr_str;
+                reader.onload = function() {
+                    arr_str = reader.result.replace("data:image/png;base64,", "");
+                    this.model.set("_image_data", arr_str);
+                    this.touch();
+                }.bind(this);
+                reader.readAsDataURL(blob);
+            }.bind(this));
+        }
     },
 
     cleanOutput: function() {
@@ -943,13 +960,21 @@ var NGLView = widgets.DOMWidgetView.extend({
          }
     },
 
+    get_last_child_id: function(){
+        var keys = Object.keys(this.model.views);
+        return keys[keys.length-1]
+    },
+
     _handle_stage_loadFile: function(msg){
-         // args = [{'type': ..., 'data': ...}]
-         var that = this;
-         this._get_loadFile_promise(msg).then(function(o){
-             that._handle_loading_file_finished();
-             o;
-          });
+        // args = [{'type': ..., 'data': ...}]
+        if (this.ngl_view_id != this.get_last_child_id() && msg.last_child){
+            return
+        }
+        var that = this;
+        this._get_loadFile_promise(msg).then(function(o){
+            that._handle_loading_file_finished();
+            o;
+        });
     },
 
     on_msg: function(msg) {
@@ -970,6 +995,12 @@ var NGLView = widgets.DOMWidgetView.extend({
                         component = this.stage.compList[index];
                         this.stage.removeComponent(component);
                     } else if (msg.methodName == 'loadFile') {
+                        if (this.model.views.length > 1 && msg.kwargs &&
+                            msg.kwargs.defaultRepresentation) {
+                            // no need to add default representation as all representations
+                            // are serialized separately, also it unwantedly sets the orientation
+                            msg.kwargs.defaultRepresentation = false
+                        }
                         this._handle_stage_loadFile(msg);
                     } else {
                             stage_func.apply(stage, new_args);
@@ -1056,9 +1087,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             } else if (msg.data == 'parameters') {
                 this.send(JSON.stringify(this.stage.parameters));
             } else {
-                for (i = 0; i < this.stage.compList.length; i++) {
-                    console.log(this.stage.compList[i]);
-                }
+                console.log("Number of components", this.stage.compList.length);
+                console.log("ngl_view_id", this.ngl_view_id);
             }
         }
     },

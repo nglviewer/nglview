@@ -28,10 +28,12 @@ from .config import BACKENDS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '0.5.4-dev.24' # must match to js/package.json and js/src/widget_ngl.js
+__frontend_version__ = '0.5.4-dev.26' # must match to js/package.json and js/src/widget_ngl.js
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
         'setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
-        '_downloadImage', '_exportImage'
+        'autoView',
+        '_downloadImage', '_exportImage',
+        'set_representation_from_backend',
 }
 
 
@@ -438,7 +440,36 @@ class NGLWidget(DOMWidget):
 
         Note: unstable feature
         """
-        self._fire_callbacks(self._ngl_displayed_callbacks_after_loaded)
+        new_callbacks = []
+        for c in self._ngl_displayed_callbacks_after_loaded:
+            if (c._method_name == 'loadFile' and
+                    'defaultRepresentation' in c._ngl_msg['kwargs']):
+                # set to False to avoid autoView
+                # so subsequent display of `self` won't reset view orientation.
+                c._ngl_msg['kwargs']['defaultRepresentation'] = False
+            msg = c._ngl_msg
+            msg['last_child'] = True
+            def callback(widget, msg=msg):
+                widget.send(msg)
+            callback._method_name = msg['methodName']
+            callback._ngl_msg = msg
+            new_callbacks.append(callback)
+
+        msg = {}
+        msg['target'] = 'Widget'
+        msg['type'] = 'call_method'
+        msg['methodName'] = 'set_representation_from_backend'
+        msg['args'] = []
+        msg['kwargs'] = {}
+        msg['last_child'] = True
+
+        def callback(widget, msg=msg):
+            widget.send(msg)
+        callback._method_name = msg['methodName']
+        callback._ngl_msg = msg
+
+        new_callbacks.append(callback)
+        self._fire_callbacks(new_callbacks)
 
     def _ipython_display_(self, **kwargs):
         super(NGLWidget, self)._ipython_display_(**kwargs)
