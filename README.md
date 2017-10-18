@@ -411,7 +411,7 @@ Projects using NGLView
 - [nanoribbon](https://github.com/oschuett/nanoribbon)
 - [ase](https://github.com/rosswhitfield/ase): Atomic Simulation Environment
 - [pida](https://github.com/jharman25/pida): Software for analyzing multiple protein-protein interaction docking solutions,
-
+- [pytim](https://github.com/Marcello-Sega/pytim) 
 Acknowledgment
 ==============
 - Funding: Hai Nguyen is supported by NIH Grant GM103297, "The Center for HIV RNA Studies" (2015 to 02-2017).
