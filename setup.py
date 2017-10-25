@@ -45,7 +45,7 @@ def enable_extentions():
         # enable_nbextension_python does not exist in older notebook
         # use try ... except in case users do not have notebook yet
         from notebook.nbextensions import enable_nbextension_python
-        enable_nbextension_python('widgetsnbextension')
+        enable_nbextension_python('widgetsnbextension', user=False, sys_prefix=True)
 
         subprocess.check_call([
             'jupyter', 'nbextension', 'install', '--py',
