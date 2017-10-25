@@ -2,6 +2,18 @@
 module.exports = {
 
 
+    "nglview/tests/notebooks/api/initial_representations.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/initial_representations.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 8; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
     "nglview/tests/notebooks/api/render_image.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/api/render_image.ipynb");
         browser.restartKernel(2000);
@@ -54,6 +66,18 @@ module.exports = {
         browser.openNotebook("nglview/tests/notebooks/api/test_component_names.ipynb");
         browser.restartKernel(2000);
         for ( var i = 0; i < 12; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/api/test_display_same_view_several_times.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_display_same_view_several_times.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 8; i++) {
            browser.executeCell(i)
                   .pause(3000)
                   .cellHasError(i);
