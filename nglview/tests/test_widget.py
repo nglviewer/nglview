@@ -172,7 +172,7 @@ def test_API_promise_to_have():
     # constructor
     ngl_traj = nv.PyTrajTrajectory(pt.datafiles.load_ala3())
     nv.NGLWidget(ngl_traj, parameters=dict(background_color='black'))
-    nv.NGLWidget(ngl_traj, representations=[dict(type='cartoon')])
+    nv.NGLWidget(ngl_traj, representations=[dict(type='cartoon', params={})])
 
     view.parameters
     view.camera
@@ -381,7 +381,7 @@ def test_load_data():
 
 def test_representations():
     view = nv.show_pytraj(pt.datafiles.load_tz2())
-    assert view.representations == DEFAULT_REPR
+    view.representations = DEFAULT_REPR
     view.add_cartoon()
     representations_2 = DEFAULT_REPR[:]
     representations_2.append({'type': 'cartoon', 'params': {'sele': 'all'}})

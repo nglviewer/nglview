@@ -138,6 +138,7 @@ class NGLWidget(DOMWidget):
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
     _ngl_coordinate_resource = Dict().tag(sync=True)
+    _representations = List().tag(sync=False)
 
     def __init__(self,
                  structure=None,
