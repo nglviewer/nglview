@@ -138,6 +138,7 @@ class NGLWidget(DOMWidget):
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
     _ngl_coordinate_resource = Dict().tag(sync=True)
+    _representations = List().tag(sync=False)
 
     def __init__(self,
                  structure=None,
@@ -185,28 +186,7 @@ class NGLWidget(DOMWidget):
                 self.add_structure(structure, **kwargs)
 
         if representations:
-            self._init_representations = representations
-        else:
-            self._init_representations = [{
-                "type": "cartoon",
-                "params": {
-                    "sele": "polymer"
-                }
-            }, {
-                "type": "ball+stick",
-                "params": {
-                    "sele": "hetero OR mol"
-                }
-            }, {
-                "type": "ball+stick",
-                "params": {
-                    "sele": "not protein and not nucleic"
-                }
-            }]
-
-        # keep track but making copy
-        if structure is not None:
-            self._representations = self._init_representations[:]
+            self.representations = representations
 
         self._set_unsync_camera()
         selector = 'nglviewHolder' + str(id(self))

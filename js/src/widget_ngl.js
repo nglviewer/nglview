@@ -29,9 +29,6 @@ var NGLModel = widgets.DOMWidgetModel.extend({
 
 var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
-        // init representations handling
-        this.model.on("change:_init_representations", this.representationsChanged, this);
-
         // init setting of frame
         this.model.on("change:frame", this.frameChanged, this);
 
@@ -174,8 +171,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             var file = e.dataTransfer.files[0];
 
             that.stage.loadFile(file).then(function(o){
-                that.makeDefaultRepr(o);
                 that._handle_loading_file_finished();
+                o;
             });
             var numDroppedFiles = that.model.get("_n_dragged_files");
             that.model.set("_n_dragged_files", numDroppedFiles + 1);
@@ -435,17 +432,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.stage.viewerControls.rotate( q );
     },
 
-    makeDefaultRepr: function(o) {
-        var reprDefList = this.model.get("_init_representations");
-        reprDefList.forEach(function(reprDef) {
-            o.addRepresentation(reprDef.type, reprDef.params);
-        });
-
-        if (this.stage.compList.length < 2) {
-            o.autoView(100);
-        }
-    },
-
     set_representation_from_backend: function(){
         this._set_representation_from_backend(this.stage.compList);
     },
@@ -544,21 +530,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
         if (this.model.get("count") > 1) {
             this.$player.show()
-        }
-    },
-
-    representationsChanged: function() {
-        var representations = this.model.get("_init_representations");
-        var component;
-
-        for (var i = 0; i < this.stage.compList.length; i++) {
-            component = this.stage.compList[i];
-            if (representations && component) {
-                component.clearRepresentations();
-                representations.forEach(function(repr) {
-                    component.addRepresentation(repr.type, repr.params);
-                });
-            }
         }
     },
 

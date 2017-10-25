@@ -2,18 +2,6 @@
 module.exports = {
 
 
-    "nglview/tests/notebooks/api/render_image.ipynb": function (browser) {
-        browser.openNotebook("nglview/tests/notebooks/api/render_image.ipynb");
-        browser.restartKernel(2000);
-        for ( var i = 0; i < 12; i++) {
-           browser.executeCell(i)
-                  .pause(3000)
-                  .cellHasError(i);
-        }
-        browser.end();
-    },
-
-
     "nglview/tests/notebooks/api/test_add_shape.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/api/test_add_shape.ipynb");
         browser.restartKernel(2000);
@@ -62,10 +50,34 @@ module.exports = {
     },
 
 
+    "nglview/tests/notebooks/api/test_display_same_view_several_times.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_display_same_view_several_times.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 8; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
     "nglview/tests/notebooks/api/test_gui_get_representation.ipynb": function (browser) {
         browser.openNotebook("nglview/tests/notebooks/api/test_gui_get_representation.ipynb");
         browser.restartKernel(2000);
         for ( var i = 0; i < 14; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/api/test_initial_representations.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_initial_representations.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 8; i++) {
            browser.executeCell(i)
                   .pause(3000)
                   .cellHasError(i);
@@ -90,6 +102,18 @@ module.exports = {
         browser.openNotebook("nglview/tests/notebooks/api/test_no_gui_demo.ipynb");
         browser.restartKernel(2000);
         for ( var i = 0; i < 4; i++) {
+           browser.executeCell(i)
+                  .pause(3000)
+                  .cellHasError(i);
+        }
+        browser.end();
+    },
+
+
+    "nglview/tests/notebooks/api/test_render_image.ipynb": function (browser) {
+        browser.openNotebook("nglview/tests/notebooks/api/test_render_image.ipynb");
+        browser.restartKernel(2000);
+        for ( var i = 0; i < 12; i++) {
            browser.executeCell(i)
                   .pause(3000)
                   .cellHasError(i);
