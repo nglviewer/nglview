@@ -172,6 +172,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
             that.stage.loadFile(file).then(function(o){
                 that._handle_loading_file_finished();
+                o;
             });
             var numDroppedFiles = that.model.get("_n_dragged_files");
             that.model.set("_n_dragged_files", numDroppedFiles + 1);
