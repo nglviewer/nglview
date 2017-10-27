@@ -243,6 +243,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	            that.stage.loadFile(file).then(function(o){
 	                that._handle_loading_file_finished();
+	                o;
 	            });
 	            var numDroppedFiles = that.model.get("_n_dragged_files");
 	            that.model.set("_n_dragged_files", numDroppedFiles + 1);
@@ -677,8 +678,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    setColorByResidue: function(colors, component_index, repr_index){
+	        console.log('NGL.ColormakerRegistry', NGL.ColormakerRegistry);
 	        var repr = this.stage.compList[component_index].reprList[repr_index];
-	        var schemeId = NGL.ColorMakerRegistry.addScheme(function(params){
+	        var schemeId = NGL.ColormakerRegistry.addScheme(function(params){
 	            this.atomColor = function(atom){
 	                 var color = colors[atom.residueIndex];
 	                 return color
