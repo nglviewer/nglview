@@ -412,6 +412,7 @@ Projects using NGLView
 - [ase](https://github.com/rosswhitfield/ase): Atomic Simulation Environment
 - [pida](https://github.com/jharman25/pida): Software for analyzing multiple protein-protein interaction docking solutions,
 - [pytim](https://github.com/Marcello-Sega/pytim) 
+- [MobleyLab/drug-computing](https://github.com/MobleyLab/drug-computing) Educational materials for, and related to, UC Irvine's Drug Discovery Computing Techniques course.
 
 Acknowledgment
 ==============
