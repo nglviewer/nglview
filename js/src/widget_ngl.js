@@ -607,8 +607,9 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     setColorByResidue: function(colors, component_index, repr_index){
+        console.log('NGL.ColormakerRegistry', NGL.ColormakerRegistry);
         var repr = this.stage.compList[component_index].reprList[repr_index];
-        var schemeId = NGL.ColorMakerRegistry.addScheme(function(params){
+        var schemeId = NGL.ColormakerRegistry.addScheme(function(params){
             this.atomColor = function(atom){
                  var color = colors[atom.residueIndex];
                  return color
