@@ -41,6 +41,7 @@ Released version
 - Available on `bioconda` channel
 
     ```bash
+    conda config --add channels conda-forge
     conda install nglview -c bioconda
     # might need: jupyter-nbextension enable nglview --py --sys-prefix
 
@@ -52,7 +53,7 @@ Released version
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
 ```bash
-   pip install nglview==1.0.b2
+   pip install nglview==1.0
    jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
@@ -75,7 +76,7 @@ jupyter notebook --NotebookApp.iopub_data_rate_limit=10000000
 Development version
 -------------------
 
-Requirement: `ipywidgets >= 7.0.0`, `notebook >= 4.2`
+Requirement: `ipywidgets >= 7.0`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
 
