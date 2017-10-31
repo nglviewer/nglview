@@ -5,14 +5,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Welcome to NGLView’s documentation! &#8212; NGLView 1.0.a3 documentation</title>
+    <title>Welcome to NGLView’s documentation! &#8212; NGLView 1.0 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.a3',
+        VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.6.0/dist/embed.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.10.0/dist/embed.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0.a3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -395,12 +395,6 @@ transparent : bool, default False</p>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="nglview.NGLWidget.orientation">
-<code class="descname">orientation</code><a class="headerlink" href="#nglview.NGLWidget.orientation" title="Permalink to this definition">¶</a></dt>
-<dd><p>An instance of a Python list.</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="nglview.NGLWidget.parameters">
 <code class="descname">parameters</code><a class="headerlink" href="#nglview.NGLWidget.parameters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -502,6 +496,24 @@ view.get_image()</p>
 <p>parameters : dict</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="function">
+<dt id="nglview.write_html">
+<code class="descclassname">nglview.</code><code class="descname">write_html</code><span class="sig-paren">(</span><em>fp</em>, <em>views</em>, <em>frame_range=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nglview/widget.html#write_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.write_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>EXPERIMENTAL. Likely will be changed.</p>
+<p>Make html file to display a list of views. For further options, please
+check <cite>ipywidgets.embed</cite> module.</p>
+<p>fp : str or file handle
+views : list of Widget or derived class
+frame_range : None or a tuple of int</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">show_pdbid</span><span class="p">(</span><span class="s1">&#39;1tsu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nglview</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">view</span><span class="p">])</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nglview</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">view</span><span class="p">],</span> <span class="n">frame_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> 
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="class">
@@ -727,12 +739,6 @@ transparent : bool, default False</p>
 <dt>
 <code class="descname">on_update_dragged_file</code></dt>
 <dd></dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">orientation</code></dt>
-<dd><p>An instance of a Python list.</p>
-</dd></dl>
 
 <dl class="attribute">
 <dt>
@@ -1436,12 +1442,12 @@ from Bio.PDB as its data input.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0.a3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 13, 2017.
+      Last updated on Oct 31, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>

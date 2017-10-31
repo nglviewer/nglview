@@ -72,20 +72,19 @@ Released version
 
 .. code:: bash
 
-       pip install ipywidgets==5.2.2 # if you don't have ipywidgets yet
-       pip install nglview
-       # might need: jupyter-nbextension enable nglview --py --sys-prefix
+       pip install nglview==1.0.b2
+       jupyter-nbextension enable nglview --py --sys-prefix
 
 Version Compatibility
 ---------------------
 
-+-----------+--------------+--------------+
-| nglview   | ipywidgets   | jupyterlab   |
-+===========+==============+==============+
-| < 1.0     | 5.2.2        | None         |
-+-----------+--------------+--------------+
-| 1.0       | 7.0          | 0.25.2       |
-+-----------+--------------+--------------+
++-----------+--------------+
+| nglview   | ipywidgets   |
++===========+==============+
+| < 1.0     | 5.2.2        |
++-----------+--------------+
+| 1.0       | 7.0          |
++-----------+--------------+
 
 Notes
 -----
@@ -128,26 +127,12 @@ notebook user
 jupyterlab user
 ~~~~~~~~~~~~~~~
 
-**Note**: jupyterlab is in its alpha version, so the instruction below
-might or might now work.
+HIGHLY EXPERIMENTAL. Things might not work as you are expecting.
 
-.. code:: bash
+::
 
-    # Make sure to view below file before executing it.
+    # Please read its content before running
     source devtools/nglview-jupyterlab.sh
-
-Docker user
-~~~~~~~~~~~
-
-.. code:: bash
-
-    docker pull hainm/nglview:1.0.a0 # only do once
-    docker run -it --rm -p 8888:8888 hainm/nglview:1.0.a0
-
-    # Then follow the instruction in your screen.
-
-`How does ``nglview`` look like in
-jupyterlab? <examples/jupyterlab.md>`__
 
 Example
 =======
@@ -366,8 +351,8 @@ Mouse
 Interaction controls
 --------------------
 
--  `Mouse <https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#mouse>`__
--  `Keyboard <https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#keyboard>`__
+-  `Mouse <https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#mouse>`__
+-  `Keyboard <https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#keyboard>`__
 
 Display more than two widgets
 -----------------------------
@@ -402,6 +387,11 @@ Notes: Unstable feature.
     from nglview.contrib.movie import MovieMaker
     movie = MovieMaker(view, output='my.gif')
     movie.make()
+
+Embed widget
+------------
+
+`embed <docs/embed.md>`__
 
 API doc
 =======
@@ -504,6 +494,10 @@ Projects using NGLView
    Environment
 -  `pida <https://github.com/jharman25/pida>`__: Software for analyzing
    multiple protein-protein interaction docking solutions,
+-  `pytim <https://github.com/Marcello-Sega/pytim>`__
+-  `MobleyLab/drug-computing <https://github.com/MobleyLab/drug-computing>`__
+   Educational materials for, and related to, UC Irvine's Drug Discovery
+   Computing Techniques course.
 
 Acknowledgment
 ==============

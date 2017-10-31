@@ -5,14 +5,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Table of contents &#8212; NGLView 1.0.a3 documentation</title>
+    <title>Table of contents &#8212; NGLView 1.0 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.a3',
+        VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.6.0/dist/embed.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.10.0/dist/embed.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 1.0.a3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 1.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -112,9 +112,8 @@ an <a class="reference external" href="https://github.com/arose/nglview/issues">
 <li><p class="first">Available on <a class="reference external" href="https://pypi.python.org/pypi/nglview/">PyPI</a></p>
 </li>
 </ul>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">ipywidgets</span><span class="o">==</span><span class="mf">5.2</span><span class="o">.</span><span class="mi">2</span> <span class="c1"># if you don&#39;t have ipywidgets yet</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">nglview</span>
-<span class="c1"># might need: jupyter-nbextension enable nglview --py --sys-prefix</span>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">nglview</span><span class="o">==</span><span class="mf">1.0</span><span class="o">.</span><span class="n">b2</span>
+<span class="n">jupyter</span><span class="o">-</span><span class="n">nbextension</span> <span class="n">enable</span> <span class="n">nglview</span> <span class="o">--</span><span class="n">py</span> <span class="o">--</span><span class="n">sys</span><span class="o">-</span><span class="n">prefix</span>
 </pre></div>
 </div>
 </div>
@@ -122,24 +121,20 @@ an <a class="reference external" href="https://github.com/arose/nglview/issues">
 <h2>Version Compatibility<a class="headerlink" href="#version-compatibility" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="28%" />
-<col width="36%" />
-<col width="36%" />
+<col width="44%" />
+<col width="56%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">nglview</th>
 <th class="head">ipywidgets</th>
-<th class="head">jupyterlab</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>&lt; 1.0</td>
 <td>5.2.2</td>
-<td>None</td>
 </tr>
 <tr class="row-odd"><td>1.0</td>
 <td>7.0</td>
-<td>0.25.2</td>
 </tr>
 </tbody>
 </table>
@@ -178,23 +173,11 @@ system)</a></p>
 </div>
 <div class="section" id="jupyterlab-user">
 <h3>jupyterlab user<a class="headerlink" href="#jupyterlab-user" title="Permalink to this headline">¶</a></h3>
-<p><strong>Note</strong>: jupyterlab is in its alpha version, so the instruction below
-might or might now work.</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Make sure to view below file before executing it.</span>
+<p>HIGHLY EXPERIMENTAL. Things might not work as you are expecting.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Please read its content before running</span>
 <span class="n">source</span> <span class="n">devtools</span><span class="o">/</span><span class="n">nglview</span><span class="o">-</span><span class="n">jupyterlab</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="docker-user">
-<h3>Docker user<a class="headerlink" href="#docker-user" title="Permalink to this headline">¶</a></h3>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">hainm</span><span class="o">/</span><span class="n">nglview</span><span class="p">:</span><span class="mf">1.0</span><span class="o">.</span><span class="n">a0</span> <span class="c1"># only do once</span>
-<span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">--</span><span class="n">rm</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8888</span><span class="p">:</span><span class="mi">8888</span> <span class="n">hainm</span><span class="o">/</span><span class="n">nglview</span><span class="p">:</span><span class="mf">1.0</span><span class="o">.</span><span class="n">a0</span>
-
-<span class="c1"># Then follow the instruction in your screen.</span>
-</pre></div>
-</div>
-<p><cite>How does ``nglview`</cite> look like in
-jupyterlab? &lt;examples/jupyterlab.md&gt;`__</p>
 </div>
 </div>
 </div>
@@ -419,8 +402,8 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 <div class="section" id="interaction-controls">
 <h2>Interaction controls<a class="headerlink" href="#interaction-controls" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference external" href="https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#mouse">Mouse</a></li>
-<li><a class="reference external" href="https://github.com/arose/ngl/blob/master/doc/usage/interaction-controls.md#keyboard">Keyboard</a></li>
+<li><a class="reference external" href="https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#mouse">Mouse</a></li>
+<li><a class="reference external" href="https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#keyboard">Keyboard</a></li>
 </ul>
 </div>
 <div class="section" id="display-more-than-two-widgets">
@@ -452,6 +435,10 @@ also</a></p>
 <span class="n">movie</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="embed-widget">
+<h2>Embed widget<a class="headerlink" href="#embed-widget" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="docs/embed.md">embed</a></p>
 </div>
 </div>
 <div class="section" id="api-doc">
@@ -551,6 +538,10 @@ visualize MD-trajectories along projected trajectories</li>
 Environment</li>
 <li><a class="reference external" href="https://github.com/jharman25/pida">pida</a>: Software for analyzing
 multiple protein-protein interaction docking solutions,</li>
+<li><a class="reference external" href="https://github.com/Marcello-Sega/pytim">pytim</a></li>
+<li><a class="reference external" href="https://github.com/MobleyLab/drug-computing">MobleyLab/drug-computing</a>
+Educational materials for, and related to, UC Irvine’s Drug Discovery
+Computing Techniques course.</li>
 </ul>
 </div>
 <div class="section" id="acknowledgment">
@@ -587,7 +578,6 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
 <li><a class="reference internal" href="#development-version">Development version</a><ul>
 <li><a class="reference internal" href="#notebook-user">notebook user</a></li>
 <li><a class="reference internal" href="#jupyterlab-user">jupyterlab user</a></li>
-<li><a class="reference internal" href="#docker-user">Docker user</a></li>
 </ul>
 </li>
 </ul>
@@ -605,6 +595,7 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
 <li><a class="reference internal" href="#display-more-than-two-widgets">Display more than two widgets</a></li>
 <li><a class="reference internal" href="#show-gui">Show GUI</a></li>
 <li><a class="reference internal" href="#movie-making">Movie making</a></li>
+<li><a class="reference internal" href="#embed-widget">Embed widget</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#api-doc">API doc</a></li>
@@ -648,12 +639,12 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 1.0.a3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 1.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Aug 13, 2017.
+      Last updated on Oct 31, 2017.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
