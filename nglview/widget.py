@@ -28,7 +28,7 @@ from .config import BACKENDS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '0.5.4-dev.27' # must match to js/package.json and js/src/widget_ngl.js
+__frontend_version__ = '0.5.4-dev.28' # must match to js/package.json and js/src/widget_ngl.js
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
         'setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
         'autoView',
