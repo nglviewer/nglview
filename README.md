@@ -260,8 +260,8 @@ view.add_trajectory(traj)
 # `parmed.Structure`, `htmd.Molecule` or derived class of `nglview.Trajectory`
 
 # change representation
-view.trajectory_0.add_cartoon(...) # equal to view.add_cartoon(component=0)
-view.trajectory_1.add_licorice(...) # equal to view.add_licorice(component=1)
+view[0].add_cartoon(...) # equal to view.add_cartoon(component=0)
+view[1].add_licorice(...) # equal to view.add_licorice(component=1)
 ```
 
 Add extra component
