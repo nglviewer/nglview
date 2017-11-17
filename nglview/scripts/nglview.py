@@ -81,29 +81,6 @@ notebook_dict = {
 }
 
 
-def install_nbextension(jupyter, user=True):
-    path = os.path.dirname(__file__)
-    nglview_main = os.path.join(path, 'nglview_main.js')
-
-    local = '--user' if user else ''
-    cm_install = '{jupyter} nbextension install {nglview_main} {local}'.format(
-        jupyter=jupyter, nglview_main=nglview_main, local=local)
-    cm_activate = '{jupyter} nbextension enable nglview_main'.format(
-        jupyter=jupyter)
-
-    with open(os.devnull, 'wb') as devnull:
-        subprocess.check_call(
-            cm_install.split(), stdout=devnull, stderr=subprocess.STDOUT)
-        subprocess.check_call(
-            cm_activate.split(), stdout=devnull, stderr=subprocess.STDOUT)
-
-
-def disable_extension(jupyter):
-    print("disable nglview_main extension")
-    cm = '{jupyter} nbextension disable nglview_main'.format(jupyter=jupyter)
-    subprocess.check_call(cm.split())
-
-
 remote_msg = """
 Try to use port = {port}
 
@@ -260,12 +237,6 @@ def main(notebook_dict=notebook_dict, cmd=None):
                                                 dirname=dirname)
         print('NOTE: make sure to open {0} in your local machine\n'.format(
             notebook_name))
-
-    if not args.auto or command is None:
-        try:
-            disable_extension(jupyter=args.jexe)
-        except CalledProcessError:
-            pass
 
     try:
         subprocess.check_call(cm.split())

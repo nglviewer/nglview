@@ -3,7 +3,6 @@ import os
 import unittest
 import subprocess
 from nglview import datafiles
-from nglview.scripts.nglview import install_nbextension
 import pytest
 from nglview.scripts.nglview import main, get_remote_port
 from mock import patch, mock_open
@@ -12,8 +11,7 @@ this_path = os.path.dirname(os.path.abspath(__file__))
 PY2 = sys.version_info[0] == 2
 
 @patch('subprocess.check_call')
-@patch('nglview.scripts.nglview.install_nbextension')
-def test_cli(_, mock_call):
+def test_cli(mock_call):
     # no argument 
     command = []
     # subprocess.check_call(command.split())
@@ -98,11 +96,6 @@ def test_cli(_, mock_call):
         main(cmd=command)
         mock_remote.assert_called_with(None, 'tmpnb_ngl.ipynb')
 
-
-@patch('subprocess.check_call')
-def test_install_nbextension(mock_call):
-    install_nbextension('jupyter')
-    assert mock_call.called
 
 
 @patch('nglview.scripts.app.NGLViewApp.get_port')
