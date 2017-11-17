@@ -19,6 +19,9 @@ Double check if you are having two ipywidgets version (e.g: one installed via pi
 You are likely using older JavaScript distribution of nglview. Check if it is 
 `./.local/share/jupyter/nbextensions/nglview-js-widgets/`, if Yes, delete it.
 
+- Debug experience from users
+    - https://github.com/SBRG/ssbio/wiki/Troubleshooting#nglviewer-fresh-install-tips
+
 ### Can I have two MDA.Atomgroups in the same view?
 
 https://github.com/arose/nglview/issues/434
