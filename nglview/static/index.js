@@ -58272,7 +58272,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    this._words[index >>> 5] ^= 1 << index;
 	};
 	BitArray.prototype._assignRange = function _assignRange (start, end, value) {
-	    if (end <= start)
+	    if (end < start)
 	        { return; }
 	    var words = this._words;
 	    var wordValue = value === true ? 0xFFFFFFFF : 0;
@@ -58398,7 +58398,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    return this;
 	};
 	BitArray.prototype._isRangeValue = function _isRangeValue (start, end, value) {
-	    if (end <= start)
+	    if (end < start)
 	        { return; }
 	    var words = this._words;
 	    var wordValue = value === true ? 0xFFFFFFFF : 0;
@@ -59141,7 +59141,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    var d2 = new Vector3();
 	    d1.subVectors(ap2, ap1);
 	    ap1.eachBondedAtom(function (x) {
-	        if (x.element !== 'H') {
+	        if (x.number !== 1) {
 	            d2.subVectors(x, ap1);
 	            var a = d1.angleTo(d2);
 	            angle = angle ? Math.min(angle, a) : a;
@@ -59166,7 +59166,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        if (ni > 1) {
 	            return;
 	        }
-	        if (x.element !== 'H') {
+	        if (x.number !== 1) {
 	            x1.index = x.index;
 	            neighbours[ni++].subVectors(x, ap1);
 	        }
@@ -59176,7 +59176,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            if (ni > 1) {
 	                return;
 	            }
-	            if (x.element !== 'H' && x.index !== ap1.index) {
+	            if (x.number !== 1 && x.index !== ap1.index) {
 	                neighbours[ni++].subVectors(x, ap1);
 	            }
 	        });
@@ -59513,9 +59513,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	 * Carbon in a carboxylate group
 	 */
 	function isCarboxylate(a) {
-	    return (a.number === 6 &&
+	    var terminalOxygenCount = 0;
+	    if (a.number === 6 &&
 	        a.bondToElementCount('O') === 2 &&
-	        a.bondToElementCount('C') === 1);
+	        a.bondToElementCount('C') === 1) {
+	        a.eachBondedAtom(function (ba) {
+	            if (ba.bondCount - ba.bondToElementCount('H') === 1) {
+	                ++terminalOxygenCount;
+	            }
+	        });
+	    }
+	    return terminalOxygenCount === 2;
 	}
 	/**
 	 * Carbon in a guanidine group
@@ -59571,10 +59579,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	function addPositiveCharges(structure, features) {
 	    var ref = valenceModel(structure.data);
 	    var charge = ref.charge;
-	    // TODO: Only used for Guanidine
-	    //   need to check if needed for other groups as well
-	    //   to avoid adding charged atoms that are part of a charged group
-	    var ignoreAtomsDict = {};
+	    var atomInGroupDict = {};
 	    structure.eachResidue(function (r) {
 	        if (PositvelyCharged.includes(r.resname)) {
 	            var state = createFeatureState(1 /* PositiveCharge */);
@@ -59587,31 +59592,30 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	        else if (!AA3.includes(r.resname) && !r.isNucleic()) {
 	            r.eachAtom(function (a) {
+	                var addGroup = false;
 	                var state = createFeatureState(1 /* PositiveCharge */);
 	                if (isGuanidine(a)) {
 	                    state.group = 8 /* Guanidine */;
-	                    a.eachBondedAtom(function (a) {
-	                        if (a.number === 7) {
-	                            ignoreAtomsDict[a.index] = true;
-	                            addAtom(state, a);
-	                        }
-	                    });
+	                    addGroup = true;
 	                }
 	                else if (isAcetamidine(a)) {
 	                    state.group = 9 /* Acetamidine */;
+	                    addGroup = true;
+	                }
+	                if (addGroup) {
 	                    a.eachBondedAtom(function (a) {
 	                        if (a.number === 7) {
-	                            ignoreAtomsDict[a.index] = true;
+	                            atomInGroupDict[a.index] = true;
 	                            addAtom(state, a);
 	                        }
 	                    });
+	                    addFeature(features, state);
 	                }
-	                addFeature(features, state);
 	            });
 	            r.eachAtom(function (a) {
 	                var state = createFeatureState(1 /* PositiveCharge */);
 	                if (charge[a.index] > 0) {
-	                    if (!ignoreAtomsDict[a.index]) {
+	                    if (!atomInGroupDict[a.index]) {
 	                        addAtom(state, a);
 	                        addFeature(features, state);
 	                    }
@@ -59623,10 +59627,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	function addNegativeCharges(structure, features) {
 	    var ref = valenceModel(structure.data);
 	    var charge = ref.charge;
-	    // TODO: Only used for Carboxylate
-	    //   need to check if needed for other groups as well
-	    //   to avoid adding charged atoms that are part of a charged group
-	    var ignoreAtomsDict = {};
+	    var atomInGroupDict = {};
 	    structure.eachResidue(function (r) {
 	        if (NegativelyCharged.includes(r.resname)) {
 	            var state = createFeatureState(2 /* NegativeCharge */);
@@ -59637,36 +59638,53 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            });
 	            addFeature(features, state);
 	        }
-	        else if (!AA3.includes(r.resname) && !r.isNucleic()) {
+	        else if (Bases.includes(r.resname)) {
+	            var state$1 = createFeatureState(2 /* NegativeCharge */);
 	            r.eachAtom(function (a) {
+	                if (isPhosphate(a)) {
+	                    state$1.group = 6 /* Phosphate */;
+	                    a.eachBondedAtom(function (a) {
+	                        if (a.number === 8)
+	                            { addAtom(state$1, a); }
+	                    });
+	                    addFeature(features, state$1);
+	                }
+	            });
+	        }
+	        else if (!AA3.includes(r.resname) && !Bases.includes(r.resname)) {
+	            r.eachAtom(function (a) {
+	                var addGroup = false;
 	                var state = createFeatureState(2 /* NegativeCharge */);
 	                if (isSulfonicAcid(a)) {
 	                    state.group = 4 /* SulfonicAcid */;
-	                    addAtom(state, a);
+	                    addGroup = true;
 	                }
 	                else if (isPhosphate(a)) {
 	                    state.group = 6 /* Phosphate */;
-	                    addAtom(state, a);
+	                    addGroup = true;
 	                }
 	                else if (isSulfate(a)) {
 	                    state.group = 5 /* Sulfate */;
-	                    addAtom(state, a);
+	                    addGroup = true;
 	                }
 	                else if (isCarboxylate(a)) {
 	                    state.group = 10 /* Carboxylate */;
+	                    addGroup = true;
+	                }
+	                if (addGroup) {
 	                    a.eachBondedAtom(function (a) {
 	                        if (a.number === 8) {
-	                            ignoreAtomsDict[a.index] = true;
+	                            atomInGroupDict[a.index] = true;
 	                            addAtom(state, a);
 	                        }
 	                    });
+	                    addFeature(features, state);
 	                }
-	                addFeature(features, state);
 	            });
 	            r.eachAtom(function (a) {
 	                var state = createFeatureState(2 /* NegativeCharge */);
 	                if (charge[a.index] < 0) {
-	                    if (!ignoreAtomsDict[a.index]) {
+	                    if (!atomInGroupDict[a.index]) {
 	                        addAtom(state, a);
 	                        addFeature(features, state);
 	                    }
@@ -59706,14 +59724,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	function addChargedContacts(structure, contacts, params) {
 	    if ( params === void 0 ) params = {};
 	
-	    var maxSaltbridgeDist = defaults(params.maxSaltbridgeDist, ContactDefaultParams.maxSaltbridgeDist);
+	    var maxSaltBridgeDist = defaults(params.maxSaltBridgeDist, ContactDefaultParams.maxSaltBridgeDist);
 	    var maxPiStackingDist = defaults(params.maxPiStackingDist, ContactDefaultParams.maxPiStackingDist);
 	    var maxPiStackingOffset = defaults(params.maxPiStackingOffset, ContactDefaultParams.maxPiStackingOffset);
 	    var maxPiStackingAngle = defaults(params.maxPiStackingAngle, ContactDefaultParams.maxPiStackingAngle);
 	    var maxCationPiDist = defaults(params.maxCationPiDist, ContactDefaultParams.maxCationPiDist);
 	    var maxCationPiOffset = defaults(params.maxCationPiOffset, ContactDefaultParams.maxCationPiOffset);
-	    var maxDistance = Math.max(maxSaltbridgeDist, maxPiStackingDist, maxCationPiDist);
-	    var maxSaltbridgeDistSq = maxSaltbridgeDist * maxSaltbridgeDist;
+	    var maxDistance = Math.max(maxSaltBridgeDist + 2, maxPiStackingDist, maxCationPiDist);
+	    // const maxSaltBridgeDistSq = maxSaltBridgeDist * maxSaltBridgeDist
 	    var maxPiStackingDistSq = maxPiStackingDist * maxPiStackingDist;
 	    var maxCationPiDistSq = maxCationPiDist * maxCationPiDist;
 	    var features = contacts.features;
@@ -59732,6 +59750,20 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    var az = structure.atomStore.z;
 	    var ap1 = structure.getAtomProxy();
 	    var ap2 = structure.getAtomProxy();
+	    var areAtomSetsWithinDist = function (atomSet1, atomSet2, maxDist) {
+	        var sn = atomSet1.length;
+	        var sm = atomSet2.length;
+	        for (var si = 0; si < sn; ++si) {
+	            ap1.index = atomSet1[si];
+	            for (var sj = 0; sj < sm; ++sj) {
+	                ap2.index = atomSet2[sj];
+	                if (ap1.distanceTo(ap2) <= maxDist) {
+	                    return true;
+	                }
+	            }
+	        }
+	        return false;
+	    };
 	    var v1 = new Vector3();
 	    var v2 = new Vector3();
 	    var v3 = new Vector3();
@@ -59767,7 +59799,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            var ti = types[i];
 	            var tj = types[j];
 	            if (isSaltBridge(ti, tj)) {
-	                if (dSq <= maxSaltbridgeDistSq) {
+	                if (areAtomSetsWithinDist(atomSets[i], atomSets[j], maxSaltBridgeDist)) {
 	                    add(i, j, 1 /* SaltBridge */);
 	                }
 	            }
@@ -59845,13 +59877,35 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    structure.eachAtom(function (a) {
 	        if (a.number === 6 && // C
 	            totalH[a.index] > 0 &&
-	            a.bondToElementCount('N') > 0 // TODO && a.isAromatic()
-	        ) {
+	            (a.bondToElementCount('N') > 0 ||
+	                a.bondToElementCount('O') > 0 ||
+	                inAromaticRingWithElectronNegativeElement(a))) {
 	            var state = createFeatureState(11 /* WeakHydrogenDonor */);
 	            addAtom(state, a);
 	            addFeature(features, state);
 	        }
 	    });
+	}
+	function inAromaticRingWithElectronNegativeElement(a) {
+	    if (!a.isAromatic())
+	        { return false; }
+	    var ringData = a.residueType.getRings();
+	    if (!ringData)
+	        { return false; }
+	    var hasElement = false;
+	    var rings = ringData.rings;
+	    rings.forEach(function (ring) {
+	        if (hasElement)
+	            { return; } // already found one
+	        if (ring.some(function (idx) { return (a.index - a.residueAtomOffset) === idx; })) {
+	            hasElement = ring.some(function (idx) {
+	                var atomTypeId = a.residueType.atomTypeIdList[idx];
+	                var number = a.atomMap.get(atomTypeId).number;
+	                return number === 7 || number === 8; // N, O
+	            });
+	        }
+	    });
+	    return hasElement;
 	}
 	/**
 	 * Potential hydrogen acceptor
@@ -59912,8 +59966,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    return ap.resname === 'HIS' && ap.number == 7 && ap.isRing();
 	}
 	function isBackboneHydrogenBond(ap1, ap2) {
-	    return ((ap1.atomname === 'O' && ap2.atomname === 'N') ||
-	        (ap1.atomname === 'N' && ap2.atomname === 'O'));
+	    return ap1.isBackbone() && ap2.isBackbone();
 	}
 	function isWaterHydrogenBond(ap1, ap2) {
 	    return ap1.isWater() && ap2.isWater();
@@ -59970,7 +60023,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            var ti = types[i];
 	            var tj = types[j];
 	            var isWeak = isWeakHydrogenBond(ti, tj);
-	            if (!isHydrogenBond(ti, tj) && !isWeakHydrogenBond(ti, tj))
+	            if (!isWeak && !isHydrogenBond(ti, tj))
 	                { return; }
 	            var ref = types[j] === 5 /* HydrogenAcceptor */ ? [i, j] : [j, i];
 	            var l = ref[0];
@@ -60199,7 +60252,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
 	 */
 	/**
-	 * Weak hydrogen donor
+	 * Hydrophobic carbon
 	 */
 	function addHydrophobic(structure, features) {
 	    structure.eachAtom(function (a) {
@@ -60208,9 +60261,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        if (a.number === 6) {
 	            flag = true;
 	            a.eachBondedAtom(function (ap) {
-	                var e = ap.element;
-	                if (e !== 'C' && e !== 'H')
-	                    { flag = false; }
+	                var an = ap.number;
+	                if (an !== 6 && an !== 1)
+	                    { flag = false; } // C, H
 	            });
 	        }
 	        if (flag) {
@@ -60404,36 +60457,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	 * Remove weak hydrogen bonds when the acceptor is involved in
 	 * a normal/strong hydrogen bond
 	 */
-	function refineWeakHydrogenBonds(structure, contacts) {
-	    var contactSet = contacts.contactSet;
-	    var contactStore = contacts.contactStore;
-	    var features = contacts.features;
-	    var adjacencyList = contacts.adjacencyList;
-	    var type = contactStore.type;
-	    var index1 = contactStore.index1;
-	    var index2 = contactStore.index2;
-	    var types = features.types;
-	    contactSet.forEach(function (i) {
-	        if (type[i] !== 8 /* WeakHydrogenBond */)
-	            { return; }
-	        var accFeat;
-	        if (types[index1[i]] === 11 /* WeakHydrogenDonor */) {
-	            accFeat = index2[i];
-	        }
-	        else {
-	            accFeat = index1[i];
-	        }
-	        var n = adjacencyList.countArray[accFeat];
-	        var offset = adjacencyList.offsetArray[accFeat];
-	        for (var j = 0; j < n; ++j) {
-	            var ci = adjacencyList.indexArray[offset + j];
-	            if (isHydrogenBondType(type[ci])) {
-	                contactSet.clear(i);
-	                return;
-	            }
-	        }
-	    });
-	}
+	
 	/**
 	 * Remove hydrogen bonds between groups that also form
 	 * a salt bridge between each other
@@ -60524,7 +60548,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    maxHydrophobicDist: 4.0,
 	    maxHbondDist: 3.5,
 	    maxHbondAccAngle: 60,
-	    maxHbondDonAngle: 30,
+	    maxHbondDonAngle: 45,
 	    maxHbondAccDihedral: 45,
 	    maxHbondDonDihedral: 45,
 	    maxPiStackingDist: 5.5,
@@ -60532,10 +60556,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    maxPiStackingAngle: 30,
 	    maxCationPiDist: 6.0,
 	    maxCationPiOffset: 1.5,
-	    maxSaltbridgeDist: 6.0,
+	    maxSaltBridgeDist: 6.0,
 	    maxHalogenBondDist: 4.0,
 	    maxHalogenBondAngle: 30,
-	    maxMetalDist: 3.0
+	    maxMetalDist: 3.0,
+	    refineSaltBridges: true
 	};
 	function invalidAtomContact(ap1, ap2) {
 	    return (ap1.modelIndex !== ap2.modelIndex ||
@@ -60590,55 +60615,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    var contacts = createContacts(features);
 	    if (exports.Debug)
 	        { Log.time('calculateContacts'); }
-	    if (exports.Debug)
-	        { Log.time('addChargedContacts'); }
 	    addChargedContacts(structure, contacts, params);
-	    if (exports.Debug)
-	        { Log.timeEnd('addChargedContacts'); }
-	    if (exports.Debug)
-	        { Log.time('addHydrogenBonds'); }
 	    addHydrogenBonds(structure, contacts, params);
-	    if (exports.Debug)
-	        { Log.timeEnd('addHydrogenBonds'); }
-	    if (exports.Debug)
-	        { Log.time('addMetalComplexation'); }
 	    addMetalComplexation(structure, contacts, params);
-	    if (exports.Debug)
-	        { Log.timeEnd('addMetalComplexation'); }
-	    if (exports.Debug)
-	        { Log.time('addHydrophobicContacts'); }
 	    addHydrophobicContacts(structure, contacts, params);
-	    if (exports.Debug)
-	        { Log.timeEnd('addHydrophobicContacts'); }
-	    if (exports.Debug)
-	        { Log.time('addHalogenBonds'); }
 	    addHalogenBonds(structure, contacts, params);
-	    if (exports.Debug)
-	        { Log.timeEnd('addHalogenBonds'); }
 	    var frozenContacts = createFrozenContacts(contacts);
-	    if (exports.Debug)
-	        { Log.time('refineHydrophobicContacts'); }
 	    refineHydrophobicContacts(structure, frozenContacts);
-	    if (exports.Debug)
-	        { Log.timeEnd('refineHydrophobicContacts'); }
-	    if (exports.Debug)
-	        { Log.time('refineWeakHydrogenBonds'); }
-	    refineWeakHydrogenBonds(structure, frozenContacts);
-	    if (exports.Debug)
-	        { Log.timeEnd('refineWeakHydrogenBonds'); }
-	    if (exports.Debug)
-	        { Log.time('refineSaltBridges'); }
-	    refineSaltBridges(structure, frozenContacts);
-	    if (exports.Debug)
-	        { Log.timeEnd('refineSaltBridges'); }
-	    if (exports.Debug)
-	        { Log.time('refinePiStacking'); }
+	    if (params.refineSaltBridges)
+	        { refineSaltBridges(structure, frozenContacts); }
 	    refinePiStacking(structure, frozenContacts);
 	    if (exports.Debug)
-	        { Log.timeEnd('refinePiStacking'); }
-	    if (exports.Debug)
 	        { Log.timeEnd('calculateContacts'); }
-	    console.log(frozenContacts);
 	    return frozenContacts;
 	}
 	function contactTypeName(type) {
@@ -76264,7 +76252,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            opacity: 0.6
 	        };
 	        this.distanceRepresentation = this.addRepresentation('distance', Object.assign({ labelUnit: 'angstrom' }, measurementParams), true);
-	        this.angleRepresentation = this.addRepresentation('angle', Object.assign({ arcVisible: false }, measurementParams), true);
+	        this.angleRepresentation = this.addRepresentation('angle', Object.assign({ arcVisible: true }, measurementParams), true);
 	        this.dihedralRepresentation = this.addRepresentation('dihedral', Object.assign({ planeVisible: false }, measurementParams), true);
 	    }
 	
@@ -82412,6 +82400,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            maxMetalDist: {
 	                type: 'number', precision: 1, max: 10, min: 0.1, rebuild: true
 	            },
+	            refineSaltBridges: {
+	                type: 'boolean', rebuild: true
+	            },
 	            radialSegments: true,
 	            disableImpostor: true
 	        }, this.parameters);
@@ -82437,7 +82428,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.maxHydrophobicDist = defaults(p.maxHydrophobicDist, 4.0);
 	        this.maxHbondDist = defaults(p.maxHbondDist, 3.5);
 	        this.maxHbondAccAngle = defaults(p.maxHbondAccAngle, 60);
-	        this.maxHbondDonAngle = defaults(p.maxHbondDonAngle, 30);
+	        this.maxHbondDonAngle = defaults(p.maxHbondDonAngle, 45);
 	        this.maxHbondAccDihedral = defaults(p.maxHbondAccDihedral, 45);
 	        this.maxHbondDonDihedral = defaults(p.maxHbondDonDihedral, 45);
 	        this.maxPiStackingDist = defaults(p.maxPiStackingDist, 5.5);
@@ -82449,6 +82440,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.maxHalogenBondDist = defaults(p.maxHalogenBondDist, 3.5);
 	        this.maxHalogenBondAngle = defaults(p.maxHalogenBondAngle, 30);
 	        this.maxMetalDist = defaults(p.maxMetalDist, 3.0);
+	        this.refineSaltBridges = defaults(p.refineSaltBridges, true);
 	        StructureRepresentation$$1.prototype.init.call(this, p);
 	    };
 	    ContactRepresentation.prototype.getAtomRadius = function getAtomRadius () {
@@ -82467,10 +82459,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            maxPiStackingAngle: this.maxPiStackingAngle,
 	            maxCationPiDist: this.maxCationPiDist,
 	            maxCationPiOffset: this.maxCationPiOffset,
-	            maxSaltbridgeDist: this.maxSaltbridgeDist,
+	            maxSaltBridgeDist: this.maxSaltbridgeDist,
 	            maxHalogenBondDist: this.maxHalogenBondDist,
 	            maxHalogenBondAngle: this.maxHalogenBondAngle,
-	            maxMetalDist: this.maxMetalDist
+	            maxMetalDist: this.maxMetalDist,
+	            refineSaltBridges: this.refineSaltBridges
 	        };
 	        var dataParams = {
 	            hydrogenBond: this.hydrogenBond,
