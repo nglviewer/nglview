@@ -173,9 +173,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }.bind(this));
 	
 	        // init toggle fullscreen
-	        $(this.stage.viewer.container).dblclick(function() {
+	        $(this.stage.viewer.container).dblclick(function(e) {
 	            if (!e.altKey){
-		            this.stage.toggleFullscreen();
+	                this.stage.toggleFullscreen();
 	            }
 	        }.bind(this));
 	
