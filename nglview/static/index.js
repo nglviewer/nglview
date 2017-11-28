@@ -70,6 +70,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /***/ (function(module, exports, __webpack_require__) {
 
 	var widgets = __webpack_require__(2);
+	// var NGL = require('ngl');
 	var NGL = __webpack_require__(3);
 	var $ = __webpack_require__(7);
 	var _ = __webpack_require__(8);
@@ -54054,7 +54055,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    canvas.height = 16;
 	    canvas.style.width = 16 + 'px';
 	    canvas.style.height = 16 + 'px';
-	    var gl = canvas.getContext("webgl");
+	    var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
 	    if (!gl) {
 	        console.log(("error creating webgl context for " + type));
 	        return false;
@@ -59999,10 +60000,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    if ( params === void 0 ) params = {};
 	
 	    var maxHbondDist = defaults(params.maxHbondDist, ContactDefaultParams.maxHbondDist);
+	    var maxHbondSulfurDist = defaults(params.maxHbondSulfurDist, ContactDefaultParams.maxHbondSulfurDist);
 	    var maxHbondAccAngle = degToRad(defaults(params.maxHbondAccAngle, ContactDefaultParams.maxHbondAccAngle));
 	    var maxHbondDonAngle = degToRad(defaults(params.maxHbondDonAngle, ContactDefaultParams.maxHbondDonAngle));
 	    var maxHbondAccDihedral = degToRad(defaults(params.maxHbondAccDihedral, ContactDefaultParams.maxHbondAccDihedral));
 	    var maxHbondDonDihedral = degToRad(defaults(params.maxHbondDonDihedral, ContactDefaultParams.maxHbondDonDihedral));
+	    var maxDist = Math.max(maxHbondDist, maxHbondSulfurDist);
+	    var maxHbondDistSq = maxHbondDist * maxHbondDist;
 	    var features = contacts.features;
 	    var spatialHash = contacts.spatialHash;
 	    var contactStore = contacts.contactStore;
@@ -60019,7 +60023,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    var donor = structure.getAtomProxy();
 	    var acceptor = structure.getAtomProxy();
 	    var loop = function ( i ) {
-	        spatialHash.eachWithin(x[i], y[i], z[i], maxHbondDist, function (j, dSq) {
+	        spatialHash.eachWithin(x[i], y[i], z[i], maxDist, function (j, dSq) {
 	            if (j <= i)
 	                { return; }
 	            var ti = types[i];
@@ -60033,6 +60037,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            donor.index = atomSets[l][0];
 	            acceptor.index = atomSets[k][0];
 	            if (invalidAtomContact(donor, acceptor))
+	                { return; }
+	            if (donor.number !== 16 && acceptor.number !== 16 && dSq > maxHbondDistSq)
 	                { return; }
 	            var donorAngle = calcMinAngle(donor, acceptor);
 	            if (donorAngle !== undefined) {
@@ -60359,6 +60365,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    return ((ti === 7 /* HalogenAcceptor */ && tj === 6 /* HalogenDonor */) ||
 	        (ti === 6 /* HalogenDonor */ && tj === 7 /* HalogenAcceptor */));
 	}
+	// http://www.pnas.org/content/101/48/16789.full
+	var OptimalHalogenAngle = degToRad(165);
+	var OptimalAcceptorAngle = degToRad(120);
 	/**
 	 * All pairs of halogen donor and acceptor atoms
 	 */
@@ -60393,10 +60402,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            var ref = types[i] === 6 /* HalogenDonor */ ? [ap1, ap2] : [ap2, ap1];
 	            var halogen = ref[0];
 	            var acceptor = ref[1];
-	            var angle = calcMinAngle(halogen, acceptor);
-	            if (angle === undefined)
+	            var halogenAngle = calcMinAngle(halogen, acceptor);
+	            if (halogenAngle === undefined)
 	                { return; } // Angle must be defined
-	            if (Math.PI - angle > maxHalogenBondAngle)
+	            if (OptimalHalogenAngle - halogenAngle > maxHalogenBondAngle)
+	                { return; }
+	            var acceptorAngle = calcMinAngle(acceptor, halogen);
+	            if (acceptorAngle === undefined)
+	                { return; } // Angle must be defined
+	            if (OptimalAcceptorAngle - acceptorAngle > maxHalogenBondAngle)
 	                { return; }
 	            featureSet.setBits(i, j);
 	            contactStore.addContact(i, j, 5 /* HalogenBond */);
@@ -60501,7 +60515,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    });
 	}
 	/**
-	 * Remove hydrophobic contacts between groups that also form
+	 * Remove hydrophobic and cation-pi interactions between groups that also form
 	 * a pi-stacking interaction between each other
 	 */
 	function refinePiStacking(structure, contacts) {
@@ -60525,7 +60539,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        atomSets[index2[i]].forEach(function (idx) { return add(idx, i); });
 	    });
 	    contactSet.forEach(function (i) {
-	        if (type[i] !== 6 /* Hydrophobic */)
+	        if (type[i] !== 6 /* Hydrophobic */ &&
+	            type[i] !== 2 /* CationPi */)
 	            { return; }
 	        var pil1 = piStackingDict[atomSets[index1[i]][0]];
 	        var pil2 = piStackingDict[atomSets[index2[i]][0]];
@@ -60549,6 +60564,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	var ContactDefaultParams = {
 	    maxHydrophobicDist: 4.0,
 	    maxHbondDist: 3.5,
+	    maxHbondSulfurDist: 4.1,
 	    maxHbondAccAngle: 60,
 	    maxHbondDonAngle: 45,
 	    maxHbondAccDihedral: 45,
@@ -64974,7 +64990,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	 * @return {undefined}
 	 */
 	MouseActions.isolevelScroll = function isolevelScroll (stage, delta) {
-	    var d = Math.sign(delta) / 5;
+	    var d = Math.sign(delta) / 10;
 	    stage.eachRepresentation(function (reprElem, comp) {
 	        if (reprElem.repr instanceof SurfaceRepresentation) {
 	            var p = reprElem.getParameters(); // TODO
@@ -65572,8 +65588,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    // ensure the domElement is focusable
 	    this.domElement.setAttribute('tabIndex', '-1');
 	    this.domElement.style.outline = 'none';
-	    // this.domElement.autofocus = true
-	    this.domElement.focus();
 	    this._focusDomElement = this._focusDomElement.bind(this);
 	    this._onKeydown = this._onKeydown.bind(this);
 	    this._onKeyup = this._onKeyup.bind(this);
@@ -69912,8 +69926,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	};
 	
 	//
+	var AromaticRingElements = [
+	    5, 6, 7, 8,
+	    14, 15, 16,
+	    32, 33,
+	    50, 51,
+	    83 // Bi
+	];
 	var AromaticRingPlanarityThreshold = 0.05;
 	function isRingAromatic(ring) {
+	    if (ring.some(function (a) { return !AromaticRingElements.includes(a.number); }))
+	        { return false; }
 	    var i = 0;
 	    var coords = new Matrix(3, ring.length);
 	    var cd = coords.data;
@@ -74397,6 +74420,80 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	Object.defineProperties( Component.prototype, prototypeAccessors$13 );
 	
 	/**
+	 * @file Collection
+	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
+	 * @private
+	 */
+	var Collection = function Collection(list) {
+	    var this$1 = this;
+	    if ( list === void 0 ) list = [];
+	
+	    this.list = list;
+	    // remove elements from list when they get disposed
+	    var n = list.length;
+	    for (var i = 0; i < n; ++i) {
+	        var elm = list[i];
+	        elm.signals.disposed.add(this$1._remove, this$1);
+	    }
+	};
+	
+	var prototypeAccessors$26 = { first: { configurable: true } };
+	Collection.prototype._remove = function _remove (elm) {
+	    var idx = this.list.indexOf(elm);
+	    if (idx !== -1) {
+	        this.list.splice(idx, 1);
+	    }
+	};
+	prototypeAccessors$26.first.get = function () {
+	    return this.list.length > 0 ? this.list[0] : undefined;
+	};
+	Collection.prototype.forEach = function forEach (fn) {
+	    this.list.forEach(fn);
+	    return this;
+	};
+	Collection.prototype.dispose = function dispose () {
+	    return this.forEach(function (elm) { return elm.dispose(); });
+	};
+	
+	Object.defineProperties( Collection.prototype, prototypeAccessors$26 );
+	
+	/**
+	 * @file Component Collection
+	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
+	 * @private
+	 */
+	var RepresentationCollection = (function (Collection$$1) {
+	    function RepresentationCollection () {
+	        Collection$$1.apply(this, arguments);
+	    }
+	
+	    if ( Collection$$1 ) RepresentationCollection.__proto__ = Collection$$1;
+	    RepresentationCollection.prototype = Object.create( Collection$$1 && Collection$$1.prototype );
+	    RepresentationCollection.prototype.constructor = RepresentationCollection;
+	
+	    RepresentationCollection.prototype.setParameters = function setParameters (params) {
+	        return this.forEach(function (repr) { return repr.setParameters(params); });
+	    };
+	    RepresentationCollection.prototype.setVisibility = function setVisibility (value) {
+	        return this.forEach(function (repr) { return repr.setVisibility(value); });
+	    };
+	    RepresentationCollection.prototype.setSelection = function setSelection (string) {
+	        return this.forEach(function (repr) { return repr.setSelection(string); });
+	    };
+	    RepresentationCollection.prototype.setColor = function setColor (color) {
+	        return this.forEach(function (repr) { return repr.setColor(color); });
+	    };
+	    RepresentationCollection.prototype.update = function update (what) {
+	        return this.forEach(function (repr) { return repr.update(what); });
+	    };
+	    RepresentationCollection.prototype.build = function build (params) {
+	        return this.forEach(function (repr) { return repr.build(params); });
+	    };
+	
+	    return RepresentationCollection;
+	}(Collection));
+	
+	/**
 	 * @file Trajectory Component
 	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
 	 * @private
@@ -74510,10 +74607,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    this.deltaTime = 1;
 	};
 	
-	var prototypeAccessors$26 = { type: { configurable: true } };
-	prototypeAccessors$26.type.get = function () { return 'Frames'; };
+	var prototypeAccessors$27 = { type: { configurable: true } };
+	prototypeAccessors$27.type.get = function () { return 'Frames'; };
 	
-	Object.defineProperties( Frames.prototype, prototypeAccessors$26 );
+	Object.defineProperties( Frames.prototype, prototypeAccessors$27 );
 	
 	/**
 	 * @file Superposition
@@ -74691,8 +74788,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    this._animate = this._animate.bind(this);
 	};
 	
-	var prototypeAccessors$28 = { isRunning: { configurable: true } };
-	prototypeAccessors$28.isRunning.get = function () { return this._run; };
+	var prototypeAccessors$29 = { isRunning: { configurable: true } };
+	prototypeAccessors$29.isRunning.get = function () { return this._run; };
 	/**
 	 * set player parameters
 	 * @param {TrajectoryPlayerParameters} [params] - parameter object
@@ -74874,7 +74971,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    this.traj.setFrame(this.parameters.start);
 	};
 	
-	Object.defineProperties( TrajectoryPlayer.prototype, prototypeAccessors$28 );
+	Object.defineProperties( TrajectoryPlayer.prototype, prototypeAccessors$29 );
 	
 	/**
 	 * @file Trajectory
@@ -75018,17 +75115,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    });
 	};
 	
-	var prototypeAccessors$27 = { frameCount: { configurable: true },currentFrame: { configurable: true } };
+	var prototypeAccessors$28 = { frameCount: { configurable: true },currentFrame: { configurable: true } };
 	/**
 	 * Number of frames in the trajectory
 	 */
-	prototypeAccessors$27.frameCount.get = function () {
+	prototypeAccessors$28.frameCount.get = function () {
 	    return this._frameCount;
 	};
 	/**
 	 * Currently set frame of the trajectory
 	 */
-	prototypeAccessors$27.currentFrame.get = function () {
+	prototypeAccessors$28.currentFrame.get = function () {
 	    return this._currentFrame;
 	};
 	Trajectory.prototype._init = function _init (structure) {
@@ -75361,7 +75458,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    return this.timeOffset + i * this.deltaTime;
 	};
 	
-	Object.defineProperties( Trajectory.prototype, prototypeAccessors$27 );
+	Object.defineProperties( Trajectory.prototype, prototypeAccessors$28 );
 	
 	/**
 	 * @file Frames Trajectory
@@ -76256,6 +76353,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.distanceRepresentation = this.addRepresentation('distance', Object.assign({ labelUnit: 'angstrom' }, measurementParams), true);
 	        this.angleRepresentation = this.addRepresentation('angle', Object.assign({ arcVisible: true }, measurementParams), true);
 	        this.dihedralRepresentation = this.addRepresentation('dihedral', Object.assign({ planeVisible: false }, measurementParams), true);
+	        this.measureRepresentations = new RepresentationCollection([
+	            this.spacefillRepresentation,
+	            this.distanceRepresentation,
+	            this.angleRepresentation,
+	            this.dihedralRepresentation
+	        ]);
 	    }
 	
 	    if ( Component$$1 ) StructureComponent.__proto__ = Component$$1;
@@ -76328,10 +76431,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.reprList.forEach(function (repr) {
 	            repr.build();
 	        });
-	        this.spacefillRepresentation.build(undefined);
-	        this.distanceRepresentation.build(undefined);
-	        this.angleRepresentation.build(undefined);
-	        this.dihedralRepresentation.build(undefined);
+	        this.measureRepresentations.build();
 	    };
 	    /**
 	     * Rebuild all trajectories
@@ -76340,9 +76440,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    StructureComponent.prototype.rebuildTrajectories = function rebuildTrajectories () {
 	        var this$1 = this;
 	
-	        this.trajList.slice().forEach(function (trajComp) {
+	        this.trajList.forEach(function (trajComp) {
 	            trajComp.trajectory.setStructure(this$1.structureView);
 	        });
+	    };
+	    StructureComponent.prototype.updateRepresentations = function updateRepresentations (what) {
+	        Component$$1.prototype.updateRepresentations.call(this, what);
+	        this.measureRepresentations.update(what);
 	    };
 	    StructureComponent.prototype.addRepresentation = function addRepresentation (type, params, hidden) {
 	        var this$1 = this;
@@ -76388,10 +76492,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        });
 	        this.trajList.length = 0;
 	        this.structure.dispose();
-	        this.spacefillRepresentation.dispose();
-	        this.distanceRepresentation.dispose();
-	        this.angleRepresentation.dispose();
-	        this.dihedralRepresentation.dispose();
+	        this.measureRepresentations.dispose();
 	        Component$$1.prototype.dispose.call(this);
 	    };
 	    StructureComponent.prototype.autoView = function autoView (sele, duration) {
@@ -76437,29 +76538,31 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    };
 	    StructureComponent.prototype.measurePick = function measurePick (atom) {
 	        var pickCount = this.pickBuffer.count;
-	        if (this.lastPick === atom.index && pickCount >= 2) {
-	            var atomList = this.pickBuffer.data;
-	            var atomListSorted = this.pickBuffer.data.sort();
-	            if (this.pickDict.has(atomListSorted)) {
-	                this.pickDict.del(atomListSorted);
-	            }
-	            else {
-	                this.pickDict.add(atomListSorted, atomList);
-	            }
-	            if (pickCount === 2) {
-	                this.distanceRepresentation.setParameters({
-	                    atomPair: this.pickDict.values.filter(function (l) { return l.length === 2; })
-	                });
-	            }
-	            else if (pickCount === 3) {
-	                this.angleRepresentation.setParameters({
-	                    atomTriple: this.pickDict.values.filter(function (l) { return l.length === 3; })
-	                });
-	            }
-	            else if (pickCount === 4) {
-	                this.dihedralRepresentation.setParameters({
-	                    atomQuad: this.pickDict.values.filter(function (l) { return l.length === 4; })
-	                });
+	        if (this.lastPick === atom.index && pickCount >= 1) {
+	            if (pickCount > 1) {
+	                var atomList = this.pickBuffer.data;
+	                var atomListSorted = this.pickBuffer.data.sort();
+	                if (this.pickDict.has(atomListSorted)) {
+	                    this.pickDict.del(atomListSorted);
+	                }
+	                else {
+	                    this.pickDict.add(atomListSorted, atomList);
+	                }
+	                if (pickCount === 2) {
+	                    this.distanceRepresentation.setParameters({
+	                        atomPair: this.pickDict.values.filter(function (l) { return l.length === 2; })
+	                    });
+	                }
+	                else if (pickCount === 3) {
+	                    this.angleRepresentation.setParameters({
+	                        atomTriple: this.pickDict.values.filter(function (l) { return l.length === 3; })
+	                    });
+	                }
+	                else if (pickCount === 4) {
+	                    this.dihedralRepresentation.setParameters({
+	                        atomQuad: this.pickDict.values.filter(function (l) { return l.length === 4; })
+	                    });
+	                }
 	            }
 	            this.pickBuffer.clear();
 	            this.lastPick = undefined;
@@ -76477,6 +76580,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.lastPick = undefined;
 	        this.spacefillRepresentation.setSelection('none');
 	    };
+	    StructureComponent.prototype.measureBuild = function measureBuild () {
+	        var md = this.measureData();
+	        this.distanceRepresentation.setParameters({ atomPair: md.distance });
+	        this.angleRepresentation.setParameters({ atomTriple: md.angle });
+	        this.dihedralRepresentation.setParameters({ atomQuad: md.dihedral });
+	    };
 	    StructureComponent.prototype.measureUpdate = function measureUpdate () {
 	        var this$1 = this;
 	
@@ -76487,6 +76596,50 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        });
 	        this.spacefillRepresentation.setSelection('@' + this.pickBuffer.data.join(','));
 	        this.spacefillRepresentation.setParameters({ radiusData: radiusData });
+	    };
+	    StructureComponent.prototype.measureData = function measureData () {
+	        var pv = this.pickDict.values;
+	        return {
+	            distance: pv.filter(function (l) { return l.length === 2; }),
+	            angle: pv.filter(function (l) { return l.length === 3; }),
+	            dihedral: pv.filter(function (l) { return l.length === 4; })
+	        };
+	    };
+	    /**
+	     * Remove all measurements, optionally limit to distance, angle or dihedral
+	     */
+	    StructureComponent.prototype.removeAllMeasurements = function removeAllMeasurements (type) {
+	        var pd = this.pickDict;
+	        var pv = pd.values;
+	        var remove = function (len) {
+	            pv.filter(function (l) { return l.length === len; }).forEach(function (l) { return pd.del(l.slice().sort()); });
+	        };
+	        if (!type || type & 1 /* Distance */)
+	            { remove(2); }
+	        if (!type || type & 2 /* Angle */)
+	            { remove(3); }
+	        if (!type || type & 4 /* Dihedral */)
+	            { remove(4); }
+	        this.measureBuild();
+	    };
+	    /**
+	     * Remove a measurement given as a pair, triple, quad of atom indices
+	     */
+	    StructureComponent.prototype.removeMeasurement = function removeMeasurement (atomList) {
+	        this.pickDict.del(atomList.slice().sort());
+	        this.measureBuild();
+	    };
+	    /**
+	     * Add a measurement given as a pair, triple, quad of atom indices
+	     */
+	    StructureComponent.prototype.addMeasurement = function addMeasurement (atomList) {
+	        if (atomList.length < 2 || atomList.length > 4)
+	            { return; }
+	        var atomListSorted = atomList.slice().sort();
+	        if (!this.pickDict.has(atomListSorted)) {
+	            this.pickDict.add(atomListSorted, atomList);
+	        }
+	        this.measureBuild();
 	    };
 	
 	    Object.defineProperties( StructureComponent.prototype, prototypeAccessors );
@@ -76618,44 +76771,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	ComponentRegistry.add('volume', VolumeComponent);
 	
 	/**
-	 * @file Collection
-	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
-	 * @private
-	 */
-	var Collection = function Collection(list) {
-	    var this$1 = this;
-	    if ( list === void 0 ) list = [];
-	
-	    this.list = list;
-	    // remove elements from list when they get disposed
-	    var n = list.length;
-	    for (var i = 0; i < n; ++i) {
-	        var elm = list[i];
-	        elm.signals.disposed.add(this$1._remove, this$1);
-	    }
-	};
-	
-	var prototypeAccessors$29 = { first: { configurable: true } };
-	Collection.prototype._remove = function _remove (elm) {
-	    var idx = this.list.indexOf(elm);
-	    if (idx !== -1) {
-	        this.list.splice(idx, 1);
-	    }
-	};
-	prototypeAccessors$29.first.get = function () {
-	    return this.list.length > 0 ? this.list[0] : undefined;
-	};
-	Collection.prototype.forEach = function forEach (fn) {
-	    this.list.forEach(fn);
-	    return this;
-	};
-	Collection.prototype.dispose = function dispose () {
-	    return this.forEach(function (elm) { return elm.dispose(); });
-	};
-	
-	Object.defineProperties( Collection.prototype, prototypeAccessors$29 );
-	
-	/**
 	 * @file Component Collection
 	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
 	 * @private
@@ -76677,36 +76792,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    };
 	
 	    return ComponentCollection;
-	}(Collection));
-	
-	/**
-	 * @file Component Collection
-	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
-	 * @private
-	 */
-	var RepresentationCollection = (function (Collection$$1) {
-	    function RepresentationCollection () {
-	        Collection$$1.apply(this, arguments);
-	    }
-	
-	    if ( Collection$$1 ) RepresentationCollection.__proto__ = Collection$$1;
-	    RepresentationCollection.prototype = Object.create( Collection$$1 && Collection$$1.prototype );
-	    RepresentationCollection.prototype.constructor = RepresentationCollection;
-	
-	    RepresentationCollection.prototype.setParameters = function setParameters (params) {
-	        return this.forEach(function (repr) { return repr.setParameters(params); });
-	    };
-	    RepresentationCollection.prototype.setVisibility = function setVisibility (value) {
-	        return this.forEach(function (repr) { return repr.setVisibility(value); });
-	    };
-	    RepresentationCollection.prototype.setSelection = function setSelection (string) {
-	        return this.forEach(function (repr) { return repr.setSelection(string); });
-	    };
-	    RepresentationCollection.prototype.setColor = function setColor (color) {
-	        return this.forEach(function (repr) { return repr.setColor(color); });
-	    };
-	
-	    return RepresentationCollection;
 	}(Collection));
 	
 	/**
@@ -82363,6 +82448,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            maxHbondDist: {
 	                type: 'number', precision: 1, max: 10, min: 0.1, rebuild: true
 	            },
+	            maxHbondSulfurDist: {
+	                type: 'number', precision: 1, max: 10, min: 0.1, rebuild: true
+	            },
 	            maxHbondAccAngle: {
 	                type: 'integer', max: 180, min: 0, rebuild: true
 	            },
@@ -82429,6 +82517,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.piStacking = defaults(p.piStacking, true);
 	        this.maxHydrophobicDist = defaults(p.maxHydrophobicDist, 4.0);
 	        this.maxHbondDist = defaults(p.maxHbondDist, 3.5);
+	        this.maxHbondSulfurDist = defaults(p.maxHbondSulfurDist, 4.1);
 	        this.maxHbondAccAngle = defaults(p.maxHbondAccAngle, 60);
 	        this.maxHbondDonAngle = defaults(p.maxHbondDonAngle, 45);
 	        this.maxHbondAccDihedral = defaults(p.maxHbondAccDihedral, 45);
@@ -82452,6 +82541,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        var params = {
 	            maxHydrophobicDist: this.maxHydrophobicDist,
 	            maxHbondDist: this.maxHbondDist,
+	            maxHbondSulfurDist: this.maxHbondSulfurDist,
 	            maxHbondAccAngle: this.maxHbondAccAngle,
 	            maxHbondDonAngle: this.maxHbondDonAngle,
 	            maxHbondAccDihedral: this.maxHbondAccDihedral,
@@ -118137,7 +118227,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 66 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.28","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"file-loader":"^0.8.5","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","css-loader":"^0.23.1","style-loader":"^0.13.1","ngl":"0.10.5-20","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"v1.0.0-beta.5"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"0.5.4-dev.30","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"dist/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"file-loader":"^0.8.5","babel-eslint":"^7.0.0","babel-register":"^6.11.6","eslint":"^3.2.2","eslint-config-google":"^0.7.1","json-loader":"^0.5.4","css-loader":"^0.23.1","style-loader":"^0.13.1","ngl":"0.10.5-20","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","@jupyter-widgets/base":"^0.5.2","@jupyterlab/nbwidgets":"^0.6.15","ngl":"v1.0.0-beta.5"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ })
 /******/ ])});;
