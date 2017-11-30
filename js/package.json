@@ -30,15 +30,15 @@
     "test": "mocha"
   },
   "devDependencies": {
-    "file-loader": "^0.8.5",
     "babel-eslint": "^7.0.0",
     "babel-register": "^6.11.6",
+    "css-loader": "^0.23.1",
     "eslint": "^3.2.2",
     "eslint-config-google": "^0.7.1",
+    "file-loader": "^0.8.5",
     "json-loader": "^0.5.4",
-    "css-loader": "^0.23.1",
+    "ngl": "^2.0.0-dev.1",
     "style-loader": "^0.13.1",
-    "ngl": "0.10.5-20",
     "webpack": "^1.12.14"
   },
   "dependencies": {
@@ -46,8 +46,7 @@
     "jquery-ui": "^1.12.1",
     "underscore": "^1.8.3",
     "@jupyter-widgets/base": "^0.5.2",
-    "@jupyterlab/nbwidgets": "^0.6.15",
-    "ngl": "v1.0.0-beta.5"
+    "@jupyterlab/nbwidgets": "^0.6.15"
   },
   "homepage": "https://github.com/arose/nglview#readme",
   "directories": {

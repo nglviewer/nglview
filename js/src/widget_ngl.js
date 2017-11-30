@@ -1,6 +1,5 @@
 var widgets = require("@jupyter-widgets/base");
-// var NGL = require('ngl');
-var NGL = require('./ngl');
+var NGL = require('ngl');
 var $ = require('jquery');
 var _ = require('underscore');
 require('jquery-ui/ui/widgets/draggable');
