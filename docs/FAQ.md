@@ -14,7 +14,7 @@ Then in your Jupyter notebook, choose the right `kernel`. If you are using `pyth
 
 Double check if you are having two ipywidgets version (e.g: one installed via pip and one installed via conda)
 
-- Class NGLModel not found in module nglview-js-widgets
+- Class NGLModel not found in module nglview-js-widgets (Message can be observed in the web developer console view of your favorite browser)
 
 You are likely using older JavaScript distribution of nglview. Check if it is 
 `$HOME/.local/share/jupyter/nbextensions/nglview-js-widgets/`, if Yes, delete it.
