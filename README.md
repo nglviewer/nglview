@@ -379,7 +379,7 @@ nglview my.pdb --browser=google-chrome
 FAQ
 ===
 
-[Q&A](https://github.com/arose/nglview/wiki/Q&A)
+[Q&A](docs/FAQ.md)
 
 Website
 =======
