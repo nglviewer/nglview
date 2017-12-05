@@ -1,10 +1,10 @@
 1. Can not import nglview although successfully installed it?
 
-> You can try
+You can try
 
-> ```bash
-> python -m ipykernel install --user
-> ```
+```bash
+python -m ipykernel install
+```
 
 > Then in your Jupyter notebook, choose the right `kernel`. If you are using `python 2`, make sure to choose `Python 2` kernel.
 
@@ -21,7 +21,7 @@ You are likely using older JavaScript distribution of nglview. Check if it is
 
 Why? This directory has a higher preference over sys-prefix so notebook will load Javascripts files from here first.
 
-- Debug experience from users
+- Extensive debug experience from users
     - https://github.com/SBRG/ssbio/wiki/Troubleshooting#nglviewer-fresh-install-tips
 
 3. Can I have two MDA.Atomgroups in the same view?
