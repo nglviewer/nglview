@@ -6,7 +6,7 @@ You can try
 python -m ipykernel install
 ```
 
-> Then in your Jupyter notebook, choose the right `kernel`. If you are using `python 2`, make sure to choose `Python 2` kernel.
+Then in your Jupyter notebook, choose the right `kernel`. If you are using `python 2`, make sure to choose `Python 2` kernel.
 
 2. widget not shown?
 
