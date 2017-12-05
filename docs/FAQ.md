@@ -17,7 +17,9 @@ Double check if you are having two ipywidgets version (e.g: one installed via pi
 - Class NGLModel not found in module nglview-js-widgets
 
 You are likely using older JavaScript distribution of nglview. Check if it is 
-`./.local/share/jupyter/nbextensions/nglview-js-widgets/`, if Yes, delete it.
+`$HOME/.local/share/jupyter/nbextensions/nglview-js-widgets/`, if Yes, delete it.
+
+Why? This directory has a higher preference over sys-prefix so notebook will load Javascripts files from here first.
 
 - Debug experience from users
     - https://github.com/SBRG/ssbio/wiki/Troubleshooting#nglviewer-fresh-install-tips
