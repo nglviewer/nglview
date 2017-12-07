@@ -1,12 +1,12 @@
 1. Can not import nglview although successfully installed it?
 
-> You can try
+You can try
 
-> ```bash
-> python -m ipykernel install --user
-> ```
+```bash
+python -m ipykernel install
+```
 
-> Then in your Jupyter notebook, choose the right `kernel`. If you are using `python 2`, make sure to choose `Python 2` kernel.
+Then in your Jupyter notebook, choose the right `kernel`. If you are using `python 2`, make sure to choose `Python 2` kernel.
 
 2. widget not shown?
 
@@ -14,12 +14,14 @@
 
 Double check if you are having two ipywidgets version (e.g: one installed via pip and one installed via conda)
 
-- Class NGLModel not found in module nglview-js-widgets
+- Class NGLModel not found in module nglview-js-widgets (Message can be observed in the web developer console view of your favorite browser)
 
 You are likely using older JavaScript distribution of nglview. Check if it is 
-`./.local/share/jupyter/nbextensions/nglview-js-widgets/`, if Yes, delete it.
+`$HOME/.local/share/jupyter/nbextensions/nglview-js-widgets/`, if Yes, delete it.
 
-- Debug experience from users
+Why? This directory has a higher preference over sys-prefix so notebook will load Javascripts files from here first.
+
+- Extensive debug experience from users
     - https://github.com/SBRG/ssbio/wiki/Troubleshooting#nglviewer-fresh-install-tips
 
 3. Can I have two MDA.Atomgroups in the same view?
