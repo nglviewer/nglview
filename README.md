@@ -1,4 +1,4 @@
-[Installation](#installation) | [Example](#example) | [Usage](#usage) | [Command line](#command-line) | [API doc](#api-doc) | [Interface classes](docs/interface_classes.md) | [Website](#website) | [GUI](#show-gui) | [Acknowledgment](#acknowledgment)
+[Citation](#cite) | [Installation](#installation) | [Example](#example) | [Usage](#usage) | [Command line](#command-line) | [API doc](#api-doc) | [Interface classes](docs/interface_classes.md) | [Website](#website) | [GUI](#show-gui) | [Acknowledgment](#acknowledgment)
 
 [![Binder](http://mybinder.org/assets/images/logo.svg)](http://mybinder.org/repo/hainm/nglview-notebooks)
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
@@ -29,6 +29,7 @@ Table of contents
 * [FAQ](#faq)
 * [Website](#website)
 * [Acknowledgment](#acknowledgment)
+* [Cite](#cite)
 * [License](#license)
 
 
@@ -422,6 +423,12 @@ Acknowledgment
 - [dunovank/jupyter-themes](https://github.com/dunovank/jupyter-themes): for `oceans16` theme
 - [base64-arraybuffer](https://github.com/niklasvh/base64-arraybuffer)
 - [ipywidgets](https://github.com/jupyter-widgets/ipywidgets)
+
+Cite
+====
+If you would like to acknowledge our work, feel free to cite:
+
+Hai Nguyen, David A Case, Alexander S Rose; NGLview - Interactive molecular graphics for Jupyter notebooks, Bioinformatics, , btx789, https://doi.org/10.1093/bioinformatics/btx789
 
 License
 =======
