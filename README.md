@@ -60,10 +60,10 @@ Released version
 
 ## Version Compatibility
 
-| nglview | ipywidgets |
-| --------|:----------:|
-| < 1.0   | 5.2.2      |
-| 1.0     | 7.0        |
+| nglview | ipywidgets | ipykernel |
+| --------|:----------:|----------:|
+| < 1.0   | 5.2.2      | N/A
+| 1.0     | 7.0        | 4.6
 
 ## Notes
 
