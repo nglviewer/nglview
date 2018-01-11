@@ -203,7 +203,9 @@ class FileManager(object):
                 return self.src.read()
             else:
                 if self.is_filename:
-                    return open(self.src, 'rb').read()
+                    mode = 'rb' if self.is_binary else 'r'
+                    with open(self.src, mode) as fh:
+                        return fh.read()
                 else:
                     return self.src
 
