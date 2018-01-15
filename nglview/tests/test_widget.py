@@ -609,7 +609,7 @@ def test_coordinates_meta():
 
 def test_structure_file():
     for fn in [get_fn('tz2.pdb'), nv.datafiles.GRO]:
-        content = open(fn, 'rb').read()
+        content = open(fn, 'r').read()
         fs1 = nv.FileStructure(fn)
         assert content == fs1.get_structure_string()
 

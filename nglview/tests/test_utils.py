@@ -115,7 +115,7 @@ def test_file_current_folder():
         assert fh_content != src2.read()
 
     fh3 = FileManager(src)
-    content = open(src, 'rb').read()
+    content = open(src, 'r').read()
     assert_equal(fh3.read(force_buffer=True), content)
 
     # blob
