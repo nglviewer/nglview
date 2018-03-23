@@ -1,10 +1,10 @@
 {
   "name": "nglview-js-widgets",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "nglview-js-widgets",
   "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arose/nglview.git"
@@ -13,7 +13,8 @@
     "url": "https://github.com/arose/nglview/issues"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "keywords": [
     "molecular graphics",
@@ -45,7 +46,11 @@
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "underscore": "^1.8.3",
-    "@jupyter-widgets/base": "^0.5.2"
+    "ngl": "^2.0.0-dev.28",
+    "@jupyter-widgets/base": "^1.0.0"
+  },
+  "jupyterlab": {
+    "extension": "src/jupyterlab-plugin"
   },
   "homepage": "https://github.com/arose/nglview#readme",
   "directories": {

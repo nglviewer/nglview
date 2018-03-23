@@ -100,11 +100,8 @@ The development version can be installed directly from github:
     # tested with ipywidgets 5.2.2, notebook 4.2.1
 ```
 ### jupyterlab user
-HIGHLY EXPERIMENTAL. Things might not work as you are expecting.
-```
-# Please read its content before running
-source devtools/nglview-jupyterlab.sh
-```
+
+Not supported yet.
 
 Example
 =======

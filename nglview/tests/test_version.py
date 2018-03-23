@@ -14,9 +14,3 @@ def test_make_sure_versions_matched():
                 break
     line = line.replace('module.exports =', '')
     assert json.loads(line)['version'] == nv.widget.__frontend_version__
-
-    # bakend and jslab
-    package_json = os.path.join(nglview_dir, '..', 'jslab', 'package.json')
-    with open(package_json) as fh:
-        assert json.loads(fh.read())['dependencies']['nglview-js-widgets'] == \
-                nv.widget.__frontend_version__

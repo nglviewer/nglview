@@ -1,11 +1,10 @@
-
-var nglview_js_widgets = require('nglview-js-widgets');
-var jupyterlab_widgets = require('@jupyter-widgets/jupyterlab-manager');
+var nglview_js_widgets = require('./index');
+var base = require('@jupyter-widgets/base');
 
 
 module.exports = {
   id: 'nglview-js-widgets',
-  requires: [jupyterlab_widgets.INBWidgetExtension],
+  requires: [base.IJupyterWidgetRegistry],
   activate: function(app, widgets) {
       widgets.registerWidget({
           name: 'nglview-js-widgets',
