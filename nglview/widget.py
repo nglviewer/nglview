@@ -1419,21 +1419,3 @@ class NGLWidget(DOMWidget):
         """
         for i, _ in enumerate(self._ngl_component_ids):
             yield self[i]
-
-    def detach(self, split=False):
-        """detach player from its original container.
-
-        Parameters
-        ----------
-        split : bool, default False
-            if True, resize notebook then move it to the right of its container
-        """
-        if not self.loaded:
-            raise RuntimeError("must display view first")
-
-        # resize notebook first
-        # width of the dialog will be calculated based on notebook container offset
-        if split:
-            # rename
-            js_utils._move_notebook_to_the_right()
-        self._remote_call('setDialog', target='Widget')

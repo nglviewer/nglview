@@ -261,8 +261,6 @@ def test_API_promise_to_have():
     ])
     view._js_console()
     view._get_full_params()
-    view.detach(split=False)
-    view.detach(split=True)
     # view._set_place_proxy(HBox())
 
     # iter

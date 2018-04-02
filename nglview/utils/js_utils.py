@@ -4,8 +4,6 @@ from IPython.display import display, Javascript, HTML
 __alll__ = [
     'clean_error_output', 'launch_qtconsole', 'clean_empty_output_area',
     'open_url_template', '_set_ipython_cell', 'ngl_demo', 'init_funcs',
-    '_move_notebook_to_the_right', '_move_notebook_to_the_left',
-    '_reset_notebook', '_set_notebook_draggable'
 ]
 
 
@@ -42,44 +40,6 @@ def _set_notebook_width(width='20%', left_padding=0):
         offset_str = ''
     command = script_template + offset_str
     run(command)
-
-
-def _set_notebook_draggable(yes=True):
-    script_template = """
-    var x = $('#notebook-container');
-    x.draggable({args});
-    """
-    if yes:
-        run(script_template.replace('{args}', ''))
-    else:
-        run(script_template.replace('{args}', '"destroy"'))
-
-
-def _move_notebook_to_the_right():
-    script_template = """
-    var x = $('#notebook-container');
-    x.css({position: "relative", left: "20%"});
-    """
-    run(script_template)
-
-
-def _move_notebook_to_the_left():
-    script_template = """
-    var cb = Jupyter.notebook.container;
-
-    cb.offset({'left': 0})
-    """
-    run(script_template)
-
-
-def _reset_notebook():
-    script_template = """
-    var x = $('#notebook-container');
-    x.width('30%');
-    x.css({position: "relative", left: "0%"});
-    """
-    run(script_template)
-
 
 clean_empty_output_area = partial(
     run,
