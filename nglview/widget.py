@@ -11,7 +11,7 @@ import ipywidgets.embed
 from traitlets import (Unicode, Bool, Dict, List, Int, Integer, observe,
                        CaselessStrEnum)
 
-from .utils import py_utils, js_utils, widget_utils
+from .utils import py_utils, widget_utils
 from .utils.py_utils import (seq_to_string, _camelize_dict, FileManager,
                              get_repr_names_from_dict, encode_base64,
                              _update_url)
@@ -1388,7 +1388,8 @@ class NGLWidget(DOMWidget):
         '''for testing
         '''
         from IPython import display
-        return display.Image(self._image_data)
+        im_bytes = base64.b64decode(self._image_data)
+        return display.Image(im_bytes)
 
     def _clear_component_auto_completion(self):
         for index, _ in enumerate(self._ngl_component_ids):
