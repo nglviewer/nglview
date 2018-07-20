@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "nglview-js-widgets",
   "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
   "license": "MIT",
@@ -46,7 +46,7 @@
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "underscore": "^1.8.3",
-    "ngl": "^2.0.0-dev.28",
+    "ngl": "^2.0.0-dev.33",
     "@jupyter-widgets/base": "^1.0.0"
   },
   "jupyterlab": {
