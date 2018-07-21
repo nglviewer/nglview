@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "nglview-js-widgets",
   "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
   "license": "MIT",
@@ -38,7 +38,7 @@
     "eslint-config-google": "^0.7.1",
     "file-loader": "^0.8.5",
     "json-loader": "^0.5.4",
-    "ngl": "^2.0.0-dev.28",
+    "ngl": "^2.0.0-dev.33",
     "style-loader": "^0.13.1",
     "webpack": "^1.12.14"
   },

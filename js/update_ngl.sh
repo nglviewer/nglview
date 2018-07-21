@@ -1,2 +1,2 @@
-npm install ngl@ts2
+npm install ngl@next
 npm install
