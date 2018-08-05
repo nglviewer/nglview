@@ -410,6 +410,7 @@ Projects using NGLView
 - [pida](https://github.com/jharman25/pida): Software for analyzing multiple protein-protein interaction docking solutions,
 - [pytim](https://github.com/Marcello-Sega/pytim) 
 - [MobleyLab/drug-computing](https://github.com/MobleyLab/drug-computing) Educational materials for, and related to, UC Irvine's Drug Discovery Computing Techniques course.
+- [pyiron](https://pyiron.github.io/): an integrated development environment for implementing, testing, and running simulations in computational materials science.
 
 Acknowledgment
 ==============
