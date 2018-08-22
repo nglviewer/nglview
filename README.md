@@ -392,8 +392,8 @@ Contributing
 
 [Join us here](./CONTRIBUTING.md)
 
-Projects using NGLView
-======================
+Projects integrating NGLView
+============================
 
 (Feel free to make a PR to add/remove your project here)
 
