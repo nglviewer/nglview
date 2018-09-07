@@ -52,7 +52,7 @@ Released version
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
 ```bash
-   pip install nglview==1.1.5
+   pip install nglview==1.1.6
    jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
