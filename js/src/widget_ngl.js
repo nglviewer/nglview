@@ -963,7 +963,6 @@ var NGLView = widgets.DOMWidgetView.extend({
             var new_args = msg.args.slice();
             new_args.push(msg.kwargs);
 
-            console.log("my change");
             if (msg.methodName == 'addRepresentation' && 
                 msg.reconstruc_color_scheme){
                 msg.kwargs.color = this._make_color_scheme(msg.kwargs.color);
