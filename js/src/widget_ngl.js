@@ -951,12 +951,23 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
     },
 
+    _make_color_scheme: function(args){
+        console.log("making color scheme", args);
+        return NGL.ColormakerRegistry.addSelectionScheme(args)
+    },
+
     on_msg: function(msg) {
         // TODO: re-organize
         if (msg.type == 'call_method') {
             var index, component, func, stage;
             var new_args = msg.args.slice();
             new_args.push(msg.kwargs);
+
+            console.log("my change");
+            if (msg.methodName == 'addRepresentation' && 
+                msg.reconstruc_color_scheme){
+                msg.kwargs.color = this._make_color_scheme(msg.kwargs.color);
+            };
 
             switch (msg.target) {
                 case 'Stage':

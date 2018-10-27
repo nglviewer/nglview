@@ -426,6 +426,17 @@ def test_add_repr_shortcut():
     view.remove_rope()
 
 
+def test_color_scheme():
+    view = nv.demo()
+    scheme = nv.color._ColorScheme([
+        ['red', '1-6'],
+        ['yellow', '20-30'],
+        "hey"
+    ])
+    view.clear()
+    view.add_cartoon(color=scheme)
+
+
 def test_add_new_shape():
     view = nv.NGLWidget()
     sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
