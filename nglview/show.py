@@ -174,11 +174,11 @@ def show_mdtraj(mdtraj_trajectory, **kwargs):
 
     Examples
     --------
-    >>> import nglview as nv
-    >>> import mdtraj as md
-    >>> t = md.load(nv.datafiles.XTC, top=nv.datafiles.GRO)
-    >>> w = nv.show_mdtraj(t)
-    >>> w # doctest: +SKIP
+    >>> import nglview as nv # doctest: +SKIP
+    ... import mdtraj as md
+    ... t = md.load(nv.datafiles.XTC, top=nv.datafiles.GRO)
+    ... w = nv.show_mdtraj(t)
+    ... w
     '''
     structure_trajectory = MDTrajTrajectory(mdtraj_trajectory)
     return NGLWidget(structure_trajectory, **kwargs)
