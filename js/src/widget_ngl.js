@@ -139,20 +139,38 @@ var NGLView = widgets.DOMWidgetView.extend({
             .appendTo(this.$container);
         this.$notebook_text.hide();
 
-        this.stage.signals.clicked.add(function(pd) {
+        this.stage.signals.clicked.add(function (pd) {
             if (pd) {
-                var pd2 = {};
-                if (pd.atom) pd2.atom = pd.atom.toObject();
-                if (pd.bond) pd2.bond = pd.bond.toObject();
-                if (pd.instance) pd2.instance = pd.instance;
-                this.model.set("picked", pd2);
+                this.model.set('picked', {}); //refresh signal
                 this.touch();
+
+                var pd2 = {};
                 var pickingText = "";
                 if (pd.atom) {
-                    pickingText = "Atom: " + pd.atom.qualifiedName();
+                    pd2.atom1 = pd.atom.toObject();
+                    pd2.atom1.name = pd.atom.qualifiedName();
+                    pickingText = "Atom: " + pd2.atom1.name;
                 } else if (pd.bond) {
-                    pickingText = "Bond: " + pd.bond.atom1.qualifiedName() + " - " + pd.bond.atom2.qualifiedName();
+                    pd2.bond = pd.bond.toObject();
+                    pd2.atom1 = pd.bond.atom1.toObject();
+                    pd2.atom1.name = pd.bond.atom1.qualifiedName();
+                    pd2.atom2 = pd.bond.atom2.toObject();
+                    pd2.atom2.name = pd.bond.atom2.qualifiedName();
+                    pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
                 }
+                if (pd.instance) pd2.instance = pd.instance;
+                
+                var n_components = this.stage.compList.length;
+                for (var i = 0; i < n_components; i++) {
+                    var comp = this.stage.compList[i];
+                    if (comp.uuid == pd.component.uuid) {
+                        pd2.component = i;
+                    }
+                }
+
+                this.model.set('picked', pd2);
+                this.touch();
+                
                 this.$pickingInfo.text(pickingText);
             }
         }, this);
