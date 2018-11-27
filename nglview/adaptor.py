@@ -78,26 +78,6 @@ class RdkitStructure(Structure):
         return fh.read()
 
 
-class SchrodingerStructure(Structure):
-    '''Only read first structure
-    '''
-    def __init__(self, structure, ext="pdb"):
-        super(SchrodingerStructure, self).__init__()
-        self.path = ''
-        self.ext = ext
-        self.params = {}
-        self._schrodinger_structure = structure
-
-    def get_structure_string(self):
-        from schrodinger.application.scisol.packages.fep.fepmae import _reorder_protein_and_water
-        with tempfolder():
-            pdb_fn = 'tmp.pdb'
-            _reorder_protein_and_water(self._schrodinger_structure).write(pdb_fn)
-            with open(pdb_fn) as fh:
-                content = fh.read()
-        return content
-
-
 class PdbIdStructure(Structure):
     def __init__(self, pdbid):
         super(PdbIdStructure, self).__init__()
@@ -456,7 +436,29 @@ class ASETrajectory(Trajectory, Structure):
 
 
 @register_backend('schrodinger')
+class SchrodingerStructure(Structure):
+    '''Only read first structure
+    '''
+    def __init__(self, structure, ext="pdb"):
+        super(SchrodingerStructure, self).__init__()
+        self.path = ''
+        self.ext = ext
+        self.params = {}
+        self._schrodinger_structure = structure
+
+    def get_structure_string(self):
+        with tempfolder():
+            pdb_fn = 'tmp.pdb'
+            self._schrodinger_structure.write(pdb_fn)
+            with open(pdb_fn) as fh:
+                content = fh.read()
+        return content
+
+
+@register_backend('schrodinger')
 class SchrodingerTrajectory(SchrodingerStructure, Trajectory):
+    """Require `parmed` package.
+    """
     def __init__(self, structure, traj):
         super(SchrodingerTrajectory, self).__init__(structure)
         self._traj = traj

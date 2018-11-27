@@ -326,7 +326,10 @@ def show_schrodinger(mol, traj=None, **kwargs):
     ... w = nv.show_schrodinger(s)
     ... w
     '''
-    structure_trajectory = SchrodingerTrajectory(mol, traj)
+    if traj is None:
+        structure_trajectory = SchrodingerStructure(mol)
+    else:
+        structure_trajectory = SchrodingerTrajectory(mol, traj)
     return NGLWidget(structure_trajectory, **kwargs)
 
 
