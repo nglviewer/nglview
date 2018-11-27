@@ -294,10 +294,11 @@ class ParmEdStructure(Structure):
 
 
 @register_backend('parmed')
-class ParmEdTrajectory(Trajectory, Structure):
+class ParmEdTrajectory(Trajectory, ParmEdStructure):
     '''ParmEd adaptor.
     '''
     def __init__(self, trajectory):
+        ParmEdStructure.__init__(self, trajectory)
         self.trajectory = self._structure = trajectory
         self.ext = "pdb"
         self.params = {}
