@@ -46,6 +46,7 @@ def test_show_schrodinger():
     traj.__len__.return_value = 3
     v1 = nglview.show_schrodinger(s, traj)
     assert v1.count == 3
+    v1.frame = 2 # trigger `get_coordinates`
 
 
 def test_show_htmd():
