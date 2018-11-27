@@ -12,7 +12,7 @@ from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
                       RosettaStructure,
                       MDTrajTrajectory,
                       PyTrajTrajectory, ParmEdTrajectory, MDAnalysisTrajectory,
-                      HTMDTrajectory, ASETrajectory, SchrodingerStructure)
+                      HTMDTrajectory, ASETrajectory, SchrodingerStructure, SchrodingerTrajectory)
 
 __all__ = [
     'demo',
@@ -310,7 +310,7 @@ def show_htmd(mol, **kwargs):
     return NGLWidget(structure_trajectory, **kwargs)
 
 
-def show_schrodinger(mol, **kwargs):
+def show_schrodinger(mol, traj=None, **kwargs):
     '''Show NGL widget with Schrodinger's Structure
 
     Notes
@@ -326,7 +326,10 @@ def show_schrodinger(mol, **kwargs):
     ... w = nv.show_schrodinger(s)
     ... w
     '''
-    structure_trajectory = SchrodingerStructure(mol)
+    if traj is None:
+        structure_trajectory = SchrodingerStructure(mol)
+    else:
+        structure_trajectory = SchrodingerTrajectory(mol, traj)
     return NGLWidget(structure_trajectory, **kwargs)
 
 
