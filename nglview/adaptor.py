@@ -89,9 +89,10 @@ class SchrodingerStructure(Structure):
         self._schrodinger_structure = structure
 
     def get_structure_string(self):
+        from schrodinger.application.scisol.packages.fep.fepmae import _reorder_protein_and_water
         with tempfolder():
             pdb_fn = 'tmp.pdb'
-            self._schrodinger_structure.write(pdb_fn)
+            _reorder_protein_and_water(self._schrodinger_structure).write(pdb_fn)
             with open(pdb_fn) as fh:
                 content = fh.read()
         return content
@@ -291,18 +292,38 @@ class PyTrajTrajectory(Trajectory, Structure):
 
 
 @register_backend('parmed')
+class ParmEdStructure(Structure):
+    def __init__(self, structure):
+        self._structure = structure
+        self.only_save_1st_model = True
+
+    def get_structure_string(self):
+        # only write 1st model
+        fname = 'tmp.pdb'
+        with tempfolder():
+            if self.only_save_1st_model:
+                self._structure.save(
+                    fname,
+                    overwrite=True,
+                    coordinates=self._structure.coordinates)
+            else:
+                self._structure.save(fname, overwrite=True)
+            with open(fname) as fh:
+                pdb_string = fh.read()
+        return pdb_string
+
+
+@register_backend('parmed')
 class ParmEdTrajectory(Trajectory, Structure):
     '''ParmEd adaptor.
     '''
-
     def __init__(self, trajectory):
-        self.trajectory = trajectory
+        self.trajectory = self._structure = trajectory
         self.ext = "pdb"
         self.params = {}
         # only call get_coordinates once
         self._xyz = trajectory.get_coordinates()
         self.id = str(uuid.uuid4())
-        self.only_save_1st_model = True
 
     def get_coordinates(self, index):
         return self._xyz[index]
@@ -310,21 +331,6 @@ class ParmEdTrajectory(Trajectory, Structure):
     @property
     def n_frames(self):
         return len(self._xyz)
-
-    def get_structure_string(self):
-        # only write 1st model
-        fname = 'tmp.pdb'
-        with tempfolder():
-            if self.only_save_1st_model:
-                self.trajectory.save(
-                    fname,
-                    overwrite=True,
-                    coordinates=self.trajectory.coordinates)
-            else:
-                self.trajectory.save(fname, overwrite=True)
-            with open(fname) as fh:
-                pdb_string = fh.read()
-        return pdb_string
 
 
 @register_backend('MDAnalysis')
@@ -447,3 +453,30 @@ class ASETrajectory(Trajectory, Structure):
     @property
     def n_frames(self):
         return len(self.trajectory)
+
+
+@register_backend('schrodinger')
+class SchrodingerTrajectory(SchrodingerStructure, Trajectory):
+    def __init__(self, structure, traj):
+        super(SchrodingerTrajectory, self).__init__(structure)
+        self._traj = traj
+
+    @property
+    def n_frames(self):
+        return len(self._traj) if self._traj else 1
+
+    def get_coordinates(self, index):
+        return self._traj[index].pos()
+
+    def get_structure_string(self):
+        """Require `parmed` package.
+        """
+        import parmed as pmd
+        c = self._schrodinger_structure
+        s = pmd.Structure()
+        fsys = c.fsys_ct if hasattr(c, 'fsys_ct') else c
+        for atom in fsys.atom:
+            parm_atom = pmd.Atom(name=atom.pdbname.strip(), atomic_number=atom.atomic_number)
+            s.add_atom(parm_atom, atom.pdbres.strip(), atom.resnum, chain=atom.chain)
+        s.coordinates = fsys.getXYZ()
+        return ParmEdStructure(s).get_structure_string()
