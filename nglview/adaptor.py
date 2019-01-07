@@ -87,7 +87,7 @@ class PdbIdStructure(Structure):
 
     def get_structure_string(self):
         url = "http://www.rcsb.org/pdb/files/" + self.pdbid + ".cif"
-        return urlopen(url).read()
+        return urlopen(url).read().decode('utf-8')
 
 
 class ASEStructure(Structure):
