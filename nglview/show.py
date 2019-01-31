@@ -281,12 +281,12 @@ def show_mdanalysis(atomgroup, **kwargs):
 
     Examples
     --------
-        import nglview as nv
-        import MDAnalysis as mda
-        u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)
-        prot = u.select_atoms('protein')
-        w = nv.show_mdanalysis(prot)
-        w # doctest: +SKIP
+    >>> import nglview as nv
+    >>> import MDAnalysis as mda
+    >>> u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)
+    >>> prot = u.select_atoms('protein')
+    >>> w = nv.show_mdanalysis(prot)
+    >>> w # doctest: +SKIP
     '''
     structure_trajectory = MDAnalysisTrajectory(atomgroup)
     return NGLWidget(structure_trajectory, **kwargs)
