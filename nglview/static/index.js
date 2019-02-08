@@ -313,6 +313,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	    },
 	
+	    execute_code: function(code){
+	        eval(code);
+	    },
+	
 	    handle_embed: function(){
 	        var that = this;
 	        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");

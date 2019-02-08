@@ -1409,6 +1409,9 @@ class NGLWidget(DOMWidget):
             name = 'component_' + str(index)
             delattr(self, name)
 
+    def _execute_js_code(self, code):
+        self._remote_call('execute_code', target='Widget', args=[code])
+
     def _update_component_auto_completion(self):
         trajids = [traj.id for traj in self._trajlist]
 

@@ -242,6 +242,10 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
+    execute_code: function(code){
+        eval(code);
+    },
+
     handle_embed: function(){
         var that = this;
         var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
