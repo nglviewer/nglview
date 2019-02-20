@@ -26,6 +26,7 @@ from . import interpolate
 from .stage import Stage
 from .component import ComponentViewer
 from .shape import Shape
+from . import color
 from .viewer_control import ViewerControl
 from .representation import RepresentationControl
 
@@ -34,7 +35,7 @@ from .config import BACKENDS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '1.1.6'  # must match to js/package.json
+__frontend_version__ = '1.1.7'  # must match to js/package.json
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
         'setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
         'autoView',
@@ -1293,9 +1294,15 @@ class NGLWidget(DOMWidget):
         if 'repr_index' in kwargs:
             msg['repr_index'] = kwargs.pop('repr_index')
 
+        reconstruc_color_scheme = False
+        if 'color' in kwargs and isinstance(kwargs['color'], color._ColorScheme):
+            kwargs['color'] = kwargs['color'].data
+            reconstruc_color_scheme = True
+
         msg['target'] = target
         msg['type'] = 'call_method'
         msg['methodName'] = method_name
+        msg['reconstruc_color_scheme'] = reconstruc_color_scheme
         msg['args'] = args
         msg['kwargs'] = kwargs
 
@@ -1401,6 +1408,9 @@ class NGLWidget(DOMWidget):
         for index, _ in enumerate(self._ngl_component_ids):
             name = 'component_' + str(index)
             delattr(self, name)
+
+    def _execute_js_code(self, code):
+        self._remote_call('execute_code', target='Widget', args=[code])
 
     def _update_component_auto_completion(self):
         trajids = [traj.id for traj in self._trajlist]

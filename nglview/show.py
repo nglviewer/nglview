@@ -12,7 +12,7 @@ from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
                       RosettaStructure,
                       MDTrajTrajectory,
                       PyTrajTrajectory, ParmEdTrajectory, MDAnalysisTrajectory,
-                      HTMDTrajectory, ASETrajectory, SchrodingerStructure)
+                      HTMDTrajectory, ASETrajectory, SchrodingerStructure, SchrodingerTrajectory)
 
 __all__ = [
     'demo',
@@ -174,11 +174,11 @@ def show_mdtraj(mdtraj_trajectory, **kwargs):
 
     Examples
     --------
-    >>> import nglview as nv
-    >>> import mdtraj as md
-    >>> t = md.load(nv.datafiles.XTC, top=nv.datafiles.GRO)
-    >>> w = nv.show_mdtraj(t)
-    >>> w # doctest: +SKIP
+    >>> import nglview as nv # doctest: +SKIP
+    ... import mdtraj as md
+    ... t = md.load(nv.datafiles.XTC, top=nv.datafiles.GRO)
+    ... w = nv.show_mdtraj(t)
+    ... w
     '''
     structure_trajectory = MDTrajTrajectory(mdtraj_trajectory)
     return NGLWidget(structure_trajectory, **kwargs)
@@ -281,12 +281,12 @@ def show_mdanalysis(atomgroup, **kwargs):
 
     Examples
     --------
-        import nglview as nv
-        import MDAnalysis as mda
-        u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)
-        prot = u.select_atoms('protein')
-        w = nv.show_mdanalysis(prot)
-        w # doctest: +SKIP
+    >>> import nglview as nv # doctest: +SKIP
+    ... import MDAnalysis as mda
+    ... u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)
+    ... prot = u.select_atoms('protein')
+    ... w = nv.show_mdanalysis(prot)
+    ... w
     '''
     structure_trajectory = MDAnalysisTrajectory(atomgroup)
     return NGLWidget(structure_trajectory, **kwargs)
@@ -310,7 +310,7 @@ def show_htmd(mol, **kwargs):
     return NGLWidget(structure_trajectory, **kwargs)
 
 
-def show_schrodinger(mol, **kwargs):
+def show_schrodinger(mol, traj=None, **kwargs):
     '''Show NGL widget with Schrodinger's Structure
 
     Notes
@@ -326,7 +326,10 @@ def show_schrodinger(mol, **kwargs):
     ... w = nv.show_schrodinger(s)
     ... w
     '''
-    structure_trajectory = SchrodingerStructure(mol)
+    if traj is None:
+        structure_trajectory = SchrodingerStructure(mol)
+    else:
+        structure_trajectory = SchrodingerTrajectory(mol, traj)
     return NGLWidget(structure_trajectory, **kwargs)
 
 

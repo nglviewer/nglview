@@ -1,8 +1,14 @@
-conda create -n lab python=3.6 -y
+pythonversion=3.7
+nglviewversion=1.1.7
+labversion=0.34.12
+labmanagerversion=0.37.4
+ipywidgetsversion=7.4.2
+
+conda create -n lab python=$pythonversion -y
 source activate lab
-conda install ipywidgets=7.1.2 -c conda-forge -y
-pip install nglview==1.1.2
+conda install ipywidgets=$ipywidgetsversion -c conda-forge -y
+pip install nglview==$nglviewversion
 nglview enable # might need this to enable nglview-js-widgets extension for notebook
-conda install jupyterlab=0.31.12 -y -c conda-forge
-jupyter-labextension install @jupyter-widgets/jupyterlab-manager@0.33.2
-jupyter-labextension install nglview-js-widgets@1.1.2
+conda install jupyterlab=$labversion  -y -c conda-forge
+jupyter-labextension install @jupyter-widgets/jupyterlab-manager@$labmanagerversion
+jupyter-labextension install nglview-js-widgets@$nglviewversion
