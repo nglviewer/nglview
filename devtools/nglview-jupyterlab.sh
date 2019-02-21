@@ -1,5 +1,5 @@
 pythonversion=3.7
-nglviewversion=1.1.8
+nglviewversion=1.1.7
 labversion=0.34.12
 labmanagerversion=0.37.4
 ipywidgetsversion=7.4.2
