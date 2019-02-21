@@ -38,7 +38,7 @@
     "eslint-config-google": "^0.7.1",
     "file-loader": "^0.8.5",
     "json-loader": "^0.5.4",
-    "ngl": "^2.0.0-dev.34",
+    "ngl": "2.0.0-dev.34",
     "style-loader": "^0.13.1",
     "webpack": "^1.12.14"
   },
@@ -46,7 +46,7 @@
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "underscore": "^1.8.3",
-    "ngl": "^2.0.0-dev.33",
+    "ngl": "2.0.0-dev.34",
     "@jupyter-widgets/base": "^1.0.0"
   },
   "jupyterlab": {
