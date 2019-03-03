@@ -151,9 +151,9 @@ class RosettaStructure(Structure):
         self._mol = pose
 
     def get_structure_string(self):
-        with NamedTemporaryFile() as fhj:
-            self._mol.dump_pdb(fh.read())
-            return open('tmp.pdb').read()
+        with NamedTemporaryFile() as fh:
+            self._mol.dump_pdb(fh.name)
+            return fh.read()
 
 
 @register_backend('simpletraj')
