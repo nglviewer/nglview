@@ -178,6 +178,16 @@ class NGLWidget(DOMWidget):
         self._remote_call_thread.start()
         self._trajlist = []
         self._ngl_component_ids = []
+
+        if self.representations:
+            # Must be set here before calling
+            # add_trajectory or add_struture
+            # After finish adding new Structure/Trajectory,
+            # initial representations will be set.
+            kwargs['default_representation'] = False
+        autoview = 'center' not in kwargs or ('center' in kwargs and kwargs.pop('center'))
+        # NOTE: Using `pop` to avoid passing `center` to NGL.
+
         if parameters:
             self.parameters = parameters
         if isinstance(structure, Trajectory):
@@ -193,14 +203,13 @@ class NGLWidget(DOMWidget):
                 self.add_structure(structure, **kwargs)
 
         if representations:
+            # If initial representations are provided,
+            # we need to set defaultRepresentation to False
             self.representations = representations
+            if autoview:
+                self.center()
 
         self._set_unsync_camera()
-        selector = 'nglviewHolder' + str(id(self))
-        self._remote_call(
-            'setSelector', target='Widget', args=[
-                selector,
-            ])
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
