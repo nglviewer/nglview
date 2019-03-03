@@ -100,7 +100,7 @@ class ASEStructure(Structure):
         self._ase_atoms = ase_atoms
 
     def get_structure_string(self):
-        with NamedTemporaryFile() as fh:
+        with NamedTemporaryFile(suffix='.pdb') as fh:
             self._ase_atoms.write(fh.name)
             return fh.read()
 
@@ -151,7 +151,7 @@ class RosettaStructure(Structure):
         self._mol = pose
 
     def get_structure_string(self):
-        with NamedTemporaryFile() as fh:
+        with NamedTemporaryFile(suffix='.pdb') as fh:
             self._mol.dump_pdb(fh.name)
             return fh.read()
 
@@ -228,7 +228,7 @@ class MDTrajTrajectory(Trajectory, Structure):
         return self.trajectory.n_frames
 
     def get_structure_string(self):
-        with NamedTemporaryFile() as fh:
+        with NamedTemporaryFile(suffix='.pdb') as fh:
             self.trajectory[0].save_pdb(fh.name)
             return fh.read()
 
@@ -261,7 +261,7 @@ class PyTrajTrajectory(Trajectory, Structure):
         return self.trajectory.n_frames
 
     def get_structure_string(self, index=0):
-        with NamedTemporaryFile() as fh:
+        with NamedTemporaryFile(suffix='.pdb') as fh:
             self.trajectory[index:index+1].save(fh.name, format="pdb", overwrite=True)
             return fh.read()
 
@@ -274,7 +274,7 @@ class ParmEdStructure(Structure):
 
     def get_structure_string(self):
         # only write 1st model
-        with NamedTemporaryFile() as fh:
+        with NamedTemporaryFile(suffix='.pdb') as fh:
             if self.only_save_1st_model:
                 self._structure.write_pdb(
                     fh.name,
@@ -385,8 +385,7 @@ class HTMDTrajectory(Trajectory):
         return self.mol.numFrames
 
     def get_structure_string(self):
-        fname = 'tmp.pdb'
-        with NamedTemporaryFile() as fh:
+        with NamedTemporaryFile(suffix='.pdb') as fh:
             self.mol.write(fh.name)
             return fh.read()
 
@@ -416,7 +415,7 @@ class ASETrajectory(Trajectory, Structure):
         return self.trajectory[index].positions
 
     def get_structure_string(self):
-        with NamedTemporaryFile() as fh:
+        with NamedTemporaryFile(suffix='.pdb') as fh:
             self.trajectory[0].write(fh.name)
             return fh.read()
 
@@ -437,7 +436,7 @@ class SchrodingerStructure(Structure):
         self._schrodinger_structure = structure
 
     def get_structure_string(self):
-        with NamedTemporaryFile() as fh:
+        with NamedTemporaryFile(suffix='.pdb') as fh:
             self._schrodinger_structure.write(fh.name)
             return fh.read()
 
