@@ -4,6 +4,7 @@ import os
 import os.path
 import uuid
 import numpy as np
+from tempfile import NamedTemporaryFile
 
 try:
     from cStringIO import StringIO
@@ -16,7 +17,7 @@ except ImportError:
     from urllib2 import urlopen
 
 from .base_adaptor import Structure, Trajectory
-from .utils.py_utils import FileManager, tempfolder
+from .utils.py_utils import FileManager
 from . import config
 
 __all__ = [
@@ -99,9 +100,9 @@ class ASEStructure(Structure):
         self._ase_atoms = ase_atoms
 
     def get_structure_string(self):
-        with tempfolder():
-            self._ase_atoms.write('tmp.pdb')
-            return open('tmp.pdb').read()
+        with NamedTemporaryFile() as fh:
+            self._ase_atoms.write(fh.name)
+            return fh.read()
 
 
 class BiopythonStructure(Structure):
@@ -150,8 +151,8 @@ class RosettaStructure(Structure):
         self._mol = pose
 
     def get_structure_string(self):
-        with tempfolder():
-            self._mol.dump_pdb('tmp.pdb')
+        with NamedTemporaryFile() as fhj:
+            self._mol.dump_pdb(fh.read())
             return open('tmp.pdb').read()
 
 
@@ -227,12 +228,9 @@ class MDTrajTrajectory(Trajectory, Structure):
         return self.trajectory.n_frames
 
     def get_structure_string(self):
-        with tempfolder():
-            fname = 'tmp.pdb'
-            self.trajectory[0].save_pdb(fname)
-            with open(fname) as fh:
-                pdb_string = fh.read()
-        return pdb_string
+        with NamedTemporaryFile() as fh:
+            self.trajectory[0].save_pdb(fh.name)
+            return fh.read()
 
 
 @register_backend('pytraj')
@@ -262,13 +260,10 @@ class PyTrajTrajectory(Trajectory, Structure):
     def n_frames(self):
         return self.trajectory.n_frames
 
-    def get_structure_string(self):
-        fname = 'tmp.pdb'
-        with tempfolder():
-            self.trajectory[:1].save(fname, format="pdb", overwrite=True)
-            with open(fname) as fh:
-                pdb_string = fh.read()
-        return pdb_string
+    def get_structure_string(self, index=0):
+        with NamedTemporaryFile() as fh:
+            self.trajectory[index:index+1].save(fh.name, format="pdb", overwrite=True)
+            return fh.read()
 
 
 @register_backend('parmed')
@@ -279,18 +274,15 @@ class ParmEdStructure(Structure):
 
     def get_structure_string(self):
         # only write 1st model
-        fname = 'tmp.pdb'
-        with tempfolder():
+        with NamedTemporaryFile() as fh:
             if self.only_save_1st_model:
                 self._structure.save(
-                    fname,
+                    fh.name,
                     overwrite=True,
                     coordinates=self._structure.coordinates)
             else:
-                self._structure.save(fname, overwrite=True)
-            with open(fname) as fh:
-                pdb_string = fh.read()
-        return pdb_string
+                self._structure.save(fh.name, overwrite=True)
+            return fh.read()
 
 
 @register_backend('parmed')
@@ -395,11 +387,9 @@ class HTMDTrajectory(Trajectory):
 
     def get_structure_string(self):
         fname = 'tmp.pdb'
-        with tempfolder():
-            self.mol.write(fname)
-            with open(fname) as fh:
-                pdb_string = fh.read()
-        return pdb_string
+        with NamedTemporaryFile() as fh:
+            self.mol.write(fh.name)
+            return fh.read()
 
 
 @register_backend('ase')
@@ -427,9 +417,9 @@ class ASETrajectory(Trajectory, Structure):
         return self.trajectory[index].positions
 
     def get_structure_string(self):
-        with tempfolder():
-            self.trajectory[0].write('tmp.pdb')
-            return open('tmp.pdb').read()
+        with NamedTemporaryFile() as fh:
+            self.trajectory[0].write(fh.name)
+            return fh.read()
 
     @property
     def n_frames(self):
@@ -448,12 +438,9 @@ class SchrodingerStructure(Structure):
         self._schrodinger_structure = structure
 
     def get_structure_string(self):
-        with tempfolder():
-            pdb_fn = 'tmp.pdb'
-            self._schrodinger_structure.write(pdb_fn)
-            with open(pdb_fn) as fh:
-                content = fh.read()
-        return content
+        with NamedTemporaryFile() as fh:
+            self._schrodinger_structure.write(fh.name)
+            return fh.read()
 
 
 @register_backend('schrodinger')
