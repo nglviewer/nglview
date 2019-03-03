@@ -179,7 +179,7 @@ class NGLWidget(DOMWidget):
         self._trajlist = []
         self._ngl_component_ids = []
 
-        if self.representations:
+        if representations:
             # Must be set here before calling
             # add_trajectory or add_struture
             # After finish adding new Structure/Trajectory,
