@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # require: ffmpeg
 # e.g: conda install ffmpeg -c menpo
 # 
