@@ -276,12 +276,11 @@ class ParmEdStructure(Structure):
         # only write 1st model
         with NamedTemporaryFile() as fh:
             if self.only_save_1st_model:
-                self._structure.save(
+                self._structure.write_pdb(
                     fh.name,
-                    overwrite=True,
                     coordinates=self._structure.coordinates)
             else:
-                self._structure.save(fh.name, overwrite=True)
+                self._structure.write_pdb(fh.name)
             return fh.read()
 
 
