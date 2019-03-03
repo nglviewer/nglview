@@ -1091,7 +1091,7 @@ def test_queuing_messages():
     view.download_image()
     view
     assert [f._method_name for f in view._ngl_displayed_callbacks_before_loaded] == \
-           ['setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
+           ['setUnSyncCamera', 'setUnSyncFrame', 'setDelay',
             'loadFile',
             '_downloadImage']
     assert [f._method_name for f in view._ngl_displayed_callbacks_after_loaded] == \
