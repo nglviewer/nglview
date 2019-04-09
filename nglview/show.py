@@ -87,13 +87,13 @@ def show_pymatgen(struct, **kwargs):
 
     Examples
     --------
-    >>> import nglview as nv
+    >>> import nglview as nv # doctest: +SKIP
     ... import pymatgen as mg
     ... lattice = mg.Lattice.cubic(4.2)
     ... structure = mg.Structure(lattice, ["Cs", "Cl"],
                           [[0, 0, 0], [0.5, 0.5, 0.5]])
     ... view = nv.show_pymatgen(structure)
-    ... view # doctest: +SKIP
+    ... view
     """
     from pymatgen.io.ase import AseAtomsAdaptor
     return show_ase(AseAtomsAdaptor().get_atoms(struct))
