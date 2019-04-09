@@ -11,6 +11,6 @@ else
       conda install nodejs -c conda-forge -y
       (cd js/ && npm install && npm run lint); 
   else
-      (cd nglview/tests && py.test --cov=nglview -vs .);
+      (cd nglview/tests && pytest --cov=nglview -vs .);
   fi
 fi
