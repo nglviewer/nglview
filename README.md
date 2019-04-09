@@ -140,6 +140,7 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_rdkit(mol)`                        | Shows `rdkit` rdkit.Chem.rdchem.Mol                   |
 | `show_ase(atoms)`                        | Shows `ase` Atoms                                     |
 | `show_asetraj(traj)`                     | Shows `ase` trajectory `traj`                         |
+| `show_pymatgen(struct)`                  | Shows `pymatgen` Structure                            |
 | `show_htmd(mol)`                         | Shows `HTMD` Molecules                                |
 | `show_biopython(mol)`                    | Shows `Biopython` structural entities                 |
 | `show_iotbx(mol)`                        | Shows `cctbx's iotbx` structure                       |
