@@ -12,6 +12,7 @@ ase
 parmed
 pytraj
 biopython
+pymatgen
 
 # movie making
 matplotlib==2.0.2
