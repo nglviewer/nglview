@@ -20,6 +20,7 @@ __all__ = [
     'show_url',
     'show_text',
     'show_ase',
+    'show_pymatgen',
     'show_iotbx',
     'show_rosetta',
     'show_asetraj',
@@ -79,6 +80,23 @@ def show_ase(ase_atoms, **kwargs):
     """
     structure = ASEStructure(ase_atoms)
     return NGLWidget(structure, **kwargs)
+
+
+def show_pymatgen(struct, **kwargs):
+    """Require `ase` package.
+
+    Examples
+    --------
+    >>> import nglview as nv
+    ... import pymatgen as mg
+    ... lattice = mg.Lattice.cubic(4.2)
+    ... structure = mg.Structure(lattice, ["Cs", "Cl"],
+                          [[0, 0, 0], [0.5, 0.5, 0.5]])
+    ... view = nv.show_pymatgen(structure)
+    ... view # doctest: +SKIP
+    """
+    from pymatgen.io.ase import AseAtomsAdaptor
+    return show_ase(AseAtomsAdaptor().get_atoms(struct))
 
 
 def show_iotbx(mol, **kwargs):

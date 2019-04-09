@@ -84,6 +84,12 @@ except ImportError:
     has_ase = False
 
 try:
+    import pymatgen
+    has_pymatgen = True
+except ImportError:
+    has_pymatgfen = False
+
+try:
     import Bio.PDB
     has_bio = True
 except ImportError:
@@ -504,6 +510,16 @@ def test_show_ase():
     dimer = Atoms([Atom('X', (0, 0, 0)), Atom('X', (0, 0, 1))])
     dimer.set_positions([(1, 2, 3), (4, 5, 6.2)])
     nv.show_ase(dimer)
+
+
+@unittest.skipUnless(has_pymatgen, 'skip if not having pymatgen')
+def test_show_pymatgen():
+    import pymatgen as mg
+    lattice = mg.Lattice.cubic(4.2)
+    structure = mg.Structure(lattice, ["Cs", "Cl"],
+                      [[0, 0, 0], [0.5, 0.5, 0.5]])
+    view = nv.show_pymatgen(structure)
+    view
 
 
 @unittest.skipUnless(has_bio, 'skip if not having biopython')
