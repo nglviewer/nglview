@@ -957,7 +957,7 @@ class NGLWidget(DOMWidget):
                        antialias=True,
                        trim=False,
                        transparent=False):
-        """render and download scence at current frame
+        """render and download scene at current frame
 
         Parameters
         ----------
