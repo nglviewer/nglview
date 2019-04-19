@@ -412,6 +412,7 @@ Projects integrating NGLView
 - [MobleyLab/drug-computing](https://github.com/MobleyLab/drug-computing) Educational materials for, and related to, UC Irvine's Drug Discovery Computing Techniques course.
 - [pyiron](https://pyiron.github.io/): an integrated development environment for implementing, testing, and running simulations in computational materials science.
 - [BioSimSpace](https://biosimspace.org/): An interoperable framework for biomolecular simulation
+- [pyrod](https://github.com/schallerdavid/pyrod): PyRod - Tracing water molecules in molecular dynamics simulations
 
 Acknowledgment
 ==============
