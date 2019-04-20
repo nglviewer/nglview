@@ -952,7 +952,17 @@ var NGLView = widgets.DOMWidgetView.extend({
              }
              return this.stage.loadFile(blob, msg.kwargs)
          } else {
-             return this.stage.loadFile(msg.args[0].data, msg.kwargs)
+             var file = new File([""], args0.data);
+             if (args0.type == 'path' && ! file.exists){
+                 // hacky fix for jupyterlab
+                 // https://github.com/arose/nglview/issues/783
+                 // https://github.com/jupyterlab/jupyterlab/issues/6218
+                 // e.g: http://localhost:8888/files/ala3.pdb
+                 path = 'files/' + args0.data;
+             } else {
+                 path = args0.data;
+             }
+             return this.stage.loadFile(path, msg.kwargs)
          }
     },
 
