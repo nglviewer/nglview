@@ -953,6 +953,7 @@ var NGLView = widgets.DOMWidgetView.extend({
              return this.stage.loadFile(blob, msg.kwargs)
          } else {
              var file = new File([""], args0.data);
+             var path = "";
              if (args0.type == 'path' && ! file.exists){
                  // hacky fix for jupyterlab
                  // https://github.com/arose/nglview/issues/783
