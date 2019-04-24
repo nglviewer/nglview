@@ -31,6 +31,12 @@ __all__ = [
 ]
 
 
+def _get_structure_string(write_method):
+    with NamedTemporaryFile(suffix='.pdb') as fh:
+        write_method(fh.name)
+        return fh.read().decode()
+
+
 class register_backend(object):
     def __init__(self, package_name):
         # package_name must match exactly to your Python package
@@ -100,9 +106,7 @@ class ASEStructure(Structure):
         self._ase_atoms = ase_atoms
 
     def get_structure_string(self):
-        with NamedTemporaryFile(suffix='.pdb') as fh:
-            self._ase_atoms.write(fh.name)
-            return fh.read()
+        return _get_structure_string(self._ase_atoms.write)
 
 
 class BiopythonStructure(Structure):
@@ -151,9 +155,7 @@ class RosettaStructure(Structure):
         self._mol = pose
 
     def get_structure_string(self):
-        with NamedTemporaryFile(suffix='.pdb') as fh:
-            self._mol.dump_pdb(fh.name)
-            return fh.read()
+        return _get_structure_string(self._mol.dump_pdb)
 
 
 @register_backend('simpletraj')
@@ -228,9 +230,7 @@ class MDTrajTrajectory(Trajectory, Structure):
         return self.trajectory.n_frames
 
     def get_structure_string(self):
-        with NamedTemporaryFile(suffix='.pdb') as fh:
-            self.trajectory[0].save_pdb(fh.name)
-            return fh.read()
+        return _get_structure_string(self.trajectory[0].save_pdb)
 
 
 @register_backend('pytraj')
@@ -261,9 +261,7 @@ class PyTrajTrajectory(Trajectory, Structure):
         return self.trajectory.n_frames
 
     def get_structure_string(self, index=0):
-        with NamedTemporaryFile(suffix='.pdb') as fh:
-            self.trajectory[index:index+1].save(fh.name, format="pdb", overwrite=True)
-            return fh.read()
+        return _get_structure_string(self.trajectory[index:index+1].save)
 
 
 @register_backend('parmed')
@@ -281,7 +279,7 @@ class ParmEdStructure(Structure):
                     coordinates=self._structure.coordinates)
             else:
                 self._structure.write_pdb(fh.name)
-            return fh.read()
+            return fh.read().decode()
 
 
 @register_backend('parmed')
@@ -385,9 +383,7 @@ class HTMDTrajectory(Trajectory):
         return self.mol.numFrames
 
     def get_structure_string(self):
-        with NamedTemporaryFile(suffix='.pdb') as fh:
-            self.mol.write(fh.name)
-            return fh.read()
+        return _get_structure_string(self.mol.write)
 
 
 @register_backend('ase')
@@ -415,9 +411,7 @@ class ASETrajectory(Trajectory, Structure):
         return self.trajectory[index].positions
 
     def get_structure_string(self):
-        with NamedTemporaryFile(suffix='.pdb') as fh:
-            self.trajectory[0].write(fh.name)
-            return fh.read()
+        return _get_structure_string(self.trajectory[0].write)
 
     @property
     def n_frames(self):
@@ -436,9 +430,7 @@ class SchrodingerStructure(Structure):
         self._schrodinger_structure = structure
 
     def get_structure_string(self):
-        with NamedTemporaryFile(suffix='.pdb') as fh:
-            self._schrodinger_structure.write(fh.name)
-            return fh.read()
+        return _get_structure_string(self._schrodinger_structure.write)
 
 
 @register_backend('schrodinger')
