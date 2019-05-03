@@ -145,6 +145,10 @@ the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/
 | `show_biopython(mol)`                    | Shows `Biopython` structural entities                 |
 | `show_iotbx(mol)`                        | Shows `cctbx's iotbx` structure                       |
 | `show_rosetta(pose)`                     | Shows `pyrosetta's Pose`                              |
+| `show_iodata(obj)`                       | Shows `iodata's IOData`                               |
+| `show_psi4(obj)`                         | Shows `psi4's Molecule`                               |
+| `show_qcelementary`                      | Shows `QCelementary's Molecule`                       |
+| `show_openbabel`                         | Shows `openbabel's OMol`                              |
 
 
 API
