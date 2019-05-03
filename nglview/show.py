@@ -10,6 +10,9 @@ from . import datafiles
 from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
                       ASEStructure, BiopythonStructure, IOTBXStructure,
                       RosettaStructure,
+                      IODataStructure,
+                      QCelementalStructure,
+                      OpenbabelStructure,
                       MDTrajTrajectory,
                       PyTrajTrajectory, ParmEdTrajectory, MDAnalysisTrajectory,
                       HTMDTrajectory, ASETrajectory, SchrodingerStructure, SchrodingerTrajectory)
@@ -22,6 +25,10 @@ __all__ = [
     'show_ase',
     'show_pymatgen',
     'show_iotbx',
+    'show_iodata',
+    'show_qcelemental',
+    'show_openbabel',
+    'show_psi4',
     'show_rosetta',
     'show_asetraj',
     'show_simpletraj',
@@ -80,6 +87,61 @@ def show_ase(ase_atoms, **kwargs):
     """
     structure = ASEStructure(ase_atoms)
     return NGLWidget(structure, **kwargs)
+
+
+def show_iodata(obj, **kwargs):
+    """Show iodata's IOData (require `ase` package).
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> from iodata import IOData # doctest: +SKIP
+    ... obj = IOData.from_file('what.xyz')
+    ... view = nv.show_iodata(obj)
+    ... view
+    """
+    return NGLWidget(IODataStructure(obj), **kwargs)
+
+
+def show_qcelemental(obj, **kwargs):
+    """Show QCelemental's Molecule (require `ase` package).
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> import qcelemental as qcel # doctest: +SKIP
+    ... mol = qcel.models.Molecule.from_data("He 0 0 0")
+    ... view = nv.show_qcelemental(mol)
+    ... view
+    """
+    return NGLWidget(QCelementalStructure(obj), **kwargs)
+
+
+def show_psi4(obj, **kwargs):
+    """Show psi4's Molecule (require `ase` package)
+
+    Examples
+    --------
+    >>> import nglview as nv
+    >>> import psi4 # doctest: +SKIP
+    ... mol = psi4.geometry('xyz content here')
+    ... view = nv.show_psi4(mol)
+    ... view
+    """
+    return NGLWidget(QCelementalStructure(obj), **kwargs)
+
+
+def show_openbabel(obj, **kwargs):
+    """Show openbabel's Omol
+
+    >>> import nglview
+    >>> mol = openbabel.OBMol() # doctest: +SKIP
+    ... obConversion = openbabel.OBConversion() 
+    ... obConversion.SetInFormat('xyz')
+    ... obConversion.ReadFile(mol, 'what.xyz')
+    ... nglview.show_openbabel(mol)
+    """
+    return NGLWidget(OpenbabelStructure(obj), **kwargs)
 
 
 def show_pymatgen(struct, **kwargs):

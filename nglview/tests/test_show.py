@@ -1,3 +1,4 @@
+import sys
 import subprocess
 from mock import MagicMock
 import nglview
@@ -67,3 +68,38 @@ def test_show_rosetta():
 def test_show_iotbx():
     mol = MockStructure()
     nglview.show_iotbx(mol)
+
+
+def test_show_iodata():
+    class MockIO:
+        def to_file(self, fname):
+            with open(fname, 'w') as fh:
+                fh.write("""3
+water
+H    0.7838370000   -0.4922360000   -0.0000000000
+O   -0.0000000000    0.0620200000   -0.0000000000
+H   -0.7838370000   -0.4922360000   -0.0000000000""")
+
+    v = nglview.show_iodata(MockIO())
+    v
+
+def test_show_qcelemental_show_psi4():
+    class MockMol:
+        def to_string(self, format):
+            return '1\nHe\nHe                    0.000000000000     0.000000000000     0.000000000000\n'
+    v = nglview.show_qcelemental(MockMol())
+    v
+    nglview.show_psi4(MockMol())
+
+
+def test_show_openbabel():
+    import types
+    openbabel = types.ModuleType('openbabel')
+    sys.modules['openbabel'] = openbabel
+    b = MagicMock()
+    mol = MagicMock()
+    openbabel.OBConversion = MagicMock(return_value=b)
+    nglview.show_openbabel(mol)
+    b.SetOutFormat.assert_called_with('pdb')
+    assert b.WriteFile.called
+    assert len(b.WriteFile.call_args_list[0]) == 2
