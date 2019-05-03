@@ -605,6 +605,8 @@ def test_encode_and_decode():
     aa_eq(xyz, new_xyz)
 
 
+@unittest.skipUnless(has_pytraj, 'skip if not having pytraj')
+@unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
 @unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
 def test_coordinates_meta():
     from mdtraj.testing import get_fn

@@ -192,12 +192,12 @@ class NGLWidget(DOMWidget):
             self.parameters = parameters
         if isinstance(structure, Trajectory):
             name = py_utils.get_name(structure, kwargs)
-            self.add_trajectory(structure, name=name)
+            self.add_trajectory(structure, name=name, **kwargs)
         elif isinstance(structure, (list, tuple)):
             trajectories = structure
             for trajectory in trajectories:
                 name = py_utils.get_name(trajectory, kwargs)
-                self.add_trajectory(trajectory, name=name)
+                self.add_trajectory(trajectory, name=name, **kwargs)
         else:
             if structure is not None:
                 self.add_structure(structure, **kwargs)

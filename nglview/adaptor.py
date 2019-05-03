@@ -5,6 +5,7 @@ import os.path
 import uuid
 import numpy as np
 from tempfile import NamedTemporaryFile
+from functools import partial
 
 try:
     from cStringIO import StringIO
@@ -23,6 +24,8 @@ from . import config
 __all__ = [
     'FileStructure', 'TextStructure', 'RdkitStructure', 'PdbIdStructure',
     'ASEStructure', 'BiopythonStructure', 'IOTBXStructure',
+    'IODataStructure', 'QCelementalStructure', 'Psi4Structure',
+    'OpenbabelStructure',
     'RosettaStructure',
     'SimpletrajTrajectory',
     'MDTrajTrajectory', 'PyTrajTrajectory', 'ParmEdTrajectory',
@@ -31,8 +34,8 @@ __all__ = [
 ]
 
 
-def _get_structure_string(write_method):
-    with NamedTemporaryFile(suffix='.pdb') as fh:
+def _get_structure_string(write_method, suffix='.pdb'):
+    with NamedTemporaryFile(suffix=suffix) as fh:
         write_method(fh.name)
         return fh.read().decode()
 
@@ -107,6 +110,52 @@ class ASEStructure(Structure):
 
     def get_structure_string(self):
         return _get_structure_string(self._ase_atoms.write)
+
+
+class IODataStructure(Structure):
+    def __init__(self, obj):
+        super(IODataStructure, self).__init__()
+        self._obj = obj
+
+    def get_structure_string(self):
+        """Require `ase` package
+        """
+        import ase.io
+        with NamedTemporaryFile(suffix='.xyz') as fh:
+            self._obj.to_file(fh.name)
+            return ASEStructure(ase.io.read(fh.name)).get_structure_string()
+
+
+class QCelementalStructure(Structure):
+    def __init__(self, obj):
+        super(QCelementalStructure, self).__init__()
+        self._obj = obj
+
+    def get_structure_string(self):
+        """Require `ase` package
+        """
+        import ase.io
+        with NamedTemporaryFile(suffix='.xyz') as fh:
+            with open(fh.name, 'w') as fh2:
+                fh2.write(self._obj.to_string('xyz'))
+            return ASEStructure(ase.io.read(fh.name)).get_structure_string()
+
+
+class Psi4Structure(QCelementalStructure):
+    pass
+
+
+class OpenbabelStructure(Structure):
+    def __init__(self, obj):
+        super(OpenbabelStructure, self).__init__()
+        self._obj = obj
+
+    def get_structure_string(self):
+        import openbabel
+        oc = openbabel.OBConversion()
+        oc.SetOutFormat('pdb')
+        write = partial(oc.WriteFile, self._obj)
+        return _get_structure_string(write)
 
 
 class BiopythonStructure(Structure):
