@@ -13,6 +13,8 @@ from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
                       IODataStructure,
                       QCelementalStructure,
                       OpenbabelStructure,
+                      ProdyStructure,
+                      ProdyTrajectory,
                       MDTrajTrajectory,
                       PyTrajTrajectory, ParmEdTrajectory, MDAnalysisTrajectory,
                       HTMDTrajectory, ASETrajectory, SchrodingerStructure, SchrodingerTrajectory)
@@ -32,6 +34,7 @@ __all__ = [
     'show_rosetta',
     'show_asetraj',
     'show_simpletraj',
+    'show_prody',
     'show_mdtraj',
     'show_pytraj',
     'show_mdanalysis',
@@ -247,6 +250,16 @@ def show_simpletraj(traj, **kwargs):
     >>> view # doctest: +SKIP
     '''
     return NGLWidget(traj, **kwargs)
+
+
+def show_prody(obj, **kwargs):
+    import prody
+    if isinstance(obj, prody.Ensemble):
+        view_obj = ProdyTrajectory(obj)
+    else:
+        print("what")
+        view_obj = ProdyStructure(obj)
+    return NGLWidget(view_obj, **kwargs)
 
 
 def show_mdtraj(mdtraj_trajectory, **kwargs):

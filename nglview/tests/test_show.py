@@ -103,3 +103,33 @@ def test_show_openbabel():
     b.SetOutFormat.assert_called_with('pdb')
     assert b.WriteFile.called
     assert len(b.WriteFile.call_args_list[0]) == 2
+
+
+def test_show_prody():
+    import types
+    prody = types.ModuleType('prody')
+    sys.modules['prody'] = prody
+
+    class MockEnsemble:
+        def __getitem__(self, index):
+            return 0
+
+        def numConfs(self):
+            return 1
+
+        def getConformation(self, index):
+            class Struct:
+                def getCoords(self):
+                    return
+
+    prody.Ensemble = MockEnsemble
+    prody.writePDB = MagicMock()
+    ens = MockEnsemble()
+    nglview.show_prody(ens)
+    assert prody.writePDB.called
+    prody.writePDB.reset_mock()
+    assert not prody.writePDB.called
+
+    st = MagicMock()
+    nglview.show_prody(st)
+    assert prody.writePDB.called
