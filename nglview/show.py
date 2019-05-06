@@ -253,11 +253,22 @@ def show_simpletraj(traj, **kwargs):
 
 
 def show_prody(obj, **kwargs):
+    """
+
+    Examples
+    --------
+    >>> import nglview as nv # doctest: +SKIP
+    ... import prody
+    ... structure = prody.parsePDB('what.pdb')
+    ... ensemble = prody.parseDCD('what.dcd')
+    ... ensemble.setAtoms(structure)
+    ... nv.show_prody(ensemble)
+    ... # nv.show_prody(structure)
+    """
     import prody
     if isinstance(obj, prody.Ensemble):
         view_obj = ProdyTrajectory(obj)
     else:
-        print("what")
         view_obj = ProdyStructure(obj)
     return NGLWidget(view_obj, **kwargs)
 
