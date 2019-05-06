@@ -27,7 +27,9 @@ __all__ = [
     'IODataStructure', 'QCelementalStructure', 'Psi4Structure',
     'OpenbabelStructure',
     'RosettaStructure',
+    'ProdyStructure',
     'SimpletrajTrajectory',
+    'ProdyTrajectory',
     'MDTrajTrajectory', 'PyTrajTrajectory', 'ParmEdTrajectory',
     'MDAnalysisTrajectory', 'HTMDTrajectory', 'ASETrajectory',
     'register_backend',
@@ -205,6 +207,38 @@ class RosettaStructure(Structure):
 
     def get_structure_string(self):
         return _get_structure_string(self._mol.dump_pdb)
+
+
+@register_backend('prody')
+class ProdyStructure(Structure):
+    def __init__(self, obj):
+        super(ProdyStructure, self).__init__()
+        self._obj = obj
+        self.ext = 'pdb'
+        self.params = {}
+
+    def get_structure_string(self):
+        import prody
+        def write(fname):
+            if isinstance(self._obj, prody.Ensemble):
+                st = self._obj[0]
+            else:
+                st = self._obj
+            prody.writePDB(fname, st)
+        return _get_structure_string(write)
+
+
+@register_backend('prody')
+class ProdyTrajectory(Trajectory, ProdyStructure):
+    def __init__(self, obj):
+        ProdyStructure.__init__(self, obj)
+
+    @property
+    def n_frames(self):
+        return self._obj.numConfs()
+
+    def get_coordinates(self, index):
+        return self._obj.getConformation(index).getCoords()
 
 
 @register_backend('simpletraj')
