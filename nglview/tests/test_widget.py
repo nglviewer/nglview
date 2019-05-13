@@ -20,7 +20,7 @@ from IPython import display
 import nglview as nv
 from nglview import NGLWidget
 from nglview import widget_utils
-from nglview.utils.py_utils import PY2, PY3, click, submit
+from nglview.utils.py_utils import click, submit
 from nglview import js_utils
 from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
