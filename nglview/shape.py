@@ -62,7 +62,7 @@ SHAPE_EXAMPLES = {
 }
 
 
-class Shape(object):
+class Shape:
     """TODO: doc
 
     Parameters

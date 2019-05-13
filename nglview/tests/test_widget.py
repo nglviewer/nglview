@@ -232,9 +232,9 @@ def test_API_promise_to_have():
     view.add_representation('surface', selection='*', component=1)
     view.center()
     view._hold_image = True
-    view._on_render_image(change=dict(new=u'xyz'))
+    view._on_render_image(change=dict(new='xyz'))
     view._hold_image = False
-    view._on_render_image(change=dict(new=u'xyz'))
+    view._on_render_image(change=dict(new='xyz'))
     view.render_image()
     view.render_image(frame=2)
     view.download_image()
@@ -692,7 +692,7 @@ def test_trajectory_show_hide_sending_cooridnates():
 
     def copy_coordinate_dict(view):
         # make copy to avoid memory free
-        return dict((k, v.copy()) for k, v in view._coordinates_dict.items())
+        return {k: v.copy() for k, v in view._coordinates_dict.items()}
 
     coordinates_dict = copy_coordinate_dict(view)
     aa_eq(coordinates_dict[0], traj0[1].xyz)

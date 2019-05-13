@@ -17,7 +17,7 @@ class RemoteCallThread(threading.Thread):
         self.q = []
         self.view = view
         self.timeout = timeout
-        super(RemoteCallThread, self).__init__()
+        super().__init__()
         self.daemon = True
         self.registered_funcs = registered_funcs
 

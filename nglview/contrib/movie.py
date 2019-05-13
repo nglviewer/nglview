@@ -10,7 +10,7 @@ import time
 import threading
 
 
-class MovieMaker(object):
+class MovieMaker:
     """ Unstable API
 
     Parameters

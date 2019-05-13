@@ -224,7 +224,7 @@ def main(notebook_dict=notebook_dict, cmd=None):
               '--notebook-dir {dirname}'.format(jupyter=args.jexe,
                                                 port=port,
                                                 dirname=dirname)
-        print('NOTE: make sure to open {0} in your local machine\n'.format(
+        print('NOTE: make sure to open {} in your local machine\n'.format(
             notebook_name))
 
     try:

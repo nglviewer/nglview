@@ -6,7 +6,7 @@ import uuid
 __all__ = ['Structure', 'Trajectory']
 
 
-class Structure(object):
+class Structure:
     """abstract base class
     """
 
@@ -19,7 +19,7 @@ class Structure(object):
         raise NotImplementedError()
 
 
-class Trajectory(object):
+class Trajectory:
     """abstract base class
     """
 

@@ -144,7 +144,7 @@ def _camelize(snake):
 
 
 def _camelize_dict(kwargs):
-    return dict((_camelize(k), v) for k, v in kwargs.items())
+    return {_camelize(k): v for k, v in kwargs.items()}
 
 
 def snakify(from_camel):
@@ -158,7 +158,7 @@ def snakify(from_camel):
     return re.sub('([A-Z]{1})', r'_\1', from_camel).lower()
 
 
-class FileManager(object):
+class FileManager:
     """FileManager is for internal use.
 
     If file is in the current folder or subfoler, use filename
@@ -260,4 +260,4 @@ class FileManager(object):
     @property
     def is_url(self):
         return (isinstance(self.src, str) and (
-            (self.src.startswith('http') or self.src.startswith('rcsb://'))))
+            self.src.startswith('http') or self.src.startswith('rcsb://')))
