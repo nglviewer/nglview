@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
 import os, sys, argparse, json
 import subprocess
 from .cmd_example import CMD_EXAMPLE

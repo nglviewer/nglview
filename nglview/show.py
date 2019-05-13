@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import
-
 from io import StringIO
 from .widget import NGLWidget
 from . import datafiles

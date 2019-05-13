@@ -1,6 +1,5 @@
 # TODO: reorg
 # simplify code
-from __future__ import absolute_import
 import time
 import json
 from IPython.display import display, Javascript

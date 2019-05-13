@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from traitlets import Int, Dict, Any, observe, Bool
 from ipywidgets import Box, interactive
 

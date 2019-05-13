@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from ipywidgets import Box
 from .widget import NGLWidget
 from .layout import make_form_item_layout

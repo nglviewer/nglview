@@ -1,6 +1,4 @@
-from __future__ import print_function
 import os
-import unittest
 import pytest
 import nglview
 from nglview.utils import py_utils, js_utils

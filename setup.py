@@ -1,4 +1,3 @@
-from __future__ import print_function
 import subprocess
 from setuptools import setup, find_packages, Command
 from setuptools.command.egg_info import egg_info
