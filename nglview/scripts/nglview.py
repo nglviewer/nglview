@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 import os, sys, argparse, json
 import subprocess
-from subprocess import CalledProcessError
 from .cmd_example import CMD_EXAMPLE
 
 bin_path = os.path.join(sys.prefix, 'bin')
@@ -116,7 +115,6 @@ def get_remote_port(port=None, notebook_path=''):
 
 def main(notebook_dict=notebook_dict, cmd=None):
     # typte: (Dict, List[str]) -> None
-    PY3 = sys.version_info[0] == 3
     pyv_full_string = ','.join(str(i) for i in sys.version_info)
     pyv_short_string = str(sys.version_info[0])
     default_jexe = ' '.join((sys.executable, '-m jupyter_core'))
@@ -182,15 +180,6 @@ def main(notebook_dict=notebook_dict, cmd=None):
         notebook_name = command
     else:
         notebook_name = args.notebook_name
-        if not PY3:
-            kernelspec = notebook_dict['metadata']['kernelspec']
-            kernelspec['display_name'] = 'Python 2'
-            kernelspec['name'] = 'python2'
-            notebook_dict['metadata']['kernelspec'] = kernelspec
-
-            notebook_dict['metadata']['language_info']['codemirror_mode'][
-                'version'] = pyv_short_string
-            notebook_dict['metadata']['version'] = pyv_full_string
         if command is None:
             # create a notebook and import nglview
             notebook_dict['cells'][0]['source'] = simple_source

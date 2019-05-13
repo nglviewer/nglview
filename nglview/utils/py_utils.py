@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 import os
-import sys
 import gzip
 import bz2
 from zipfile import ZipFile
@@ -13,9 +12,6 @@ __all__ = [
     'encode_base64', 'decode_base64', 'seq_to_string', '_camelize',
     '_camelize_dict', 'get_colors_from_b64', 'display_gif'
 ]
-
-PY2 = sys.version_info[0] == 2
-PY3 = sys.version_info[0] == 3
 
 
 def get_positive_index(index, size):
@@ -41,12 +37,6 @@ def _update_url(func):
     from nglview.default import NGL_BASE_URL
     func.__doc__ = func.__doc__.format(ngl_url=NGL_BASE_URL)
     return func
-
-
-if PY3:
-    string_types = str
-else:
-    string_types = basestring
 
 
 def encode_base64(arr, dtype='f4'):
@@ -132,7 +122,7 @@ def get_colors_from_b64(b64_image):
 def seq_to_string(seq):
     """e.g. convert [1, 3, 5] to "@1,3,5"
     """
-    if isinstance(seq, string_types):
+    if isinstance(seq, str):
         return seq
     else:
         # assume 1D array
@@ -269,5 +259,5 @@ class FileManager(object):
 
     @property
     def is_url(self):
-        return (isinstance(self.src, string_types) and (
+        return (isinstance(self.src, str) and (
             (self.src.startswith('http') or self.src.startswith('rcsb://'))))

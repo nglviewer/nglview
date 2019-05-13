@@ -2,11 +2,7 @@ from __future__ import print_function
 import os
 import sys
 from itertools import chain
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
-
+from io import StringIO
 from mock import patch, MagicMock
 import gzip
 import time

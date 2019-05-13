@@ -1,10 +1,6 @@
 from __future__ import print_function, absolute_import
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
-
+from io import StringIO
 from .widget import NGLWidget
 from . import datafiles
 from .adaptor import (FileStructure, TextStructure, PdbIdStructure,

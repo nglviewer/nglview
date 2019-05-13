@@ -4,18 +4,10 @@ import os
 import os.path
 import uuid
 import numpy as np
-from tempfile import NamedTemporaryFile
+from io import StringIO
 from functools import partial
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
-
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
 
 from .base_adaptor import Structure, Trajectory
 from .utils.py_utils import FileManager
@@ -170,10 +162,7 @@ class BiopythonStructure(Structure):
 
     def get_structure_string(self):
         from Bio.PDB import PDBIO
-        try:
-            from StringIO import StringIO
-        except ImportError:
-            from io import StringIO
+        from io import StringIO
         io_pdb = PDBIO()
         io_pdb.set_structure(self._entity)
         io_str = StringIO()
