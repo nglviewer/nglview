@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from ipywidgets import Box
 from .widget import NGLWidget
 from .layout import make_form_item_layout
@@ -13,7 +12,7 @@ class BoxNGL(Box):
 
     def __init__(self, *args, **kwargs):
         self.layout = make_form_item_layout()
-        super(BoxNGL, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @observe('_gui_style')
     def _update_gui_style(self, change):
@@ -23,7 +22,7 @@ class BoxNGL(Box):
         self.layout.flex_flow = what.lower()
 
     def _ipython_display_(self, *args, **kwargs):
-        super(BoxNGL, self)._ipython_display_(*args, **kwargs)
+        super()._ipython_display_(*args, **kwargs)
         self._beautify()
 
     def _update_size(self):

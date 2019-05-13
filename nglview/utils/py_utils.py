@@ -1,6 +1,4 @@
-from __future__ import absolute_import
 import os
-import sys
 import gzip
 import bz2
 from zipfile import ZipFile
@@ -13,9 +11,6 @@ __all__ = [
     'encode_base64', 'decode_base64', 'seq_to_string', '_camelize',
     '_camelize_dict', 'get_colors_from_b64', 'display_gif'
 ]
-
-PY2 = sys.version_info[0] == 2
-PY3 = sys.version_info[0] == 3
 
 
 def get_positive_index(index, size):
@@ -43,12 +38,6 @@ def _update_url(func):
     return func
 
 
-if PY3:
-    string_types = str
-else:
-    string_types = basestring
-
-
 def encode_base64(arr, dtype='f4'):
     arr = arr.astype(dtype)
     return base64.b64encode(arr.data).decode('utf8')
@@ -69,7 +58,7 @@ def get_name(obj, kwargs):
 
 def display_gif(fn):
     from IPython import display
-    return display.HTML('<img src="{}">'.format(fn))
+    return display.HTML(f'<img src="{fn}">')
 
 
 @contextmanager
@@ -132,7 +121,7 @@ def get_colors_from_b64(b64_image):
 def seq_to_string(seq):
     """e.g. convert [1, 3, 5] to "@1,3,5"
     """
-    if isinstance(seq, string_types):
+    if isinstance(seq, str):
         return seq
     else:
         # assume 1D array
@@ -154,7 +143,7 @@ def _camelize(snake):
 
 
 def _camelize_dict(kwargs):
-    return dict((_camelize(k), v) for k, v in kwargs.items())
+    return {_camelize(k): v for k, v in kwargs.items()}
 
 
 def snakify(from_camel):
@@ -168,7 +157,7 @@ def snakify(from_camel):
     return re.sub('([A-Z]{1})', r'_\1', from_camel).lower()
 
 
-class FileManager(object):
+class FileManager:
     """FileManager is for internal use.
 
     If file is in the current folder or subfoler, use filename
@@ -269,5 +258,5 @@ class FileManager(object):
 
     @property
     def is_url(self):
-        return (isinstance(self.src, string_types) and (
-            (self.src.startswith('http') or self.src.startswith('rcsb://'))))
+        return (isinstance(self.src, str) and (
+            self.src.startswith('http') or self.src.startswith('rcsb://')))

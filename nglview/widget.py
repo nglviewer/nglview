@@ -1,4 +1,3 @@
-from __future__ import print_function, absolute_import
 import threading
 import time
 import base64
@@ -152,7 +151,7 @@ class NGLWidget(DOMWidget):
                  representations=None,
                  parameters=None,
                  **kwargs):
-        super(NGLWidget, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self._gui = None
         self._init_gui = kwargs.pop('gui', False)
@@ -468,7 +467,7 @@ class NGLWidget(DOMWidget):
         self._fire_callbacks(new_callbacks)
 
     def _ipython_display_(self, **kwargs):
-        super(NGLWidget, self)._ipython_display_(**kwargs)
+        super()._ipython_display_(**kwargs)
         if self._first_time_loaded:
             self._first_time_loaded = False
         else:
@@ -732,9 +731,9 @@ class NGLWidget(DOMWidget):
             # DEPRECATED: This is not efficient, cause lots of lagging.
             # should send binary
             # send base64
-            encoded_coordinates_dict = dict(
-                (k, encode_base64(v))
-                for (k, v) in self._coordinates_dict.items())
+            encoded_coordinates_dict = {
+                k: encode_base64(v)
+                for (k, v) in self._coordinates_dict.items()}
             mytime = time.time() * 1000
             self.send({
                 'type': 'base64_single',
@@ -1079,7 +1078,7 @@ class NGLWidget(DOMWidget):
         '''
         if not isinstance(structure, Structure):
             raise ValueError(
-                '{} is not an instance of Structure'.format(structure))
+                f'{structure} is not an instance of Structure')
         self._load_data(structure, **kwargs)
         self._ngl_component_ids.append(structure.id)
         if self.n_components > 1:
@@ -1138,7 +1137,7 @@ class NGLWidget(DOMWidget):
         >>> # which is equal to 
         >>> # view.add_component('rcsb://1tsu.pdb')
         '''
-        return self.add_component('rcsb://{}.pdb'.format(pdbid))
+        return self.add_component(f'rcsb://{pdbid}.pdb')
 
     def add_component(self, filename, **kwargs):
         '''add component from file/trajectory/struture
@@ -1342,7 +1341,7 @@ class NGLWidget(DOMWidget):
     def hide(self, indices):
         """set invisibility for given component/struture/trajectory (by their indices)
         """
-        traj_ids = set(traj.id for traj in self._trajlist)
+        traj_ids = {traj.id for traj in self._trajlist}
 
         for index in indices:
             comp_id = self._ngl_component_ids[index]
@@ -1369,7 +1368,7 @@ class NGLWidget(DOMWidget):
         ----------
         indices : {'all', array-like}, component index, default 'all'
         """
-        traj_ids = set(traj.id for traj in self._trajlist)
+        traj_ids = {traj.id for traj in self._trajlist}
 
         if indices == 'all':
             indices_ = set(range(self.n_components))

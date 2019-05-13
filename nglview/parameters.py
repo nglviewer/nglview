@@ -25,4 +25,4 @@ REPRESENTATION_NAME_PAIRS = [
 
 REPRESENTATION_NAMES = list(
     sorted(
-        set([name for pairs in REPRESENTATION_NAME_PAIRS for name in pairs])))
+        {name for pairs in REPRESENTATION_NAME_PAIRS for name in pairs}))

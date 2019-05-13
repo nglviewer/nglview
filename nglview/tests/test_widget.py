@@ -1,12 +1,7 @@
-from __future__ import print_function
 import os
 import sys
 from itertools import chain
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
-
+from io import StringIO
 from mock import patch, MagicMock
 import gzip
 import time
@@ -25,7 +20,7 @@ from IPython import display
 import nglview as nv
 from nglview import NGLWidget
 from nglview import widget_utils
-from nglview.utils.py_utils import PY2, PY3, click, submit
+from nglview.utils.py_utils import click, submit
 from nglview import js_utils
 from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import encode_base64, decode_base64
@@ -236,9 +231,9 @@ def test_API_promise_to_have():
     view.add_representation('surface', selection='*', component=1)
     view.center()
     view._hold_image = True
-    view._on_render_image(change=dict(new=u'xyz'))
+    view._on_render_image(change=dict(new='xyz'))
     view._hold_image = False
-    view._on_render_image(change=dict(new=u'xyz'))
+    view._on_render_image(change=dict(new='xyz'))
     view.render_image()
     view.render_image(frame=2)
     view.download_image()
@@ -696,7 +691,7 @@ def test_trajectory_show_hide_sending_cooridnates():
 
     def copy_coordinate_dict(view):
         # make copy to avoid memory free
-        return dict((k, v.copy()) for k, v in view._coordinates_dict.items())
+        return {k: v.copy() for k, v in view._coordinates_dict.items()}
 
     coordinates_dict = copy_coordinate_dict(view)
     aa_eq(coordinates_dict[0], traj0[1].xyz)

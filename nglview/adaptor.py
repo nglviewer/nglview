@@ -1,21 +1,11 @@
-from __future__ import print_function, absolute_import
-
 import os
 import os.path
 import uuid
 import numpy as np
-from tempfile import NamedTemporaryFile
+from io import StringIO
 from functools import partial
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
-
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
 
 from .base_adaptor import Structure, Trajectory
 from .utils.py_utils import FileManager
@@ -42,7 +32,7 @@ def _get_structure_string(write_method, suffix='.pdb'):
         return fh.read().decode()
 
 
-class register_backend(object):
+class register_backend:
     def __init__(self, package_name):
         # package_name must match exactly to your Python package
         self.package_name = package_name
@@ -54,7 +44,7 @@ class register_backend(object):
 
 class FileStructure(Structure):
     def __init__(self, path):
-        super(FileStructure, self).__init__()
+        super().__init__()
         self.fm = FileManager(path)
         self.ext = self.fm.ext
         self.params = {}
@@ -66,7 +56,7 @@ class FileStructure(Structure):
 
 class TextStructure(Structure):
     def __init__(self, text, ext='pdb', params={}):
-        super(TextStructure, self).__init__()
+        super().__init__()
         self.path = ''
         self.ext = ext
         self.params = params
@@ -78,7 +68,7 @@ class TextStructure(Structure):
 
 class RdkitStructure(Structure):
     def __init__(self, rdkit_mol, ext="pdb"):
-        super(RdkitStructure, self).__init__()
+        super().__init__()
         self.path = ''
         self.ext = ext
         self.params = {}
@@ -92,7 +82,7 @@ class RdkitStructure(Structure):
 
 class PdbIdStructure(Structure):
     def __init__(self, pdbid):
-        super(PdbIdStructure, self).__init__()
+        super().__init__()
         self.pdbid = pdbid
         self.ext = "cif"
         self.params = {}
@@ -104,7 +94,7 @@ class PdbIdStructure(Structure):
 
 class ASEStructure(Structure):
     def __init__(self, ase_atoms, ext='pdb', params={}):
-        super(ASEStructure, self).__init__()
+        super().__init__()
         self.path = ''
         self.ext = ext
         self.params = params
@@ -116,7 +106,7 @@ class ASEStructure(Structure):
 
 class IODataStructure(Structure):
     def __init__(self, obj):
-        super(IODataStructure, self).__init__()
+        super().__init__()
         self._obj = obj
 
     def get_structure_string(self):
@@ -130,7 +120,7 @@ class IODataStructure(Structure):
 
 class QCelementalStructure(Structure):
     def __init__(self, obj):
-        super(QCelementalStructure, self).__init__()
+        super().__init__()
         self._obj = obj
 
     def get_structure_string(self):
@@ -149,7 +139,7 @@ class Psi4Structure(QCelementalStructure):
 
 class OpenbabelStructure(Structure):
     def __init__(self, obj):
-        super(OpenbabelStructure, self).__init__()
+        super().__init__()
         self._obj = obj
 
     def get_structure_string(self):
@@ -162,7 +152,7 @@ class OpenbabelStructure(Structure):
 
 class BiopythonStructure(Structure):
     def __init__(self, entity, ext='pdb', params={}):
-        super(BiopythonStructure, self).__init__()
+        super().__init__()
         self.path = ''
         self.ext = ext
         self.params = params
@@ -170,10 +160,7 @@ class BiopythonStructure(Structure):
 
     def get_structure_string(self):
         from Bio.PDB import PDBIO
-        try:
-            from StringIO import StringIO
-        except ImportError:
-            from io import StringIO
+        from io import StringIO
         io_pdb = PDBIO()
         io_pdb.set_structure(self._entity)
         io_str = StringIO()
@@ -186,7 +173,7 @@ class IOTBXStructure(Structure):
         """
         obj must have as_pdb_string method
         """
-        super(IOTBXStructure, self).__init__()
+        super().__init__()
         self.path = ''
         self.ext = ext
         self.params = params
@@ -199,7 +186,7 @@ class IOTBXStructure(Structure):
 class RosettaStructure(Structure):
     def __init__(self, pose, ext='pdb', params={}):
         # type: (pyrosetta.rosetta.core.pose.Pose, str, Dict) -> None
-        super(RosettaStructure, self).__init__()
+        super().__init__()
         self.path = ''
         self.ext = ext
         self.params = params
@@ -212,7 +199,7 @@ class RosettaStructure(Structure):
 @register_backend('prody')
 class ProdyStructure(Structure):
     def __init__(self, obj):
-        super(ProdyStructure, self).__init__()
+        super().__init__()
         self._obj = obj
         self.ext = 'pdb'
         self.params = {}
@@ -506,7 +493,7 @@ class SchrodingerStructure(Structure):
     '''Only read first structure
     '''
     def __init__(self, structure, ext="pdb"):
-        super(SchrodingerStructure, self).__init__()
+        super().__init__()
         self.path = ''
         self.ext = ext
         self.params = {}
@@ -521,7 +508,7 @@ class SchrodingerTrajectory(SchrodingerStructure, Trajectory):
     """Require `parmed` package.
     """
     def __init__(self, structure, traj):
-        super(SchrodingerTrajectory, self).__init__(structure)
+        super().__init__(structure)
         self._traj = traj
 
     @property

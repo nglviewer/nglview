@@ -1,6 +1,5 @@
 # TODO: reorg
 # simplify code
-from __future__ import absolute_import
 from ipywidgets import Layout, Button, ToggleButton, Box, Label, Tab
 
 

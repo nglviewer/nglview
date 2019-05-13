@@ -8,7 +8,6 @@ from nglview.scripts.nglview import main, get_remote_port
 from mock import patch, mock_open
 
 this_path = os.path.dirname(os.path.abspath(__file__))
-PY2 = sys.version_info[0] == 2
 
 @patch('subprocess.check_call')
 def test_cli(mock_call):
@@ -34,7 +33,7 @@ def test_cli(mock_call):
     main(cmd=command)
 
     # single pdb, specify browser
-    command = 'nglview {} --browser=google-chrome'.format(datafiles.PDB)
+    command = f'nglview {datafiles.PDB} --browser=google-chrome'
     subprocess.check_call(command.split())
 
     # single pdb, does not exists
@@ -49,15 +48,11 @@ def test_cli(mock_call):
 
     # python script
     command = ['my.py']
-    if PY2:
-        with patch('__builtin__.open'), patch('json.dumps'):
-            main(cmd=command)
-    else:
-        with patch('builtins.open'), patch('json.dumps'):
-            main(cmd=command)
+    with patch('builtins.open'), patch('json.dumps'):
+        main(cmd=command)
 
     # pytraj
-    command = 'nglview {} -c {}'.format(datafiles.PDB, datafiles.XTC)
+    command = f'nglview {datafiles.PDB} -c {datafiles.XTC}'
     subprocess.check_call(command.split())
 
     # remote
@@ -67,7 +62,7 @@ def test_cli(mock_call):
 
     # python script
     pyfile = os.path.join(this_path, 'test_widget.py')
-    command = 'nglview {pyfile}'.format(pyfile=pyfile)
+    command = f'nglview {pyfile}'
     subprocess.check_call(command.split())
 
     # notebook (.ipynb)

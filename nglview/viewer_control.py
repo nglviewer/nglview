@@ -1,4 +1,4 @@
-class ViewerControl(object):
+class ViewerControl:
     """EXPERIMENTAL. Create viewer controls (rotate, zoom, translation, ...)
 
     Parameters

@@ -1,7 +1,7 @@
 from .utils import widget_utils
 
 
-class ComponentViewer(object):
+class ComponentViewer:
     """Convenient attribute for NGLWidget. See example below.
 
     Examples

@@ -1,10 +1,4 @@
-from __future__ import print_function, absolute_import
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
-
+from io import StringIO
 from .widget import NGLWidget
 from . import datafiles
 from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
@@ -62,7 +56,7 @@ def show_pdbid(pdbid, **kwargs):
 
 
 def show_url(url, **kwargs):
-    kwargs2 = dict((k, v) for k, v in kwargs.items())
+    kwargs2 = {k: v for k, v in kwargs.items()}
     view = NGLWidget()
     view.add_component(url, **kwargs2)
     return view

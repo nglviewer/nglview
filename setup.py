@@ -1,4 +1,3 @@
-from __future__ import print_function
 import subprocess
 from setuptools import setup, find_packages, Command
 from setuptools.command.egg_info import egg_info
@@ -221,6 +220,7 @@ setup_args = {
         'jupyter',
         'widgets',
     ],
+    'python_requires': '>=3.6',
     'classifiers': [
         'Development Status :: 4 - Beta',
         'Framework :: IPython',
@@ -229,8 +229,10 @@ setup_args = {
         'License :: OSI Approved :: MIT License',
         'Programming Language :: JavaScript',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Multimedia :: Graphics',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Scientific/Engineering :: Chemistry',

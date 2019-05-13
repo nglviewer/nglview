@@ -8,7 +8,7 @@ from mock import patch, MagicMock
 from make_dummy_comm import *
 
 
-class FakeEvent(object):
+class FakeEvent:
     def is_set(self):
         return self._event_set
 

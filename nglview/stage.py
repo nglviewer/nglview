@@ -1,6 +1,6 @@
 from .utils.py_utils import _camelize_dict
 
-class Stage(object):
+class Stage:
     """
     Try to mimic NGL.Stage
     """

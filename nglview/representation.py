@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from traitlets import Int, Dict, Any, observe, Bool
 from ipywidgets import Box, interactive
 
@@ -21,7 +20,7 @@ class RepresentationControl(Box):
                  name=None,
                  *args,
                  **kwargs):
-        super(RepresentationControl, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.component_index = component_index
         self.repr_index = repr_index
         self._view = view

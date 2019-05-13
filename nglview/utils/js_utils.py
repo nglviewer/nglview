@@ -23,7 +23,7 @@ def show_toolbar():
 
 
 def execute(command):
-    run('Jupyter.notebook.kernel.execute("{}")'.format(command))
+    run(f'Jupyter.notebook.kernel.execute("{command}")')
 
 
 def _set_notebook_width(width='20%', left_padding=0):
@@ -35,7 +35,7 @@ def _set_notebook_width(width='20%', left_padding=0):
     """.format(width=width)
 
     if left_padding is not None:
-        offset_str = "cb.offset({{'left': {}}})".format(left_padding)
+        offset_str = f"cb.offset({{'left': {left_padding}}})"
     else:
         offset_str = ''
     command = script_template + offset_str
