@@ -1078,7 +1078,7 @@ class NGLWidget(DOMWidget):
         '''
         if not isinstance(structure, Structure):
             raise ValueError(
-                '{} is not an instance of Structure'.format(structure))
+                f'{structure} is not an instance of Structure')
         self._load_data(structure, **kwargs)
         self._ngl_component_ids.append(structure.id)
         if self.n_components > 1:
@@ -1137,7 +1137,7 @@ class NGLWidget(DOMWidget):
         >>> # which is equal to 
         >>> # view.add_component('rcsb://1tsu.pdb')
         '''
-        return self.add_component('rcsb://{}.pdb'.format(pdbid))
+        return self.add_component(f'rcsb://{pdbid}.pdb')
 
     def add_component(self, filename, **kwargs):
         '''add component from file/trajectory/struture

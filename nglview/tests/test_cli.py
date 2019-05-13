@@ -33,7 +33,7 @@ def test_cli(mock_call):
     main(cmd=command)
 
     # single pdb, specify browser
-    command = 'nglview {} --browser=google-chrome'.format(datafiles.PDB)
+    command = f'nglview {datafiles.PDB} --browser=google-chrome'
     subprocess.check_call(command.split())
 
     # single pdb, does not exists
@@ -52,7 +52,7 @@ def test_cli(mock_call):
         main(cmd=command)
 
     # pytraj
-    command = 'nglview {} -c {}'.format(datafiles.PDB, datafiles.XTC)
+    command = f'nglview {datafiles.PDB} -c {datafiles.XTC}'
     subprocess.check_call(command.split())
 
     # remote
@@ -62,7 +62,7 @@ def test_cli(mock_call):
 
     # python script
     pyfile = os.path.join(this_path, 'test_widget.py')
-    command = 'nglview {pyfile}'.format(pyfile=pyfile)
+    command = f'nglview {pyfile}'
     subprocess.check_call(command.split())
 
     # notebook (.ipynb)

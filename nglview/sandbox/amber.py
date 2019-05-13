@@ -24,8 +24,8 @@ class AmberMD(BaseMD):
 
     def __init__(self, top=None, restart=None, reference=None):
         self.top = top
-        assert os.path.exists(restart), '{} must exists'.format(restart)
-        assert os.path.exists(reference), '{} must exists'.format(reference)
+        assert os.path.exists(restart), f'{restart} must exists'
+        assert os.path.exists(reference), f'{reference} must exists'
         self.restart = restart
         self.reference_traj = pt.load(reference, top=self.top)
         self.thread = None

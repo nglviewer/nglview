@@ -230,7 +230,7 @@ def main(notebook_dict=notebook_dict, cmd=None):
         subprocess.check_call(cm.split())
     except KeyboardInterrupt:
         if args.clean and create_new_nb:
-            print("deleting {}".format(notebook_name))
+            print(f"deleting {notebook_name}")
             os.remove(notebook_name)
         if args.auto:
             disable_extension(jupyter=args.jexe)

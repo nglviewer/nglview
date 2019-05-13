@@ -58,7 +58,7 @@ def get_name(obj, kwargs):
 
 def display_gif(fn):
     from IPython import display
-    return display.HTML('<img src="{}">'.format(fn))
+    return display.HTML(f'<img src="{fn}">')
 
 
 @contextmanager
