@@ -5,11 +5,17 @@ COLOR_SCHEMES = [
 ]
 
 
+_USER_COLOR_DICT = {}
+
+
 class _ColorScheme:
-    def __init__(self, args):
+    _color_dict = {}
+    def __init__(self, args, label):
         # FIXME: validate `args`
         self._color_scheme = args
+        self._label = label
+        _USER_COLOR_DICT[label] = self._color_scheme
 
     @property
     def data(self):
-        return self._color_scheme
+        return {'data': self._color_scheme, 'label': self._label}

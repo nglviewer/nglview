@@ -998,7 +998,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
             if (msg.methodName == 'addRepresentation' && 
                 msg.reconstruc_color_scheme){
-                msg.kwargs.color = this._make_color_scheme(msg.kwargs.color);
+                msg.kwargs.color = this._make_color_scheme(msg.kwargs.color, msg.kwargs.color_label);
             }
 
             switch (msg.target) {

@@ -145,6 +145,7 @@ class NGLWidget(DOMWidget):
     _ngl_msg_archive = List().tag(sync=True)
     _ngl_coordinate_resource = Dict().tag(sync=True)
     _representations = List().tag(sync=False)
+    _ngl_color_dict = Dict().tag(sync=True)
 
     def __init__(self,
                  structure=None,
@@ -231,6 +232,7 @@ class NGLWidget(DOMWidget):
 
         self._ngl_coordinate_resource = resource
         self._ngl_full_stage_parameters_embed = self._ngl_full_stage_parameters
+        self._ngl_color_dict = color._USER_COLOR_DICT.copy()
 
     def _unset_serialization(self):
         self._ngl_serialize = False
@@ -1304,7 +1306,9 @@ class NGLWidget(DOMWidget):
 
         reconstruc_color_scheme = False
         if 'color' in kwargs and isinstance(kwargs['color'], color._ColorScheme):
-            kwargs['color'] = kwargs['color'].data
+            kwargs['color_label'] = kwargs['color'].data['label']
+            # overite `color`
+            kwargs['color'] = kwargs['color'].data['data']
             reconstruc_color_scheme = True
 
         msg['target'] = target
