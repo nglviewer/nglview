@@ -325,10 +325,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        var ngl_color_dict = that.model.get("_ngl_color_dict");
 	        var loadfile_list = [];
 	
+	        // reconstruct colors
 	        for (label in ngl_color_dict){
 	            that._make_color_scheme(ngl_color_dict[label], label);
 	        }
-            console.log(NGL.ColormakerRegistry.userSchemes);
 	
 	        _.each(ngl_msg_archive, function(msg){
 	            if (msg.methodName == 'loadFile'){

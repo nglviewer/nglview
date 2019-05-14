@@ -254,6 +254,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         var ngl_color_dict = that.model.get("_ngl_color_dict");
         var loadfile_list = [];
 
+        // reconstruct colors
         for (label in ngl_color_dict){
             that._make_color_scheme(ngl_color_dict[label], label);
         }

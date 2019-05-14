@@ -322,7 +322,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
 	        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
 	        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters_embed');
+	        var ngl_color_dict = that.model.get("_ngl_color_dict");
 	        var loadfile_list = [];
+	
+	        // reconstruct colors
+	        for (label in ngl_color_dict){
+	            that._make_color_scheme(ngl_color_dict[label], label);
+	        }
 	
 	        _.each(ngl_msg_archive, function(msg){
 	            if (msg.methodName == 'loadFile'){
