@@ -253,6 +253,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         var ngl_stage_params = that.model.get('_ngl_full_stage_parameters_embed');
         var ngl_color_dict = that.model.get("_ngl_color_dict");
         var loadfile_list = [];
+        var label
 
         // reconstruct colors
         for (label in ngl_color_dict){
@@ -991,7 +992,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
 	_make_color_scheme: function(args, label){
-	    var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
+        var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
         var scheme = NGL.ColormakerRegistry.userSchemes[id];
         NGL.ColormakerRegistry.removeScheme(id);
         // hard code the scheme ID
