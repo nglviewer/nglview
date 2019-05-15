@@ -322,7 +322,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
 	        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
 	        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters_embed');
+	        var ngl_color_dict = that.model.get("_ngl_color_dict");
 	        var loadfile_list = [];
+	
+	        // reconstruct colors
+	        for (label in ngl_color_dict){
+	            that._make_color_scheme(ngl_color_dict[label], label);
+	        }
 	
 	        _.each(ngl_msg_archive, function(msg){
 	            if (msg.methodName == 'loadFile'){
@@ -1055,10 +1061,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        });
 	    },
 	
-	    _make_color_scheme: function(args){
-	        console.log("making color scheme", args);
-	        return NGL.ColormakerRegistry.addSelectionScheme(args)
-	    },
+		_make_color_scheme: function(args, label){
+		    console.log("making color scheme", args);
+		    var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
+	        var scheme = NGL.ColormakerRegistry.userSchemes[id];
+	        NGL.ColormakerRegistry.removeScheme(id);
+	        // hard code the scheme ID
+	        NGL.ColormakerRegistry.add(label, scheme);
+	        return label
+		},
 	
 	    on_msg: function(msg) {
 	        // TODO: re-organize
@@ -1069,7 +1080,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	            if (msg.methodName == 'addRepresentation' && 
 	                msg.reconstruc_color_scheme){
-	                msg.kwargs.color = this._make_color_scheme(msg.kwargs.color);
+	                msg.kwargs.color = this._make_color_scheme(msg.kwargs.color, msg.kwargs.color_label);
 	            }
 	
 	            switch (msg.target) {
@@ -1661,7 +1672,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v3.4.0
+	 * jQuery JavaScript Library v3.3.1
 	 * https://jquery.com/
 	 *
 	 * Includes Sizzle.js
@@ -1671,7 +1682,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	 * Released under the MIT license
 	 * https://jquery.org/license
 	 *
-	 * Date: 2019-04-10T19:48Z
+	 * Date: 2018-01-20T17:24Z
 	 */
 	( function( global, factory ) {
 	
@@ -1753,33 +1764,20 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		var preservedScriptAttributes = {
 			type: true,
 			src: true,
-			nonce: true,
 			noModule: true
 		};
 	
-		function DOMEval( code, node, doc ) {
+		function DOMEval( code, doc, node ) {
 			doc = doc || document;
 	
-			var i, val,
+			var i,
 				script = doc.createElement( "script" );
 	
 			script.text = code;
 			if ( node ) {
 				for ( i in preservedScriptAttributes ) {
-	
-					// Support: Firefox 64+, Edge 18+
-					// Some browsers don't support the "nonce" property on scripts.
-					// On the other hand, just using `getAttribute` is not enough as
-					// the `nonce` attribute is reset to an empty string whenever it
-					// becomes browsing-context connected.
-					// See https://github.com/whatwg/html/issues/2369
-					// See https://html.spec.whatwg.org/#nonce-attributes
-					// The `node.getAttribute` check was added for the sake of
-					// `jQuery.globalEval` so that it can fake a nonce-containing node
-					// via an object.
-					val = node[ i ] || node.getAttribute && node.getAttribute( i );
-					if ( val ) {
-						script.setAttribute( i, val );
+					if ( node[ i ] ) {
+						script[ i ] = node[ i ];
 					}
 				}
 			}
@@ -1804,7 +1802,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	
 	var
-		version = "3.4.0",
+		version = "3.3.1",
 	
 		// Define a local copy of jQuery
 		jQuery = function( selector, context ) {
@@ -1933,28 +1931,25 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 				// Extend the base object
 				for ( name in options ) {
+					src = target[ name ];
 					copy = options[ name ];
 	
-					// Prevent Object.prototype pollution
 					// Prevent never-ending loop
-					if ( name === "__proto__" || target === copy ) {
+					if ( target === copy ) {
 						continue;
 					}
 	
 					// Recurse if we're merging plain objects or arrays
 					if ( deep && copy && ( jQuery.isPlainObject( copy ) ||
 						( copyIsArray = Array.isArray( copy ) ) ) ) {
-						src = target[ name ];
 	
-						// Ensure proper type for the source value
-						if ( copyIsArray && !Array.isArray( src ) ) {
-							clone = [];
-						} else if ( !copyIsArray && !jQuery.isPlainObject( src ) ) {
-							clone = {};
+						if ( copyIsArray ) {
+							copyIsArray = false;
+							clone = src && Array.isArray( src ) ? src : [];
+	
 						} else {
-							clone = src;
+							clone = src && jQuery.isPlainObject( src ) ? src : {};
 						}
-						copyIsArray = false;
 	
 						// Never move original objects, clone them
 						target[ name ] = jQuery.extend( deep, clone, copy );
@@ -2007,6 +2002,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		},
 	
 		isEmptyObject: function( obj ) {
+	
+			/* eslint-disable no-unused-vars */
+			// See https://github.com/eslint/eslint/issues/6125
 			var name;
 	
 			for ( name in obj ) {
@@ -2016,8 +2014,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		},
 	
 		// Evaluates a script in a global context
-		globalEval: function( code, options ) {
-			DOMEval( code, { nonce: options && options.nonce } );
+		globalEval: function( code ) {
+			DOMEval( code );
 		},
 	
 		each: function( obj, callback ) {
@@ -2173,14 +2171,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	}
 	var Sizzle =
 	/*!
-	 * Sizzle CSS Selector Engine v2.3.4
+	 * Sizzle CSS Selector Engine v2.3.3
 	 * https://sizzlejs.com/
 	 *
-	 * Copyright JS Foundation and other contributors
+	 * Copyright jQuery Foundation and other contributors
 	 * Released under the MIT license
-	 * https://js.foundation/
+	 * http://jquery.org/license
 	 *
-	 * Date: 2019-04-08
+	 * Date: 2016-08-08
 	 */
 	(function( window ) {
 	
@@ -2214,7 +2212,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		classCache = createCache(),
 		tokenCache = createCache(),
 		compilerCache = createCache(),
-		nonnativeSelectorCache = createCache(),
 		sortOrder = function( a, b ) {
 			if ( a === b ) {
 				hasDuplicate = true;
@@ -2276,7 +2273,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 		rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
 		rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*" ),
-		rdescend = new RegExp( whitespace + "|>" ),
+	
+		rattributeQuotes = new RegExp( "=" + whitespace + "*([^\\]'\"]*?)" + whitespace + "*\\]", "g" ),
 	
 		rpseudo = new RegExp( pseudos ),
 		ridentifier = new RegExp( "^" + identifier + "$" ),
@@ -2297,7 +2295,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
 		},
 	
-		rhtml = /HTML$/i,
 		rinputs = /^(?:input|select|textarea|button)$/i,
 		rheader = /^h\d$/i,
 	
@@ -2352,9 +2349,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			setDocument();
 		},
 	
-		inDisabledFieldset = addCombinator(
+		disabledAncestor = addCombinator(
 			function( elem ) {
-				return elem.disabled === true && elem.nodeName.toLowerCase() === "fieldset";
+				return elem.disabled === true && ("form" in elem || "label" in elem);
 			},
 			{ dir: "parentNode", next: "legend" }
 		);
@@ -2467,22 +2464,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 				// Take advantage of querySelectorAll
 				if ( support.qsa &&
-					!nonnativeSelectorCache[ selector + " " ] &&
-					(!rbuggyQSA || !rbuggyQSA.test( selector )) &&
+					!compilerCache[ selector + " " ] &&
+					(!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
 	
-					// Support: IE 8 only
+					if ( nodeType !== 1 ) {
+						newContext = context;
+						newSelector = selector;
+	
+					// qSA looks outside Element context, which is not what we want
+					// Thanks to Andrew Dupont for this workaround technique
+					// Support: IE <=8
 					// Exclude object elements
-					(nodeType !== 1 || context.nodeName.toLowerCase() !== "object") ) {
-	
-					newSelector = selector;
-					newContext = context;
-	
-					// qSA considers elements outside a scoping root when evaluating child or
-					// descendant combinators, which is not what we want.
-					// In such cases, we work around the behavior by prefixing every selector in the
-					// list with an ID selector referencing the scope context.
-					// Thanks to Andrew Dupont for this technique.
-					if ( nodeType === 1 && rdescend.test( selector ) ) {
+					} else if ( context.nodeName.toLowerCase() !== "object" ) {
 	
 						// Capture the context ID, setting it first if necessary
 						if ( (nid = context.getAttribute( "id" )) ) {
@@ -2504,16 +2497,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 							context;
 					}
 	
-					try {
-						push.apply( results,
-							newContext.querySelectorAll( newSelector )
-						);
-						return results;
-					} catch ( qsaError ) {
-						nonnativeSelectorCache( selector, true );
-					} finally {
-						if ( nid === expando ) {
-							context.removeAttribute( "id" );
+					if ( newSelector ) {
+						try {
+							push.apply( results,
+								newContext.querySelectorAll( newSelector )
+							);
+							return results;
+						} catch ( qsaError ) {
+						} finally {
+							if ( nid === expando ) {
+								context.removeAttribute( "id" );
+							}
 						}
 					}
 				}
@@ -2677,7 +2671,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 						// Where there is no isDisabled, check manually
 						/* jshint -W018 */
 						elem.isDisabled !== !disabled &&
-							inDisabledFieldset( elem ) === disabled;
+							disabledAncestor( elem ) === disabled;
 				}
 	
 				return elem.disabled === disabled;
@@ -2734,13 +2728,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	 * @returns {Boolean} True iff elem is a non-HTML XML node
 	 */
 	isXML = Sizzle.isXML = function( elem ) {
-		var namespace = elem.namespaceURI,
-			docElem = (elem.ownerDocument || elem).documentElement;
-	
-		// Support: IE <=8
-		// Assume HTML when documentElement doesn't yet exist, such as inside loading iframes
-		// https://bugs.jquery.com/ticket/4833
-		return !rhtml.test( namespace || docElem && docElem.nodeName || "HTML" );
+		// documentElement is verified for cases where it doesn't yet exist
+		// (such as loading iframes in IE - #4833)
+		var documentElement = elem && (elem.ownerDocument || elem).documentElement;
+		return documentElement ? documentElement.nodeName !== "HTML" : false;
 	};
 	
 	/**
@@ -3162,8 +3153,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			setDocument( elem );
 		}
 	
+		// Make sure that attribute selectors are quoted
+		expr = expr.replace( rattributeQuotes, "='$1']" );
+	
 		if ( support.matchesSelector && documentIsHTML &&
-			!nonnativeSelectorCache[ expr + " " ] &&
+			!compilerCache[ expr + " " ] &&
 			( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
 			( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
 	
@@ -3177,9 +3171,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 						elem.document && elem.document.nodeType !== 11 ) {
 					return ret;
 				}
-			} catch (e) {
-				nonnativeSelectorCache( expr, true );
-			}
+			} catch (e) {}
 		}
 	
 		return Sizzle( expr, document, null, [ elem ] ).length > 0;
@@ -3638,7 +3630,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			"contains": markFunction(function( text ) {
 				text = text.replace( runescape, funescape );
 				return function( elem ) {
-					return ( elem.textContent || getText( elem ) ).indexOf( text ) > -1;
+					return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
 				};
 			}),
 	
@@ -3777,11 +3769,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			}),
 	
 			"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-				var i = argument < 0 ?
-					argument + length :
-					argument > length ?
-						length :
-						argument;
+				var i = argument < 0 ? argument + length : argument;
 				for ( ; --i >= 0; ) {
 					matchIndexes.push( i );
 				}
@@ -4831,18 +4819,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			return siblings( elem.firstChild );
 		},
 		contents: function( elem ) {
-			if ( typeof elem.contentDocument !== "undefined" ) {
-				return elem.contentDocument;
-			}
+	        if ( nodeName( elem, "iframe" ) ) {
+	            return elem.contentDocument;
+	        }
 	
-			// Support: IE 9 - 11 only, iOS 7 only, Android Browser <=4.3 only
-			// Treat the template element as a regular one in browsers that
-			// don't support it.
-			if ( nodeName( elem, "template" ) ) {
-				elem = elem.content || elem;
-			}
+	        // Support: IE 9 - 11 only, iOS 7 only, Android Browser <=4.3 only
+	        // Treat the template element as a regular one in browsers that
+	        // don't support it.
+	        if ( nodeName( elem, "template" ) ) {
+	            elem = elem.content || elem;
+	        }
 	
-			return jQuery.merge( [], elem.childNodes );
+	        return jQuery.merge( [], elem.childNodes );
 		}
 	}, function( name, fn ) {
 		jQuery.fn[ name ] = function( until, selector ) {
@@ -6151,22 +6139,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	var cssExpand = [ "Top", "Right", "Bottom", "Left" ];
 	
-	var documentElement = document.documentElement;
-	
-	
-	
-		var isAttached = function( elem ) {
-				return jQuery.contains( elem.ownerDocument, elem );
-			},
-			composed = { composed: true };
-	
-		// Check attachment across shadow DOM boundaries when possible (gh-3504)
-		if ( documentElement.attachShadow ) {
-			isAttached = function( elem ) {
-				return jQuery.contains( elem.ownerDocument, elem ) ||
-					elem.getRootNode( composed ) === elem.ownerDocument;
-			};
-		}
 	var isHiddenWithinTree = function( elem, el ) {
 	
 			// isHiddenWithinTree might be called from jQuery#filter function;
@@ -6181,7 +6153,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				// Support: Firefox <=43 - 45
 				// Disconnected elements can have computed display: none, so first confirm that elem is
 				// in the document.
-				isAttached( elem ) &&
+				jQuery.contains( elem.ownerDocument, elem ) &&
 	
 				jQuery.css( elem, "display" ) === "none";
 		};
@@ -6223,8 +6195,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			unit = valueParts && valueParts[ 3 ] || ( jQuery.cssNumber[ prop ] ? "" : "px" ),
 	
 			// Starting value computation is required for potential unit mismatches
-			initialInUnit = elem.nodeType &&
-				( jQuery.cssNumber[ prop ] || unit !== "px" && +initial ) &&
+			initialInUnit = ( jQuery.cssNumber[ prop ] || unit !== "px" && +initial ) &&
 				rcssNum.exec( jQuery.css( elem, prop ) );
 	
 		if ( initialInUnit && initialInUnit[ 3 ] !== unit ) {
@@ -6371,7 +6342,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	} );
 	var rcheckableType = ( /^(?:checkbox|radio)$/i );
 	
-	var rtagName = ( /<([a-z][^\/\0>\x20\t\r\n\f]*)/i );
+	var rtagName = ( /<([a-z][^\/\0>\x20\t\r\n\f]+)/i );
 	
 	var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 	
@@ -6443,7 +6414,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	var rhtml = /<|&#?\w+;/;
 	
 	function buildFragment( elems, context, scripts, selection, ignored ) {
-		var elem, tmp, tag, wrap, attached, j,
+		var elem, tmp, tag, wrap, contains, j,
 			fragment = context.createDocumentFragment(),
 			nodes = [],
 			i = 0,
@@ -6507,13 +6478,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				continue;
 			}
 	
-			attached = isAttached( elem );
+			contains = jQuery.contains( elem.ownerDocument, elem );
 	
 			// Append to fragment
 			tmp = getAll( fragment.appendChild( elem ), "script" );
 	
 			// Preserve script evaluation history
-			if ( attached ) {
+			if ( contains ) {
 				setGlobalEval( tmp );
 			}
 	
@@ -6556,6 +6527,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		div.innerHTML = "<textarea>x</textarea>";
 		support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
 	} )();
+	var documentElement = document.documentElement;
+	
 	
 	
 	var
@@ -6571,19 +6544,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		return false;
 	}
 	
-	// Support: IE <=9 - 11+
-	// focus() and blur() are asynchronous, except when they are no-op.
-	// So expect focus to be synchronous when the element is already active,
-	// and blur to be synchronous when the element is not already active.
-	// (focus and blur are always synchronous in other supported browsers,
-	// this just defines when we can count on it).
-	function expectSync( elem, type ) {
-		return ( elem === safeActiveElement() ) === ( type === "focus" );
-	}
-	
 	// Support: IE <=9 only
-	// Accessing document.activeElement can throw unexpectedly
-	// https://bugs.jquery.com/ticket/13393
+	// See #13393 for more info
 	function safeActiveElement() {
 		try {
 			return document.activeElement;
@@ -6883,10 +6845,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				while ( ( handleObj = matched.handlers[ j++ ] ) &&
 					!event.isImmediatePropagationStopped() ) {
 	
-					// If the event is namespaced, then each handler is only invoked if it is
-					// specially universal or its namespaces are a superset of the event's.
-					if ( !event.rnamespace || handleObj.namespace === false ||
-						event.rnamespace.test( handleObj.namespace ) ) {
+					// Triggered event must either 1) have no namespace, or 2) have namespace(s)
+					// a subset or equal to those in the bound event (both can have no namespace).
+					if ( !event.rnamespace || event.rnamespace.test( handleObj.namespace ) ) {
 	
 						event.handleObj = handleObj;
 						event.data = handleObj.data;
@@ -7010,53 +6971,39 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				// Prevent triggered image.load events from bubbling to window.load
 				noBubble: true
 			},
+			focus: {
+	
+				// Fire native event if possible so blur/focus sequence is correct
+				trigger: function() {
+					if ( this !== safeActiveElement() && this.focus ) {
+						this.focus();
+						return false;
+					}
+				},
+				delegateType: "focusin"
+			},
+			blur: {
+				trigger: function() {
+					if ( this === safeActiveElement() && this.blur ) {
+						this.blur();
+						return false;
+					}
+				},
+				delegateType: "focusout"
+			},
 			click: {
 	
-				// Utilize native event to ensure correct state for checkable inputs
-				setup: function( data ) {
-	
-					// For mutual compressibility with _default, replace `this` access with a local var.
-					// `|| data` is dead code meant only to preserve the variable through minification.
-					var el = this || data;
-	
-					// Claim the first handler
-					if ( rcheckableType.test( el.type ) &&
-						el.click && nodeName( el, "input" ) &&
-						dataPriv.get( el, "click" ) === undefined ) {
-	
-						// dataPriv.set( el, "click", ... )
-						leverageNative( el, "click", returnTrue );
+				// For checkbox, fire native event so checked state will be right
+				trigger: function() {
+					if ( this.type === "checkbox" && this.click && nodeName( this, "input" ) ) {
+						this.click();
+						return false;
 					}
-	
-					// Return false to allow normal processing in the caller
-					return false;
-				},
-				trigger: function( data ) {
-	
-					// For mutual compressibility with _default, replace `this` access with a local var.
-					// `|| data` is dead code meant only to preserve the variable through minification.
-					var el = this || data;
-	
-					// Force setup before triggering a click
-					if ( rcheckableType.test( el.type ) &&
-						el.click && nodeName( el, "input" ) &&
-						dataPriv.get( el, "click" ) === undefined ) {
-	
-						leverageNative( el, "click" );
-					}
-	
-					// Return non-false to allow normal event-path propagation
-					return true;
 				},
 	
-				// For cross-browser consistency, suppress native .click() on links
-				// Also prevent it if we're currently inside a leveraged native-event stack
+				// For cross-browser consistency, don't fire native .click() on links
 				_default: function( event ) {
-					var target = event.target;
-					return rcheckableType.test( target.type ) &&
-						target.click && nodeName( target, "input" ) &&
-						dataPriv.get( target, "click" ) ||
-						nodeName( target, "a" );
+					return nodeName( event.target, "a" );
 				}
 			},
 	
@@ -7072,85 +7019,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			}
 		}
 	};
-	
-	// Ensure the presence of an event listener that handles manually-triggered
-	// synthetic events by interrupting progress until reinvoked in response to
-	// *native* events that it fires directly, ensuring that state changes have
-	// already occurred before other listeners are invoked.
-	function leverageNative( el, type, expectSync ) {
-	
-		// Missing expectSync indicates a trigger call, which must force setup through jQuery.event.add
-		if ( !expectSync ) {
-			jQuery.event.add( el, type, returnTrue );
-			return;
-		}
-	
-		// Register the controller as a special universal handler for all event namespaces
-		dataPriv.set( el, type, false );
-		jQuery.event.add( el, type, {
-			namespace: false,
-			handler: function( event ) {
-				var notAsync, result,
-					saved = dataPriv.get( this, type );
-	
-				if ( ( event.isTrigger & 1 ) && this[ type ] ) {
-	
-					// Interrupt processing of the outer synthetic .trigger()ed event
-					if ( !saved ) {
-	
-						// Store arguments for use when handling the inner native event
-						saved = slice.call( arguments );
-						dataPriv.set( this, type, saved );
-	
-						// Trigger the native event and capture its result
-						// Support: IE <=9 - 11+
-						// focus() and blur() are asynchronous
-						notAsync = expectSync( this, type );
-						this[ type ]();
-						result = dataPriv.get( this, type );
-						if ( saved !== result || notAsync ) {
-							dataPriv.set( this, type, false );
-						} else {
-							result = undefined;
-						}
-						if ( saved !== result ) {
-	
-							// Cancel the outer synthetic event
-							event.stopImmediatePropagation();
-							event.preventDefault();
-							return result;
-						}
-	
-					// If this is an inner synthetic event for an event with a bubbling surrogate
-					// (focus or blur), assume that the surrogate already propagated from triggering the
-					// native event and prevent that from happening again here.
-					// This technically gets the ordering wrong w.r.t. to `.trigger()` (in which the
-					// bubbling surrogate propagates *after* the non-bubbling base), but that seems
-					// less bad than duplication.
-					} else if ( ( jQuery.event.special[ type ] || {} ).delegateType ) {
-						event.stopPropagation();
-					}
-	
-				// If this is a native event triggered above, everything is now in order
-				// Fire an inner synthetic event with the original arguments
-				} else if ( saved ) {
-	
-					// ...and capture the result
-					dataPriv.set( this, type, jQuery.event.trigger(
-	
-						// Support: IE <=9 - 11+
-						// Extend with the prototype to reset the above stopImmediatePropagation()
-						jQuery.extend( saved.shift(), jQuery.Event.prototype ),
-						saved,
-						this
-					) );
-	
-					// Abort handling of the native event
-					event.stopImmediatePropagation();
-				}
-			}
-		} );
-	}
 	
 	jQuery.removeEvent = function( elem, type, handle ) {
 	
@@ -7264,7 +7132,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		shiftKey: true,
 		view: true,
 		"char": true,
-		code: true,
 		charCode: true,
 		key: true,
 		keyCode: true,
@@ -7310,33 +7177,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			return event.which;
 		}
 	}, jQuery.event.addProp );
-	
-	jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateType ) {
-		jQuery.event.special[ type ] = {
-	
-			// Utilize native event if possible so blur/focus sequence is correct
-			setup: function() {
-	
-				// Claim the first handler
-				// dataPriv.set( this, "focus", ... )
-				// dataPriv.set( this, "blur", ... )
-				leverageNative( this, type, expectSync );
-	
-				// Return false to allow normal processing in the caller
-				return false;
-			},
-			trigger: function() {
-	
-				// Force setup before trigger
-				leverageNative( this, type );
-	
-				// Return non-false to allow normal event-path propagation
-				return true;
-			},
-	
-			delegateType: delegateType
-		};
-	} );
 	
 	// Create mouseenter/leave events using mouseover/out and event-time checks
 	// so that event delegation works in jQuery.
@@ -7588,13 +7428,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 							if ( node.src && ( node.type || "" ).toLowerCase()  !== "module" ) {
 	
 								// Optional AJAX dependency, but won't run scripts if not present
-								if ( jQuery._evalUrl && !node.noModule ) {
-									jQuery._evalUrl( node.src, {
-										nonce: node.nonce || node.getAttribute( "nonce" )
-									} );
+								if ( jQuery._evalUrl ) {
+									jQuery._evalUrl( node.src );
 								}
 							} else {
-								DOMEval( node.textContent.replace( rcleanScript, "" ), node, doc );
+								DOMEval( node.textContent.replace( rcleanScript, "" ), doc, node );
 							}
 						}
 					}
@@ -7616,7 +7454,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			}
 	
 			if ( node.parentNode ) {
-				if ( keepData && isAttached( node ) ) {
+				if ( keepData && jQuery.contains( node.ownerDocument, node ) ) {
 					setGlobalEval( getAll( node, "script" ) );
 				}
 				node.parentNode.removeChild( node );
@@ -7634,7 +7472,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		clone: function( elem, dataAndEvents, deepDataAndEvents ) {
 			var i, l, srcElements, destElements,
 				clone = elem.cloneNode( true ),
-				inPage = isAttached( elem );
+				inPage = jQuery.contains( elem.ownerDocument, elem );
 	
 			// Fix IE cloning issues
 			if ( !support.noCloneChecked && ( elem.nodeType === 1 || elem.nodeType === 11 ) &&
@@ -7930,10 +7768,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// Support: IE 9 only
 			// Detect overflow:scroll screwiness (gh-3699)
-			// Support: Chrome <=64
-			// Don't get tricked when zoom affects offsetWidth (gh-4029)
 			div.style.position = "absolute";
-			scrollboxSizeVal = roundPixelMeasures( div.offsetWidth / 3 ) === 12;
+			scrollboxSizeVal = div.offsetWidth === 36 || "absolute";
 	
 			documentElement.removeChild( container );
 	
@@ -8004,7 +7840,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( computed ) {
 			ret = computed.getPropertyValue( name ) || computed[ name ];
 	
-			if ( ret === "" && !isAttached( elem ) ) {
+			if ( ret === "" && !jQuery.contains( elem.ownerDocument, elem ) ) {
 				ret = jQuery.style( elem, name );
 			}
 	
@@ -8060,12 +7896,29 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	}
 	
 	
-	var cssPrefixes = [ "Webkit", "Moz", "ms" ],
-		emptyStyle = document.createElement( "div" ).style,
-		vendorProps = {};
+	var
 	
-	// Return a vendor-prefixed property or undefined
+		// Swappable if display is none or starts with table
+		// except "table", "table-cell", or "table-caption"
+		// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
+		rdisplayswap = /^(none|table(?!-c[ea]).+)/,
+		rcustomProp = /^--/,
+		cssShow = { position: "absolute", visibility: "hidden", display: "block" },
+		cssNormalTransform = {
+			letterSpacing: "0",
+			fontWeight: "400"
+		},
+	
+		cssPrefixes = [ "Webkit", "Moz", "ms" ],
+		emptyStyle = document.createElement( "div" ).style;
+	
+	// Return a css property mapped to a potentially vendor prefixed property
 	function vendorPropName( name ) {
+	
+		// Shortcut for names that are not vendor prefixed
+		if ( name in emptyStyle ) {
+			return name;
+		}
 	
 		// Check for vendor prefixed names
 		var capName = name[ 0 ].toUpperCase() + name.slice( 1 ),
@@ -8079,32 +7932,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		}
 	}
 	
-	// Return a potentially-mapped jQuery.cssProps or vendor prefixed property
+	// Return a property mapped along what jQuery.cssProps suggests or to
+	// a vendor prefixed property.
 	function finalPropName( name ) {
-		var final = jQuery.cssProps[ name ] || vendorProps[ name ];
-	
-		if ( final ) {
-			return final;
+		var ret = jQuery.cssProps[ name ];
+		if ( !ret ) {
+			ret = jQuery.cssProps[ name ] = vendorPropName( name ) || name;
 		}
-		if ( name in emptyStyle ) {
-			return name;
-		}
-		return vendorProps[ name ] = vendorPropName( name ) || name;
+		return ret;
 	}
-	
-	
-	var
-	
-		// Swappable if display is none or starts with table
-		// except "table", "table-cell", or "table-caption"
-		// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
-		rdisplayswap = /^(none|table(?!-c[ea]).+)/,
-		rcustomProp = /^--/,
-		cssShow = { position: "absolute", visibility: "hidden", display: "block" },
-		cssNormalTransform = {
-			letterSpacing: "0",
-			fontWeight: "400"
-		};
 	
 	function setPositiveNumber( elem, value, subtract ) {
 	
@@ -8177,10 +8013,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				delta -
 				extra -
 				0.5
-	
-			// If offsetWidth/offsetHeight is unknown, then we can't determine content-box scroll gutter
-			// Use an explicit zero to avoid NaN (gh-3964)
-			) ) || 0;
+			) );
 		}
 	
 		return delta;
@@ -8190,16 +8023,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 		// Start with computed style
 		var styles = getStyles( elem ),
-	
-			// To avoid forcing a reflow, only fetch boxSizing if we need it (gh-4322).
-			// Fake content-box until we know it's needed to know the true value.
-			boxSizingNeeded = !support.boxSizingReliable() || extra,
-			isBorderBox = boxSizingNeeded &&
-				jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
-			valueIsBorderBox = isBorderBox,
-	
 			val = curCSS( elem, dimension, styles ),
-			offsetProp = "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 );
+			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
+			valueIsBorderBox = isBorderBox;
 	
 		// Support: Firefox <=54
 		// Return a confounding non-pixel value or feign ignorance, as appropriate.
@@ -8210,29 +8036,22 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			val = "auto";
 		}
 	
+		// Check for style in case a browser which returns unreliable values
+		// for getComputedStyle silently falls back to the reliable elem.style
+		valueIsBorderBox = valueIsBorderBox &&
+			( support.boxSizingReliable() || val === elem.style[ dimension ] );
 	
 		// Fall back to offsetWidth/offsetHeight when value is "auto"
 		// This happens for inline elements with no explicit setting (gh-3571)
 		// Support: Android <=4.1 - 4.3 only
 		// Also use offsetWidth/offsetHeight for misreported inline dimensions (gh-3602)
-		// Support: IE 9-11 only
-		// Also use offsetWidth/offsetHeight for when box sizing is unreliable
-		// We use getClientRects() to check for hidden/disconnected.
-		// In those cases, the computed value can be trusted to be border-box
-		if ( ( !support.boxSizingReliable() && isBorderBox ||
-			val === "auto" ||
-			!parseFloat( val ) && jQuery.css( elem, "display", false, styles ) === "inline" ) &&
-			elem.getClientRects().length ) {
+		if ( val === "auto" ||
+			!parseFloat( val ) && jQuery.css( elem, "display", false, styles ) === "inline" ) {
 	
-			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
+			val = elem[ "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 ) ];
 	
-			// Where available, offsetWidth/offsetHeight approximate border box dimensions.
-			// Where not available (e.g., SVG), assume unreliable box-sizing and interpret the
-			// retrieved value as a content box dimension.
-			valueIsBorderBox = offsetProp in elem;
-			if ( valueIsBorderBox ) {
-				val = elem[ offsetProp ];
-			}
+			// offsetWidth/offsetHeight provide border-box values
+			valueIsBorderBox = true;
 		}
 	
 		// Normalize "" and auto
@@ -8278,13 +8097,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			"flexGrow": true,
 			"flexShrink": true,
 			"fontWeight": true,
-			"gridArea": true,
-			"gridColumn": true,
-			"gridColumnEnd": true,
-			"gridColumnStart": true,
-			"gridRow": true,
-			"gridRowEnd": true,
-			"gridRowStart": true,
 			"lineHeight": true,
 			"opacity": true,
 			"order": true,
@@ -8340,9 +8152,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				}
 	
 				// If a number was passed in, add the unit (except for certain CSS properties)
-				// The isCustomProp check can be removed in jQuery 4.0 when we only auto-append
-				// "px" to a few hardcoded values.
-				if ( type === "number" && !isCustomProp ) {
+				if ( type === "number" ) {
 					value += ret && ret[ 3 ] || ( jQuery.cssNumber[ origName ] ? "" : "px" );
 				}
 	
@@ -8442,29 +8252,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			set: function( elem, value, extra ) {
 				var matches,
 					styles = getStyles( elem ),
-	
-					// Only read styles.position if the test has a chance to fail
-					// to avoid forcing a reflow.
-					scrollboxSizeBuggy = !support.scrollboxSize() &&
-						styles.position === "absolute",
-	
-					// To avoid forcing a reflow, only fetch boxSizing if we need it (gh-3991)
-					boxSizingNeeded = scrollboxSizeBuggy || extra,
-					isBorderBox = boxSizingNeeded &&
-						jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
-					subtract = extra ?
-						boxModelAdjustment(
-							elem,
-							dimension,
-							extra,
-							isBorderBox,
-							styles
-						) :
-						0;
+					isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
+					subtract = extra && boxModelAdjustment(
+						elem,
+						dimension,
+						extra,
+						isBorderBox,
+						styles
+					);
 	
 				// Account for unreliable border-box dimensions by comparing offset* to computed and
 				// faking a content-box to get border and padding (gh-3699)
-				if ( isBorderBox && scrollboxSizeBuggy ) {
+				if ( isBorderBox && support.scrollboxSize() === styles.position ) {
 					subtract -= Math.ceil(
 						elem[ "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 ) ] -
 						parseFloat( styles[ dimension ] ) -
@@ -8632,9 +8431,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				// Use .style if available and use plain properties where available.
 				if ( jQuery.fx.step[ tween.prop ] ) {
 					jQuery.fx.step[ tween.prop ]( tween );
-				} else if ( tween.elem.nodeType === 1 && (
-						jQuery.cssHooks[ tween.prop ] ||
-						tween.elem.style[ finalPropName( tween.prop ) ] != null ) ) {
+				} else if ( tween.elem.nodeType === 1 &&
+					( tween.elem.style[ jQuery.cssProps[ tween.prop ] ] != null ||
+						jQuery.cssHooks[ tween.prop ] ) ) {
 					jQuery.style( tween.elem, tween.prop, tween.now + tween.unit );
 				} else {
 					tween.elem[ tween.prop ] = tween.now;
@@ -10341,10 +10140,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 					encodeURIComponent( value == null ? "" : value );
 			};
 	
-		if ( a == null ) {
-			return "";
-		}
-	
 		// If an array was passed in, assume that it is an array of form elements.
 		if ( Array.isArray( a ) || ( a.jquery && !jQuery.isPlainObject( a ) ) ) {
 	
@@ -10847,14 +10642,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 							if ( !responseHeaders ) {
 								responseHeaders = {};
 								while ( ( match = rheaders.exec( responseHeadersString ) ) ) {
-									responseHeaders[ match[ 1 ].toLowerCase() + " " ] =
-										( responseHeaders[ match[ 1 ].toLowerCase() + " " ] || [] )
-											.concat( match[ 2 ] );
+									responseHeaders[ match[ 1 ].toLowerCase() ] = match[ 2 ];
 								}
 							}
-							match = responseHeaders[ key.toLowerCase() + " " ];
+							match = responseHeaders[ key.toLowerCase() ];
 						}
-						return match == null ? null : match.join( ", " );
+						return match == null ? null : match;
 					},
 	
 					// Raw string
@@ -11243,7 +11036,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	} );
 	
 	
-	jQuery._evalUrl = function( url, options ) {
+	jQuery._evalUrl = function( url ) {
 		return jQuery.ajax( {
 			url: url,
 	
@@ -11253,16 +11046,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			cache: true,
 			async: false,
 			global: false,
-	
-			// Only evaluate the response if it is successful (gh-4126)
-			// dataFilter is not invoked for failure responses, so using it instead
-			// of the default converter is kludgy but it works.
-			converters: {
-				"text script": function() {}
-			},
-			dataFilter: function( response ) {
-				jQuery.globalEval( response, options );
-			}
+			"throws": true
 		} );
 	};
 	
@@ -11545,21 +11329,24 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	// Bind script tag hack transport
 	jQuery.ajaxTransport( "script", function( s ) {
 	
-		// This transport only deals with cross domain or forced-by-attrs requests
-		if ( s.crossDomain || s.scriptAttrs ) {
+		// This transport only deals with cross domain requests
+		if ( s.crossDomain ) {
 			var script, callback;
 			return {
 				send: function( _, complete ) {
-					script = jQuery( "<script>" )
-						.attr( s.scriptAttrs || {} )
-						.prop( { charset: s.scriptCharset, src: s.url } )
-						.on( "load error", callback = function( evt ) {
+					script = jQuery( "<script>" ).prop( {
+						charset: s.scriptCharset,
+						src: s.url
+					} ).on(
+						"load error",
+						callback = function( evt ) {
 							script.remove();
 							callback = null;
 							if ( evt ) {
 								complete( evt.type === "error" ? 404 : 200, evt.type );
 							}
-						} );
+						}
+					);
 	
 					// Use native DOM manipulation to avoid our domManip AJAX trickery
 					document.head.appendChild( script[ 0 ] );
@@ -13994,9 +13781,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				__webpack_require__(11),
 				__webpack_require__(15),
 				__webpack_require__(16),
+				__webpack_require__(19),
 				__webpack_require__(17),
 				__webpack_require__(18),
-				__webpack_require__(19),
 				__webpack_require__(13),
 				__webpack_require__(14)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -16346,52 +16133,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			factory( jQuery );
 		}
 	} ( function( $ ) {
-	return $.ui.safeActiveElement = function( document ) {
-		var activeElement;
-	
-		// Support: IE 9 only
-		// IE9 throws an "Unspecified error" accessing document.activeElement from an <iframe>
-		try {
-			activeElement = document.activeElement;
-		} catch ( error ) {
-			activeElement = document.body;
-		}
-	
-		// Support: IE 9 - 11 only
-		// IE may return null instead of an element
-		// Interestingly, this only seems to occur when NOT in an iframe
-		if ( !activeElement ) {
-			activeElement = document.body;
-		}
-	
-		// Support: IE 11 only
-		// IE11 returns a seemingly empty object in some cases when accessing
-		// document.activeElement from an <iframe>
-		if ( !activeElement.nodeName ) {
-			activeElement = document.body;
-		}
-	
-		return activeElement;
-	};
-	
-	} ) );
-
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
 	return $.ui.safeBlur = function( element ) {
 	
 		// Support: IE9 - 10 only
@@ -16405,7 +16146,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -16450,6 +16191,52 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		return position === "fixed" || !scrollParent.length ?
 			$( this[ 0 ].ownerDocument || document ) :
 			scrollParent;
+	};
+	
+	} ) );
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	return $.ui.safeActiveElement = function( document ) {
+		var activeElement;
+	
+		// Support: IE 9 only
+		// IE9 throws an "Unspecified error" accessing document.activeElement from an <iframe>
+		try {
+			activeElement = document.activeElement;
+		} catch ( error ) {
+			activeElement = document.body;
+		}
+	
+		// Support: IE 9 - 11 only
+		// IE may return null instead of an element
+		// Interestingly, this only seems to occur when NOT in an iframe
+		if ( !activeElement ) {
+			activeElement = document.body;
+		}
+	
+		// Support: IE 11 only
+		// IE11 returns a seemingly empty object in some cases when accessing
+		// document.activeElement from an <iframe>
+		if ( !activeElement.nodeName ) {
+			activeElement = document.body;
+		}
+	
+		return activeElement;
 	};
 	
 	} ) );
@@ -17298,11 +17085,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				__webpack_require__(30),
 				__webpack_require__(32),
 				__webpack_require__(21),
-				__webpack_require__(33),
-				__webpack_require__(17),
-				__webpack_require__(18),
-				__webpack_require__(34),
 				__webpack_require__(35),
+				__webpack_require__(19),
+				__webpack_require__(17),
+				__webpack_require__(33),
+				__webpack_require__(34),
 				__webpack_require__(13),
 				__webpack_require__(14)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -20756,6 +20543,102 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Tabbable 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: :tabbable Selector
+	//>>group: Core
+	//>>description: Selects elements which can be tabbed to.
+	//>>docs: http://api.jqueryui.com/tabbable-selector/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13), __webpack_require__(32) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	return $.extend( $.expr[ ":" ], {
+		tabbable: function( element ) {
+			var tabIndex = $.attr( element, "tabindex" ),
+				hasTabindex = tabIndex != null;
+			return ( !hasTabindex || tabIndex >= 0 ) && $.ui.focusable( element, hasTabindex );
+		}
+	} );
+	
+	} ) );
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Unique ID 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: uniqueId
+	//>>group: Core
+	//>>description: Functions to generate and remove uniqueId's
+	//>>docs: http://api.jqueryui.com/uniqueId/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	return $.fn.extend( {
+		uniqueId: ( function() {
+			var uuid = 0;
+	
+			return function() {
+				return this.each( function() {
+					if ( !this.id ) {
+						this.id = "ui-id-" + ( ++uuid );
+					}
+				} );
+			};
+		} )(),
+	
+		removeUniqueId: function() {
+			return this.each( function() {
+				if ( /^ui-id-\d+$/.test( this.id ) ) {
+					$( this ).removeAttr( "id" );
+				}
+			} );
+		}
+	} );
+	
+	} ) );
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	 * jQuery UI Position 1.12.1
 	 * http://jqueryui.com
 	 *
@@ -21251,102 +21134,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	} )();
 	
 	return $.ui.position;
-	
-	} ) );
-
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Tabbable 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: :tabbable Selector
-	//>>group: Core
-	//>>description: Selects elements which can be tabbed to.
-	//>>docs: http://api.jqueryui.com/tabbable-selector/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13), __webpack_require__(32) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	return $.extend( $.expr[ ":" ], {
-		tabbable: function( element ) {
-			var tabIndex = $.attr( element, "tabindex" ),
-				hasTabindex = tabIndex != null;
-			return ( !hasTabindex || tabIndex >= 0 ) && $.ui.focusable( element, hasTabindex );
-		}
-	} );
-	
-	} ) );
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Unique ID 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: uniqueId
-	//>>group: Core
-	//>>description: Functions to generate and remove uniqueId's
-	//>>docs: http://api.jqueryui.com/uniqueId/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	return $.fn.extend( {
-		uniqueId: ( function() {
-			var uuid = 0;
-	
-			return function() {
-				return this.each( function() {
-					if ( !this.id ) {
-						this.id = "ui-id-" + ( ++uuid );
-					}
-				} );
-			};
-		} )(),
-	
-		removeUniqueId: function() {
-			return this.each( function() {
-				if ( /^ui-id-\d+$/.test( this.id ) ) {
-					$( this ).removeAttr( "id" );
-				}
-			} );
-		}
-	} );
 	
 	} ) );
 

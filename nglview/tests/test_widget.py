@@ -431,9 +431,8 @@ def test_color_scheme():
     view = nv.demo()
     scheme = nv.color._ColorScheme([
         ['red', '1-6'],
-        ['yellow', '20-30'],
-        "hey"
-    ])
+        ['yellow', '20-30']],
+        'what')
     view.clear()
     view.add_cartoon(color=scheme)
 

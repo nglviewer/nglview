@@ -251,7 +251,14 @@ var NGLView = widgets.DOMWidgetView.extend({
         var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
         var ngl_stage_params = that.model.get('_ngl_full_stage_parameters_embed');
+        var ngl_color_dict = that.model.get("_ngl_color_dict");
         var loadfile_list = [];
+        var label
+
+        // reconstruct colors
+        for (label in ngl_color_dict){
+            that._make_color_scheme(ngl_color_dict[label], label);
+        }
 
         _.each(ngl_msg_archive, function(msg){
             if (msg.methodName == 'loadFile'){
@@ -984,10 +991,14 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
     },
 
-    _make_color_scheme: function(args){
-        console.log("making color scheme", args);
-        return NGL.ColormakerRegistry.addSelectionScheme(args)
-    },
+	_make_color_scheme: function(args, label){
+        var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
+        var scheme = NGL.ColormakerRegistry.userSchemes[id];
+        NGL.ColormakerRegistry.removeScheme(id);
+        // hard code the scheme ID
+        NGL.ColormakerRegistry.add(label, scheme);
+        return label
+	},
 
     on_msg: function(msg) {
         // TODO: re-organize
@@ -998,7 +1009,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
             if (msg.methodName == 'addRepresentation' && 
                 msg.reconstruc_color_scheme){
-                msg.kwargs.color = this._make_color_scheme(msg.kwargs.color);
+                msg.kwargs.color = this._make_color_scheme(msg.kwargs.color, msg.kwargs.color_label);
             }
 
             switch (msg.target) {
