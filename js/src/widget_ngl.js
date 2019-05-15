@@ -990,10 +990,14 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
     },
 
-    _make_color_scheme: function(args){
-        console.log("making color scheme", args);
-        return NGL.ColormakerRegistry.addSelectionScheme(args)
-    },
+	_make_color_scheme: function(args, label){
+	    var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
+        var scheme = NGL.ColormakerRegistry.userSchemes[id];
+        NGL.ColormakerRegistry.removeScheme(id);
+        // hard code the scheme ID
+        NGL.ColormakerRegistry.add(label, scheme);
+        return label
+	},
 
     on_msg: function(msg) {
         // TODO: re-organize

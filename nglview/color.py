@@ -13,8 +13,8 @@ class _ColorScheme:
     def __init__(self, args, label):
         # FIXME: validate `args`
         self._color_scheme = args
-        self._label = label
-        _USER_COLOR_DICT[label] = self._color_scheme
+        self._label = f'user_{label}'
+        _USER_COLOR_DICT[self._label] = self._color_scheme
 
     @property
     def data(self):
