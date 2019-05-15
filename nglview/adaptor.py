@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
 from .base_adaptor import Structure, Trajectory
-from .utils.py_utils import FileManager
+from .utils.py_utils import FileManager, tempfolder
 from . import config
 
 __all__ = [
@@ -500,6 +500,16 @@ class SchrodingerStructure(Structure):
         self._schrodinger_structure = structure
 
     def get_structure_string(self):
+        # NOTE: For some reasons, _get_structure_string always return
+        # empty string in this case.
+        with tempfolder():
+            pdb_fn = 'tmp.pdb'
+            self._schrodinger_structure.write(pdb_fn)
+            with open(pdb_fn) as fh:
+                content = fh.read()
+        return content
+
+
         return _get_structure_string(self._schrodinger_structure.write)
 
 
