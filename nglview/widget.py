@@ -1294,6 +1294,7 @@ class NGLWidget(DOMWidget):
                           args=['*', 200],
                           kwargs={'component_index': 1})
         """
+        # NOTE: _camelize_dict here?
         args = [] if args is None else args
         kwargs = {} if kwargs is None else kwargs
 
@@ -1304,12 +1305,17 @@ class NGLWidget(DOMWidget):
         if 'repr_index' in kwargs:
             msg['repr_index'] = kwargs.pop('repr_index')
 
+        # Color handling
         reconstruc_color_scheme = False
         if 'color' in kwargs and isinstance(kwargs['color'], color._ColorScheme):
             kwargs['color_label'] = kwargs['color'].data['label']
             # overite `color`
             kwargs['color'] = kwargs['color'].data['data']
             reconstruc_color_scheme = True
+        if kwargs.get('colorScheme') == 'volume' and kwargs.get('colorVolume'):
+            assert isinstance(kwargs['colorVolume'], ComponentViewer)
+            kwargs['colorVolume'] = kwargs['colorVolume']._index
+
 
         msg['target'] = target
         msg['type'] = 'call_method'

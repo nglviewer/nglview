@@ -1007,9 +1007,16 @@ var NGLView = widgets.DOMWidgetView.extend({
             var new_args = msg.args.slice();
             new_args.push(msg.kwargs);
 
+            // handle color
             if (msg.methodName == 'addRepresentation' && 
                 msg.reconstruc_color_scheme){
                 msg.kwargs.color = this._make_color_scheme(msg.kwargs.color, msg.kwargs.color_label);
+            }
+            if ("colorVolume" in msg.kwargs){
+                // backend only send component index
+                // so we need to convert to 'volume' data
+                var index = msg.kwargs["colorVolume"];
+                msg.kwargs["colorVolume"] = this.stage.compList[index].volume;
             }
 
             switch (msg.target) {
