@@ -82,7 +82,7 @@ try:
     import pymatgen
     has_pymatgen = True
 except ImportError:
-    has_pymatgfen = False
+    has_pymatgen = False
 
 try:
     import Bio.PDB
@@ -840,8 +840,6 @@ def test_player_simple():
     player.parameters = dict(step=2)
     player._display()
     player._make_button_center()
-    player._make_button_theme()
-    player._make_button_reset_theme()
     w = player._make_widget_preference()
     w.children[0].value = 1.
     player.widget_preference = None
@@ -858,7 +856,6 @@ def test_player_simple():
     player._make_spin_box()
     player._make_widget_picked()
     player._make_export_image_widget()
-    player._make_theme_box()
     player._make_general_box()
     player._update_padding()
     player.spin = True
@@ -911,7 +908,6 @@ def test_player_click_button():
     view.player.widget_export_image = view.player._make_button_export_image()
     button_iter = chain.from_iterable([
         view.player.widget_repr_control_buttons.children,
-        view.player.widget_theme.children,
         [
             view.player._show_download_image(),
             view.player._make_button_url("", ""),

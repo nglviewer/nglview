@@ -48,7 +48,6 @@ class TrajectoryPlayer(HasTraits):
     widget_picked = Any(None)
     widget_preference = Any(None)
     widget_extra = Any(None)
-    widget_theme = Any(None)
     widget_help = Any(None)
     widget_export_image = Any(None)
     widget_component_slider = Any(None)
@@ -88,8 +87,7 @@ class TrajectoryPlayer(HasTraits):
                 widget.layout.padding = padding
 
     def _create_all_widgets(self):
-        if self.widget_tab is None:
-            self.widget_tab = self._display()
+        self.widget_tab = self._display()
 
         old_index = self.widget_tab.selected_index
         for index, _ in enumerate(self.widget_tab.children):
@@ -183,10 +181,12 @@ class TrajectoryPlayer(HasTraits):
                                  self._spin_speed)
 
     def _display(self):
+        if self.widget_tab:
+            return self.widget_tab
+
         box_factory = [(self._make_general_box, 'General'),
                        (self._make_widget_repr, 'Representation'),
                        (self._make_widget_preference, 'Preference'),
-                       (self._make_theme_box, 'Theme'),
                        (self._make_extra_box, 'Extra')]
 
         tab = _make_delay_tab(box_factory, selected_index=0)
@@ -207,44 +207,6 @@ class TrajectoryPlayer(HasTraits):
         @button.on_click
         def on_click(button):
             self._view.center()
-
-        return button
-
-    def _make_button_theme(self):
-        button = Button(description='Oceans16')
-
-        @button.on_click
-        def on_click(button):
-            from nglview import theme
-            display(theme.oceans16())
-            self._view._remote_call('cleanOutput', target='Widget')
-
-        return button
-
-    def _make_button_reset_theme(self, hide_toolbar=False):
-        from nglview import theme
-
-        if hide_toolbar:
-            button = Button(description='Simplified Default')
-
-            @button.on_click
-            def on_click(button):
-                theme.reset(hide_toolbar=True)
-        else:
-            button = Button(description='Default')
-
-            @button.on_click
-            def on_click(button):
-                theme.reset()
-
-        return button
-
-    def _make_button_clean_error_output(self):
-        button = Button(description='Clear Error')
-
-        @button.on_click
-        def on_click(_):
-            js_utils.clean_error_output()
 
         return button
 
@@ -787,16 +749,6 @@ class TrajectoryPlayer(HasTraits):
             self.widget_extra = extra_box
         return self.widget_extra
 
-    def _make_theme_box(self):
-        if self.widget_theme is None:
-            self.widget_theme = Box([
-                self._make_button_theme(),
-                self._make_button_reset_theme(hide_toolbar=False),
-                self._make_button_reset_theme(hide_toolbar=True),
-                self._make_button_clean_error_output()
-            ])
-        return self.widget_theme
-
     def _make_general_box(self):
         if self.widget_general is None:
             step_slide = IntSlider(
@@ -841,6 +793,9 @@ class TrajectoryPlayer(HasTraits):
             v0_left = _relayout_master(v0_left, width='100%')
             self.widget_general = v0_left
         return self.widget_general
+
+    def _ipython_display_(self, **kwargs):
+        display(self._display())
 
     def _make_command_box(self):
         widget_text_command = Text()

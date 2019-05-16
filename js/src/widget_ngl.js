@@ -1015,7 +1015,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             if ("colorVolume" in msg.kwargs){
                 // backend only send component index
                 // so we need to convert to 'volume' data
-                var index = msg.kwargs["colorVolume"];
+                index = msg.kwargs["colorVolume"];
                 msg.kwargs["colorVolume"] = this.stage.compList[index].volume;
             }
 
