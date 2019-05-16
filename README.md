@@ -304,13 +304,6 @@ view1.sync_view()
 view2.sync_view()
 ```
 
-Show GUI
---------
-
-Notes: Unstable feature. [See also](https://github.com/arose/nglview/blob/master/examples/README.md#unstable-features)
-
-![](examples/images/nglview_gui.png)
-
 Movie making
 ------------
 
