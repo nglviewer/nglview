@@ -60,7 +60,6 @@ class TrajectoryPlayer(HasTraits):
     widget_repr_parameters_dialog = Any(None)
     widget_repr_name = Any(None)
     widget_component_dropdown = Any(None)
-    widget_drag = Any(None)
 
     def __init__(self, view, step=1, delay=100, sync_frame=False,
                  min_delay=40):
@@ -188,8 +187,7 @@ class TrajectoryPlayer(HasTraits):
                        (self._make_widget_repr, 'Representation'),
                        (self._make_widget_preference, 'Preference'),
                        (self._make_theme_box, 'Theme'),
-                       (self._make_extra_box, 'Extra'),
-                       (self._show_website, 'Help')]
+                       (self._make_extra_box, 'Extra')]
 
         tab = _make_delay_tab(box_factory, selected_index=0)
         # tab = _make_autofit(tab)
@@ -341,29 +339,6 @@ class TrajectoryPlayer(HasTraits):
         @button.on_click
         def on_click(button):
             display(Javascript(js_utils.open_url_template.format(url=url)))
-
-        return button
-
-    def _show_website(self, ngl_base_url=default.NGL_BASE_URL):
-        buttons = [
-            self._make_button_url(url.format(ngl_base_url), description)
-            for url, description in
-            [("'http://arose.github.io/nglview/latest/'", "nglview"
-              ), ("'{}/index.html'", "NGL"
-                  ), ("'{}/tutorial-selection-language.html'", "Selection"),
-             ("'{}/tutorial-molecular-representations.html'", "Representation"
-              )]
-        ]
-        self.widget_help = _make_autofit(HBox(buttons))
-        return self.widget_help
-
-    def _make_button_qtconsole(self):
-        from nglview import js_utils
-        button = Button(description='qtconsole', tooltip='pop up qtconsole')
-
-        @button.on_click
-        def on_click(button):
-            js_utils.launch_qtconsole()
 
         return button
 
@@ -759,60 +734,6 @@ class TrajectoryPlayer(HasTraits):
         self.widget_repr_choices = repr_choices
         return self.widget_repr_choices
 
-    def _make_drag_widget(self):
-        button_drag = Button(
-            description='widget drag: off', tooltip='dangerous')
-        drag_nb = Button(description='notebook drag: off', tooltip='dangerous')
-        button_reset_notebook = Button(
-            description='notebook: reset', tooltip='reset?')
-        button_dialog = Button(description='dialog', tooltip='make a dialog')
-        button_split_half = Button(
-            description='split screen',
-            tooltip='try best to make a good layout')
-
-        @button_drag.on_click
-        def on_drag(button_drag):
-            if button_drag.description == 'widget drag: off':
-                self._view._set_draggable(True)
-                button_drag.description = 'widget drag: on'
-            else:
-                self._view._set_draggable(False)
-                button_drag.description = 'widget drag: off'
-
-        @drag_nb.on_click
-        def on_drag_nb(button_drag):
-            if drag_nb.description == 'notebook drag: off':
-                js_utils._set_notebook_draggable(True)
-                drag_nb.description = 'notebook drag: on'
-            else:
-                js_utils._set_notebook_draggable(False)
-                drag_nb.description = 'notebook drag: off'
-
-        @button_reset_notebook.on_click
-        def on_reset(button_reset_notebook):
-            js_utils._reset_notebook()
-
-        @button_dialog.on_click
-        def on_dialog(button_dialog):
-            self._view._remote_call('setDialog', target='Widget')
-
-        @button_split_half.on_click
-        def on_split_half(button_dialog):
-            from nglview import js_utils
-            import time
-            js_utils._move_notebook_to_the_left()
-            js_utils._set_notebook_width('5%')
-            time.sleep(0.1)
-            self._view._remote_call('setDialog', target='Widget')
-
-        drag_box = HBox([
-            button_drag, drag_nb, button_reset_notebook, button_dialog,
-            button_split_half
-        ])
-        drag_box = _make_autofit(drag_box)
-        self.widget_drag = drag_box
-        return drag_box
-
     def _make_spin_box(self):
         checkbox_spin = Checkbox(self.spin, description='spin')
         spin_x_slide = IntSlider(
@@ -855,7 +776,7 @@ class TrajectoryPlayer(HasTraits):
 
     def _make_extra_box(self):
         if self.widget_extra is None:
-            extra_list = [(self._make_drag_widget, 'Drag'),
+            extra_list = [
                           (self._make_spin_box, 'Spin'),
                           (self._make_widget_picked, 'Picked'),
                           (self._make_repr_playground, 'Quick'),
@@ -904,11 +825,9 @@ class TrajectoryPlayer(HasTraits):
 
             center_button = self._make_button_center()
             render_button = self._show_download_image()
-            qtconsole_button = self._make_button_qtconsole()
             center_render_hbox = _make_autofit(
                 HBox([
                     toggle_button_interpolate, center_button, render_button,
-                    qtconsole_button
                 ]))
 
             v0_left = VBox([

@@ -189,8 +189,6 @@ def test_API_promise_to_have():
     view.player.picked_widget = DummWidget()
 
     view._update_background_color(change=dict(new='blue'))
-    view.on_update_dragged_file(change=dict(new=2, old=1))
-    view.on_update_dragged_file(change=dict(new=1, old=1))
     tab = view.player._display()
 
     view.player.widget_repr = view.player._make_widget_repr()
@@ -214,8 +212,6 @@ def test_API_promise_to_have():
     view.display(gui=True)
     view.display(gui=False)
     view.display(gui=True, use_box=True)
-    view._set_draggable(True)
-    view._set_draggable(False)
     view._set_sync_frame()
     view._set_sync_camera()
     view._set_spin([0, 1, 0], 0.5)
@@ -853,15 +849,12 @@ def test_player_simple():
     w.children[0].value = 1.
     player._show_download_image()
     player._make_button_url('dummy_url', description='dummy_url')
-    player._show_website()
-    player._make_button_qtconsole()
     player._make_text_picked()
     player._refresh(component_slider, repr_slider)
     player._make_widget_repr()
     player._make_resize_notebook_slider()
     player._make_button_export_image()
     player._make_repr_playground()
-    player._make_drag_widget()
     player._make_spin_box()
     player._make_widget_picked()
     player._make_export_image_widget()
@@ -919,16 +912,13 @@ def test_player_click_button():
     button_iter = chain.from_iterable([
         view.player.widget_repr_control_buttons.children,
         view.player.widget_theme.children,
-        view.player.widget_drag.children,
         [
             view.player._show_download_image(),
             view.player._make_button_url("", ""),
             view.player._make_button_center(),
-            view.player._make_button_qtconsole(),
             view.player.widget_export_image.children[0].children[0],
             view.player.widget_repr_add.children[0],
         ],
-        view.player.widget_drag.children,
         [
             w for w in view.player.widget_preference.children
             if isinstance(w, Button)
