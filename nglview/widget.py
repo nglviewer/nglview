@@ -953,19 +953,20 @@ class NGLWidget(DOMWidget):
         self._remote_call('_exportImage', target='Widget', kwargs=params)
 
         old_data = self._image_data[:]
-        out_widget = Output()
+        iw = Image()
+        iw.width = '99%' # avoid ugly scroll bar on notebook.
+
         def _display():
             from IPython.display import display, Image
             t0 = time.time()
             while old_data == self._image_data:
                 time.sleep(0.01)
-            with out_widget:
-                display(Image(base64.b64decode(self._image_data)))
+            iw.value = base64.b64decode(self._image_data)
 
         thread = threading.Thread(target=_display)
         thread.daemon = True
         thread.start()
-        return out_widget
+        return iw
 
     def download_image(self,
                        filename='screenshot.png',
