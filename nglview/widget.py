@@ -5,7 +5,7 @@ import uuid
 import json
 import numpy as np
 from IPython.display import display
-from ipywidgets import Box, DOMWidget
+from ipywidgets import Box, DOMWidget, Output
 try:
     # ipywidgets >= 7.4
     from ipywidgets import Image
@@ -951,6 +951,22 @@ class NGLWidget(DOMWidget):
             trim=trim,
             transparent=transparent)
         self._remote_call('_exportImage', target='Widget', kwargs=params)
+
+        old_data = self._image_data[:]
+        iw = Image()
+        iw.width = '99%' # avoid ugly scroll bar on notebook.
+
+        def _display():
+            from IPython.display import display, Image
+            t0 = time.time()
+            while old_data == self._image_data:
+                time.sleep(0.01)
+            iw.value = base64.b64decode(self._image_data)
+
+        thread = threading.Thread(target=_display)
+        thread.daemon = True
+        thread.start()
+        return iw
 
     def download_image(self,
                        filename='screenshot.png',
