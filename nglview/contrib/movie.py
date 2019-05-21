@@ -46,6 +46,8 @@ class MovieMaker:
     in_memory : bool, default False
         if False, save rendered images to disk first
         if True, keep all image data in memory (good for small video)
+    perframe_hook : callable with `view` as a single argument, default None
+        if given, update the `view` by `perframe_hook`.
 
     Examples
     --------
@@ -95,6 +97,7 @@ class MovieMaker:
                  skip_render=False,
                  timeout=1.,
                  in_memory=False,
+                 perframe_hook=None,
                  render_params=None,
                  moviepy_params=None):
         if download_folder is None:
@@ -108,6 +111,7 @@ class MovieMaker:
         self.in_memory = in_memory
         self.render_params = render_params if render_params is not None else {}
         self.moviepy_params = moviepy_params if moviepy_params is not None else {}
+        self.perframe_hook = perframe_hook
         if self.render_params is not None:
             assert isinstance(self.render_params, dict)
         if self.moviepy_params is not None:
@@ -120,6 +124,9 @@ class MovieMaker:
         self._thread = None
         self._image_array = []
 
+    def sleep(self):
+        time.sleep(self.timeout)
+
     def make(self, in_memory=False):
         # TODO : make base class so we can reuse this with sandbox/base.py
         self._event = threading.Event()
@@ -130,14 +137,17 @@ class MovieMaker:
                 for i in self._time_range:
                     if not event.is_set():
                         self.view.frame = i
-                        time.sleep(self.timeout)
+                        self.sleep()
+                        if self.perframe_hook:
+                            self.perframe_hook(self.view)
+                        self.sleep()
                         if not self.in_memory:
                             self.view.download_image(
                                 self.prefix + '.' + str(i) + '.png',
                                 **self.render_params)
                         else:
                             self.view.render_image(**self.render_params)
-                        time.sleep(self.timeout)
+                        self.sleep()
                         if self.in_memory:
                             rgb = self._base64_to_ndarray(
                                 self.view._image_data)
