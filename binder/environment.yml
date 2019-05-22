@@ -1,0 +1,11 @@
+channels:
+- conda-forge
+dependencies:
+- jupyterlab
+- python
+- nodejs
+- ipython
+- ipywidgets 
+- notebook
+- ipykernel
+- nglview=2.1
