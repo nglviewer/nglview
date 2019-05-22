@@ -954,6 +954,13 @@ class NGLWidget(DOMWidget):
         iw.width = '99%' # avoid ugly scroll bar on notebook.
         self._remote_call('_exportImage', target='Widget', args=[iw.model_id], kwargs=params)
         # iw.value will be updated later after frontend send the image_data back.
+        if threading.current_thread().name != 'MainThread':
+            # if running on another thread, we can wait (and block other codes) until
+            # gettting the data.
+            # NOTE: We can not do this on main thread since it handles the communication
+            # between frontend and backend (I think so).
+            while not iw.value:
+                time.sleep(0.1)
         return iw
 
     def download_image(self,
