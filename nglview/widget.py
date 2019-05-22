@@ -955,10 +955,10 @@ class NGLWidget(DOMWidget):
         self._remote_call('_exportImage', target='Widget', args=[iw.model_id], kwargs=params)
         # iw.value will be updated later after frontend send the image_data back.
         if threading.current_thread().name != 'MainThread':
-            # if running on another thread, we can wait (and block other codes) until
-            # gettting the data.
+            # If running `render_image` on another thread,
+            # we can wait (and block other codes) until gettting the image data.
             # NOTE: We can not do this on main thread since it handles the communication
-            # between frontend and backend (I think so).
+            # between frontend and backend (I think so); sleeping in main thread will block that
             while not iw.value:
                 time.sleep(0.1)
         return iw
@@ -1066,7 +1066,9 @@ class NGLWidget(DOMWidget):
                 self._event.set()
         elif msg_type == 'image_data':
             self._image_data = msg.get('data')
-            Widget.widgets[msg.get('ID')].value = base64.b64decode(self._image_data)
+            wid = msg.get('ID')
+            if wid:
+                Widget.widgets[wid].value = base64.b64decode(self._image_data)
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call(
