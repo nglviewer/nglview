@@ -110,7 +110,7 @@ class NGLWidget(DOMWidget):
     _ngl_version = Unicode().tag(sync=True)
     # _model_name = Unicode("NGLView").tag(sync=True)
     # _model_module = Unicode("nglview-js-widgets").tag(sync=True)
-    _image_data = Unicode().tag(sync=True)
+    _image_data = Unicode().tag(sync=False)
     # use Integer here, because mdtraj uses a long datatype here on Python-2.7
     frame = Integer().tag(sync=True)
     count = Integer(1).tag(sync=True)
@@ -174,10 +174,11 @@ class NGLWidget(DOMWidget):
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
         self._remote_call_thread = RemoteCallThread(
-            self, registered_funcs=['loadFile', 'replaceStructure'])
+            self, registered_funcs=['loadFile', 'replaceStructure', '_exportImage'])
         self._remote_call_thread.start()
         self._trajlist = []
         self._ngl_component_ids = []
+        self._render_dict = {}
 
         if representations:
             # Must be set here before calling
@@ -950,22 +951,12 @@ class NGLWidget(DOMWidget):
             antialias=antialias,
             trim=trim,
             transparent=transparent)
-        self._remote_call('_exportImage', target='Widget', kwargs=params)
+        wid = str(uuid.uuid4())
+        self._remote_call('_exportImage', target='Widget', args=[wid], kwargs=params)
 
-        old_data = self._image_data[:]
         iw = Image()
         iw.width = '99%' # avoid ugly scroll bar on notebook.
-
-        def _display():
-            from IPython.display import display, Image
-            t0 = time.time()
-            while old_data == self._image_data:
-                time.sleep(0.01)
-            iw.value = base64.b64decode(self._image_data)
-
-        thread = threading.Thread(target=_display)
-        thread.daemon = True
-        thread.start()
+        self._render_dict[wid] = iw # iw.value will be updated once self._image_data available.
         return iw
 
     def download_image(self,
@@ -1069,6 +1060,9 @@ class NGLWidget(DOMWidget):
         elif msg_type == 'async_message':
             if msg.get('data') == 'ok':
                 self._event.set()
+        elif msg_type == 'image_data':
+            self._image_data = msg.get('data')
+            self._render_dict[msg.get('ID')].value = base64.b64decode(self._image_data)
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call(
