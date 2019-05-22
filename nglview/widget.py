@@ -36,21 +36,27 @@ from .remote_thread import RemoteCallThread
 __all__ = ['NGLWidget', 'ComponentViewer']
 __frontend_version__ = '2.1.0'  # must match to js/package.json
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
-        'setUnSyncCamera', 'setSelector', 'setUnSyncFrame', 'setDelay',
-        'autoView',
-        '_downloadImage', '_exportImage',
-        'set_representation_from_backend',
+    'setUnSyncCamera',
+    'setSelector',
+    'setUnSyncFrame',
+    'setDelay',
+    'autoView',
+    '_downloadImage',
+    '_exportImage',
+    'set_representation_from_backend',
 }
 
-
 import logging
+
 
 def _deprecated(msg):
     def wrap_1(func):
         def wrap_2(*args, **kwargs):
             logging.warn(msg)
             return func(*args, **kwargs)
+
         return wrap_2
+
     return wrap_1
 
 
@@ -83,8 +89,7 @@ def write_html(fp, views, frame_range=None):
     snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
     snippet += embed.embed_snippet(views)
     html_code = embed.html_template.format(
-            title='nglview-demo',
-            snippet=snippet)
+        title='nglview-demo', snippet=snippet)
 
     # from ipywidgets
     # Check if fp is writable:
@@ -130,8 +135,8 @@ class NGLWidget(DOMWidget):
     _ngl_original_stage_parameters = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
     _camera_str = CaselessStrEnum(
-        ['perspective', 'orthographic'], default_value='orthographic').tag(
-            sync=True)
+        ['perspective', 'orthographic'],
+        default_value='orthographic').tag(sync=True)
     _camera_orientation = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
@@ -174,7 +179,8 @@ class NGLWidget(DOMWidget):
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
         self._remote_call_thread = RemoteCallThread(
-            self, registered_funcs=['loadFile', 'replaceStructure', '_exportImage'])
+            self,
+            registered_funcs=['loadFile', 'replaceStructure', '_exportImage'])
         self._remote_call_thread.start()
         self._trajlist = []
         self._ngl_component_ids = []
@@ -185,7 +191,8 @@ class NGLWidget(DOMWidget):
             # After finish adding new Structure/Trajectory,
             # initial representations will be set.
             kwargs['default_representation'] = False
-        autoview = 'center' not in kwargs or ('center' in kwargs and kwargs.pop('center'))
+        autoview = 'center' not in kwargs or ('center' in kwargs
+                                              and kwargs.pop('center'))
         # NOTE: Using `pop` to avoid passing `center` to NGL.
 
         if parameters:
@@ -215,8 +222,9 @@ class NGLWidget(DOMWidget):
 
     def _set_serialization(self, frame_range=None):
         self._ngl_serialize = True
-        self._ngl_msg_archive = [f._ngl_msg
-                for f in self._ngl_displayed_callbacks_after_loaded]
+        self._ngl_msg_archive = [
+            f._ngl_msg for f in self._ngl_displayed_callbacks_after_loaded
+        ]
 
         resource = self._ngl_coordinate_resource
         if frame_range is not None:
@@ -224,10 +232,11 @@ class NGLWidget(DOMWidget):
                 resource[t_index] = []
                 for f_index in range(*frame_range):
                     if f_index < traj.n_frames:
-                        resource[t_index].append(encode_base64(traj.get_coordinates(f_index)))
+                        resource[t_index].append(
+                            encode_base64(traj.get_coordinates(f_index)))
                     else:
-                        resource[t_index].append(encode_base64(
-                            np.empty((0), dtype='f4')))
+                        resource[t_index].append(
+                            encode_base64(np.empty((0), dtype='f4')))
             resource['n_frames'] = len(resource[0])
 
         self._ngl_coordinate_resource = resource
@@ -274,8 +283,10 @@ class NGLWidget(DOMWidget):
             kwargs=dict(cameraType=self._camera_str))
 
     def _set_camera_orientation(self, arr):
-        self._remote_call('set_camera_orientation', target='Widget',
-                args=[arr,])
+        self._remote_call(
+            'set_camera_orientation', target='Widget', args=[
+                arr,
+            ])
 
     def _request_stage_parameters(self):
         self._remote_call('requestUpdateStageParameters', target='Widget')
@@ -371,7 +382,8 @@ class NGLWidget(DOMWidget):
                             repr_slider.value - 1]
 
                 # e.g: 0-cartoon
-                repr_name_text.value = reprlist_choices.value.split('-')[-1].strip()
+                repr_name_text.value = reprlist_choices.value.split('-')[
+                    -1].strip()
 
                 repr_slider.max = len(repr_names) - 1 if len(
                     repr_names) >= 1 else len(repr_names)
@@ -399,7 +411,8 @@ class NGLWidget(DOMWidget):
         # func(*args)
         thread = threading.Thread(
             target=func,
-            args=args, )
+            args=args,
+        )
         thread.daemon = True
         thread.start()
         return thread
@@ -418,6 +431,7 @@ class NGLWidget(DOMWidget):
                 callback(self)
                 if callback._method_name == 'loadFile':
                     self._wait_until_finished()
+
         self._run_on_another_thread(_call, self._event)
 
     def _refresh_render(self):
@@ -439,15 +453,17 @@ class NGLWidget(DOMWidget):
         """
         new_callbacks = []
         for c in self._ngl_displayed_callbacks_after_loaded:
-            if (c._method_name == 'loadFile' and
-                    'defaultRepresentation' in c._ngl_msg['kwargs']):
+            if (c._method_name == 'loadFile'
+                    and 'defaultRepresentation' in c._ngl_msg['kwargs']):
                 # set to False to avoid autoView
                 # so subsequent display of `self` won't reset view orientation.
                 c._ngl_msg['kwargs']['defaultRepresentation'] = False
             msg = c._ngl_msg
             msg['last_child'] = True
+
             def callback(widget, msg=msg):
                 widget.send(msg)
+
             callback._method_name = msg['methodName']
             callback._ngl_msg = msg
             new_callbacks.append(callback)
@@ -462,6 +478,7 @@ class NGLWidget(DOMWidget):
 
         def callback(widget, msg=msg):
             widget.send(msg)
+
         callback._method_name = msg['methodName']
         callback._ngl_msg = msg
 
@@ -564,12 +581,10 @@ class NGLWidget(DOMWidget):
             args=[colors, component_index, repr_index])
 
     def _show_notebook_command_box(self):
-        self._remote_call('showNotebookCommandBox',
-                target='Widget')
+        self._remote_call('showNotebookCommandBox', target='Widget')
 
     def _hide_notebook_command_box(self):
-        self._remote_call('hideNotebookCommandBox',
-                target='Widget')
+        self._remote_call('hideNotebookCommandBox', target='Widget')
 
     def color_by(self, color_scheme, component=0):
         '''update color for all representations of given component
@@ -735,7 +750,8 @@ class NGLWidget(DOMWidget):
             # send base64
             encoded_coordinates_dict = {
                 k: encode_base64(v)
-                for (k, v) in self._coordinates_dict.items()}
+                for (k, v) in self._coordinates_dict.items()
+            }
             mytime = time.time() * 1000
             self.send({
                 'type': 'base64_single',
@@ -781,7 +797,9 @@ class NGLWidget(DOMWidget):
         self._remote_call(
             "removeAllRepresentations",
             target='compList',
-            kwargs={'component_index': component})
+            kwargs={
+                'component_index': component
+            })
 
     @_update_url
     def _add_shape(self, shapes, name='shape'):
@@ -898,7 +916,9 @@ class NGLWidget(DOMWidget):
             'autoView',
             target='compList',
             args=[selection, duration],
-            kwargs={'component_index': component})
+            kwargs={
+                'component_index': component
+            })
 
     @observe('_image_data')
     def _on_render_image(self, change):
@@ -917,7 +937,8 @@ class NGLWidget(DOMWidget):
                      factor=4,
                      antialias=True,
                      trim=False,
-                     transparent=False):
+                     transparent=False,
+                     blocking=False):
         """render and get image as ipywidgets.widget_image.Image
 
         Parameters
@@ -930,6 +951,27 @@ class NGLWidget(DOMWidget):
         antialias : bool, default True
         trim : bool, default False
         transparent : bool, default False
+        blocking : bool, default False
+            Use `ipython_blocking` approach for getting image data.
+            NOTE: Value of "True" is for advanced user. Turn on `blocking` if 
+            user wants to get the image data in the same notebook cell running
+            on main thread.
+
+            blocking = False:
+                - pros: view.render_image() can display image immediately
+                - cons: Need to run in another thread if we want to play with 
+                        image data directly without using sleep
+
+                        # e.g:
+                        # data = []
+                        # def run():
+                        #     view.update_cartoon(color='red')
+                        #     data.append(view.render_image().value)
+                        #     view.update_cartoon(color='blue')
+                        #     data.append(view.render_image().value)
+                        # threading.Thread(target=run).start()
+            blocking = True:
+                # proc and cons are opposite from threading approach (lol).
 
         Examples
         --------
@@ -951,16 +993,27 @@ class NGLWidget(DOMWidget):
             trim=trim,
             transparent=transparent)
         iw = Image()
-        iw.width = '99%' # avoid ugly scroll bar on notebook.
-        self._remote_call('_exportImage', target='Widget', args=[iw.model_id], kwargs=params)
+        iw.width = '99%'  # avoid ugly scroll bar on notebook.
+        self._remote_call(
+            '_exportImage', target='Widget', args=[iw.model_id], kwargs=params)
+
         # iw.value will be updated later after frontend send the image_data back.
-        if threading.current_thread().name != 'MainThread':
-            # If running `render_image` on another thread,
-            # we can wait (and block other codes) until gettting the image data.
-            # NOTE: We can not do this on main thread since it handles the communication
-            # between frontend and backend (I think so); sleeping in main thread will block that
-            while not iw.value:
-                time.sleep(0.1)
+        if not blocking:
+            if threading.current_thread().name != 'MainThread':
+                # If running `render_image` on another thread,
+                # we can wait (and block other codes) until gettting the image data.
+                # NOTE: We can not do this on main thread since it handles the communication
+                # between frontend and backend (I think so); sleeping in main thread will block that
+                while not iw.value:
+                    time.sleep(0.1)
+        else:
+            from ipython_blocking import CaptureExecution
+            c = CaptureExecution()
+            with c:
+                while True:
+                    if iw.value:
+                        break
+                    c.step()
         return iw
 
     def download_image(self,
@@ -1095,8 +1148,7 @@ class NGLWidget(DOMWidget):
         nglview.NGLWidget.add_component
         '''
         if not isinstance(structure, Structure):
-            raise ValueError(
-                f'{structure} is not an instance of Structure')
+            raise ValueError(f'{structure} is not an instance of Structure')
         self._load_data(structure, **kwargs)
         self._ngl_component_ids.append(structure.id)
         if self.n_components > 1:
@@ -1323,7 +1375,8 @@ class NGLWidget(DOMWidget):
 
         # Color handling
         reconstruc_color_scheme = False
-        if 'color' in kwargs and isinstance(kwargs['color'], color._ColorScheme):
+        if 'color' in kwargs and isinstance(kwargs['color'],
+                                            color._ColorScheme):
             kwargs['color_label'] = kwargs['color'].data['label']
             # overite `color`
             kwargs['color'] = kwargs['color'].data['data']
@@ -1331,7 +1384,6 @@ class NGLWidget(DOMWidget):
         if kwargs.get('colorScheme') == 'volume' and kwargs.get('colorVolume'):
             assert isinstance(kwargs['colorVolume'], ComponentViewer)
             kwargs['colorVolume'] = kwargs['colorVolume']._index
-
 
         msg['target'] = target
         msg['type'] = 'call_method'
@@ -1380,7 +1432,9 @@ class NGLWidget(DOMWidget):
                 args=[
                     False,
                 ],
-                kwargs={'component_index': index})
+                kwargs={
+                    'component_index': index
+                })
 
     def show(self, **kwargs):
         """shortcut of `show_only`
@@ -1423,7 +1477,9 @@ class NGLWidget(DOMWidget):
                 "setVisibility",
                 target='compList',
                 args=args,
-                kwargs={'component_index': index})
+                kwargs={
+                    'component_index': index
+                })
 
     def _js_console(self):
         self.send(dict(type='get', data='any'))
