@@ -908,20 +908,27 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    _exportImage: function(params) {
+    _exportImage: function(wid, params) {
         if (this.ngl_view_id == this.get_last_child_id()){
             this.stage.makeImage(params).then(function(blob) {
                 var reader = new FileReader();
                 var arr_str;
                 reader.onload = function() {
                     arr_str = reader.result.replace("data:image/png;base64,", "");
-                    this.model.set("_image_data", arr_str);
-                    this.touch();
+                    // this.model.set("_image_data", arr_str);
+                    // this.touch();
+                    this.send({
+                        "data": arr_str,
+                        "type": "image_data",
+                        "ID": wid,
+                    });
+                    this.send({'type': 'async_message', 'data': 'ok'});
                 }.bind(this);
                 reader.readAsDataURL(blob);
             }.bind(this));
         }
     },
+
 
     cleanOutput: function() {
 
