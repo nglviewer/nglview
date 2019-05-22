@@ -953,7 +953,7 @@ class NGLWidget(DOMWidget):
         iw = Image()
         iw.width = '99%' # avoid ugly scroll bar on notebook.
         self._remote_call('_exportImage', target='Widget', args=[iw.model_id], kwargs=params)
-        # iw.value will be updated later after fronend send the image_data back.
+        # iw.value will be updated later after frontend send the image_data back.
         return iw
 
     def download_image(self,
