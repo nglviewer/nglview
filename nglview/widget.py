@@ -970,7 +970,7 @@ class NGLWidget(DOMWidget):
                         #     view.update_cartoon(color='blue')
                         #     data.append(view.render_image().value)
                         # threading.Thread(target=run).start()
-            blocking = True:
+            blocking = True, require `ipython_blocking` package.
                 # proc and cons are opposite from threading approach (lol).
 
         Examples
