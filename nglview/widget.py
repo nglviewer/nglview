@@ -951,7 +951,7 @@ class NGLWidget(DOMWidget):
         antialias : bool, default True
         trim : bool, default False
         transparent : bool, default False
-        blocking : bool, default False
+        blocking : bool, default False (EXPERIMENTAL option).
             Use `ipython_blocking` approach for getting image data.
             NOTE: Value of "True" is for advanced user. Turn on `blocking` if 
             user wants to get the image data in the same notebook cell running
