@@ -915,8 +915,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                 var arr_str;
                 reader.onload = function() {
                     arr_str = reader.result.replace("data:image/png;base64,", "");
-                    console.log(this.get_repr_dict());
-                    console.log(arr_str.slice(0, 100));
                     // this.model.set("_image_data", arr_str);
                     // this.touch();
                     this.send({

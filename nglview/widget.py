@@ -5,7 +5,7 @@ import uuid
 import json
 import numpy as np
 from IPython.display import display
-from ipywidgets import Box, DOMWidget, Output
+from ipywidgets import Box, DOMWidget, Output, Widget
 try:
     # ipywidgets >= 7.4
     from ipywidgets import Image
@@ -178,7 +178,6 @@ class NGLWidget(DOMWidget):
         self._remote_call_thread.start()
         self._trajlist = []
         self._ngl_component_ids = []
-        self._render_dict = {}
 
         if representations:
             # Must be set here before calling
@@ -951,12 +950,10 @@ class NGLWidget(DOMWidget):
             antialias=antialias,
             trim=trim,
             transparent=transparent)
-        wid = str(uuid.uuid4())
-        self._remote_call('_exportImage', target='Widget', args=[wid], kwargs=params)
-
         iw = Image()
         iw.width = '99%' # avoid ugly scroll bar on notebook.
-        self._render_dict[wid] = iw # iw.value will be updated once self._image_data available.
+        self._remote_call('_exportImage', target='Widget', args=[iw.model_id], kwargs=params)
+        # iw.value will be updated later after fronend send the image_data back.
         return iw
 
     def download_image(self,
@@ -1062,7 +1059,7 @@ class NGLWidget(DOMWidget):
                 self._event.set()
         elif msg_type == 'image_data':
             self._image_data = msg.get('data')
-            self._render_dict[msg.get('ID')].value = base64.b64decode(self._image_data)
+            Widget.widgets[msg.get('ID')].value = base64.b64decode(self._image_data)
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         self._remote_call(
