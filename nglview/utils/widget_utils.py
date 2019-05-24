@@ -1,4 +1,22 @@
+import time
 from ..parameters import REPRESENTATION_NAME_PAIRS
+
+
+def wait(widget, attribute='value', timeout=5):
+    """ EXPERIMENTAL. Require `ipython_blocking` package.
+
+    Block further code execution until `attribute` of `widget` is updated.
+    """
+    from ipython_blocking import CaptureExecution
+    c = CaptureExecution()
+    with c:
+        t0 = time.time()
+        while True or time.time() - t0 > timeout:
+            attr = getattr(widget, attribute)
+            if attr:
+                break
+            c.step()
+    return widget
 
 
 def get_widget_by_name(box, widget_name):
