@@ -9,3 +9,6 @@ dependencies:
 - notebook
 - ipykernel
 - nglview=2.1
+- pip:
+    - pytraj
+    - sidecar
