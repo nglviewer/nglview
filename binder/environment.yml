@@ -12,3 +12,4 @@ dependencies:
 - pip:
     - pytraj
     - sidecar
+    - ipython_blocking
