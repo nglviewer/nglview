@@ -12,3 +12,6 @@
       Rose <http://arose.github.io/talks/ngl-3dsig/>`__
    -  `ngl-web3d, Alexander
       Rose <http://arose.github.io/talks/ngl-web3d>`__
+
+- Videos from users
+    - https://www.youtube.com/watch?v=RWgt1WMwMUs
