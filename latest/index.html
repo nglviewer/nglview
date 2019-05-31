@@ -4,30 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Table of contents &#8212; NGLView 1.0 documentation</title>
+    <title>Try nglview online: &#8212; NGLView 2.1.0 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.10.0/dist/embed.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.14.0/dist/embed.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -37,7 +28,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 2.1.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -46,12 +37,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <p><a class="reference external" href="#installation">Installation</a> | <a class="reference external" href="#example">Example</a> |
-<a class="reference external" href="#usage">Usage</a> | <a class="reference external" href="#command-line">Command line</a> | <a class="reference external" href="#api-doc">API
-doc</a> | <a class="reference external" href="interface_classes.html">Interface classes</a> |
-<a class="reference external" href="#website">Website</a> | <a class="reference external" href="#show-gui">GUI</a> |
+  <p><a class="reference external" href="#cite">Citation</a> | <a class="reference external" href="#installation">Installation</a> |
+<a class="reference external" href="#example">Example</a> | <a class="reference external" href="#usage">Usage</a> | <a class="reference external" href="#command-line">Command
+line</a> | <a class="reference external" href="#api-doc">API doc</a> | <a class="reference external" href="interface_classes.html">Interface
+classes</a> | <a class="reference external" href="#website">Website</a> |
 <a class="reference external" href="#acknowledgment">Acknowledgment</a></p>
-<p><a class="reference external" href="http://mybinder.org/repo/hainm/nglview-notebooks"><img alt="Binder" src="http://mybinder.org/assets/images/logo.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="http://bioconda.github.io"><img alt="bioconda-badge" src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square" /></a> <a class="reference external" href="https://coveralls.io/github/arose/nglview"><img alt="Coverage Status" src="https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master" /></a></p>
+<p><a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="https://coveralls.io/github/arose/nglview"><img alt="Coverage Status" src="https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master" /></a></p>
+<div class="section" id="try-nglview-online-binder">
+<h1>Try nglview online: <a class="reference external" href="https://mybinder.org/v2/gh/arose/nglview/master?urlpath=lab"><img alt="Binder" src="https://mybinder.org/badge_logo.svg" /></a><a class="headerlink" href="#try-nglview-online-binder" title="Permalink to this headline">¶</a></h1>
 <p>An <a class="reference external" href="http://jupyter.org/">IPython/Jupyter</a> widget to interactively
 view molecular structures and trajectories. Utilizes the embeddable <a class="reference external" href="https://github.com/arose/ngl">NGL
 Viewer</a> for rendering. Support for
@@ -68,16 +61,16 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <a class="reference external" href="https://cci.lbl.gov/cctbx_docs/iotbx/">cctbx</a>,
 <a class="reference external" href="http://pyrosetta.org">pyrosetta</a>, <a class="reference external" href="http://content.schrodinger.com/Docs/r2015-4/python_api/api/schrodinger.structure.Structure-class.html">schrodinger’s
 Structure</a></p>
-<p>Should work with Python 2 and 3. If you experience problems, please file
-an <a class="reference external" href="https://github.com/arose/nglview/issues">issue</a>.</p>
+<p>Should work with Python 3. If you experience problems, please file an
+<a class="reference external" href="https://github.com/arose/nglview/issues">issue</a>.</p>
 <p>Ask question about usage? Please post
-<a class="reference external" href="https://github.com/arose/nglview/issues/589">here</a></p>
+<a class="reference external" href="https://github.com/arose/nglview/issues/785">here</a></p>
 <div class="figure" id="id1">
 <img alt="membrane" src="https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true" />
 <p class="caption"><span class="caption-text">membrane</span></p>
 </div>
 <div class="section" id="table-of-contents">
-<h1>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
+<h2>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference external" href="#installation">Installation</a></li>
 <li><a class="reference external" href="#example">Example</a></li>
@@ -91,16 +84,19 @@ an <a class="reference external" href="https://github.com/arose/nglview/issues">
 <li><a class="reference external" href="#faq">FAQ</a></li>
 <li><a class="reference external" href="#website">Website</a></li>
 <li><a class="reference external" href="#acknowledgment">Acknowledgment</a></li>
+<li><a class="reference external" href="#cite">Cite</a></li>
 <li><a class="reference external" href="#license">License</a></li>
 </ul>
 </div>
 <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
 <div class="section" id="released-version">
-<h2>Released version<a class="headerlink" href="#released-version" title="Permalink to this headline">¶</a></h2>
+<h1>Released version<a class="headerlink" href="#released-version" title="Permalink to this headline">¶</a></h1>
 <ul>
-<li><p class="first">Available on <code class="docutils literal"><span class="pre">bioconda</span></code> channel</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="n">nglview</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span>
+<li><p class="first">Available on <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> channel</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="n">nglview</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>
 <span class="c1"># might need: jupyter-nbextension enable nglview --py --sys-prefix</span>
 
 <span class="c1"># if you already installed nglview, you can `upgrade`</span>
@@ -112,49 +108,51 @@ an <a class="reference external" href="https://github.com/arose/nglview/issues">
 <li><p class="first">Available on <a class="reference external" href="https://pypi.python.org/pypi/nglview/">PyPI</a></p>
 </li>
 </ul>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">nglview</span><span class="o">==</span><span class="mf">1.0</span><span class="o">.</span><span class="n">b2</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">nglview</span>
 <span class="n">jupyter</span><span class="o">-</span><span class="n">nbextension</span> <span class="n">enable</span> <span class="n">nglview</span> <span class="o">--</span><span class="n">py</span> <span class="o">--</span><span class="n">sys</span><span class="o">-</span><span class="n">prefix</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="version-compatibility">
-<h2>Version Compatibility<a class="headerlink" href="#version-compatibility" title="Permalink to this headline">¶</a></h2>
+<h1>Version Compatibility<a class="headerlink" href="#version-compatibility" title="Permalink to this headline">¶</a></h1>
 <table border="1" class="docutils">
 <colgroup>
-<col width="44%" />
-<col width="56%" />
+<col width="29%" />
+<col width="37%" />
+<col width="34%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">nglview</th>
 <th class="head">ipywidgets</th>
+<th class="head">ipykernel</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>&lt; 1.0</td>
 <td>5.2.2</td>
+<td>N/A</td>
 </tr>
 <tr class="row-odd"><td>1.0</td>
-<td>7.0</td>
+<td>7.0.0</td>
+<td>4.6</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
-<p>If you are using <code class="docutils literal"><span class="pre">notebook</span></code> v5.0, you need to increase the
-<code class="docutils literal"><span class="pre">iopub_data_rate_limit</span></code> to <a class="reference external" href="https://github.com/arose/nglview/issues/633">visualize big structure (e.g: solvated
+<h1>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h1>
+<p>If you are using <code class="docutils literal notranslate"><span class="pre">notebook</span></code> v5.0, you need to increase the
+<code class="docutils literal notranslate"><span class="pre">iopub_data_rate_limit</span></code> to <a class="reference external" href="https://github.com/arose/nglview/issues/633">visualize big structure (e.g: solvated
 system)</a></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">jupyter</span> <span class="n">notebook</span> <span class="o">--</span><span class="n">NotebookApp</span><span class="o">.</span><span class="n">iopub_data_rate_limit</span><span class="o">=</span><span class="mi">10000000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jupyter</span> <span class="n">notebook</span> <span class="o">--</span><span class="n">NotebookApp</span><span class="o">.</span><span class="n">iopub_data_rate_limit</span><span class="o">=</span><span class="mi">10000000</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="development-version">
-<h2>Development version<a class="headerlink" href="#development-version" title="Permalink to this headline">¶</a></h2>
-<p>Requirement: <code class="docutils literal"><span class="pre">ipywidgets</span> <span class="pre">&gt;=</span> <span class="pre">7.0.0</span></code>, <code class="docutils literal"><span class="pre">notebook</span> <span class="pre">&gt;=</span> <span class="pre">4.2</span></code></p>
+<h1>Development version<a class="headerlink" href="#development-version" title="Permalink to this headline">¶</a></h1>
+<p>Requirement: <code class="docutils literal notranslate"><span class="pre">ipywidgets</span> <span class="pre">&gt;=</span> <span class="pre">7.0</span></code>, <code class="docutils literal notranslate"><span class="pre">notebook</span> <span class="pre">&gt;=</span> <span class="pre">4.2</span></code></p>
 <p>The development version can be installed directly from github:</p>
-<div class="section" id="notebook-user">
-<h3>notebook user<a class="headerlink" href="#notebook-user" title="Permalink to this headline">¶</a></h3>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">arose</span><span class="o">/</span><span class="n">nglview</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">arose</span><span class="o">/</span><span class="n">nglview</span>
 <span class="n">cd</span> <span class="n">nglview</span>
 <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
 
@@ -170,19 +168,9 @@ system)</a></p>
 <span class="c1"># tested with ipywidgets 5.2.2, notebook 4.2.1</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="jupyterlab-user">
-<h3>jupyterlab user<a class="headerlink" href="#jupyterlab-user" title="Permalink to this headline">¶</a></h3>
-<p>HIGHLY EXPERIMENTAL. Things might not work as you are expecting.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Please read its content before running</span>
-<span class="n">source</span> <span class="n">devtools</span><span class="o">/</span><span class="n">nglview</span><span class="o">-</span><span class="n">jupyterlab</span><span class="o">.</span><span class="n">sh</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
+<p>Not supported yet.</p>
 <div class="section" id="example">
-<h1>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h1>
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Notebooks: please see our <a class="reference external" href="https://github.com/arose/nglview/blob/master/examples/README.md">Jupyter notebook
 examples</a></li>
@@ -191,18 +179,18 @@ examples</a></li>
 </ul>
 </div>
 <div class="section" id="showcase-from-users">
-<h1>Showcase from users<a class="headerlink" href="#showcase-from-users" title="Permalink to this headline">¶</a></h1>
+<h2>Showcase from users<a class="headerlink" href="#showcase-from-users" title="Permalink to this headline">¶</a></h2>
 <p>Please check <a class="reference external" href="examples/user_examples.md">user examples</a>. Feel free to
 contribute.</p>
 </div>
 <div class="section" id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>Open a notebook</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">jupyter</span> <span class="n">notebook</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jupyter</span> <span class="n">notebook</span>
 </pre></div>
 </div>
 <p>and issue</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nglview</span>
 <span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">show_pdbid</span><span class="p">(</span><span class="s2">&quot;3pqr&quot;</span><span class="p">)</span>  <span class="c1"># load &quot;3pqr&quot; from RCSB PDB and display viewer widget</span>
 <span class="n">view</span>
 </pre></div>
@@ -228,61 +216,81 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_file(path)</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">show_file(path)</span></code></td>
 <td>Shows any NGL supported file formats
 (pdb, gro, mol2, sdf, dx, ..) in
-<code class="docutils literal"><span class="pre">path</span></code></td>
+<code class="docutils literal notranslate"><span class="pre">path</span></code></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_pdbid(pdbid)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">pdbid</span></code> fetched from RCSB PDB</td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">show_pdbid(pdbid)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">pdbid</span></code> fetched from RCSB PDB</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_simpletraj(struc_path,</span> <span class="pre">t</span>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">show_simpletraj(struc_path,</span> <span class="pre">t</span>
 <span class="pre">raj_path)</span></code></td>
 <td>Shows structure &amp; trajectory loaded with
-<code class="docutils literal"><span class="pre">simpletraj</span></code></td>
+<code class="docutils literal notranslate"><span class="pre">simpletraj</span></code></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_mdtraj(traj)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">MDTraj</span></code> trajectory <code class="docutils literal"><span class="pre">traj</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">show_mdtraj(traj)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">MDTraj</span></code> trajectory <code class="docutils literal notranslate"><span class="pre">traj</span></code></td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_pytraj(traj)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">PyTraj</span></code> trajectory <code class="docutils literal"><span class="pre">traj</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">show_pytraj(traj)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">PyTraj</span></code> trajectory <code class="docutils literal notranslate"><span class="pre">traj</span></code></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_parmed(structure)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">ParmEd</span></code> structure</td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">show_parmed(structure)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">ParmEd</span></code> structure</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_mdanalysis(univ)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">MDAnalysis</span></code> Universe or
-AtomGroup <code class="docutils literal"><span class="pre">univ</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">show_mdanalysis(univ)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">MDAnalysis</span></code> Universe or
+AtomGroup <code class="docutils literal notranslate"><span class="pre">univ</span></code></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_rdkit(mol)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">rdkit</span></code> rdkit.Chem.rdchem.Mol</td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">show_rdkit(mol)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">rdkit</span></code> rdkit.Chem.rdchem.Mol</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_ase(atoms)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">ase</span></code> Atoms</td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">show_ase(atoms)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">ase</span></code> Atoms</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_asetraj(traj)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">ase</span></code> trajectory <code class="docutils literal"><span class="pre">traj</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">show_asetraj(traj)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">ase</span></code> trajectory <code class="docutils literal notranslate"><span class="pre">traj</span></code></td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_htmd(mol)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">HTMD</span></code> Molecules</td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">show_pymatgen(struct)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">pymatgen</span></code> Structure</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_biopython(mol)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">Biopython</span></code> structural entities</td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">show_htmd(mol)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">HTMD</span></code> Molecules</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">show_iotbx(mol)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">cctbx's</span> <span class="pre">iotbx</span></code> structure</td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">show_biopython(mol)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">Biopython</span></code> structural entities</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">show_rosetta(pose)</span></code></td>
-<td>Shows <code class="docutils literal"><span class="pre">pyrosetta's</span> <span class="pre">Pose</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">show_iotbx(mol)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">cctbx's</span> <span class="pre">iotbx</span></code> structure</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">show_rosetta(pose)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">pyrosetta's</span> <span class="pre">Pose</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">show_iodata(obj)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">iodata's</span> <span class="pre">IOData</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">show_psi4(obj)</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">psi4's</span> <span class="pre">Molecule</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">show_qcelementary</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">QCelementary's</span> <span class="pre">Molecule</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">show_openbabel</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">openbabel's</span> <span class="pre">OMol</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">show_prody</span></code></td>
+<td>Shows <code class="docutils literal notranslate"><span class="pre">prody's</span> <span class="pre">Ensemble</span> <span class="pre">or</span> <span class="pre">AtomGroup</span></code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="api">
-<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
 <div class="section" id="representations">
-<h2>Representations<a class="headerlink" href="#representations" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">repr_type</span><span class="o">=</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">)</span>
+<h1>Representations<a class="headerlink" href="#representations" title="Permalink to this headline">¶</a></h1>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="n">repr_type</span><span class="o">=</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">)</span>
 
 <span class="c1"># or shorter</span>
 <span class="n">view</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="n">selection</span><span class="o">=</span><span class="s2">&quot;protein&quot;</span><span class="p">)</span>
@@ -307,10 +315,10 @@ AtomGroup <code class="docutils literal"><span class="pre">univ</span></code></t
 <p>And many more, please check <a class="reference external" href="http://arose.github.io/ngl/api/index.html">NGL
 website</a></p>
 <p>Representations can also be changed by overwriting the
-<code class="docutils literal"><span class="pre">representations</span></code> property of the widget instance <code class="docutils literal"><span class="pre">view</span></code>. The
-available <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">params</span></code> are described in the NGL Viewer
+<code class="docutils literal notranslate"><span class="pre">representations</span></code> property of the widget instance <code class="docutils literal notranslate"><span class="pre">view</span></code>. The
+available <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">params</span></code> are described in the NGL Viewer
 <a class="reference external" href="http://arose.github.io/ngl/api/index.html">documentation</a>.</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;residueindex&quot;</span>
     <span class="p">}},</span>
@@ -320,8 +328,8 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 <span class="p">]</span>
 </pre></div>
 </div>
-<p>The widget constructor also accepts a <code class="docutils literal"><span class="pre">representation</span></code> argument:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
+<p>The widget constructor also accepts a <code class="docutils literal notranslate"><span class="pre">representation</span></code> argument:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">initial_repr</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;sstruc&quot;</span>
     <span class="p">}}</span>
@@ -333,12 +341,12 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 </div>
 <div class="section" id="properties">
-<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
+<h1>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h1>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the frame number</span>
 <span class="n">view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="mi">100</span>
 </pre></div>
 </div>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># parameters for the NGL stage object</span>
 <span class="n">view</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># &quot;percentages, &quot;dist&quot; is distance too camera in Angstrom</span>
     <span class="s2">&quot;clipNear&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;clipFar&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;clipDist&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -352,37 +360,37 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 <span class="c1"># and snake keywords (e.g &quot;clip_near&quot;)</span>
 </pre></div>
 </div>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># parameters to control the `delay` between snapshots</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># parameters to control the `delay` between snapshots</span>
 <span class="c1"># change `step` to play forward (positive value) or backward (negative value)</span>
 <span class="c1"># note: experimental code</span>
 <span class="n">view</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># update camera type</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># update camera type</span>
 <span class="n">view</span><span class="o">.</span><span class="n">camera</span> <span class="o">=</span> <span class="s1">&#39;orthographic&#39;</span>
 </pre></div>
 </div>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># change background color</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># change background color</span>
 <span class="n">view</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="trajectory">
-<h2>Trajectory<a class="headerlink" href="#trajectory" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># adding new trajectory</span>
+<h1>Trajectory<a class="headerlink" href="#trajectory" title="Permalink to this headline">¶</a></h1>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding new trajectory</span>
 <span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
 <span class="c1"># traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`,</span>
 <span class="c1"># `parmed.Structure`, `htmd.Molecule` or derived class of `nglview.Trajectory`</span>
 
 <span class="c1"># change representation</span>
-<span class="n">view</span><span class="o">.</span><span class="n">trajectory_0</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1"># equal to view.add_cartoon(component=0)</span>
-<span class="n">view</span><span class="o">.</span><span class="n">trajectory_1</span><span class="o">.</span><span class="n">add_licorice</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1"># equal to view.add_licorice(component=1)</span>
+<span class="n">view</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1"># equal to view.add_cartoon(component=0)</span>
+<span class="n">view</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_licorice</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1"># equal to view.add_licorice(component=1)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="add-extra-component">
-<h2>Add extra component<a class="headerlink" href="#add-extra-component" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)</span>
+<h1>Add extra component<a class="headerlink" href="#add-extra-component" title="Permalink to this headline">¶</a></h1>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Density volumes (MRC/MAP/CCP4, DX/DXBIN, CUBE)</span>
 <span class="c1"># Or adding derived class of `nglview.Structure`</span>
 <span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="s1">&#39;my.ccp4&#39;</span><span class="p">)</span>
 
@@ -393,22 +401,22 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </div>
 </div>
 <div class="section" id="mouse">
-<h2>Mouse<a class="headerlink" href="#mouse" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># coot mouse style (https://en.wikipedia.org/wiki/Coot_(software))</span>
+<h1>Mouse<a class="headerlink" href="#mouse" title="Permalink to this headline">¶</a></h1>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># coot mouse style (https://en.wikipedia.org/wiki/Coot_(software))</span>
 <span class="n">view</span><span class="o">.</span><span class="n">stage</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">mouse_preset</span><span class="o">=</span><span class="s1">&#39;coot&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="interaction-controls">
-<h2>Interaction controls<a class="headerlink" href="#interaction-controls" title="Permalink to this headline">¶</a></h2>
+<h1>Interaction controls<a class="headerlink" href="#interaction-controls" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><a class="reference external" href="https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#mouse">Mouse</a></li>
 <li><a class="reference external" href="https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#keyboard">Keyboard</a></li>
 </ul>
 </div>
 <div class="section" id="display-more-than-two-widgets">
-<h2>Display more than two widgets<a class="headerlink" href="#display-more-than-two-widgets" title="Permalink to this headline">¶</a></h2>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># 1st cell</span>
+<h1>Display more than two widgets<a class="headerlink" href="#display-more-than-two-widgets" title="Permalink to this headline">¶</a></h1>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1st cell</span>
 <span class="kn">import</span> <span class="nn">ipywidgets</span>
 <span class="n">vbox</span> <span class="o">=</span> <span class="n">ipywidgets</span><span class="o">.</span><span class="n">VBox</span><span class="p">([</span><span class="n">view1</span><span class="p">,</span> <span class="n">view2</span><span class="p">])</span>
 <span class="n">vbox</span> <span class="c1"># display</span>
@@ -419,30 +427,20 @@ available <code class="docutils literal"><span class="pre">type</span></code> an
 </pre></div>
 </div>
 </div>
-<div class="section" id="show-gui">
-<h2>Show GUI<a class="headerlink" href="#show-gui" title="Permalink to this headline">¶</a></h2>
-<p>Notes: Unstable feature. <a class="reference external" href="https://github.com/arose/nglview/blob/master/examples/README.md#unstable-features">See
-also</a></p>
-<div class="figure">
-<img alt="" src="https://github.com/arose/nglview/blob/master/examples/images/nglview_gui.png?raw=true" />
-</div>
-</div>
 <div class="section" id="movie-making">
-<h2>Movie making<a class="headerlink" href="#movie-making" title="Permalink to this headline">¶</a></h2>
+<h1>Movie making<a class="headerlink" href="#movie-making" title="Permalink to this headline">¶</a></h1>
 <p>Notes: Unstable feature.</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nglview.contrib.movie</span> <span class="k">import</span> <span class="n">MovieMaker</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nglview.contrib.movie</span> <span class="k">import</span> <span class="n">MovieMaker</span>
 <span class="n">movie</span> <span class="o">=</span> <span class="n">MovieMaker</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;my.gif&#39;</span><span class="p">)</span>
 <span class="n">movie</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="embed-widget">
-<h2>Embed widget<a class="headerlink" href="#embed-widget" title="Permalink to this headline">¶</a></h2>
+<h1>Embed widget<a class="headerlink" href="#embed-widget" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="docs/embed.md">embed</a></p>
-</div>
-</div>
 <div class="section" id="api-doc">
-<h1>API doc<a class="headerlink" href="#api-doc" title="Permalink to this headline">¶</a></h1>
+<h2>API doc<a class="headerlink" href="#api-doc" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference external" href="http://arose.github.io/nglview/latest/api.html">Latest version</a></li>
 <li><a class="reference external" href="http://arose.github.io/nglview/release/index.html">All releases
@@ -451,8 +449,8 @@ versions</a></li>
 </ul>
 </div>
 <div class="section" id="command-line">
-<h1>Command line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h1>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># open a notebook and import nglview</span>
+<h2>Command line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h2>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># open a notebook and import nglview</span>
 <span class="n">nglview</span>
 
 <span class="c1"># Require installing pytraj (PR for other backends is welcome)</span>
@@ -494,26 +492,26 @@ versions</a></li>
 </div>
 </div>
 <div class="section" id="faq">
-<h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://github.com/arose/nglview/wiki/Q&amp;A">Q&amp;A</a></p>
+<h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="docs/FAQ.md">Q&amp;A</a></p>
 </div>
 <div class="section" id="website">
-<h1>Website<a class="headerlink" href="#website" title="Permalink to this headline">¶</a></h1>
+<h2>Website<a class="headerlink" href="#website" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference external" href="http://arose.github.io/nglview/latest">http://arose.github.io/nglview/latest</a></li>
 <li><a class="reference external" href="http://arose.github.io/nglview/dev">http://arose.github.io/nglview/dev</a></li>
 </ul>
 </div>
 <div class="section" id="talks">
-<h1>Talks<a class="headerlink" href="#talks" title="Permalink to this headline">¶</a></h1>
+<h2>Talks<a class="headerlink" href="#talks" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="./talks.html">Talks about NGL and nglview</a></p>
 </div>
 <div class="section" id="contributing">
-<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="./contributing.html">Join us here</a></p>
 </div>
-<div class="section" id="projects-using-nglview">
-<h1>Projects using NGLView<a class="headerlink" href="#projects-using-nglview" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="projects-integrating-nglview">
+<h2>Projects integrating NGLView<a class="headerlink" href="#projects-integrating-nglview" title="Permalink to this headline">¶</a></h2>
 <p>(Feel free to make a PR to add/remove your project here)</p>
 <ul class="simple">
 <li><a class="reference external" href="http://ambermd.org/">AMBER</a> - A package of programs for molecular
@@ -542,24 +540,39 @@ multiple protein-protein interaction docking solutions,</li>
 <li><a class="reference external" href="https://github.com/MobleyLab/drug-computing">MobleyLab/drug-computing</a>
 Educational materials for, and related to, UC Irvine’s Drug Discovery
 Computing Techniques course.</li>
+<li><a class="reference external" href="https://pyiron.github.io/">pyiron</a>: an integrated development
+environment for implementing, testing, and running simulations in
+computational materials science.</li>
+<li><a class="reference external" href="https://biosimspace.org/">BioSimSpace</a>: An interoperable
+framework for biomolecular simulation</li>
+<li><a class="reference external" href="https://github.com/schallerdavid/pyrod">pyrod</a>: PyRod - Tracing
+water molecules in molecular dynamics simulations</li>
 </ul>
 </div>
 <div class="section" id="acknowledgment">
-<h1>Acknowledgment<a class="headerlink" href="#acknowledgment" title="Permalink to this headline">¶</a></h1>
+<h2>Acknowledgment<a class="headerlink" href="#acknowledgment" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Funding: Hai Nguyen is supported by NIH Grant GM103297, “The Center
 for HIV RNA Studies” (2015 to 02-2017).</li>
-<li>Many thanks to <code class="docutils literal"><span class="pre">nglview</span></code>
+<li>Many thanks to <code class="docutils literal notranslate"><span class="pre">nglview</span></code>
 <a class="reference external" href="https://github.com/arose/nglview/graphs/contributors">contributors</a></li>
 <li><a class="reference external" href="https://github.com/dunovank/jupyter-themes">dunovank/jupyter-themes</a>:
-for <code class="docutils literal"><span class="pre">oceans16</span></code> theme</li>
+for <code class="docutils literal notranslate"><span class="pre">oceans16</span></code> theme</li>
 <li><a class="reference external" href="https://github.com/niklasvh/base64-arraybuffer">base64-arraybuffer</a></li>
 <li><a class="reference external" href="https://github.com/jupyter-widgets/ipywidgets">ipywidgets</a></li>
 </ul>
 </div>
+<div class="section" id="cite">
+<h2>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h2>
+<p>If you would like to acknowledge our work, feel free to cite:</p>
+<p>Hai Nguyen, David A Case, Alexander S Rose; NGLview - Interactive
+molecular graphics for Jupyter notebooks, Bioinformatics, , btx789,
+<a class="reference external" href="https://doi.org/10.1093/bioinformatics/btx789">https://doi.org/10.1093/bioinformatics/btx789</a></p>
+</div>
 <div class="section" id="license">
-<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
 <p>Generally MIT, see the LICENSE file for details.</p>
+</div>
 </div>
 
 
@@ -568,24 +581,23 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table Of Contents</a></h3>
+  <h3><a href="#">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Table of contents</a></li>
-<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#">Try nglview online: </a><ul>
+<li><a class="reference internal" href="#table-of-contents">Table of contents</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#released-version">Released version</a></li>
 <li><a class="reference internal" href="#version-compatibility">Version Compatibility</a></li>
 <li><a class="reference internal" href="#notes">Notes</a></li>
 <li><a class="reference internal" href="#development-version">Development version</a><ul>
-<li><a class="reference internal" href="#notebook-user">notebook user</a></li>
-<li><a class="reference internal" href="#jupyterlab-user">jupyterlab user</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li><a class="reference internal" href="#example">Example</a></li>
 <li><a class="reference internal" href="#showcase-from-users">Showcase from users</a></li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
-<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#api">API</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#representations">Representations</a></li>
 <li><a class="reference internal" href="#properties">Properties</a></li>
 <li><a class="reference internal" href="#trajectory">Trajectory</a></li>
@@ -593,20 +605,20 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
 <li><a class="reference internal" href="#mouse">Mouse</a></li>
 <li><a class="reference internal" href="#interaction-controls">Interaction controls</a></li>
 <li><a class="reference internal" href="#display-more-than-two-widgets">Display more than two widgets</a></li>
-<li><a class="reference internal" href="#show-gui">Show GUI</a></li>
 <li><a class="reference internal" href="#movie-making">Movie making</a></li>
-<li><a class="reference internal" href="#embed-widget">Embed widget</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#embed-widget">Embed widget</a><ul>
 <li><a class="reference internal" href="#api-doc">API doc</a></li>
 <li><a class="reference internal" href="#command-line">Command line</a></li>
 <li><a class="reference internal" href="#faq">FAQ</a></li>
 <li><a class="reference internal" href="#website">Website</a></li>
 <li><a class="reference internal" href="#talks">Talks</a></li>
 <li><a class="reference internal" href="#contributing">Contributing</a></li>
-<li><a class="reference internal" href="#projects-using-nglview">Projects using NGLView</a></li>
+<li><a class="reference internal" href="#projects-integrating-nglview">Projects integrating NGLView</a></li>
 <li><a class="reference internal" href="#acknowledgment">Acknowledgment</a></li>
+<li><a class="reference internal" href="#cite">Cite</a></li>
 <li><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
 </ul>
 
   <div role="note" aria-label="source link">
@@ -618,12 +630,14 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -639,13 +653,13 @@ for <code class="docutils literal"><span class="pre">oceans16</span></code> them
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">NGLView 2.1.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Oct 31, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Last updated on May 31, 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
     </div>
   </body>
 </html>

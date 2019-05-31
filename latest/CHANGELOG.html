@@ -4,30 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Changelog &#8212; NGLView 1.0 documentation</title>
+    <title>Changelog &#8212; NGLView 2.1.0 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.10.0/dist/embed.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.14.0/dist/embed.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -37,7 +28,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 2.1.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -48,36 +39,31 @@
             
   <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-1-0-b">
-<h2>Version 1.0.b<a class="headerlink" href="#version-1-0-b" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-1-0">
+<h2>Version 1.0<a class="headerlink" href="#version-1-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>SUPPORT ipywidgets 7.0 and drop ipywidgets 5.2</li>
-<li>UPGRADE: <code class="docutils literal"><span class="pre">NGL</span> <span class="pre">0.10.5-20</span></code></li>
-<li>SUPPORT: Jupyterlab (v0.26.5, )</li>
-<li>ADD: <code class="docutils literal"><span class="pre">show_biopython</span></code></li>
-<li>ADD: <code class="docutils literal"><span class="pre">show_iotbx</span></code></li>
-<li>ADD: <code class="docutils literal"><span class="pre">show_rosetta</span></code></li>
-<li>ADD: <code class="docutils literal"><span class="pre">show_file</span></code></li>
-<li>ADD: <code class="docutils literal"><span class="pre">add_slice</span></code></li>
+<li>UPGRADE: NGL v1.0.0-beta.4</li>
+<li>SUPPORT: Jupyterlab v0.27</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">show_biopython</span></code></li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">show_iotbx</span></code></li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">show_rosetta</span></code></li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">show_file</span></code></li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">add_slice</span></code></li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">add_buffer</span></code></li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">add_label</span></code></li>
 <li>ADD: movie making</li>
-<li>ADD: <code class="docutils literal"><span class="pre">set_coordinates</span></code> for ComponentViewer</li>
-<li>FIX: <code class="docutils literal"><span class="pre">nglview</span> <span class="pre">install</span></code> always overwrite</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">set_coordinates</span></code> for ComponentViewer</li>
+<li>FIX: <code class="docutils literal notranslate"><span class="pre">nglview</span> <span class="pre">install</span></code> always overwrite</li>
 <li>SUPPORT: widget serialization and sphinx-jupyter</li>
-<li>ADD: <code class="docutils literal"><span class="pre">write_html</span></code></li>
-</ul>
-</div>
-<div class="section" id="dev">
-<h2>Dev<a class="headerlink" href="#dev" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>MIGRATION: only support <code class="docutils literal"><span class="pre">ipywidgets</span> <span class="pre">&gt;=</span> <span class="pre">5.2</span></code></li>
-<li>ADD: <code class="docutils literal"><span class="pre">ngl</span> <span class="pre">v0.8</span></code></li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">write_html</span></code></li>
 </ul>
 </div>
 <div class="section" id="version-0-5-2">
 <h2>Version 0.5.2<a class="headerlink" href="#version-0-5-2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>ADD: <code class="docutils literal"><span class="pre">nglview</span></code> command line for quickly opening notebook.</li>
-<li>ADD: <code class="docutils literal"><span class="pre">add_text</span></code> to display</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">nglview</span></code> command line for quickly opening notebook.</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">add_text</span></code> to display</li>
 <li>FIX: view.background assignment.</li>
 </ul>
 </div>
@@ -93,50 +79,50 @@
 <p><a class="reference external" href="http://dx.doi.org/10.5281/zenodo.44700"><img alt="DOI" src="https://zenodo.org/badge/doi/10.5281/zenodo.44700.svg" /></a></p>
 <ul class="simple">
 <li>ADD: basic use of binary messages for faster coordinate data transfer</li>
-<li>ADD: updated to newer <code class="docutils literal"><span class="pre">NGL</span></code> version, (e.g. orthographic camera,
+<li>ADD: updated to newer <code class="docutils literal notranslate"><span class="pre">NGL</span></code> version, (e.g. orthographic camera,
 anti-aliasing, much faster rendering, …)</li>
-<li>ADD: <code class="docutils literal"><span class="pre">view.delay</span></code> property to adjust trajectory playback</li>
-<li>ADD: <code class="docutils literal"><span class="pre">show_url</span></code> function for loading &amp; viewing from an url</li>
-<li>ADD: <code class="docutils literal"><span class="pre">view.hide()</span></code> and <code class="docutils literal"><span class="pre">view.show_only()</span></code> convenience methods</li>
-<li>ADD: <code class="docutils literal"><span class="pre">show_rdkit</span></code> function to view rdkit Mol objects</li>
-<li>ADD: <code class="docutils literal"><span class="pre">view.clear()</span></code> for clearing all representations</li>
-<li>ADD: <code class="docutils literal"><span class="pre">view.add_unitcell()</span></code>, support for the new NGL unitcell
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">view.delay</span></code> property to adjust trajectory playback</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">show_url</span></code> function for loading &amp; viewing from an url</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">view.hide()</span></code> and <code class="docutils literal notranslate"><span class="pre">view.show_only()</span></code> convenience methods</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">show_rdkit</span></code> function to view rdkit Mol objects</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">view.clear()</span></code> for clearing all representations</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">view.add_unitcell()</span></code>, support for the new NGL unitcell
 representation</li>
-<li>ADD: automatic creation of attributes: <code class="docutils literal"><span class="pre">view.trajectory_0</span></code>,
-<code class="docutils literal"><span class="pre">view.trajectory_1</span></code>, <code class="docutils literal"><span class="pre">view.component_0</span></code>, …</li>
-<li>ADD: specify <code class="docutils literal"><span class="pre">component</span></code> index in <code class="docutils literal"><span class="pre">view.add_representations</span></code>,
-<code class="docutils literal"><span class="pre">view.clear_representations</span></code></li>
+<li>ADD: automatic creation of attributes: <code class="docutils literal notranslate"><span class="pre">view.trajectory_0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">view.trajectory_1</span></code>, <code class="docutils literal notranslate"><span class="pre">view.component_0</span></code>, …</li>
+<li>ADD: specify <code class="docutils literal notranslate"><span class="pre">component</span></code> index in <code class="docutils literal notranslate"><span class="pre">view.add_representations</span></code>,
+<code class="docutils literal notranslate"><span class="pre">view.clear_representations</span></code></li>
 <li>ADD: drag and drop files into widget</li>
-<li>ADD: extra TrajectoryPlayer widget available via <code class="docutils literal"><span class="pre">view.player</span></code></li>
-<li>ADD: <code class="docutils literal"><span class="pre">view.camera</span></code> property (<code class="docutils literal"><span class="pre">perspective</span></code> and <code class="docutils literal"><span class="pre">orthographic</span></code>,
+<li>ADD: extra TrajectoryPlayer widget available via <code class="docutils literal notranslate"><span class="pre">view.player</span></code></li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">view.camera</span></code> property (<code class="docutils literal notranslate"><span class="pre">perspective</span></code> and <code class="docutils literal notranslate"><span class="pre">orthographic</span></code>,
 new in NGL)</li>
-<li>ADD: <code class="docutils literal"><span class="pre">view.background</span></code> property to change the viewer background
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">view.background</span></code> property to change the viewer background
 (color name or hex value)</li>
-<li>ADD: <code class="docutils literal"><span class="pre">view.orientation</span></code> property to synchronize cameras of two
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">view.orientation</span></code> property to synchronize cameras of two
 viewer widgets</li>
-<li>ADD: view multiple trajectories via <code class="docutils literal"><span class="pre">view.add_trajectory()</span></code>,
-<code class="docutils literal"><span class="pre">view.add_component()</span></code></li>
-<li>ADD: <code class="docutils literal"><span class="pre">view.download_image()</span></code> to render high quality image and
+<li>ADD: view multiple trajectories via <code class="docutils literal notranslate"><span class="pre">view.add_trajectory()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">view.add_component()</span></code></li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">view.download_image()</span></code> to render high quality image and
 trigger download in browser</li>
-<li>ADD: <code class="docutils literal"><span class="pre">view.render_image()</span></code> to render image for display in the
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">view.render_image()</span></code> to render image for display in the
 notebook</li>
-<li>ADD: <code class="docutils literal"><span class="pre">view.center_view()</span></code> to center</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">view.center_view()</span></code> to center</li>
 <li>ADD: select atoms by their indices, given as a List</li>
 <li>ADD: shortcuts for view.add_representation (view.add_cartoon,
 view.add_rope, …)</li>
-<li>ADD: <code class="docutils literal"><span class="pre">ParmEdTrajectory</span></code> adaptor and <code class="docutils literal"><span class="pre">show_parmed</span></code> function to
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">ParmEdTrajectory</span></code> adaptor and <code class="docutils literal notranslate"><span class="pre">show_parmed</span></code> function to
 view ParmEd objects</li>
-<li>ENH: <code class="docutils literal"><span class="pre">view.add_trajectory</span></code> now accept <code class="docutils literal"><span class="pre">pytraj.Trajectory</span></code>,
-<code class="docutils literal"><span class="pre">mdtraj.Trajectory</span></code>, <code class="docutils literal"><span class="pre">MDAnalysis.Universe</span></code>, <code class="docutils literal"><span class="pre">parmed.Structure</span></code></li>
+<li>ENH: <code class="docutils literal notranslate"><span class="pre">view.add_trajectory</span></code> now accept <code class="docutils literal notranslate"><span class="pre">pytraj.Trajectory</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mdtraj.Trajectory</span></code>, <code class="docutils literal notranslate"><span class="pre">MDAnalysis.Universe</span></code>, <code class="docutils literal notranslate"><span class="pre">parmed.Structure</span></code></li>
 <li>ENH: view.add_representations now accepts keywords in both
 snake_case and CamelCase</li>
 <li>ENH: smoother trajectory playing</li>
 <li>ENH: smoother rendering when adding new representation</li>
 <li>MIGRATION: change html/static to js/</li>
 <li>MIGRATION: change sending base64 to binary coordinates</li>
-<li>MIGRATION: change <code class="docutils literal"><span class="pre">view.trajectory</span></code> to <code class="docutils literal"><span class="pre">view.trajlist</span></code></li>
-<li>MIGRATION: change <code class="docutils literal"><span class="pre">get_frame_count</span></code> method to <code class="docutils literal"><span class="pre">n_frames</span></code> property</li>
-<li>MIGRATION: remove <code class="docutils literal"><span class="pre">get_coordinates_dict</span></code></li>
+<li>MIGRATION: change <code class="docutils literal notranslate"><span class="pre">view.trajectory</span></code> to <code class="docutils literal notranslate"><span class="pre">view.trajlist</span></code></li>
+<li>MIGRATION: change <code class="docutils literal notranslate"><span class="pre">get_frame_count</span></code> method to <code class="docutils literal notranslate"><span class="pre">n_frames</span></code> property</li>
+<li>MIGRATION: remove <code class="docutils literal notranslate"><span class="pre">get_coordinates_dict</span></code></li>
 <li>FIX: symlink error</li>
 </ul>
 </div>
@@ -145,12 +131,12 @@ snake_case and CamelCase</li>
 <p><a class="reference external" href="http://dx.doi.org/10.5281/zenodo.44700"><img alt="DOI" src="https://zenodo.org/badge/doi/10.5281/zenodo.44700.svg" /></a></p>
 <ul class="simple">
 <li>ADD: Convenience methods to show widget from various sources</li>
-<li>ADD: <code class="docutils literal"><span class="pre">PyTrajTrajectory</span></code> adaptor</li>
-<li>ADD: <code class="docutils literal"><span class="pre">MDAnalysisTrajectory</span></code> adaptor</li>
-<li>ADD: <code class="docutils literal"><span class="pre">NGLWidget.add_representation()</span></code> method</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">PyTrajTrajectory</span></code> adaptor</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">MDAnalysisTrajectory</span></code> adaptor</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">NGLWidget.add_representation()</span></code> method</li>
 <li>ADD: append a “WebGL not supported message” to widget if so</li>
-<li>ADD: <code class="docutils literal"><span class="pre">parameters</span></code> widget property, passed to NGL stage object</li>
-<li>ADD: <code class="docutils literal"><span class="pre">params</span></code> property for <code class="docutils literal"><span class="pre">Structure</span></code>, dict passed to NGL</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">parameters</span></code> widget property, passed to NGL stage object</li>
+<li>ADD: <code class="docutils literal notranslate"><span class="pre">params</span></code> property for <code class="docutils literal notranslate"><span class="pre">Structure</span></code>, dict passed to NGL</li>
 <li>CODE: be less noisy when importing nglview</li>
 <li>DOC: more usage examples, API description</li>
 <li>DOC: added CHANGELOG file</li>
@@ -161,20 +147,20 @@ snake_case and CamelCase</li>
 <h2>Version 0.3<a class="headerlink" href="#version-0-3" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="http://dx.doi.org/10.5281/zenodo.44700"><img alt="DOI" src="https://zenodo.org/badge/doi/10.5281/zenodo.44700.svg" /></a></p>
 <ul class="simple">
-<li>MIGRATION: <code class="docutils literal"><span class="pre">Trajectory</span></code> classes need <code class="docutils literal"><span class="pre">get_frame_count</span></code> method</li>
-<li>MIGRATION: removed <code class="docutils literal"><span class="pre">set_frame</span></code> method use new <code class="docutils literal"><span class="pre">frame</span></code> property</li>
+<li>MIGRATION: <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> classes need <code class="docutils literal notranslate"><span class="pre">get_frame_count</span></code> method</li>
+<li>MIGRATION: removed <code class="docutils literal notranslate"><span class="pre">set_frame</span></code> method use new <code class="docutils literal notranslate"><span class="pre">frame</span></code> property</li>
 <li>ADD: simple trajectory player</li>
 <li>ADD: widget resizing support</li>
-<li>ADD: picking support (gui info; <code class="docutils literal"><span class="pre">picked</span></code> property)</li>
-<li>CODE: check for file existence in <code class="docutils literal"><span class="pre">FileStructure</span></code> and
-<code class="docutils literal"><span class="pre">SimpletrajTrajectory</span></code></li>
+<li>ADD: picking support (gui info; <code class="docutils literal notranslate"><span class="pre">picked</span></code> property)</li>
+<li>CODE: check for file existence in <code class="docutils literal notranslate"><span class="pre">FileStructure</span></code> and
+<code class="docutils literal notranslate"><span class="pre">SimpletrajTrajectory</span></code></li>
 </ul>
 </div>
 <div class="section" id="version-0-2">
 <h2>Version 0.2<a class="headerlink" href="#version-0-2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>MIGRATION: changed <code class="docutils literal"><span class="pre">get_string</span></code> to <code class="docutils literal"><span class="pre">get_structure_string</span></code></li>
-<li>MIGRATION: changed <code class="docutils literal"><span class="pre">get_coordinates</span></code> to <code class="docutils literal"><span class="pre">get_coordinates_list</span></code></li>
+<li>MIGRATION: changed <code class="docutils literal notranslate"><span class="pre">get_string</span></code> to <code class="docutils literal notranslate"><span class="pre">get_structure_string</span></code></li>
+<li>MIGRATION: changed <code class="docutils literal notranslate"><span class="pre">get_coordinates</span></code> to <code class="docutils literal notranslate"><span class="pre">get_coordinates_list</span></code></li>
 <li>DOC: usage, interface classes</li>
 <li>ADD: MDTrajTrajectory adaptor</li>
 <li>CODE: added interface classes</li>
@@ -195,11 +181,10 @@ snake_case and CamelCase</li>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#version-1-0-b">Version 1.0.b</a></li>
-<li><a class="reference internal" href="#dev">Dev</a></li>
+<li><a class="reference internal" href="#version-1-0">Version 1.0</a></li>
 <li><a class="reference internal" href="#version-0-5-2">Version 0.5.2</a></li>
 <li><a class="reference internal" href="#version-0-5-1">Version 0.5.1</a></li>
 <li><a class="reference internal" href="#version-0-5">Version 0.5</a></li>
@@ -220,12 +205,14 @@ snake_case and CamelCase</li>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -241,13 +228,13 @@ snake_case and CamelCase</li>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 2.1.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Oct 31, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Last updated on May 31, 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
     </div>
   </body>
 </html>

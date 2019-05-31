@@ -4,30 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>nglview.widget &#8212; NGLView 1.0 documentation</title>
+    <title>nglview.widget &#8212; NGLView 2.1.0 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.10.0/dist/embed.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.14.0/dist/embed.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -37,7 +28,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.1.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -53,16 +44,16 @@
 <dl class="class">
 <dt id="nglview.widget.NGLWidget">
 <em class="property">class </em><code class="descclassname">nglview.widget.</code><code class="descname">NGLWidget</code><span class="sig-paren">(</span><em>structure=None</em>, <em>representations=None</em>, <em>parameters=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">ipywidgets.widgets.domwidget.DOMWidget</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ipywidgets.widgets.domwidget.DOMWidget</span></code></p>
 <dl class="method">
 <dt id="nglview.widget.NGLWidget.add_component">
 <code class="descname">add_component</code><span class="sig-paren">(</span><em>filename</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.add_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.add_component" title="Permalink to this definition">¶</a></dt>
 <dd><p>add component from file/trajectory/struture</p>
 <p>filename : str or Trajectory or Structure or their derived class or url
 <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs : additional arguments, optional</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="c1"># doctest: +SKIP</span>
 <span class="gp">... </span><span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;somefile.ccp4&#39;</span>
 <span class="gp">... </span><span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 </pre></div>
@@ -75,7 +66,7 @@ faster to load file from current or subfolder.</p>
 <dt id="nglview.widget.NGLWidget.add_pdbid">
 <code class="descname">add_pdbid</code><span class="sig-paren">(</span><em>pdbid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.add_pdbid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.add_pdbid" title="Permalink to this definition">¶</a></dt>
 <dd><p>add new Structure view by fetching pdb id from rcsb</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">add_pdbid</span><span class="p">(</span><span class="s1">&#39;1tsu&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># which is equal to </span>
@@ -95,17 +86,17 @@ faster to load file from current or subfolder.</p>
 <dd>atom selection</dd>
 </dl>
 <p><a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: additional arguments for representation</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">pytraj</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">load_tz2</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pytraj</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="s1">&#39;cartoon&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">add_representation</span><span class="p">(</span><span class="s1">&#39;licorice&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="c1"># doctest: +SKIP</span>
 </pre></div>
 </div>
 <p>User can also use shortcut</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">selection</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">selection</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">add_cartoon</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span> <span class="c1"># w.add_representation(&#39;cartoon&#39;, selection)</span>
 </pre></div>
 </div>
@@ -116,7 +107,7 @@ faster to load file from current or subfolder.</p>
 <code class="descname">add_structure</code><span class="sig-paren">(</span><em>structure</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.add_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.add_structure" title="Permalink to this definition">¶</a></dt>
 <dd><p>add structure to view</p>
 <p>structure : nglview.Structure object</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj0</span><span class="p">)</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj0</span><span class="p">)</span> <span class="c1"># doctest: +SKIP</span>
 <span class="gp">... </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj1</span><span class="p">)</span>
 <span class="gp">... </span><span class="c1"># then add Structure</span>
 <span class="gp">... </span><span class="n">view</span><span class="o">.</span><span class="n">add_structure</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
@@ -134,11 +125,11 @@ faster to load file from current or subfolder.</p>
 <dd>pytraj.Trajectory-like, mdtraj.Trajectory or MDAnalysis objects</dd>
 </dl>
 <p>nglview.NGLWidget.add_component</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span><span class="o">,</span> <span class="nn">pytraj</span> <span class="k">as</span> <span class="nn">pt</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span><span class="o">,</span> <span class="nn">pytraj</span> <span class="k">as</span> <span class="nn">pt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">traj</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">TRR</span><span class="p">,</span> <span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pytraj</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># show view first</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="c1"># doctest: +SKIP</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># add new Trajectory</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">traj2</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">load_tz2</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj2</span><span class="p">)</span>
@@ -166,7 +157,7 @@ faster to load file from current or subfolder.</p>
 
 <dl class="method">
 <dt id="nglview.widget.NGLWidget.center_view">
-<code class="descname">center_view</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.center_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.center_view" title="Permalink to this definition">¶</a></dt>
+<code class="descname">center_view</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.center_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.center_view" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -194,13 +185,13 @@ faster to load file from current or subfolder.</p>
 component : int, default 0</p>
 <blockquote>
 <div>component index</div></blockquote>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">demo</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># component 0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">color_by</span><span class="p">(</span><span class="s1">&#39;atomindex&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># component 1</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># component 1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">color_by</span><span class="p">(</span><span class="s1">&#39;atomindex&#39;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -213,16 +204,6 @@ component : int, default 0</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="nglview.widget.NGLWidget.detach">
-<code class="descname">detach</code><span class="sig-paren">(</span><em>split=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.detach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.detach" title="Permalink to this definition">¶</a></dt>
-<dd><p>detach player from its original container.</p>
-<dl class="docutils">
-<dt>split <span class="classifier-delimiter">:</span> <span class="classifier">bool, default False</span></dt>
-<dd>if True, resize notebook then move it to the right of its container</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
 <dt id="nglview.widget.NGLWidget.display">
 <code class="descname">display</code><span class="sig-paren">(</span><em>gui=False</em>, <em>use_box=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -230,7 +211,7 @@ component : int, default 0</p>
 <dl class="method">
 <dt id="nglview.widget.NGLWidget.download_image">
 <code class="descname">download_image</code><span class="sig-paren">(</span><em>filename='screenshot.png'</em>, <em>factor=4</em>, <em>antialias=True</em>, <em>trim=False</em>, <em>transparent=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/widget.html#NGLWidget.download_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.NGLWidget.download_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>render and download scence at current frame</p>
+<dd><p>render and download scene at current frame</p>
 <p>filename : str, default ‘screenshot.png’
 factor : int, default 4</p>
 <blockquote>
@@ -291,7 +272,7 @@ transparent : bool, default False</p>
 <dd><p>remove component by its uuid.
 If isinstance(c, ComponentViewer), <cite>c</cite> won’t be associated with <cite>self</cite></p>
 <p>c : Union[int, ComponentViewer]</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c0</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj0</span><span class="p">)</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c0</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj0</span><span class="p">)</span> <span class="c1"># doctest: +SKIP</span>
 <span class="gp">... </span><span class="n">c1</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj1</span><span class="p">)</span>
 <span class="gp">... </span><span class="n">c2</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">add_struture</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
 <span class="gp">... </span><span class="c1"># remove last component</span>
@@ -381,9 +362,9 @@ view.get_image()</p>
 <dl class="class">
 <dt id="nglview.widget.ComponentViewer">
 <em class="property">class </em><code class="descclassname">nglview.widget.</code><code class="descname">ComponentViewer</code><span class="sig-paren">(</span><em>view</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/component.html#ComponentViewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.widget.ComponentViewer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Convenient attribute for NGLWidget. See example below.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">()</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">()</span> <span class="c1"># doctest: +SKIP</span>
 <span class="gp">... </span><span class="n">view</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="c1"># traj is a component 0</span>
 <span class="gp">... </span><span class="n">c</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="c1"># component 1</span>
 <span class="gp">... </span><span class="n">c</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -431,7 +412,7 @@ view.get_image()</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">nglview.widget</a><ul>
 <li><a class="reference internal" href="#module-nglview.widget">Module contents</a></li>
@@ -448,12 +429,14 @@ view.get_image()</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -469,13 +452,13 @@ view.get_image()</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.1.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Oct 31, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Last updated on May 31, 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
     </div>
   </body>
 </html>
