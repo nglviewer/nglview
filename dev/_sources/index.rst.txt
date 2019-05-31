@@ -1,10 +1,13 @@
-`Installation <#installation>`__ \| `Example <#example>`__ \|
-`Usage <#usage>`__ \| `Command line <#command-line>`__ \| `API
-doc <#api-doc>`__ \| `Interface classes <interface_classes.html>`__ \|
-`Website <#website>`__ \| `GUI <#show-gui>`__ \|
+`Citation <#cite>`__ \| `Installation <#installation>`__ \|
+`Example <#example>`__ \| `Usage <#usage>`__ \| `Command
+line <#command-line>`__ \| `API doc <#api-doc>`__ \| `Interface
+classes <interface_classes.html>`__ \| `Website <#website>`__ \|
 `Acknowledgment <#acknowledgment>`__
 
-|Binder| |DOI| |Build Status| |bioconda-badge| |Coverage Status|
+|DOI| |Build Status| |Coverage Status|
+
+Try nglview online: |Binder|
+----------------------------
 
 An `IPython/Jupyter <http://jupyter.org/>`__ widget to interactively
 view molecular structures and trajectories. Utilizes the embeddable `NGL
@@ -23,11 +26,11 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 `pyrosetta <http://pyrosetta.org>`__, `schrodinger's
 Structure <http://content.schrodinger.com/Docs/r2015-4/python_api/api/schrodinger.structure.Structure-class.html>`__
 
-Should work with Python 2 and 3. If you experience problems, please file
-an `issue <https://github.com/arose/nglview/issues>`__.
+Should work with Python 3. If you experience problems, please file an
+`issue <https://github.com/arose/nglview/issues>`__.
 
 Ask question about usage? Please post
-`here <https://github.com/arose/nglview/issues/589>`__
+`here <https://github.com/arose/nglview/issues/785>`__
 
 .. figure:: https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true
    :alt: membrane
@@ -49,6 +52,7 @@ Table of contents
 -  `FAQ <#faq>`__
 -  `Website <#website>`__
 -  `Acknowledgment <#acknowledgment>`__
+-  `Cite <#cite>`__
 -  `License <#license>`__
 
 Installation
@@ -57,11 +61,11 @@ Installation
 Released version
 ----------------
 
--  Available on ``bioconda`` channel
+-  Available on ``conda-forge`` channel
 
    .. code:: bash
 
-       conda install nglview -c bioconda
+       conda install nglview -c conda-forge
        # might need: jupyter-nbextension enable nglview --py --sys-prefix
 
        # if you already installed nglview, you can `upgrade`
@@ -72,19 +76,19 @@ Released version
 
 .. code:: bash
 
-       pip install nglview==1.0.b2
+       pip install nglview
        jupyter-nbextension enable nglview --py --sys-prefix
 
 Version Compatibility
 ---------------------
 
-+-----------+--------------+
-| nglview   | ipywidgets   |
-+===========+==============+
-| < 1.0     | 5.2.2        |
-+-----------+--------------+
-| 1.0       | 7.0          |
-+-----------+--------------+
++-----------+--------------+-------------+
+| nglview   | ipywidgets   | ipykernel   |
++===========+==============+=============+
+| < 1.0     | 5.2.2        | N/A         |
++-----------+--------------+-------------+
+| 1.0       | 7.0.0        | 4.6         |
++-----------+--------------+-------------+
 
 Notes
 -----
@@ -100,7 +104,7 @@ system) <https://github.com/arose/nglview/issues/633>`__
 Development version
 -------------------
 
-Requirement: ``ipywidgets >= 7.0.0``, ``notebook >= 4.2``
+Requirement: ``ipywidgets >= 7.0``, ``notebook >= 4.2``
 
 The development version can be installed directly from github:
 
@@ -127,12 +131,7 @@ notebook user
 jupyterlab user
 ~~~~~~~~~~~~~~~
 
-HIGHLY EXPERIMENTAL. Things might not work as you are expecting.
-
-::
-
-    # Please read its content before running
-    source devtools/nglview-jupyterlab.sh
+Not supported yet.
 
 Example
 =======
@@ -203,6 +202,8 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 +---------------------------------+------------------------------------------+
 | ``show_asetraj(traj)``          | Shows ``ase`` trajectory ``traj``        |
 +---------------------------------+------------------------------------------+
+| ``show_pymatgen(struct)``       | Shows ``pymatgen`` Structure             |
++---------------------------------+------------------------------------------+
 | ``show_htmd(mol)``              | Shows ``HTMD`` Molecules                 |
 +---------------------------------+------------------------------------------+
 | ``show_biopython(mol)``         | Shows ``Biopython`` structural entities  |
@@ -210,6 +211,16 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 | ``show_iotbx(mol)``             | Shows ``cctbx's iotbx`` structure        |
 +---------------------------------+------------------------------------------+
 | ``show_rosetta(pose)``          | Shows ``pyrosetta's Pose``               |
++---------------------------------+------------------------------------------+
+| ``show_iodata(obj)``            | Shows ``iodata's IOData``                |
++---------------------------------+------------------------------------------+
+| ``show_psi4(obj)``              | Shows ``psi4's Molecule``                |
++---------------------------------+------------------------------------------+
+| ``show_qcelementary``           | Shows ``QCelementary's Molecule``        |
++---------------------------------+------------------------------------------+
+| ``show_openbabel``              | Shows ``openbabel's OMol``               |
++---------------------------------+------------------------------------------+
+| ``show_prody``                  | Shows ``prody's Ensemble or AtomGroup``  |
 +---------------------------------+------------------------------------------+
 
 API
@@ -324,8 +335,8 @@ Trajectory
     # `parmed.Structure`, `htmd.Molecule` or derived class of `nglview.Trajectory`
 
     # change representation
-    view.trajectory_0.add_cartoon(...) # equal to view.add_cartoon(component=0)
-    view.trajectory_1.add_licorice(...) # equal to view.add_licorice(component=1)
+    view[0].add_cartoon(...) # equal to view.add_cartoon(component=0)
+    view[1].add_licorice(...) # equal to view.add_licorice(component=1)
 
 Add extra component
 -------------------
@@ -367,15 +378,6 @@ Display more than two widgets
     # 2nd cell
     view1.sync_view()
     view2.sync_view()
-
-Show GUI
---------
-
-Notes: Unstable feature. `See
-also <https://github.com/arose/nglview/blob/master/examples/README.md#unstable-features>`__
-
-.. figure:: https://github.com/arose/nglview/blob/master/examples/images/nglview_gui.png?raw=true
-   :alt: 
 
 Movie making
 ------------
@@ -449,7 +451,7 @@ Command line
 FAQ
 ===
 
-`Q&A <https://github.com/arose/nglview/wiki/Q&A>`__
+`Q&A <docs/FAQ.md>`__
 
 Website
 =======
@@ -467,8 +469,8 @@ Contributing
 
 `Join us here <./contributing.html>`__
 
-Projects using NGLView
-======================
+Projects integrating NGLView
+============================
 
 (Feel free to make a PR to add/remove your project here)
 
@@ -498,6 +500,13 @@ Projects using NGLView
 -  `MobleyLab/drug-computing <https://github.com/MobleyLab/drug-computing>`__
    Educational materials for, and related to, UC Irvine's Drug Discovery
    Computing Techniques course.
+-  `pyiron <https://pyiron.github.io/>`__: an integrated development
+   environment for implementing, testing, and running simulations in
+   computational materials science.
+-  `BioSimSpace <https://biosimspace.org/>`__: An interoperable
+   framework for biomolecular simulation
+-  `pyrod <https://github.com/schallerdavid/pyrod>`__: PyRod - Tracing
+   water molecules in molecular dynamics simulations
 
 Acknowledgment
 ==============
@@ -511,18 +520,25 @@ Acknowledgment
 -  `base64-arraybuffer <https://github.com/niklasvh/base64-arraybuffer>`__
 -  `ipywidgets <https://github.com/jupyter-widgets/ipywidgets>`__
 
+Cite
+====
+
+If you would like to acknowledge our work, feel free to cite:
+
+Hai Nguyen, David A Case, Alexander S Rose; NGLview - Interactive
+molecular graphics for Jupyter notebooks, Bioinformatics, , btx789,
+https://doi.org/10.1093/bioinformatics/btx789
+
 License
 =======
 
 Generally MIT, see the LICENSE file for details.
 
-.. |Binder| image:: http://mybinder.org/assets/images/logo.svg
-   :target: http://mybinder.org/repo/hainm/nglview-notebooks
 .. |DOI| image:: https://zenodo.org/badge/11846/arose/nglview.svg
    :target: https://zenodo.org/badge/latestdoi/11846/arose/nglview
 .. |Build Status| image:: https://travis-ci.org/arose/nglview.svg?branch=master
    :target: https://travis-ci.org/arose/nglview
-.. |bioconda-badge| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square
-   :target: http://bioconda.github.io
 .. |Coverage Status| image:: https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master
    :target: https://coveralls.io/github/arose/nglview
+.. |Binder| image:: https://mybinder.org/badge_logo.svg
+   :target: https://mybinder.org/v2/gh/arose/nglview/master?urlpath=lab

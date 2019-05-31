@@ -4,30 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>nglview.widget &#8212; NGLView 1.0 documentation</title>
+    <title>nglview.widget &#8212; NGLView 2.1.0+10.g91d1b0e documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.10.0/dist/embed.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.14.0/dist/embed.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -37,7 +28,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 2.1.0+10.g91d1b0e documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -48,20 +39,25 @@
           <div class="body" role="main">
             
   <h1>Source code for nglview.widget</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">absolute_import</span>
-<span class="kn">import</span> <span class="nn">threading</span>
+<span></span><span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span>
-<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">Box</span><span class="p">,</span> <span class="n">DOMWidget</span><span class="p">,</span> <span class="n">widget_image</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">Box</span><span class="p">,</span> <span class="n">DOMWidget</span><span class="p">,</span> <span class="n">Output</span><span class="p">,</span> <span class="n">Widget</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># ipywidgets &gt;= 7.4</span>
+    <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">Image</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ipywidgets.widget_image</span> <span class="k">import</span> <span class="n">Image</span>
+
 <span class="kn">import</span> <span class="nn">ipywidgets.embed</span>
 <span class="kn">from</span> <span class="nn">traitlets</span> <span class="k">import</span> <span class="p">(</span><span class="n">Unicode</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">observe</span><span class="p">,</span>
                        <span class="n">CaselessStrEnum</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">py_utils</span><span class="p">,</span> <span class="n">js_utils</span><span class="p">,</span> <span class="n">widget_utils</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">py_utils</span><span class="p">,</span> <span class="n">widget_utils</span>
 <span class="kn">from</span> <span class="nn">.utils.py_utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">seq_to_string</span><span class="p">,</span> <span class="n">_camelize_dict</span><span class="p">,</span> <span class="n">FileManager</span><span class="p">,</span>
                              <span class="n">get_repr_names_from_dict</span><span class="p">,</span> <span class="n">encode_base64</span><span class="p">,</span>
                              <span class="n">_update_url</span><span class="p">)</span>
@@ -70,6 +66,7 @@
 <span class="kn">from</span> <span class="nn">.stage</span> <span class="k">import</span> <span class="n">Stage</span>
 <span class="kn">from</span> <span class="nn">.component</span> <span class="k">import</span> <span class="n">ComponentViewer</span>
 <span class="kn">from</span> <span class="nn">.shape</span> <span class="k">import</span> <span class="n">Shape</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">color</span>
 <span class="kn">from</span> <span class="nn">.viewer_control</span> <span class="k">import</span> <span class="n">ViewerControl</span>
 <span class="kn">from</span> <span class="nn">.representation</span> <span class="k">import</span> <span class="n">RepresentationControl</span>
 
@@ -78,7 +75,7 @@
 <span class="kn">from</span> <span class="nn">.remote_thread</span> <span class="k">import</span> <span class="n">RemoteCallThread</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NGLWidget&#39;</span><span class="p">,</span> <span class="s1">&#39;ComponentViewer&#39;</span><span class="p">]</span>
-<span class="n">__frontend_version__</span> <span class="o">=</span> <span class="s1">&#39;0.5.4-dev.27&#39;</span> <span class="c1"># must match to js/package.json and js/src/widget_ngl.js</span>
+<span class="n">__frontend_version__</span> <span class="o">=</span> <span class="s1">&#39;2.1.0&#39;</span>  <span class="c1"># must match to js/package.json</span>
 <span class="n">_EXCLUDED_CALLBACK_AFTER_FIRING</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;setUnSyncCamera&#39;</span><span class="p">,</span> <span class="s1">&#39;setSelector&#39;</span><span class="p">,</span> <span class="s1">&#39;setUnSyncFrame&#39;</span><span class="p">,</span> <span class="s1">&#39;setDelay&#39;</span><span class="p">,</span>
         <span class="s1">&#39;autoView&#39;</span><span class="p">,</span>
@@ -154,7 +151,7 @@
     <span class="n">_ngl_version</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># _model_name = Unicode(&quot;NGLView&quot;).tag(sync=True)</span>
     <span class="c1"># _model_module = Unicode(&quot;nglview-js-widgets&quot;).tag(sync=True)</span>
-    <span class="n">_image_data</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">_image_data</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># use Integer here, because mdtraj uses a long datatype here on Python-2.7</span>
     <span class="n">frame</span> <span class="o">=</span> <span class="n">Integer</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">count</span> <span class="o">=</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -189,18 +186,19 @@
     <span class="n">_ngl_msg_archive</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_ngl_coordinate_resource</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_representations</span> <span class="o">=</span> <span class="n">List</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_ngl_color_dict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">()</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">structure</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">representations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">NGLWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_gui</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_gui</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;gui&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_theme</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;theme&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_widget_image</span> <span class="o">=</span> <span class="n">widget_image</span><span class="o">.</span><span class="n">Image</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_widget_image</span> <span class="o">=</span> <span class="n">Image</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_widget_image</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mf">900.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># do not use _displayed_callbacks since there is another Widget._display_callbacks</span>
@@ -217,33 +215,42 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call_thread</span> <span class="o">=</span> <span class="n">RemoteCallThread</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">registered_funcs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;loadFile&#39;</span><span class="p">,</span> <span class="s1">&#39;replaceStructure&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">registered_funcs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;loadFile&#39;</span><span class="p">,</span> <span class="s1">&#39;replaceStructure&#39;</span><span class="p">,</span> <span class="s1">&#39;_exportImage&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">representations</span><span class="p">:</span>
+            <span class="c1"># Must be set here before calling</span>
+            <span class="c1"># add_trajectory or add_struture</span>
+            <span class="c1"># After finish adding new Structure/Trajectory,</span>
+            <span class="c1"># initial representations will be set.</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;default_representation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">autoview</span> <span class="o">=</span> <span class="s1">&#39;center&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="p">(</span><span class="s1">&#39;center&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;center&#39;</span><span class="p">))</span>
+        <span class="c1"># NOTE: Using `pop` to avoid passing `center` to NGL.</span>
+
         <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">Trajectory</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">py_utils</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="n">trajectories</span> <span class="o">=</span> <span class="n">structure</span>
             <span class="k">for</span> <span class="n">trajectory</span> <span class="ow">in</span> <span class="n">trajectories</span><span class="p">:</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="n">py_utils</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">structure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">representations</span><span class="p">:</span>
+            <span class="c1"># If initial representations are provided,</span>
+            <span class="c1"># we need to set defaultRepresentation to False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="n">representations</span>
+            <span class="k">if</span> <span class="n">autoview</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_unsync_camera</span><span class="p">()</span>
-        <span class="n">selector</span> <span class="o">=</span> <span class="s1">&#39;nglviewHolder&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span>
-            <span class="s1">&#39;setSelector&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">selector</span><span class="p">,</span>
-            <span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="n">TrajectoryPlayer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_already_constructed</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -266,6 +273,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_coordinate_resource</span> <span class="o">=</span> <span class="n">resource</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_full_stage_parameters_embed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_full_stage_parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_color_dict</span> <span class="o">=</span> <span class="n">color</span><span class="o">.</span><span class="n">_USER_COLOR_DICT</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_unset_serialization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_serialize</span> <span class="o">=</span> <span class="kc">False</span>
@@ -502,7 +510,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_fire_callbacks</span><span class="p">(</span><span class="n">new_callbacks</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_ipython_display_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">NGLWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_ipython_display_</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_ipython_display_</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first_time_loaded</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_first_time_loaded</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
@@ -766,9 +774,9 @@
             <span class="c1"># DEPRECATED: This is not efficient, cause lots of lagging.</span>
             <span class="c1"># should send binary</span>
             <span class="c1"># send base64</span>
-            <span class="n">encoded_coordinates_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">encode_base64</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
-                <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates_dict</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="n">encoded_coordinates_dict</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">k</span><span class="p">:</span> <span class="n">encode_base64</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
             <span class="n">mytime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span>
                 <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;base64_single&#39;</span><span class="p">,</span>
@@ -983,7 +991,11 @@
             <span class="n">antialias</span><span class="o">=</span><span class="n">antialias</span><span class="p">,</span>
             <span class="n">trim</span><span class="o">=</span><span class="n">trim</span><span class="p">,</span>
             <span class="n">transparent</span><span class="o">=</span><span class="n">transparent</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;_exportImage&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
+        <span class="n">iw</span> <span class="o">=</span> <span class="n">Image</span><span class="p">()</span>
+        <span class="n">iw</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="s1">&#39;99%&#39;</span> <span class="c1"># avoid ugly scroll bar on notebook.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;_exportImage&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">iw</span><span class="o">.</span><span class="n">model_id</span><span class="p">],</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="c1"># iw.value will be updated later after frontend send the image_data back.</span>
+        <span class="k">return</span> <span class="n">iw</span></div>
 
 <div class="viewcode-block" id="NGLWidget.download_image"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.download_image">[docs]</a>    <span class="k">def</span> <span class="nf">download_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                        <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;screenshot.png&#39;</span><span class="p">,</span>
@@ -991,7 +1003,7 @@
                        <span class="n">antialias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                        <span class="n">trim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                        <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;render and download scence at current frame</span>
+        <span class="sd">&quot;&quot;&quot;render and download scene at current frame</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1086,6 +1098,9 @@
         <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;async_message&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;ok&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;image_data&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+            <span class="n">Widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ID&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_request_repr_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">repr_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span>
@@ -1113,7 +1128,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not an instance of Structure&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">structure</span><span class="p">))</span>
+                <span class="n">f</span><span class="s1">&#39;</span><span class="si">{structure}</span><span class="s1"> is not an instance of Structure&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -1172,7 +1187,7 @@
 <span class="sd">        &gt;&gt;&gt; # which is equal to </span>
 <span class="sd">        &gt;&gt;&gt; # view.add_component(&#39;rcsb://1tsu.pdb&#39;)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="s1">&#39;rcsb://</span><span class="si">{}</span><span class="s1">.pdb&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pdbid</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;rcsb://</span><span class="si">{pdbid}</span><span class="s1">.pdb&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NGLWidget.add_component"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.add_component">[docs]</a>    <span class="k">def</span> <span class="nf">add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;add component from file/trajectory/struture</span>
@@ -1327,6 +1342,7 @@
 <span class="sd">                          args=[&#39;*&#39;, 200],</span>
 <span class="sd">                          kwargs={&#39;component_index&#39;: 1})</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># NOTE: _camelize_dict here?</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">args</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">kwargs</span>
 
@@ -1337,9 +1353,22 @@
         <span class="k">if</span> <span class="s1">&#39;repr_index&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;repr_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;repr_index&#39;</span><span class="p">)</span>
 
+        <span class="c1"># Color handling</span>
+        <span class="n">reconstruc_color_scheme</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s1">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">.</span><span class="n">_ColorScheme</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;color_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+            <span class="c1"># overite `color`</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+            <span class="n">reconstruc_color_scheme</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;colorScheme&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;volume&#39;</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;colorVolume&#39;</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;colorVolume&#39;</span><span class="p">],</span> <span class="n">ComponentViewer</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;colorVolume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;colorVolume&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">_index</span>
+
+
         <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span>
         <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;call_method&#39;</span>
         <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;methodName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">method_name</span>
+        <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;reconstruc_color_scheme&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reconstruc_color_scheme</span>
         <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
         <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;kwargs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span>
 
@@ -1370,7 +1399,7 @@
 <div class="viewcode-block" id="NGLWidget.hide"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;set invisibility for given component/struture/trajectory (by their indices)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">traj_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">)</span>
+        <span class="n">traj_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">}</span>
 
         <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
             <span class="n">comp_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
@@ -1397,7 +1426,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        indices : {&#39;all&#39;, array-like}, component index, default &#39;all&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">traj_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">)</span>
+        <span class="n">traj_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">}</span>
 
         <span class="k">if</span> <span class="n">indices</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
             <span class="n">indices_</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">))</span>
@@ -1438,12 +1467,16 @@
         <span class="sd">&#39;&#39;&#39;for testing</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="kn">from</span> <span class="nn">IPython</span> <span class="k">import</span> <span class="n">display</span>
-        <span class="k">return</span> <span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span><span class="p">)</span>
+        <span class="n">im_bytes</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">im_bytes</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_clear_component_auto_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;component_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
             <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_execute_js_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;execute_code&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">code</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">_update_component_auto_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">trajids</span> <span class="o">=</span> <span class="p">[</span><span class="n">traj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajlist</span><span class="p">]</span>
@@ -1468,25 +1501,7 @@
         <span class="sd">&quot;&quot;&quot;return ComponentViewer</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngl_component_ids</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-
-<div class="viewcode-block" id="NGLWidget.detach"><a class="viewcode-back" href="../../api.html#nglview.widget.NGLWidget.detach">[docs]</a>    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;detach player from its original container.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        split : bool, default False</span>
-<span class="sd">            if True, resize notebook then move it to the right of its container</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;must display view first&quot;</span><span class="p">)</span>
-
-        <span class="c1"># resize notebook first</span>
-        <span class="c1"># width of the dialog will be calculated based on notebook container offset</span>
-        <span class="k">if</span> <span class="n">split</span><span class="p">:</span>
-            <span class="c1"># rename</span>
-            <span class="n">js_utils</span><span class="o">.</span><span class="n">_move_notebook_to_the_right</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remote_call</span><span class="p">(</span><span class="s1">&#39;setDialog&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;Widget&#39;</span><span class="p">)</span></div></div>
+            <span class="k">yield</span> <span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
 </pre></div>
 
           </div>
@@ -1496,12 +1511,14 @@
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -1517,14 +1534,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 2.1.0+10.g91d1b0e documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Oct 31, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Last updated on May 31, 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
     </div>
   </body>
 </html>

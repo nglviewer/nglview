@@ -4,30 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>General &#8212; NGLView 1.0 documentation</title>
+    <title>General &#8212; NGLView 2.1.0+10.g91d1b0e documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.10.0/dist/embed.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.14.0/dist/embed.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -37,7 +28,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 2.1.0+10.g91d1b0e documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -55,7 +46,7 @@ format Python code.</li>
 </div>
 <div class="section" id="install-all-required-packages-for-testing">
 <h1>Install all required packages for testing<a class="headerlink" href="#install-all-required-packages-for-testing" title="Permalink to this headline">¶</a></h1>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">pip</span><span class="o">-</span><span class="n">requirements</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">txt</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">pip</span><span class="o">-</span><span class="n">requirements</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">txt</span>
 <span class="n">sh</span> <span class="n">conda</span><span class="o">-</span><span class="n">requirements</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
 </div>
@@ -68,7 +59,7 @@ development). This means for a release a new git tag should be created.
 The tag should be of the form vX.Y or vX.Y.Z and generally follow
 <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/">pep440</a> with a prefixed
 “v”.</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">tag</span>  <span class="o">-</span><span class="n">a</span> <span class="n">vX</span><span class="o">.</span><span class="n">Y</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;version X.Y&quot;</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">tag</span>  <span class="o">-</span><span class="n">a</span> <span class="n">vX</span><span class="o">.</span><span class="n">Y</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;version X.Y&quot;</span>
 <span class="n">git</span> <span class="n">push</span>
 <span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="o">--</span><span class="n">tags</span>
 
@@ -82,13 +73,13 @@ The tag should be of the form vX.Y or vX.Y.Z and generally follow
 <h1>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h1>
 <p>Install developer mode so you don’t need to re-install after chaning
 your code.</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="test">
 <h1>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h1>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="o">-</span><span class="n">vs</span> <span class="n">nglview</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="o">-</span><span class="n">vs</span> <span class="n">nglview</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span>
 </pre></div>
 </div>
 </div>
@@ -96,7 +87,7 @@ your code.</p>
 <h1>Sync versions<a class="headerlink" href="#sync-versions" title="Permalink to this headline">¶</a></h1>
 <p>There is not yet an elegant way to sync version in nglview/widget.py;
 js/package.json and jslab/package.json So make sure to update those</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">nglview</span><span class="o">/</span><span class="n">wiget</span><span class="o">.</span><span class="n">py</span><span class="p">:</span> <span class="n">__frontend_version__</span> <span class="o">=</span> <span class="s1">&#39;0.5.4-dev.13&#39;</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nglview</span><span class="o">/</span><span class="n">wiget</span><span class="o">.</span><span class="n">py</span><span class="p">:</span> <span class="n">__frontend_version__</span> <span class="o">=</span> <span class="s1">&#39;0.5.4-dev.13&#39;</span>
 <span class="n">js</span><span class="o">/</span><span class="n">package</span><span class="o">.</span><span class="n">json</span><span class="p">:</span>              <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.5.4-dev.13&quot;</span><span class="p">,</span>
 <span class="n">jslab</span><span class="o">/</span><span class="n">package</span><span class="o">.</span><span class="n">json</span><span class="p">:</span> <span class="s2">&quot;@jupyter-widgets/jupyterlab-manager&quot;</span><span class="p">:</span> <span class="s2">&quot;^0.25.11&quot;</span><span class="p">,</span> <span class="c1"># make sure this compat with ipywidgets</span>
 <span class="n">jslab</span><span class="o">/</span><span class="n">package</span><span class="o">.</span><span class="n">json</span><span class="p">:</span> <span class="s2">&quot;nglview-js-widgets&quot;</span><span class="p">:</span> <span class="s2">&quot;0.5.4-dev.13&quot;</span>
@@ -105,7 +96,7 @@ js/package.json and jslab/package.json So make sure to update those</p>
 </div>
 <div class="section" id="update-javascript-build">
 <h1>Update Javascript build<a class="headerlink" href="#update-javascript-build" title="Permalink to this headline">¶</a></h1>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># install nodejs</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># install nodejs</span>
 <span class="c1"># conda install -c javascript nodejs</span>
 
 <span class="n">cd</span> <span class="n">js</span>
@@ -129,7 +120,7 @@ js/package.json and jslab/package.json So make sure to update those</p>
 </div>
 <div class="section" id="my-hai-workflow">
 <h1>My (Hai) workflow<a class="headerlink" href="#my-hai-workflow" title="Permalink to this headline">¶</a></h1>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">nglview</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">folder</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">nglview</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">folder</span>
 
 <span class="c1"># install development version for Python code</span>
 <span class="c1"># so we can update Python source code without reinstall</span>
@@ -158,18 +149,18 @@ js/package.json and jslab/package.json So make sure to update those</p>
 </div>
 </div>
 <div class="section" id="using-ngl-locally">
-<h1>Using <code class="docutils literal"><span class="pre">NGL</span></code> locally<a class="headerlink" href="#using-ngl-locally" title="Permalink to this headline">¶</a></h1>
+<h1>Using <code class="docutils literal notranslate"><span class="pre">NGL</span></code> locally<a class="headerlink" href="#using-ngl-locally" title="Permalink to this headline">¶</a></h1>
 <ol class="arabic">
-<li><p class="first">Change <code class="docutils literal"><span class="pre">var</span> <span class="pre">NGL</span> <span class="pre">=</span> <span class="pre">require('ngl');</span></code> to
-<code class="docutils literal"><span class="pre">var</span> <span class="pre">NGL</span> <span class="pre">=</span> <span class="pre">require('./ngl');</span></code>
+<li><p class="first">Change <code class="docutils literal notranslate"><span class="pre">var</span> <span class="pre">NGL</span> <span class="pre">=</span> <span class="pre">require('ngl');</span></code> to
+<code class="docutils literal notranslate"><span class="pre">var</span> <span class="pre">NGL</span> <span class="pre">=</span> <span class="pre">require('./ngl');</span></code>
 <a class="reference external" href="https://github.com/arose/nglview/blob/master/js/src/widget_ngl.js#L2">https://github.com/arose/nglview/blob/master/js/src/widget_ngl.js#L2</a></p>
 </li>
 <li><p class="first">Then, <a class="reference external" href="https://github.com/arose/ngl/blob/master/DEVELOPMENT.md#building">build
 NGL</a>,
-then copy <code class="docutils literal"><span class="pre">ngl.js</span></code> (or <code class="docutils literal"><span class="pre">ngl.dev.js</span></code>) to <code class="docutils literal"><span class="pre">nglview/js/src/</span></code></p>
+then copy <code class="docutils literal notranslate"><span class="pre">ngl.js</span></code> (or <code class="docutils literal notranslate"><span class="pre">ngl.dev.js</span></code>) to <code class="docutils literal notranslate"><span class="pre">nglview/js/src/</span></code></p>
 </li>
 <li><p class="first">Rebuild js code</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">js</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">js</span>
 <span class="n">npm</span> <span class="n">install</span>
 <span class="n">nglview</span> <span class="n">install</span> <span class="c1"># install updated js code</span>
 <span class="n">nglview</span> <span class="n">enable</span> <span class="c1"># enable again, (not sure if needed)</span>
@@ -177,14 +168,14 @@ then copy <code class="docutils literal"><span class="pre">ngl.js</span></code> 
 </div>
 </li>
 </ol>
-<p>You need to install <code class="docutils literal"><span class="pre">nodejs</span></code> (which includes <code class="docutils literal"><span class="pre">npm</span></code>). Tips:
-<code class="docutils literal"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">nodejs</span> <span class="pre">-c</span> <span class="pre">conda-forge</span></code> (and so on)</p>
+<p>You need to install <code class="docutils literal notranslate"><span class="pre">nodejs</span></code> (which includes <code class="docutils literal notranslate"><span class="pre">npm</span></code>). Tips:
+<code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">nodejs</span> <span class="pre">-c</span> <span class="pre">conda-forge</span></code> (and so on)</p>
 </div>
 <div class="section" id="test-notebook">
 <h1>Test notebook<a class="headerlink" href="#test-notebook" title="Permalink to this headline">¶</a></h1>
 <ul>
 <li><p class="first">[edit to add more notebooks] and update notebook files</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">./</span><span class="n">devtools</span><span class="o">/</span><span class="n">make_test_js</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">api</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">./</span><span class="n">devtools</span><span class="o">/</span><span class="n">make_test_js</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">api</span>
 </pre></div>
 </div>
 </li>
@@ -196,36 +187,36 @@ in your PATH (tested on MacOS 10.12.5)</p>
 <li><p class="first">install nightwatch</p>
 </li>
 </ul>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">npm</span> <span class="n">install</span> <span class="o">-</span><span class="n">g</span> <span class="n">nightwatch</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">npm</span> <span class="n">install</span> <span class="o">-</span><span class="n">g</span> <span class="n">nightwatch</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li>install notebook runner</li>
 </ul>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">devtools</span><span class="o">/</span><span class="n">travis</span><span class="o">-</span><span class="n">ci</span><span class="o">/</span><span class="n">clone_nbtest</span><span class="o">.</span><span class="n">sh</span> <span class="c1"># only once</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">devtools</span><span class="o">/</span><span class="n">travis</span><span class="o">-</span><span class="n">ci</span><span class="o">/</span><span class="n">clone_nbtest</span><span class="o">.</span><span class="n">sh</span> <span class="c1"># only once</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li>(may be):</li>
 </ul>
 <p>To avoid entering notebook token or password, you might want to update</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>c.NotebookApp.token = &#39;&#39; in $HOME/.jupyter/jupyter_notebook_config.py
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>c.NotebookApp.token = &#39;&#39; in $HOME/.jupyter/jupyter_notebook_config.py
 </pre></div>
 </div>
 <ul class="simple">
 <li>Run notebook server</li>
 </ul>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">jupyter</span> <span class="n">notebook</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">8889</span> <span class="o">&amp;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jupyter</span> <span class="n">notebook</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">8889</span> <span class="o">&amp;</span>
 </pre></div>
 </div>
 <ul>
 <li><p class="first">Run all tests</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">nightwatch</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nightwatch</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Run a single test</p>
-<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># nightwatch /path/to/your/file.js</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># nightwatch /path/to/your/file.js</span>
 <span class="n">nightwatch</span> <span class="n">nglview</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">js</span><span class="o">/</span><span class="n">render_image</span><span class="o">.</span><span class="n">js</span>
 </pre></div>
 </div>
@@ -243,7 +234,7 @@ in your PATH (tested on MacOS 10.12.5)</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">General</a></li>
 <li><a class="reference internal" href="#install-all-required-packages-for-testing">Install all required packages for testing</a></li>
@@ -253,7 +244,7 @@ in your PATH (tested on MacOS 10.12.5)</p>
 <li><a class="reference internal" href="#sync-versions">Sync versions</a></li>
 <li><a class="reference internal" href="#update-javascript-build">Update Javascript build</a></li>
 <li><a class="reference internal" href="#my-hai-workflow">My (Hai) workflow</a></li>
-<li><a class="reference internal" href="#using-ngl-locally">Using <code class="docutils literal"><span class="pre">NGL</span></code> locally</a></li>
+<li><a class="reference internal" href="#using-ngl-locally">Using <code class="docutils literal notranslate"><span class="pre">NGL</span></code> locally</a></li>
 <li><a class="reference internal" href="#test-notebook">Test notebook</a></li>
 <li><a class="reference internal" href="#more-stuff">More stuff</a></li>
 </ul>
@@ -267,12 +258,14 @@ in your PATH (tested on MacOS 10.12.5)</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -288,13 +281,13 @@ in your PATH (tested on MacOS 10.12.5)</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">NGLView 1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 2.1.0+10.g91d1b0e documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on Oct 31, 2017.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Last updated on May 31, 2019.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
     </div>
   </body>
 </html>
