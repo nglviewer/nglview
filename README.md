@@ -293,19 +293,6 @@ Interaction controls
 - [Mouse](https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#mouse)
 - [Keyboard](https://github.com/arose/ngl/blob/master/docs/usage/interaction-controls.md#keyboard)
 
-Display more than two widgets
------------------------------
-
-```python
-# 1st cell
-import ipywidgets
-vbox = ipywidgets.VBox([view1, view2])
-vbox # display
-
-# 2nd cell
-view1.sync_view()
-view2.sync_view()
-```
 
 Movie making
 ------------
