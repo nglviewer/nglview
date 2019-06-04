@@ -135,6 +135,10 @@ def test_API_promise_to_have():
 
     view = nv.demo()
 
+    # trigger _set_size
+    view.layout.width = '100px'
+    view.layout.height = '500px'
+
     # Structure
     structure = nv.Structure()
     structure.get_structure_string
