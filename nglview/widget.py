@@ -213,6 +213,19 @@ class NGLWidget(DOMWidget):
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
+        # Updating only self.layout.{width, height} don't handle
+        # resizing NGL widget properly.
+        self._sync_with_layout()
+
+    def _sync_with_layout(self):
+        def on_change_layout(change):
+            new = change['new']
+            if change['name'] == 'width':
+                self._set_size(new, '')
+            elif change['name'] == 'height':
+                self._set_size('', new)
+        self.layout.observe(on_change_layout, ['width', 'height']) 
+
     def _set_serialization(self, frame_range=None):
         self._ngl_serialize = True
         self._ngl_msg_archive = [f._ngl_msg
