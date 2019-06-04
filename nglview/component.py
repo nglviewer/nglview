@@ -67,6 +67,30 @@ class ComponentViewer:
         if traj is not None:
             traj.shown = True
 
+    def set_position(self, pos):
+        """
+        Parameters
+        ----------
+        pos: List-like of float, length = 3
+        """
+        self._call('setPosition', pos)
+
+    def set_rotation(self, rot):
+        """
+        Parameters
+        ----------
+        rot: List-like of float, length = 3
+        """
+        self._call('setPosition', rot)
+
+    def set_scale(self, scale):
+        """
+        Parameters
+        ----------
+        scale: float
+        """
+        self._call('setScale', scale)
+
     def add_representation(self, repr_type, selection='all', **kwargs):
         kwargs['component'] = self._index
         self._view.add_representation(
