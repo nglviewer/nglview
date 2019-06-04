@@ -219,6 +219,16 @@ def show_structure_file(path, **kwargs):
     return NGLWidget(structure, **kwargs)
 
 
+def _show_schrodinger_file(path, **kwargs):
+    from schrodinger.structure import StructureReader
+
+    view = NGLWidget()
+    cts = list(StructureReader(path))
+    for ct in cts:
+        view.add_component(SchrodingerStructure(ct), **kwargs)
+    return view
+
+
 def show_file(path, **kwargs):
     '''Show any supported file format (e.g: .gro, .dx, ...)
 
@@ -228,8 +238,14 @@ def show_file(path, **kwargs):
     ... w = nv.show_file('my.dx')
     ... w # doctest: +SKIP
     '''
-    view = NGLWidget()
-    view.add_component(path, **kwargs)
+    if isinstance(path, str) and (path.endswith(
+            ('.mae', '.mae.gz', '.meagz',
+            '.cms', '.cms.gz', '.cms.gz')) or
+            (kwargs.get('format', None) == 'maestro')):
+        view = _show_schrodinger_file(path, **kwargs)
+    else:
+        view = NGLWidget()
+        view.add_component(path, **kwargs)
     return view
 
 
