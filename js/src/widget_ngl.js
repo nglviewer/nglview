@@ -103,7 +103,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
         // init toggle fullscreen
         $(this.stage.viewer.container).dblclick(function(e) {
-            if (!e.altKey || !e.ctrlKey){
+            if (!e.ctrlKey){
                 this.stage.toggleFullscreen();
             }
         }.bind(this));
