@@ -191,6 +191,10 @@ class NGLWidget(DOMWidget):
             # After finish adding new Structure/Trajectory,
             # initial representations will be set.
             kwargs['default_representation'] = False
+        else:
+            if 'default' in kwargs:
+                kwargs['default_representation'] = kwargs['default']
+
         autoview = 'center' not in kwargs or ('center' in kwargs
                                               and kwargs.pop('center'))
         # NOTE: Using `pop` to avoid passing `center` to NGL.
