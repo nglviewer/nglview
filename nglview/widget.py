@@ -1059,11 +1059,12 @@ class NGLWidget(DOMWidget):
 
         msg_type = self._ngl_msg.get('type')
         if msg_type == 'request_frame':
-            self.frame += self.player.step
-            if self.frame >= self.count:
-                self.frame = 0
-            elif self.frame < 0:
-                self.frame = self.count - 1
+            frame = self.frame + self.player.step
+            if frame >= self.count:
+                frame = 0
+            elif frame < 0:
+                frame = self.count - 1
+            self.frame = frame
         elif msg_type == 'repr_parameters':
             data_dict = self._ngl_msg.get('data')
             name = data_dict.pop('name') + '\n'
