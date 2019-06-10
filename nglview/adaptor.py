@@ -22,6 +22,7 @@ __all__ = [
     'ProdyTrajectory',
     'MDTrajTrajectory', 'PyTrajTrajectory', 'ParmEdTrajectory',
     'MDAnalysisTrajectory', 'HTMDTrajectory', 'ASETrajectory',
+    'SchrodingerStructure', 'SchrodingerTrajectory',
     'register_backend',
 ]
 
@@ -540,3 +541,10 @@ class SchrodingerTrajectory(SchrodingerStructure, Trajectory):
             s.add_atom(parm_atom, atom.pdbres.strip(), atom.resnum, chain=atom.chain)
         s.coordinates = fsys.getXYZ()
         return ParmEdStructure(s).get_structure_string()
+
+    @classmethod
+    def from_files(cls, cms_fname, traj_fname):
+        from schrodinger.application.desmond.packages import topo, traj
+        _, model = topo.read_cms(cms_fname)
+        traj = traj.read_traj(traj_fname)
+        return cls(model, traj)

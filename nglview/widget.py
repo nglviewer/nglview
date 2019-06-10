@@ -413,7 +413,8 @@ class NGLWidget(DOMWidget):
 
     @observe('count')
     def _count_changed(self, change):
-        if self.player._iplayer:
+        # NOTE: `player` attribute might not be created yet.
+        if hasattr(self, 'player') and self.player._iplayer:
             self.player._iplayer.max = change['new'] - 1
             self.player._islider.max = change['new'] - 1
             # If using ipywidgets's player, always hide the jquerry player
