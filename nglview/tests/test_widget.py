@@ -844,6 +844,7 @@ def test_player_simple():
     player.parameters = dict(step=2)
     player._display()
     player._make_button_center()
+    player._make_widget_player()
     w = player._make_widget_preference()
     w.children[0].value = 1.
     player.widget_preference = None

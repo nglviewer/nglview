@@ -2,8 +2,9 @@
 # simplify code
 import time
 import json
+import uuid
 from IPython.display import display, Javascript
-from ipywidgets import (Box, HBox, VBox, Checkbox, ColorPicker,
+from ipywidgets import (jslink, Play, Box, HBox, VBox, Checkbox, ColorPicker,
                         IntSlider, FloatSlider, Dropdown, Button, ToggleButton,
                         Text, Textarea, IntText, FloatText, Label, interactive,
                         Layout, Tab)
@@ -59,6 +60,7 @@ class TrajectoryPlayer(HasTraits):
     widget_repr_parameters_dialog = Any(None)
     widget_repr_name = Any(None)
     widget_component_dropdown = Any(None)
+    widget_player = Any(None)
 
     def __init__(self, view, step=1, delay=100, sync_frame=False,
                  min_delay=40):
@@ -824,3 +826,34 @@ class TrajectoryPlayer(HasTraits):
                 widget.layout.display = 'none'
         self.widget_repr_choices.layout.display = 'flex'
         self.widget_accordion_repr_parameters.selected_index = 0
+
+    def _make_widget_player(self):
+        if self.widget_player:
+            return self.widget_player
+        view = self._view
+        self._iplayer = player = Play(max=view.count-1, interval=100)
+        slider = IntSlider(max=view.count-1)
+        jslink((player, 'value'), (slider, 'value'))
+        jslink((player, 'value'), (view, 'frame'))
+        box = HBox([player, slider])
+        class_id = f'ngl-player-{uuid.uuid4()}'
+        box.add_class(class_id)
+
+        def on_display(w):
+            c = f"""
+            var pe = document.getElementsByClassName('{class_id}')[0]
+
+            pe.style.position = 'absolute'
+            pe.style.zIndex = 100
+            pe.style.bottom = '5%'
+            pe.style.left = '10%'
+            pe.style.opacity = '0.7'
+
+            this.$iplayer = $(pe)
+            this.$container.append(this.$iplayer);
+            this.$player.hide();
+            """
+            view._execute_js_code(c)
+        box.on_displayed(on_display)
+        self.widget_player = box
+        return self.widget_player
