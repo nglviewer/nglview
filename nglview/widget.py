@@ -411,6 +411,16 @@ class NGLWidget(DOMWidget):
             int(traj.n_frames) for traj in self._trajlist
             if hasattr(traj, 'n_frames'))
 
+    @observe('count')
+    def _count_changed(self, change):
+        if self.player._iplayer:
+            self.player._iplayer.max = change['new'] - 1
+            self.player._islider.max = change['new'] - 1
+            # If using ipywidgets's player, always hide the jquerry player
+            self._execute_js_code("""
+            this.$player.hide()
+            """)
+
     def _wait_until_finished(self, timeout=0.0001):
         # NGL need to send 'finished' signal to
         # backend

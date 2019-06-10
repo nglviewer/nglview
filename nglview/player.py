@@ -69,6 +69,7 @@ class TrajectoryPlayer(HasTraits):
         self.sync_frame = sync_frame
         self.delay = delay
         self.min_delay = min_delay
+        self._iplayer = None
         self._interpolation_t = 0.5
         self._iterpolation_type = 'linear'
         self.iparams = dict(
@@ -832,7 +833,7 @@ class TrajectoryPlayer(HasTraits):
             return self.widget_player
         view = self._view
         self._iplayer = player = Play(max=view.count-1, interval=100)
-        slider = IntSlider(max=view.count-1)
+        self._islider = slider = IntSlider(max=view.count-1)
         jslink((player, 'value'), (slider, 'value'))
         jslink((player, 'value'), (view, 'frame'))
         box = HBox([player, slider])
