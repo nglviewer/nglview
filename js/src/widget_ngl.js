@@ -199,6 +199,16 @@ var NGLView = widgets.DOMWidgetView.extend({
             that.touch();
         }, false);
 
+        container.addEventListener('mouseover', function(e) {
+            that.model.set("_ngl_focused", 1)
+            that.touch();
+        }, false);
+
+        container.addEventListener('mouseout', function(e) {
+            that.model.set("_ngl_focused", 0)
+            that.touch();
+        }, false);
+
         that = this;
         this.stage.signals.componentAdded.add(function() {
             var len = this.stage.compList.length;
