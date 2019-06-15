@@ -202,11 +202,13 @@ var NGLView = widgets.DOMWidgetView.extend({
         container.addEventListener('mouseover', function(e) {
             that.model.set("_ngl_focused", 1)
             that.touch();
+            e; // linter
         }, false);
 
         container.addEventListener('mouseout', function(e) {
             that.model.set("_ngl_focused", 0)
             that.touch();
+            e; // linter
         }, false);
 
         that = this;
