@@ -1,5 +1,6 @@
 from .utils import js_utils 
 
+
 class DatasourceRegistry:
     sources = {}
 
@@ -16,8 +17,10 @@ class DatasourceRegistry:
         ... v.add_component('data://1CRN.cif') # 1CRN.cif is from above url
         ... v
         """
+        cls.sources[name] = url
+
         js_utils.run(f"""
-        var NGL = require("nglview-js-widgets).NGL;
+        var NGL = require("nglview-js-widgets").NGL;
 
         NGL.DatasourceRegistry.add("{name}",
             new NGL.StaticDatasource("{url}"))
