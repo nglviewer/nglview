@@ -6,6 +6,7 @@ import base64
 from contextlib import contextmanager
 import tempfile
 from shutil import rmtree
+from ..data_source import DatasourceRegistry
 
 __all__ = [
     'encode_base64', 'decode_base64', 'seq_to_string', '_camelize',
@@ -258,5 +259,7 @@ class FileManager:
 
     @property
     def is_url(self):
-        return (isinstance(self.src, str) and (
-            self.src.startswith('http') or self.src.startswith('rcsb://')))
+        url_ext = ['http', 'rcsb://', 'data://'] + \
+                  [f"{k}://" for k in DatasourceRegistry.sources]
+        return (isinstance(self.src, str) and 
+            self.src.startswith(tuple(url_ext)))

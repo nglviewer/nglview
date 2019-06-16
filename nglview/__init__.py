@@ -26,6 +26,7 @@ from .base_adaptor import *
 from .adaptor import *
 from .show import *
 from . import datafiles
+from .data_source import DatasourceRegistry
 
 # utils
 from .utils import widget_utils, js_utils
