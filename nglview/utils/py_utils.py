@@ -258,5 +258,5 @@ class FileManager:
 
     @property
     def is_url(self):
-        return (isinstance(self.src, str) and (
-            self.src.startswith('http') or self.src.startswith('rcsb://')))
+        return (isinstance(self.src, str) and 
+            self.src.startswith(("http", "rcsb://", "data://")))
