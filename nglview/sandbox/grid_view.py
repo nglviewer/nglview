@@ -3,6 +3,43 @@ from ipywidgets import GridBox, Layout # ipywidgets >= 7.3
 from uuid import uuid4
 
 
+_code_fullscreen = """
+var ww = window.outerWidth
+var wh = window.outerHeight
+var vw = ww / %s + 'px'
+var vh = wh / %s + 50 + 'px'
+var pmodel =  this.model.widget_manager.get_model('%s')
+console.log(pmodel);
+
+pmodel.then(function(model){
+    var key = Object.keys(model.views)[0];
+    model.views[key].then(function(v){
+        console.log(v.el.style)
+        console.log(v.el.style)
+        v.children_views.views.forEach(function(pv){
+             pv.then(function(v){
+                 v.setSize(vw, vh);
+             })
+        })
+    })
+})
+
+document.onkeydown = function(event){
+    if (event.keyCode === 27){
+        pmodel.then(function(model){
+            var key = Object.keys(model.views)[0];
+            model.views[key].then(function(v){
+                v.children_views.views.forEach(function(pv){
+                    pv.then(function(pvv){
+                        pvv.setSize('400px', '300px');
+                    })
+                })
+            })
+        })
+    }
+}
+"""
+
 class GridBoxNGL(GridBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -13,11 +50,18 @@ class GridBoxNGL(GridBox):
         self._ngl_class_id = class_id
         return self
 
-    def fullscreen(self):
+    def fullscreen(self, js_code=None):
         code = (f"""
             var ele = document.getElementsByClassName('{self._ngl_class_id}')[0];
             ele.requestFullscreen();
-        """)
+        """           )
+        n_rows = len(self.children) // self._n_columns
+        n_columns = self._n_columns
+        code_fullscreen = _code_fullscreen % (n_columns, n_rows, self.model_id)
+        self.children[0]._execute_js_code(code_fullscreen)
+
+        if js_code is not None:
+            code += js_code
         js_utils.run(code)
 
 
@@ -52,6 +96,7 @@ def grid_view(views, n_columns, fullscreen=False, sync_camera=True):
                 ))
     class_id = f"nglview-grid-{str(uuid4())}"
     box.add_class(class_id)
+    box._n_columns = n_columns
 
     if fullscreen:
         def on_displayed(box):
