@@ -116,19 +116,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.sync_frame = false;
 	        this.sync_camera = false;
 	
-	        // get message from Python
-	        this.model.on("msg:custom", function(msg) {
-                console.log('original');
-                console.log(msg);
-                if ('ngl_view_id' in msg){
-                    console.log(msg);
-                    this.model.views[msg.kwargs.ngl_view_id].then(function(v){
-                        v.on_msg(msg);
-                    })
-                }
-                else{
-	                this.on_msg(msg);}
-	        }, this);
+		    // get message from Python
+		    this.model.on("msg:custom", function(msg) {
+	            if ('ngl_view_id' in msg){
+	                console.log(msg);
+	                this.model.views[msg.kwargs.ngl_view_id].then(function(v){
+	                    v.on_msg(msg);
+	                })
+	            }
+	            else{
+		            this.on_msg(msg);}
+		    }, this);
 	
 	        if (this.model.comm) {
 	            // for embeding in website
@@ -157,8 +155,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        });
 	        this.displayed.then(function() {
 	            this.ngl_view_id = this.get_last_child_id();
-	            this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
-                this.touch();
+	            this.model.set(Object.keys(this.model.views).sort(), "_ngl_view_id");
+	            this.touch();
 	            var that = this;
 	            var width = this.$el.parent().width() + "px";
 	            var height = "300px";

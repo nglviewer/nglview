@@ -84,7 +84,8 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
         this.displayed.then(function() {
             this.ngl_view_id = this.get_last_child_id();
-            this.model.set(Object.keys(this.model.views).sort(), "_ngl_view_id");
+            this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
+            this.touch();
             var that = this;
             var width = this.$el.parent().width() + "px";
             var height = "300px";
