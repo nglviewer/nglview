@@ -103,7 +103,7 @@ def _sync_all(views):
         _sync_camera_pair(v0, v1)
 
 
-def grid_view(views, n_columns, grid_class=GridBoxViewAndPlayer, fullscreen=False, sync_camera=True,
+def grid_view(views, n_columns, grid_class=GridBoxViewAndPlayer, fullscreen=False, sync_camera=False,
         **grid_kwargs):
     if sync_camera:
         _sync_all(views)
