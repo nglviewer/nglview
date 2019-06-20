@@ -48,8 +48,9 @@ var NGLView = widgets.DOMWidgetView.extend({
 	    // get message from Python
 	    this.model.on("msg:custom", function(msg) {
             if ('ngl_view_id' in msg){
-                console.log(msg);
-                this.model.views[msg.kwargs.ngl_view_id].then(function(v){
+                var key = msg.ngl_view_id;
+                console.log(key);
+                this.model.views[key].then(function(v){
                     v.on_msg(msg);
                 })
             }
