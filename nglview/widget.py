@@ -139,6 +139,7 @@ class NGLWidget(DOMWidget):
         ['perspective', 'orthographic'],
         default_value='orthographic').tag(sync=True)
     _camera_orientation = List().tag(sync=True)
+    _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
@@ -935,7 +936,7 @@ class NGLWidget(DOMWidget):
         """
         self.center(*args, **kwargs)
 
-    def center(self, selection='*', duration=0, component=0):
+    def center(self, selection='*', duration=0, component=0, **kwargs):
         """center view for given atom selection
 
         Examples
@@ -948,7 +949,7 @@ class NGLWidget(DOMWidget):
             args=[selection, duration],
             kwargs={
                 'component_index': component
-            })
+            }, **kwargs)
 
     @observe('_image_data')
     def _on_render_image(self, change):
@@ -1325,7 +1326,8 @@ class NGLWidget(DOMWidget):
                      method_name,
                      target='Widget',
                      args=None,
-                     kwargs=None):
+                     kwargs=None,
+                     **other_kwargs):
         """call NGL's methods from Python.
         
         Parameters
@@ -1382,6 +1384,8 @@ class NGLWidget(DOMWidget):
         msg['reconstruc_color_scheme'] = reconstruc_color_scheme
         msg['args'] = args
         msg['kwargs'] = kwargs
+        if other_kwargs:
+            msg.update(other_kwargs)
 
         def callback(widget, msg=msg):
             widget.send(msg)
@@ -1432,7 +1436,7 @@ class NGLWidget(DOMWidget):
         """
         self.show_only(**kwargs)
 
-    def show_only(self, indices='all'):
+    def show_only(self, indices='all', **kwargs):
         """set visibility for given components (by their indices)
 
         Parameters
@@ -1470,7 +1474,8 @@ class NGLWidget(DOMWidget):
                 args=args,
                 kwargs={
                     'component_index': index
-                })
+                },
+                **kwargs)
 
     def _js_console(self):
         self.send(dict(type='get', data='any'))
@@ -1490,8 +1495,8 @@ class NGLWidget(DOMWidget):
             name = 'component_' + str(index)
             delattr(self, name)
 
-    def _execute_js_code(self, code):
-        self._remote_call('execute_code', target='Widget', args=[code])
+    def _execute_js_code(self, code, **kwargs):
+        self._remote_call('execute_code', target='Widget', args=[code], **kwargs)
 
     def _update_component_auto_completion(self):
         trajids = [traj.id for traj in self._trajlist]
