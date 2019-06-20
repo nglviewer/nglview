@@ -30,11 +30,6 @@ class TrajectoryPlayer(HasTraits):
     iparams = Dict()
     _interpolation_t = Float()
     _iterpolation_type = CaselessStrEnum(['linear', 'spline'])
-    spin = Bool(False)
-    _spin_x = Int(1)
-    _spin_y = Int(0)
-    _spin_z = Int(0)
-    _spin_speed = Float(0.005)
     camera = CaselessStrEnum(
         ['perspective', 'orthographic'],
         default_value='perspective')
@@ -144,44 +139,6 @@ class TrajectoryPlayer(HasTraits):
     @observe('_interpolation_t')
     def _interpolation_t_changed(self, change):
         self.iparams['t'] = change['new']
-
-    @observe('spin')
-    def _on_spin_changed(self, change):
-        self.spin = change['new']
-        if self.spin:
-            self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
-                                 self._spin_speed)
-        else:
-            # stop
-            self._view._set_spin(None, None)
-
-    @observe('_spin_x')
-    def _on_spin_x_changed(self, change):
-        self._spin_x = change['new']
-        if self.spin:
-            self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
-                                 self._spin_speed)
-
-    @observe('_spin_y')
-    def _on_spin_y_changed(self, change):
-        self._spin_y = change['new']
-        if self.spin:
-            self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
-                                 self._spin_speed)
-
-    @observe('_spin_z')
-    def _on_spin_z_changed(self, change):
-        self._spin_z = change['new']
-        if self.spin:
-            self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
-                                 self._spin_speed)
-
-    @observe('_spin_speed')
-    def _on_spin_speed_changed(self, change):
-        self._spin_speed = change['new']
-        if self.spin:
-            self._view._set_spin([self._spin_x, self._spin_y, self._spin_z],
-                                 self._spin_speed)
 
     def _display(self):
         if self.widget_tab:
@@ -699,34 +656,6 @@ class TrajectoryPlayer(HasTraits):
         self.widget_repr_choices = repr_choices
         return self.widget_repr_choices
 
-    def _make_spin_box(self):
-        checkbox_spin = Checkbox(self.spin, description='spin')
-        spin_x_slide = IntSlider(
-            self._spin_x, min=-1, max=1, description='spin_x')
-        spin_y_slide = IntSlider(
-            self._spin_y, min=-1, max=1, description='spin_y')
-        spin_z_slide = IntSlider(
-            self._spin_z, min=-1, max=1, description='spin_z')
-        spin_speed_slide = FloatSlider(
-            self._spin_speed,
-            min=0,
-            max=0.2,
-            step=0.001,
-            description='spin speed')
-        # spin
-        link((checkbox_spin, 'value'), (self, 'spin'))
-        link((spin_x_slide, 'value'), (self, '_spin_x'))
-        link((spin_y_slide, 'value'), (self, '_spin_y'))
-        link((spin_z_slide, 'value'), (self, '_spin_z'))
-        link((spin_speed_slide, 'value'), (self, '_spin_speed'))
-
-        spin_box = VBox([
-            checkbox_spin, spin_x_slide, spin_y_slide, spin_z_slide,
-            spin_speed_slide
-        ])
-        spin_box = _relayout_master(spin_box, width='75%')
-        return spin_box
-
     def _make_widget_picked(self):
         self.widget_picked = self._make_text_picked()
         picked_box = HBox([
@@ -742,7 +671,6 @@ class TrajectoryPlayer(HasTraits):
     def _make_extra_box(self):
         if self.widget_extra is None:
             extra_list = [
-                          (self._make_spin_box, 'Spin'),
                           (self._make_widget_picked, 'Picked'),
                           (self._make_repr_playground, 'Quick'),
                           (self._make_export_image_widget, 'Image'),

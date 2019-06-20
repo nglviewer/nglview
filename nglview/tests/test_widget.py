@@ -218,7 +218,6 @@ def test_API_promise_to_have():
     view.display(gui=True, use_box=True)
     view._set_sync_frame()
     view._set_sync_camera()
-    view._set_spin([0, 1, 0], 0.5)
     view._set_selection('.CA')
     view.color_by('atomindex')
     representations = [dict(type='cartoon', params=dict())]
@@ -858,26 +857,10 @@ def test_player_simple():
     player._make_resize_notebook_slider()
     player._make_button_export_image()
     player._make_repr_playground()
-    player._make_spin_box()
     player._make_widget_picked()
     player._make_export_image_widget()
     player._make_general_box()
     player._update_padding()
-    player.spin = True
-    player._on_spin_changed(change=dict(new=True))
-    player._on_spin_x_changed(change=dict(new=1))
-    player._on_spin_y_changed(change=dict(new=1))
-    player._on_spin_z_changed(change=dict(new=1))
-    player._on_spin_speed_changed(change=dict(new=0.5))
-    player._spin_x = 2
-    player._spin_y = 2
-    player._spin_z = 2
-    player.spin = False
-    player._on_spin_changed(change=dict(new=True))
-    player._on_spin_x_changed(change=dict(new=1))
-    player._on_spin_y_changed(change=dict(new=1))
-    player._on_spin_z_changed(change=dict(new=1))
-    player._on_spin_speed_changed(change=dict(new=0.5))
     player._real_time_update = True
     player._make_widget_repr()
     player.widget_component_slider
