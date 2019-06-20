@@ -16,8 +16,7 @@ pmodel.then(function(model){
     model.views[key].then(function(v){
         v.children_views.views.forEach(function(pv){
              pv.then(function(v){
-                 // v.setSize(vw, vh);
-                 console.log('do nothing');
+                 v.setSize(vw, vh);
              })
         })
     })
@@ -25,8 +24,6 @@ pmodel.then(function(model){
 """
 
 _code_esc_callback = """
-var pmodel =  this.model.widget_manager.get_model('%s')
-
 document.onkeydown = function(event){
     if (event.keyCode === 27){
         pmodel.then(function(model){
@@ -61,7 +58,6 @@ class GridBoxNGL(GridBox):
         n_rows = len(self.children) // self._n_columns
         n_columns = self._n_columns
         code_fullscreen = _code_set_size % (n_columns, n_rows, self.model_id) + _code_esc_callback
-        print(code_fullscreen)
         self.children[0]._execute_js_code(code_fullscreen)
 
         if js_code is not None:
@@ -136,7 +132,9 @@ def fullscreen_mode(view):
     b = player._display()
     b.layout.width = '400px'
     b.layout.align_self = 'stretch'
-    bb = HBox([view, b])
+    bb = GridBox([view, b],
+            layout=Layout(
+            grid_template_columns='70% 30%'))
     class_id = f'nglview-{uuid4()}'
     bb.add_class(class_id)
 
