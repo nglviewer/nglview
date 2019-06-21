@@ -112,8 +112,6 @@ var NGLView = widgets.DOMWidgetView.extend({
             var that = this;
             this.serialize_camera_orientation();
             var m = this.stage.viewerControls.getOrientation();
-            console.log('_synced_model_ids');
-            console.log(that._synced_model_ids);
             if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
                 that._synced_model_ids.forEach(function(mid){
                     that.model.widget_manager.get_model(mid).then(function(model){
@@ -486,14 +484,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     setSyncCamera: function(model_ids){
-        console.log('setSyncCamera model_ids');
-        console.log(model_ids);
         this._synced_model_ids = model_ids;
-        // backend will update _synced_model_ids
-    },
-
-    setUnSyncCamera: function() {
-        this.sync_camera = false;
     },
 
     viewXZPlane: function() {

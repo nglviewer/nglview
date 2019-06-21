@@ -584,13 +584,13 @@ class NGLWidget(DOMWidget):
         model_ids = {v._model_id for v in other_views}
         self._synced_model_ids = sorted(
                 set(self._synced_model_ids) | model_ids)
-        self._remote_call("setSyncCamera", target="Widget", args=self._synced_model_ids)
+        self._remote_call("setSyncCamera", target="Widget", args=[self._synced_model_ids])
 
     def _set_unsync_camera(self, other_views):
         model_ids = {v._model_id for v in other_views}
         self._synced_model_ids = list(
                 set(self._synced_model_ids) - model_ids)
-        self._remote_call("setSyncCamera", target="Widget", args=self._synced_model_ids)
+        self._remote_call("setSyncCamera", target="Widget", args=[self._synced_model_ids])
 
     def _set_delay(self, delay):
         """unit of millisecond
