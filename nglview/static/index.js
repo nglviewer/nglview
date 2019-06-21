@@ -116,8 +116,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.sync_frame = false;
 	        this.sync_camera = false;
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
-            console.log('render');
-            console.log(this._synced_model_ids);
 	
 		    // get message from Python
 		    this.model.on("msg:custom", function(msg) {
@@ -182,13 +180,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }.bind(this));
 	
 	        this.stage.viewerControls.signals.changed.add(function() {
-                var that = this;
 	            this.serialize_camera_orientation();
 	            var m = this.stage.viewerControls.getOrientation();
-	            if (this._synced_model_ids.length > 0 && this._ngl_focused == 1){
-                    console.log('yeah');
+	            if (this._synced_model_ids.length > 0 && this.$container.is(":focus")){
 	                this._synced_model_ids.forEach(function(mid){
-	                    that.model.widget_manager.get_model(mid).then(function(model){
+	                    this.model.widget_manager.get_model(mid).then(function(model){
 	                        for (var k in model.views){
 	                            var pview = model.views[k];
 	                            pview.then(function(view){
@@ -299,15 +295,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }, false);
 	
 	        container.addEventListener('mouseover', function(e) {
-                that._ngl_focused= 1;
-	            that.model.set("_ngl_focused", that._ngl_focused);
+	            that.model.set("_ngl_focused", 1)
 	            that.touch();
 	            e; // linter
 	        }, false);
 	
 	        container.addEventListener('mouseout', function(e) {
-                that._ngl_focused = 0;
-	            that.model.set("_ngl_focused", that._ngl_focused);
+	            that.model.set("_ngl_focused", 0)
 	            that.touch();
 	            e; // linter
 	        }, false);
@@ -343,7 +337,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    serialize_camera_orientation: function(){
-            
+	         var m = this.stage.viewerControls.getOrientation();
 	         this.model.set('_camera_orientation', m.elements);
 	         this.touch();
 	    },
@@ -562,9 +556,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    setSyncCamera: function(model_ids){
-            console.log('from setSyncCamera 0');
 	        this._synced_model_ids = model_ids;
-            console.log(this._synced_model_ids);
 	        // backend will update _synced_model_ids
 	    },
 	
