@@ -45,9 +45,8 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.sync_frame = false;
         this.sync_camera = false;
         this._synced_model_ids = this.model.get("_synced_model_ids");
-
-	    // get message from Python
-	    this.model.on("msg:custom", function(msg) {
+        // get message from Python
+        this.model.on("msg:custom", function(msg){ 
             if ('ngl_view_id' in msg){
                 var key = msg.ngl_view_id;
                 console.log(key);
@@ -55,9 +54,8 @@ var NGLView = widgets.DOMWidgetView.extend({
                     v.on_msg(msg);
                 })
             }
-            else{
-	            this.on_msg(msg);}
-	    }, this);
+            else{this.on_msg(msg);}
+        }, this);
 
         if (this.model.comm) {
             // for embeding in website
