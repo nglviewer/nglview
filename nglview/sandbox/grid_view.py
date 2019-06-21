@@ -109,7 +109,7 @@ def _sync_all(views):
         v._set_sync_camera(list(model_ids - {v._model_id}))
 
 
-def grid_view(views, n_columns, grid_class=GridBoxViewAndPlayer, fullscreen=False, sync_camera=True,
+def grid_view(views, n_columns, grid_class=GridBoxViewAndPlayer, fullscreen=False, sync_camera=False,
         **grid_kwargs):
     if sync_camera:
         _sync_all(views)
