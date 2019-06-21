@@ -223,7 +223,6 @@ class NGLWidget(DOMWidget):
             if autoview:
                 self.center()
 
-        self._set_unsync_camera()
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
@@ -582,12 +581,17 @@ class NGLWidget(DOMWidget):
     def _set_unsync_frame(self):
         self._remote_call("setUnSyncFrame", target="Widget")
 
-    def _set_sync_camera(self, model_ids):
-        self._remote_call("setSyncCamera", target="Widget", args=[model_ids])
-        self._synced_model_ids = model_ids[:]
+    def _set_sync_camera(self, other_views):
+        model_ids = {v._model_id for v in other_views}
+        self._synced_model_ids = sorted(
+                set(self._synced_model_ids) | model_ids)
+        self._remote_call("setSyncCamera", target="Widget", args=self._synced_model_ids)
 
-    def _set_unsync_camera(self):
-        self._remote_call("setUnSyncCamera", target="Widget")
+    def _set_unsync_camera(self, other_views):
+        model_ids = {v._model_id for v in other_views}
+        self._synced_model_ids = list(
+                set(self._synced_model_ids) - model_ids)
+        self._remote_call("setSyncCamera", target="Widget", args=self._synced_model_ids)
 
     def _set_delay(self, delay):
         """unit of millisecond

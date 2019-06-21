@@ -104,9 +104,9 @@ class GridBoxViewAndPlayer(GridBoxNGL):
 #         _sync_camera_pair(v0, v1)
 
 def _sync_all(views):
-    model_ids = set(v._model_id for v in views)
+    views = set(views)
     for v in views:
-        v._set_sync_camera(list(model_ids - {v._model_id}))
+        v._set_sync_camera(views - {v})
 
 
 def grid_view(views, n_columns, grid_class=GridBoxViewAndPlayer, fullscreen=False, sync_camera=False,

@@ -113,8 +113,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             var that = this;
             this.serialize_camera_orientation();
             var m = this.stage.viewerControls.getOrientation();
-            if (this._synced_model_ids.length > 0 && this._ngl_focused == 1){
-                this._synced_model_ids.forEach(function(mid){
+            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
+                that._synced_model_ids.forEach(function(mid){
                     that.model.widget_manager.get_model(mid).then(function(model){
                         for (var k in model.views){
                             var pview = model.views[k];
