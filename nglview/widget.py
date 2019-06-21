@@ -139,6 +139,7 @@ class NGLWidget(DOMWidget):
         ['perspective', 'orthographic'],
         default_value='orthographic').tag(sync=True)
     _camera_orientation = List().tag(sync=True)
+    _synced_model_ids = List().tag(sync=True)
     _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
@@ -581,8 +582,9 @@ class NGLWidget(DOMWidget):
     def _set_unsync_frame(self):
         self._remote_call("setUnSyncFrame", target="Widget")
 
-    def _set_sync_camera(self):
-        self._remote_call("setSyncCamera", target="Widget")
+    def _set_sync_camera(self, model_ids):
+        self._remote_call("setSyncCamera", target="Widget", args=[model_ids])
+        self._synced_model_ids = model_ids[:]
 
     def _set_unsync_camera(self):
         self._remote_call("setUnSyncCamera", target="Widget")

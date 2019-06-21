@@ -83,24 +83,30 @@ class GridBoxViewAndPlayer(GridBoxNGL):
         self._player.widget_general.children = list(self._player.widget_general.children) + [btn]
 
 
-def _sync_camera_pair(v0, v1):
-    def on_change_camera(change):
-        new = change['new']
-        owner = change['owner']
-        if owner == v0 and v0._ngl_focused:
-            v1.control.orient(v0._camera_orientation)
-        elif owner == v1 and v1._ngl_focused:
-            v0.control.orient(v1._camera_orientation)
+# def _sync_camera_pair(v0, v1):
+#     v0._set_sync_camera(v0
+#     def on_change_camera(change):
+#         new = change['new']
+#         owner = change['owner']
+#         if owner == v0 and v0._ngl_focused:
+#             v1.control.orient(v0._camera_orientation)
+#         elif owner == v1 and v1._ngl_focused:
+#             v0.control.orient(v1._camera_orientation)
+# 
+#     v0.observe(on_change_camera, '_camera_orientation')
+#     v1.observe(on_change_camera, '_camera_orientation')
 
-    v0.observe(on_change_camera, '_camera_orientation')
-    v1.observe(on_change_camera, '_camera_orientation')
 
+# def _sync_all(views):
+#     from itertools import combinations
+#     views = [v for v in views if isinstance(v, NGLWidget)]
+#     for v0, v1 in combinations(views, 2):
+#         _sync_camera_pair(v0, v1)
 
 def _sync_all(views):
-    from itertools import combinations
-    views = [v for v in views if isinstance(v, NGLWidget)]
-    for v0, v1 in combinations(views, 2):
-        _sync_camera_pair(v0, v1)
+    model_ids = set(v._model_id for v in views)
+    for v in views:
+        v._set_sync_camera(list(model_ids - {v._model_id}))
 
 
 def grid_view(views, n_columns, grid_class=GridBoxViewAndPlayer, fullscreen=False, sync_camera=True,
