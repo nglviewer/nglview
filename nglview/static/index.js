@@ -116,7 +116,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.sync_frame = false;
 	        this.sync_camera = false;
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
-	        this._ngl_focused = this.model.get("_ngl_focused");
 	
 		    // get message from Python
 		    this.model.on("msg:custom", function(msg) {
@@ -184,8 +183,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            var that = this;
 	            this.serialize_camera_orientation();
 	            var m = this.stage.viewerControls.getOrientation();
-	            if (this._synced_model_ids.length > 0 && this._ngl_focused == 1){
-	                this._synced_model_ids.forEach(function(mid){
+	            console.log('_synced_model_ids');
+	            console.log(that._synced_model_ids);
+	            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
+	                that._synced_model_ids.forEach(function(mid){
 	                    that.model.widget_manager.get_model(mid).then(function(model){
 	                        for (var k in model.views){
 	                            var pview = model.views[k];
@@ -298,15 +299,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	        container.addEventListener('mouseover', function(e) {
 	            that._ngl_focused = 1;
-	            that.model.set("_ngl_focused", that._ngl_focused);
-	            that.touch();
 	            e; // linter
 	        }, false);
 	
 	        container.addEventListener('mouseout', function(e) {
 	            that._ngl_focused = 0;
-	            that.model.set("_ngl_focused", that._ngl_focused);
-	            that.touch();
 	            e; // linter
 	        }, false);
 	
@@ -560,6 +557,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    setSyncCamera: function(model_ids){
+	        console.log('setSyncCamera model_ids');
+	        console.log(model_ids);
 	        this._synced_model_ids = model_ids;
 	        // backend will update _synced_model_ids
 	    },
