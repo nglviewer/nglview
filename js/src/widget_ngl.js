@@ -45,6 +45,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.sync_frame = false;
         this.sync_camera = false;
         this._synced_model_ids = this.model.get("_synced_model_ids");
+        this._ngl_focused = this.model.get("_ngl_focused");
 
 	    // get message from Python
 	    this.model.on("msg:custom", function(msg) {
@@ -224,13 +225,15 @@ var NGLView = widgets.DOMWidgetView.extend({
         }, false);
 
         container.addEventListener('mouseover', function(e) {
-            that.model.set("_ngl_focused", 1)
+            that._ngl_focused = 1;
+            that.model.set("_ngl_focused", that._ngl_focused);
             that.touch();
             e; // linter
         }, false);
 
         container.addEventListener('mouseout', function(e) {
-            that.model.set("_ngl_focused", 0)
+            that._ngl_focused = 0;
+            that.model.set("_ngl_focused", that._ngl_focused);
             that.touch();
             e; // linter
         }, false);

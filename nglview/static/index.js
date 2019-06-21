@@ -182,7 +182,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.stage.viewerControls.signals.changed.add(function() {
 	            this.serialize_camera_orientation();
 	            var m = this.stage.viewerControls.getOrientation();
-	            if (this._synced_model_ids.length > 0 && this.$container.is(":focus")){
+	            if (this._synced_model_ids.length > 0 && this._ngl_focused == 1){
 	                this._synced_model_ids.forEach(function(mid){
 	                    this.model.widget_manager.get_model(mid).then(function(model){
 	                        for (var k in model.views){
