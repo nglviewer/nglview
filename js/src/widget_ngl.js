@@ -7,12 +7,6 @@ require('jquery-ui/ui/widgets/slider');
 require('jquery-ui/ui/widgets/dialog');
 require('jquery-ui/themes/base/all.css');
 
-var Jupyter;
-if (typeof window !== 'undefined') {
-  Jupyter = window['Jupyter'] = window['Jupyter'] || {};
-} else {
-  Jupyter = Jupyter || {};
-}
 
 var NGLModel = widgets.DOMWidgetModel.extend({
     defaults: function(){

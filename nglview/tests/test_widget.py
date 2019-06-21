@@ -217,7 +217,7 @@ def test_API_promise_to_have():
     view.display(gui=False)
     view.display(gui=True, use_box=True)
     view._set_sync_frame()
-    view._set_sync_camera()
+    view._set_sync_camera([view])
     view._set_selection('.CA')
     view.color_by('atomindex')
     representations = [dict(type='cartoon', params=dict())]
@@ -1077,7 +1077,7 @@ def test_queuing_messages():
     view.download_image()
     view
     assert [f._method_name for f in view._ngl_displayed_callbacks_before_loaded] == \
-           ['setUnSyncCamera', 'setUnSyncFrame', 'setDelay',
+           ['setUnSyncFrame', 'setDelay',
             'loadFile',
             '_downloadImage']
     assert [f._method_name for f in view._ngl_displayed_callbacks_after_loaded] == \
