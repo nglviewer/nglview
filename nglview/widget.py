@@ -582,6 +582,8 @@ class NGLWidget(DOMWidget):
 
     def _set_sync_camera(self, other_views):
         model_ids = {v._model_id for v in other_views}
+        if self._model_id in model_ids:
+            raise ValueError("Not allow to sync camera with itself")
         self._synced_model_ids = sorted(
                 set(self._synced_model_ids) | model_ids)
         self._remote_call("setSyncCamera", target="Widget", args=[self._synced_model_ids])
