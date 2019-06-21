@@ -110,11 +110,12 @@ var NGLView = widgets.DOMWidgetView.extend({
         }.bind(this));
 
         this.stage.viewerControls.signals.changed.add(function() {
+            var that = this;
             this.serialize_camera_orientation();
             var m = this.stage.viewerControls.getOrientation();
             if (this._synced_model_ids.length > 0 && this._ngl_focused == 1){
                 this._synced_model_ids.forEach(function(mid){
-                    this.model.widget_manager.get_model(mid).then(function(model){
+                    that.model.widget_manager.get_model(mid).then(function(model){
                         for (var k in model.views){
                             var pview = model.views[k];
                             pview.then(function(view){
