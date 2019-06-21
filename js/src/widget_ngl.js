@@ -118,7 +118,10 @@ var NGLView = widgets.DOMWidgetView.extend({
                         for (var k in model.views){
                             var pview = model.views[k];
                             pview.then(function(view){
-                                view.stage.viewerControls.orient(m);
+                                // not sync with itself
+                                if (view != that){ 
+                                    view.stage.viewerControls.orient(m);
+                                }
                             })
                         }
                     })
