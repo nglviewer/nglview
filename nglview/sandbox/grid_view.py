@@ -5,7 +5,7 @@ from uuid import uuid4
 
 
 _code_set_size = """
-var ww = window.outerWidth - 300
+var ww = window.outerWidth
 var wh = window.outerHeight
 var vw = ww / %s + 'px'
 var vh = wh / %s + 50 + 'px'
