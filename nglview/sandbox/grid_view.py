@@ -5,7 +5,7 @@ from uuid import uuid4
 
 
 _code_set_size = """
-var ww = window.outerWidth
+var ww = window.outerWidth - 300
 var wh = window.outerHeight
 var vw = ww / %s + 'px'
 var vh = wh / %s + 50 + 'px'
@@ -104,9 +104,9 @@ class GridBoxViewAndPlayer(GridBoxNGL):
 #         _sync_camera_pair(v0, v1)
 
 def _sync_all(views):
-    views = set(views)
+    views = {v for v in views if isinstance(v, NGLWidget)}
     for v in views:
-        v._set_sync_camera(views - {v})
+        v._set_sync_camera(views)
 
 
 def grid_view(views, n_columns, grid_class=GridBoxViewAndPlayer, fullscreen=False, sync_camera=False,

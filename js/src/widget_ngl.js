@@ -1,3 +1,4 @@
+var Jupyter
 var widgets = require("@jupyter-widgets/base");
 var NGL = require('ngl');
 var $ = require('jquery');
