@@ -34,7 +34,7 @@ from .config import BACKENDS
 from .remote_thread import RemoteCallThread
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '2.1.0'  # must match to js/package.json
+__frontend_version__ = '2.2.0'  # must match to js/package.json
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
     'setUnSyncCamera',
     'setSelector',
@@ -126,7 +126,6 @@ class NGLWidget(DOMWidget):
     _scene_position = Dict().tag(sync=True)
     _scene_rotation = Dict().tag(sync=True)
     _first_time_loaded = Bool(True).tag(sync=False)
-    _ngl_focused = Integer(False).tag(sync=True)
     # hack to always display movie
     _n_dragged_files = Int().tag(sync=True)
     # TODO: remove _parameters?
@@ -139,6 +138,8 @@ class NGLWidget(DOMWidget):
         ['perspective', 'orthographic'],
         default_value='orthographic').tag(sync=True)
     _camera_orientation = List().tag(sync=True)
+    _synced_model_ids = List().tag(sync=True)
+    _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
@@ -221,7 +222,6 @@ class NGLWidget(DOMWidget):
             if autoview:
                 self.center()
 
-        self._set_unsync_camera()
         self.player = TrajectoryPlayer(self)
         self._already_constructed = True
 
@@ -580,11 +580,17 @@ class NGLWidget(DOMWidget):
     def _set_unsync_frame(self):
         self._remote_call("setUnSyncFrame", target="Widget")
 
-    def _set_sync_camera(self):
-        self._remote_call("setSyncCamera", target="Widget")
+    def _set_sync_camera(self, other_views):
+        model_ids = {v._model_id for v in other_views}
+        self._synced_model_ids = sorted(
+                set(self._synced_model_ids) | model_ids)
+        self._remote_call("setSyncCamera", target="Widget", args=[self._synced_model_ids])
 
-    def _set_unsync_camera(self):
-        self._remote_call("setUnSyncCamera", target="Widget")
+    def _set_unsync_camera(self, other_views):
+        model_ids = {v._model_id for v in other_views}
+        self._synced_model_ids = list(
+                set(self._synced_model_ids) - model_ids)
+        self._remote_call("setSyncCamera", target="Widget", args=[self._synced_model_ids])
 
     def _set_delay(self, delay):
         """unit of millisecond
@@ -935,7 +941,7 @@ class NGLWidget(DOMWidget):
         """
         self.center(*args, **kwargs)
 
-    def center(self, selection='*', duration=0, component=0):
+    def center(self, selection='*', duration=0, component=0, **kwargs):
         """center view for given atom selection
 
         Examples
@@ -948,7 +954,7 @@ class NGLWidget(DOMWidget):
             args=[selection, duration],
             kwargs={
                 'component_index': component
-            })
+            }, **kwargs)
 
     @observe('_image_data')
     def _on_render_image(self, change):
@@ -1325,7 +1331,8 @@ class NGLWidget(DOMWidget):
                      method_name,
                      target='Widget',
                      args=None,
-                     kwargs=None):
+                     kwargs=None,
+                     **other_kwargs):
         """call NGL's methods from Python.
         
         Parameters
@@ -1382,6 +1389,8 @@ class NGLWidget(DOMWidget):
         msg['reconstruc_color_scheme'] = reconstruc_color_scheme
         msg['args'] = args
         msg['kwargs'] = kwargs
+        if other_kwargs:
+            msg.update(other_kwargs)
 
         def callback(widget, msg=msg):
             widget.send(msg)
@@ -1432,7 +1441,7 @@ class NGLWidget(DOMWidget):
         """
         self.show_only(**kwargs)
 
-    def show_only(self, indices='all'):
+    def show_only(self, indices='all', **kwargs):
         """set visibility for given components (by their indices)
 
         Parameters
@@ -1470,7 +1479,8 @@ class NGLWidget(DOMWidget):
                 args=args,
                 kwargs={
                     'component_index': index
-                })
+                },
+                **kwargs)
 
     def _js_console(self):
         self.send(dict(type='get', data='any'))
@@ -1490,8 +1500,8 @@ class NGLWidget(DOMWidget):
             name = 'component_' + str(index)
             delattr(self, name)
 
-    def _execute_js_code(self, code):
-        self._remote_call('execute_code', target='Widget', args=[code])
+    def _execute_js_code(self, code, **kwargs):
+        self._remote_call('execute_code', target='Widget', args=[code], **kwargs)
 
     def _update_component_auto_completion(self):
         trajids = [traj.id for traj in self._trajlist]

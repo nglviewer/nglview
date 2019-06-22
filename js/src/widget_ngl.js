@@ -1,3 +1,4 @@
+var Jupyter
 var widgets = require("@jupyter-widgets/base");
 var NGL = require('ngl');
 var $ = require('jquery');
@@ -7,12 +8,6 @@ require('jquery-ui/ui/widgets/slider');
 require('jquery-ui/ui/widgets/dialog');
 require('jquery-ui/themes/base/all.css');
 
-var Jupyter;
-if (typeof window !== 'undefined') {
-  Jupyter = window['Jupyter'] = window['Jupyter'] || {};
-} else {
-  Jupyter = Jupyter || {};
-}
 
 var NGLModel = widgets.DOMWidgetModel.extend({
     defaults: function(){
@@ -44,10 +39,17 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.delay = 100;
         this.sync_frame = false;
         this.sync_camera = false;
-
+        this._synced_model_ids = this.model.get("_synced_model_ids");
         // get message from Python
-        this.model.on("msg:custom", function(msg) {
-            this.on_msg(msg);
+        this.model.on("msg:custom", function(msg){ 
+            if ('ngl_view_id' in msg){
+                var key = msg.ngl_view_id;
+                console.log(key);
+                this.model.views[key].then(function(v){
+                    v.on_msg(msg);
+                })
+            }
+            else{this.on_msg(msg);}
         }, this);
 
         if (this.model.comm) {
@@ -77,6 +79,8 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
         this.displayed.then(function() {
             this.ngl_view_id = this.get_last_child_id();
+            this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
+            this.touch();
             var that = this;
             var width = this.$el.parent().width() + "px";
             var height = "300px";
@@ -98,7 +102,24 @@ var NGLView = widgets.DOMWidgetView.extend({
         }.bind(this));
 
         this.stage.viewerControls.signals.changed.add(function() {
+            var that = this;
             this.serialize_camera_orientation();
+            var m = this.stage.viewerControls.getOrientation();
+            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
+                that._synced_model_ids.forEach(function(mid){
+                    that.model.widget_manager.get_model(mid).then(function(model){
+                        for (var k in model.views){
+                            var pview = model.views[k];
+                            pview.then(function(view){
+                                // not sync with itself
+                                if (view != that){ 
+                                    view.stage.viewerControls.orient(m);
+                                }
+                            })
+                        }
+                    })
+                })
+            }
         }.bind(this));
 
         // init toggle fullscreen
@@ -200,14 +221,12 @@ var NGLView = widgets.DOMWidgetView.extend({
         }, false);
 
         container.addEventListener('mouseover', function(e) {
-            that.model.set("_ngl_focused", 1)
-            that.touch();
+            that._ngl_focused = 1;
             e; // linter
         }, false);
 
         container.addEventListener('mouseout', function(e) {
-            that.model.set("_ngl_focused", 0)
-            that.touch();
+            that._ngl_focused = 0;
             e; // linter
         }, false);
 
@@ -460,13 +479,8 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.sync_frame = false;
     },
 
-    setSyncCamera: function() {
-        this.sync_camera = true;
-        this.serialize_camera_orientation();
-    },
-
-    setUnSyncCamera: function() {
-        this.sync_camera = false;
+    setSyncCamera: function(model_ids){
+        this._synced_model_ids = model_ids;
     },
 
     viewXZPlane: function() {
