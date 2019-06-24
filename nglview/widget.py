@@ -1193,7 +1193,7 @@ class NGLWidget(DOMWidget):
         self._update_component_auto_completion()
         return self[-1]
 
-    def add_pdbid(self, pdbid):
+    def add_pdbid(self, pdbid, **kwargs):
         '''add new Structure view by fetching pdb id from rcsb
 
         Examples
@@ -1204,7 +1204,7 @@ class NGLWidget(DOMWidget):
         >>> # which is equal to 
         >>> # view.add_component('rcsb://1tsu.pdb')
         '''
-        return self.add_component(f'rcsb://{pdbid}.pdb')
+        return self.add_component(f'rcsb://{pdbid}.pdb', **kwargs)
 
     def add_component(self, filename, **kwargs):
         '''add component from file/trajectory/struture
@@ -1327,6 +1327,9 @@ class NGLWidget(DOMWidget):
 
         self._update_component_auto_completion()
 
+    def _add_colorscheme(self, arr, name):
+        self._remote_call('addColorScheme', args=[arr, name])
+
     def _remote_call(self,
                      method_name,
                      target='Widget',
@@ -1370,6 +1373,8 @@ class NGLWidget(DOMWidget):
             msg['component_index'] = kwargs.pop('component_index')
         if 'repr_index' in kwargs:
             msg['repr_index'] = kwargs.pop('repr_index')
+        if 'default' in kwargs:
+            kwargs['defaultRepresentation'] = kwargs.pop('default')
 
         # Color handling
         reconstruc_color_scheme = False

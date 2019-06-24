@@ -288,7 +288,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
         // reconstruct colors
         for (label in ngl_color_dict){
-            that._make_color_scheme(ngl_color_dict[label], label);
+            that.addColorScheme(ngl_color_dict[label], label);
         }
 
         _.each(ngl_msg_archive, function(msg){
@@ -1024,7 +1024,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
     },
 
-	_make_color_scheme: function(args, label){
+	addColorScheme: function(args, label){
         var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
         var scheme = NGL.ColormakerRegistry.userSchemes[id];
         NGL.ColormakerRegistry.removeScheme(id);
@@ -1043,7 +1043,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             // handle color
             if (msg.methodName == 'addRepresentation' && 
                 msg.reconstruc_color_scheme){
-                msg.kwargs.color = this._make_color_scheme(msg.kwargs.color, msg.kwargs.color_label);
+                msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
             }
             if ("colorVolume" in msg.kwargs){
                 // backend only send component index
