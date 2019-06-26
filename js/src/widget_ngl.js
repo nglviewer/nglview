@@ -38,7 +38,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         // for player
         this.delay = 100;
         this.sync_frame = false;
-        this.sync_camera = false;
         this._synced_model_ids = this.model.get("_synced_model_ids");
         // get message from Python
         this.model.on("msg:custom", function(msg){ 
@@ -64,12 +63,14 @@ var NGLView = widgets.DOMWidgetView.extend({
             }.bind(this));
         }
 
+        var stage_params = this.model.get("_ngl_full_stage_parameters");
+        if (!("backgroundColor" in stage_params)){
+            stage_params["backgroundColor"] = "white"
+        }
         // init NGL stage
         NGL.useWorker = false;
-        this.stage = new NGL.Stage(undefined, {
-            backgroundColor: "white"
-        });
-        this.structureComponent = undefined;
+        this.stage = new NGL.Stage(undefined);
+        this.stage.setParameters(stage_params);
         this.$container = $(this.stage.viewer.container);
         this.$el.append(this.$container);
         this.$container.resizable({
@@ -1087,11 +1088,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                 case 'compList':
                     index = msg['component_index'];
                     component = this.stage.compList[index];
-                    func = component[msg.methodName];
-                    func.apply(component, new_args);
-                    break;
-                case 'StructureComponent':
-                    component = this.structureComponent;
                     func = component[msg.methodName];
                     func.apply(component, new_args);
                     break;

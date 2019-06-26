@@ -135,11 +135,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }.bind(this));
 	        }
 	
+	        var stage_params = this.model.get("_ngl_full_stage_parameters");
+	        if (!("backgroundColor" in stage_params)){
+	            stage_params["backgroundColor"] = "white"
+	        }
 	        // init NGL stage
 	        NGL.useWorker = false;
-	        this.stage = new NGL.Stage(undefined, {
-	            backgroundColor: "white"
-	        });
+	        this.stage = new NGL.Stage(undefined);
+	        this.stage.setParameters(stage_params);
 	        this.structureComponent = undefined;
 	        this.$container = $(this.stage.viewer.container);
 	        this.$el.append(this.$container);
