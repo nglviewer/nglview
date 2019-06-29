@@ -174,7 +174,8 @@ class TrajectoryPlayer(HasTraits):
         def on_click(_):
             self._view.center()
 
-        dry_run(self._view, self.btn_center.click)
+        if hasattr(self.btn_center, 'click')
+            dry_run(self._view, self.btn_center.click)
         return self.btn_center
 
     def _make_widget_preference(self, width='100%'):
@@ -347,7 +348,8 @@ class TrajectoryPlayer(HasTraits):
                 button_remove
             ]))
         for b in bbox.children:
-            dry_run(self._view, b.click)
+            if hasattr(b, 'click'):
+                dry_run(self._view, b.click)
         return bbox
 
     def _make_widget_repr(self):
@@ -655,7 +657,8 @@ class TrajectoryPlayer(HasTraits):
                 # unselect
                 kid.value = False
 
-        dry_run(self._view, button_clear.click)
+        if hasattr(button_clear, 'click')
+            dry_run(self._view, button_clear.click)
 
         vbox.children = children + [repr_selection, button_clear]
         _make_autofit(vbox)
