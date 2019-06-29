@@ -24,22 +24,14 @@ var NGLModel = widgets.DOMWidgetModel.extend({
 
 var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
-        // init setting of frame
-        this.model.on("change:frame", this.frameChanged, this);
-
-        // init setting of frame
+        // maximum number of frames.
+        // change "count" to "n_frames"?
         this.model.on("change:count", this.countChanged, this);
-
-        // init _parameters handling
         this.model.on("change:_parameters", this.parametersChanged, this);
-
         this.model.set('_ngl_version', NGL.Version);
-
-        // for player
-        this.delay = 100;
-        this.sync_frame = false;
         this._synced_model_ids = this.model.get("_synced_model_ids");
-        // get message from Python
+        this.createIPlayer();
+
         this.model.on("msg:custom", function(msg){ 
             if ('ngl_view_id' in msg){
                 var key = msg.ngl_view_id;
@@ -79,7 +71,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             }.bind(this)
         });
         this.displayed.then(function() {
-            this.ngl_view_id = this.get_last_child_id();
+            this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
+            // more than two views at the same time (e.g: in a Box)
             this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
             this.touch();
             var that = this;
@@ -197,30 +190,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
         }, this);
 
-        this.createIPlayer();
-
         var container = this.stage.viewer.container;
         that = this;
-        container.addEventListener('dragover', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'copy';
-        }, false);
-
-        container.addEventListener('drop', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            var file = e.dataTransfer.files[0];
-
-            that.stage.loadFile(file).then(function(o){
-                that._handle_loading_file_finished();
-                o;
-            });
-            var numDroppedFiles = that.model.get("_n_dragged_files");
-            that.model.set("_n_dragged_files", numDroppedFiles + 1);
-            that.touch();
-        }, false);
-
         container.addEventListener('mouseover', function(e) {
             that._ngl_focused = 1;
             e; // linter
