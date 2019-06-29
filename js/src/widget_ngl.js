@@ -419,7 +419,6 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     countChanged: function() {
         var count = this.model.get("count");
-        var that = this;
         this.getPlayerModel().then(function(model){
             model.get("children").forEach(function(w){
                 w.set("max", count - 1);
@@ -436,11 +435,19 @@ var NGLView = widgets.DOMWidgetView.extend({
         })
     },
 
-    createIPlayer: function(){
+    createIPlayerView: function(){
+        // return a Promise
         var manager = this.model.widget_manager;
         var that = this;
-        this.getPlayerModel().then(function(model){
-            manager.create_view(model).then(function(view){
+        return this.getPlayerModel().then(function(model){
+            return manager.create_view(model)
+        })
+    },
+
+    createIPlayer: function(){
+        this.player_pview = this.createIPlayerView();
+        var that = this;
+        this.player_pview.then(function(view){
                 var pe = view.el
                 pe.style.position = 'absolute'
                 pe.style.zIndex = 100
@@ -451,7 +458,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                 if (that.model.get("count") <= 1){
                     pe.style.display = 'none';
                 }
-            })
             })
     },
 

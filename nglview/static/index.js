@@ -97,7 +97,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    render: function() {
 	        // maximum number of frames.
 	        // change "count" to "n_frames"?
-	        this.player_view = undefined;
 	        this.model.on("change:count", this.countChanged, this);
 	        this.model.on("change:_parameters", this.parametersChanged, this);
 	        this.model.set('_ngl_version', NGL.Version);
@@ -491,7 +490,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    countChanged: function() {
 	        var count = this.model.get("count");
-	        var that = this;
 	        this.getPlayerModel().then(function(model){
 	            model.get("children").forEach(function(w){
 	                w.set("max", count - 1);
@@ -508,11 +506,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        })
 	    },
 	
-	    createIPlayer: function(){
+	    createIPlayerView: function(){
 	        var manager = this.model.widget_manager;
 	        var that = this;
-	        this.getPlayerModel().then(function(model){
-	            manager.create_view(model).then(function(view){
+	        return this.getPlayerModel().then(function(model){
+	            return manager.create_view(model)
+	        })
+	    },
+	
+	    createIPlayer: function(){
+	        this.player_pview = this.createIPlayerView();
+	        var that = this;
+	        this.player_pview.then(function(view){
 	                var pe = view.el
 	                pe.style.position = 'absolute'
 	                pe.style.zIndex = 100
@@ -523,7 +528,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                if (that.model.get("count") <= 1){
 	                    pe.style.display = 'none';
 	                }
-	            })
 	            })
 	    },
 	
