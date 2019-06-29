@@ -26,7 +26,6 @@ var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
         // maximum number of frames.
         // change "count" to "n_frames"?
-        this.player_view = undefined;
         this.model.on("change:count", this.countChanged, this);
         this.model.on("change:_parameters", this.parametersChanged, this);
         this.model.set('_ngl_version', NGL.Version);
