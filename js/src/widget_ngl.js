@@ -351,7 +351,23 @@ var NGLView = widgets.DOMWidgetView.extend({
                         frame = ui.value;
                     }.bind(that)
                 })
-           }
+            };
+
+            var pd = that.model.get("_player_dict");
+            var manager = that.model.widget_manager;
+            if (pd){
+                var rd = pd['widget_quick_repr'];
+                for (var model_id in rd){
+                    console.log(model_id);
+                    var msg_dict = rd[model_id];
+                    manager.get_model(model_id).then(function(model){
+                        that.listenTo(model, "change:value", function(){
+                            var msg = msg_dict[model.get("value")];
+                            that.on_msg(msg);
+                        })
+                    })
+                }
+            }
         });
     },
 
