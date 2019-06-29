@@ -174,7 +174,7 @@ class TrajectoryPlayer(HasTraits):
         def on_click(_):
             self._view.center()
 
-        if hasattr(self.btn_center, 'click')
+        if hasattr(self.btn_center, 'click'):
             dry_run(self._view, self.btn_center.click)
         return self.btn_center
 
@@ -657,7 +657,7 @@ class TrajectoryPlayer(HasTraits):
                 # unselect
                 kid.value = False
 
-        if hasattr(button_clear, 'click')
+        if hasattr(button_clear, 'click'):
             dry_run(self._view, button_clear.click)
 
         vbox.children = children + [repr_selection, button_clear]
