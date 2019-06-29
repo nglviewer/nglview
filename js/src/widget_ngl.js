@@ -26,11 +26,11 @@ var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
         // maximum number of frames.
         // change "count" to "n_frames"?
+        this.player_view = undefined;
         this.model.on("change:count", this.countChanged, this);
         this.model.on("change:_parameters", this.parametersChanged, this);
         this.model.set('_ngl_version', NGL.Version);
         this._synced_model_ids = this.model.get("_synced_model_ids");
-        this.createIPlayer();
 
         this.model.on("msg:custom", function(msg){ 
             if ('ngl_view_id' in msg){
@@ -230,6 +230,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         var state_params = this.stage.getParameters();
         this.model.set('_ngl_original_stage_parameters', state_params);
         this.touch();
+        this.createIPlayer();
     },
 
     serialize_camera_orientation: function(){
@@ -419,11 +420,18 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     countChanged: function() {
         var count = this.model.get("count");
+        var that = this;
         this.getPlayerModel().then(function(model){
             model.get("children").forEach(function(w){
                 w.set("max", count - 1);
-                if (count > 0){
-                    w.el.style.display = 'block';
+                for (var k in model.views){
+                    model.views[k].then(function(v){
+                        if (count > 1){
+                            v.el.style.display = 'block'
+                        }else{
+                            v.el.style.display = 'none'
+                        }
+                    })
                 }
             })
         })
@@ -441,7 +449,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                 pe.style.left = '10%'
                 pe.style.opacity = '0.7'
                 that.stage.viewer.container.append(view.el);
-                if (that.model.get("count") < 1){
+                if (that.model.get("count") <= 1){
                     pe.style.display = 'none';
                 }
             })

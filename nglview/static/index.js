@@ -97,11 +97,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    render: function() {
 	        // maximum number of frames.
 	        // change "count" to "n_frames"?
+	        this.player_view = undefined;
 	        this.model.on("change:count", this.countChanged, this);
 	        this.model.on("change:_parameters", this.parametersChanged, this);
 	        this.model.set('_ngl_version', NGL.Version);
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
-	        this.createIPlayer();
 	
 	        this.model.on("msg:custom", function(msg){ 
 	            if ('ngl_view_id' in msg){
@@ -301,6 +301,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        var state_params = this.stage.getParameters();
 	        this.model.set('_ngl_original_stage_parameters', state_params);
 	        this.touch();
+	        this.createIPlayer();
 	    },
 	
 	    serialize_camera_orientation: function(){
@@ -350,7 +351,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            that._set_representation_from_backend(compList);
 	            that.stage.setParameters(ngl_stage_params);
 	            that.set_camera_orientation(that.model.get("_camera_orientation"));
-	            var frame = 0;
 	            that.model.set("count", ngl_coordinate_resource['n_frames']);
 	            that.touch();
 	            delete ngl_coordinate_resource['n_frames'];
@@ -491,11 +491,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    countChanged: function() {
 	        var count = this.model.get("count");
+	        var that = this;
 	        this.getPlayerModel().then(function(model){
 	            model.get("children").forEach(function(w){
 	                w.set("max", count - 1);
-	                if (count > 0){
-	                    w.el.style.display = 'block';
+	                for (var k in model.views){
+	                    model.views[k].then(function(v){
+	                        if (count > 1){
+	                            v.el.style.display = 'block'
+	                        }else{
+	                            v.el.style.display = 'none'
+	                        }
+	                    })
 	                }
 	            })
 	        })
@@ -513,7 +520,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                pe.style.left = '10%'
 	                pe.style.opacity = '0.7'
 	                that.stage.viewer.container.append(view.el);
-	                if (that.model.get("count") < 1){
+	                if (that.model.get("count") <= 1){
 	                    pe.style.display = 'none';
 	                }
 	            })

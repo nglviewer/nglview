@@ -121,6 +121,7 @@ class NGLWidget(DOMWidget):
     # use Integer here, because mdtraj uses a long datatype here on Python-2.7
     frame = Integer().tag(sync=True)
     count = Integer(1).tag(sync=True)
+    max_frames = Integer(0).tag(sync=True)
     background = Unicode('white').tag(sync=True)
     loaded = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
@@ -282,6 +283,8 @@ class NGLWidget(DOMWidget):
 
         jslink((player, 'value'), (slider, 'value'))
         jslink((player, 'value'), (self, 'frame'))
+        jslink((player, 'max'), (self, 'max_frames'))
+        jslink((slider, 'max'), (self, 'max_frames'))
 
     def _unset_serialization(self):
         self._ngl_serialize = False
@@ -433,17 +436,7 @@ class NGLWidget(DOMWidget):
         self.count = max(
             int(traj.n_frames) for traj in self._trajlist
             if hasattr(traj, 'n_frames'))
-
-    @observe('count')
-    def _count_changed(self, change):
-        # NOTE: `player` attribute might not be created yet.
-        if hasattr(self, 'player') and self.player._iplayer:
-            self.player._iplayer.max = change['new'] - 1
-            self.player._islider.max = change['new'] - 1
-            # If using ipywidgets's player, always hide the jquerry player
-            self._execute_js_code("""
-            this.$player.hide()
-            """)
+        self.max_frames = self.count - 1
 
     def _wait_until_finished(self, timeout=0.0001):
         # NGL need to send 'finished' signal to
