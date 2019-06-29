@@ -174,7 +174,7 @@ class TrajectoryPlayer(HasTraits):
         def on_click(_):
             self._view.center()
 
-        print(dry_run(self._view, self.btn_center.click))
+        dry_run(self._view, self.btn_center.click)
         return self.btn_center
 
     def _make_widget_preference(self, width='100%'):
@@ -275,7 +275,7 @@ class TrajectoryPlayer(HasTraits):
         ta = Textarea(
             value=json.dumps(self._view.picked), description='Picked atom')
         ta.layout.width = '300px'
-        print(dry_run(self._view, partial(self._view._on_picked, change={'old': '', 'new': ''})))
+        dry_run(self._view, partial(self._view._on_picked, change={'old': '', 'new': ''}))
         return ta
 
     def _refresh(self, component_slider, repr_slider):
@@ -347,7 +347,7 @@ class TrajectoryPlayer(HasTraits):
                 button_remove
             ]))
         for b in bbox.children:
-            print(dry_run(self._view, b.click))
+            dry_run(self._view, b.click)
         return bbox
 
     def _make_widget_repr(self):
@@ -655,7 +655,7 @@ class TrajectoryPlayer(HasTraits):
                 # unselect
                 kid.value = False
 
-        print(dry_run(self._view, button_clear.click))
+        dry_run(self._view, button_clear.click)
 
         vbox.children = children + [repr_selection, button_clear]
         _make_autofit(vbox)
