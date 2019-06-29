@@ -646,9 +646,15 @@ class TrajectoryPlayer(HasTraits):
         pd = self._view._player_dict
         pd['widget_quick_repr'] = defaultdict(dict)
         for k in children:
-            def click(k):
+            pd['widget_quick_repr'][k.model_id] = {}
+
+            def click_true(k):
                 k.value = True
-            pd['widget_quick_repr'][k.model_id] = dry_run(self._view, partial(click, k=k))[-1]
+            pd['widget_quick_repr'][k.model_id][True] = dry_run(self._view, partial(click_true, k=k))[-1]
+
+            def click_false(k):
+                k.value = False
+            pd['widget_quick_repr'][k.model_id][False] = dry_run(self._view, partial(click_false, k=k))[-1]
 
         button_clear = Button(
             description='clear', button_style='info', icon='fa-eraser')

@@ -428,12 +428,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            var manager = that.model.widget_manager;
 	            if (pd){
 	                var rd = pd['widget_quick_repr'];
-	                for (var model_id in rd){
-	                    console.log(model_id);
-	                    var msg_dict = rd[model_id];
+	                for (let model_id in rd){
 	                    manager.get_model(model_id).then(function(model){
 	                        that.listenTo(model, "change:value", function(){
-	                            var msg = msg_dict[model.get("value")];
+	                            var msg = rd[model_id][model.get("value")];
 	                            that.on_msg(msg);
 	                        })
 	                    })
