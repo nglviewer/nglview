@@ -494,6 +494,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.getPlayerModel().then(function(model){
 	            model.get("children").forEach(function(w){
 	                w.set("max", count - 1);
+	                if (count > 0){
+	                    w.el.style.display = 'block';
+	                }
 	            })
 	        })
 	    },
@@ -510,8 +513,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                pe.style.left = '10%'
 	                pe.style.opacity = '0.7'
 	                that.stage.viewer.container.append(view.el);
+	                if (that.model.get("count") < 1){
+	                    pe.style.display = 'none';
+	                }
 	            })
-	        })
+	            })
 	    },
 	
 	    setVisibilityForRepr: function(component_index, repr_index, value) {

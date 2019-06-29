@@ -279,7 +279,6 @@ var NGLView = widgets.DOMWidgetView.extend({
             that._set_representation_from_backend(compList);
             that.stage.setParameters(ngl_stage_params);
             that.set_camera_orientation(that.model.get("_camera_orientation"));
-            var frame = 0;
             that.model.set("count", ngl_coordinate_resource['n_frames']);
             that.touch();
             delete ngl_coordinate_resource['n_frames'];
@@ -423,6 +422,9 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.getPlayerModel().then(function(model){
             model.get("children").forEach(function(w){
                 w.set("max", count - 1);
+                if (count > 0){
+                    w.el.style.display = 'block';
+                }
             })
         })
     },
@@ -439,8 +441,11 @@ var NGLView = widgets.DOMWidgetView.extend({
                 pe.style.left = '10%'
                 pe.style.opacity = '0.7'
                 that.stage.viewer.container.append(view.el);
+                if (that.model.get("count") < 1){
+                    pe.style.display = 'none';
+                }
             })
-        })
+            })
     },
 
     setVisibilityForRepr: function(component_index, repr_index, value) {
