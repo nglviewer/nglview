@@ -419,19 +419,12 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     countChanged: function() {
         var count = this.model.get("count");
-        this.getPlayerModel().then(function(model){
-            model.get("children").forEach(function(w){
-                w.set("max", count - 1);
-                for (var k in model.views){
-                    model.views[k].then(function(v){
-                        if (count > 1){
-                            v.el.style.display = 'block'
-                        }else{
-                            v.el.style.display = 'none'
-                        }
-                    })
-                }
-            })
+        this.player_pview.then(function(v){
+            if (count > 1){
+                v.el.style.display = 'block'
+            }else{
+                v.el.style.display = 'none'
+            }
         })
     },
 

@@ -490,25 +490,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    countChanged: function() {
 	        var count = this.model.get("count");
-	        this.getPlayerModel().then(function(model){
-	            model.get("children").forEach(function(w){
-	                w.set("max", count - 1);
-	                for (var k in model.views){
-	                    model.views[k].then(function(v){
-	                        if (count > 1){
-	                            v.el.style.display = 'block'
-	                        }else{
-	                            v.el.style.display = 'none'
-	                        }
-	                    })
-	                }
-	            })
+	        this.player_pview.then(function(v){
+	            if (count > 1){
+	                v.el.style.display = 'block'
+	            }else{
+	                v.el.style.display = 'none'
+	            }
 	        })
 	    },
 	
 	    createIPlayerView: function(){
+	        // return a Promise
 	        var manager = this.model.widget_manager;
-	        var that = this;
 	        return this.getPlayerModel().then(function(model){
 	            return manager.create_view(model)
 	        })
