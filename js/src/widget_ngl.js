@@ -438,7 +438,6 @@ var NGLView = widgets.DOMWidgetView.extend({
     createIPlayerView: function(){
         // return a Promise
         var manager = this.model.widget_manager;
-        var that = this;
         return this.getPlayerModel().then(function(model){
             return manager.create_view(model)
         })
