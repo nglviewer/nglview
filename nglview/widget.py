@@ -8,7 +8,7 @@ from IPython.display import display
 import ipywidgets as widgets
 from ipywidgets import widget as _widget
 widget_serialization = _widget.widget_serialization
-from ipywidgets import Box, DOMWidget, Output, Widget
+from ipywidgets import Box, HBox, DOMWidget, Output, Widget, Play, IntSlider, jslink 
 try:
     # ipywidgets >= 7.4
     from ipywidgets import Image
@@ -158,7 +158,7 @@ class NGLWidget(DOMWidget):
     _player_dict = Dict().tag(sync=True)
 
     # instance
-    _islider = Instance(widgets.IntSlider, allow_none=True).tag(sync=True, **widget_serialization)
+    _iplayer = Instance(widgets.Box, allow_none=True).tag(sync=True, **widget_serialization)
 
     def __init__(self,
                  structure=None,
@@ -234,6 +234,7 @@ class NGLWidget(DOMWidget):
         # Updating only self.layout.{width, height} don't handle
         # resizing NGL widget properly.
         self._sync_with_layout()
+        self._create_player()
 
     def _sync_with_layout(self):
         def on_change_layout(change):
@@ -272,6 +273,13 @@ class NGLWidget(DOMWidget):
         #     attr = getattr(self.player, x)
         #     if attr is not None:
         #         self._ngl_gui_dict[x] = attr.model_id
+
+    def _create_player(self):
+        player = Play(max=self.count-1, interval=100)
+        slider = IntSlider(max=self.count-1)
+        jslink((player, 'value'), (slider, 'value'))
+        jslink((player, 'value'), (self, 'frame'))
+        self._iplayer = HBox([player, slider])
 
     def _unset_serialization(self):
         self._ngl_serialize = False
