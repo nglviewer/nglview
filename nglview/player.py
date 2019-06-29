@@ -3,6 +3,8 @@
 import time
 import json
 import uuid
+from functools import partial
+from collections import defaultdict
 from IPython.display import display, Javascript
 from ipywidgets import (jslink, Play, Box, HBox, VBox, Checkbox, ColorPicker,
                         IntSlider, FloatSlider, Dropdown, Button, ToggleButton,
@@ -19,11 +21,22 @@ from .layout import (make_form_item_layout, _relayout, _make_autofit,
                      _relayout_master, _make_delay_tab, _make_box_layout)
 
 
+def dry_run(v, func):
+    # Get remote call message.
+    msg = []
+    def _another_call(*args, **kwargs):
+         msg.append(v._get_remote_call_msg(*args, **kwargs))
+    old = v._remote_call
+    setattr(v, '_remote_call', _another_call)
+    func()
+    setattr(v, '_remote_call', old)
+    return msg
+
+
 class TrajectoryPlayer(HasTraits):
     # should set default values here different from desired defaults
     # so `observe` can be triggered
     step = Int(0)
-    sync_frame = Bool(True)
     interpolate = Bool(False)
     delay = Float(0.0)
     parameters = Dict()
@@ -56,12 +69,14 @@ class TrajectoryPlayer(HasTraits):
     widget_repr_name = Any(None)
     widget_component_dropdown = Any(None)
     widget_player = Any(None)
+    widget_background = Any(None)
+    widget_camera = Any(None)
+    btn_center = Any(None)
 
-    def __init__(self, view, step=1, delay=100, sync_frame=False,
+    def __init__(self, view, step=1, delay=100,
                  min_delay=40):
         self._view = view
         self.step = step
-        self.sync_frame = sync_frame
         self.delay = delay
         self.min_delay = min_delay
         self._iplayer = None
@@ -96,6 +111,11 @@ class TrajectoryPlayer(HasTraits):
     def smooth(self):
         self.interpolate = True
 
+    @observe('delay')
+    def _on_delay(self, change):
+        if self.widget_player:
+            self.widget_player.interval = change['new']
+
     @observe('camera')
     def on_camera_changed(self, change):
         camera_type = change['new']
@@ -116,23 +136,9 @@ class TrajectoryPlayer(HasTraits):
     def count(self):
         return self._view.count
 
-    @observe('sync_frame')
-    def update_sync_frame(self, change):
-        value = change['new']
-        if value:
-            self._view._set_sync_frame()
-        else:
-            self._view._set_unsync_frame()
-
-    @observe("delay")
-    def _update_delay(self, change):
-        delay = change['new']
-        self._view._set_delay(delay)
-
     @observe('parameters')
     def update_parameters(self, change):
         params = change['new']
-        self.sync_frame = params.get("sync_frame", self.sync_frame)
         self.delay = params.get("delay", self.delay)
         self.step = params.get("step", self.step)
 
@@ -162,13 +168,15 @@ class TrajectoryPlayer(HasTraits):
         return self._display()
 
     def _make_button_center(self):
-        button = Button(description=' Center', icon='fa-bullseye')
+        self.btn_center = Button(description=' Center', icon='fa-bullseye')
 
-        @button.on_click
-        def on_click(button):
+        @self.btn_center.on_click
+        def on_click(_):
             self._view.center()
 
-        return button
+        if hasattr(self.btn_center, 'click'):
+            dry_run(self._view, self.btn_center.click)
+        return self.btn_center
 
     def _make_widget_preference(self, width='100%'):
         def make_func():
@@ -268,6 +276,7 @@ class TrajectoryPlayer(HasTraits):
         ta = Textarea(
             value=json.dumps(self._view.picked), description='Picked atom')
         ta.layout.width = '300px'
+        dry_run(self._view, partial(self._view._on_picked, change={'old': '', 'new': ''}))
         return ta
 
     def _refresh(self, component_slider, repr_slider):
@@ -338,6 +347,9 @@ class TrajectoryPlayer(HasTraits):
                 button_refresh, button_center_selection, button_hide,
                 button_remove
             ]))
+        for b in bbox.children:
+            if hasattr(b, 'click'):
+                dry_run(self._view, b.click)
         return bbox
 
     def _make_widget_repr(self):
@@ -622,6 +634,19 @@ class TrajectoryPlayer(HasTraits):
             button.observe(make_func(), names='value')
             children.append(button)
 
+        pd = self._view._player_dict
+        pd['widget_quick_repr'] = defaultdict(dict)
+        for k in children:
+            pd['widget_quick_repr'][k.model_id] = {}
+
+            def click_true(k):
+                k.value = True
+            pd['widget_quick_repr'][k.model_id][True] = dry_run(self._view, partial(click_true, k=k))[-1]
+
+            def click_false(k):
+                k.value = False
+            pd['widget_quick_repr'][k.model_id][False] = dry_run(self._view, partial(click_false, k=k))[-1]
+
         button_clear = Button(
             description='clear', button_style='info', icon='fa-eraser')
 
@@ -631,6 +656,9 @@ class TrajectoryPlayer(HasTraits):
             for kid in children:
                 # unselect
                 kid.value = False
+
+        if hasattr(button_clear, 'click'):
+            dry_run(self._view, button_clear.click)
 
         vbox.children = children + [repr_selection, button_clear]
         _make_autofit(vbox)
@@ -692,9 +720,9 @@ class TrajectoryPlayer(HasTraits):
                 tooltip='smoothing trajectory')
             link((toggle_button_interpolate, 'value'), (self, 'interpolate'))
 
-            background_color_picker = ColorPicker(
-                value='white', description='background')
-            camera_type = Dropdown(
+            self.widget_background = background_color_picker = ColorPicker(
+                value=self._view._ngl_full_stage_parameters.get('backgroundColor', 'white'), description='background')
+            self.widget_camera = camera_type = Dropdown(
                 value=self.camera,
                 options=['perspective', 'orthographic'],
                 description='camera')
@@ -755,34 +783,3 @@ class TrajectoryPlayer(HasTraits):
                 widget.layout.display = 'none'
         self.widget_repr_choices.layout.display = 'flex'
         self.widget_accordion_repr_parameters.selected_index = 0
-
-    def _make_widget_player(self):
-        if self.widget_player:
-            return self.widget_player
-        view = self._view
-        self._iplayer = player = Play(max=view.count-1, interval=100)
-        self._islider = slider = IntSlider(max=view.count-1)
-        jslink((player, 'value'), (slider, 'value'))
-        jslink((player, 'value'), (view, 'frame'))
-        box = HBox([player, slider])
-        class_id = f'ngl-player-{uuid.uuid4()}'
-        box.add_class(class_id)
-
-        def on_display(w):
-            c = f"""
-            var pe = document.getElementsByClassName('{class_id}')[0]
-
-            pe.style.position = 'absolute'
-            pe.style.zIndex = 100
-            pe.style.bottom = '5%'
-            pe.style.left = '10%'
-            pe.style.opacity = '0.7'
-
-            this.$iplayer = $(pe)
-            this.$container.append(this.$iplayer);
-            this.$player.hide();
-            """
-            view._execute_js_code(c)
-        box.on_displayed(on_display)
-        self.widget_player = box
-        return self.widget_player

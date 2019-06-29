@@ -216,7 +216,6 @@ def test_API_promise_to_have():
     view.display(gui=True)
     view.display(gui=False)
     view.display(gui=True, use_box=True)
-    view._set_sync_frame()
     view._set_sync_camera([view])
     view._set_selection('.CA')
     view.color_by('atomindex')
@@ -428,10 +427,8 @@ def test_add_repr_shortcut():
 
 def test_color_scheme():
     view = nv.demo()
-    scheme = nv.color._ColorScheme([
-        ['red', '1-6'],
-        ['yellow', '20-30']],
-        'what')
+    scheme = nv.color._ColorScheme([['red', '1-6'], ['yellow', '20-30']],
+                                   'what')
     view.clear()
     view.add_cartoon(color=scheme)
 
@@ -471,10 +468,9 @@ def test_remote_call():
 
     fn = 'notebooks/tz2.pdb'
     kwargs = {'defaultRepresentation': True}
-    view._remote_call(
-        'loadFile', target='stage', args=[
-            fn,
-        ], kwargs=kwargs)
+    view._remote_call('loadFile', target='stage', args=[
+        fn,
+    ], kwargs=kwargs)
 
 
 def test_download_image():
@@ -510,7 +506,7 @@ def test_show_pymatgen():
     import pymatgen as mg
     lattice = mg.Lattice.cubic(4.2)
     structure = mg.Structure(lattice, ["Cs", "Cl"],
-                      [[0, 0, 0], [0.5, 0.5, 0.5]])
+                             [[0, 0, 0], [0.5, 0.5, 0.5]])
     view = nv.show_pymatgen(structure)
     view
 
@@ -579,8 +575,9 @@ def test_show_rdkit():
     rdkit_mol = Chem.AddHs(
         Chem.MolFromSmiles(
             'COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4'))
-    AllChem.EmbedMultipleConfs(
-        rdkit_mol, useExpTorsionAnglePrefs=True, useBasicKnowledge=True)
+    AllChem.EmbedMultipleConfs(rdkit_mol,
+                               useExpTorsionAnglePrefs=True,
+                               useBasicKnowledge=True)
     view = nv.show_rdkit(rdkit_mol, parmed=False)
     assert not view._trajlist
     view = nv.show_rdkit(rdkit_mol, parmed=True)
@@ -824,7 +821,6 @@ def test_loaded_attribute():
 def test_player_simple():
     traj = pt.datafiles.load_tz2()
     view = nv.show_pytraj(traj)
-    assert not view.player.sync_frame
 
     # dummy
     component_slider = ipywidgets.IntSlider()
@@ -838,12 +834,9 @@ def test_player_simple():
     player.frame
     player.frame = 10
     player.count
-    player.sync_frame = False
-    player.sync_frame = True
     player.parameters = dict(step=2)
     player._display()
     player._make_button_center()
-    player._make_widget_player()
     w = player._make_widget_preference()
     w.children[0].value = 1.
     player.widget_preference = None
@@ -1056,8 +1049,9 @@ def test_ambermd():
     with patch("pytraj.load") as mock_pytraj_load, \
          patch("pytraj.superpose") as mock_pytraj_superpose, \
          patch("os.path.exists") as mock_exists:
-        ambermd = amber.AmberMD(
-            top='hey.parm7', restart='hey.rst7', reference='hey.ref')
+        ambermd = amber.AmberMD(top='hey.parm7',
+                                restart='hey.rst7',
+                                reference='hey.ref')
         view = ambermd.initialize()
         ambermd.event = MagicMock()
         ambermd.event.is_set = MagicMock()
@@ -1077,7 +1071,7 @@ def test_queuing_messages():
     view.download_image()
     view
     assert [f._method_name for f in view._ngl_displayed_callbacks_before_loaded] == \
-           ['setUnSyncFrame', 'setDelay',
+           [
             'loadFile',
             '_downloadImage']
     assert [f._method_name for f in view._ngl_displayed_callbacks_after_loaded] == \

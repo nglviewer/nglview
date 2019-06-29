@@ -24,22 +24,13 @@ var NGLModel = widgets.DOMWidgetModel.extend({
 
 var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
-        // init setting of frame
-        this.model.on("change:frame", this.frameChanged, this);
-
-        // init setting of frame
+        // maximum number of frames.
+        // change "count" to "n_frames"?
         this.model.on("change:count", this.countChanged, this);
-
-        // init _parameters handling
         this.model.on("change:_parameters", this.parametersChanged, this);
-
         this.model.set('_ngl_version', NGL.Version);
-
-        // for player
-        this.delay = 100;
-        this.sync_frame = false;
         this._synced_model_ids = this.model.get("_synced_model_ids");
-        // get message from Python
+
         this.model.on("msg:custom", function(msg){ 
             if ('ngl_view_id' in msg){
                 var key = msg.ngl_view_id;
@@ -79,7 +70,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             }.bind(this)
         });
         this.displayed.then(function() {
-            this.ngl_view_id = this.get_last_child_id();
+            this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
+            // more than two views at the same time (e.g: in a Box)
             this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
             this.touch();
             var that = this;
@@ -197,30 +189,8 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
         }, this);
 
-        this.initPlayer();
-
         var container = this.stage.viewer.container;
         that = this;
-        container.addEventListener('dragover', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'copy';
-        }, false);
-
-        container.addEventListener('drop', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            var file = e.dataTransfer.files[0];
-
-            that.stage.loadFile(file).then(function(o){
-                that._handle_loading_file_finished();
-                o;
-            });
-            var numDroppedFiles = that.model.get("_n_dragged_files");
-            that.model.set("_n_dragged_files", numDroppedFiles + 1);
-            that.touch();
-        }, false);
-
         container.addEventListener('mouseover', function(e) {
             that._ngl_focused = 1;
             e; // linter
@@ -259,6 +229,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         var state_params = this.stage.getParameters();
         this.model.set('_ngl_original_stage_parameters', state_params);
         this.touch();
+        this.createIPlayer();
     },
 
     serialize_camera_orientation: function(){
@@ -308,51 +279,33 @@ var NGLView = widgets.DOMWidgetView.extend({
             that._set_representation_from_backend(compList);
             that.stage.setParameters(ngl_stage_params);
             that.set_camera_orientation(that.model.get("_camera_orientation"));
-
-            var frame = 0;
-            var count = ngl_coordinate_resource['n_frames'];
+            that.model.set("count", ngl_coordinate_resource['n_frames']);
+            that.touch();
             delete ngl_coordinate_resource['n_frames'];
 
-            var play = function(){
-                that.$playerButton.text("pause");
-                that.playerInterval = setInterval(function(){
-                    frame = frame + 1;
-                    if (frame > count - 1){
-                        frame = 0;
-                    }
-                    that.$playerSlider.slider("option", "value", frame);
-                    that.updateCoordinatesFromDict(ngl_coordinate_resource, frame);
-                }, that.delay)
-            }
+            // sync frame again since we don't do that in notebook (to avoid lagging);
+            that.getPlayerModel().then(function(model){
+                var pmodel = model.get("children")[0];
+                that.listenTo(pmodel,
+                    "change:value", function(){that.updateCoordinatesFromDict(ngl_coordinate_resource,
+                        pmodel.get("value"))})
+            })
 
-            var pause = function() {
-                that.$playerButton.text("play");
-                if (that.playerInterval !== undefined) {
-                    clearInterval(that.playerInterval);
+
+            var pd = that.model.get("_player_dict");
+            var manager = that.model.widget_manager;
+            if (pd){
+                var rd = pd['widget_quick_repr'];
+                for (let model_id in rd){
+                    manager.get_model(model_id).then(function(model){
+                        that.listenTo(model, "change:value", function(){
+                            var msg = rd[model_id][model.get("value")];
+                            that.on_msg(msg);
+                        })
+                    })
                 }
-            }.bind(that);
-
-            if (that.$playerButton){
-                that.$playerButton
-                    .off('click')
-                    .click(function(event) {
-                        if (that.$playerButton.text() === "play") {
-                            play();
-                        } else if (that.$playerButton.text() === "pause") {
-                            pause();
-                        }
-                        event; // to pass eslint
-                    }.bind(that));
-                that.$playerSlider.slider({
-                    max : count-1,
-                    slide: function(event, ui) {
-                        pause();
-                        that.updateCoordinatesFromDict(ngl_coordinate_resource, ui.value);
-                        frame = ui.value;
-                    }.bind(that)
-                })
-           }
-        });
+            }
+        }); // Promise.all
     },
 
     updateCoordinatesFromDict: function(cdict, frame_index){
@@ -367,40 +320,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                 this.updateCoordinates(coordinates, traj_index);
             }
         }
-    },
-
-    setSelector: function(selector_id) {
-        // id is uuid that will be set from Python
-        var selector = "<div class='" + selector_id + "'></div>";
-        this.$ngl_selector = $(selector)
-            .css("position", "absolute")
-            .css("bottom", "5%")
-            .css("left", "3%")
-            .css("padding", "2px 5px 2px 5px")
-            .css("opacity", "0.7")
-            .appendTo(this.$container);
-    },
-
-    setIPythonLikeCell: function() {
-        var cell = Jupyter.notebook.insert_cell_at_bottom();
-
-        var handler = function(event) {
-            var selected_cell = Jupyter.notebook.get_selected_cell();
-            if (selected_cell.cell_id === cell.cell_id) {
-                selected_cell.execute();
-                selected_cell.set_text('');
-            }
-            event; // to pass eslint
-            return false;
-        };
-
-        var action = {
-            help: 'run cell',
-            help_index: 'zz',
-            handler: handler
-        };
-
-        Jupyter.keyboard_manager.edit_shortcuts.add_shortcut('enter', action);
     },
 
     hideNotebookCommandBox: function() {
@@ -461,25 +380,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
     },
 
-    // setDraggable: function(params) {
-    //     if (params) {
-    //         this.$container.draggable(params);
-    //     } else {
-    //         this.$container.draggable();
-    //     }
-    // },
-    setDelay: function(delay) {
-        this.delay = delay;
-    },
-
-    setSyncFrame: function() {
-        this.sync_frame = true;
-    },
-
-    setUnSyncFrame: function() {
-        this.sync_frame = false;
-    },
-
     setSyncCamera: function(model_ids){
         this._synced_model_ids = model_ids;
     },
@@ -511,84 +411,46 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    initPlayer: function() {
-        // init player
-        if (this.model.get("count")) {
-            var frame = this.model.get("frame");
-            var play = function() {
-                this.$playerButton.text("pause");
-                this.playerInterval = setInterval(function() {
-                    var frame = this.model.get("frame") + 1;
-                    var count = this.model.get("count");
-                    if (frame >= count) frame = 0;
-
-                    if (this.sync_frame) {
-                        this.model.set("frame", frame);
-                        this.touch();
-                    } else {
-                        this.requestFrame();
-                    }
-                }.bind(this), this.delay);
-            }.bind(this);
-            var pause = function() {
-                this.$playerButton.text("play");
-                if (this.playerInterval !== undefined) {
-                    clearInterval(this.playerInterval);
-                }
-            }.bind(this);
-            this.$playerButton = $("<button>play</button>")
-                .css("float", "left")
-                .css("width", "55px")
-                .css("opacity", "0.7")
-                .click(function(event) {
-                    if (this.$playerButton.text() === "play") {
-                        play();
-                    } else if (this.$playerButton.text() === "pause") {
-                        pause();
-                    }
-                    event; // to pass eslint
-                }.bind(this));
-            this.$playerSlider = $("<div></div>")
-                .css("margin-left", "70px")
-                .css("position", "relative")
-                .css("bottom", "-7px")
-                .slider({
-                    min: 0,
-                    max: this.model.get("count") - 1,
-                    value: frame,
-                    slide: function(event, ui) {
-                        pause();
-                        this.model.set("frame", ui.value);
-                        this.touch();
-                    }.bind(this)
-                });
-            this.$player = $("<div></div>")
-                .css("position", "absolute")
-                .css("bottom", "5%")
-                .css("width", "94%")
-                .css("margin-left", "3%")
-                .css("opacity", "0.7")
-                .append(this.$playerButton)
-                .append(this.$playerSlider)
-                .appendTo(this.$container);
-            this.model.on("change:frame", function() {
-                this.$playerSlider.slider("value", this.model.get("frame"));
-            }, this);
-
-            if (this.model.get("count") < 2) {
-                this.$player.hide()
-            }
-        }
+    getPlayerModel: function(){
+        // return a Promise
+        var model_id = this.model.get("_iplayer").replace("IPY_MODEL_", "");
+        return this.model.widget_manager.get_model(model_id)
     },
 
     countChanged: function() {
         var count = this.model.get("count");
-        this.$playerSlider.slider({
-            max: count - 1
-        });
-        if (this.model.get("count") > 1) {
-            this.$player.show()
-        }
+        this.player_pview.then(function(v){
+            if (count > 1){
+                v.el.style.display = 'block'
+            }else{
+                v.el.style.display = 'none'
+            }
+        })
+    },
+
+    createIPlayerView: function(){
+        // return a Promise
+        var manager = this.model.widget_manager;
+        return this.getPlayerModel().then(function(model){
+            return manager.create_view(model)
+        })
+    },
+
+    createIPlayer: function(){
+        this.player_pview = this.createIPlayerView();
+        var that = this;
+        this.player_pview.then(function(view){
+                var pe = view.el
+                pe.style.position = 'absolute'
+                pe.style.zIndex = 100
+                pe.style.bottom = '5%'
+                pe.style.left = '10%'
+                pe.style.opacity = '0.7'
+                that.stage.viewer.container.append(view.el);
+                if (that.model.get("count") <= 1){
+                    pe.style.display = 'none';
+                }
+            })
     },
 
     setVisibilityForRepr: function(component_index, repr_index, value) {
@@ -1095,15 +957,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                     func = this[msg.methodName];
                     if (func) {
                         func.apply(this, new_args);
-                    } else {
-                        // send error message to Python?
-                        console.log('can not create func for ' + msg.methodName);
-                    }
-                    break;
-                case 'player':
-                    func = this.$player[msg.methodName];
-                    if (func) {
-                        func.apply(this.$player, new_args);
                     } else {
                         // send error message to Python?
                         console.log('can not create func for ' + msg.methodName);
