@@ -279,6 +279,12 @@ class NGLWidget(DOMWidget):
         self._ngl_coordinate_resource = {}
         self._ngl_full_stage_parameters_embed = {}
 
+    def _get_embed_state(self, *args, **kwargs):
+        self._set_serialization()
+        state = super()._get_embed_state(*args, **kwargs)
+        self._unset_serialization()
+        return state
+
     @property
     def parameters(self):
         return self._parameters
