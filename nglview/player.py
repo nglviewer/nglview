@@ -37,7 +37,6 @@ class TrajectoryPlayer(HasTraits):
     # should set default values here different from desired defaults
     # so `observe` can be triggered
     step = Int(0)
-    sync_frame = Bool(True)
     interpolate = Bool(False)
     delay = Float(0.0)
     parameters = Dict()
@@ -74,11 +73,10 @@ class TrajectoryPlayer(HasTraits):
     widget_camera = Any(None)
     btn_center = Any(None)
 
-    def __init__(self, view, step=1, delay=100, sync_frame=False,
+    def __init__(self, view, step=1, delay=100,
                  min_delay=40):
         self._view = view
         self.step = step
-        self.sync_frame = sync_frame
         self.delay = delay
         self.min_delay = min_delay
         self._iplayer = None
@@ -133,14 +131,6 @@ class TrajectoryPlayer(HasTraits):
     def count(self):
         return self._view.count
 
-    @observe('sync_frame')
-    def update_sync_frame(self, change):
-        value = change['new']
-        if value:
-            self._view._set_sync_frame()
-        else:
-            self._view._set_unsync_frame()
-
     @observe("delay")
     def _update_delay(self, change):
         delay = change['new']
@@ -149,7 +139,6 @@ class TrajectoryPlayer(HasTraits):
     @observe('parameters')
     def update_parameters(self, change):
         params = change['new']
-        self.sync_frame = params.get("sync_frame", self.sync_frame)
         self.delay = params.get("delay", self.delay)
         self.step = params.get("step", self.step)
 

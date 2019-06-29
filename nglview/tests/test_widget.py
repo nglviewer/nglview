@@ -216,7 +216,6 @@ def test_API_promise_to_have():
     view.display(gui=True)
     view.display(gui=False)
     view.display(gui=True, use_box=True)
-    view._set_sync_frame()
     view._set_sync_camera([view])
     view._set_selection('.CA')
     view.color_by('atomindex')
@@ -824,7 +823,6 @@ def test_loaded_attribute():
 def test_player_simple():
     traj = pt.datafiles.load_tz2()
     view = nv.show_pytraj(traj)
-    assert not view.player.sync_frame
 
     # dummy
     component_slider = ipywidgets.IntSlider()
@@ -838,8 +836,6 @@ def test_player_simple():
     player.frame
     player.frame = 10
     player.count
-    player.sync_frame = False
-    player.sync_frame = True
     player.parameters = dict(step=2)
     player._display()
     player._make_button_center()
@@ -1077,7 +1073,7 @@ def test_queuing_messages():
     view.download_image()
     view
     assert [f._method_name for f in view._ngl_displayed_callbacks_before_loaded] == \
-           ['setUnSyncFrame', 'setDelay',
+           ['setDelay',
             'loadFile',
             '_downloadImage']
     assert [f._method_name for f in view._ngl_displayed_callbacks_after_loaded] == \

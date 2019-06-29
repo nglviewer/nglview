@@ -41,7 +41,6 @@ __frontend_version__ = '2.2.0'  # must match to js/package.json
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
     'setUnSyncCamera',
     'setSelector',
-    'setUnSyncFrame',
     'setDelay',
     'autoView',
     '_downloadImage',
@@ -594,12 +593,6 @@ class NGLWidget(DOMWidget):
                 'setDraggable', target='Widget', args=[
                     'destroy',
                 ])
-
-    def _set_sync_frame(self):
-        self._remote_call("setSyncFrame", target="Widget")
-
-    def _set_unsync_frame(self):
-        self._remote_call("setUnSyncFrame", target="Widget")
 
     def _set_sync_camera(self, other_views):
         model_ids = {v._model_id for v in other_views}
