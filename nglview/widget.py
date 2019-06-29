@@ -276,9 +276,12 @@ class NGLWidget(DOMWidget):
     def _create_player(self):
         player = Play(max=self.count-1, interval=100)
         slider = IntSlider(max=self.count-1)
+        self._iplayer = HBox([player, slider])
+        self.player.widget_player = player
+        self.player.widget_player_slider = slider
+
         jslink((player, 'value'), (slider, 'value'))
         jslink((player, 'value'), (self, 'frame'))
-        self._iplayer = HBox([player, slider])
 
     def _unset_serialization(self):
         self._ngl_serialize = False
@@ -605,14 +608,6 @@ class NGLWidget(DOMWidget):
         self._synced_model_ids = list(
                 set(self._synced_model_ids) - model_ids)
         self._remote_call("setSyncCamera", target="Widget", args=[self._synced_model_ids])
-
-    def _set_delay(self, delay):
-        """unit of millisecond
-        """
-        self._remote_call(
-            "setDelay", target="Widget", args=[
-                delay,
-            ])
 
     def _set_spin(self, axis, angle):
         self._remote_call('setSpin', target='Stage', args=[axis, angle])

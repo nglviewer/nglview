@@ -381,10 +381,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         });
     },
 
-    setDelay: function(delay) {
-        this.delay = delay;
-    },
-
     setSyncCamera: function(model_ids){
         this._synced_model_ids = model_ids;
     },

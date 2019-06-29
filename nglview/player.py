@@ -111,6 +111,11 @@ class TrajectoryPlayer(HasTraits):
     def smooth(self):
         self.interpolate = True
 
+    @observe('delay')
+    def _on_delay(self, change):
+        if self.widget_player:
+            self.widget_player.interval = change['new']
+
     @observe('camera')
     def on_camera_changed(self, change):
         camera_type = change['new']
@@ -130,11 +135,6 @@ class TrajectoryPlayer(HasTraits):
     @property
     def count(self):
         return self._view.count
-
-    @observe("delay")
-    def _update_delay(self, change):
-        delay = change['new']
-        self._view._set_delay(delay)
 
     @observe('parameters')
     def update_parameters(self, change):
@@ -780,42 +780,3 @@ class TrajectoryPlayer(HasTraits):
                 widget.layout.display = 'none'
         self.widget_repr_choices.layout.display = 'flex'
         self.widget_accordion_repr_parameters.selected_index = 0
-
-    def _make_widget_player(self, ):
-        from string import Template
-        if self.widget_player:
-            return self.widget_player
-        view = self._view
-        self._iplayer = player = Play(max=view.count-1, interval=100)
-        self._islider = slider = IntSlider(max=view.count-1)
-        jslink((player, 'value'), (slider, 'value'))
-        jslink((player, 'value'), (view, 'frame'))
-        self.widget_player = HBox([player, slider])
-
-        t = Template("""
-        
-        var wm = this.model.widget_manager
-        var that = this
-        that.iplayer_id = '$iplayer_model_id';
-        that.islider_id = '$islider_model_id';
-        wm.get_model('$model_id').then(function(model){
-            wm.create_view(model).then(function(view){
-                var pe = view.el
-                pe.style.position = 'absolute'
-                pe.style.zIndex = 100
-                pe.style.bottom = '5%'
-                pe.style.left = '10%'
-                pe.style.opacity = '0.7'
-                var ele = document.getElementById('what');
-                that.stage.viewer.container.append(view.el);
-            })
-        })
-        
-        """)
-        
-        view._execute_js_code(t.substitute(
-            model_id=self.widget_player.model_id,
-            iplayer_model_id=player.model_id,
-            islider_model_id=slider.model_id,
-            ))
-        return self.widget_player

@@ -452,10 +452,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        });
 	    },
 	
-	    setDelay: function(delay) {
-	        this.delay = delay;
-	    },
-	
 	    setSyncCamera: function(model_ids){
 	        this._synced_model_ids = model_ids;
 	    },
