@@ -5,6 +5,9 @@ import uuid
 import json
 import numpy as np
 from IPython.display import display
+import ipywidgets as widgets
+from ipywidgets import widget as _widget
+widget_serialization = _widget.widget_serialization
 from ipywidgets import Box, DOMWidget, Output, Widget
 try:
     # ipywidgets >= 7.4
@@ -13,7 +16,7 @@ except ImportError:
     from ipywidgets.widget_image import Image
 
 import ipywidgets.embed
-from traitlets import (Unicode, Bool, Dict, List, Int, Integer, observe,
+from traitlets import (Unicode, Bool, Dict, List, Int, Integer, observe, Instance,
                        CaselessStrEnum)
 
 from .utils import py_utils, widget_utils
@@ -127,7 +130,6 @@ class NGLWidget(DOMWidget):
     _scene_rotation = Dict().tag(sync=True)
     _first_time_loaded = Bool(True).tag(sync=False)
     # hack to always display movie
-    _n_dragged_files = Int().tag(sync=True)
     # TODO: remove _parameters?
     _parameters = Dict().tag(sync=False)
     _ngl_full_stage_parameters = Dict().tag(sync=True)
@@ -153,6 +155,10 @@ class NGLWidget(DOMWidget):
     _ngl_coordinate_resource = Dict().tag(sync=True)
     _representations = List().tag(sync=False)
     _ngl_color_dict = Dict().tag(sync=True)
+    _player_dict = Dict().tag(sync=True)
+
+    # instance
+    _islider = Instance(widgets.IntSlider, allow_none=True).tag(sync=True, **widget_serialization)
 
     def __init__(self,
                  structure=None,
@@ -262,6 +268,11 @@ class NGLWidget(DOMWidget):
         self._ngl_full_stage_parameters_embed = self._ngl_full_stage_parameters
         self._ngl_color_dict = color._USER_COLOR_DICT.copy()
 
+        # for x in filter(lambda _: _.startswith(('btn_', 'widget_')), dir(self.player)):
+        #     attr = getattr(self.player, x)
+        #     if attr is not None:
+        #         self._ngl_gui_dict[x] = attr.model_id
+
     def _unset_serialization(self):
         self._ngl_serialize = False
         self._ngl_msg_archive = []
@@ -319,12 +330,7 @@ class NGLWidget(DOMWidget):
     @observe('background')
     def _update_background_color(self, change):
         color = change['new']
-        self.parameters = dict(background_color=color)
-
-    @observe('_n_dragged_files')
-    def on_update_dragged_file(self, change):
-        if change['new'] - change['old'] == 1:
-            self._ngl_component_ids.append(uuid.uuid4())
+        self.stage.set_parameters(background_color=color)
 
     @observe('n_components')
     def _handle_n_components_changed(self, change):
@@ -534,13 +540,14 @@ class NGLWidget(DOMWidget):
 
     def display(self, gui=False, use_box=False):
         if gui:
+            self._gui = self.player._display()
             if use_box:
-                box = Box([self, self.player._display()])
+                box = Box([self, self._gui])
                 box._gui_style = 'row'
                 return box
             else:
                 display(self)
-                display(self.player._display())
+                display(self._gui)
                 return None
         else:
             return self
@@ -1330,7 +1337,7 @@ class NGLWidget(DOMWidget):
     def _add_colorscheme(self, arr, name):
         self._remote_call('addColorScheme', args=[arr, name])
 
-    def _remote_call(self,
+    def _get_remote_call_msg(self,
                      method_name,
                      target='Widget',
                      args=None,
@@ -1396,6 +1403,21 @@ class NGLWidget(DOMWidget):
         msg['kwargs'] = kwargs
         if other_kwargs:
             msg.update(other_kwargs)
+        return msg
+
+    def _remote_call(self,
+                     method_name,
+                     target='Widget',
+                     args=None,
+                     kwargs=None,
+                     **other_kwargs):
+    
+        msg = self._get_remote_call_msg(
+                     method_name,
+                     target=target,
+                     args=args,
+                     kwargs=kwargs,
+                     **other_kwargs)
 
         def callback(widget, msg=msg):
             widget.send(msg)
@@ -1410,7 +1432,8 @@ class NGLWidget(DOMWidget):
             # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks_before_loaded.append(callback)
 
-        if callback._method_name not in _EXCLUDED_CALLBACK_AFTER_FIRING:
+        if callback._method_name not in _EXCLUDED_CALLBACK_AFTER_FIRING and \
+           (not other_kwargs.get("fire_once", False)):
             self._ngl_displayed_callbacks_after_loaded.append(callback)
 
     def _get_traj_by_id(self, itsid):
