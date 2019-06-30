@@ -1,6 +1,7 @@
-import nglview as nv
 import json
 import os
+
+import nglview as nv
 
 
 def test_make_sure_versions_matched():

@@ -1,10 +1,10 @@
-import sys
 import subprocess
-from mock import MagicMock
-import nglview
-import numpy as np
+import sys
 
-# local
+import numpy as np
+from mock import MagicMock
+
+import nglview
 from make_dummy_comm import *
 
 # TODO : add more show_xxx
@@ -21,6 +21,7 @@ class MockStructure:
         with open(nglview.datafiles.PDB) as fh:
             return fh.read()
 
+
 class MockRosettaPose:
     def dump_pdb(self, _):
         _write()
@@ -34,20 +35,20 @@ def test_show_schrodinger():
 
     # Show a trajectory with a Structure as topology
     class MockAtom:
-       pdbname = 'C'
-       atomic_number=6
-       pdbres = 'GLU'
-       resnum = 1
-       chain = 'A'
+        pdbname = 'C'
+        atomic_number = 6
+        pdbres = 'GLU'
+        resnum = 1
+        chain = 'A'
 
     s = MagicMock()
     s.fsys_ct.getXYZ.return_value = np.zeros((3, 3))
-    s.fsys_ct.atom = [MockAtom()]*3
+    s.fsys_ct.atom = [MockAtom()] * 3
     traj = MagicMock()
     traj.__len__.return_value = 3
     v1 = nglview.show_schrodinger(s, traj)
     assert v1.count == 3
-    v1.frame = 2 # trigger `get_coordinates`
+    v1.frame = 2  # trigger `get_coordinates`
 
 
 def test_show_htmd():
@@ -83,10 +84,12 @@ H   -0.7838370000   -0.4922360000   -0.0000000000""")
     v = nglview.show_iodata(MockIO())
     v
 
+
 def test_show_qcelemental_show_psi4():
     class MockMol:
         def to_string(self, format):
             return '1\nHe\nHe                    0.000000000000     0.000000000000     0.000000000000\n'
+
     v = nglview.show_qcelemental(MockMol())
     v
     nglview.show_psi4(MockMol())

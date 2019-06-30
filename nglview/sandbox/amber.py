@@ -1,7 +1,8 @@
 import os
-import time
-import pytraj as pt
 import threading
+import time
+
+import pytraj as pt
 
 from .base import BaseMD
 

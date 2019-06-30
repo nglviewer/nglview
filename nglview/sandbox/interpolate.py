@@ -4,7 +4,11 @@
 import numpy as np
 
 
-def smooth(coords_3d, method='filtfilt', inplace=True, atom_indices=None, **kwargs):
+def smooth(coords_3d,
+           method='filtfilt',
+           inplace=True,
+           atom_indices=None,
+           **kwargs):
     """
     Parameters
     ----------
@@ -45,5 +49,5 @@ def smooth(coords_3d, method='filtfilt', inplace=True, atom_indices=None, **kwar
             else:
                 raise ValueError(f"%s method is not supported" % method)
             xyz[:, idx, j] = smooth_data
-    xyz[0] = xyz0 # to correctly render 1st frame.
+    xyz[0] = xyz0  # to correctly render 1st frame.
     return xyz

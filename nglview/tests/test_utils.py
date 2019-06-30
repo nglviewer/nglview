@@ -1,15 +1,16 @@
-import os
-import pytest
-import nglview
-from nglview.utils import py_utils, js_utils
-from nglview.utils.py_utils import seq_to_string, _camelize, _camelize_dict, FileManager
-
-# local
-from utils import repr_dict as repr_dict_example
 import gzip
+import os
 
+import pytest
+
+import nglview
+from nglview.utils import js_utils, py_utils
+from nglview.utils.py_utils import (FileManager, _camelize, _camelize_dict,
+                                    seq_to_string)
+# local
 # local
 from utils import get_fn
+from utils import repr_dict as repr_dict_example
 
 
 def assert_equal(x, y):
@@ -19,9 +20,8 @@ def assert_equal(x, y):
 def test_get_name():
     fn = nglview.datafiles.PDB
     assert_equal(py_utils.get_name(object, dict(name='hello')), 'hello')
-    assert_equal(
-        py_utils.get_name(nglview.FileStructure(fn), dict()),
-        'nglview.adaptor.FileStructure')
+    assert_equal(py_utils.get_name(nglview.FileStructure(fn), dict()),
+                 'nglview.adaptor.FileStructure')
 
 
 def test_seq_to_string():
@@ -177,9 +177,8 @@ def test_file_passing_blob_from_gzip():
 
 
 def test_get_repr_names_from_dict():
-    assert_equal(
-        py_utils.get_repr_names_from_dict(repr_dict_example, 0),
-        ['cartoon', 'base', 'ball+stick'])
+    assert_equal(py_utils.get_repr_names_from_dict(repr_dict_example, 0),
+                 ['cartoon', 'base', 'ball+stick'])
 
 
 def test_js_utils():

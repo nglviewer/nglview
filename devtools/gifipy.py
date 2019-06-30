@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
+import subprocess
 # require: ffmpeg
 # e.g: conda install ffmpeg -c menpo
 # 
 import sys
-import subprocess
 
 mov_in = sys.argv[1]
 mov_out = sys.argv[2]

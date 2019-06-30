@@ -1,13 +1,15 @@
+import os
 import subprocess
-from setuptools import setup, find_packages, Command
-from setuptools.command.egg_info import egg_info
+import sys
+from distutils import log
 from subprocess import check_call
 
-import os
-import sys
+from setuptools import Command, find_packages, setup
+from setuptools.command.egg_info import egg_info
 
 import versioneer
 from versioneer import get_cmdclass
+
 sdist = get_cmdclass()['sdist']
 build_py = get_cmdclass()['build_py']
 
@@ -20,7 +22,6 @@ npm_path = os.pathsep.join([
                 os.environ.get('PATH', os.defpath),
 ])
 
-from distutils import log
 log.set_verbosity(log.DEBUG)
 log.info('setup.py entered')
 log.info('$PATH=%s' % os.environ['PATH'])

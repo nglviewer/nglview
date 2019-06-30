@@ -4,12 +4,12 @@ COLOR_SCHEMES = [
     "hydrophobicity", "value", "volume", "occupancy"
 ]
 
-
 _USER_COLOR_DICT = {}
 
 
 class _ColorScheme:
     _color_dict = {}
+
     def __init__(self, args, label):
         # FIXME: validate `args`
         self._color_scheme = args

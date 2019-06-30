@@ -1,11 +1,12 @@
 import os
+
+from mock import MagicMock, patch
+
 import nglview
 import pytraj
-from mock import patch, MagicMock
+from make_dummy_comm import *
 
 # local
-
-from make_dummy_comm import *
 
 
 class FakeEvent:
@@ -49,13 +50,13 @@ def test_movie_maker(ImageSequenceClip):
     movie._event._event_set = False
     movie.make()
 
-    movie = MovieMaker(
-        view,
-        download_folder='here',
-        render_params=dict(factor=4),
-        moviepy_params={},
-        stop=2)
+    movie = MovieMaker(view,
+                       download_folder='here',
+                       render_params=dict(factor=4),
+                       moviepy_params={},
+                       stop=2)
     movie.make()
+
 
 def test_movie_maker_base64_to_ndarray():
     from nglview.contrib.movie import MovieMaker

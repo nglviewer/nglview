@@ -1,4 +1,4 @@
-from .utils import js_utils 
+from .utils import js_utils
 
 
 class DatasourceRegistry:

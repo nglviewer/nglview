@@ -1,17 +1,20 @@
-import sys
 import os
-import unittest
 import subprocess
-from nglview import datafiles
+import sys
+import unittest
+
 import pytest
-from nglview.scripts.nglview import main, get_remote_port
-from mock import patch, mock_open
+from mock import mock_open, patch
+
+from nglview import datafiles
+from nglview.scripts.nglview import get_remote_port, main
 
 this_path = os.path.dirname(os.path.abspath(__file__))
 
+
 @patch('subprocess.check_call')
 def test_cli(mock_call):
-    # no argument 
+    # no argument
     command = []
     # subprocess.check_call(command.split())
     main(cmd=command)
@@ -56,8 +59,7 @@ def test_cli(mock_call):
     subprocess.check_call(command.split())
 
     # remote
-    command = 'nglview {} -c {} --remote'.format(
-        datafiles.PDB, datafiles.XTC)
+    command = 'nglview {} -c {} --remote'.format(datafiles.PDB, datafiles.XTC)
     subprocess.check_call(command.split())
 
     # python script
@@ -74,23 +76,24 @@ def test_cli(mock_call):
     command = ['install', '--symlink']
     with pytest.raises(SystemExit):
         main(cmd=command)
-    mock_call.assert_called_with(
-            ['jupyter', 'nbextension', 'install', '--py', '--sys-prefix', 'nglview',
-             '--overwrite', '--symlink'])
+    mock_call.assert_called_with([
+        'jupyter', 'nbextension', 'install', '--py', '--sys-prefix', 'nglview',
+        '--overwrite', '--symlink'
+    ])
 
     # enable
     command = ['enable']
     with pytest.raises(SystemExit):
         main(cmd=command)
-    mock_call.assert_called_with(
-            ['jupyter', 'nbextension', 'enable', '--py', '--sys-prefix', 'nglview'])
+    mock_call.assert_called_with([
+        'jupyter', 'nbextension', 'enable', '--py', '--sys-prefix', 'nglview'
+    ])
 
     # remote
     with patch('nglview.scripts.nglview.get_remote_port') as mock_remote:
         command = ['--remote']
         main(cmd=command)
         mock_remote.assert_called_with(None, 'tmpnb_ngl.ipynb')
-
 
 
 @patch('nglview.scripts.app.NGLViewApp.get_port')

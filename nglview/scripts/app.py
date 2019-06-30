@@ -1,7 +1,8 @@
-from notebook.notebookapp import NotebookApp, random_ports
 import socket
-from tornado import httpserver
 from itertools import chain
+
+from notebook.notebookapp import NotebookApp, random_ports
+from tornado import httpserver
 
 
 class NGLViewApp(NotebookApp):

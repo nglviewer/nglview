@@ -1,17 +1,15 @@
 from io import StringIO
-from .widget import NGLWidget
+
 from . import datafiles
-from .adaptor import (FileStructure, TextStructure, PdbIdStructure,
-                      ASEStructure, BiopythonStructure, IOTBXStructure,
-                      RosettaStructure,
-                      IODataStructure,
-                      QCelementalStructure,
-                      OpenbabelStructure,
-                      ProdyStructure,
-                      ProdyTrajectory,
-                      MDTrajTrajectory,
-                      PyTrajTrajectory, ParmEdTrajectory, MDAnalysisTrajectory,
-                      HTMDTrajectory, ASETrajectory, SchrodingerStructure, SchrodingerTrajectory)
+from .adaptor import (ASEStructure, ASETrajectory, BiopythonStructure,
+                      FileStructure, HTMDTrajectory, IODataStructure,
+                      IOTBXStructure, MDAnalysisTrajectory, MDTrajTrajectory,
+                      OpenbabelStructure, ParmEdTrajectory, PdbIdStructure,
+                      ProdyStructure, ProdyTrajectory, PyTrajTrajectory,
+                      QCelementalStructure, RosettaStructure,
+                      SchrodingerStructure, SchrodingerTrajectory,
+                      TextStructure)
+from .widget import NGLWidget
 
 __all__ = [
     'demo',
@@ -239,9 +237,8 @@ def show_file(path, **kwargs):
     ... w # doctest: +SKIP
     '''
     if isinstance(path, str) and (path.endswith(
-            ('.mae', '.mae.gz', '.meagz',
-            '.cms', '.cms.gz', '.cms.gz')) or
-            (kwargs.get('format', None) == 'maestro')):
+        ('.mae', '.mae.gz', '.meagz', '.cms', '.cms.gz', '.cms.gz')) or
+                                  (kwargs.get('format', None) == 'maestro')):
         view = _show_schrodinger_file(path, **kwargs)
     else:
         view = NGLWidget()

@@ -1,36 +1,38 @@
 # TODO: reorg
 # simplify code
-import time
 import json
+import time
 import uuid
-from functools import partial
 from collections import defaultdict
-from IPython.display import display, Javascript
-from ipywidgets import (jslink, Play, Box, HBox, VBox, Checkbox, ColorPicker,
-                        IntSlider, FloatSlider, Dropdown, Button, ToggleButton,
-                        Text, Textarea, IntText, FloatText, Label, interactive,
-                        Layout, Tab)
 
-from traitlets import Any, Int, Bool, Dict, Float, CaselessStrEnum, HasTraits
-from traitlets import observe, link
+from IPython.display import Javascript, display
+from ipywidgets import (Box, Button, Checkbox, ColorPicker, Dropdown,
+                        FloatSlider, FloatText, HBox, IntSlider, IntText,
+                        Label, Layout, Play, Tab, Text, Textarea, ToggleButton,
+                        VBox, interactive, jslink)
+from traitlets import (Any, Bool, CaselessStrEnum, Dict, Float, HasTraits, Int,
+                       link, observe)
 
-from .parameters import REPRESENTATION_NAMES
 from . import default
+from .layout import (_make_autofit, _make_box_layout, _make_delay_tab,
+                     _relayout, _relayout_master, make_form_item_layout)
+from .parameters import REPRESENTATION_NAMES
 from .utils import js_utils
-from .layout import (make_form_item_layout, _relayout, _make_autofit,
-                     _relayout_master, _make_delay_tab, _make_box_layout)
 
 
-def dry_run(v, func):
+def _dry_run(v, func, *args, **kwargs):
     # Get remote call message.
     msg = []
+
     def _another_call(*args, **kwargs):
-         msg.append(v._get_remote_call_msg(*args, **kwargs))
+        msg.append(v._get_remote_call_msg(*args, **kwargs))
+
     old = v._remote_call
     setattr(v, '_remote_call', _another_call)
-    func()
+    func(*args, **kwargs)
     setattr(v, '_remote_call', old)
-    return msg
+
+    return msg and msg[-1] or None  # FIXME: all messages?
 
 
 class TrajectoryPlayer(HasTraits):
@@ -43,9 +45,8 @@ class TrajectoryPlayer(HasTraits):
     iparams = Dict()
     _interpolation_t = Float()
     _iterpolation_type = CaselessStrEnum(['linear', 'spline'])
-    camera = CaselessStrEnum(
-        ['perspective', 'orthographic'],
-        default_value='perspective')
+    camera = CaselessStrEnum(['perspective', 'orthographic'],
+                             default_value='perspective')
     _render_params = Dict()
     _real_time_update = Bool(False)
 
@@ -73,8 +74,7 @@ class TrajectoryPlayer(HasTraits):
     widget_camera = Any(None)
     btn_center = Any(None)
 
-    def __init__(self, view, step=1, delay=100,
-                 min_delay=40):
+    def __init__(self, view, step=1, delay=100, min_delay=40):
         self._view = view
         self.step = step
         self.delay = delay
@@ -82,10 +82,13 @@ class TrajectoryPlayer(HasTraits):
         self._iplayer = None
         self._interpolation_t = 0.5
         self._iterpolation_type = 'linear'
-        self.iparams = dict(
-            t=self._interpolation_t, step=1, type=self._iterpolation_type)
-        self._render_params = dict(
-            factor=4, antialias=True, trim=False, transparent=False)
+        self.iparams = dict(t=self._interpolation_t,
+                            step=1,
+                            type=self._iterpolation_type)
+        self._render_params = dict(factor=4,
+                                   antialias=True,
+                                   trim=False,
+                                   transparent=False)
 
         self._widget_names = [w for w in dir(self) if w.startswith('wiget_')]
 
@@ -119,10 +122,9 @@ class TrajectoryPlayer(HasTraits):
     @observe('camera')
     def on_camera_changed(self, change):
         camera_type = change['new']
-        self._view._remote_call(
-            "setParameters",
-            target='Stage',
-            kwargs=dict(cameraType=camera_type))
+        self._view._remote_call("setParameters",
+                                target='Stage',
+                                kwargs=dict(cameraType=camera_type))
 
     @property
     def frame(self):
@@ -175,7 +177,7 @@ class TrajectoryPlayer(HasTraits):
             self._view.center()
 
         if hasattr(self.btn_center, 'click'):
-            dry_run(self._view, self.btn_center.click)
+            _dry_run(self._view, self.btn_center.click)
         return self.btn_center
 
     def _make_widget_preference(self, width='100%'):
@@ -196,38 +198,36 @@ class TrajectoryPlayer(HasTraits):
                      quality=parameters.get('quality', 'medium'),
                      sample_level=parameters.get('sampleLevel', 1)):
 
-                self._view.parameters = dict(
-                    panSpeed=pan_speed,
-                    rotateSpeed=rotate_speed,
-                    zoomSpeed=zoom_speed,
-                    clipDist=clip_dist,
-                    clipFar=clip_far,
-                    clipNear=clip_near,
-                    cameraFov=camera_fov,
-                    fogFar=fog_far,
-                    fogNear=fog_near,
-                    impostor=impostor,
-                    lightIntensity=light_intensity,
-                    quality=quality,
-                    sampleLevel=sample_level)
+                self._view.parameters = dict(panSpeed=pan_speed,
+                                             rotateSpeed=rotate_speed,
+                                             zoomSpeed=zoom_speed,
+                                             clipDist=clip_dist,
+                                             clipFar=clip_far,
+                                             clipNear=clip_near,
+                                             cameraFov=camera_fov,
+                                             fogFar=fog_far,
+                                             fogNear=fog_near,
+                                             impostor=impostor,
+                                             lightIntensity=light_intensity,
+                                             quality=quality,
+                                             sampleLevel=sample_level)
 
             return func
 
         def make_widget_box():
-            widget_sliders = interactive(
-                make_func(),
-                pan_speed=(0, 10, 0.1),
-                rotate_speed=(0, 10, 1),
-                zoom_speed=(0, 10, 1),
-                clip_dist=(0, 200, 5),
-                clip_far=(0, 100, 1),
-                clip_near=(0, 100, 1),
-                camera_fov=(15, 120, 1),
-                fog_far=(0, 100, 1),
-                fog_near=(0, 100, 1),
-                light_intensity=(0, 10, 0.02),
-                quality=['low', 'medium', 'high'],
-                sample_level=(-1, 5, 1))
+            widget_sliders = interactive(make_func(),
+                                         pan_speed=(0, 10, 0.1),
+                                         rotate_speed=(0, 10, 1),
+                                         zoom_speed=(0, 10, 1),
+                                         clip_dist=(0, 200, 5),
+                                         clip_far=(0, 100, 1),
+                                         clip_near=(0, 100, 1),
+                                         camera_fov=(15, 120, 1),
+                                         fog_far=(0, 100, 1),
+                                         fog_near=(0, 100, 1),
+                                         light_intensity=(0, 10, 0.02),
+                                         quality=['low', 'medium', 'high'],
+                                         sample_level=(-1, 5, 1))
 
             for child in widget_sliders.children:
                 if isinstance(child, (IntSlider, FloatSlider)):
@@ -249,8 +249,8 @@ class TrajectoryPlayer(HasTraits):
                     reset_button,
                 ] + list(make_widget_box().children)
 
-            self.widget_preference = _relayout_master(
-                widget_sliders, width=width)
+            self.widget_preference = _relayout_master(widget_sliders,
+                                                      width=width)
         return self.widget_preference
 
     def _show_download_image(self):
@@ -273,40 +273,41 @@ class TrajectoryPlayer(HasTraits):
         return button
 
     def _make_text_picked(self):
-        ta = Textarea(
-            value=json.dumps(self._view.picked), description='Picked atom')
+        ta = Textarea(value=json.dumps(self._view.picked),
+                      description='Picked atom')
         ta.layout.width = '300px'
-        dry_run(self._view, partial(self._view._on_picked, change={'old': '', 'new': ''}))
+        _dry_run(self._view,
+                 self._view._on_picked,
+                 change={
+                     'old': '',
+                     'new': ''
+                 })
         return ta
 
     def _refresh(self, component_slider, repr_slider):
         """update representation and component information
         """
-        self._view._request_repr_parameters(
-            component=component_slider.value, repr_index=repr_slider.value)
+        self._view._request_repr_parameters(component=component_slider.value,
+                                            repr_index=repr_slider.value)
         self._view._update_repr_dict()
         self._view._handle_repr_dict_changed(change=dict(
             new=self._view._ngl_repr_dict))
 
     def _make_button_repr_control(self, component_slider, repr_slider,
                                   repr_selection):
-        button_refresh = Button(
-            description=' Refresh',
-            tooltip='Get representation info',
-            icon='fa-refresh')
-        button_center_selection = Button(
-            description=' Center',
-            tooltip='center selected atoms',
-            icon='fa-bullseye')
+        button_refresh = Button(description=' Refresh',
+                                tooltip='Get representation info',
+                                icon='fa-refresh')
+        button_center_selection = Button(description=' Center',
+                                         tooltip='center selected atoms',
+                                         icon='fa-bullseye')
         button_center_selection._ngl_name = 'button_center_selection'
-        button_hide = Button(
-            description=' Hide',
-            icon='fa-eye-slash',
-            tooltip='Hide/Show current representation')
-        button_remove = Button(
-            description=' Remove',
-            icon='fa-trash',
-            tooltip='Remove current representation')
+        button_hide = Button(description=' Hide',
+                             icon='fa-eye-slash',
+                             tooltip='Hide/Show current representation')
+        button_remove = Button(description=' Remove',
+                               icon='fa-trash',
+                               tooltip='Remove current representation')
 
         @button_refresh.on_click
         def on_click_refresh(button):
@@ -314,9 +315,8 @@ class TrajectoryPlayer(HasTraits):
 
         @button_center_selection.on_click
         def on_click_center(center_selection):
-            self._view.center(
-                selection=repr_selection.value,
-                component=component_slider.value)
+            self._view.center(selection=repr_selection.value,
+                              component=component_slider.value)
 
         @button_hide.on_click
         def on_click_hide(button_hide):
@@ -330,15 +330,14 @@ class TrajectoryPlayer(HasTraits):
                 hide = False
                 button_hide.description = 'Hide'
 
-            self._view._remote_call(
-                'setVisibilityForRepr',
-                target='Widget',
-                args=[component, repr_index, not hide])
+            self._view._remote_call('setVisibilityForRepr',
+                                    target='Widget',
+                                    args=[component, repr_index, not hide])
 
         @button_remove.on_click
         def on_click_remove(button_remove):
-            self._view._remove_representation(
-                component=component_slider.value, repr_index=repr_slider.value)
+            self._view._remove_representation(component=component_slider.value,
+                                              repr_index=repr_slider.value)
             self._view._request_repr_parameters(
                 component=component_slider.value, repr_index=repr_slider.value)
 
@@ -349,7 +348,7 @@ class TrajectoryPlayer(HasTraits):
             ]))
         for b in bbox.children:
             if hasattr(b, 'click'):
-                dry_run(self._view, b.click)
+                _dry_run(self._view, b.click)
         return bbox
 
     def _make_widget_repr(self):
@@ -360,21 +359,23 @@ class TrajectoryPlayer(HasTraits):
         repr_selection.width = self.widget_repr_name.width = default.DEFAULT_TEXT_WIDTH
 
         max_n_components = max(self._view.n_components - 1, 0)
-        self.widget_component_slider = IntSlider(
-            value=0, max=max_n_components, min=0, description='component')
+        self.widget_component_slider = IntSlider(value=0,
+                                                 max=max_n_components,
+                                                 min=0,
+                                                 description='component')
         self.widget_component_slider._ngl_name = 'component_slider'
 
         cvalue = ' '
-        self.widget_component_dropdown = Dropdown(
-            value=cvalue, options=[
-                cvalue,
-            ], description='component')
+        self.widget_component_dropdown = Dropdown(value=cvalue,
+                                                  options=[
+                                                      cvalue,
+                                                  ],
+                                                  description='component')
         self.widget_component_dropdown._ngl_name = 'component_dropdown'
 
-        self.widget_repr_slider = IntSlider(
-            value=0,
-            description='representation',
-            width=default.DEFAULT_SLIDER_WIDTH)
+        self.widget_repr_slider = IntSlider(value=0,
+                                            description='representation',
+                                            width=default.DEFAULT_SLIDER_WIDTH)
         self.widget_repr_slider._ngl_name = 'repr_slider'
         self.widget_repr_slider.visible = True
 
@@ -416,9 +417,9 @@ class TrajectoryPlayer(HasTraits):
             name = change['new'].strip()
             old = change['old'].strip()
 
-            should_update = (self._real_time_update and old and name and
-                             name in REPRESENTATION_NAMES and
-                             name != change['old'].strip())
+            should_update = (self._real_time_update and old and name
+                             and name in REPRESENTATION_NAMES
+                             and name != change['old'].strip())
 
             if should_update:
                 component = self.widget_component_slider.value
@@ -445,24 +446,25 @@ class TrajectoryPlayer(HasTraits):
             if self._real_time_update:
                 component = self.widget_component_slider.value
                 repr_index = self.widget_repr_slider.value
-                self._view._set_selection(
-                    change['new'], component=component, repr_index=repr_index)
+                self._view._set_selection(change['new'],
+                                          component=component,
+                                          repr_index=repr_index)
 
         def on_change_component_dropdown(change):
             choice = change['new']
-            if choice and choice.strip(): # bool(" ") is True
+            if choice and choice.strip():  # bool(" ") is True
                 self.widget_component_slider.value = self._view._ngl_component_names.index(
                     choice)
 
-        self.widget_component_dropdown.observe(
-            on_change_component_dropdown, names='value')
+        self.widget_component_dropdown.observe(on_change_component_dropdown,
+                                               names='value')
 
         self.widget_repr_slider.observe(
             on_component_or_repr_slider_value_changed, names='value')
         self.widget_component_slider.observe(
             on_component_or_repr_slider_value_changed, names='value')
-        self.widget_repr_name.observe(
-            on_repr_name_text_value_changed, names='value')
+        self.widget_repr_name.observe(on_repr_name_text_value_changed,
+                                      names='value')
         repr_selection.observe(on_repr_selection_value_changed, names='value')
 
         self.widget_repr_control_buttons = self._make_button_repr_control(
@@ -502,10 +504,9 @@ class TrajectoryPlayer(HasTraits):
                                      repr_slider,
                                      repr_name_text=None):
         name = repr_name_text.value if repr_name_text is not None else ' '
-        widget = self._view._display_repr(
-            component=component_slider.value,
-            repr_index=repr_slider.value,
-            name=name)
+        widget = self._view._display_repr(component=component_slider.value,
+                                          repr_index=repr_slider.value,
+                                          name=name)
         widget._ngl_name = 'repr_parameters_box'
         return widget
 
@@ -515,13 +516,16 @@ class TrajectoryPlayer(HasTraits):
         checkbox_trim = Checkbox(value=False, description='trim')
         checkbox_transparent = Checkbox(value=False, description='transparent')
         filename_text = Text(value='Screenshot', description='Filename')
-        delay_text = FloatText(
-            value=1, description='delay (s)', tooltip='hello')
+        delay_text = FloatText(value=1,
+                               description='delay (s)',
+                               tooltip='hello')
 
-        start_text, stop_text, step_text = (
-            IntText(value=0, description='start'),
-            IntText(value=self._view.count, description='stop'),
-            IntText(value=1, description='step'))
+        start_text, stop_text, step_text = (IntText(value=0,
+                                                    description='start'),
+                                            IntText(value=self._view.count,
+                                                    description='stop'),
+                                            IntText(value=1,
+                                                    description='step'))
 
         start_text.layout.max_width = stop_text.layout.max_width = step_text.layout.max_width \
                 = filename_text.layout.max_width = delay_text.layout.max_width = default.DEFAULT_TEXT_WIDTH
@@ -529,12 +533,11 @@ class TrajectoryPlayer(HasTraits):
         button_movie_images = Button(description='Export Images')
 
         def download_image(filename):
-            self._view.download_image(
-                factor=slider_factor.value,
-                antialias=checkbox_antialias.value,
-                trim=checkbox_trim.value,
-                transparent=checkbox_transparent.value,
-                filename=filename)
+            self._view.download_image(factor=slider_factor.value,
+                                      antialias=checkbox_antialias.value,
+                                      trim=checkbox_trim.value,
+                                      transparent=checkbox_transparent.value,
+                                      filename=filename)
 
         @button_movie_images.on_click
         def on_click_images(button_movie_images):
@@ -563,26 +566,27 @@ class TrajectoryPlayer(HasTraits):
         return form
 
     def _make_resize_notebook_slider(self):
-        resize_notebook_slider = IntSlider(
-            min=300, max=2000, description='resize notebook')
+        resize_notebook_slider = IntSlider(min=300,
+                                           max=2000,
+                                           description='resize notebook')
 
         def on_resize_notebook(change):
             width = change['new']
-            self._view._remote_call(
-                'resizeNotebook', target='Widget', args=[
-                    width,
-                ])
+            self._view._remote_call('resizeNotebook',
+                                    target='Widget',
+                                    args=[
+                                        width,
+                                    ])
 
         resize_notebook_slider.observe(on_resize_notebook, names='value')
         return resize_notebook_slider
 
     def _make_add_widget_repr(self, component_slider):
-        dropdown_repr_name = Dropdown(
-            options=REPRESENTATION_NAMES, value='cartoon')
+        dropdown_repr_name = Dropdown(options=REPRESENTATION_NAMES,
+                                      value='cartoon')
         repr_selection = Text(value='*', description='')
-        repr_button = Button(
-            description='Add',
-            tooltip="""Add representation.
+        repr_button = Button(description='Add',
+                             tooltip="""Add representation.
         You can also hit Enter in selection box""")
         repr_button.layout = Layout(width='auto', flex='1 1 auto')
 
@@ -623,8 +627,8 @@ class TrajectoryPlayer(HasTraits):
                     selection = repr_selection.value
                     new = change['new']  # True/False
                     if new:
-                        self._view.add_representation(
-                            button.description, selection=selection)
+                        self._view.add_representation(button.description,
+                                                      selection=selection)
                     else:
                         self._view._remove_representations_by_name(
                             button.description)
@@ -641,14 +645,21 @@ class TrajectoryPlayer(HasTraits):
 
             def click_true(k):
                 k.value = True
-            pd['widget_quick_repr'][k.model_id][True] = dry_run(self._view, partial(click_true, k=k))[-1]
+
+            pd['widget_quick_repr'][k.model_id][True] = _dry_run(self._view,
+                                                                 click_true,
+                                                                 k=k)
 
             def click_false(k):
                 k.value = False
-            pd['widget_quick_repr'][k.model_id][False] = dry_run(self._view, partial(click_false, k=k))[-1]
 
-        button_clear = Button(
-            description='clear', button_style='info', icon='fa-eraser')
+            pd['widget_quick_repr'][k.model_id][False] = _dry_run(self._view,
+                                                                  click_false,
+                                                                  k=k)
+
+        button_clear = Button(description='clear',
+                              button_style='info',
+                              icon='fa-eraser')
 
         @button_clear.on_click
         def on_clear(button_clear):
@@ -658,7 +669,7 @@ class TrajectoryPlayer(HasTraits):
                 kid.value = False
 
         if hasattr(button_clear, 'click'):
-            dry_run(self._view, button_clear.click)
+            _dry_run(self._view, button_clear.click)
 
         vbox.children = children + [repr_selection, button_clear]
         _make_autofit(vbox)
@@ -698,8 +709,7 @@ class TrajectoryPlayer(HasTraits):
 
     def _make_extra_box(self):
         if self.widget_extra is None:
-            extra_list = [
-                          (self._make_widget_picked, 'Picked'),
+            extra_list = [(self._make_widget_picked, 'Picked'),
                           (self._make_repr_playground, 'Quick'),
                           (self._make_export_image_widget, 'Image'),
                           (self._make_command_box, 'Command')]
@@ -710,10 +720,14 @@ class TrajectoryPlayer(HasTraits):
 
     def _make_general_box(self):
         if self.widget_general is None:
-            step_slide = IntSlider(
-                value=self.step, min=-100, max=100, description='step')
-            delay_text = IntSlider(
-                value=self.delay, min=10, max=1000, description='delay')
+            step_slide = IntSlider(value=self.step,
+                                   min=-100,
+                                   max=100,
+                                   description='step')
+            delay_text = IntSlider(value=self.delay,
+                                   min=10,
+                                   max=1000,
+                                   description='delay')
             toggle_button_interpolate = ToggleButton(
                 self.interpolate,
                 description='Smoothing',
@@ -721,7 +735,9 @@ class TrajectoryPlayer(HasTraits):
             link((toggle_button_interpolate, 'value'), (self, 'interpolate'))
 
             self.widget_background = background_color_picker = ColorPicker(
-                value=self._view._ngl_full_stage_parameters.get('backgroundColor', 'white'), description='background')
+                value=self._view._ngl_full_stage_parameters.get(
+                    'backgroundColor', 'white'),
+                description='background')
             self.widget_camera = camera_type = Dropdown(
                 value=self.camera,
                 options=['perspective', 'orthographic'],
@@ -738,7 +754,9 @@ class TrajectoryPlayer(HasTraits):
             render_button = self._show_download_image()
             center_render_hbox = _make_autofit(
                 HBox([
-                    toggle_button_interpolate, center_button, render_button,
+                    toggle_button_interpolate,
+                    center_button,
+                    render_button,
                 ]))
 
             v0_left = VBox([

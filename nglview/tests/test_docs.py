@@ -1,7 +1,8 @@
 import doctest
-from nglview import widget, show, viewer_control
-
 import warnings
+
+from nglview import show, viewer_control, widget
+
 warnings.filterwarnings('ignore')
 
 try:

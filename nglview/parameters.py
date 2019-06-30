@@ -24,5 +24,5 @@ REPRESENTATION_NAME_PAIRS = [
 ]
 
 REPRESENTATION_NAMES = list(
-    sorted(
-        {name for pairs in REPRESENTATION_NAME_PAIRS for name in pairs}))
+    sorted({name
+            for pairs in REPRESENTATION_NAME_PAIRS for name in pairs}))

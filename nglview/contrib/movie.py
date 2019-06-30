@@ -6,8 +6,8 @@ except ImportError:
     print("pip install imageio==1.6")
 
 import os
-import time
 import threading
+import time
 
 
 class MovieMaker:
@@ -155,10 +155,9 @@ class MovieMaker:
                 if not self.in_memory:
                     template = "{}/{}.{}.png"
                     image_files = [
-                        image_dir
-                        for image_dir in (template.format(self.download_folder,
-                                                          self.prefix, str(i))
-                                          for i in self._time_range)
+                        image_dir for image_dir in (template.format(
+                            self.download_folder, self.prefix, str(i))
+                                                    for i in self._time_range)
                         if os.path.exists(image_dir)
                     ]
                 else:
@@ -166,11 +165,13 @@ class MovieMaker:
             if not self._event.is_set():
                 clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
                 if self.output.endswith('.gif'):
-                    clip.write_gif(
-                        self.output, fps=self.fps, **self.moviepy_params)
+                    clip.write_gif(self.output,
+                                   fps=self.fps,
+                                   **self.moviepy_params)
                 else:
-                    clip.write_videofile(
-                        self.output, fps=self.fps, **self.moviepy_params)
+                    clip.write_videofile(self.output,
+                                         fps=self.fps,
+                                         **self.moviepy_params)
                 self._image_array = []
 
         self.thread = threading.Thread(target=_make, args=(self._event, ))

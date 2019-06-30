@@ -1,5 +1,5 @@
-from traitlets import Int, Dict, Any, observe, Bool
 from ipywidgets import Box, interactive
+from traitlets import Any, Bool, Dict, Int, observe
 
 # local
 from .color import COLOR_SCHEMES
@@ -38,10 +38,9 @@ class RepresentationControl(Box):
         if not self._disable_update_parameters:
             parameters = change['new']
 
-            self._view.update_representation(
-                component=self.component_index,
-                repr_index=self.repr_index,
-                **parameters)
+            self._view.update_representation(component=self.component_index,
+                                             repr_index=self.repr_index,
+                                             **parameters)
 
     @observe('name')
     def _on_name_changed(self, change):
@@ -108,18 +107,17 @@ class RepresentationControl(Box):
                  cutoff=_repr_dict.get('cutoff', 0)):
             pass
 
-        widget = interactive(
-            func,
-            opacity=(0., 1., 0.1),
-            color_scheme=COLOR_SCHEMES,
-            assembly=assembly_list,
-            probe_radius=(0., 5., 0.1),
-            isolevel=(0., 10., 0.1),
-            smooth=(0, 10, 1),
-            surface_type=surface_types,
-            box_size=(0, 100, 2),
-            cutoff=(0., 100, 0.1),
-            continuous_update=False)
+        widget = interactive(func,
+                             opacity=(0., 1., 0.1),
+                             color_scheme=COLOR_SCHEMES,
+                             assembly=assembly_list,
+                             probe_radius=(0., 5., 0.1),
+                             isolevel=(0., 10., 0.1),
+                             smooth=(0, 10, 1),
+                             surface_type=surface_types,
+                             box_size=(0, 100, 2),
+                             cutoff=(0., 100, 0.1),
+                             continuous_update=False)
         for kid in widget.children:
             try:
                 setattr(kid, '_ngl_description', kid.description)

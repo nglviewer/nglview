@@ -1,4 +1,5 @@
 import time
+
 from ..parameters import REPRESENTATION_NAME_PAIRS
 
 
@@ -46,8 +47,9 @@ def _add_repr_method_shortcut(self, other):
         def func(this, selection='all', **kwargs):
             """
             """
-            self.add_representation(
-                repr_type=rep[1], selection=selection, **kwargs)
+            self.add_representation(repr_type=rep[1],
+                                    selection=selection,
+                                    **kwargs)
 
         func.__doc__ = """Shortcut for `add_representation` method
 
@@ -82,8 +84,8 @@ def _add_repr_method_shortcut(self, other):
         return func
 
     for rep in REPRESENTATION_NAME_PAIRS:
-        for make_func, root_fn in [(make_func_add, 'add'), (make_func_update,
-                                                            'update'),
+        for make_func, root_fn in [(make_func_add, 'add'),
+                                   (make_func_update, 'update'),
                                    (make_func_remove, 'remove')]:
             func = make_func(rep)
             fn = '_'.join((root_fn, rep[0]))

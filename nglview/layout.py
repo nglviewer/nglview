@@ -1,6 +1,6 @@
 # TODO: reorg
 # simplify code
-from ipywidgets import Layout, Button, ToggleButton, Box, Label, Tab
+from ipywidgets import Box, Button, Label, Layout, Tab, ToggleButton
 
 
 def make_form_item_layout():
@@ -8,19 +8,23 @@ def make_form_item_layout():
     return Layout(
         display='flex',
         flex_flow='row',
-        justify_content='space-between', )
+        justify_content='space-between',
+    )
 
 
 def _make_box_layout(width='100%'):
-    return Layout(
-        display='flex', flex_flow='column', align_items='stretch', width=width)
+    return Layout(display='flex',
+                  flex_flow='column',
+                  align_items='stretch',
+                  width=width)
 
 
 def _relayout(box, form_item_layout):
     form_items = []
     for kid in box.children:
-        if hasattr(kid, 'description') and not isinstance(kid, (Button,
-                                                                ToggleButton)):
+        if hasattr(kid,
+                   'description') and not isinstance(kid,
+                                                     (Button, ToggleButton)):
             label_value = kid.description
             kid.description = ''
         else:

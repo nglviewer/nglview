@@ -1,9 +1,15 @@
 from functools import partial
-from IPython.display import display, Javascript, HTML
+
+from IPython.display import HTML, Javascript, display
 
 __alll__ = [
-    'clean_error_output', 'launch_qtconsole', 'clean_empty_output_area',
-    'open_url_template', '_set_ipython_cell', 'ngl_demo', 'init_funcs',
+    'clean_error_output',
+    'launch_qtconsole',
+    'clean_empty_output_area',
+    'open_url_template',
+    '_set_ipython_cell',
+    'ngl_demo',
+    'init_funcs',
 ]
 
 
@@ -41,9 +47,9 @@ def _set_notebook_width(width='20%', left_padding=0):
     command = script_template + offset_str
     run(command)
 
-clean_empty_output_area = partial(
-    run,
-    command="""
+
+clean_empty_output_area = partial(run,
+                                  command="""
 var output_area = $(".output_area");
 
 for (var i=0; i < output_area.length; i++){
@@ -53,8 +59,8 @@ for (var i=0; i < output_area.length; i++){
 }
 """)
 
-launch_qtconsole = partial(
-    run, command="""
+launch_qtconsole = partial(run,
+                           command="""
 Jupyter.notebook.kernel.execute('%qtconsole')
 """)
 
@@ -62,9 +68,8 @@ open_url_template = """
 window.open({url});
 """
 
-clean_error_output = partial(
-    run,
-    command="""
+clean_error_output = partial(run,
+                             command="""
 var cells = Jupyter.notebook.get_cells();
 
 for (var i = 0; i < cells.length; i++){

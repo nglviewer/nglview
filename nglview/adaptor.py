@@ -1,28 +1,41 @@
 import os
 import os.path
 import uuid
-import numpy as np
-from io import StringIO
 from functools import partial
+from io import StringIO
 from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
+import numpy as np
+
+from . import config
 from .base_adaptor import Structure, Trajectory
 from .utils.py_utils import FileManager, tempfolder
-from . import config
 
 __all__ = [
-    'FileStructure', 'TextStructure', 'RdkitStructure', 'PdbIdStructure',
-    'ASEStructure', 'BiopythonStructure', 'IOTBXStructure',
-    'IODataStructure', 'QCelementalStructure', 'Psi4Structure',
+    'FileStructure',
+    'TextStructure',
+    'RdkitStructure',
+    'PdbIdStructure',
+    'ASEStructure',
+    'BiopythonStructure',
+    'IOTBXStructure',
+    'IODataStructure',
+    'QCelementalStructure',
+    'Psi4Structure',
     'OpenbabelStructure',
     'RosettaStructure',
     'ProdyStructure',
     'SimpletrajTrajectory',
     'ProdyTrajectory',
-    'MDTrajTrajectory', 'PyTrajTrajectory', 'ParmEdTrajectory',
-    'MDAnalysisTrajectory', 'HTMDTrajectory', 'ASETrajectory',
-    'SchrodingerStructure', 'SchrodingerTrajectory',
+    'MDTrajTrajectory',
+    'PyTrajTrajectory',
+    'ParmEdTrajectory',
+    'MDAnalysisTrajectory',
+    'HTMDTrajectory',
+    'ASETrajectory',
+    'SchrodingerStructure',
+    'SchrodingerTrajectory',
     'register_backend',
 ]
 
@@ -207,12 +220,14 @@ class ProdyStructure(Structure):
 
     def get_structure_string(self):
         import prody
+
         def write(fname):
             if isinstance(self._obj, prody.Ensemble):
                 st = self._obj[0]
             else:
                 st = self._obj
             prody.writePDB(fname, st)
+
         return _get_structure_string(write)
 
 
@@ -332,7 +347,7 @@ class PyTrajTrajectory(Trajectory, Structure):
         return self.trajectory.n_frames
 
     def get_structure_string(self, index=0):
-        return _get_structure_string(self.trajectory[index:index+1].save)
+        return _get_structure_string(self.trajectory[index:index + 1].save)
 
 
 @register_backend('parmed')
@@ -346,8 +361,7 @@ class ParmEdStructure(Structure):
         with NamedTemporaryFile(suffix='.pdb') as fh:
             if self.only_save_1st_model:
                 self._structure.write_pdb(
-                    fh.name,
-                    coordinates=self._structure.coordinates)
+                    fh.name, coordinates=self._structure.coordinates)
             else:
                 self._structure.write_pdb(fh.name)
             return fh.read().decode()
@@ -357,6 +371,7 @@ class ParmEdStructure(Structure):
 class ParmEdTrajectory(Trajectory, ParmEdStructure):
     '''ParmEd adaptor.
     '''
+
     def __init__(self, trajectory):
         ParmEdStructure.__init__(self, trajectory)
         self.trajectory = self._structure = trajectory
@@ -493,6 +508,7 @@ class ASETrajectory(Trajectory, Structure):
 class SchrodingerStructure(Structure):
     '''Only read first structure
     '''
+
     def __init__(self, structure, ext="pdb"):
         super().__init__()
         self.path = ''
@@ -510,7 +526,6 @@ class SchrodingerStructure(Structure):
                 content = fh.read()
         return content
 
-
         return _get_structure_string(self._schrodinger_structure.write)
 
 
@@ -518,6 +533,7 @@ class SchrodingerStructure(Structure):
 class SchrodingerTrajectory(SchrodingerStructure, Trajectory):
     """Require `parmed` package.
     """
+
     def __init__(self, structure, traj):
         super().__init__(structure)
         self._traj = traj
@@ -537,8 +553,12 @@ class SchrodingerTrajectory(SchrodingerStructure, Trajectory):
         s = pmd.Structure()
         fsys = c.fsys_ct if hasattr(c, 'fsys_ct') else c
         for atom in fsys.atom:
-            parm_atom = pmd.Atom(name=atom.pdbname.strip(), atomic_number=atom.atomic_number)
-            s.add_atom(parm_atom, atom.pdbres.strip(), atom.resnum, chain=atom.chain)
+            parm_atom = pmd.Atom(name=atom.pdbname.strip(),
+                                 atomic_number=atom.atomic_number)
+            s.add_atom(parm_atom,
+                       atom.pdbres.strip(),
+                       atom.resnum,
+                       chain=atom.chain)
         s.coordinates = fsys.getXYZ()
         return ParmEdStructure(s).get_structure_string()
 

@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
+import argparse
 import os
 import subprocess
 from glob import glob
 from random import shuffle
-
-import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--basic', action='store_true')

@@ -41,13 +41,12 @@ class ComponentViewer:
     def hide(self):
         """set invisibility for given components (by their indices)
         """
-        self._view._remote_call(
-            "setVisibility",
-            target='compList',
-            args=[
-                False,
-            ],
-            kwargs={'component_index': self._index})
+        self._view._remote_call("setVisibility",
+                                target='compList',
+                                args=[
+                                    False,
+                                ],
+                                kwargs={'component_index': self._index})
         traj = self._view._get_traj_by_id(self.id)
         if traj is not None:
             traj.shown = False
@@ -55,13 +54,12 @@ class ComponentViewer:
     def show(self):
         """set invisibility for given components (by their indices)
         """
-        self._view._remote_call(
-            "setVisibility",
-            target='compList',
-            args=[
-                True,
-            ],
-            kwargs={'component_index': self._index})
+        self._view._remote_call("setVisibility",
+                                target='compList',
+                                args=[
+                                    True,
+                                ],
+                                kwargs={'component_index': self._index})
 
         traj = self._view._get_traj_by_id(self.id)
         if traj is not None:
@@ -93,8 +91,9 @@ class ComponentViewer:
 
     def add_representation(self, repr_type, selection='all', **kwargs):
         kwargs['component'] = self._index
-        self._view.add_representation(
-            repr_type=repr_type, selection=selection, **kwargs)
+        self._view.add_representation(repr_type=repr_type,
+                                      selection=selection,
+                                      **kwargs)
 
     def _borrow_attribute(self, view, attributes, trajectory_atts=None):
         from functools import partial
@@ -123,8 +122,7 @@ class ComponentViewer:
         kwargs2 = {}
         kwargs2.update(kwargs)
         kwargs2['component_index'] = self._index
-        self._view._remote_call(
-                method,
-                target='compList',
-                args=args,
-                kwargs=kwargs2)
+        self._view._remote_call(method,
+                                target='compList',
+                                args=args,
+                                kwargs=kwargs2)

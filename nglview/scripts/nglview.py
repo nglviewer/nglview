@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
-import os, sys, argparse, json
+import argparse
+import json
+import os
 import subprocess
+import sys
+
 from .cmd_example import CMD_EXAMPLE
 
 bin_path = os.path.join(sys.prefix, 'bin')
@@ -78,7 +82,6 @@ notebook_dict = {
     0
 }
 
-
 remote_msg = """
 Try to use port = {port}
 
@@ -104,11 +107,10 @@ def get_remote_port(port=None, notebook_path=''):
         username=username, hostname=hostname, port=port)
     base_notebook_name = os.path.basename(notebook_path)
     print(
-        remote_msg.format(
-            client_cm=client_cm,
-            port=port,
-            hostname=hostname,
-            notebook_name=base_notebook_name))
+        remote_msg.format(client_cm=client_cm,
+                          port=port,
+                          hostname=hostname,
+                          notebook_name=base_notebook_name))
     return port
 
 
@@ -126,28 +128,32 @@ def main(notebook_dict=notebook_dict, cmd=None):
     parser.add_argument(
         'command',
         nargs='?',
-        help='command could be a topology filename (.pdb, .mol2, .parm7, ...) or \n'
+        help=
+        'command could be a topology filename (.pdb, .mol2, .parm7, ...) or \n'
         'could be a python script (.py), a notebook (.ipynb). '
         'If not given, a notebook will be created with only nglview imported')
-    parser.add_argument(
-        'traj', nargs='?', help='coordinate filename, optional')
+    parser.add_argument('traj',
+                        nargs='?',
+                        help='coordinate filename, optional')
     parser.add_argument('-c', '--crd', help='coordinate filename')
     parser.add_argument('--browser', help='web browser')
-    parser.add_argument(
-        '-j', '--jexe', default=default_jexe, help='jupyter path')
-    parser.add_argument(
-        '--notebook-name', default='tmpnb_ngl.ipynb', help='notebook name')
+    parser.add_argument('-j',
+                        '--jexe',
+                        default=default_jexe,
+                        help='jupyter path')
+    parser.add_argument('--notebook-name',
+                        default='tmpnb_ngl.ipynb',
+                        help='notebook name')
     parser.add_argument('--port', type=int, help='port number')
-    parser.add_argument(
-        '--remote', action='store_true', help='create remote notebook')
-    parser.add_argument(
-        '--clean',
-        action='store_true',
-        help='delete temp file after closing notebook')
-    parser.add_argument(
-        '--auto',
-        action='store_true',
-        help='Run 1st cell right after openning notebook')
+    parser.add_argument('--remote',
+                        action='store_true',
+                        help='create remote notebook')
+    parser.add_argument('--clean',
+                        action='store_true',
+                        help='delete temp file after closing notebook')
+    parser.add_argument('--auto',
+                        action='store_true',
+                        help='Run 1st cell right after openning notebook')
     parser.add_argument(
         '--symlink',
         action='store_true',
@@ -157,8 +163,8 @@ def main(notebook_dict=notebook_dict, cmd=None):
     command = args.command
     if command in ['install', 'enable', 'uninstall']:
         cmds = [
-            'jupyter', 'nbextension', command, '--py',
-            '--sys-prefix', 'nglview'
+            'jupyter', 'nbextension', command, '--py', '--sys-prefix',
+            'nglview'
         ]
         if command == 'install':
             cmds.append('--overwrite')

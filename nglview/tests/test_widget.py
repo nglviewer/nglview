@@ -1,32 +1,31 @@
+import gzip
 import os
 import sys
-from itertools import chain
-from io import StringIO
-from mock import patch, MagicMock
-import gzip
 import time
 import unittest
-import pytest
-from numpy.testing import assert_almost_equal as aa_eq
+from functools import partial
+from io import StringIO
+from itertools import chain
+
+import ipywidgets
 import numpy as np
+import pytest
 import traitlets
 from ipykernel.comm import Comm
-import ipywidgets
-from ipywidgets import Widget, IntText, BoundedFloatText, HBox, Layout, Button
-from traitlets import TraitError
-import ipywidgets as widgets
-from traitlets import TraitError, link
 from IPython import display
-import nglview as nv
-from nglview import NGLWidget
-from nglview import widget_utils
-from nglview.utils.py_utils import click, submit
-from nglview import js_utils
-from nglview.representation import RepresentationControl
-from nglview.utils.py_utils import encode_base64, decode_base64
-from nglview import interpolate
+from ipywidgets import BoundedFloatText, Button, HBox, IntText, Layout, Widget
+from mock import MagicMock, patch
+from numpy.testing import assert_almost_equal as aa_eq
+from traitlets import TraitError, link
 
+import nglview as nv
 from make_dummy_comm import *  # to initialize
+from nglview import NGLWidget, interpolate, js_utils, widget_utils
+from nglview.representation import RepresentationControl
+from nglview.utils.py_utils import click, decode_base64, encode_base64, submit
+# local
+from utils import get_fn
+from utils import repr_dict as REPR_DICT
 
 try:
     import simpletraj
@@ -90,9 +89,6 @@ try:
 except ImportError:
     has_bio = False
 
-# local
-from utils import get_fn, repr_dict as REPR_DICT
-
 
 def default_view():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -136,8 +132,12 @@ def test_API_promise_to_have():
     view = nv.demo()
 
     # trigger _set_size
-    view.layout.width = '100px'
-    view.layout.height = '500px'
+    with patch.object(view, '_remote_call') as mock_call:
+        view.layout.width = '100px'
+        view.layout.height = '500px'
+        mock_call.assert_called_with('setSize',
+                                     args=['', '500px'],
+                                     target='Widget')
 
     # Structure
     structure = nv.Structure()
@@ -235,6 +235,9 @@ def test_API_promise_to_have():
     view.render_image()
     view.render_image(frame=2)
     view.download_image()
+
+    assert view._dry_run(view._set_sync_camera,
+                         [view])['methodName'] == 'setSyncCamera'
 
     msg = dict(type='request_frame', data=dict())
     view._ngl_handle_msg(view, msg=msg, buffers=[])
@@ -1096,3 +1099,6 @@ def test_write_html(mock_unset):
     mock_unset.assert_called_with()
     assert len(view._ngl_coordinate_resource[0]) == 3
     assert len(view._ngl_coordinate_resource[1]) == 3
+
+    # box
+    nv.write_html(fp, [HBox([view])], frame_range=(0, 3))
