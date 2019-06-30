@@ -102,14 +102,22 @@ class TrajectoryPlayer(HasTraits):
             if widget is not None:
                 widget.layout.padding = padding
 
-    def _create_all_widgets(self):
-        self.widget_tab = self._display()
+    def _create_all_widgets(self, thread=False):
 
-        old_index = self.widget_tab.selected_index
-        for index, _ in enumerate(self.widget_tab.children):
-            self.widget_tab.selected_index = index
+        def make():
+            self.widget_tab = self._display()
 
-        self.widget_tab.selected_index = old_index
+            old_index = self.widget_tab.selected_index
+            for index, _ in enumerate(self.widget_tab.children):
+                self.widget_tab.selected_index = index
+                if thread:
+                    time.sleep(0.1)
+
+            self.widget_tab.selected_index = old_index
+        if thread:
+            self._view._run_on_another_thread(make)
+        else:
+            make()
 
     def smooth(self):
         self.interpolate = True
@@ -135,8 +143,8 @@ class TrajectoryPlayer(HasTraits):
         self._view.frame = value
 
     @property
-    def count(self):
-        return self._view.count
+    def max_frame(self):
+        return self._view.max_frame
 
     @observe('parameters')
     def update_parameters(self, change):
@@ -149,20 +157,18 @@ class TrajectoryPlayer(HasTraits):
         self.iparams['t'] = change['new']
 
     def _display(self):
-        if self.widget_tab:
-            return self.widget_tab
+        if self.widget_tab is None:
+            box_factory = [(self._make_general_box, 'General'),
+                           (self._make_widget_repr, 'Representation'),
+                           (self._make_widget_preference, 'Preference'),
+                           (self._make_extra_box, 'Extra')]
 
-        box_factory = [(self._make_general_box, 'General'),
-                       (self._make_widget_repr, 'Representation'),
-                       (self._make_widget_preference, 'Preference'),
-                       (self._make_extra_box, 'Extra')]
+            tab = _make_delay_tab(box_factory, selected_index=0)
+            # tab = _make_autofit(tab)
+            tab.layout.align_self = 'center'
+            tab.layout.align_items = 'stretch'
 
-        tab = _make_delay_tab(box_factory, selected_index=0)
-        # tab = _make_autofit(tab)
-        tab.layout.align_self = 'center'
-        tab.layout.align_items = 'stretch'
-
-        self.widget_tab = tab
+            self.widget_tab = self._view._igui = tab
 
         return self.widget_tab
 
@@ -522,7 +528,7 @@ class TrajectoryPlayer(HasTraits):
 
         start_text, stop_text, step_text = (IntText(value=0,
                                                     description='start'),
-                                            IntText(value=self._view.count,
+                                            IntText(value=self._view.max_frame+1,
                                                     description='stop'),
                                             IntText(value=1,
                                                     description='step'))
@@ -714,8 +720,7 @@ class TrajectoryPlayer(HasTraits):
                           (self._make_export_image_widget, 'Image'),
                           (self._make_command_box, 'Command')]
 
-            extra_box = _make_delay_tab(extra_list, selected_index=0)
-            self.widget_extra = extra_box
+            self.widget_extra = _make_delay_tab(extra_list, selected_index=0)
         return self.widget_extra
 
     def _make_general_box(self):

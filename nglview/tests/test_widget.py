@@ -836,7 +836,6 @@ def test_player_simple():
     player.camera = 'orthographic'
     player.frame
     player.frame = 10
-    player.count
     player.parameters = dict(step=2)
     player._display()
     player._make_button_center()

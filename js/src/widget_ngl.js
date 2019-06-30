@@ -25,8 +25,7 @@ var NGLModel = widgets.DOMWidgetModel.extend({
 var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
         // maximum number of frames.
-        // change "count" to "n_frames"?
-        this.model.on("change:count", this.countChanged, this);
+        this.model.on("change:max_frame", this.maxFrameChanged, this);
         this.model.on("change:_parameters", this.parametersChanged, this);
         this.model.set('_ngl_version', NGL.Version);
         this._synced_model_ids = this.model.get("_synced_model_ids");
@@ -276,10 +275,11 @@ var NGLView = widgets.DOMWidgetView.extend({
 
 
         Promise.all(loadfile_list).then(function(compList){
+            n_frames = ngl_coordinate_resource['n_frames'];
             that._set_representation_from_backend(compList);
             that.stage.setParameters(ngl_stage_params);
             that.set_camera_orientation(that.model.get("_camera_orientation"));
-            that.model.set("count", ngl_coordinate_resource['n_frames']);
+            that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
             that.touch();
             delete ngl_coordinate_resource['n_frames'];
 
@@ -411,16 +411,10 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    getPlayerModel: function(){
-        // return a Promise
-        var model_id = this.model.get("_iplayer").replace("IPY_MODEL_", "");
-        return this.model.widget_manager.get_model(model_id)
-    },
-
-    countChanged: function() {
-        var count = this.model.get("count");
+    maxFrameChanged: function() {
+        var max_frame = this.model.get("max_frame");
         this.player_pview.then(function(v){
-            if (count > 1){
+            if (max_frame > 0){
                 v.el.style.display = 'block'
             }else{
                 v.el.style.display = 'none'
@@ -428,16 +422,24 @@ var NGLView = widgets.DOMWidgetView.extend({
         })
     },
 
-    createIPlayerView: function(){
-        // return a Promise
+    createView: function(trait_name){
+        // Create a view for the model with given `trait_name`
+        // e.g: in backend, 'view.<trait_name>`
         var manager = this.model.widget_manager;
-        return this.getPlayerModel().then(function(model){
+        var model_id = this.model.get(trait_name).replace("IPY_MODEL_", "");
+        return this.model.widget_manager.get_model(model_id).then(function(model){
             return manager.create_view(model)
         })
     },
 
+    getPlayerModel: function(){
+        // return a Promise
+        var model_id = this.model.get("_iplayer").replace("IPY_MODEL_", "");
+        return this.model.widget_manager.get_model(model_id)
+    },
+
     createIPlayer: function(){
-        this.player_pview = this.createIPlayerView();
+        this.player_pview = this.createView("_iplayer");
         var that = this;
         this.player_pview.then(function(view){
                 var pe = view.el
@@ -447,9 +449,21 @@ var NGLView = widgets.DOMWidgetView.extend({
                 pe.style.left = '10%'
                 pe.style.opacity = '0.7'
                 that.stage.viewer.container.append(view.el);
-                if (that.model.get("count") <= 1){
+                if (that.model.get("max_frame") <= 0){
                     pe.style.display = 'none';
                 }
+            })
+    },
+
+    createGUI: function(){
+        this.pgui_view = this.createView("_igui");
+        var that = this;
+        this.pgui_view.then(function(view){
+                var pe = view.el
+                pe.style.position = 'absolute'
+                pe.style.zIndex = 100
+                pe.style.top = '5%'
+                pe.style.right = '10%'
             })
     },
 

@@ -131,8 +131,7 @@ class NGLWidget(DOMWidget):
     _image_data = Unicode().tag(sync=False)
     # use Integer here, because mdtraj uses a long datatype here on Python-2.7
     frame = Integer().tag(sync=True)
-    count = Integer(1).tag(sync=True)
-    max_frames = Integer(0).tag(sync=True)
+    max_frame = Integer(0).tag(sync=True)
     background = Unicode('white').tag(sync=True)
     loaded = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
@@ -170,6 +169,8 @@ class NGLWidget(DOMWidget):
     # instance
     _iplayer = Instance(widgets.Box,
                         allow_none=True).tag(sync=True, **widget_serialization)
+    _igui = Instance(widgets.Tab,
+                     allow_none=True).tag(sync=True, **widget_serialization)
 
     def __init__(self,
                  structure=None,
@@ -240,6 +241,7 @@ class NGLWidget(DOMWidget):
                 self.center()
 
         self.player = TrajectoryPlayer(self)
+        self.player._create_all_widgets(thread=True)
         self._already_constructed = True
 
         # Updating only self.layout.{width, height} don't handle
@@ -286,16 +288,16 @@ class NGLWidget(DOMWidget):
         #         self._ngl_gui_dict[x] = attr.model_id
 
     def _create_player(self):
-        player = Play(max=self.count - 1, interval=100)
-        slider = IntSlider(max=self.count - 1)
+        player = Play(max=self.max_frame, interval=100)
+        slider = IntSlider(max=self.max_frame)
         self._iplayer = HBox([player, slider])
         self.player.widget_player = player
         self.player.widget_player_slider = slider
 
         jslink((player, 'value'), (slider, 'value'))
         jslink((player, 'value'), (self, 'frame'))
-        jslink((player, 'max'), (self, 'max_frames'))
-        jslink((slider, 'max'), (self, 'max_frames'))
+        jslink((player, 'max'), (self, 'max_frame'))
+        jslink((slider, 'max'), (self, 'max_frame'))
 
     def _unset_serialization(self):
         self._ngl_serialize = False
@@ -442,11 +444,10 @@ class NGLWidget(DOMWidget):
                 repr_slider.max = len(repr_names) - 1 if len(
                     repr_names) >= 1 else len(repr_names)
 
-    def _update_count(self):
-        self.count = max(
+    def _update_max_frame(self):
+        self.max_frame = max(
             int(traj.n_frames) for traj in self._trajlist
-            if hasattr(traj, 'n_frames'))
-        self.max_frames = self.count - 1
+            if hasattr(traj, 'n_frames')) - 1 # index starts from 0
 
     def _wait_until_finished(self, timeout=0.0001):
         # NGL need to send 'finished' signal to
@@ -1041,10 +1042,10 @@ class NGLWidget(DOMWidget):
         msg_type = self._ngl_msg.get('type')
         if msg_type == 'request_frame':
             frame = self.frame + self.player.step
-            if frame >= self.count:
+            if frame > self.max_frame:
                 frame = 0
             elif frame < 0:
-                frame = self.count - 1
+                frame = self.max_frame
             self.frame = frame
         elif msg_type == 'repr_parameters':
             data_dict = self._ngl_msg.get('data')
@@ -1150,7 +1151,7 @@ class NGLWidget(DOMWidget):
         self._load_data(trajectory, **kwargs)
         setattr(trajectory, 'shown', True)
         self._trajlist.append(trajectory)
-        self._update_count()
+        self._update_max_frame()
         self._ngl_component_ids.append(trajectory.id)
         self._update_component_auto_completion()
         return self[-1]

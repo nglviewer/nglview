@@ -47,7 +47,7 @@ def test_show_schrodinger():
     traj = MagicMock()
     traj.__len__.return_value = 3
     v1 = nglview.show_schrodinger(s, traj)
-    assert v1.count == 3
+    assert v1.max_frame == 2
     v1.frame = 2  # trigger `get_coordinates`
 
 

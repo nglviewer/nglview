@@ -118,7 +118,7 @@ class MovieMaker:
             assert isinstance(self.moviepy_params, dict)
         self.output = output
         if stop < 0:
-            stop = self.view.count
+            stop = self.view.max_frame + 1
         self._time_range = range(start, stop, step)
         self._event = threading.Event()
         self._thread = None
