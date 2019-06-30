@@ -181,7 +181,7 @@ setup_args = {
         'pytest'
     ],
     'install_requires': [
-        'ipywidgets>=7.4',
+        'ipywidgets>=7',
         'numpy',
     ],
     'extras_require': {
