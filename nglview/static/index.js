@@ -213,26 +213,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	            .css("opacity", "0.7")
 	            .appendTo(this.$container);
 	
-	        var $inputNotebookCommand = $('<input id="input_notebook_command" type="text" style="border:1px solid skyblue" size="50"></input>');
 	        var that = this;
-	
-	        $inputNotebookCommand.keypress(function(e) {
-	            var command = $("#input_notebook_command").val();
-	            if (e.which == 13) {
-	                $("#input_notebook_command").val("")
-	                Jupyter.notebook.kernel.execute(command);
-	            }
-	        });
-	
-	        this.$notebook_text = $("<div></div>")
-	            .css("position", "absolute")
-	            .css("bottom", "5%")
-	            .css("left", "3%")
-	            .css("padding", "2px 5px 2px 5px")
-	            .css("opacity", "0.7")
-	            .append($inputNotebookCommand)
-	            .appendTo(this.$container);
-	        this.$notebook_text.hide();
 	
 	        this.stage.signals.clicked.add(function (pd) {
 	            if (pd) {
@@ -387,6 +368,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	                    })
 	                }
 	            }
+	
+	            // fire any msg with "fire_embed"
+	            that.model.get("_ngl_msg_archive").forEach(function(msg){
+	                if (msg.fire_embed){
+	                    that.on_msg(msg);
+	                }
+	            })
 	        }); // Promise.all
 	    },
 	
@@ -402,14 +390,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	                this.updateCoordinates(coordinates, traj_index);
 	            }
 	        }
-	    },
-	
-	    hideNotebookCommandBox: function() {
-	        this.$notebook_text.hide();
-	    },
-	
-	    showNotebookCommandBox: function() {
-	        this.$notebook_text.show();
 	    },
 	
 	    requestFrame: function() {
@@ -829,84 +809,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	        this.stage.handleResize();
 	    },
 	
-	    openNotebookCommandDialog: function() {
-	        var that = this;
-	        var dialog = this.$notebook_text.dialog({
-	            draggable: true,
-	            resizable: true,
-	            modal: false,
-	            show: {
-	                effect: "blind",
-	                duration: 150
-	            },
-	            close: function(event, ui) {
-	                that.$container.append(that.$notebook_text);
-	                that.$notebook_text.dialog('destroy');
-	                event; ui; // to pass eslint; ack;
-	            },
-	        });
-	        dialog.css({
-	            overflow: 'hidden'
-	        });
-	        dialog.prev('.ui-dialog-titlebar')
-	            .css({
-	                'background': 'transparent',
-	                'border': 'none'
-	            });
-	        Jupyter.keyboard_manager.register_events(dialog);
-	    },
-	
-	    setDialog: function() {
-	        var $nb_container = Jupyter.notebook.container;
-	        var that = this;
-	        var dialog = this.$container.dialog({
-	            title: "NGLView",
-	            draggable: true,
-	            resizable: true,
-	            modal: false,
-	            width: window.innerWidth - $nb_container.width() - $nb_container.offset().left - 50,
-	            height: 'auto',
-	            position: {
-	                my: 'right',
-	                at: 'right',
-	                of: window
-	            },
-	            show: {
-	                effect: "blind",
-	                duration: 150
-	            },
-	            close: function(event, ui) {
-	                that.$el.append(that.$container);
-	                that.$container.dialog('destroy');
-	                that.handleResize();
-	                event; ui; // to pass eslint; ack;
-	            },
-	            resize: function(event, ui) {
-	                that.stage.handleResize();
-	                that.setSize(ui.size.width + "px", ui.size.height + "px");
-	            }.bind(that),
-	        });
-	        dialog.css({
-	            overflow: 'hidden'
-	        });
-	        dialog.prev('.ui-dialog-titlebar')
-	            .css({
-	                'background': 'transparent',
-	                'border': 'none'
-	            });
-	    },
-	
-	    resizeNotebook: function(width) {
-	        var $nb_container = Jupyter.notebook.container;
-	        $nb_container.width(width);
-	
-	        if (this.$container.dialog) {
-	            this.$container.dialog({
-	                width: $nb_container.offset().left
-	            });
-	        }
-	    },
-	
 	    parametersChanged: function() {
 	        var _parameters = this.model.get("_parameters");
 	        this.setParameters(_parameters);
@@ -954,21 +856,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	        }
 	    },
 	
-	
-	    cleanOutput: function() {
-	
-	        var cells = Jupyter.notebook.get_cells();
-	
-	        for (var i = 0; i < cells.length; i++) {
-	            var cell = cells[i];
-	            if (cell.output_area.outputs.length > 0) {
-	                var out = cell.output_area.outputs[0];
-	                if (out.output_type == 'display_data') {
-	                    cell.clear_output();
-	                }
-	            }
-	        }
-	    },
 	
 	    _handle_loading_file_finished: function() {
 	        this.send({'type': 'async_message', 'data': 'ok'});
@@ -1696,10 +1583,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	    }
 	  }
 	
-	  function onAsTrajectoryChange (e) {
-	    stage.defaultFileParams.asTrajectory = e.target.checked
-	  }
-	
 	  function onFirstModelOnlyChange (e) {
 	    stage.defaultFileParams.firstModelOnly = e.target.checked
 	  }
@@ -1718,7 +1601,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	  var menuConfig = [
 	    createOption('Open...', onOpenOptionClick),
 	    createInput('PDB', onPdbInputKeyDown),
-	    createCheckbox('asTrajectory', false, onAsTrajectoryChange),
 	    createCheckbox('firstModelOnly', false, onFirstModelOnlyChange),
 	    createCheckbox('cAlphaOnly', false, onCAlphaOnlyChange),
 	    createDivider(),
@@ -1795,7 +1677,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	    )
 	  }
 	
+	  var that = this;
 	  stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	    const box = stage.viewer.container.parentElement.getBoundingClientRect()
+	    stage.setSize(box.width+"px", box.height+"px")
+	    stage.handleResize()
 	    var icon = menuConfig[ 6 ].children[ 0 ]
 	    if (isFullscreen) {
 	      icon.switchClass('compress', 'expand')

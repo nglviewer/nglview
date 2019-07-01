@@ -536,10 +536,6 @@ NGL.MenubarFileWidget = function (stage) {
     }
   }
 
-  function onAsTrajectoryChange (e) {
-    stage.defaultFileParams.asTrajectory = e.target.checked
-  }
-
   function onFirstModelOnlyChange (e) {
     stage.defaultFileParams.firstModelOnly = e.target.checked
   }
@@ -558,7 +554,6 @@ NGL.MenubarFileWidget = function (stage) {
   var menuConfig = [
     createOption('Open...', onOpenOptionClick),
     createInput('PDB', onPdbInputKeyDown),
-    createCheckbox('asTrajectory', false, onAsTrajectoryChange),
     createCheckbox('firstModelOnly', false, onFirstModelOnlyChange),
     createCheckbox('cAlphaOnly', false, onCAlphaOnlyChange),
     createDivider(),
@@ -635,7 +630,11 @@ NGL.MenubarViewWidget = function (stage, preferences) {
     )
   }
 
+  var that = this;
   stage.signals.fullscreenChanged.add(function (isFullscreen) {
+    const box = stage.viewer.container.parentElement.getBoundingClientRect()
+    stage.setSize(box.width+"px", box.height+"px")
+    stage.handleResize()
     var icon = menuConfig[ 6 ].children[ 0 ]
     if (isFullscreen) {
       icon.switchClass('compress', 'expand')
