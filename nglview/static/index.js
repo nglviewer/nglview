@@ -1324,9 +1324,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	      var sw = sidebar.dom.getBoundingClientRect().width
 	      var ew = el.getBoundingClientRect().width
 	      var w = ew - sw + 'px'
-	      console.log('HELLO w ' + w)
 	      stage.viewer.container.style.width = w 
-	      console.log(stage.viewer.container.style.width)
 	      stage.handleResize()
 	  }
 	
