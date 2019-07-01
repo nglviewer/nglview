@@ -1762,7 +1762,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	  }
 	
 	  function onFullScreenOptionClick () {
-	    stage.toggleFullscreen(document.body)
+	    stage.toggleFullscreen(stage.viewer.container.parentElement);
 	  }
 	
 	  function onCenterOptionClick () {

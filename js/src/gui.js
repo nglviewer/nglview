@@ -602,7 +602,7 @@ NGL.MenubarViewWidget = function (stage, preferences) {
   }
 
   function onFullScreenOptionClick () {
-    stage.toggleFullscreen(document.body)
+    stage.toggleFullscreen(stage.viewer.container.parentElement);
   }
 
   function onCenterOptionClick () {
