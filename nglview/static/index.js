@@ -1220,14 +1220,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	// Stage
 	
 	NGL.StageWidget = function (el, stage) {
-	  // var viewport = new NGL.ViewportWidget(stage).setId('viewport')
-	  var viewport = stage.viewer.container;
-	  // document.body.appendChild(viewport.dom)
+	  // `el` is notebook's cell element
+	  var viewport = new UI.Panel()
+	  viewport.setPosition("absolute")
+	  viewport.dom = stage.viewer.container
 	
 	  // ensure initial focus on viewer canvas for key-stroke listening
 	  stage.viewer.renderer.domElement.focus()
-	
-	  //
 	
 	  var preferences = new NGL.Preferences('ngl-stage-widget')
 	
@@ -1281,7 +1280,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	
 	  //
 	
-	  el.body.style.touchAction = 'none'
+	  // el.body.style.touchAction = 'none'
+	  el.style.touchAction = 'none'
 	
 	  //
 	
