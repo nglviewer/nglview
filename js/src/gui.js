@@ -247,6 +247,7 @@ NGL.StageWidget = function (el, stage) {
   var doResizeLeft = false
   var movedResizeLeft = false
   var minResizeLeft = false
+  var handleResizeInNotebook
 
   var handleResizeLeft = function (clientX) {
     if (clientX >= 50 && clientX <= window.innerWidth - 10) {
@@ -267,6 +268,7 @@ NGL.StageWidget = function (el, stage) {
     } else {
       minResizeLeft = false
     }
+    handleResizeInNotebook();
   }
   handleResizeLeft = NGL.throttle(
     handleResizeLeft, 50, { leading: true, trailing: true }
