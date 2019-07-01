@@ -14,6 +14,7 @@ from ipywidgets import (Box, DOMWidget, HBox, IntSlider, Output, Play, Widget,
 from ipywidgets import widget as _widget
 from traitlets import (Bool, CaselessStrEnum, Dict, Instance, Int, Integer,
                        List, Unicode, observe)
+import traitlets
 
 from . import color, interpolate
 from .adaptor import Structure, Trajectory
@@ -171,6 +172,10 @@ class NGLWidget(DOMWidget):
                         allow_none=True).tag(sync=True, **widget_serialization)
     _igui = Instance(widgets.Tab,
                      allow_none=True).tag(sync=True, **widget_serialization)
+    _ibtn_image = Instance(widgets.Button,
+            allow_none=True).tag(sync=True, **widget_serialization)
+    _ibtn_fullscreen = Instance(widgets.Button,
+            allow_none=True).tag(sync=True, **widget_serialization)
 
     def __init__(self,
                  structure=None,
@@ -248,6 +253,27 @@ class NGLWidget(DOMWidget):
         # resizing NGL widget properly.
         self._sync_with_layout()
         self._create_player()
+        self._create_ibtn_image()
+        self._create_ibtn_fullscreen()
+
+    def _create_ibtn_image(self):
+        button = widgets.Button(icon='fa-camera')
+        button.layout.width = '34px'
+
+        @button.on_click
+        def on_click(button):
+            self.download_image()
+        self._ibtn_image = button
+
+    def _create_ibtn_fullscreen(self):
+        button = widgets.Button(icon='compress')
+        button.layout.width = '34px'
+
+        @button.on_click
+        def on_click(button):
+            self._remote_call("toggleFullscreen", target='Stage', args=[None])
+        self._ibtn_fullscreen = button
+
 
     def _sync_with_layout(self):
         def on_change_layout(change):
@@ -489,18 +515,6 @@ class NGLWidget(DOMWidget):
                     self._wait_until_finished()
 
         self._run_on_another_thread(_call, self._event)
-
-    def _refresh_render(self):
-        """useful when you update coordinates for a single structure.
-
-        Notes
-        -----
-        If you are visualizing a trajectory with more than 1 frame, you can use the
-        player slider to trigger the refreshing.
-        """
-        current_frame = self.frame
-        self.frame = int(1E6)
-        self.frame = current_frame
 
     def sync_view(self):
         """call this if you want to sync multiple views of a single viewer

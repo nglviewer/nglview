@@ -1,4 +1,4 @@
-define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return /******/ (function(modules) { // webpackBootstrap
+define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_8__) { return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -62,7 +62,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    }
 	}
 	
-	module.exports['version'] = __webpack_require__(67).version;
+	module.exports['version'] = __webpack_require__(69).version;
 
 
 /***/ }),
@@ -70,14 +70,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /***/ (function(module, exports, __webpack_require__) {
 
 	var Jupyter
-	var widgets = __webpack_require__(2);
+	var gui = __webpack_require__(2);
+	var widgets = __webpack_require__(8);
 	var NGL = __webpack_require__(3);
-	var $ = __webpack_require__(7);
-	var _ = __webpack_require__(8);
-	__webpack_require__(10);
-	__webpack_require__(20);
+	var $ = __webpack_require__(9);
+	var _ = __webpack_require__(10);
+	__webpack_require__(12);
 	__webpack_require__(22);
-	__webpack_require__(36);
+	__webpack_require__(24);
+	__webpack_require__(38);
 	
 	
 	var NGLModel = widgets.DOMWidgetModel.extend({
@@ -85,10 +86,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
 	            _model_name: 'NGLModel',
 	            _model_module: 'nglview-js-widgets',
-	            _model_module_version: __webpack_require__(67).version,
+	            _model_module_version: __webpack_require__(69).version,
 	            _view_name: "NGLView",
 	            _view_module: "nglview-js-widgets",
-	            _view_module_version: __webpack_require__(67).version,
+	            _view_module_version: __webpack_require__(69).version,
 	        });
 	    }
 	})
@@ -186,11 +187,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }.bind(this));
 	
 	        // init toggle fullscreen
-	        $(this.stage.viewer.container).dblclick(function(e) {
-	            if (!e.ctrlKey){
-	                this.stage.toggleFullscreen();
-	            }
-	        }.bind(this));
+	        // $(this.stage.viewer.container).dblclick(function(e) {
+	        //     if (!e.ctrlKey){
+	        //         this.stage.toggleFullscreen();
+	        //     }
+	        // }.bind(this));
 	
 	        // init picking handling
 	        this.$pickingInfo = $("<div></div>")
@@ -496,6 +497,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    createView: function(trait_name){
 	        // Create a view for the model with given `trait_name`
 	        // e.g: in backend, 'view.<trait_name>`
+	        console.log("Creating view for model " + trait_name);
 	        var manager = this.model.widget_manager;
 	        var model_id = this.model.get(trait_name).replace("IPY_MODEL_", "");
 	        return this.model.widget_manager.get_model(model_id).then(function(model){
@@ -525,6 +527,45 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                }
 	            })
 	    },
+	
+	    createImageBtn: function(){
+	        this.image_btn_pview = this.createView("_ibtn_image");
+	        var that = this;
+	        this.image_btn_pview.then(function(view){
+	           var pe = view.el
+	           pe.style.position = 'absolute'
+	           pe.style.zIndex = 100
+	           pe.style.top = '5%'
+	           pe.style.right = '10%'
+	           pe.style.opacity = '0.7'
+	           pe.style.width = '35px'
+	           that.stage.viewer.container.append(view.el);
+	        })
+	    },
+	
+	    createFullscreenBtn: function(){
+	        this.fullscreen_btn_pview = this.createView("_ibtn_fullscreen");
+	        var that = this;
+	        var stage = that.stage;
+	        this.fullscreen_btn_pview.then(function(view){
+	           var pe = view.el
+	           pe.style.position = 'absolute'
+	           pe.style.zIndex = 100
+	           pe.style.top = '5%'
+	           pe.style.right = '5%'
+	           pe.style.opacity = '0.7'
+	           pe.style.width = '35px'
+	           stage.viewer.container.append(view.el);
+	           stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	             if (isFullscreen) {
+	               view.model.set("icon", "compress")
+	             } else {
+	               view.model.set("icon", "expand")
+	             }
+	           })
+	        })
+	    },
+	
 	
 	    createGUI: function(){
 	        this.pgui_view = this.createView("_igui");
@@ -1105,9 +1146,2406 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
+	/**
+	 * @file  Gui
+	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
+	 */
+	var NGL = __webpack_require__(3);
+	var UI = __webpack_require__(7).UI;
+	
+	
+	HTMLElement.prototype.getBoundingClientRect = (function () {
+	  // workaround for ie11 behavior with disconnected dom nodes
+	
+	  var _getBoundingClientRect = HTMLElement.prototype.getBoundingClientRect
+	
+	  return function getBoundingClientRect () {
+	    try {
+	      return _getBoundingClientRect.apply(this, arguments)
+	    } catch (e) {
+	      return {
+	        top: 0,
+	        left: 0,
+	        width: this.width,
+	        height: this.height
+	      }
+	    }
+	  }
+	}())
+	
+	NGL.Widget = function () {
+	
+	}
+	
+	NGL.Widget.prototype = {
+	  constructor: NGL.Widget
+	}
+	
+	NGL.createParameterInput = function (p, v) {
+	  if (!p) return
+	
+	  var value = v === undefined ? p.value : v
+	  var input
+	
+	  if (p.type === 'number') {
+	    input = new UI.Number(0)
+	      .setRange(p.min, p.max)
+	      .setPrecision(p.precision)
+	      .setValue(parseFloat(value))
+	  } else if (p.type === 'integer') {
+	    input = new UI.Integer(parseInt(value))
+	      .setRange(p.min, p.max)
+	  } else if (p.type === 'range') {
+	    input = new UI.Range(p.min, p.max, value, p.step)
+	      .setValue(parseFloat(value))
+	  } else if (p.type === 'boolean') {
+	    input = new UI.Checkbox(value)
+	  } else if (p.type === 'text') {
+	    input = new UI.Input(value)
+	  } else if (p.type === 'select') {
+	    input = new UI.Select()
+	      .setWidth('')
+	      .setOptions(p.options)
+	      .setValue(value)
+	  } else if (p.type === 'color') {
+	    input = new UI.ColorPopupMenu(p.label)
+	      .setValue(value)
+	  } else if (p.type === 'vector3') {
+	    input = new UI.Vector3(value)
+	      .setPrecision(p.precision)
+	  } else if (p.type === 'hidden') {
+	
+	    // nothing to display
+	
+	  } else {
+	    console.warn(
+	      'NGL.createParameterInput: unknown parameter type ' +
+	      "'" + p.type + "'"
+	    )
+	  }
+	
+	  return input
+	}
+	
+	/// /////////////
+	// Preferences
+	
+	NGL.Preferences = function (id, defaultParams) {
+	  this.signals = {
+	    keyChanged: new signals.Signal()
+	  }
+	
+	  this.id = id || 'ngl-gui'
+	  var dp = Object.assign({}, defaultParams)
+	
+	  this.storage = {
+	    impostor: true,
+	    quality: 'auto',
+	    sampleLevel: 0,
+	    theme: 'dark',
+	    backgroundColor: 'black',
+	    overview: true,
+	    rotateSpeed: 2.0,
+	    zoomSpeed: 1.2,
+	    panSpeed: 0.8,
+	    clipNear: 0,
+	    clipFar: 100,
+	    clipDist: 10,
+	    fogNear: 50,
+	    fogFar: 100,
+	    cameraFov: 40,
+	    cameraType: 'perspective',
+	    lightColor: 0xdddddd,
+	    lightIntensity: 1.0,
+	    ambientColor: 0xdddddd,
+	    ambientIntensity: 0.2,
+	    hoverTimeout: 0
+	  }
+	
+	  // overwrite default values with params
+	  for (var key in this.storage) {
+	    if (dp[ key ] !== undefined) {
+	      this.storage[ key ] = dp[ key ]
+	    }
+	  }
+	
+	  try {
+	    if (window.localStorage[ this.id ] === undefined) {
+	      window.localStorage[ this.id ] = JSON.stringify(this.storage)
+	    } else {
+	      var data = JSON.parse(window.localStorage[ this.id ])
+	      for (var key in data) {
+	        this.storage[ key ] = data[ key ]
+	      }
+	    }
+	  } catch (e) {
+	    NGL.error('localStorage not accessible/available')
+	  }
+	}
+	
+	NGL.Preferences.prototype = {
+	
+	  constructor: NGL.Preferences,
+	
+	  getKey: function (key) {
+	    return this.storage[ key ]
+	  },
+	
+	  setKey: function (key, value) {
+	    this.storage[ key ] = value
+	
+	    try {
+	      window.localStorage[ this.id ] = JSON.stringify(this.storage)
+	      this.signals.keyChanged.dispatch(key, value)
+	    } catch (e) {
+	      // Webkit === 22 / Firefox === 1014
+	      if (e.code === 22 || e.code === 1014) {
+	        NGL.error('localStorage full')
+	      } else {
+	        NGL.error('localStorage not accessible/available', e)
+	      }
+	    }
+	  },
+	
+	  clear: function () {
+	    try {
+	      delete window.localStorage[ this.id ]
+	    } catch (e) {
+	      NGL.error('localStorage not accessible/available')
+	    }
+	  }
+	
+	}
+	
+	// Stage
+	
+	NGL.StageWidget = function (stage) {
+	  var viewport = new NGL.ViewportWidget(stage).setId('viewport')
+	  document.body.appendChild(viewport.dom)
+	
+	  // ensure initial focus on viewer canvas for key-stroke listening
+	  stage.viewer.renderer.domElement.focus()
+	
+	  //
+	
+	  var preferences = new NGL.Preferences('ngl-stage-widget')
+	
+	  var pp = {}
+	  for (var name in preferences.storage) {
+	    pp[ name ] = preferences.getKey(name)
+	  }
+	  stage.setParameters(pp)
+	
+	  preferences.signals.keyChanged.add(function (key, value) {
+	    var sp = {}
+	    sp[ key ] = value
+	    stage.setParameters(sp)
+	    if (key === 'theme') {
+	      setTheme(value)
+	    }
+	  }, this)
+	
+	  //
+	
+	  var cssLinkElement = document.createElement('link')
+	  cssLinkElement.rel = 'stylesheet'
+	  cssLinkElement.id = 'theme'
+	
+	  function setTheme (value) {
+	    var cssPath, bgColor
+	    if (value === 'light') {
+	      cssPath = NGL.cssDirectory + 'light.css'
+	      bgColor = 'white'
+	    } else {
+	      cssPath = NGL.cssDirectory + 'dark.css'
+	      bgColor = 'black'
+	    }
+	    cssLinkElement.href = cssPath
+	    stage.setParameters({ backgroundColor: bgColor })
+	  }
+	
+	  setTheme(preferences.getKey('theme'))
+	  document.head.appendChild(cssLinkElement)
+	
+	  //
+	
+	  var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar')
+	  document.body.appendChild(toolbar.dom)
+	
+	  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar')
+	  document.body.appendChild(menubar.dom)
+	
+	  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar')
+	  document.body.appendChild(sidebar.dom)
+	
+	  //
+	
+	  document.body.style.touchAction = 'none'
+	
+	  //
+	
+	  stage.handleResize()
+	  // FIXME hack for ie11
+	  setTimeout(function () { stage.handleResize() }, 500)
+	
+	  //
+	
+	  var doResizeLeft = false
+	  var movedResizeLeft = false
+	  var minResizeLeft = false
+	
+	  var handleResizeLeft = function (clientX) {
+	    if (clientX >= 50 && clientX <= window.innerWidth - 10) {
+	      sidebar.setWidth(window.innerWidth - clientX + 'px')
+	      viewport.setWidth(clientX + 'px')
+	      toolbar.setWidth(clientX + 'px')
+	      stage.handleResize()
+	    }
+	    var sidebarWidth = sidebar.dom.getBoundingClientRect().width
+	    if (clientX === undefined) {
+	      var mainWidth = window.innerWidth - sidebarWidth
+	      viewport.setWidth(mainWidth + 'px')
+	      toolbar.setWidth(mainWidth + 'px')
+	      stage.handleResize()
+	    }
+	    if (sidebarWidth <= 10) {
+	      minResizeLeft = true
+	    } else {
+	      minResizeLeft = false
+	    }
+	  }
+	  handleResizeLeft = NGL.throttle(
+	    handleResizeLeft, 50, { leading: true, trailing: true }
+	  )
+	
+	  var resizeLeft = new UI.Panel()
+	    .setClass('ResizeLeft')
+	    .onMouseDown(function () {
+	      doResizeLeft = true
+	      movedResizeLeft = false
+	    })
+	    .onClick(function () {
+	      if (minResizeLeft) {
+	        handleResizeLeft(window.innerWidth - 300)
+	      } else if (!doResizeLeft && !movedResizeLeft) {
+	        handleResizeLeft(window.innerWidth - 10)
+	      }
+	    })
+	
+	  sidebar.add(resizeLeft)
+	
+	  window.addEventListener(
+	    'mousemove', function (event) {
+	      if (doResizeLeft) {
+	        document.body.style.cursor = 'col-resize'
+	        movedResizeLeft = true
+	        handleResizeLeft(event.clientX)
+	      }
+	    }, false
+	  )
+	
+	  window.addEventListener(
+	    'mouseup', function (event) {
+	      doResizeLeft = false
+	      document.body.style.cursor = ''
+	    }, false
+	  )
+	
+	  window.addEventListener(
+	    'resize', function (event) {
+	      handleResizeLeft()
+	    }, false
+	  )
+	
+	  //
+	
+	  document.addEventListener('dragover', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	    e.dataTransfer.dropEffect = 'none'
+	  }, false)
+	
+	  document.addEventListener('drop', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	  }, false)
+	
+	  this.viewport = viewport
+	  this.toolbar = toolbar
+	  this.menubar = menubar
+	  this.sidebar = sidebar
+	
+	  return this
+	}
+	
+	// Viewport
+	
+	NGL.ViewportWidget = function (stage) {
+	  var viewer = stage.viewer
+	  var renderer = viewer.renderer
+	
+	  var container = new UI.Panel()
+	  container.dom = viewer.container
+	  container.setPosition('absolute')
+	
+	  var fileTypesOpen = NGL.flatten([
+	    NGL.ParserRegistry.getStructureExtensions(),
+	    NGL.ParserRegistry.getVolumeExtensions(),
+	    NGL.ParserRegistry.getSurfaceExtensions(),
+	    NGL.DecompressorRegistry.names
+	  ])
+	
+	  // event handlers
+	
+	  container.dom.addEventListener('dragover', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	    e.dataTransfer.dropEffect = 'copy'
+	  }, false)
+	
+	  container.dom.addEventListener('drop', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	
+	    var fn = function (file, callback) {
+	      var ext = file.name.split('.').pop().toLowerCase()
+	      if (NGL.ScriptExtensions.includes(ext)) {
+	        stage.loadScript(file).then(callback)
+	      } else if (fileTypesOpen.includes(ext)) {
+	        stage.loadFile(file, { defaultRepresentation: true }).then(callback)
+	      } else {
+	        console.error('unknown filetype: ' + ext)
+	        callback()
+	      }
+	    }
+	    var queue = new NGL.Queue(fn, e.dataTransfer.files)
+	  }, false)
+	
+	  return container
+	}
+	
+	// Toolbar
+	
+	NGL.ToolbarWidget = function (stage) {
+	  var container = new UI.Panel()
+	
+	  var messageText = new UI.Text()
+	  var messagePanel = new UI.Panel()
+	    .setDisplay('inline')
+	    .setFloat('left')
+	    .add(messageText)
+	
+	  var statsText = new UI.Text()
+	  var statsPanel = new UI.Panel()
+	    .setDisplay('inline')
+	    .setFloat('right')
+	    .add(statsText)
+	
+	  stage.signals.clicked.add(function (pickingProxy) {
+	    messageText.setValue(pickingProxy ? pickingProxy.getLabel() : 'nothing')
+	  })
+	
+	  stage.viewer.stats.signals.updated.add(function () {
+	    if (NGL.Debug) {
+	      statsText.setValue(
+	        stage.viewer.stats.lastDuration.toFixed(2) + ' ms | ' +
+	        stage.viewer.stats.lastFps + ' fps'
+	      )
+	    } else {
+	      statsText.setValue('')
+	    }
+	  })
+	
+	  container.add(messagePanel, statsPanel)
+	
+	  return container
+	}
+	
+	// Menubar
+	
+	NGL.MenubarWidget = function (stage, preferences) {
+	  var container = new UI.Panel()
+	
+	  container.add(new NGL.MenubarFileWidget(stage))
+	  container.add(new NGL.MenubarViewWidget(stage, preferences))
+	  if (NGL.examplesListUrl && NGL.examplesScriptUrl) {
+	    container.add(new NGL.MenubarExamplesWidget(stage))
+	  }
+	  container.add(new NGL.MenubarHelpWidget(stage, preferences))
+	
+	  container.add(
+	    new UI.Panel().setClass('menu').setFloat('right').add(
+	      new UI.Text('NGL Viewer ' + NGL.Version).setClass('title')
+	    )
+	  )
+	
+	  return container
+	}
+	
+	NGL.MenubarFileWidget = function (stage) {
+	  var fileTypesOpen = NGL.flatten([
+	    NGL.ParserRegistry.getStructureExtensions(),
+	    NGL.ParserRegistry.getVolumeExtensions(),
+	    NGL.ParserRegistry.getSurfaceExtensions(),
+	    NGL.DecompressorRegistry.names,
+	    NGL.ScriptExtensions
+	  ])
+	
+	  function fileInputOnChange (e) {
+	    var fn = function (file, callback) {
+	      var ext = file.name.split('.').pop().toLowerCase()
+	      if (NGL.ScriptExtensions.includes(ext)) {
+	        stage.loadScript(file).then(callback)
+	      } else if (fileTypesOpen.includes(ext)) {
+	        stage.loadFile(file, { defaultRepresentation: true }).then(callback)
+	      } else {
+	        console.error('unknown filetype: ' + ext)
+	        callback()
+	      }
+	    }
+	    var queue = new NGL.Queue(fn, e.target.files)
+	  }
+	
+	  var fileInput = document.createElement('input')
+	  fileInput.type = 'file'
+	  fileInput.multiple = true
+	  fileInput.style.display = 'none'
+	  fileInput.accept = '.' + fileTypesOpen.join(',.')
+	  fileInput.addEventListener('change', fileInputOnChange, false)
+	
+	  // export image
+	
+	  var exportImageWidget = new NGL.ExportImageWidget(stage)
+	    .setDisplay('none')
+	    .attach()
+	
+	  // event handlers
+	
+	  function onOpenOptionClick () {
+	    fileInput.click()
+	  }
+	
+	  function onImportOptionClick () {
+	    var dirWidget
+	    function onListingClick (info) {
+	      var ext = info.path.split('.').pop().toLowerCase()
+	      if (NGL.ScriptExtensions.includes(ext)) {
+	        stage.loadScript(NGL.ListingDatasource.getUrl(info.path))
+	        dirWidget.dispose()
+	      } else if (fileTypesOpen.includes(ext)) {
+	        stage.loadFile(NGL.ListingDatasource.getUrl(info.path), {
+	          defaultRepresentation: true
+	        })
+	        dirWidget.dispose()
+	      } else {
+	        console.error('unknown filetype: ' + ext)
+	      }
+	    }
+	
+	    dirWidget = new NGL.DirectoryListingWidget(
+	      NGL.ListingDatasource, stage, 'Import file',
+	      fileTypesOpen, onListingClick
+	    )
+	
+	    dirWidget
+	      .setOpacity('0.9')
+	      .setLeft('50px')
+	      .setTop('80px')
+	      .attach()
+	  }
+	
+	  function onExportImageOptionClick () {
+	    exportImageWidget
+	      .setOpacity('0.9')
+	      .setLeft('50px')
+	      .setTop('80px')
+	      .setDisplay('block')
+	  }
+	
+	  function onScreenshotOptionClick () {
+	    stage.makeImage({
+	      factor: 1,
+	      antialias: true,
+	      trim: false,
+	      transparent: false
+	    }).then(function (blob) {
+	      NGL.download(blob, 'screenshot.png')
+	    })
+	  }
+	
+	  function onPdbInputKeyDown (e) {
+	    if (e.keyCode === 13) {
+	      stage.loadFile('rcsb://' + e.target.value.trim(), {
+	        defaultRepresentation: true
+	      })
+	      e.target.value = ''
+	    }
+	  }
+	
+	  function onAsTrajectoryChange (e) {
+	    stage.defaultFileParams.asTrajectory = e.target.checked
+	  }
+	
+	  function onFirstModelOnlyChange (e) {
+	    stage.defaultFileParams.firstModelOnly = e.target.checked
+	  }
+	
+	  function onCAlphaOnlyChange (e) {
+	    stage.defaultFileParams.cAlphaOnly = e.target.checked
+	  }
+	
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var createInput = UI.MenubarHelper.createInput
+	  var createCheckbox = UI.MenubarHelper.createCheckbox
+	  var createDivider = UI.MenubarHelper.createDivider
+	
+	  var menuConfig = [
+	    createOption('Open...', onOpenOptionClick),
+	    createInput('PDB', onPdbInputKeyDown),
+	    createCheckbox('asTrajectory', false, onAsTrajectoryChange),
+	    createCheckbox('firstModelOnly', false, onFirstModelOnlyChange),
+	    createCheckbox('cAlphaOnly', false, onCAlphaOnlyChange),
+	    createDivider(),
+	    createOption('Screenshot', onScreenshotOptionClick, 'camera'),
+	    createOption('Export image...', onExportImageOptionClick)
+	  ]
+	
+	  if (NGL.ListingDatasource) {
+	    menuConfig.splice(
+	      1, 0, createOption('Import...', onImportOptionClick)
+	    )
+	  }
+	
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
+	  optionsPanel.dom.appendChild(fileInput)
+	
+	  return UI.MenubarHelper.createMenuContainer('File', optionsPanel)
+	}
+	
+	NGL.MenubarViewWidget = function (stage, preferences) {
+	  // event handlers
+	
+	  function onLightThemeOptionClick () {
+	    preferences.setKey('theme', 'light')
+	  }
+	
+	  function onDarkThemeOptionClick () {
+	    preferences.setKey('theme', 'dark')
+	  }
+	
+	  function onPerspectiveCameraOptionClick () {
+	    stage.setParameters({ cameraType: 'perspective' })
+	  }
+	
+	  function onOrthographicCameraOptionClick () {
+	    stage.setParameters({ cameraType: 'orthographic' })
+	  }
+	
+	  function onStereoCameraOptionClick () {
+	    stage.setParameters({ cameraType: 'stereo' })
+	  }
+	
+	  function onFullScreenOptionClick () {
+	    stage.toggleFullscreen(document.body)
+	  }
+	
+	  function onCenterOptionClick () {
+	    stage.autoView(1000)
+	  }
+	
+	  function onToggleSpinClick () {
+	    stage.toggleSpin()
+	  }
+	
+	  function onToggleRockClick () {
+	    stage.toggleRock()
+	  }
+	
+	  function onGetOrientationClick () {
+	    window.prompt(
+	      'Get orientation',
+	      JSON.stringify(
+	        stage.viewerControls.getOrientation().toArray(),
+	        function (k, v) {
+	          return v.toFixed ? Number(v.toFixed(2)) : v
+	        }
+	      )
+	    )
+	  }
+	
+	  function onSetOrientationClick () {
+	    stage.viewerControls.orient(
+	      JSON.parse(window.prompt('Set orientation'))
+	    )
+	  }
+	
+	  stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	    var icon = menuConfig[ 6 ].children[ 0 ]
+	    if (isFullscreen) {
+	      icon.switchClass('compress', 'expand')
+	    } else {
+	      icon.switchClass('expand', 'compress')
+	    }
+	  })
+	
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var createDivider = UI.MenubarHelper.createDivider
+	
+	  var menuConfig = [
+	    createOption('Light theme', onLightThemeOptionClick),
+	    createOption('Dark theme', onDarkThemeOptionClick),
+	    createDivider(),
+	    createOption('Perspective', onPerspectiveCameraOptionClick),
+	    createOption('Orthographic', onOrthographicCameraOptionClick),
+	    createOption('Stereo', onStereoCameraOptionClick),
+	    createDivider(),
+	    createOption('Full screen', onFullScreenOptionClick, 'expand'),
+	    createOption('Center', onCenterOptionClick, 'bullseye'),
+	    createDivider(),
+	    createOption('Toggle spin', onToggleSpinClick),
+	    createOption('Toggle rock', onToggleRockClick),
+	    createDivider(),
+	    createOption('Get orientation', onGetOrientationClick),
+	    createOption('Set orientation', onSetOrientationClick)
+	  ]
+	
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
+	
+	  return UI.MenubarHelper.createMenuContainer('View', optionsPanel)
+	}
+	
+	NGL.MenubarExamplesWidget = function (stage) {
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel([])
+	  optionsPanel.setWidth('300px')
+	
+	  var xhr = new XMLHttpRequest()
+	  xhr.open('GET', NGL.examplesListUrl)
+	  xhr.responseType = 'json'
+	  xhr.onload = function (e) {
+	    var response = this.response
+	    if (typeof response === 'string') {
+	      // for ie11
+	      response = JSON.parse(response)
+	    }
+	    response.sort().forEach(function (name) {
+	      var option = createOption(name, function () {
+	        stage.loadScript(NGL.examplesScriptUrl + name + '.js')
+	      })
+	      optionsPanel.add(option)
+	    })
+	  }
+	  xhr.send()
+	
+	  return UI.MenubarHelper.createMenuContainer('Examples', optionsPanel)
+	}
+	
+	NGL.MenubarHelpWidget = function (stage, preferences) {
+	  // event handlers
+	
+	  function onOverviewOptionClick () {
+	    overviewWidget
+	      .setOpacity('0.9')
+	      .setDisplay('block')
+	      .setWidgetPosition(50, 80)
+	  }
+	
+	  function onDocOptionClick () {
+	    window.open(NGL.documentationUrl, '_blank')
+	  }
+	
+	  function onDebugOnClick () {
+	    NGL.setDebug(true)
+	    stage.viewer.updateHelper()
+	    stage.viewer.requestRender()
+	  }
+	
+	  function onDebugOffClick () {
+	    NGL.setDebug(false)
+	    stage.viewer.updateHelper()
+	    stage.viewer.requestRender()
+	  }
+	
+	  function onPreferencesOptionClick () {
+	    preferencesWidget
+	      .setOpacity('0.9')
+	      .setDisplay('block')
+	      .setWidgetPosition(50, 80)
+	  }
+	
+	  // export image
+	
+	  var preferencesWidget = new NGL.PreferencesWidget(stage, preferences)
+	    .setDisplay('none')
+	    .attach()
+	
+	  // overview
+	
+	  var overviewWidget = new NGL.OverviewWidget(stage, preferences)
+	    .setDisplay('none')
+	    .attach()
+	
+	  if (preferences.getKey('overview')) {
+	    onOverviewOptionClick()
+	  }
+	
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var createDivider = UI.MenubarHelper.createDivider
+	
+	  var menuConfig = [
+	    createOption('Overview', onOverviewOptionClick),
+	    createOption('Documentation', onDocOptionClick),
+	    createDivider(),
+	    createOption('Debug on', onDebugOnClick),
+	    createOption('Debug off', onDebugOffClick),
+	    createDivider(),
+	    createOption('Preferences', onPreferencesOptionClick, 'sliders')
+	  ]
+	
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
+	
+	  return UI.MenubarHelper.createMenuContainer('Help', optionsPanel)
+	}
+	
+	// Overview
+	
+	NGL.OverviewWidget = function (stage, preferences) {
+	  var container = new UI.OverlayPanel()
+	
+	  var xOffset = 0
+	  var yOffset = 0
+	
+	  var prevX = 0
+	  var prevY = 0
+	
+	  function onMousemove (e) {
+	    if (prevX === 0) {
+	      prevX = e.clientX
+	      prevY = e.clientY
+	    }
+	    xOffset -= prevX - e.clientX
+	    yOffset -= prevY - e.clientY
+	    prevX = e.clientX
+	    prevY = e.clientY
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	
+	  function setWidgetPosition (left, top) {
+	    xOffset = left
+	    yOffset = top
+	    prevX = 0
+	    prevY = 0
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	  container.setWidgetPosition = setWidgetPosition
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('25px')
+	    .setCursor('move')
+	    .onMouseDown(function (e) {
+	      if (e.which === 1) {
+	        document.addEventListener('mousemove', onMousemove)
+	      }
+	      document.addEventListener('mouseup', function (e) {
+	        document.removeEventListener('mousemove', onMousemove)
+	      })
+	    })
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setMaxWidth('600px')
+	    .setOverflow('auto')
+	
+	  headingPanel.add(
+	    new UI.Text('NGL Viewer').setFontStyle('italic'),
+	    new UI.Html('&nbsp;&mdash;&nbsp;Overview')
+	  )
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.setDisplay('none')
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  //
+	
+	  function addIcon (name, text) {
+	    var panel = new UI.Panel()
+	
+	    var icon = new UI.Icon(name)
+	      .setWidth('20px')
+	      .setFloat('left')
+	
+	    var label = new UI.Text(text)
+	      .setDisplay('inline')
+	      .setMarginLeft('5px')
+	
+	    panel
+	      .setMarginLeft('20px')
+	      .add(icon, label)
+	    listingPanel.add(panel)
+	  }
+	
+	  listingPanel
+	    .add(new UI.Panel().add(new UI.Html("To load a new structure use the <i>File</i> menu in the top left via drag'n'drop.")))
+	    .add(new UI.Break())
+	
+	  listingPanel
+	    .add(new UI.Panel().add(new UI.Text('A number of clickable icons provide common actions. Most icons can be clicked on, just try it or hover the mouse pointer over it to see a tooltip.')))
+	    .add(new UI.Break())
+	
+	  addIcon('eye', 'Controls the visibility of a component.')
+	  addIcon('trash-o', 'Deletes a component. Note that a second click is required to confirm the action.')
+	  addIcon('bullseye', 'Centers a component.')
+	  addIcon('bars', 'Opens a menu with further options.')
+	  addIcon('square', 'Opens a menu with coloring options.')
+	  addIcon('filter', 'Indicates atom-selection input fields.')
+	
+	  listingPanel
+	    .add(new UI.Text('Mouse controls'))
+	    .add(new UI.Html(
+	      '<ul>' +
+	          '<li>Left button hold and move to rotate camera around center.</li>' +
+	          '<li>Left button click to pick atom.</li>' +
+	          '<li>Middle button hold and move to zoom camera in and out.</li>' +
+	          '<li>Middle button click to center camera on atom.</li>' +
+	          '<li>Right button hold and move to translate camera in the screen plane.</li>' +
+	      '</ul>'
+	    ))
+	
+	  listingPanel
+	    .add(new UI.Panel().add(new UI.Html(
+	      'For more information please visit the ' +
+	      "<a href='" + NGL.documentationUrl + "' target='_blank'>documentation pages</a>."
+	    )))
+	
+	  var overview = preferences.getKey('overview')
+	  var showOverviewCheckbox = new UI.Checkbox(overview)
+	    .onClick(function () {
+	      preferences.setKey(
+	        'overview',
+	        showOverviewCheckbox.getValue()
+	      )
+	    })
+	
+	  listingPanel
+	    .add(new UI.HorizontalRule()
+	      .setBorderTop('1px solid #555')
+	      .setMarginTop('15px')
+	    )
+	    .add(new UI.Panel().add(
+	      showOverviewCheckbox,
+	      new UI.Text(
+	        'Show on startup. Always available from Menu > Help > Overview.'
+	      ).setMarginLeft('5px')
+	    ))
+	
+	  return container
+	}
+	
+	// Preferences
+	
+	NGL.PreferencesWidget = function (stage, preferences) {
+	  var container = new UI.OverlayPanel()
+	
+	  var xOffset = 0
+	  var yOffset = 0
+	
+	  var prevX = 0
+	  var prevY = 0
+	
+	  function onMousemove (e) {
+	    if (prevX === 0) {
+	      prevX = e.clientX
+	      prevY = e.clientY
+	    }
+	    xOffset -= prevX - e.clientX
+	    yOffset -= prevY - e.clientY
+	    prevX = e.clientX
+	    prevY = e.clientY
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	
+	  function setWidgetPosition (left, top) {
+	    xOffset = left
+	    yOffset = top
+	    prevX = 0
+	    prevY = 0
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	  container.setWidgetPosition = setWidgetPosition
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('25px')
+	    .setCursor('move')
+	    .onMouseDown(function (e) {
+	      if (e.which === 1) {
+	        document.addEventListener('mousemove', onMousemove)
+	      }
+	      document.addEventListener('mouseup', function (e) {
+	        document.removeEventListener('mousemove', onMousemove)
+	      })
+	    })
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setOverflow('auto')
+	
+	  headingPanel.add(new UI.Text('Preferences'))
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.setDisplay('none')
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  //
+	
+	  Object.keys(NGL.UIStageParameters).forEach(function (name) {
+	    var p = NGL.UIStageParameters[ name ]
+	    if (p.label === undefined) p.label = name
+	    var input = NGL.createParameterInput(p, stage.parameters[ name ])
+	
+	    if (!input) return
+	
+	    preferences.signals.keyChanged.add(function (key, value) {
+	      if (key === name) input.setValue(value)
+	    })
+	
+	    function setParam () {
+	      var sp = {}
+	      sp[ name ] = input.getValue()
+	      preferences.setKey(name, sp[ name ])
+	    }
+	
+	    var ua = navigator.userAgent
+	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	      input.onInput(setParam)
+	    } else {
+	      input.onChange(setParam)
+	    }
+	
+	    listingPanel
+	      .add(new UI.Text(name).setWidth('120px'))
+	      .add(input)
+	      .add(new UI.Break())
+	  })
+	
+	  return container
+	}
+	
+	// Export image
+	
+	NGL.ExportImageWidget = function (stage) {
+	  var container = new UI.OverlayPanel()
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('25px')
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setOverflow('auto')
+	
+	  headingPanel.add(new UI.Text('Image export'))
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.setDisplay('none')
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  var factorSelect = new UI.Select()
+	    .setOptions({
+	      '1': '1x',
+	      '2': '2x',
+	      '3': '3x',
+	      '4': '4x',
+	      '5': '5x',
+	      '6': '6x',
+	      '7': '7x',
+	      '8': '8x',
+	      '9': '9x',
+	      '10': '10x'
+	    })
+	    .setValue('4')
+	
+	  var antialiasCheckbox = new UI.Checkbox()
+	    .setValue(true)
+	
+	  var trimCheckbox = new UI.Checkbox()
+	    .setValue(false)
+	
+	  var transparentCheckbox = new UI.Checkbox()
+	    .setValue(false)
+	
+	  var progress = new UI.Progress()
+	    .setDisplay('none')
+	
+	  var exportButton = new UI.Button('export')
+	    .onClick(function () {
+	      exportButton.setDisplay('none')
+	      progress.setDisplay('inline-block')
+	      function onProgress (i, n, finished) {
+	        if (i === 1) {
+	          progress.setMax(n)
+	        }
+	        if (i >= n) {
+	          progress.setIndeterminate()
+	        } else {
+	          progress.setValue(i)
+	        }
+	        if (finished) {
+	          progress.setDisplay('none')
+	          exportButton.setDisplay('inline-block')
+	        }
+	      }
+	
+	      setTimeout(function () {
+	        stage.makeImage({
+	          factor: parseInt(factorSelect.getValue()),
+	          antialias: antialiasCheckbox.getValue(),
+	          trim: trimCheckbox.getValue(),
+	          transparent: transparentCheckbox.getValue(),
+	          onProgress: onProgress
+	        }).then(function (blob) {
+	          NGL.download(blob, 'screenshot.png')
+	        })
+	      }, 50)
+	    })
+	
+	  function addEntry (label, entry) {
+	    listingPanel
+	      .add(new UI.Text(label).setWidth('80px'))
+	      .add(entry || new UI.Panel())
+	      .add(new UI.Break())
+	  }
+	
+	  addEntry('scale', factorSelect)
+	  addEntry('antialias', antialiasCheckbox)
+	  addEntry('trim', trimCheckbox)
+	  addEntry('transparent', transparentCheckbox)
+	
+	  listingPanel.add(
+	    new UI.Break(),
+	    exportButton, progress
+	  )
+	
+	  return container
+	}
+	
+	// Sidebar
+	
+	NGL.SidebarWidget = function (stage) {
+	  var signals = stage.signals
+	  var container = new UI.Panel()
+	
+	  var widgetContainer = new UI.Panel()
+	    .setClass('Content')
+	
+	  var compList = []
+	  var widgetList = []
+	
+	  signals.componentAdded.add(function (component) {
+	    var widget
+	
+	    switch (component.type) {
+	      case 'structure':
+	        widget = new NGL.StructureComponentWidget(component, stage)
+	        break
+	
+	      case 'surface':
+	        widget = new NGL.SurfaceComponentWidget(component, stage)
+	        break
+	
+	      case 'volume':
+	        widget = new NGL.VolumeComponentWidget(component, stage)
+	        break
+	
+	      case 'shape':
+	        widget = new NGL.ShapeComponentWidget(component, stage)
+	        break
+	
+	      default:
+	        console.warn('NGL.SidebarWidget: component type unknown', component)
+	        return
+	    }
+	
+	    widgetContainer.add(widget)
+	
+	    compList.push(component)
+	    widgetList.push(widget)
+	  })
+	
+	  signals.componentRemoved.add(function (component) {
+	    var idx = compList.indexOf(component)
+	
+	    if (idx !== -1) {
+	      widgetList[ idx ].dispose()
+	
+	      compList.splice(idx, 1)
+	      widgetList.splice(idx, 1)
+	    }
+	  })
+	
+	  // actions
+	
+	  var expandAll = new UI.Icon('plus-square')
+	    .setTitle('expand all')
+	    .setCursor('pointer')
+	    .onClick(function () {
+	      widgetList.forEach(function (widget) {
+	        widget.expand()
+	      })
+	    })
+	
+	  var collapseAll = new UI.Icon('minus-square')
+	    .setTitle('collapse all')
+	    .setCursor('pointer')
+	    .setMarginLeft('10px')
+	    .onClick(function () {
+	      widgetList.forEach(function (widget) {
+	        widget.collapse()
+	      })
+	    })
+	
+	  var centerAll = new UI.Icon('bullseye')
+	    .setTitle('center all')
+	    .setCursor('pointer')
+	    .setMarginLeft('10px')
+	    .onClick(function () {
+	      stage.autoView(1000)
+	    })
+	
+	  var disposeAll = new UI.DisposeIcon()
+	    .setMarginLeft('10px')
+	    .setDisposeFunction(function () {
+	      stage.removeAllComponents()
+	    })
+	
+	  var settingsMenu = new UI.PopupMenu('cogs', 'Settings', 'window')
+	    .setIconTitle('settings')
+	    .setMarginLeft('10px')
+	  settingsMenu.entryLabelWidth = '120px'
+	
+	  // Busy indicator
+	
+	  var busy = new UI.Panel()
+	    .setDisplay('inline')
+	    .add(
+	      new UI.Icon('spinner')
+	        .addClass('spin')
+	        .setMarginLeft('45px')
+	    )
+	
+	  stage.tasks.signals.countChanged.add(function (delta, count) {
+	    if (count > 0) {
+	      actions.add(busy)
+	    } else {
+	      try {
+	        actions.remove(busy)
+	      } catch (e) {
+	        // already removed
+	      }
+	    }
+	  })
+	
+	  var paramNames = [
+	    'clipNear', 'clipFar', 'clipDist', 'fogNear', 'fogFar',
+	    'lightColor', 'lightIntensity', 'ambientColor', 'ambientIntensity'
+	  ]
+	
+	  paramNames.forEach(function (name) {
+	    var p = NGL.UIStageParameters[ name ]
+	    if (p.label === undefined) p.label = name
+	    var input = NGL.createParameterInput(p, stage.parameters[ name ])
+	
+	    if (!input) return
+	
+	    stage.signals.parametersChanged.add(function (params) {
+	      input.setValue(params[ name ])
+	    })
+	
+	    function setParam () {
+	      var sp = {}
+	      sp[ name ] = input.getValue()
+	      stage.setParameters(sp)
+	    }
+	
+	    var ua = navigator.userAgent
+	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	      input.onInput(setParam)
+	    } else {
+	      input.onChange(setParam)
+	    }
+	
+	    settingsMenu.addEntry(name, input)
+	  })
+	
+	  //
+	
+	  var actions = new UI.Panel()
+	    .setClass('Panel Sticky')
+	    .add(
+	      expandAll,
+	      collapseAll,
+	      centerAll,
+	      disposeAll,
+	      settingsMenu
+	    )
+	
+	  container.add(
+	    actions,
+	    widgetContainer
+	  )
+	
+	  return container
+	}
+	
+	// Component
+	
+	NGL.StructureComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	  var trajContainer = new UI.Panel()
+	
+	  signals.representationAdded.add(function (repr) {
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  })
+	
+	  signals.trajectoryAdded.add(function (traj) {
+	    trajContainer.add(new NGL.TrajectoryElementWidget(traj, stage))
+	  })
+	
+	  signals.defaultAssemblyChanged.add(function () {
+	    assembly.setValue(component.parameters.defaultAssembly)
+	  })
+	
+	  // Selection
+	
+	  container.add(
+	    new UI.SelectionPanel(component.selection)
+	      .setMarginLeft('20px')
+	      .setInputWidth('214px')
+	  )
+	
+	  // Export PDB
+	
+	  var pdb = new UI.Button('export').onClick(function () {
+	    var pdbWriter = new NGL.PdbWriter(component.structure)
+	    pdbWriter.download('structure')
+	    componentPanel.setMenuDisplay('none')
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = { '': '[ add ]' }
+	      NGL.RepresentationRegistry.names.forEach(function (key) {
+	        reprOptions[ key ] = key
+	      })
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Assembly
+	
+	  var assembly = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var biomolDict = component.structure.biomolDict
+	      var assemblyOptions = {
+	        '': (component.structure.unitcell ? 'AU' : 'FULL')
+	      }
+	      Object.keys(biomolDict).forEach(function (k) {
+	        assemblyOptions[ k ] = k
+	      })
+	      return assemblyOptions
+	    })())
+	    .setValue(component.parameters.defaultAssembly)
+	    .onChange(function () {
+	      component.setDefaultAssembly(assembly.getValue())
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Open trajectory
+	
+	  var trajExt = []
+	  NGL.ParserRegistry.getTrajectoryExtensions().forEach(function (ext) {
+	    trajExt.push('.' + ext, '.' + ext + '.gz')
+	  })
+	
+	  function framesInputOnChange (e) {
+	    var fn = function (file, callback) {
+	      NGL.autoLoad(file).then(function (frames) {
+	        component.addTrajectory(frames)
+	        callback()
+	      })
+	    }
+	    var queue = new NGL.Queue(fn, e.target.files)
+	    e.target.value = ''
+	  }
+	
+	  var framesInput = document.createElement('input')
+	  framesInput.type = 'file'
+	  framesInput.multiple = true
+	  framesInput.style.display = 'none'
+	  framesInput.accept = trajExt.join(',')
+	  framesInput.addEventListener('change', framesInputOnChange, false)
+	
+	  var traj = new UI.Button('open').onClick(function () {
+	    framesInput.click()
+	    componentPanel.setMenuDisplay('none')
+	  })
+	
+	  // Import remote trajectory
+	
+	  var remoteTraj = new UI.Button('import').onClick(function () {
+	    componentPanel.setMenuDisplay('none')
+	
+	    // TODO list of extensions should be provided by trajectory datasource
+	    var remoteTrajExt = [
+	      'xtc', 'trr', 'netcdf', 'dcd', 'ncdf', 'nc', 'gro', 'pdb',
+	      'lammpstrj', 'xyz', 'mdcrd', 'gz', 'binpos', 'h5', 'dtr',
+	      'arc', 'tng', 'trj', 'trz'
+	    ]
+	    var dirWidget
+	
+	    function onListingClick (info) {
+	      var ext = info.path.split('.').pop().toLowerCase()
+	      if (remoteTrajExt.indexOf(ext) !== -1) {
+	        component.addTrajectory(info.path + '?struc=' + component.structure.path)
+	        dirWidget.dispose()
+	      } else {
+	        NGL.log('unknown trajectory type: ' + ext)
+	      }
+	    }
+	
+	    dirWidget = new NGL.DirectoryListingWidget(
+	      NGL.ListingDatasource, stage, 'Import trajectory',
+	      remoteTrajExt, onListingClick
+	    )
+	
+	    dirWidget
+	      .setOpacity('0.9')
+	      .setLeft('50px')
+	      .setTop('80px')
+	      .attach()
+	  })
+	
+	  // Superpose
+	
+	  function setSuperposeOptions () {
+	    var superposeOptions = { '': '[ structure ]' }
+	    stage.eachComponent(function (o, i) {
+	      if (o !== component) {
+	        superposeOptions[ i ] = o.name
+	      }
+	    }, NGL.StructureComponent)
+	    superpose.setOptions(superposeOptions)
+	  }
+	
+	  stage.signals.componentAdded.add(setSuperposeOptions)
+	  stage.signals.componentRemoved.add(setSuperposeOptions)
+	
+	  var superpose = new UI.Select()
+	    .setColor('#444')
+	    .onChange(function () {
+	      component.superpose(
+	        stage.compList[ superpose.getValue() ],
+	        true
+	      )
+	      component.autoView(1000)
+	      superpose.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  setSuperposeOptions()
+	
+	  // Principal axes
+	
+	  var alignAxes = new UI.Button('align').onClick(function () {
+	    var pa = component.structure.getPrincipalAxes()
+	    var q = pa.getRotationQuaternion()
+	    q.multiply(component.quaternion.clone().inverse())
+	    stage.animationControls.rotate(q)
+	    stage.animationControls.move(component.getCenter())
+	  })
+	
+	  // Measurements removal
+	
+	  var removeMeasurements = new UI.Button('remove').onClick(function () {
+	    component.removeAllMeasurements()
+	  })
+	
+	  // Annotations visibility
+	
+	  var showAnnotations = new UI.Button('show').onClick(function () {
+	    component.annotationList.forEach(function (annotation) {
+	      annotation.setVisibility(true)
+	    })
+	  })
+	
+	  var hideAnnotations = new UI.Button('hide').onClick(function () {
+	    component.annotationList.forEach(function (annotation) {
+	      annotation.setVisibility(false)
+	    })
+	  })
+	
+	  var annotationButtons = new UI.Panel()
+	    .setDisplay('inline-block')
+	    .add(showAnnotations, hideAnnotations)
+	
+	  // Open validation
+	
+	  function validationInputOnChange (e) {
+	    var fn = function (file, callback) {
+	      NGL.autoLoad(file, { ext: 'validation' }).then(function (validation) {
+	        component.structure.validation = validation
+	        callback()
+	      })
+	    }
+	    var queue = new NGL.Queue(fn, e.target.files)
+	  }
+	
+	  var validationInput = document.createElement('input')
+	  validationInput.type = 'file'
+	  validationInput.style.display = 'none'
+	  validationInput.accept = '.xml'
+	  validationInput.addEventListener('change', validationInputOnChange, false)
+	
+	  var vali = new UI.Button('open').onClick(function () {
+	    validationInput.click()
+	    componentPanel.setMenuDisplay('none')
+	  })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	  // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('PDB file', pdb)
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry('Assembly', assembly)
+	    .addMenuEntry('Superpose', superpose)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.structure.path)
+	        .setMaxWidth('100px')
+	        .setOverflow('auto')
+	      // .setWordWrap( "break-word" )
+	    )
+	    .addMenuEntry('Trajectory', traj)
+	    .addMenuEntry('Principal axes', alignAxes)
+	    .addMenuEntry('Measurements', removeMeasurements)
+	    .addMenuEntry('Annotations', annotationButtons)
+	    .addMenuEntry('Validation', vali)
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  if (NGL.ListingDatasource && NGL.TrajectoryDatasource) {
+	    componentPanel.addMenuEntry('Remote trajectory', remoteTraj)
+	  }
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(trajContainer)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	NGL.SurfaceComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	
+	  signals.representationAdded.add(function (repr) {
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = {
+	        '': '[ add ]',
+	        'surface': 'surface',
+	        'dot': 'dot'
+	      }
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	  // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.surface.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	NGL.VolumeComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	
+	  signals.representationAdded.add(function (repr) {
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = {
+	        '': '[ add ]',
+	        'surface': 'surface',
+	        'dot': 'dot',
+	        'slice': 'slice'
+	      }
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	  // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.volume.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	NGL.ShapeComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	
+	  signals.representationAdded.add(function (repr) {
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = {
+	        '': '[ add ]',
+	        'buffer': 'buffer'
+	      }
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	    // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.shape.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	// Representation
+	
+	NGL.RepresentationElementWidget = function (element, stage) {
+	  var signals = element.signals
+	
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	    .setMarginLeft('20px')
+	
+	  signals.visibilityChanged.add(function (value) {
+	    toggle.setValue(value)
+	  })
+	
+	  signals.nameChanged.add(function (value) {
+	    name.setValue(value)
+	  })
+	
+	  signals.disposed.add(function () {
+	    menu.dispose()
+	    container.dispose()
+	  })
+	
+	  // Name
+	
+	  var name = new UI.EllipsisText(element.name)
+	    .setWidth('103px')
+	
+	    // Actions
+	
+	  var toggle = new UI.ToggleIcon(element.visible, 'eye', 'eye-slash')
+	    .setTitle('hide/show')
+	    .setCursor('pointer')
+	    .setMarginLeft('25px')
+	    .onClick(function () {
+	      element.setVisibility(!element.visible)
+	    })
+	
+	  var disposeIcon = new UI.DisposeIcon()
+	    .setMarginLeft('10px')
+	    .setDisposeFunction(function () {
+	      element.dispose()
+	    })
+	
+	  container
+	    .addStatic(name)
+	    .addStatic(toggle)
+	    .addStatic(disposeIcon)
+	
+	  // Selection
+	
+	  if ((element.parent.type === 'structure' ||
+	          element.parent.type === 'trajectory') &&
+	        element.repr.selection && element.repr.selection.type === 'selection'
+	  ) {
+	    container.add(
+	      new UI.SelectionPanel(element.repr.selection)
+	        .setMarginLeft('20px')
+	        .setInputWidth('194px')
+	    )
+	  }
+	
+	  // Menu
+	
+	  var menu = new UI.PopupMenu('bars', 'Representation')
+	    .setMarginLeft('45px')
+	    .setEntryLabelWidth('190px')
+	
+	  menu.addEntry('type', new UI.Text(element.repr.type))
+	
+	  // Parameters
+	
+	  var repr = element.repr
+	  var rp = repr.getParameters()
+	
+	  Object.keys(repr.parameters).forEach(function (name) {
+	    if (!repr.parameters[ name ]) return
+	    var p = Object.assign({}, repr.parameters[ name ])
+	    p.value = rp[ name ]
+	    if (p.label === undefined) p.label = name
+	    var input = NGL.createParameterInput(p)
+	
+	    if (!input) return
+	
+	    signals.parametersChanged.add(function (params) {
+	      if (typeof input.setValue === 'function') {
+	        input.setValue(params[ name ])
+	      }
+	    })
+	
+	    function setParam () {
+	      var po = {}
+	      po[ name ] = input.getValue()
+	      element.setParameters(po)
+	      stage.viewer.requestRender()
+	    }
+	
+	    var ua = navigator.userAgent
+	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	      input.onInput(setParam)
+	    } else {
+	      input.onChange(setParam)
+	    }
+	
+	    menu.addEntry(name, input)
+	  })
+	
+	  container
+	    .addStatic(menu)
+	
+	  return container
+	}
+	
+	// Trajectory
+	
+	NGL.TrajectoryElementWidget = function (element, stage) {
+	  var signals = element.signals
+	  var traj = element.trajectory
+	
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	    .setMarginLeft('20px')
+	
+	  signals.disposed.add(function () {
+	    menu.dispose()
+	    container.dispose()
+	  })
+	
+	  var frameCount = new UI.Panel()
+	    .setDisplay('inline')
+	    .add(new UI.Icon('spinner')
+	      .addClass('spin')
+	      .setMarginRight('99px')
+	    )
+	
+	  var frameTime = new UI.Panel()
+	    .setMarginLeft('5px')
+	    .setDisplay('inline')
+	
+	  function setFrame (value) {
+	    frame.setValue(value)
+	    if (traj.deltaTime && value >= 0) {
+	      var t = traj.getFrameTime(value) / 1000
+	      time.setValue(t.toFixed(9).replace(/\.?0+$/g, '') + 'ns')
+	    } else {
+	      time.setValue('')
+	    }
+	    frameRange.setValue(value)
+	    frameCount.clear().add(frame.setWidth('40px'))
+	    frameTime.clear().add(time.setWidth('90px'))
+	  }
+	
+	  function init (value) {
+	    frame.setRange(-1, value - 1)
+	    frameRange.setRange(-1, value - 1)
+	
+	    setFrame(traj.currentFrame)
+	
+	    if (element.parameters.defaultStep !== undefined) {
+	      step.setValue(element.parameters.defaultStep)
+	    } else {
+	      // 1000 = n / step
+	      step.setValue(Math.ceil((value + 1) / 100))
+	    }
+	
+	    player.setParameters({step: step.getValue()})
+	    player.setParameters({end: value - 1})
+	  }
+	
+	  signals.countChanged.add(init)
+	  signals.frameChanged.add(setFrame)
+	
+	  // Name
+	
+	  var name = new UI.EllipsisText(element.parameters.name)
+	    .setWidth('103px')
+	
+	  signals.nameChanged.add(function (value) {
+	    name.setValue(value)
+	  })
+	
+	  container.addStatic(name)
+	  container.addStatic(frameTime)
+	
+	  // frames
+	
+	  var frame = new UI.Integer(-1)
+	    .setWidth('40px')
+	    .setTextAlign('right')
+	    .setMarginLeft('5px')
+	    .setRange(-1, -1)
+	    .onChange(function (e) {
+	      traj.setFrame(frame.getValue())
+	      menu.setMenuDisplay('none')
+	    })
+	
+	  var time = new UI.Text()
+	    .setTextAlign('right')
+	    .setWidth('90px')
+	
+	  var step = new UI.Integer(1)
+	    .setWidth('50px')
+	    .setRange(1, 10000)
+	    .onChange(function () {
+	      player.setParameters({step: step.getValue()})
+	    })
+	
+	  var frameRow = new UI.Panel()
+	
+	  var frameRange = new UI.Range(-1, -1, -1, 1)
+	    .setWidth('147px')
+	    .setMargin('0px')
+	    .setPadding('0px')
+	    .setBorder('0px')
+	    .onInput(function (e) {
+	      var value = frameRange.getValue()
+	
+	      if (value === traj.currentFrame) {
+	        return
+	      }
+	
+	      if (traj.player && traj.player.isRunning) {
+	        traj.setPlayer()
+	        traj.setFrame(value)
+	      } else if (!traj.inProgress) {
+	        traj.setFrame(value)
+	      }
+	    })
+	
+	  var interpolateType = new UI.Select()
+	    .setColor('#444')
+	    .setOptions({
+	      '': 'none',
+	      'linear': 'linear',
+	      'spline': 'spline'
+	    })
+	    .setValue(element.parameters.defaultInterpolateType)
+	    .onChange(function () {
+	      player.setParameters({interpolateType: interpolateType.getValue()})
+	    })
+	
+	  var interpolateStep = new UI.Integer(element.parameters.defaultInterpolateStep)
+	    .setWidth('30px')
+	    .setRange(1, 50)
+	    .onChange(function () {
+	      player.setParameters({interpolateStep: interpolateStep.getValue()})
+	    })
+	
+	  var playDirection = new UI.Select()
+	    .setColor('#444')
+	    .setOptions({
+	      'forward': 'forward',
+	      'backward': 'backward',
+	      'bounce': 'bounce'
+	    })
+	    .setValue(element.parameters.defaultDirection)
+	    .onChange(function () {
+	      player.setParameters({direction: playDirection.getValue()})
+	    })
+	
+	  var playMode = new UI.Select()
+	    .setColor('#444')
+	    .setOptions({
+	      'loop': 'loop',
+	      'once': 'once'
+	    })
+	    .setValue(element.parameters.defaultMode)
+	    .onChange(function () {
+	      player.setParameters({mode: playMode.getValue()})
+	    })
+	
+	  // player
+	
+	  var timeout = new UI.Integer(element.parameters.defaultTimeout)
+	    .setWidth('30px')
+	    .setRange(10, 1000)
+	    .onChange(function () {
+	      player.setParameters({timeout: timeout.getValue()})
+	    })
+	
+	  var player = new NGL.TrajectoryPlayer(traj, {
+	    step: step.getValue(),
+	    timeout: timeout.getValue(),
+	    start: 0,
+	    end: traj.frameCount - 1,
+	    interpolateType: interpolateType.getValue(),
+	    interpolateStep: interpolateStep.getValue(),
+	    direction: playDirection.getValue(),
+	    mode: playMode.getValue()
+	  })
+	  traj.setPlayer(player)
+	
+	  var playerButton = new UI.ToggleIcon(true, 'play', 'pause')
+	    .setMarginRight('10px')
+	    .setMarginLeft('20px')
+	    .setCursor('pointer')
+	    .setWidth('12px')
+	    .setTitle('play')
+	    .onClick(function () {
+	      player.toggle()
+	    })
+	
+	  player.signals.startedRunning.add(function () {
+	    playerButton
+	      .setTitle('pause')
+	      .setValue(false)
+	  })
+	
+	  player.signals.haltedRunning.add(function () {
+	    playerButton
+	      .setTitle('play')
+	      .setValue(true)
+	  })
+	
+	  frameRow.add(playerButton, frameRange, frameCount)
+	
+	  // Selection
+	
+	  container.add(
+	    new UI.SelectionPanel(traj.selection)
+	      .setMarginLeft('20px')
+	      .setInputWidth('194px')
+	  )
+	
+	  // Options
+	
+	  var setCenterPbc = new UI.Checkbox(traj.centerPbc)
+	    .onChange(function () {
+	      element.setParameters({
+	        'centerPbc': setCenterPbc.getValue()
+	      })
+	    })
+	
+	  var setRemovePeriodicity = new UI.Checkbox(traj.removePeriodicity)
+	    .onChange(function () {
+	      element.setParameters({
+	        'removePeriodicity': setRemovePeriodicity.getValue()
+	      })
+	    })
+	
+	  var setRemovePbc = new UI.Checkbox(traj.removePbc)
+	    .onChange(function () {
+	      element.setParameters({
+	        'removePbc': setRemovePbc.getValue()
+	      })
+	    })
+	
+	  var setSuperpose = new UI.Checkbox(traj.superpose)
+	    .onChange(function () {
+	      element.setParameters({
+	        'superpose': setSuperpose.getValue()
+	      })
+	    })
+	
+	  var setDeltaTime = new UI.Number(traj.deltaTime)
+	    .setWidth('55px')
+	    .setRange(0, 1000000)
+	    .onChange(function () {
+	      element.setParameters({
+	        'deltaTime': setDeltaTime.getValue()
+	      })
+	    })
+	
+	  var setTimeOffset = new UI.Number(traj.timeOffset)
+	    .setWidth('55px')
+	    .setRange(0, 1000000000)
+	    .onChange(function () {
+	      element.setParameters({
+	        'timeOffset': setTimeOffset.getValue()
+	      })
+	    })
+	
+	  signals.parametersChanged.add(function (params) {
+	    setCenterPbc.setValue(traj.centerPbc)
+	    setRemovePeriodicity.setValue(traj.removePeriodicity)
+	    setRemovePbc.setValue(traj.removePbc)
+	    setSuperpose.setValue(traj.superpose)
+	    setDeltaTime.setValue(traj.deltaTime)
+	    setTimeOffset.setValue(traj.timeOffset)
+	    traj.setFrame(frame.getValue())
+	  })
+	
+	  // Dispose
+	
+	  var dispose = new UI.DisposeIcon()
+	    .setDisposeFunction(function () {
+	      element.parent.removeTrajectory(element)
+	    })
+	
+	  //
+	
+	  if (traj.frameCount) {
+	    init(traj.frameCount)
+	  }
+	
+	  // Menu
+	
+	  var menu = new UI.PopupMenu('bars', 'Trajectory')
+	    .setMarginLeft('10px')
+	    .setEntryLabelWidth('130px')
+	    .addEntry('Center', setCenterPbc)
+	    .addEntry('Remove Periodicity', setRemovePeriodicity)
+	    .addEntry('Remove PBC', setRemovePbc)
+	    .addEntry('Superpose', setSuperpose)
+	    .addEntry('Step size', step)
+	    .addEntry('Interpolation type', interpolateType)
+	    .addEntry('Interpolation steps', interpolateStep)
+	    .addEntry('Play timeout', timeout)
+	    .addEntry('Play direction', playDirection)
+	    .addEntry('Play mode', playMode)
+	    .addEntry('Delta time [ps]', setDeltaTime)
+	    .addEntry('Time offset [ps]', setTimeOffset)
+	    .addEntry('File',
+	      new UI.Text(traj.trajPath)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addEntry('Dispose', dispose)
+	
+	  container
+	    .addStatic(menu)
+	
+	  container
+	    .add(frameRow)
+	
+	  return container
+	}
+	
+	// Listing
+	
+	NGL.DirectoryListingWidget = function (datasource, stage, heading, filter, callback) {
+	  // from http://stackoverflow.com/a/20463021/1435042
+	  function fileSizeSI (a, b, c, d, e) {
+	    return (b = Math, c = b.log, d = 1e3, e = c(a) / c(d) | 0, a / b.pow(d, e)).toFixed(2) +
+	            String.fromCharCode(160) + (e ? 'kMGTPEZY'[--e] + 'B' : 'Bytes')
+	  }
+	
+	  function getFolderDict (path) {
+	    path = path || ''
+	    var options = { '': '' }
+	    var full = []
+	    path.split('/').forEach(function (chunk) {
+	      full.push(chunk)
+	      options[ full.join('/') ] = chunk
+	    })
+	    return options
+	  }
+	
+	  var container = new UI.OverlayPanel()
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('30px')
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setPaddingRight('15px')
+	    .setOverflow('auto')
+	
+	  var folderSelect = new UI.Select()
+	    .setColor('#444')
+	    .setMarginLeft('20px')
+	    .setWidth('')
+	    .setMaxWidth('200px')
+	    .setOptions(getFolderDict())
+	    .onChange(function () {
+	      datasource.getListing(folderSelect.getValue())
+	        .then(onListingLoaded)
+	    })
+	
+	  heading = heading || 'Directoy listing'
+	
+	  headingPanel.add(new UI.Text(heading))
+	  headingPanel.add(folderSelect)
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.dispose()
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  function onListingLoaded (listing) {
+	    var folder = listing.path
+	    var data = listing.data
+	
+	    NGL.lastUsedDirectory = folder
+	    listingPanel.clear()
+	
+	    folderSelect
+	      .setOptions(getFolderDict(folder))
+	      .setValue(folder)
+	
+	    data.forEach(function (info) {
+	      var ext = info.path.split('.').pop().toLowerCase()
+	      if (filter && !info.dir && filter.indexOf(ext) === -1) {
+	        return
+	      }
+	
+	      var icon, name
+	      if (info.dir) {
+	        icon = 'folder-o'
+	        name = info.name
+	      } else {
+	        icon = 'file-o'
+	        name = info.name + String.fromCharCode(160) +
+	                '(' + fileSizeSI(info.size) + ')'
+	      }
+	
+	      var pathRow = new UI.Panel()
+	        .setDisplay('block')
+	        .setWhiteSpace('nowrap')
+	        .add(new UI.Icon(icon).setWidth('20px'))
+	        .add(new UI.Text(name))
+	        .onClick(function () {
+	          if (info.dir) {
+	            datasource.getListing(info.path)
+	              .then(onListingLoaded)
+	          } else {
+	            callback(info)
+	          }
+	        })
+	
+	      if (info.restricted) {
+	        pathRow.add(new UI.Icon('lock').setMarginLeft('5px'))
+	      }
+	
+	      listingPanel.add(pathRow)
+	    })
+	  }
+	
+	  datasource.getListing(NGL.lastUsedDirectory)
+	    .then(onListingLoaded)
+	
+	  return container
+	}
+
 
 /***/ }),
 /* 3 */
@@ -1572,6 +4010,1055 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports) {
+
+	/**
+	 * @author mrdoob / http://mrdoob.com/
+	 * The MIT License, Copyright &copy; 2010-2016 three.js authors
+	 */
+	
+	// TODO changes by Alexander S. Rose
+	// - more events and properties
+	// - ctrlKey modifier for Number and Integer
+	// - UI.Element.prototype.getBox()
+	// - UI.Element.prototype.dispose()
+	// - UI.Element.prototype.setTitle()
+	// - UI.Element.prototype.getStyle()
+	
+	var UI = {}
+	
+	UI.Element = function () {}
+	
+	UI.Element.prototype = {
+	
+	  setId: function (id) {
+	    this.dom.id = id
+	
+	    return this
+	  },
+	
+	  setTitle: function (title) {
+	    this.dom.title = title
+	
+	    return this
+	  },
+	
+	  setClass: function (name) {
+	    this.dom.className = name
+	
+	    return this
+	  },
+	
+	  setStyle: function (style, array) {
+	    for (var i = 0; i < array.length; i++) {
+	      this.dom.style[ style ] = array[ i ]
+	    }
+	  },
+	
+	  getStyle: function (style) {
+	    return this.dom.style[ style ]
+	  },
+	
+	  getBox: function () {
+	    return this.dom.getBoundingClientRect()
+	  },
+	
+	  setDisabled: function (value) {
+	    this.dom.disabled = value
+	
+	    return this
+	  },
+	
+	  setTextContent: function (value) {
+	    this.dom.textContent = value
+	
+	    return this
+	  },
+	
+	  dispose: function () {
+	    this.dom.parentNode.removeChild(this.dom)
+	  }
+	
+	}
+	
+	// properties
+	
+	var properties = [
+	  'position', 'left', 'top', 'right', 'bottom', 'width', 'height', 'border',
+	  'borderLeft', 'borderTop', 'borderRight', 'borderBottom', 'borderColor',
+	  'display', 'overflow', 'overflowX', 'overflowY', 'margin', 'marginLeft',
+	  'marginTop', 'marginRight',
+	  'marginBottom', 'padding', 'paddingLeft', 'paddingTop', 'paddingRight',
+	  'paddingBottom', 'color', 'backgroundColor', 'opacity', 'fontSize',
+	  'fontWeight', 'fontStyle', 'fontFamily', 'textTransform', 'cursor',
+	  'verticalAlign', 'clear', 'float', 'zIndex', 'minHeight', 'maxHeight',
+	  'minWidth', 'maxWidth', 'wordBreak', 'wordWrap', 'spellcheck',
+	  'lineHeight', 'whiteSpace', 'textOverflow', 'textAlign', 'pointerEvents'
+	]
+	
+	properties.forEach(function (property) {
+	  var methodSuffix = property.substr(0, 1).toUpperCase() +
+	                        property.substr(1, property.length)
+	
+	  UI.Element.prototype[ 'set' + methodSuffix ] = function () {
+	    this.setStyle(property, arguments)
+	    return this
+	  }
+	
+	  UI.Element.prototype[ 'get' + methodSuffix ] = function () {
+	    return this.getStyle(property)
+	  }
+	})
+	
+	// events
+	
+	var events = [
+	  'KeyUp', 'KeyDown', 'KeyPress',
+	  'MouseOver', 'MouseOut', 'MouseDown', 'MouseUp', 'MouseMove',
+	  'Click', 'Change', 'Input', 'Scroll'
+	]
+	
+	events.forEach(function (event) {
+	  var method = 'on' + event
+	
+	  UI.Element.prototype[ method ] = function (callback) {
+	    this.dom.addEventListener(event.toLowerCase(), callback.bind(this), false)
+	
+	    return this
+	  }
+	})
+	
+	// Panel
+	
+	UI.Panel = function () {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('div')
+	  dom.className = 'Panel'
+	
+	  this.dom = dom
+	  this.children = []
+	
+	  return this
+	}
+	
+	UI.Panel.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Panel.prototype.add = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.appendChild(arguments[ i ].dom)
+	    this.children.push(arguments[ i ])
+	  }
+	
+	  return this
+	}
+	
+	UI.Panel.prototype.remove = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.removeChild(arguments[ i ].dom)
+	
+	    var idx = this.children.indexOf(arguments[ i ])
+	    if (idx !== -1) this.children.splice(idx, 1)
+	  }
+	
+	  return this
+	}
+	
+	UI.Panel.prototype.clear = function () {
+	  while (this.dom.children.length) {
+	    this.dom.removeChild(this.dom.lastChild)
+	  }
+	
+	  this.children.length = 0
+	
+	  return this
+	}
+	
+	// Collapsible Panel
+	
+	UI.CollapsiblePanel = function () {
+	  UI.Panel.call(this)
+	
+	  this.dom.className = 'Panel CollapsiblePanel'
+	
+	  this.button = document.createElement('div')
+	  this.button.className = 'CollapsiblePanelButton'
+	  this.dom.appendChild(this.button)
+	
+	  var scope = this
+	  this.button.addEventListener('click', function (event) {
+	    scope.toggle()
+	  }, false)
+	
+	  this.content = document.createElement('div')
+	  this.content.className = 'CollapsibleContent'
+	  this.dom.appendChild(this.content)
+	
+	  this.isCollapsed = false
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.CollapsiblePanel.prototype.addStatic = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.insertBefore(arguments[ i ].dom, this.content)
+	  }
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype.removeStatic = UI.Panel.prototype.remove
+	
+	UI.CollapsiblePanel.prototype.clearStatic = function () {
+	  this.dom.childNodes.forEach(function (child) {
+	    if (child !== this.content) {
+	      this.dom.removeChild(child)
+	    }
+	  })
+	}
+	
+	UI.CollapsiblePanel.prototype.add = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.content.appendChild(arguments[ i ].dom)
+	  }
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype.remove = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.content.removeChild(arguments[ i ].dom)
+	  }
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype.clear = function () {
+	  while (this.content.children.length) {
+	    this.content.removeChild(this.content.lastChild)
+	  }
+	}
+	
+	UI.CollapsiblePanel.prototype.toggle = function () {
+	  this.setCollapsed(!this.isCollapsed)
+	}
+	
+	UI.CollapsiblePanel.prototype.collapse = function () {
+	  this.setCollapsed(true)
+	}
+	
+	UI.CollapsiblePanel.prototype.expand = function () {
+	  this.setCollapsed(false)
+	}
+	
+	UI.CollapsiblePanel.prototype.setCollapsed = function (setCollapsed) {
+	  if (setCollapsed) {
+	    this.dom.classList.add('collapsed')
+	  } else {
+	    this.dom.classList.remove('collapsed')
+	  }
+	
+	  this.isCollapsed = setCollapsed
+	}
+	
+	// Text
+	
+	UI.Text = function (text) {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('span')
+	  dom.className = 'Text'
+	  dom.style.display = 'inline-block'
+	  dom.style.verticalAlign = 'middle'
+	
+	  this.dom = dom
+	  this.setValue(text)
+	
+	  return this
+	}
+	
+	UI.Text.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Text.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.textContent = value
+	  }
+	
+	  return this
+	}
+	
+	UI.Text.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	// Input
+	
+	UI.Input = function (value) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Input'
+	  dom.style.padding = '2px'
+	  dom.style.border = '1px solid #ccc'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	  }, false)
+	
+	  this.dom = dom
+	  this.setValue(value || '')
+	
+	  return this
+	}
+	
+	UI.Input.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Input.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.Input.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Input.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	
+	// TextArea
+	
+	UI.TextArea = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('textarea')
+	  dom.className = 'TextArea'
+	  dom.style.padding = '2px'
+	  dom.style.border = '1px solid #ccc'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	  }, false)
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.TextArea.prototype = Object.create(UI.Element.prototype)
+	
+	UI.TextArea.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.TextArea.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	// Select
+	
+	UI.Select = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('select')
+	  dom.className = 'Select'
+	  dom.style.width = '64px'
+	  dom.style.height = '16px'
+	  dom.style.border = '0px'
+	  dom.style.padding = '0px'
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Select.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Select.prototype.setMultiple = function (boolean) {
+	  this.dom.multiple = boolean
+	
+	  return this
+	}
+	
+	UI.Select.prototype.setOptions = function (options) {
+	  var selected = this.dom.value
+	
+	  while (this.dom.children.length > 0) {
+	    this.dom.removeChild(this.dom.firstChild)
+	  }
+	
+	  for (var key in options) {
+	    var option = document.createElement('option')
+	    option.value = key
+	    option.innerHTML = options[ key ]
+	    this.dom.appendChild(option)
+	  }
+	
+	  this.dom.value = selected
+	
+	  return this
+	}
+	
+	UI.Select.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.Select.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Select.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	
+	// FancySelect
+	
+	UI.FancySelect = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('div')
+	  dom.className = 'FancySelect'
+	  dom.tabIndex = 0 // keyup event is ignored without setting tabIndex
+	
+	  // Broadcast for object selection after arrow navigation
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  // Prevent native scroll behavior
+	  dom.addEventListener('keydown', function (event) {
+	    switch (event.keyCode) {
+	      case 38: // up
+	      case 40: // down
+	        event.preventDefault()
+	        event.stopPropagation()
+	        break
+	    }
+	  }, false)
+	
+	  // Keybindings to support arrow navigation
+	  dom.addEventListener('keyup', function (event) {
+	    switch (event.keyCode) {
+	      case 38: // up
+	      case 40: // down
+	        scope.selectedIndex += (event.keyCode == 38) ? -1 : 1
+	
+	        if (scope.selectedIndex >= 0 && scope.selectedIndex < scope.options.length) {
+	          // Highlight selected dom elem and scroll parent if needed
+	          scope.setValue(scope.options[ scope.selectedIndex ].value)
+	
+	          scope.dom.dispatchEvent(changeEvent)
+	        }
+	
+	        break
+	    }
+	  }, false)
+	
+	  this.dom = dom
+	
+	  this.options = []
+	  this.selectedIndex = -1
+	  this.selectedValue = null
+	
+	  return this
+	}
+	
+	UI.FancySelect.prototype = Object.create(UI.Element.prototype)
+	
+	UI.FancySelect.prototype.setOptions = function (options) {
+	  var scope = this
+	
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  while (scope.dom.children.length > 0) {
+	    scope.dom.removeChild(scope.dom.firstChild)
+	  }
+	
+	  scope.options = []
+	
+	  for (var i = 0; i < options.length; i++) {
+	    var option = options[ i ]
+	
+	    var div = document.createElement('div')
+	    div.className = 'option'
+	    div.innerHTML = option.html
+	    div.value = option.value
+	    scope.dom.appendChild(div)
+	
+	    scope.options.push(div)
+	
+	    div.addEventListener('click', function (event) {
+	      scope.setValue(this.value)
+	      scope.dom.dispatchEvent(changeEvent)
+	    }, false)
+	  }
+	
+	  return scope
+	}
+	
+	UI.FancySelect.prototype.getValue = function () {
+	  return this.selectedValue
+	}
+	
+	UI.FancySelect.prototype.setValue = function (value) {
+	  for (var i = 0; i < this.options.length; i++) {
+	    var element = this.options[ i ]
+	
+	    if (element.value === value) {
+	      element.classList.add('active')
+	
+	      // scroll into view
+	
+	      var y = element.offsetTop - this.dom.offsetTop
+	      var bottomY = y + element.offsetHeight
+	      var minScroll = bottomY - this.dom.offsetHeight
+	
+	      if (this.dom.scrollTop > y) {
+	        this.dom.scrollTop = y
+	      } else if (this.dom.scrollTop < minScroll) {
+	        this.dom.scrollTop = minScroll
+	      }
+	
+	      this.selectedIndex = i
+	    } else {
+	      element.classList.remove('active')
+	    }
+	  }
+	
+	  this.selectedValue = value
+	
+	  return this
+	}
+	
+	// Checkbox
+	
+	UI.Checkbox = function (boolean) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Checkbox'
+	  dom.type = 'checkbox'
+	
+	  this.dom = dom
+	  this.setValue(boolean)
+	
+	  return this
+	}
+	
+	UI.Checkbox.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Checkbox.prototype.getValue = function () {
+	  return this.dom.checked
+	}
+	
+	UI.Checkbox.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.checked = value
+	  }
+	
+	  return this
+	}
+	
+	UI.Checkbox.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	// Color
+	
+	UI.Color = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Color'
+	  dom.style.width = '64px'
+	  dom.style.height = '16px'
+	  dom.style.border = '0px'
+	  dom.style.padding = '0px'
+	  dom.style.backgroundColor = 'transparent'
+	
+	  try {
+	    dom.type = 'color'
+	    dom.value = '#ffffff'
+	  } catch (exception) {}
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Color.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Color.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.Color.prototype.getHexValue = function () {
+	  return parseInt(this.dom.value.substr(1), 16)
+	}
+	
+	UI.Color.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Color.prototype.setHexValue = function (hex) {
+	  this.dom.value = '#' + ('000000' + hex.toString(16)).slice(-6)
+	
+	  return this
+	}
+	
+	// Number
+	
+	UI.Number = function (number) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Number'
+	  dom.value = '0.00'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	
+	    if (event.keyCode === 13) dom.blur()
+	  }, false)
+	
+	  this.min = -Infinity
+	  this.max = Infinity
+	
+	  this.precision = 2
+	  this.step = 1
+	
+	  this.dom = dom
+	  this.setValue(number)
+	
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  var distance = 0
+	  var onMouseDownValue = 0
+	
+	  var pointer = [ 0, 0 ]
+	  var prevPointer = [ 0, 0 ]
+	
+	  var onMouseDown = function (event) {
+	    event.preventDefault()
+	
+	    distance = 0
+	
+	    onMouseDownValue = parseFloat(dom.value)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	
+	    document.addEventListener('mousemove', onMouseMove, false)
+	    document.addEventListener('mouseup', onMouseUp, false)
+	  }
+	
+	  var onMouseMove = function (event) {
+	    var currentValue = dom.value
+	
+	    pointer = [ event.clientX, event.clientY ]
+	
+	    distance += (pointer[ 0 ] - prevPointer[ 0 ]) - (pointer[ 1 ] - prevPointer[ 1 ])
+	
+	    var modifier = 50
+	    if (event.shiftKey) modifier = 5
+	    if (event.ctrlKey) modifier = 500
+	
+	    var number = onMouseDownValue + (distance / modifier) * scope.step
+	
+	    dom.value = Math.min(scope.max, Math.max(scope.min, number)).toFixed(scope.precision)
+	
+	    if (currentValue !== dom.value) dom.dispatchEvent(changeEvent)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	  }
+	
+	  var onMouseUp = function (event) {
+	    document.removeEventListener('mousemove', onMouseMove, false)
+	    document.removeEventListener('mouseup', onMouseUp, false)
+	
+	    if (Math.abs(distance) < 2) {
+	      dom.focus()
+	      dom.select()
+	    }
+	  }
+	
+	  var onChange = function (event) {
+	    var number = parseFloat(dom.value)
+	
+	    dom.value = isNaN(number) === false ? number : 0
+	  }
+	
+	  var onFocus = function (event) {
+	    dom.style.backgroundColor = ''
+	    dom.style.borderColor = '#ccc'
+	    dom.style.cursor = ''
+	  }
+	
+	  var onBlur = function (event) {
+	    dom.style.backgroundColor = 'transparent'
+	    dom.style.borderColor = 'transparent'
+	    dom.style.cursor = 'col-resize'
+	  }
+	
+	  dom.addEventListener('mousedown', onMouseDown, false)
+	  dom.addEventListener('change', onChange, false)
+	  dom.addEventListener('focus', onFocus, false)
+	  dom.addEventListener('blur', onBlur, false)
+	
+	  return this
+	}
+	
+	UI.Number.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Number.prototype.getValue = function () {
+	  return parseFloat(this.dom.value)
+	}
+	
+	UI.Number.prototype.setValue = function (value) {
+	  if (isNaN(value)) {
+	    this.dom.value = NaN
+	  } else if (value !== undefined) {
+	    this.dom.value = value.toFixed(this.precision)
+	  }
+	
+	  return this
+	}
+	
+	UI.Number.prototype.setRange = function (min, max) {
+	  this.min = min
+	  this.max = max
+	
+	  return this
+	}
+	
+	UI.Number.prototype.setPrecision = function (precision) {
+	  this.precision = precision
+	  this.setValue(parseFloat(this.dom.value))
+	
+	  return this
+	}
+	
+	UI.Number.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	// Integer
+	
+	UI.Integer = function (number) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Number'
+	  dom.value = '0.00'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	  }, false)
+	
+	  this.min = -Infinity
+	  this.max = Infinity
+	
+	  this.step = 1
+	
+	  this.dom = dom
+	  this.setValue(number)
+	
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  var distance = 0
+	  var onMouseDownValue = 0
+	
+	  var pointer = [ 0, 0 ]
+	  var prevPointer = [ 0, 0 ]
+	
+	  var onMouseDown = function (event) {
+	    event.preventDefault()
+	
+	    distance = 0
+	
+	    onMouseDownValue = parseFloat(dom.value)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	
+	    document.addEventListener('mousemove', onMouseMove, false)
+	    document.addEventListener('mouseup', onMouseUp, false)
+	  }
+	
+	  var onMouseMove = function (event) {
+	    var currentValue = dom.value
+	
+	    pointer = [ event.clientX, event.clientY ]
+	
+	    distance += (pointer[ 0 ] - prevPointer[ 0 ]) - (pointer[ 1 ] - prevPointer[ 1 ])
+	
+	    var modifier = 50
+	    if (event.shiftKey) modifier = 5
+	    if (event.ctrlKey) modifier = 500
+	
+	    var number = onMouseDownValue + (distance / modifier) * scope.step
+	
+	    dom.value = Math.min(scope.max, Math.max(scope.min, number)) | 0
+	
+	    if (currentValue !== dom.value) dom.dispatchEvent(changeEvent)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	  }
+	
+	  var onMouseUp = function (event) {
+	    document.removeEventListener('mousemove', onMouseMove, false)
+	    document.removeEventListener('mouseup', onMouseUp, false)
+	
+	    if (Math.abs(distance) < 2) {
+	      dom.focus()
+	      dom.select()
+	    }
+	  }
+	
+	  var onChange = function (event) {
+	    var number = parseInt(dom.value)
+	
+	    if (isNaN(number) === false) {
+	      dom.value = number
+	    }
+	  }
+	
+	  var onFocus = function (event) {
+	    dom.style.backgroundColor = ''
+	    dom.style.borderColor = '#ccc'
+	    dom.style.cursor = ''
+	  }
+	
+	  var onBlur = function (event) {
+	    dom.style.backgroundColor = 'transparent'
+	    dom.style.borderColor = 'transparent'
+	    dom.style.cursor = 'col-resize'
+	  }
+	
+	  dom.addEventListener('mousedown', onMouseDown, false)
+	  dom.addEventListener('change', onChange, false)
+	  dom.addEventListener('focus', onFocus, false)
+	  dom.addEventListener('blur', onBlur, false)
+	
+	  return this
+	}
+	
+	UI.Integer.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Integer.prototype.getValue = function () {
+	  return parseInt(this.dom.value)
+	}
+	
+	UI.Integer.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.value = value | 0
+	  }
+	
+	  return this
+	}
+	
+	UI.Integer.prototype.setRange = function (min, max) {
+	  this.min = min
+	  this.max = max
+	
+	  return this
+	}
+	
+	UI.Integer.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	
+	UI.Integer.prototype.setStep = function (step) {
+	  this.step = step
+	
+	  return this
+	}
+	// Break
+	
+	UI.Break = function () {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('br')
+	  dom.className = 'Break'
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Break.prototype = Object.create(UI.Element.prototype)
+	
+	// HorizontalRule
+	
+	UI.HorizontalRule = function () {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('hr')
+	  dom.className = 'HorizontalRule'
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.HorizontalRule.prototype = Object.create(UI.Element.prototype)
+	
+	// Button
+	
+	UI.Button = function (value) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('button')
+	  dom.className = 'Button'
+	
+	  this.dom = dom
+	  this.dom.textContent = value
+	
+	  return this
+	}
+	
+	UI.Button.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Button.prototype.setLabel = function (value) {
+	  this.dom.textContent = value
+	
+	  return this
+	}
+	
+	// Helper
+	
+	UI.MenubarHelper = {
+	
+	  createMenuContainer: function (name, optionsPanel) {
+	    var container = new UI.Panel()
+	    var title = new UI.Panel()
+	    title.setClass('title')
+	
+	    title.setTextContent(name)
+	    title.setMargin('0px')
+	    title.setPadding('8px')
+	
+	    container.setClass('menu')
+	    container.add(title)
+	    container.add(optionsPanel)
+	
+	    return container
+	  },
+	
+	  createOption: function (name, callbackHandler, icon) {
+	    var option = new UI.Panel()
+	    option.setClass('option')
+	
+	    if (icon) {
+	      option.add(new UI.Icon(icon).setWidth('20px'))
+	      option.add(new UI.Text(name))
+	    } else {
+	      option.setTextContent(name)
+	    }
+	
+	    option.onClick(callbackHandler)
+	
+	    return option
+	  },
+	
+	  createOptionsPanel: function (menuConfig) {
+	    var options = new UI.Panel()
+	    options.setClass('options')
+	
+	    menuConfig.forEach(function (option) {
+	      options.add(option)
+	    })
+	
+	    return options
+	  },
+	
+	  createInput: function (name, callbackHandler) {
+	    var panel = new UI.Panel()
+	      .setClass('option')
+	
+	    var text = new UI.Text()
+	      .setWidth('70px')
+	      .setValue(name)
+	
+	    var input = new UI.Input()
+	      .setWidth('40px')
+	      .onKeyDown(callbackHandler)
+	
+	    panel.add(text)
+	    panel.add(input)
+	
+	    return panel
+	  },
+	
+	  createCheckbox: function (name, value, callbackHandler) {
+	    var panel = new UI.Panel()
+	      .setClass('option')
+	
+	    var text = new UI.Text()
+	      .setWidth('70px')
+	      .setValue(name)
+	
+	    var checkbox = new UI.Checkbox()
+	      .setValue(value)
+	      .onClick(callbackHandler)
+	
+	    panel.add(checkbox)
+	    panel.add(text)
+	
+	    return panel
+	  },
+	
+	  createDivider: function () {
+	    return new UI.HorizontalRule()
+	  }
+	
+	}
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_8__;
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -11941,7 +15428,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, module) {//     Underscore.js 1.9.1
@@ -13637,10 +17124,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	  }
 	}());
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(9)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(11)(module)))
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports) {
 
 	module.exports = function(module) {
@@ -13656,7 +17143,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -13680,15 +17167,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(11),
-				__webpack_require__(15),
-				__webpack_require__(16),
-				__webpack_require__(19),
+				__webpack_require__(9),
+				__webpack_require__(13),
 				__webpack_require__(17),
 				__webpack_require__(18),
-				__webpack_require__(13),
-				__webpack_require__(14)
+				__webpack_require__(21),
+				__webpack_require__(19),
+				__webpack_require__(20),
+				__webpack_require__(15),
+				__webpack_require__(16)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -14912,7 +18399,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -14934,10 +18421,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(12),
-				__webpack_require__(13),
-				__webpack_require__(14)
+				__webpack_require__(9),
+				__webpack_require__(14),
+				__webpack_require__(15),
+				__webpack_require__(16)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -15144,14 +18631,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -15165,14 +18652,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -15188,7 +18675,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -15210,7 +18697,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -15927,7 +19414,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -15948,7 +19435,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -15972,14 +19459,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -16022,14 +19509,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -16049,7 +19536,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -16070,7 +19557,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -16100,14 +19587,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -16146,7 +19633,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -16172,11 +19659,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(11),
-				__webpack_require__(21),
+				__webpack_require__(9),
 				__webpack_require__(13),
-				__webpack_require__(14)
+				__webpack_require__(23),
+				__webpack_require__(15),
+				__webpack_require__(16)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -16904,7 +20391,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -16925,7 +20412,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -16955,7 +20442,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -16981,20 +20468,20 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(23),
-				__webpack_require__(10),
-				__webpack_require__(11),
-				__webpack_require__(30),
-				__webpack_require__(32),
-				__webpack_require__(21),
-				__webpack_require__(35),
-				__webpack_require__(19),
-				__webpack_require__(17),
-				__webpack_require__(33),
-				__webpack_require__(34),
+				__webpack_require__(9),
+				__webpack_require__(25),
+				__webpack_require__(12),
 				__webpack_require__(13),
-				__webpack_require__(14)
+				__webpack_require__(32),
+				__webpack_require__(34),
+				__webpack_require__(23),
+				__webpack_require__(37),
+				__webpack_require__(21),
+				__webpack_require__(19),
+				__webpack_require__(35),
+				__webpack_require__(36),
+				__webpack_require__(15),
+				__webpack_require__(16)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -17901,7 +21388,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -17927,15 +21414,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
+				__webpack_require__(9),
 	
 				// These are only for backcompat
 				// TODO: Remove after 1.12
-				__webpack_require__(24),
-				__webpack_require__(25),
+				__webpack_require__(26),
+				__webpack_require__(27),
 	
-				__webpack_require__(21),
-				__webpack_require__(14)
+				__webpack_require__(23),
+				__webpack_require__(16)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -18293,7 +21780,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -18319,8 +21806,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(14)
+				__webpack_require__(9),
+				__webpack_require__(16)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -18597,7 +22084,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -18624,11 +22111,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(26),
-				__webpack_require__(27),
+				__webpack_require__(9),
+				__webpack_require__(28),
 				__webpack_require__(29),
-				__webpack_require__(14)
+				__webpack_require__(31),
+				__webpack_require__(16)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -18889,14 +22376,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -18916,7 +22403,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -18938,9 +22425,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(28),
-				__webpack_require__(13)
+				__webpack_require__(9),
+				__webpack_require__(30),
+				__webpack_require__(15)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -18999,14 +22486,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -19025,7 +22512,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -19046,7 +22533,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13), __webpack_require__(26) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15), __webpack_require__(28) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -19093,7 +22580,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -19119,12 +22606,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(11),
-				__webpack_require__(31),
-				__webpack_require__(16),
+				__webpack_require__(9),
 				__webpack_require__(13),
-				__webpack_require__(14)
+				__webpack_require__(33),
+				__webpack_require__(18),
+				__webpack_require__(15),
+				__webpack_require__(16)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -20300,7 +23787,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20322,7 +23809,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -20352,7 +23839,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20373,7 +23860,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -20442,7 +23929,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20463,7 +23950,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13), __webpack_require__(32) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15), __webpack_require__(34) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -20483,7 +23970,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20504,7 +23991,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -20538,7 +24025,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20562,7 +24049,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(9), __webpack_require__(15) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21042,16 +24529,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(37);
+	var content = __webpack_require__(39);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(66)(content, {});
+	var update = __webpack_require__(68)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -21068,13 +24555,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	}
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
-	exports.i(__webpack_require__(39), "");
-	exports.i(__webpack_require__(59), "");
+	exports.i(__webpack_require__(41), "");
+	exports.i(__webpack_require__(61), "");
 	
 	// module
 	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n */\n", ""]);
@@ -21083,7 +24570,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports) {
 
 	/*
@@ -21139,13 +24626,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
-	exports.i(__webpack_require__(40), "");
-	exports.i(__webpack_require__(41), "");
 	exports.i(__webpack_require__(42), "");
 	exports.i(__webpack_require__(43), "");
 	exports.i(__webpack_require__(44), "");
@@ -21163,6 +24648,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	exports.i(__webpack_require__(56), "");
 	exports.i(__webpack_require__(57), "");
 	exports.i(__webpack_require__(58), "");
+	exports.i(__webpack_require__(59), "");
+	exports.i(__webpack_require__(60), "");
 	
 	// module
 	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n */\n", ""]);
@@ -21171,10 +24658,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21185,10 +24672,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 41 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21199,10 +24686,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 42 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21213,10 +24700,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 43 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21227,10 +24714,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 44 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21241,10 +24728,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 45 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21255,10 +24742,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 46 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21269,10 +24756,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 47 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21283,10 +24770,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 48 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21297,10 +24784,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 49 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21311,10 +24798,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 50 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21325,10 +24812,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 51 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21339,10 +24826,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 52 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21353,10 +24840,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 53 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21367,10 +24854,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 54 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21381,10 +24868,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 55 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21395,10 +24882,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 56 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21409,10 +24896,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 57 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21423,10 +24910,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 58 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
@@ -21437,57 +24924,57 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 59 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(40)();
 	// imports
 	
 	
 	// module
-	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n *\n * To view and modify this theme, visit http://jqueryui.com/themeroller/\n */\n\n\n/* Component containers\n----------------------------------*/\n.ui-widget {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em/*{fsDefault}*/;\n}\n.ui-widget .ui-widget {\n\tfont-size: 1em;\n}\n.ui-widget input,\n.ui-widget select,\n.ui-widget textarea,\n.ui-widget button {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em;\n}\n.ui-widget.ui-widget-content {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n}\n.ui-widget-content {\n\tborder: 1px solid #dddddd/*{borderColorContent}*/;\n\tbackground: #ffffff/*{bgColorContent}*/ /*{bgImgUrlContent}*/ /*{bgContentXPos}*/ /*{bgContentYPos}*/ /*{bgContentRepeat}*/;\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-content a {\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-header {\n\tborder: 1px solid #dddddd/*{borderColorHeader}*/;\n\tbackground: #e9e9e9/*{bgColorHeader}*/ /*{bgImgUrlHeader}*/ /*{bgHeaderXPos}*/ /*{bgHeaderYPos}*/ /*{bgHeaderRepeat}*/;\n\tcolor: #333333/*{fcHeader}*/;\n\tfont-weight: bold;\n}\n.ui-widget-header a {\n\tcolor: #333333/*{fcHeader}*/;\n}\n\n/* Interaction states\n----------------------------------*/\n.ui-state-default,\n.ui-widget-content .ui-state-default,\n.ui-widget-header .ui-state-default,\n.ui-button,\n\n/* We use html here because we need a greater specificity to make sure disabled\nworks properly when clicked or hovered */\nhtml .ui-button.ui-state-disabled:hover,\nhtml .ui-button.ui-state-disabled:active {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n\tbackground: #f6f6f6/*{bgColorDefault}*/ /*{bgImgUrlDefault}*/ /*{bgDefaultXPos}*/ /*{bgDefaultYPos}*/ /*{bgDefaultRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #454545/*{fcDefault}*/;\n}\n.ui-state-default a,\n.ui-state-default a:link,\n.ui-state-default a:visited,\na.ui-button,\na:link.ui-button,\na:visited.ui-button,\n.ui-button {\n\tcolor: #454545/*{fcDefault}*/;\n\ttext-decoration: none;\n}\n.ui-state-hover,\n.ui-widget-content .ui-state-hover,\n.ui-widget-header .ui-state-hover,\n.ui-state-focus,\n.ui-widget-content .ui-state-focus,\n.ui-widget-header .ui-state-focus,\n.ui-button:hover,\n.ui-button:focus {\n\tborder: 1px solid #cccccc/*{borderColorHover}*/;\n\tbackground: #ededed/*{bgColorHover}*/ /*{bgImgUrlHover}*/ /*{bgHoverXPos}*/ /*{bgHoverYPos}*/ /*{bgHoverRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #2b2b2b/*{fcHover}*/;\n}\n.ui-state-hover a,\n.ui-state-hover a:hover,\n.ui-state-hover a:link,\n.ui-state-hover a:visited,\n.ui-state-focus a,\n.ui-state-focus a:hover,\n.ui-state-focus a:link,\n.ui-state-focus a:visited,\na.ui-button:hover,\na.ui-button:focus {\n\tcolor: #2b2b2b/*{fcHover}*/;\n\ttext-decoration: none;\n}\n\n.ui-visual-focus {\n\tbox-shadow: 0 0 3px 1px rgb(94, 158, 214);\n}\n.ui-state-active,\n.ui-widget-content .ui-state-active,\n.ui-widget-header .ui-state-active,\na.ui-button:active,\n.ui-button:active,\n.ui-button.ui-state-active:hover {\n\tborder: 1px solid #003eff/*{borderColorActive}*/;\n\tbackground: #007fff/*{bgColorActive}*/ /*{bgImgUrlActive}*/ /*{bgActiveXPos}*/ /*{bgActiveYPos}*/ /*{bgActiveRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #ffffff/*{fcActive}*/;\n}\n.ui-icon-background,\n.ui-state-active .ui-icon-background {\n\tborder: #003eff/*{borderColorActive}*/;\n\tbackground-color: #ffffff/*{fcActive}*/;\n}\n.ui-state-active a,\n.ui-state-active a:link,\n.ui-state-active a:visited {\n\tcolor: #ffffff/*{fcActive}*/;\n\ttext-decoration: none;\n}\n\n/* Interaction Cues\n----------------------------------*/\n.ui-state-highlight,\n.ui-widget-content .ui-state-highlight,\n.ui-widget-header .ui-state-highlight {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/ /*{bgImgUrlHighlight}*/ /*{bgHighlightXPos}*/ /*{bgHighlightYPos}*/ /*{bgHighlightRepeat}*/;\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-checked {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/;\n}\n.ui-state-highlight a,\n.ui-widget-content .ui-state-highlight a,\n.ui-widget-header .ui-state-highlight a {\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-error,\n.ui-widget-content .ui-state-error,\n.ui-widget-header .ui-state-error {\n\tborder: 1px solid #f1a899/*{borderColorError}*/;\n\tbackground: #fddfdf/*{bgColorError}*/ /*{bgImgUrlError}*/ /*{bgErrorXPos}*/ /*{bgErrorYPos}*/ /*{bgErrorRepeat}*/;\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error a,\n.ui-widget-content .ui-state-error a,\n.ui-widget-header .ui-state-error a {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error-text,\n.ui-widget-content .ui-state-error-text,\n.ui-widget-header .ui-state-error-text {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-priority-primary,\n.ui-widget-content .ui-priority-primary,\n.ui-widget-header .ui-priority-primary {\n\tfont-weight: bold;\n}\n.ui-priority-secondary,\n.ui-widget-content .ui-priority-secondary,\n.ui-widget-header .ui-priority-secondary {\n\topacity: .7;\n\tfilter:Alpha(Opacity=70); /* support: IE8 */\n\tfont-weight: normal;\n}\n.ui-state-disabled,\n.ui-widget-content .ui-state-disabled,\n.ui-widget-header .ui-state-disabled {\n\topacity: .35;\n\tfilter:Alpha(Opacity=35); /* support: IE8 */\n\tbackground-image: none;\n}\n.ui-state-disabled .ui-icon {\n\tfilter:Alpha(Opacity=35); /* support: IE8 - See #6059 */\n}\n\n/* Icons\n----------------------------------*/\n\n/* states and images */\n.ui-icon {\n\twidth: 16px;\n\theight: 16px;\n}\n.ui-icon,\n.ui-widget-content .ui-icon {\n\tbackground-image: url(" + __webpack_require__(60) + ");\n}\n.ui-widget-header .ui-icon {\n\tbackground-image: url(" + __webpack_require__(60) + ");\n}\n.ui-state-hover .ui-icon,\n.ui-state-focus .ui-icon,\n.ui-button:hover .ui-icon,\n.ui-button:focus .ui-icon {\n\tbackground-image: url(" + __webpack_require__(61) + ");\n}\n.ui-state-active .ui-icon,\n.ui-button:active .ui-icon {\n\tbackground-image: url(" + __webpack_require__(62) + ");\n}\n.ui-state-highlight .ui-icon,\n.ui-button .ui-state-highlight.ui-icon {\n\tbackground-image: url(" + __webpack_require__(63) + ");\n}\n.ui-state-error .ui-icon,\n.ui-state-error-text .ui-icon {\n\tbackground-image: url(" + __webpack_require__(64) + ");\n}\n.ui-button .ui-icon {\n\tbackground-image: url(" + __webpack_require__(65) + ");\n}\n\n/* positioning */\n.ui-icon-blank { background-position: 16px 16px; }\n.ui-icon-caret-1-n { background-position: 0 0; }\n.ui-icon-caret-1-ne { background-position: -16px 0; }\n.ui-icon-caret-1-e { background-position: -32px 0; }\n.ui-icon-caret-1-se { background-position: -48px 0; }\n.ui-icon-caret-1-s { background-position: -65px 0; }\n.ui-icon-caret-1-sw { background-position: -80px 0; }\n.ui-icon-caret-1-w { background-position: -96px 0; }\n.ui-icon-caret-1-nw { background-position: -112px 0; }\n.ui-icon-caret-2-n-s { background-position: -128px 0; }\n.ui-icon-caret-2-e-w { background-position: -144px 0; }\n.ui-icon-triangle-1-n { background-position: 0 -16px; }\n.ui-icon-triangle-1-ne { background-position: -16px -16px; }\n.ui-icon-triangle-1-e { background-position: -32px -16px; }\n.ui-icon-triangle-1-se { background-position: -48px -16px; }\n.ui-icon-triangle-1-s { background-position: -65px -16px; }\n.ui-icon-triangle-1-sw { background-position: -80px -16px; }\n.ui-icon-triangle-1-w { background-position: -96px -16px; }\n.ui-icon-triangle-1-nw { background-position: -112px -16px; }\n.ui-icon-triangle-2-n-s { background-position: -128px -16px; }\n.ui-icon-triangle-2-e-w { background-position: -144px -16px; }\n.ui-icon-arrow-1-n { background-position: 0 -32px; }\n.ui-icon-arrow-1-ne { background-position: -16px -32px; }\n.ui-icon-arrow-1-e { background-position: -32px -32px; }\n.ui-icon-arrow-1-se { background-position: -48px -32px; }\n.ui-icon-arrow-1-s { background-position: -65px -32px; }\n.ui-icon-arrow-1-sw { background-position: -80px -32px; }\n.ui-icon-arrow-1-w { background-position: -96px -32px; }\n.ui-icon-arrow-1-nw { background-position: -112px -32px; }\n.ui-icon-arrow-2-n-s { background-position: -128px -32px; }\n.ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }\n.ui-icon-arrow-2-e-w { background-position: -160px -32px; }\n.ui-icon-arrow-2-se-nw { background-position: -176px -32px; }\n.ui-icon-arrowstop-1-n { background-position: -192px -32px; }\n.ui-icon-arrowstop-1-e { background-position: -208px -32px; }\n.ui-icon-arrowstop-1-s { background-position: -224px -32px; }\n.ui-icon-arrowstop-1-w { background-position: -240px -32px; }\n.ui-icon-arrowthick-1-n { background-position: 1px -48px; }\n.ui-icon-arrowthick-1-ne { background-position: -16px -48px; }\n.ui-icon-arrowthick-1-e { background-position: -32px -48px; }\n.ui-icon-arrowthick-1-se { background-position: -48px -48px; }\n.ui-icon-arrowthick-1-s { background-position: -64px -48px; }\n.ui-icon-arrowthick-1-sw { background-position: -80px -48px; }\n.ui-icon-arrowthick-1-w { background-position: -96px -48px; }\n.ui-icon-arrowthick-1-nw { background-position: -112px -48px; }\n.ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }\n.ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }\n.ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }\n.ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }\n.ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }\n.ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }\n.ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }\n.ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }\n.ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }\n.ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }\n.ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }\n.ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }\n.ui-icon-arrowreturn-1-w { background-position: -64px -64px; }\n.ui-icon-arrowreturn-1-n { background-position: -80px -64px; }\n.ui-icon-arrowreturn-1-e { background-position: -96px -64px; }\n.ui-icon-arrowreturn-1-s { background-position: -112px -64px; }\n.ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }\n.ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }\n.ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }\n.ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }\n.ui-icon-arrow-4 { background-position: 0 -80px; }\n.ui-icon-arrow-4-diag { background-position: -16px -80px; }\n.ui-icon-extlink { background-position: -32px -80px; }\n.ui-icon-newwin { background-position: -48px -80px; }\n.ui-icon-refresh { background-position: -64px -80px; }\n.ui-icon-shuffle { background-position: -80px -80px; }\n.ui-icon-transfer-e-w { background-position: -96px -80px; }\n.ui-icon-transferthick-e-w { background-position: -112px -80px; }\n.ui-icon-folder-collapsed { background-position: 0 -96px; }\n.ui-icon-folder-open { background-position: -16px -96px; }\n.ui-icon-document { background-position: -32px -96px; }\n.ui-icon-document-b { background-position: -48px -96px; }\n.ui-icon-note { background-position: -64px -96px; }\n.ui-icon-mail-closed { background-position: -80px -96px; }\n.ui-icon-mail-open { background-position: -96px -96px; }\n.ui-icon-suitcase { background-position: -112px -96px; }\n.ui-icon-comment { background-position: -128px -96px; }\n.ui-icon-person { background-position: -144px -96px; }\n.ui-icon-print { background-position: -160px -96px; }\n.ui-icon-trash { background-position: -176px -96px; }\n.ui-icon-locked { background-position: -192px -96px; }\n.ui-icon-unlocked { background-position: -208px -96px; }\n.ui-icon-bookmark { background-position: -224px -96px; }\n.ui-icon-tag { background-position: -240px -96px; }\n.ui-icon-home { background-position: 0 -112px; }\n.ui-icon-flag { background-position: -16px -112px; }\n.ui-icon-calendar { background-position: -32px -112px; }\n.ui-icon-cart { background-position: -48px -112px; }\n.ui-icon-pencil { background-position: -64px -112px; }\n.ui-icon-clock { background-position: -80px -112px; }\n.ui-icon-disk { background-position: -96px -112px; }\n.ui-icon-calculator { background-position: -112px -112px; }\n.ui-icon-zoomin { background-position: -128px -112px; }\n.ui-icon-zoomout { background-position: -144px -112px; }\n.ui-icon-search { background-position: -160px -112px; }\n.ui-icon-wrench { background-position: -176px -112px; }\n.ui-icon-gear { background-position: -192px -112px; }\n.ui-icon-heart { background-position: -208px -112px; }\n.ui-icon-star { background-position: -224px -112px; }\n.ui-icon-link { background-position: -240px -112px; }\n.ui-icon-cancel { background-position: 0 -128px; }\n.ui-icon-plus { background-position: -16px -128px; }\n.ui-icon-plusthick { background-position: -32px -128px; }\n.ui-icon-minus { background-position: -48px -128px; }\n.ui-icon-minusthick { background-position: -64px -128px; }\n.ui-icon-close { background-position: -80px -128px; }\n.ui-icon-closethick { background-position: -96px -128px; }\n.ui-icon-key { background-position: -112px -128px; }\n.ui-icon-lightbulb { background-position: -128px -128px; }\n.ui-icon-scissors { background-position: -144px -128px; }\n.ui-icon-clipboard { background-position: -160px -128px; }\n.ui-icon-copy { background-position: -176px -128px; }\n.ui-icon-contact { background-position: -192px -128px; }\n.ui-icon-image { background-position: -208px -128px; }\n.ui-icon-video { background-position: -224px -128px; }\n.ui-icon-script { background-position: -240px -128px; }\n.ui-icon-alert { background-position: 0 -144px; }\n.ui-icon-info { background-position: -16px -144px; }\n.ui-icon-notice { background-position: -32px -144px; }\n.ui-icon-help { background-position: -48px -144px; }\n.ui-icon-check { background-position: -64px -144px; }\n.ui-icon-bullet { background-position: -80px -144px; }\n.ui-icon-radio-on { background-position: -96px -144px; }\n.ui-icon-radio-off { background-position: -112px -144px; }\n.ui-icon-pin-w { background-position: -128px -144px; }\n.ui-icon-pin-s { background-position: -144px -144px; }\n.ui-icon-play { background-position: 0 -160px; }\n.ui-icon-pause { background-position: -16px -160px; }\n.ui-icon-seek-next { background-position: -32px -160px; }\n.ui-icon-seek-prev { background-position: -48px -160px; }\n.ui-icon-seek-end { background-position: -64px -160px; }\n.ui-icon-seek-start { background-position: -80px -160px; }\n/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */\n.ui-icon-seek-first { background-position: -80px -160px; }\n.ui-icon-stop { background-position: -96px -160px; }\n.ui-icon-eject { background-position: -112px -160px; }\n.ui-icon-volume-off { background-position: -128px -160px; }\n.ui-icon-volume-on { background-position: -144px -160px; }\n.ui-icon-power { background-position: 0 -176px; }\n.ui-icon-signal-diag { background-position: -16px -176px; }\n.ui-icon-signal { background-position: -32px -176px; }\n.ui-icon-battery-0 { background-position: -48px -176px; }\n.ui-icon-battery-1 { background-position: -64px -176px; }\n.ui-icon-battery-2 { background-position: -80px -176px; }\n.ui-icon-battery-3 { background-position: -96px -176px; }\n.ui-icon-circle-plus { background-position: 0 -192px; }\n.ui-icon-circle-minus { background-position: -16px -192px; }\n.ui-icon-circle-close { background-position: -32px -192px; }\n.ui-icon-circle-triangle-e { background-position: -48px -192px; }\n.ui-icon-circle-triangle-s { background-position: -64px -192px; }\n.ui-icon-circle-triangle-w { background-position: -80px -192px; }\n.ui-icon-circle-triangle-n { background-position: -96px -192px; }\n.ui-icon-circle-arrow-e { background-position: -112px -192px; }\n.ui-icon-circle-arrow-s { background-position: -128px -192px; }\n.ui-icon-circle-arrow-w { background-position: -144px -192px; }\n.ui-icon-circle-arrow-n { background-position: -160px -192px; }\n.ui-icon-circle-zoomin { background-position: -176px -192px; }\n.ui-icon-circle-zoomout { background-position: -192px -192px; }\n.ui-icon-circle-check { background-position: -208px -192px; }\n.ui-icon-circlesmall-plus { background-position: 0 -208px; }\n.ui-icon-circlesmall-minus { background-position: -16px -208px; }\n.ui-icon-circlesmall-close { background-position: -32px -208px; }\n.ui-icon-squaresmall-plus { background-position: -48px -208px; }\n.ui-icon-squaresmall-minus { background-position: -64px -208px; }\n.ui-icon-squaresmall-close { background-position: -80px -208px; }\n.ui-icon-grip-dotted-vertical { background-position: 0 -224px; }\n.ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }\n.ui-icon-grip-solid-vertical { background-position: -32px -224px; }\n.ui-icon-grip-solid-horizontal { background-position: -48px -224px; }\n.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }\n.ui-icon-grip-diagonal-se { background-position: -80px -224px; }\n\n\n/* Misc visuals\n----------------------------------*/\n\n/* Corner radius */\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-left,\n.ui-corner-tl {\n\tborder-top-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-right,\n.ui-corner-tr {\n\tborder-top-right-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-left,\n.ui-corner-bl {\n\tborder-bottom-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-right,\n.ui-corner-br {\n\tborder-bottom-right-radius: 3px/*{cornerRadius}*/;\n}\n\n/* Overlays */\n.ui-widget-overlay {\n\tbackground: #aaaaaa/*{bgColorOverlay}*/ /*{bgImgUrlOverlay}*/ /*{bgOverlayXPos}*/ /*{bgOverlayYPos}*/ /*{bgOverlayRepeat}*/;\n\topacity: .3/*{opacityOverlay}*/;\n\tfilter: Alpha(Opacity=30)/*{opacityFilterOverlay}*/; /* support: IE8 */\n}\n.ui-widget-shadow {\n\t-webkit-box-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n\tbox-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n}\n", ""]);
+	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n *\n * To view and modify this theme, visit http://jqueryui.com/themeroller/\n */\n\n\n/* Component containers\n----------------------------------*/\n.ui-widget {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em/*{fsDefault}*/;\n}\n.ui-widget .ui-widget {\n\tfont-size: 1em;\n}\n.ui-widget input,\n.ui-widget select,\n.ui-widget textarea,\n.ui-widget button {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em;\n}\n.ui-widget.ui-widget-content {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n}\n.ui-widget-content {\n\tborder: 1px solid #dddddd/*{borderColorContent}*/;\n\tbackground: #ffffff/*{bgColorContent}*/ /*{bgImgUrlContent}*/ /*{bgContentXPos}*/ /*{bgContentYPos}*/ /*{bgContentRepeat}*/;\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-content a {\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-header {\n\tborder: 1px solid #dddddd/*{borderColorHeader}*/;\n\tbackground: #e9e9e9/*{bgColorHeader}*/ /*{bgImgUrlHeader}*/ /*{bgHeaderXPos}*/ /*{bgHeaderYPos}*/ /*{bgHeaderRepeat}*/;\n\tcolor: #333333/*{fcHeader}*/;\n\tfont-weight: bold;\n}\n.ui-widget-header a {\n\tcolor: #333333/*{fcHeader}*/;\n}\n\n/* Interaction states\n----------------------------------*/\n.ui-state-default,\n.ui-widget-content .ui-state-default,\n.ui-widget-header .ui-state-default,\n.ui-button,\n\n/* We use html here because we need a greater specificity to make sure disabled\nworks properly when clicked or hovered */\nhtml .ui-button.ui-state-disabled:hover,\nhtml .ui-button.ui-state-disabled:active {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n\tbackground: #f6f6f6/*{bgColorDefault}*/ /*{bgImgUrlDefault}*/ /*{bgDefaultXPos}*/ /*{bgDefaultYPos}*/ /*{bgDefaultRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #454545/*{fcDefault}*/;\n}\n.ui-state-default a,\n.ui-state-default a:link,\n.ui-state-default a:visited,\na.ui-button,\na:link.ui-button,\na:visited.ui-button,\n.ui-button {\n\tcolor: #454545/*{fcDefault}*/;\n\ttext-decoration: none;\n}\n.ui-state-hover,\n.ui-widget-content .ui-state-hover,\n.ui-widget-header .ui-state-hover,\n.ui-state-focus,\n.ui-widget-content .ui-state-focus,\n.ui-widget-header .ui-state-focus,\n.ui-button:hover,\n.ui-button:focus {\n\tborder: 1px solid #cccccc/*{borderColorHover}*/;\n\tbackground: #ededed/*{bgColorHover}*/ /*{bgImgUrlHover}*/ /*{bgHoverXPos}*/ /*{bgHoverYPos}*/ /*{bgHoverRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #2b2b2b/*{fcHover}*/;\n}\n.ui-state-hover a,\n.ui-state-hover a:hover,\n.ui-state-hover a:link,\n.ui-state-hover a:visited,\n.ui-state-focus a,\n.ui-state-focus a:hover,\n.ui-state-focus a:link,\n.ui-state-focus a:visited,\na.ui-button:hover,\na.ui-button:focus {\n\tcolor: #2b2b2b/*{fcHover}*/;\n\ttext-decoration: none;\n}\n\n.ui-visual-focus {\n\tbox-shadow: 0 0 3px 1px rgb(94, 158, 214);\n}\n.ui-state-active,\n.ui-widget-content .ui-state-active,\n.ui-widget-header .ui-state-active,\na.ui-button:active,\n.ui-button:active,\n.ui-button.ui-state-active:hover {\n\tborder: 1px solid #003eff/*{borderColorActive}*/;\n\tbackground: #007fff/*{bgColorActive}*/ /*{bgImgUrlActive}*/ /*{bgActiveXPos}*/ /*{bgActiveYPos}*/ /*{bgActiveRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #ffffff/*{fcActive}*/;\n}\n.ui-icon-background,\n.ui-state-active .ui-icon-background {\n\tborder: #003eff/*{borderColorActive}*/;\n\tbackground-color: #ffffff/*{fcActive}*/;\n}\n.ui-state-active a,\n.ui-state-active a:link,\n.ui-state-active a:visited {\n\tcolor: #ffffff/*{fcActive}*/;\n\ttext-decoration: none;\n}\n\n/* Interaction Cues\n----------------------------------*/\n.ui-state-highlight,\n.ui-widget-content .ui-state-highlight,\n.ui-widget-header .ui-state-highlight {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/ /*{bgImgUrlHighlight}*/ /*{bgHighlightXPos}*/ /*{bgHighlightYPos}*/ /*{bgHighlightRepeat}*/;\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-checked {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/;\n}\n.ui-state-highlight a,\n.ui-widget-content .ui-state-highlight a,\n.ui-widget-header .ui-state-highlight a {\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-error,\n.ui-widget-content .ui-state-error,\n.ui-widget-header .ui-state-error {\n\tborder: 1px solid #f1a899/*{borderColorError}*/;\n\tbackground: #fddfdf/*{bgColorError}*/ /*{bgImgUrlError}*/ /*{bgErrorXPos}*/ /*{bgErrorYPos}*/ /*{bgErrorRepeat}*/;\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error a,\n.ui-widget-content .ui-state-error a,\n.ui-widget-header .ui-state-error a {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error-text,\n.ui-widget-content .ui-state-error-text,\n.ui-widget-header .ui-state-error-text {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-priority-primary,\n.ui-widget-content .ui-priority-primary,\n.ui-widget-header .ui-priority-primary {\n\tfont-weight: bold;\n}\n.ui-priority-secondary,\n.ui-widget-content .ui-priority-secondary,\n.ui-widget-header .ui-priority-secondary {\n\topacity: .7;\n\tfilter:Alpha(Opacity=70); /* support: IE8 */\n\tfont-weight: normal;\n}\n.ui-state-disabled,\n.ui-widget-content .ui-state-disabled,\n.ui-widget-header .ui-state-disabled {\n\topacity: .35;\n\tfilter:Alpha(Opacity=35); /* support: IE8 */\n\tbackground-image: none;\n}\n.ui-state-disabled .ui-icon {\n\tfilter:Alpha(Opacity=35); /* support: IE8 - See #6059 */\n}\n\n/* Icons\n----------------------------------*/\n\n/* states and images */\n.ui-icon {\n\twidth: 16px;\n\theight: 16px;\n}\n.ui-icon,\n.ui-widget-content .ui-icon {\n\tbackground-image: url(" + __webpack_require__(62) + ");\n}\n.ui-widget-header .ui-icon {\n\tbackground-image: url(" + __webpack_require__(62) + ");\n}\n.ui-state-hover .ui-icon,\n.ui-state-focus .ui-icon,\n.ui-button:hover .ui-icon,\n.ui-button:focus .ui-icon {\n\tbackground-image: url(" + __webpack_require__(63) + ");\n}\n.ui-state-active .ui-icon,\n.ui-button:active .ui-icon {\n\tbackground-image: url(" + __webpack_require__(64) + ");\n}\n.ui-state-highlight .ui-icon,\n.ui-button .ui-state-highlight.ui-icon {\n\tbackground-image: url(" + __webpack_require__(65) + ");\n}\n.ui-state-error .ui-icon,\n.ui-state-error-text .ui-icon {\n\tbackground-image: url(" + __webpack_require__(66) + ");\n}\n.ui-button .ui-icon {\n\tbackground-image: url(" + __webpack_require__(67) + ");\n}\n\n/* positioning */\n.ui-icon-blank { background-position: 16px 16px; }\n.ui-icon-caret-1-n { background-position: 0 0; }\n.ui-icon-caret-1-ne { background-position: -16px 0; }\n.ui-icon-caret-1-e { background-position: -32px 0; }\n.ui-icon-caret-1-se { background-position: -48px 0; }\n.ui-icon-caret-1-s { background-position: -65px 0; }\n.ui-icon-caret-1-sw { background-position: -80px 0; }\n.ui-icon-caret-1-w { background-position: -96px 0; }\n.ui-icon-caret-1-nw { background-position: -112px 0; }\n.ui-icon-caret-2-n-s { background-position: -128px 0; }\n.ui-icon-caret-2-e-w { background-position: -144px 0; }\n.ui-icon-triangle-1-n { background-position: 0 -16px; }\n.ui-icon-triangle-1-ne { background-position: -16px -16px; }\n.ui-icon-triangle-1-e { background-position: -32px -16px; }\n.ui-icon-triangle-1-se { background-position: -48px -16px; }\n.ui-icon-triangle-1-s { background-position: -65px -16px; }\n.ui-icon-triangle-1-sw { background-position: -80px -16px; }\n.ui-icon-triangle-1-w { background-position: -96px -16px; }\n.ui-icon-triangle-1-nw { background-position: -112px -16px; }\n.ui-icon-triangle-2-n-s { background-position: -128px -16px; }\n.ui-icon-triangle-2-e-w { background-position: -144px -16px; }\n.ui-icon-arrow-1-n { background-position: 0 -32px; }\n.ui-icon-arrow-1-ne { background-position: -16px -32px; }\n.ui-icon-arrow-1-e { background-position: -32px -32px; }\n.ui-icon-arrow-1-se { background-position: -48px -32px; }\n.ui-icon-arrow-1-s { background-position: -65px -32px; }\n.ui-icon-arrow-1-sw { background-position: -80px -32px; }\n.ui-icon-arrow-1-w { background-position: -96px -32px; }\n.ui-icon-arrow-1-nw { background-position: -112px -32px; }\n.ui-icon-arrow-2-n-s { background-position: -128px -32px; }\n.ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }\n.ui-icon-arrow-2-e-w { background-position: -160px -32px; }\n.ui-icon-arrow-2-se-nw { background-position: -176px -32px; }\n.ui-icon-arrowstop-1-n { background-position: -192px -32px; }\n.ui-icon-arrowstop-1-e { background-position: -208px -32px; }\n.ui-icon-arrowstop-1-s { background-position: -224px -32px; }\n.ui-icon-arrowstop-1-w { background-position: -240px -32px; }\n.ui-icon-arrowthick-1-n { background-position: 1px -48px; }\n.ui-icon-arrowthick-1-ne { background-position: -16px -48px; }\n.ui-icon-arrowthick-1-e { background-position: -32px -48px; }\n.ui-icon-arrowthick-1-se { background-position: -48px -48px; }\n.ui-icon-arrowthick-1-s { background-position: -64px -48px; }\n.ui-icon-arrowthick-1-sw { background-position: -80px -48px; }\n.ui-icon-arrowthick-1-w { background-position: -96px -48px; }\n.ui-icon-arrowthick-1-nw { background-position: -112px -48px; }\n.ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }\n.ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }\n.ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }\n.ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }\n.ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }\n.ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }\n.ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }\n.ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }\n.ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }\n.ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }\n.ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }\n.ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }\n.ui-icon-arrowreturn-1-w { background-position: -64px -64px; }\n.ui-icon-arrowreturn-1-n { background-position: -80px -64px; }\n.ui-icon-arrowreturn-1-e { background-position: -96px -64px; }\n.ui-icon-arrowreturn-1-s { background-position: -112px -64px; }\n.ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }\n.ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }\n.ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }\n.ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }\n.ui-icon-arrow-4 { background-position: 0 -80px; }\n.ui-icon-arrow-4-diag { background-position: -16px -80px; }\n.ui-icon-extlink { background-position: -32px -80px; }\n.ui-icon-newwin { background-position: -48px -80px; }\n.ui-icon-refresh { background-position: -64px -80px; }\n.ui-icon-shuffle { background-position: -80px -80px; }\n.ui-icon-transfer-e-w { background-position: -96px -80px; }\n.ui-icon-transferthick-e-w { background-position: -112px -80px; }\n.ui-icon-folder-collapsed { background-position: 0 -96px; }\n.ui-icon-folder-open { background-position: -16px -96px; }\n.ui-icon-document { background-position: -32px -96px; }\n.ui-icon-document-b { background-position: -48px -96px; }\n.ui-icon-note { background-position: -64px -96px; }\n.ui-icon-mail-closed { background-position: -80px -96px; }\n.ui-icon-mail-open { background-position: -96px -96px; }\n.ui-icon-suitcase { background-position: -112px -96px; }\n.ui-icon-comment { background-position: -128px -96px; }\n.ui-icon-person { background-position: -144px -96px; }\n.ui-icon-print { background-position: -160px -96px; }\n.ui-icon-trash { background-position: -176px -96px; }\n.ui-icon-locked { background-position: -192px -96px; }\n.ui-icon-unlocked { background-position: -208px -96px; }\n.ui-icon-bookmark { background-position: -224px -96px; }\n.ui-icon-tag { background-position: -240px -96px; }\n.ui-icon-home { background-position: 0 -112px; }\n.ui-icon-flag { background-position: -16px -112px; }\n.ui-icon-calendar { background-position: -32px -112px; }\n.ui-icon-cart { background-position: -48px -112px; }\n.ui-icon-pencil { background-position: -64px -112px; }\n.ui-icon-clock { background-position: -80px -112px; }\n.ui-icon-disk { background-position: -96px -112px; }\n.ui-icon-calculator { background-position: -112px -112px; }\n.ui-icon-zoomin { background-position: -128px -112px; }\n.ui-icon-zoomout { background-position: -144px -112px; }\n.ui-icon-search { background-position: -160px -112px; }\n.ui-icon-wrench { background-position: -176px -112px; }\n.ui-icon-gear { background-position: -192px -112px; }\n.ui-icon-heart { background-position: -208px -112px; }\n.ui-icon-star { background-position: -224px -112px; }\n.ui-icon-link { background-position: -240px -112px; }\n.ui-icon-cancel { background-position: 0 -128px; }\n.ui-icon-plus { background-position: -16px -128px; }\n.ui-icon-plusthick { background-position: -32px -128px; }\n.ui-icon-minus { background-position: -48px -128px; }\n.ui-icon-minusthick { background-position: -64px -128px; }\n.ui-icon-close { background-position: -80px -128px; }\n.ui-icon-closethick { background-position: -96px -128px; }\n.ui-icon-key { background-position: -112px -128px; }\n.ui-icon-lightbulb { background-position: -128px -128px; }\n.ui-icon-scissors { background-position: -144px -128px; }\n.ui-icon-clipboard { background-position: -160px -128px; }\n.ui-icon-copy { background-position: -176px -128px; }\n.ui-icon-contact { background-position: -192px -128px; }\n.ui-icon-image { background-position: -208px -128px; }\n.ui-icon-video { background-position: -224px -128px; }\n.ui-icon-script { background-position: -240px -128px; }\n.ui-icon-alert { background-position: 0 -144px; }\n.ui-icon-info { background-position: -16px -144px; }\n.ui-icon-notice { background-position: -32px -144px; }\n.ui-icon-help { background-position: -48px -144px; }\n.ui-icon-check { background-position: -64px -144px; }\n.ui-icon-bullet { background-position: -80px -144px; }\n.ui-icon-radio-on { background-position: -96px -144px; }\n.ui-icon-radio-off { background-position: -112px -144px; }\n.ui-icon-pin-w { background-position: -128px -144px; }\n.ui-icon-pin-s { background-position: -144px -144px; }\n.ui-icon-play { background-position: 0 -160px; }\n.ui-icon-pause { background-position: -16px -160px; }\n.ui-icon-seek-next { background-position: -32px -160px; }\n.ui-icon-seek-prev { background-position: -48px -160px; }\n.ui-icon-seek-end { background-position: -64px -160px; }\n.ui-icon-seek-start { background-position: -80px -160px; }\n/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */\n.ui-icon-seek-first { background-position: -80px -160px; }\n.ui-icon-stop { background-position: -96px -160px; }\n.ui-icon-eject { background-position: -112px -160px; }\n.ui-icon-volume-off { background-position: -128px -160px; }\n.ui-icon-volume-on { background-position: -144px -160px; }\n.ui-icon-power { background-position: 0 -176px; }\n.ui-icon-signal-diag { background-position: -16px -176px; }\n.ui-icon-signal { background-position: -32px -176px; }\n.ui-icon-battery-0 { background-position: -48px -176px; }\n.ui-icon-battery-1 { background-position: -64px -176px; }\n.ui-icon-battery-2 { background-position: -80px -176px; }\n.ui-icon-battery-3 { background-position: -96px -176px; }\n.ui-icon-circle-plus { background-position: 0 -192px; }\n.ui-icon-circle-minus { background-position: -16px -192px; }\n.ui-icon-circle-close { background-position: -32px -192px; }\n.ui-icon-circle-triangle-e { background-position: -48px -192px; }\n.ui-icon-circle-triangle-s { background-position: -64px -192px; }\n.ui-icon-circle-triangle-w { background-position: -80px -192px; }\n.ui-icon-circle-triangle-n { background-position: -96px -192px; }\n.ui-icon-circle-arrow-e { background-position: -112px -192px; }\n.ui-icon-circle-arrow-s { background-position: -128px -192px; }\n.ui-icon-circle-arrow-w { background-position: -144px -192px; }\n.ui-icon-circle-arrow-n { background-position: -160px -192px; }\n.ui-icon-circle-zoomin { background-position: -176px -192px; }\n.ui-icon-circle-zoomout { background-position: -192px -192px; }\n.ui-icon-circle-check { background-position: -208px -192px; }\n.ui-icon-circlesmall-plus { background-position: 0 -208px; }\n.ui-icon-circlesmall-minus { background-position: -16px -208px; }\n.ui-icon-circlesmall-close { background-position: -32px -208px; }\n.ui-icon-squaresmall-plus { background-position: -48px -208px; }\n.ui-icon-squaresmall-minus { background-position: -64px -208px; }\n.ui-icon-squaresmall-close { background-position: -80px -208px; }\n.ui-icon-grip-dotted-vertical { background-position: 0 -224px; }\n.ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }\n.ui-icon-grip-solid-vertical { background-position: -32px -224px; }\n.ui-icon-grip-solid-horizontal { background-position: -48px -224px; }\n.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }\n.ui-icon-grip-diagonal-se { background-position: -80px -224px; }\n\n\n/* Misc visuals\n----------------------------------*/\n\n/* Corner radius */\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-left,\n.ui-corner-tl {\n\tborder-top-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-right,\n.ui-corner-tr {\n\tborder-top-right-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-left,\n.ui-corner-bl {\n\tborder-bottom-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-right,\n.ui-corner-br {\n\tborder-bottom-right-radius: 3px/*{cornerRadius}*/;\n}\n\n/* Overlays */\n.ui-widget-overlay {\n\tbackground: #aaaaaa/*{bgColorOverlay}*/ /*{bgImgUrlOverlay}*/ /*{bgOverlayXPos}*/ /*{bgOverlayYPos}*/ /*{bgOverlayRepeat}*/;\n\topacity: .3/*{opacityOverlay}*/;\n\tfilter: Alpha(Opacity=30)/*{opacityFilterOverlay}*/; /* support: IE8 */\n}\n.ui-widget-shadow {\n\t-webkit-box-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n\tbox-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n}\n", ""]);
 	
 	// exports
 
 
 /***/ }),
-/* 60 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "a4c733ec4baef9ad3896d4e34a8a5448.png";
 
 /***/ }),
-/* 61 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "971364734f3b603e5d363a2634898b42.png";
 
 /***/ }),
-/* 62 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "bf27228a7d3957983584fa7698121ea1.png";
 
 /***/ }),
-/* 63 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "208a290102a4ada58a04de354a1354d7.png";
 
 /***/ }),
-/* 64 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "0de3b51742ed3ac61435875bccd8973b.png";
 
 /***/ }),
-/* 65 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "73a1fd052c9d84c0ee0bea3ee85892ed.png";
 
 /***/ }),
-/* 66 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -21739,7 +25226,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 67 */
+/* 69 */
 /***/ (function(module, exports) {
 
 	module.exports = {"name":"nglview-js-widgets","version":"2.2.0","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.0.0"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}

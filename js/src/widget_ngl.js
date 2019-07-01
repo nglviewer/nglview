@@ -1,4 +1,5 @@
 var Jupyter
+var gui = require("./gui");
 var widgets = require("@jupyter-widgets/base");
 var NGL = require('ngl');
 var $ = require('jquery');
@@ -115,11 +116,11 @@ var NGLView = widgets.DOMWidgetView.extend({
         }.bind(this));
 
         // init toggle fullscreen
-        $(this.stage.viewer.container).dblclick(function(e) {
-            if (!e.ctrlKey){
-                this.stage.toggleFullscreen();
-            }
-        }.bind(this));
+        // $(this.stage.viewer.container).dblclick(function(e) {
+        //     if (!e.ctrlKey){
+        //         this.stage.toggleFullscreen();
+        //     }
+        // }.bind(this));
 
         // init picking handling
         this.$pickingInfo = $("<div></div>")
@@ -425,6 +426,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     createView: function(trait_name){
         // Create a view for the model with given `trait_name`
         // e.g: in backend, 'view.<trait_name>`
+        console.log("Creating view for model " + trait_name);
         var manager = this.model.widget_manager;
         var model_id = this.model.get(trait_name).replace("IPY_MODEL_", "");
         return this.model.widget_manager.get_model(model_id).then(function(model){
@@ -454,6 +456,45 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             })
     },
+
+    createImageBtn: function(){
+        this.image_btn_pview = this.createView("_ibtn_image");
+        var that = this;
+        this.image_btn_pview.then(function(view){
+           var pe = view.el
+           pe.style.position = 'absolute'
+           pe.style.zIndex = 100
+           pe.style.top = '5%'
+           pe.style.right = '10%'
+           pe.style.opacity = '0.7'
+           pe.style.width = '35px'
+           that.stage.viewer.container.append(view.el);
+        })
+    },
+
+    createFullscreenBtn: function(){
+        this.fullscreen_btn_pview = this.createView("_ibtn_fullscreen");
+        var that = this;
+        var stage = that.stage;
+        this.fullscreen_btn_pview.then(function(view){
+           var pe = view.el
+           pe.style.position = 'absolute'
+           pe.style.zIndex = 100
+           pe.style.top = '5%'
+           pe.style.right = '5%'
+           pe.style.opacity = '0.7'
+           pe.style.width = '35px'
+           stage.viewer.container.append(view.el);
+           stage.signals.fullscreenChanged.add(function (isFullscreen) {
+             if (isFullscreen) {
+               view.model.set("icon", "compress")
+             } else {
+               view.model.set("icon", "expand")
+             }
+           })
+        })
+    },
+
 
     createGUI: function(){
         this.pgui_view = this.createView("_igui");
