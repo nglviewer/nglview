@@ -1035,3 +1035,7 @@ UI.MenubarHelper = {
   }
 
 }
+
+module.exports = {
+    "UI": UI
+}

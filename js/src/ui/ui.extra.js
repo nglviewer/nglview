@@ -4,6 +4,8 @@
 
 // Html
 
+var UI = require("./ui.js").UI;
+
 UI.Html = function (html) {
   UI.Element.call(this)
 
@@ -1133,4 +1135,8 @@ UI.ColorPicker.prototype.setValue = function (value) {
 
 UI.ColorPicker.prototype.getValue = function () {
   return this.hex
+}
+
+module.exports = {
+    "UI": UI
 }

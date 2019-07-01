@@ -5,6 +5,9 @@
 
 // Color
 
+var NGL = require("ngl");
+var UI = require("./ui.extra.js").UI;
+
 UI.ColorPopupMenu = function () {
   var scope = this
 
@@ -365,4 +368,9 @@ UI.ComponentPanel.prototype.setMenuDisplay = function (value) {
   this.menu.setMenuDisplay(value)
 
   return this
+}
+
+
+module.exports = {
+    "UI": UI
 }

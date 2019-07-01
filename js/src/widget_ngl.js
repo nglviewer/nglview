@@ -4,6 +4,13 @@ var widgets = require("@jupyter-widgets/base");
 var NGL = require('ngl');
 var $ = require('jquery');
 var _ = require('underscore');
+require("./lib/signals.min.js")
+require("./lib/tether.min.js")
+require("./lib/colorpicker.min.js")
+require("./ui/ui.js")
+require("./ui/ui.extra.js")
+require("./ui/ui.ngl.js")
+require("./gui.js");
 require('jquery-ui/ui/widgets/draggable');
 require('jquery-ui/ui/widgets/slider');
 require('jquery-ui/ui/widgets/dialog');
