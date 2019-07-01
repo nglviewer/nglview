@@ -1332,9 +1332,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	
 	// Stage
 	
-	NGL.StageWidget = function (stage) {
-	  var viewport = new NGL.ViewportWidget(stage).setId('viewport')
-	  document.body.appendChild(viewport.dom)
+	NGL.StageWidget = function (el, stage) {
+	  // var viewport = new NGL.ViewportWidget(stage).setId('viewport')
+	  var viewport = stage.viewer.container;
+	  // document.body.appendChild(viewport.dom)
 	
 	  // ensure initial focus on viewer canvas for key-stroke listening
 	  stage.viewer.renderer.domElement.focus()
@@ -1378,22 +1379,22 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	  }
 	
 	  setTheme(preferences.getKey('theme'))
-	  document.head.appendChild(cssLinkElement)
+	  el.appendChild(cssLinkElement)
 	
 	  //
 	
 	  var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar')
-	  document.body.appendChild(toolbar.dom)
+	  el.appendChild(toolbar.dom)
 	
 	  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar')
-	  document.body.appendChild(menubar.dom)
+	  el.appendChild(menubar.dom)
 	
 	  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar')
-	  document.body.appendChild(sidebar.dom)
+	  el.appendChild(sidebar.dom)
 	
 	  //
 	
-	  document.body.style.touchAction = 'none'
+	  el.body.style.touchAction = 'none'
 	
 	  //
 	
