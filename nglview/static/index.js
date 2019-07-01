@@ -1319,6 +1319,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	    handleResizeLeft, 50, { leading: true, trailing: true }
 	  )
 	
+	  var handleResizeInNotebook = function(){
+	      // FIXME
+	      var sw = sidebar.dom.getBoundingClientRect().width
+	      var ew = el.getBoundingClientRect().width
+	      var w = ew - sw + 'px'
+	      console.log('HELLO w ' + w)
+	      stage.viewer.container.style.width = w 
+	      console.log(stage.viewer.container.style.width)
+	      stage.handleResize()
+	  }
+	
 	  var resizeLeft = new UI.Panel()
 	    .setClass('ResizeLeft')
 	    .onMouseDown(function () {
@@ -1375,6 +1386,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_9__) { retu
 	  this.toolbar = toolbar
 	  this.menubar = menubar
 	  this.sidebar = sidebar
+	
+	  handleResizeInNotebook()
 	
 	  return this
 	}

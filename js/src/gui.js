@@ -272,6 +272,15 @@ NGL.StageWidget = function (el, stage) {
     handleResizeLeft, 50, { leading: true, trailing: true }
   )
 
+  var handleResizeInNotebook = function(){
+      // FIXME
+      var sw = sidebar.dom.getBoundingClientRect().width
+      var ew = el.getBoundingClientRect().width
+      var w = ew - sw + 'px'
+      stage.viewer.container.style.width = w 
+      stage.handleResize()
+  }
+
   var resizeLeft = new UI.Panel()
     .setClass('ResizeLeft')
     .onMouseDown(function () {
@@ -328,6 +337,8 @@ NGL.StageWidget = function (el, stage) {
   this.toolbar = toolbar
   this.menubar = menubar
   this.sidebar = sidebar
+
+  handleResizeInNotebook()
 
   return this
 }
