@@ -42,8 +42,9 @@ def _cature_msg(f):
         v = self._view
         msg_dict = v._player_dict
         w = f(*args, **kwargs)
-        if isinstance(w, Button):
-            msg_dict[w.model_id] = _dry_run(v, w.click)
+        # FIXME: add code here
+        # if isinstance(w, Button):
+        #     msg_dict[w.model_id] = _dry_run(v, w.click)
         return w
     return wrap
 
