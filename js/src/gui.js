@@ -146,8 +146,9 @@ NGL.StageWidget = function (el, stage) {
   viewport.setPosition("absolute")
   viewport.dom = stage.viewer.container
 
+  // Turn off in Jupyter notebook so user can run the next cell.
   // ensure initial focus on viewer canvas for key-stroke listening
-  stage.viewer.renderer.domElement.focus()
+  // stage.viewer.renderer.domElement.focus()
 
   var preferences = new NGL.Preferences('ngl-stage-widget', stage.getParameters())
 
@@ -454,7 +455,7 @@ NGL.MenubarFileWidget = function (stage) {
 
   var exportImageWidget = new NGL.ExportImageWidget(stage)
     .setDisplay('none')
-    .attach()
+    .attach(stage.viewer.container.parentElement)
 
   // event handlers
 
@@ -618,7 +619,7 @@ NGL.MenubarViewWidget = function (stage, preferences) {
     const box = stage.viewer.container.parentElement.getBoundingClientRect()
     stage.setSize(box.width+"px", box.height+"px")
     stage.handleResize()
-    var icon = menuConfig[ 6 ].children[ 0 ]
+    var icon = menuConfig[ 7 ].children[ 0 ]
     if (isFullscreen) {
       icon.switchClass('compress', 'expand')
     } else {
