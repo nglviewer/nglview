@@ -1,5 +1,5 @@
 var Jupyter
-var gui = require("./gui");
+var NglGUI = require("./gui");
 var widgets = require("@jupyter-widgets/base");
 var NGL = require('ngl');
 var $ = require('jquery');
@@ -15,7 +15,7 @@ require('jquery-ui/ui/widgets/draggable');
 require('jquery-ui/ui/widgets/slider');
 require('jquery-ui/ui/widgets/dialog');
 require('jquery-ui/themes/base/all.css');
-require('./css/dark.css');
+// require('./css/dark.css'); // How to switch theme?
 require('./css/light.css');
 require('./css/main.css');
 

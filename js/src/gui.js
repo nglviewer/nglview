@@ -134,6 +134,7 @@ NGL.Preferences.prototype = {
 
   setKey: function (key, value) {
     this.storage[ key ] = value
+    this.signals.keyChanged.dispatch(key, value)
   },
 }
 
@@ -148,7 +149,7 @@ NGL.StageWidget = function (el, stage) {
   // ensure initial focus on viewer canvas for key-stroke listening
   stage.viewer.renderer.domElement.focus()
 
-  var preferences = new NGL.Preferences('ngl-stage-widget')
+  var preferences = new NGL.Preferences('ngl-stage-widget', stage.getParameters())
 
   var pp = {}
   for (var name in preferences.storage) {
