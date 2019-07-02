@@ -2339,11 +2339,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	  var reprContainer = new UI.Panel()
 	  var trajContainer = new UI.Panel()
 	
-	  signals.representationAdded.add(function (repr) {
+	  function handleRepr(repr){
 	    reprContainer.add(
 	      new NGL.RepresentationElementWidget(repr, stage)
 	    )
+	  }
+	
+	  component.reprList.forEach(function(repr){
+	      handleRepr(repr)
 	  })
+	
+	  signals.representationAdded.add(handleRepr)
 	
 	  signals.trajectoryAdded.add(function (traj) {
 	    trajContainer.add(new NGL.TrajectoryElementWidget(traj, stage))
