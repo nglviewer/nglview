@@ -111,6 +111,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	        this.model.on("change:_parameters", this.parametersChanged, this);
 	        this.model.set('_ngl_version', NGL.Version);
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
+	        this.stage_widget = undefined
 	
 	        this.model.on("msg:custom", function(msg){ 
 	            if ('ngl_view_id' in msg){
@@ -568,6 +569,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	                pe.style.right = '10%'
 	            })
 	    },
+	
+	
+	    createNglGUI: function(){
+	      this.stage_widget = NGL.StageWidget(this.el, this.stage);
+	    },
+	
 	
 	    setVisibilityForRepr: function(component_index, repr_index, value) {
 	        // value = True/False
