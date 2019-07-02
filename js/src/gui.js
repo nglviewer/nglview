@@ -4,6 +4,7 @@
  */
 var NGL = require('ngl');
 var UI = require('./ui/ui.js').UI;
+require("./css/dark.css")
 var signals = require("./lib/signals.min.js");
 
 
@@ -97,7 +98,7 @@ NGL.Preferences = function (id, defaultParams) {
     sampleLevel: 0,
     theme: 'dark',
     backgroundColor: 'black',
-    overview: true,
+    overview: false,
     rotateSpeed: 2.0,
     zoomSpeed: 1.2,
     panSpeed: 0.8,
@@ -121,19 +122,6 @@ NGL.Preferences = function (id, defaultParams) {
       this.storage[ key ] = dp[ key ]
     }
   }
-
-  try {
-    if (window.localStorage[ this.id ] === undefined) {
-      window.localStorage[ this.id ] = JSON.stringify(this.storage)
-    } else {
-      var data = JSON.parse(window.localStorage[ this.id ])
-      for (var key in data) {
-        this.storage[ key ] = data[ key ]
-      }
-    }
-  } catch (e) {
-    NGL.error('localStorage not accessible/available')
-  }
 }
 
 NGL.Preferences.prototype = {
@@ -146,28 +134,7 @@ NGL.Preferences.prototype = {
 
   setKey: function (key, value) {
     this.storage[ key ] = value
-
-    try {
-      window.localStorage[ this.id ] = JSON.stringify(this.storage)
-      this.signals.keyChanged.dispatch(key, value)
-    } catch (e) {
-      // Webkit === 22 / Firefox === 1014
-      if (e.code === 22 || e.code === 1014) {
-        NGL.error('localStorage full')
-      } else {
-        NGL.error('localStorage not accessible/available', e)
-      }
-    }
   },
-
-  clear: function () {
-    try {
-      delete window.localStorage[ this.id ]
-    } catch (e) {
-      NGL.error('localStorage not accessible/available')
-    }
-  }
-
 }
 
 // Stage
@@ -193,9 +160,10 @@ NGL.StageWidget = function (el, stage) {
     var sp = {}
     sp[ key ] = value
     stage.setParameters(sp)
-    if (key === 'theme') {
-      setTheme(value)
-    }
+    // FIXME: remove?
+    // if (key === 'theme') {
+    //   setTheme(value)
+    // }
   }, this)
 
   //
@@ -217,7 +185,8 @@ NGL.StageWidget = function (el, stage) {
     stage.setParameters({ backgroundColor: bgColor })
   }
 
-  setTheme(preferences.getKey('theme'))
+  // FIXME: remove?
+  // setTheme(preferences.getKey('theme'))
   el.appendChild(cssLinkElement)
 
   //
@@ -1150,7 +1119,7 @@ NGL.SidebarWidget = function (stage) {
   var compList = []
   var widgetList = []
 
-  signals.componentAdded.add(function (component) {
+  function handleComponent(component) {
     var widget
 
     switch (component.type) {
@@ -1179,7 +1148,15 @@ NGL.SidebarWidget = function (stage) {
 
     compList.push(component)
     widgetList.push(widget)
+
+  }
+
+  // In case user adds components directly from notebook
+  stage.compList.forEach(function(comp){
+      handleComponent(comp)
   })
+
+  signals.componentAdded.add(handleComponent)
 
   signals.componentRemoved.add(function (component) {
     var idx = compList.indexOf(component)

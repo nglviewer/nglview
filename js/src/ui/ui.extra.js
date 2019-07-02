@@ -5,6 +5,7 @@
 // Html
 
 var UI = require("./ui.js").UI;
+require("../lib/tether.min.js")
 
 UI.Html = function (html) {
   UI.Element.call(this)
