@@ -1,23 +1,22 @@
 var Jupyter
-var NglGUI = require("./gui");
-var widgets = require("@jupyter-widgets/base");
-var NGL = require('ngl');
-var $ = require('jquery');
-var _ = require('underscore');
+var widgets = require("@jupyter-widgets/base")
+var NGL = require('ngl')
+var $ = require('jquery')
+var _ = require('underscore')
 require("./lib/signals.min.js")
 require("./lib/tether.min.js")
 require("./lib/colorpicker.min.js")
 require("./ui/ui.js")
 require("./ui/ui.extra.js")
 require("./ui/ui.ngl.js")
-require("./gui.js");
-require('jquery-ui/ui/widgets/draggable');
-require('jquery-ui/ui/widgets/slider');
-require('jquery-ui/ui/widgets/dialog');
-require('jquery-ui/themes/base/all.css');
-// require('./css/dark.css'); // How to switch theme?
-require('./css/light.css');
-require('./css/main.css');
+var StageWidget = require("./gui").StageWidget
+// require('jquery-ui/ui/widgets/draggable');
+// require('jquery-ui/ui/widgets/slider');
+require('jquery-ui/ui/widgets/dialog')
+require('jquery-ui/themes/base/all.css')
+// require('./css/dark.css');  // How to switch theme?
+require('./css/light.css'); // FIXME: this will change notebook's them
+require('./css/main.css')
 
 
 var NGLModel = widgets.DOMWidgetModel.extend({
@@ -523,7 +522,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
 
     createNglGUI: function(){
-      this.stage_widget = NGL.StageWidget(this.el, this.stage);
+      this.stage_widget = new StageWidget(this.el, this.stage);
     },
 
 

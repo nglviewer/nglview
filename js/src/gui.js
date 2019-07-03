@@ -4,7 +4,6 @@
  */
 var NGL = require('ngl');
 var UI = require('./ui/ui.js').UI;
-require("./css/dark.css")
 var signals = require("./lib/signals.min.js");
 
 
@@ -140,11 +139,13 @@ NGL.Preferences.prototype = {
 
 // Stage
 
-NGL.StageWidget = function (el, stage) {
+StageWidget = function (el, stage) {
   // `el` is notebook's cell element
   var viewport = new UI.Panel()
   viewport.setPosition("absolute")
   viewport.dom = stage.viewer.container
+  this.el = el
+  this.widgetList = []
 
   // Turn off in Jupyter notebook so user can run the next cell.
   // ensure initial focus on viewer canvas for key-stroke listening
@@ -201,6 +202,10 @@ NGL.StageWidget = function (el, stage) {
 
   var sidebar = new NGL.SidebarWidget(stage).setId('sidebar')
   el.appendChild(sidebar.dom)
+
+  this.widgetList.push(toolbar)
+  this.widgetList.push(menubar)
+  this.widgetList.push(sidebar)
 
   //
 
@@ -312,8 +317,17 @@ NGL.StageWidget = function (el, stage) {
   this.sidebar = sidebar
 
   handleResizeInNotebook()
-
   return this
+}
+
+StageWidget.prototype = {
+   constructor: StageWidget,
+
+   dispose: function(){
+       for (var i in this.widgetList){
+           this.widgetList[i].dispose()
+       }
+   },
 }
 
 // Viewport
@@ -2393,4 +2407,8 @@ NGL.DirectoryListingWidget = function (datasource, stage, heading, filter, callb
     .then(onListingLoaded)
 
   return container
+}
+
+module.exports = {
+    "StageWidget": StageWidget
 }

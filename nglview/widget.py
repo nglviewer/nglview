@@ -1099,9 +1099,10 @@ class NGLWidget(DOMWidget):
                 self._image_data)
 
     def _request_repr_parameters(self, component=0, repr_index=0):
-        self._remote_call('requestReprParameters',
-                          target='Widget',
-                          args=[component, repr_index])
+        if self.n_components > 0:
+            self._remote_call('requestReprParameters',
+                              target='Widget',
+                              args=[component, repr_index])
 
     def add_structure(self, structure, **kwargs):
         '''add structure to view

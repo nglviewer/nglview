@@ -1,4 +1,4 @@
-define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { return /******/ (function(modules) { // webpackBootstrap
+define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -62,7 +62,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	    }
 	}
 	
-	module.exports['version'] = __webpack_require__(80).version;
+	module.exports['version'] = __webpack_require__(77).version;
 
 
 /***/ }),
@@ -70,25 +70,24 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 /***/ (function(module, exports, __webpack_require__) {
 
 	var Jupyter
-	var NglGUI = __webpack_require__(2);
-	var widgets = __webpack_require__(13);
-	var NGL = __webpack_require__(3);
-	var $ = __webpack_require__(14);
-	var _ = __webpack_require__(15);
+	var widgets = __webpack_require__(2)
+	var NGL = __webpack_require__(3)
+	var $ = __webpack_require__(7)
+	var _ = __webpack_require__(8)
+	__webpack_require__(10)
+	__webpack_require__(11)
 	__webpack_require__(12)
+	__webpack_require__(13)
+	__webpack_require__(14)
+	__webpack_require__(15)
+	var StageWidget = __webpack_require__(16).StageWidget
+	// require('jquery-ui/ui/widgets/draggable');
+	// require('jquery-ui/ui/widgets/slider');
 	__webpack_require__(17)
-	__webpack_require__(18)
-	__webpack_require__(7)
-	__webpack_require__(19)
-	__webpack_require__(20)
-	__webpack_require__(2);
-	__webpack_require__(21);
-	__webpack_require__(31);
-	__webpack_require__(33);
-	__webpack_require__(47);
-	// require('./css/dark.css'); // How to switch theme?
-	__webpack_require__(76);
-	__webpack_require__(78);
+	__webpack_require__(42)
+	// require('./css/dark.css');  // How to switch theme?
+	__webpack_require__(73); // FIXME: this will change notebook's them
+	__webpack_require__(75)
 	
 	
 	var NGLModel = widgets.DOMWidgetModel.extend({
@@ -96,10 +95,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
 	            _model_name: 'NGLModel',
 	            _model_module: 'nglview-js-widgets',
-	            _model_module_version: __webpack_require__(80).version,
+	            _model_module_version: __webpack_require__(77).version,
 	            _view_name: "NGLView",
 	            _view_module: "nglview-js-widgets",
-	            _view_module_version: __webpack_require__(80).version,
+	            _view_module_version: __webpack_require__(77).version,
 	        });
 	    }
 	})
@@ -594,7 +593,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	
 	
 	    createNglGUI: function(){
-	      this.stage_widget = NGL.StageWidget(this.el, this.stage);
+	      this.stage_widget = new StageWidget(this.el, this.stage);
 	    },
 	
 	
@@ -1072,2405 +1071,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-	/**
-	 * @file  Gui
-	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
-	 */
-	var NGL = __webpack_require__(3);
-	var UI = __webpack_require__(7).UI;
-	__webpack_require__(8)
-	var signals = __webpack_require__(12);
-	
-	
-	HTMLElement.prototype.getBoundingClientRect = (function () {
-	  // workaround for ie11 behavior with disconnected dom nodes
-	
-	  var _getBoundingClientRect = HTMLElement.prototype.getBoundingClientRect
-	
-	  return function getBoundingClientRect () {
-	    try {
-	      return _getBoundingClientRect.apply(this, arguments)
-	    } catch (e) {
-	      return {
-	        top: 0,
-	        left: 0,
-	        width: this.width,
-	        height: this.height
-	      }
-	    }
-	  }
-	}())
-	
-	NGL.Widget = function () {
-	
-	}
-	
-	NGL.Widget.prototype = {
-	  constructor: NGL.Widget
-	}
-	
-	NGL.createParameterInput = function (p, v) {
-	  if (!p) return
-	
-	  var value = v === undefined ? p.value : v
-	  var input
-	
-	  if (p.type === 'number') {
-	    input = new UI.Number(0)
-	      .setRange(p.min, p.max)
-	      .setPrecision(p.precision)
-	      .setValue(parseFloat(value))
-	  } else if (p.type === 'integer') {
-	    input = new UI.Integer(parseInt(value))
-	      .setRange(p.min, p.max)
-	  } else if (p.type === 'range') {
-	    input = new UI.Range(p.min, p.max, value, p.step)
-	      .setValue(parseFloat(value))
-	  } else if (p.type === 'boolean') {
-	    input = new UI.Checkbox(value)
-	  } else if (p.type === 'text') {
-	    input = new UI.Input(value)
-	  } else if (p.type === 'select') {
-	    input = new UI.Select()
-	      .setWidth('')
-	      .setOptions(p.options)
-	      .setValue(value)
-	  } else if (p.type === 'color') {
-	    input = new UI.ColorPopupMenu(p.label)
-	      .setValue(value)
-	  } else if (p.type === 'vector3') {
-	    input = new UI.Vector3(value)
-	      .setPrecision(p.precision)
-	  } else if (p.type === 'hidden') {
-	
-	    // nothing to display
-	
-	  } else {
-	    console.warn(
-	      'NGL.createParameterInput: unknown parameter type ' +
-	      "'" + p.type + "'"
-	    )
-	  }
-	
-	  return input
-	}
-	
-	/// /////////////
-	// Preferences
-	
-	NGL.Preferences = function (id, defaultParams) {
-	  this.signals = {
-	    keyChanged: new signals.Signal()
-	  }
-	
-	  this.id = id || 'ngl-gui'
-	  var dp = Object.assign({}, defaultParams)
-	
-	  this.storage = {
-	    impostor: true,
-	    quality: 'auto',
-	    sampleLevel: 0,
-	    theme: 'dark',
-	    backgroundColor: 'black',
-	    overview: false,
-	    rotateSpeed: 2.0,
-	    zoomSpeed: 1.2,
-	    panSpeed: 0.8,
-	    clipNear: 0,
-	    clipFar: 100,
-	    clipDist: 10,
-	    fogNear: 50,
-	    fogFar: 100,
-	    cameraFov: 40,
-	    cameraType: 'perspective',
-	    lightColor: 0xdddddd,
-	    lightIntensity: 1.0,
-	    ambientColor: 0xdddddd,
-	    ambientIntensity: 0.2,
-	    hoverTimeout: 0
-	  }
-	
-	  // overwrite default values with params
-	  for (var key in this.storage) {
-	    if (dp[ key ] !== undefined) {
-	      this.storage[ key ] = dp[ key ]
-	    }
-	  }
-	}
-	
-	NGL.Preferences.prototype = {
-	
-	  constructor: NGL.Preferences,
-	
-	  getKey: function (key) {
-	    return this.storage[ key ]
-	  },
-	
-	  setKey: function (key, value) {
-	    this.storage[ key ] = value
-	    this.signals.keyChanged.dispatch(key, value)
-	  },
-	}
-	
-	// Stage
-	
-	NGL.StageWidget = function (el, stage) {
-	  // `el` is notebook's cell element
-	  var viewport = new UI.Panel()
-	  viewport.setPosition("absolute")
-	  viewport.dom = stage.viewer.container
-	
-	  // Turn off in Jupyter notebook so user can run the next cell.
-	  // ensure initial focus on viewer canvas for key-stroke listening
-	  // stage.viewer.renderer.domElement.focus()
-	
-	  var preferences = new NGL.Preferences('ngl-stage-widget', stage.getParameters())
-	
-	  var pp = {}
-	  for (var name in preferences.storage) {
-	    pp[ name ] = preferences.getKey(name)
-	  }
-	  stage.setParameters(pp)
-	
-	  preferences.signals.keyChanged.add(function (key, value) {
-	    var sp = {}
-	    sp[ key ] = value
-	    stage.setParameters(sp)
-	    // FIXME: remove?
-	    // if (key === 'theme') {
-	    //   setTheme(value)
-	    // }
-	  }, this)
-	
-	  //
-	
-	  var cssLinkElement = document.createElement('link')
-	  cssLinkElement.rel = 'stylesheet'
-	  cssLinkElement.id = 'theme'
-	
-	  function setTheme (value) {
-	    var cssPath, bgColor
-	    if (value === 'light') {
-	      cssPath = NGL.cssDirectory + 'light.css'
-	      bgColor = 'white'
-	    } else {
-	      cssPath = NGL.cssDirectory + 'dark.css'
-	      bgColor = 'black'
-	    }
-	    cssLinkElement.href = cssPath
-	    stage.setParameters({ backgroundColor: bgColor })
-	  }
-	
-	  // FIXME: remove?
-	  // setTheme(preferences.getKey('theme'))
-	  el.appendChild(cssLinkElement)
-	
-	  //
-	
-	  var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar')
-	  el.appendChild(toolbar.dom)
-	
-	  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar')
-	  el.appendChild(menubar.dom)
-	
-	  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar')
-	  el.appendChild(sidebar.dom)
-	
-	  //
-	
-	  // el.body.style.touchAction = 'none'
-	  el.style.touchAction = 'none'
-	
-	  //
-	
-	  stage.handleResize()
-	  // FIXME hack for ie11
-	  setTimeout(function () { stage.handleResize() }, 500)
-	
-	  //
-	
-	  var doResizeLeft = false
-	  var movedResizeLeft = false
-	  var minResizeLeft = false
-	  var handleResizeInNotebook
-	
-	  var handleResizeLeft = function (clientX) {
-	    if (clientX >= 50 && clientX <= window.innerWidth - 10) {
-	      sidebar.setWidth(window.innerWidth - clientX + 'px')
-	      viewport.setWidth(clientX + 'px')
-	      toolbar.setWidth(clientX + 'px')
-	      stage.handleResize()
-	    }
-	    var sidebarWidth = sidebar.dom.getBoundingClientRect().width
-	    if (clientX === undefined) {
-	      var mainWidth = window.innerWidth - sidebarWidth
-	      viewport.setWidth(mainWidth + 'px')
-	      toolbar.setWidth(mainWidth + 'px')
-	      stage.handleResize()
-	    }
-	    if (sidebarWidth <= 10) {
-	      minResizeLeft = true
-	    } else {
-	      minResizeLeft = false
-	    }
-	    handleResizeInNotebook();
-	  }
-	  handleResizeLeft = NGL.throttle(
-	    handleResizeLeft, 50, { leading: true, trailing: true }
-	  )
-	
-	  var handleResizeInNotebook = function(){
-	      // FIXME
-	      var sw = sidebar.dom.getBoundingClientRect().width
-	      var ew = el.getBoundingClientRect().width
-	      var w = ew - sw + 'px'
-	      stage.viewer.container.style.width = w 
-	      stage.handleResize()
-	  }
-	
-	  var resizeLeft = new UI.Panel()
-	    .setClass('ResizeLeft')
-	    .onMouseDown(function () {
-	      doResizeLeft = true
-	      movedResizeLeft = false
-	    })
-	    .onClick(function () {
-	      if (minResizeLeft) {
-	        handleResizeLeft(window.innerWidth - 300)
-	      } else if (!doResizeLeft && !movedResizeLeft) {
-	        handleResizeLeft(window.innerWidth - 10)
-	      }
-	    })
-	
-	  sidebar.add(resizeLeft)
-	
-	  window.addEventListener(
-	    'mousemove', function (event) {
-	      if (doResizeLeft) {
-	        document.body.style.cursor = 'col-resize'
-	        movedResizeLeft = true
-	        handleResizeLeft(event.clientX)
-	      }
-	    }, false
-	  )
-	
-	  window.addEventListener(
-	    'mouseup', function (event) {
-	      doResizeLeft = false
-	      document.body.style.cursor = ''
-	    }, false
-	  )
-	
-	  window.addEventListener(
-	    'resize', function (event) {
-	      handleResizeLeft()
-	    }, false
-	  )
-	
-	  //
-	
-	  document.addEventListener('dragover', function (e) {
-	    e.stopPropagation()
-	    e.preventDefault()
-	    e.dataTransfer.dropEffect = 'none'
-	  }, false)
-	
-	  document.addEventListener('drop', function (e) {
-	    e.stopPropagation()
-	    e.preventDefault()
-	  }, false)
-	
-	  this.viewport = viewport
-	  this.toolbar = toolbar
-	  this.menubar = menubar
-	  this.sidebar = sidebar
-	
-	  handleResizeInNotebook()
-	
-	  return this
-	}
-	
-	// Viewport
-	
-	NGL.ViewportWidget = function (stage) {
-	  var viewer = stage.viewer
-	  var renderer = viewer.renderer
-	
-	  var container = new UI.Panel()
-	  container.dom = viewer.container
-	  container.setPosition('absolute')
-	
-	  var fileTypesOpen = NGL.flatten([
-	    NGL.ParserRegistry.getStructureExtensions(),
-	    NGL.ParserRegistry.getVolumeExtensions(),
-	    NGL.ParserRegistry.getSurfaceExtensions(),
-	    NGL.DecompressorRegistry.names
-	  ])
-	
-	  // event handlers
-	
-	  container.dom.addEventListener('dragover', function (e) {
-	    e.stopPropagation()
-	    e.preventDefault()
-	    e.dataTransfer.dropEffect = 'copy'
-	  }, false)
-	
-	  container.dom.addEventListener('drop', function (e) {
-	    e.stopPropagation()
-	    e.preventDefault()
-	
-	    var fn = function (file, callback) {
-	      var ext = file.name.split('.').pop().toLowerCase()
-	      if (NGL.ScriptExtensions.includes(ext)) {
-	        stage.loadScript(file).then(callback)
-	      } else if (fileTypesOpen.includes(ext)) {
-	        stage.loadFile(file, { defaultRepresentation: true }).then(callback)
-	      } else {
-	        console.error('unknown filetype: ' + ext)
-	        callback()
-	      }
-	    }
-	    var queue = new NGL.Queue(fn, e.dataTransfer.files)
-	  }, false)
-	
-	  return container
-	}
-	
-	// Toolbar
-	
-	NGL.ToolbarWidget = function (stage) {
-	  var container = new UI.Panel()
-	
-	  var messageText = new UI.Text()
-	  var messagePanel = new UI.Panel()
-	    .setDisplay('inline')
-	    .setFloat('left')
-	    .add(messageText)
-	
-	  var statsText = new UI.Text()
-	  var statsPanel = new UI.Panel()
-	    .setDisplay('inline')
-	    .setFloat('right')
-	    .add(statsText)
-	
-	  stage.signals.clicked.add(function (pickingProxy) {
-	    messageText.setValue(pickingProxy ? pickingProxy.getLabel() : 'nothing')
-	  })
-	
-	  stage.viewer.stats.signals.updated.add(function () {
-	    if (NGL.Debug) {
-	      statsText.setValue(
-	        stage.viewer.stats.lastDuration.toFixed(2) + ' ms | ' +
-	        stage.viewer.stats.lastFps + ' fps'
-	      )
-	    } else {
-	      statsText.setValue('')
-	    }
-	  })
-	
-	  container.add(messagePanel, statsPanel)
-	
-	  return container
-	}
-	
-	// Menubar
-	
-	NGL.MenubarWidget = function (stage, preferences) {
-	  var container = new UI.Panel()
-	
-	  container.add(new NGL.MenubarFileWidget(stage))
-	  container.add(new NGL.MenubarViewWidget(stage, preferences))
-	  if (NGL.examplesListUrl && NGL.examplesScriptUrl) {
-	    container.add(new NGL.MenubarExamplesWidget(stage))
-	  }
-	  container.add(new NGL.MenubarHelpWidget(stage, preferences))
-	
-	  container.add(
-	    new UI.Panel().setClass('menu').setFloat('right').add(
-	      new UI.Text('NGL Viewer ' + NGL.Version).setClass('title')
-	    )
-	  )
-	
-	  return container
-	}
-	
-	NGL.MenubarFileWidget = function (stage) {
-	  var fileTypesOpen = NGL.flatten([
-	    NGL.ParserRegistry.getStructureExtensions(),
-	    NGL.ParserRegistry.getVolumeExtensions(),
-	    NGL.ParserRegistry.getSurfaceExtensions(),
-	    NGL.DecompressorRegistry.names,
-	    NGL.ScriptExtensions
-	  ])
-	
-	  function fileInputOnChange (e) {
-	    var fn = function (file, callback) {
-	      var ext = file.name.split('.').pop().toLowerCase()
-	      if (NGL.ScriptExtensions.includes(ext)) {
-	        stage.loadScript(file).then(callback)
-	      } else if (fileTypesOpen.includes(ext)) {
-	        stage.loadFile(file, { defaultRepresentation: true }).then(callback)
-	      } else {
-	        console.error('unknown filetype: ' + ext)
-	        callback()
-	      }
-	    }
-	    var queue = new NGL.Queue(fn, e.target.files)
-	  }
-	
-	  var fileInput = document.createElement('input')
-	  fileInput.type = 'file'
-	  fileInput.multiple = true
-	  fileInput.style.display = 'none'
-	  fileInput.accept = '.' + fileTypesOpen.join(',.')
-	  fileInput.addEventListener('change', fileInputOnChange, false)
-	
-	  // export image
-	
-	  var exportImageWidget = new NGL.ExportImageWidget(stage)
-	    .setDisplay('none')
-	    .attach(stage.viewer.container.parentElement)
-	
-	  // event handlers
-	
-	  function onOpenOptionClick () {
-	    fileInput.click()
-	  }
-	
-	  function onImportOptionClick () {
-	    var dirWidget
-	    function onListingClick (info) {
-	      var ext = info.path.split('.').pop().toLowerCase()
-	      if (NGL.ScriptExtensions.includes(ext)) {
-	        stage.loadScript(NGL.ListingDatasource.getUrl(info.path))
-	        dirWidget.dispose()
-	      } else if (fileTypesOpen.includes(ext)) {
-	        stage.loadFile(NGL.ListingDatasource.getUrl(info.path), {
-	          defaultRepresentation: true
-	        })
-	        dirWidget.dispose()
-	      } else {
-	        console.error('unknown filetype: ' + ext)
-	      }
-	    }
-	
-	    dirWidget = new NGL.DirectoryListingWidget(
-	      NGL.ListingDatasource, stage, 'Import file',
-	      fileTypesOpen, onListingClick
-	    )
-	
-	    dirWidget
-	      .setOpacity('0.9')
-	      .setLeft('50px')
-	      .setTop('80px')
-	      .attach()
-	  }
-	
-	  function onExportImageOptionClick () {
-	    exportImageWidget
-	      .setOpacity('0.9')
-	      .setLeft('50px')
-	      .setTop('80px')
-	      .setDisplay('block')
-	  }
-	
-	  function onScreenshotOptionClick () {
-	    stage.makeImage({
-	      factor: 1,
-	      antialias: true,
-	      trim: false,
-	      transparent: false
-	    }).then(function (blob) {
-	      NGL.download(blob, 'screenshot.png')
-	    })
-	  }
-	
-	  function onPdbInputKeyDown (e) {
-	    if (e.keyCode === 13) {
-	      stage.loadFile('rcsb://' + e.target.value.trim(), {
-	        defaultRepresentation: true
-	      })
-	      e.target.value = ''
-	    }
-	  }
-	
-	  function onFirstModelOnlyChange (e) {
-	    stage.defaultFileParams.firstModelOnly = e.target.checked
-	  }
-	
-	  function onCAlphaOnlyChange (e) {
-	    stage.defaultFileParams.cAlphaOnly = e.target.checked
-	  }
-	
-	  // configure menu contents
-	
-	  var createOption = UI.MenubarHelper.createOption
-	  var createInput = UI.MenubarHelper.createInput
-	  var createCheckbox = UI.MenubarHelper.createCheckbox
-	  var createDivider = UI.MenubarHelper.createDivider
-	
-	  var menuConfig = [
-	    createOption('Open...', onOpenOptionClick),
-	    createInput('PDB', onPdbInputKeyDown),
-	    createCheckbox('firstModelOnly', false, onFirstModelOnlyChange),
-	    createCheckbox('cAlphaOnly', false, onCAlphaOnlyChange),
-	    createDivider(),
-	    createOption('Screenshot', onScreenshotOptionClick, 'camera'),
-	    createOption('Export image...', onExportImageOptionClick)
-	  ]
-	
-	  if (NGL.ListingDatasource) {
-	    menuConfig.splice(
-	      1, 0, createOption('Import...', onImportOptionClick)
-	    )
-	  }
-	
-	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
-	  optionsPanel.dom.appendChild(fileInput)
-	
-	  return UI.MenubarHelper.createMenuContainer('File', optionsPanel)
-	}
-	
-	NGL.MenubarViewWidget = function (stage, preferences) {
-	  // event handlers
-	
-	  function onLightThemeOptionClick () {
-	    preferences.setKey('theme', 'light')
-	  }
-	
-	  function onDarkThemeOptionClick () {
-	    preferences.setKey('theme', 'dark')
-	  }
-	
-	  function onPerspectiveCameraOptionClick () {
-	    stage.setParameters({ cameraType: 'perspective' })
-	  }
-	
-	  function onOrthographicCameraOptionClick () {
-	    stage.setParameters({ cameraType: 'orthographic' })
-	  }
-	
-	  function onStereoCameraOptionClick () {
-	    stage.setParameters({ cameraType: 'stereo' })
-	  }
-	
-	  function onFullScreenOptionClick () {
-	    stage.toggleFullscreen(stage.viewer.container.parentElement);
-	  }
-	
-	  function onCenterOptionClick () {
-	    stage.autoView(1000)
-	  }
-	
-	  function onToggleSpinClick () {
-	    stage.toggleSpin()
-	  }
-	
-	  function onToggleRockClick () {
-	    stage.toggleRock()
-	  }
-	
-	  function onGetOrientationClick () {
-	    window.prompt(
-	      'Get orientation',
-	      JSON.stringify(
-	        stage.viewerControls.getOrientation().toArray(),
-	        function (k, v) {
-	          return v.toFixed ? Number(v.toFixed(2)) : v
-	        }
-	      )
-	    )
-	  }
-	
-	  function onSetOrientationClick () {
-	    stage.viewerControls.orient(
-	      JSON.parse(window.prompt('Set orientation'))
-	    )
-	  }
-	
-	  var that = this;
-	  stage.signals.fullscreenChanged.add(function (isFullscreen) {
-	    const box = stage.viewer.container.parentElement.getBoundingClientRect()
-	    stage.setSize(box.width+"px", box.height+"px")
-	    stage.handleResize()
-	    var icon = menuConfig[ 7 ].children[ 0 ]
-	    if (isFullscreen) {
-	      icon.switchClass('compress', 'expand')
-	    } else {
-	      icon.switchClass('expand', 'compress')
-	    }
-	  })
-	
-	  // configure menu contents
-	
-	  var createOption = UI.MenubarHelper.createOption
-	  var createDivider = UI.MenubarHelper.createDivider
-	
-	  var menuConfig = [
-	    createOption('Light theme', onLightThemeOptionClick),
-	    createOption('Dark theme', onDarkThemeOptionClick),
-	    createDivider(),
-	    createOption('Perspective', onPerspectiveCameraOptionClick),
-	    createOption('Orthographic', onOrthographicCameraOptionClick),
-	    createOption('Stereo', onStereoCameraOptionClick),
-	    createDivider(),
-	    createOption('Full screen', onFullScreenOptionClick, 'expand'),
-	    createOption('Center', onCenterOptionClick, 'bullseye'),
-	    createDivider(),
-	    createOption('Toggle spin', onToggleSpinClick),
-	    createOption('Toggle rock', onToggleRockClick),
-	    createDivider(),
-	    createOption('Get orientation', onGetOrientationClick),
-	    createOption('Set orientation', onSetOrientationClick)
-	  ]
-	
-	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
-	
-	  return UI.MenubarHelper.createMenuContainer('View', optionsPanel)
-	}
-	
-	NGL.MenubarExamplesWidget = function (stage) {
-	  // configure menu contents
-	
-	  var createOption = UI.MenubarHelper.createOption
-	  var optionsPanel = UI.MenubarHelper.createOptionsPanel([])
-	  optionsPanel.setWidth('300px')
-	
-	  var xhr = new XMLHttpRequest()
-	  xhr.open('GET', NGL.examplesListUrl)
-	  xhr.responseType = 'json'
-	  xhr.onload = function (e) {
-	    var response = this.response
-	    if (typeof response === 'string') {
-	      // for ie11
-	      response = JSON.parse(response)
-	    }
-	    response.sort().forEach(function (name) {
-	      var option = createOption(name, function () {
-	        stage.loadScript(NGL.examplesScriptUrl + name + '.js')
-	      })
-	      optionsPanel.add(option)
-	    })
-	  }
-	  xhr.send()
-	
-	  return UI.MenubarHelper.createMenuContainer('Examples', optionsPanel)
-	}
-	
-	NGL.MenubarHelpWidget = function (stage, preferences) {
-	  // event handlers
-	
-	  function onOverviewOptionClick () {
-	    overviewWidget
-	      .setOpacity('0.9')
-	      .setDisplay('block')
-	      .setWidgetPosition(50, 80)
-	  }
-	
-	  function onDocOptionClick () {
-	    window.open(NGL.documentationUrl, '_blank')
-	  }
-	
-	  function onDebugOnClick () {
-	    NGL.setDebug(true)
-	    stage.viewer.updateHelper()
-	    stage.viewer.requestRender()
-	  }
-	
-	  function onDebugOffClick () {
-	    NGL.setDebug(false)
-	    stage.viewer.updateHelper()
-	    stage.viewer.requestRender()
-	  }
-	
-	  function onPreferencesOptionClick () {
-	    preferencesWidget
-	      .setOpacity('0.9')
-	      .setDisplay('block')
-	      .setWidgetPosition(50, 80)
-	  }
-	
-	  // export image
-	
-	  var preferencesWidget = new NGL.PreferencesWidget(stage, preferences)
-	    .setDisplay('none')
-	    .attach(stage.viewer.container.parentElement)
-	
-	  // overview
-	
-	  var overviewWidget = new NGL.OverviewWidget(stage, preferences)
-	    .setDisplay('none')
-	    .attach(stage.viewer.container.parentElement)
-	
-	  if (preferences.getKey('overview')) {
-	    onOverviewOptionClick()
-	  }
-	
-	  // configure menu contents
-	
-	  var createOption = UI.MenubarHelper.createOption
-	  var createDivider = UI.MenubarHelper.createDivider
-	
-	  var menuConfig = [
-	    createOption('Overview', onOverviewOptionClick),
-	    createOption('Documentation', onDocOptionClick),
-	    createDivider(),
-	    createOption('Debug on', onDebugOnClick),
-	    createOption('Debug off', onDebugOffClick),
-	    createDivider(),
-	    createOption('Preferences', onPreferencesOptionClick, 'sliders')
-	  ]
-	
-	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
-	
-	  return UI.MenubarHelper.createMenuContainer('Help', optionsPanel)
-	}
-	
-	// Overview
-	
-	NGL.OverviewWidget = function (stage, preferences) {
-	  var container = new UI.OverlayPanel()
-	
-	  var xOffset = 0
-	  var yOffset = 0
-	
-	  var prevX = 0
-	  var prevY = 0
-	
-	  function onMousemove (e) {
-	    if (prevX === 0) {
-	      prevX = e.clientX
-	      prevY = e.clientY
-	    }
-	    xOffset -= prevX - e.clientX
-	    yOffset -= prevY - e.clientY
-	    prevX = e.clientX
-	    prevY = e.clientY
-	    container.dom.style.top = yOffset + 'px'
-	    container.dom.style.left = xOffset + 'px'
-	  }
-	
-	  function setWidgetPosition (left, top) {
-	    xOffset = left
-	    yOffset = top
-	    prevX = 0
-	    prevY = 0
-	    container.dom.style.top = yOffset + 'px'
-	    container.dom.style.left = xOffset + 'px'
-	  }
-	  container.setWidgetPosition = setWidgetPosition
-	
-	  var headingPanel = new UI.Panel()
-	    .setBorderBottom('1px solid #555')
-	    .setHeight('25px')
-	    .setCursor('move')
-	    .onMouseDown(function (e) {
-	      if (e.which === 1) {
-	        document.addEventListener('mousemove', onMousemove)
-	      }
-	      document.addEventListener('mouseup', function (e) {
-	        document.removeEventListener('mousemove', onMousemove)
-	      })
-	    })
-	
-	  var listingPanel = new UI.Panel()
-	    .setMarginTop('10px')
-	    .setMinHeight('100px')
-	    .setMaxHeight('500px')
-	    .setMaxWidth('600px')
-	    .setOverflow('auto')
-	
-	  headingPanel.add(
-	    new UI.Text('NGL Viewer').setFontStyle('italic'),
-	    new UI.Html('&nbsp;&mdash;&nbsp;Overview')
-	  )
-	  headingPanel.add(
-	    new UI.Icon('times')
-	      .setCursor('pointer')
-	      .setMarginLeft('20px')
-	      .setFloat('right')
-	      .onClick(function () {
-	        container.setDisplay('none')
-	      })
-	  )
-	
-	  container.add(headingPanel)
-	  container.add(listingPanel)
-	
-	  //
-	
-	  function addIcon (name, text) {
-	    var panel = new UI.Panel()
-	
-	    var icon = new UI.Icon(name)
-	      .setWidth('20px')
-	      .setFloat('left')
-	
-	    var label = new UI.Text(text)
-	      .setDisplay('inline')
-	      .setMarginLeft('5px')
-	
-	    panel
-	      .setMarginLeft('20px')
-	      .add(icon, label)
-	    listingPanel.add(panel)
-	  }
-	
-	  listingPanel
-	    .add(new UI.Panel().add(new UI.Html("To load a new structure use the <i>File</i> menu in the top left via drag'n'drop.")))
-	    .add(new UI.Break())
-	
-	  listingPanel
-	    .add(new UI.Panel().add(new UI.Text('A number of clickable icons provide common actions. Most icons can be clicked on, just try it or hover the mouse pointer over it to see a tooltip.')))
-	    .add(new UI.Break())
-	
-	  addIcon('eye', 'Controls the visibility of a component.')
-	  addIcon('trash-o', 'Deletes a component. Note that a second click is required to confirm the action.')
-	  addIcon('bullseye', 'Centers a component.')
-	  addIcon('bars', 'Opens a menu with further options.')
-	  addIcon('square', 'Opens a menu with coloring options.')
-	  addIcon('filter', 'Indicates atom-selection input fields.')
-	
-	  listingPanel
-	    .add(new UI.Text('Mouse controls'))
-	    .add(new UI.Html(
-	      '<ul>' +
-	          '<li>Left button hold and move to rotate camera around center.</li>' +
-	          '<li>Left button click to pick atom.</li>' +
-	          '<li>Middle button hold and move to zoom camera in and out.</li>' +
-	          '<li>Middle button click to center camera on atom.</li>' +
-	          '<li>Right button hold and move to translate camera in the screen plane.</li>' +
-	      '</ul>'
-	    ))
-	
-	  listingPanel
-	    .add(new UI.Panel().add(new UI.Html(
-	      'For more information please visit the ' +
-	      "<a href='" + NGL.documentationUrl + "' target='_blank'>documentation pages</a>."
-	    )))
-	
-	  var overview = preferences.getKey('overview')
-	  var showOverviewCheckbox = new UI.Checkbox(overview)
-	    .onClick(function () {
-	      preferences.setKey(
-	        'overview',
-	        showOverviewCheckbox.getValue()
-	      )
-	    })
-	
-	  listingPanel
-	    .add(new UI.HorizontalRule()
-	      .setBorderTop('1px solid #555')
-	      .setMarginTop('15px')
-	    )
-	    .add(new UI.Panel().add(
-	      showOverviewCheckbox,
-	      new UI.Text(
-	        'Show on startup. Always available from Menu > Help > Overview.'
-	      ).setMarginLeft('5px')
-	    ))
-	
-	  return container
-	}
-	
-	// Preferences
-	
-	NGL.PreferencesWidget = function (stage, preferences) {
-	  var container = new UI.OverlayPanel()
-	
-	  var xOffset = 0
-	  var yOffset = 0
-	
-	  var prevX = 0
-	  var prevY = 0
-	
-	  function onMousemove (e) {
-	    if (prevX === 0) {
-	      prevX = e.clientX
-	      prevY = e.clientY
-	    }
-	    xOffset -= prevX - e.clientX
-	    yOffset -= prevY - e.clientY
-	    prevX = e.clientX
-	    prevY = e.clientY
-	    container.dom.style.top = yOffset + 'px'
-	    container.dom.style.left = xOffset + 'px'
-	  }
-	
-	  function setWidgetPosition (left, top) {
-	    xOffset = left
-	    yOffset = top
-	    prevX = 0
-	    prevY = 0
-	    container.dom.style.top = yOffset + 'px'
-	    container.dom.style.left = xOffset + 'px'
-	  }
-	  container.setWidgetPosition = setWidgetPosition
-	
-	  var headingPanel = new UI.Panel()
-	    .setBorderBottom('1px solid #555')
-	    .setHeight('25px')
-	    .setCursor('move')
-	    .onMouseDown(function (e) {
-	      if (e.which === 1) {
-	        document.addEventListener('mousemove', onMousemove)
-	      }
-	      document.addEventListener('mouseup', function (e) {
-	        document.removeEventListener('mousemove', onMousemove)
-	      })
-	    })
-	
-	  var listingPanel = new UI.Panel()
-	    .setMarginTop('10px')
-	    .setMinHeight('100px')
-	    .setMaxHeight('500px')
-	    .setOverflow('auto')
-	
-	  headingPanel.add(new UI.Text('Preferences'))
-	  headingPanel.add(
-	    new UI.Icon('times')
-	      .setCursor('pointer')
-	      .setMarginLeft('20px')
-	      .setFloat('right')
-	      .onClick(function () {
-	        container.setDisplay('none')
-	      })
-	  )
-	
-	  container.add(headingPanel)
-	  container.add(listingPanel)
-	
-	  //
-	
-	  Object.keys(NGL.UIStageParameters).forEach(function (name) {
-	    var p = NGL.UIStageParameters[ name ]
-	    if (p.label === undefined) p.label = name
-	    var input = NGL.createParameterInput(p, stage.parameters[ name ])
-	
-	    if (!input) return
-	
-	    preferences.signals.keyChanged.add(function (key, value) {
-	      if (key === name) input.setValue(value)
-	    })
-	
-	    function setParam () {
-	      var sp = {}
-	      sp[ name ] = input.getValue()
-	      preferences.setKey(name, sp[ name ])
-	    }
-	
-	    var ua = navigator.userAgent
-	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
-	      input.onInput(setParam)
-	    } else {
-	      input.onChange(setParam)
-	    }
-	
-	    listingPanel
-	      .add(new UI.Text(name).setWidth('120px'))
-	      .add(input)
-	      .add(new UI.Break())
-	  })
-	
-	  return container
-	}
-	
-	// Export image
-	
-	NGL.ExportImageWidget = function (stage) {
-	  var container = new UI.OverlayPanel()
-	
-	  var headingPanel = new UI.Panel()
-	    .setBorderBottom('1px solid #555')
-	    .setHeight('25px')
-	
-	  var listingPanel = new UI.Panel()
-	    .setMarginTop('10px')
-	    .setMinHeight('100px')
-	    .setMaxHeight('500px')
-	    .setOverflow('auto')
-	
-	  headingPanel.add(new UI.Text('Image export'))
-	  headingPanel.add(
-	    new UI.Icon('times')
-	      .setCursor('pointer')
-	      .setMarginLeft('20px')
-	      .setFloat('right')
-	      .onClick(function () {
-	        container.setDisplay('none')
-	      })
-	  )
-	
-	  container.add(headingPanel)
-	  container.add(listingPanel)
-	
-	  var factorSelect = new UI.Select()
-	    .setOptions({
-	      '1': '1x',
-	      '2': '2x',
-	      '3': '3x',
-	      '4': '4x',
-	      '5': '5x',
-	      '6': '6x',
-	      '7': '7x',
-	      '8': '8x',
-	      '9': '9x',
-	      '10': '10x'
-	    })
-	    .setValue('4')
-	
-	  var antialiasCheckbox = new UI.Checkbox()
-	    .setValue(true)
-	
-	  var trimCheckbox = new UI.Checkbox()
-	    .setValue(false)
-	
-	  var transparentCheckbox = new UI.Checkbox()
-	    .setValue(false)
-	
-	  var progress = new UI.Progress()
-	    .setDisplay('none')
-	
-	  var exportButton = new UI.Button('export')
-	    .onClick(function () {
-	      exportButton.setDisplay('none')
-	      progress.setDisplay('inline-block')
-	      function onProgress (i, n, finished) {
-	        if (i === 1) {
-	          progress.setMax(n)
-	        }
-	        if (i >= n) {
-	          progress.setIndeterminate()
-	        } else {
-	          progress.setValue(i)
-	        }
-	        if (finished) {
-	          progress.setDisplay('none')
-	          exportButton.setDisplay('inline-block')
-	        }
-	      }
-	
-	      setTimeout(function () {
-	        stage.makeImage({
-	          factor: parseInt(factorSelect.getValue()),
-	          antialias: antialiasCheckbox.getValue(),
-	          trim: trimCheckbox.getValue(),
-	          transparent: transparentCheckbox.getValue(),
-	          onProgress: onProgress
-	        }).then(function (blob) {
-	          NGL.download(blob, 'screenshot.png')
-	        })
-	      }, 50)
-	    })
-	
-	  function addEntry (label, entry) {
-	    listingPanel
-	      .add(new UI.Text(label).setWidth('80px'))
-	      .add(entry || new UI.Panel())
-	      .add(new UI.Break())
-	  }
-	
-	  addEntry('scale', factorSelect)
-	  addEntry('antialias', antialiasCheckbox)
-	  addEntry('trim', trimCheckbox)
-	  addEntry('transparent', transparentCheckbox)
-	
-	  listingPanel.add(
-	    new UI.Break(),
-	    exportButton, progress
-	  )
-	
-	  return container
-	}
-	
-	// Sidebar
-	
-	NGL.SidebarWidget = function (stage) {
-	  var signals = stage.signals
-	  var container = new UI.Panel()
-	
-	  var widgetContainer = new UI.Panel()
-	    .setClass('Content')
-	
-	  var compList = []
-	  var widgetList = []
-	
-	  function handleComponent(component) {
-	    var widget
-	
-	    switch (component.type) {
-	      case 'structure':
-	        widget = new NGL.StructureComponentWidget(component, stage)
-	        break
-	
-	      case 'surface':
-	        widget = new NGL.SurfaceComponentWidget(component, stage)
-	        break
-	
-	      case 'volume':
-	        widget = new NGL.VolumeComponentWidget(component, stage)
-	        break
-	
-	      case 'shape':
-	        widget = new NGL.ShapeComponentWidget(component, stage)
-	        break
-	
-	      default:
-	        console.warn('NGL.SidebarWidget: component type unknown', component)
-	        return
-	    }
-	
-	    widgetContainer.add(widget)
-	
-	    compList.push(component)
-	    widgetList.push(widget)
-	
-	  }
-	
-	  // In case user adds components directly from notebook
-	  stage.compList.forEach(function(comp){
-	      handleComponent(comp)
-	  })
-	
-	  signals.componentAdded.add(handleComponent)
-	
-	  signals.componentRemoved.add(function (component) {
-	    var idx = compList.indexOf(component)
-	
-	    if (idx !== -1) {
-	      widgetList[ idx ].dispose()
-	
-	      compList.splice(idx, 1)
-	      widgetList.splice(idx, 1)
-	    }
-	  })
-	
-	  // actions
-	
-	  var expandAll = new UI.Icon('plus-square')
-	    .setTitle('expand all')
-	    .setCursor('pointer')
-	    .onClick(function () {
-	      widgetList.forEach(function (widget) {
-	        widget.expand()
-	      })
-	    })
-	
-	  var collapseAll = new UI.Icon('minus-square')
-	    .setTitle('collapse all')
-	    .setCursor('pointer')
-	    .setMarginLeft('10px')
-	    .onClick(function () {
-	      widgetList.forEach(function (widget) {
-	        widget.collapse()
-	      })
-	    })
-	
-	  var centerAll = new UI.Icon('bullseye')
-	    .setTitle('center all')
-	    .setCursor('pointer')
-	    .setMarginLeft('10px')
-	    .onClick(function () {
-	      stage.autoView(1000)
-	    })
-	
-	  var disposeAll = new UI.DisposeIcon()
-	    .setMarginLeft('10px')
-	    .setDisposeFunction(function () {
-	      stage.removeAllComponents()
-	    })
-	
-	  var settingsMenu = new UI.PopupMenu('cogs', 'Settings', 'window')
-	    .setIconTitle('settings')
-	    .setMarginLeft('10px')
-	  settingsMenu.entryLabelWidth = '120px'
-	
-	  // Busy indicator
-	
-	  var busy = new UI.Panel()
-	    .setDisplay('inline')
-	    .add(
-	      new UI.Icon('spinner')
-	        .addClass('spin')
-	        .setMarginLeft('45px')
-	    )
-	
-	  stage.tasks.signals.countChanged.add(function (delta, count) {
-	    if (count > 0) {
-	      actions.add(busy)
-	    } else {
-	      try {
-	        actions.remove(busy)
-	      } catch (e) {
-	        // already removed
-	      }
-	    }
-	  })
-	
-	  var paramNames = [
-	    'clipNear', 'clipFar', 'clipDist', 'fogNear', 'fogFar',
-	    'lightColor', 'lightIntensity', 'ambientColor', 'ambientIntensity'
-	  ]
-	
-	  paramNames.forEach(function (name) {
-	    var p = NGL.UIStageParameters[ name ]
-	    if (p.label === undefined) p.label = name
-	    var input = NGL.createParameterInput(p, stage.parameters[ name ])
-	
-	    if (!input) return
-	
-	    stage.signals.parametersChanged.add(function (params) {
-	      input.setValue(params[ name ])
-	    })
-	
-	    function setParam () {
-	      var sp = {}
-	      sp[ name ] = input.getValue()
-	      stage.setParameters(sp)
-	    }
-	
-	    var ua = navigator.userAgent
-	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
-	      input.onInput(setParam)
-	    } else {
-	      input.onChange(setParam)
-	    }
-	
-	    settingsMenu.addEntry(name, input)
-	  })
-	
-	  //
-	
-	  var actions = new UI.Panel()
-	    .setClass('Panel Sticky')
-	    .add(
-	      expandAll,
-	      collapseAll,
-	      centerAll,
-	      disposeAll,
-	      settingsMenu
-	    )
-	
-	  container.add(
-	    actions,
-	    widgetContainer
-	  )
-	
-	  return container
-	}
-	
-	// Component
-	
-	NGL.StructureComponentWidget = function (component, stage) {
-	  var signals = component.signals
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	
-	  var reprContainer = new UI.Panel()
-	  var trajContainer = new UI.Panel()
-	
-	  function handleRepr(repr){
-	    reprContainer.add(
-	      new NGL.RepresentationElementWidget(repr, stage)
-	    )
-	  }
-	
-	  component.reprList.forEach(function(repr){
-	      handleRepr(repr)
-	  })
-	
-	  signals.representationAdded.add(handleRepr)
-	
-	  signals.trajectoryAdded.add(function (traj) {
-	    trajContainer.add(new NGL.TrajectoryElementWidget(traj, stage))
-	  })
-	
-	  signals.defaultAssemblyChanged.add(function () {
-	    assembly.setValue(component.parameters.defaultAssembly)
-	  })
-	
-	  // Selection
-	
-	  container.add(
-	    new UI.SelectionPanel(component.selection)
-	      .setMarginLeft('20px')
-	      .setInputWidth('214px')
-	  )
-	
-	  // Export PDB
-	
-	  var pdb = new UI.Button('export').onClick(function () {
-	    var pdbWriter = new NGL.PdbWriter(component.structure)
-	    pdbWriter.download('structure')
-	    componentPanel.setMenuDisplay('none')
-	  })
-	
-	  // Add representation
-	
-	  var repr = new UI.Select()
-	    .setColor('#444')
-	    .setOptions((function () {
-	      var reprOptions = { '': '[ add ]' }
-	      NGL.RepresentationRegistry.names.forEach(function (key) {
-	        reprOptions[ key ] = key
-	      })
-	      return reprOptions
-	    })())
-	    .onChange(function () {
-	      component.addRepresentation(repr.getValue())
-	      repr.setValue('')
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  // Assembly
-	
-	  var assembly = new UI.Select()
-	    .setColor('#444')
-	    .setOptions((function () {
-	      var biomolDict = component.structure.biomolDict
-	      var assemblyOptions = {
-	        '': (component.structure.unitcell ? 'AU' : 'FULL')
-	      }
-	      Object.keys(biomolDict).forEach(function (k) {
-	        assemblyOptions[ k ] = k
-	      })
-	      return assemblyOptions
-	    })())
-	    .setValue(component.parameters.defaultAssembly)
-	    .onChange(function () {
-	      component.setDefaultAssembly(assembly.getValue())
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  // Open trajectory
-	
-	  var trajExt = []
-	  NGL.ParserRegistry.getTrajectoryExtensions().forEach(function (ext) {
-	    trajExt.push('.' + ext, '.' + ext + '.gz')
-	  })
-	
-	  function framesInputOnChange (e) {
-	    var fn = function (file, callback) {
-	      NGL.autoLoad(file).then(function (frames) {
-	        component.addTrajectory(frames)
-	        callback()
-	      })
-	    }
-	    var queue = new NGL.Queue(fn, e.target.files)
-	    e.target.value = ''
-	  }
-	
-	  var framesInput = document.createElement('input')
-	  framesInput.type = 'file'
-	  framesInput.multiple = true
-	  framesInput.style.display = 'none'
-	  framesInput.accept = trajExt.join(',')
-	  framesInput.addEventListener('change', framesInputOnChange, false)
-	
-	  var traj = new UI.Button('open').onClick(function () {
-	    framesInput.click()
-	    componentPanel.setMenuDisplay('none')
-	  })
-	
-	  // Import remote trajectory
-	
-	  var remoteTraj = new UI.Button('import').onClick(function () {
-	    componentPanel.setMenuDisplay('none')
-	
-	    // TODO list of extensions should be provided by trajectory datasource
-	    var remoteTrajExt = [
-	      'xtc', 'trr', 'netcdf', 'dcd', 'ncdf', 'nc', 'gro', 'pdb',
-	      'lammpstrj', 'xyz', 'mdcrd', 'gz', 'binpos', 'h5', 'dtr',
-	      'arc', 'tng', 'trj', 'trz'
-	    ]
-	    var dirWidget
-	
-	    function onListingClick (info) {
-	      var ext = info.path.split('.').pop().toLowerCase()
-	      if (remoteTrajExt.indexOf(ext) !== -1) {
-	        component.addTrajectory(info.path + '?struc=' + component.structure.path)
-	        dirWidget.dispose()
-	      } else {
-	        NGL.log('unknown trajectory type: ' + ext)
-	      }
-	    }
-	
-	    dirWidget = new NGL.DirectoryListingWidget(
-	      NGL.ListingDatasource, stage, 'Import trajectory',
-	      remoteTrajExt, onListingClick
-	    )
-	
-	    dirWidget
-	      .setOpacity('0.9')
-	      .setLeft('50px')
-	      .setTop('80px')
-	      .attach()
-	  })
-	
-	  // Superpose
-	
-	  function setSuperposeOptions () {
-	    var superposeOptions = { '': '[ structure ]' }
-	    stage.eachComponent(function (o, i) {
-	      if (o !== component) {
-	        superposeOptions[ i ] = o.name
-	      }
-	    }, NGL.StructureComponent)
-	    superpose.setOptions(superposeOptions)
-	  }
-	
-	  stage.signals.componentAdded.add(setSuperposeOptions)
-	  stage.signals.componentRemoved.add(setSuperposeOptions)
-	
-	  var superpose = new UI.Select()
-	    .setColor('#444')
-	    .onChange(function () {
-	      component.superpose(
-	        stage.compList[ superpose.getValue() ],
-	        true
-	      )
-	      component.autoView(1000)
-	      superpose.setValue('')
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  setSuperposeOptions()
-	
-	  // Principal axes
-	
-	  var alignAxes = new UI.Button('align').onClick(function () {
-	    var pa = component.structure.getPrincipalAxes()
-	    var q = pa.getRotationQuaternion()
-	    q.multiply(component.quaternion.clone().inverse())
-	    stage.animationControls.rotate(q)
-	    stage.animationControls.move(component.getCenter())
-	  })
-	
-	  // Measurements removal
-	
-	  var removeMeasurements = new UI.Button('remove').onClick(function () {
-	    component.removeAllMeasurements()
-	  })
-	
-	  // Annotations visibility
-	
-	  var showAnnotations = new UI.Button('show').onClick(function () {
-	    component.annotationList.forEach(function (annotation) {
-	      annotation.setVisibility(true)
-	    })
-	  })
-	
-	  var hideAnnotations = new UI.Button('hide').onClick(function () {
-	    component.annotationList.forEach(function (annotation) {
-	      annotation.setVisibility(false)
-	    })
-	  })
-	
-	  var annotationButtons = new UI.Panel()
-	    .setDisplay('inline-block')
-	    .add(showAnnotations, hideAnnotations)
-	
-	  // Open validation
-	
-	  function validationInputOnChange (e) {
-	    var fn = function (file, callback) {
-	      NGL.autoLoad(file, { ext: 'validation' }).then(function (validation) {
-	        component.structure.validation = validation
-	        callback()
-	      })
-	    }
-	    var queue = new NGL.Queue(fn, e.target.files)
-	  }
-	
-	  var validationInput = document.createElement('input')
-	  validationInput.type = 'file'
-	  validationInput.style.display = 'none'
-	  validationInput.accept = '.xml'
-	  validationInput.addEventListener('change', validationInputOnChange, false)
-	
-	  var vali = new UI.Button('open').onClick(function () {
-	    validationInput.click()
-	    componentPanel.setMenuDisplay('none')
-	  })
-	
-	  // Position
-	
-	  var position = new UI.Vector3()
-	    .onChange(function () {
-	      component.setPosition(position.getValue())
-	    })
-	
-	  // Rotation
-	
-	  var q = new NGL.Quaternion()
-	  var e = new NGL.Euler()
-	  var rotation = new UI.Vector3()
-	    .setRange(-6.28, 6.28)
-	    .onChange(function () {
-	      e.setFromVector3(rotation.getValue())
-	      q.setFromEuler(e)
-	      component.setRotation(q)
-	    })
-	
-	  // Scale
-	
-	  var scale = new UI.Number(1)
-	    .setRange(0.01, 100)
-	    .onChange(function () {
-	      component.setScale(scale.getValue())
-	    })
-	
-	  // Matrix
-	
-	  signals.matrixChanged.add(function () {
-	    position.setValue(component.position)
-	    rotation.setValue(e.setFromQuaternion(component.quaternion))
-	    scale.setValue(component.scale.x)
-	  })
-	
-	  // Component panel
-	
-	  var componentPanel = new UI.ComponentPanel(component)
-	    .setDisplay('inline-block')
-	    .setMargin('0px')
-	    .addMenuEntry('PDB file', pdb)
-	    .addMenuEntry('Representation', repr)
-	    .addMenuEntry('Assembly', assembly)
-	    .addMenuEntry('Superpose', superpose)
-	    .addMenuEntry(
-	      'File', new UI.Text(component.structure.path)
-	        .setMaxWidth('100px')
-	        .setOverflow('auto')
-	      // .setWordWrap( "break-word" )
-	    )
-	    .addMenuEntry('Trajectory', traj)
-	    .addMenuEntry('Principal axes', alignAxes)
-	    .addMenuEntry('Measurements', removeMeasurements)
-	    .addMenuEntry('Annotations', annotationButtons)
-	    .addMenuEntry('Validation', vali)
-	    .addMenuEntry('Position', position)
-	    .addMenuEntry('Rotation', rotation)
-	    .addMenuEntry('Scale', scale)
-	
-	  if (NGL.ListingDatasource && NGL.TrajectoryDatasource) {
-	    componentPanel.addMenuEntry('Remote trajectory', remoteTraj)
-	  }
-	
-	  // Fill container
-	
-	  container
-	    .addStatic(componentPanel)
-	    .add(trajContainer)
-	    .add(reprContainer)
-	
-	  return container
-	}
-	
-	NGL.SurfaceComponentWidget = function (component, stage) {
-	  var signals = component.signals
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	
-	  var reprContainer = new UI.Panel()
-	
-	  signals.representationAdded.add(function (repr) {
-	    reprContainer.add(
-	      new NGL.RepresentationElementWidget(repr, stage)
-	    )
-	  })
-	
-	  // Add representation
-	
-	  var repr = new UI.Select()
-	    .setColor('#444')
-	    .setOptions((function () {
-	      var reprOptions = {
-	        '': '[ add ]',
-	        'surface': 'surface',
-	        'dot': 'dot'
-	      }
-	      return reprOptions
-	    })())
-	    .onChange(function () {
-	      component.addRepresentation(repr.getValue())
-	      repr.setValue('')
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  // Position
-	
-	  var position = new UI.Vector3()
-	    .onChange(function () {
-	      component.setPosition(position.getValue())
-	    })
-	
-	  // Rotation
-	
-	  var q = new NGL.Quaternion()
-	  var e = new NGL.Euler()
-	  var rotation = new UI.Vector3()
-	    .setRange(-6.28, 6.28)
-	    .onChange(function () {
-	      e.setFromVector3(rotation.getValue())
-	      q.setFromEuler(e)
-	      component.setRotation(q)
-	    })
-	
-	  // Scale
-	
-	  var scale = new UI.Number(1)
-	    .setRange(0.01, 100)
-	    .onChange(function () {
-	      component.setScale(scale.getValue())
-	    })
-	
-	  // Matrix
-	
-	  signals.matrixChanged.add(function () {
-	    position.setValue(component.position)
-	    rotation.setValue(e.setFromQuaternion(component.quaternion))
-	    scale.setValue(component.scale.x)
-	  })
-	
-	  // Component panel
-	
-	  var componentPanel = new UI.ComponentPanel(component)
-	    .setDisplay('inline-block')
-	    .setMargin('0px')
-	    .addMenuEntry('Representation', repr)
-	    .addMenuEntry(
-	      'File', new UI.Text(component.surface.path)
-	        .setMaxWidth('100px')
-	        .setWordWrap('break-word'))
-	    .addMenuEntry('Position', position)
-	    .addMenuEntry('Rotation', rotation)
-	    .addMenuEntry('Scale', scale)
-	
-	  // Fill container
-	
-	  container
-	    .addStatic(componentPanel)
-	    .add(reprContainer)
-	
-	  return container
-	}
-	
-	NGL.VolumeComponentWidget = function (component, stage) {
-	  var signals = component.signals
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	
-	  var reprContainer = new UI.Panel()
-	
-	  signals.representationAdded.add(function (repr) {
-	    reprContainer.add(
-	      new NGL.RepresentationElementWidget(repr, stage)
-	    )
-	  })
-	
-	  // Add representation
-	
-	  var repr = new UI.Select()
-	    .setColor('#444')
-	    .setOptions((function () {
-	      var reprOptions = {
-	        '': '[ add ]',
-	        'surface': 'surface',
-	        'dot': 'dot',
-	        'slice': 'slice'
-	      }
-	      return reprOptions
-	    })())
-	    .onChange(function () {
-	      component.addRepresentation(repr.getValue())
-	      repr.setValue('')
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  // Position
-	
-	  var position = new UI.Vector3()
-	    .onChange(function () {
-	      component.setPosition(position.getValue())
-	    })
-	
-	  // Rotation
-	
-	  var q = new NGL.Quaternion()
-	  var e = new NGL.Euler()
-	  var rotation = new UI.Vector3()
-	    .setRange(-6.28, 6.28)
-	    .onChange(function () {
-	      e.setFromVector3(rotation.getValue())
-	      q.setFromEuler(e)
-	      component.setRotation(q)
-	    })
-	
-	  // Scale
-	
-	  var scale = new UI.Number(1)
-	    .setRange(0.01, 100)
-	    .onChange(function () {
-	      component.setScale(scale.getValue())
-	    })
-	
-	  // Matrix
-	
-	  signals.matrixChanged.add(function () {
-	    position.setValue(component.position)
-	    rotation.setValue(e.setFromQuaternion(component.quaternion))
-	    scale.setValue(component.scale.x)
-	  })
-	
-	  // Component panel
-	
-	  var componentPanel = new UI.ComponentPanel(component)
-	    .setDisplay('inline-block')
-	    .setMargin('0px')
-	    .addMenuEntry('Representation', repr)
-	    .addMenuEntry(
-	      'File', new UI.Text(component.volume.path)
-	        .setMaxWidth('100px')
-	        .setWordWrap('break-word'))
-	    .addMenuEntry('Position', position)
-	    .addMenuEntry('Rotation', rotation)
-	    .addMenuEntry('Scale', scale)
-	
-	  // Fill container
-	
-	  container
-	    .addStatic(componentPanel)
-	    .add(reprContainer)
-	
-	  return container
-	}
-	
-	NGL.ShapeComponentWidget = function (component, stage) {
-	  var signals = component.signals
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	
-	  var reprContainer = new UI.Panel()
-	
-	  signals.representationAdded.add(function (repr) {
-	    reprContainer.add(
-	      new NGL.RepresentationElementWidget(repr, stage)
-	    )
-	  })
-	
-	  // Add representation
-	
-	  var repr = new UI.Select()
-	    .setColor('#444')
-	    .setOptions((function () {
-	      var reprOptions = {
-	        '': '[ add ]',
-	        'buffer': 'buffer'
-	      }
-	      return reprOptions
-	    })())
-	    .onChange(function () {
-	      component.addRepresentation(repr.getValue())
-	      repr.setValue('')
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  // Position
-	
-	  var position = new UI.Vector3()
-	    .onChange(function () {
-	      component.setPosition(position.getValue())
-	    })
-	
-	    // Rotation
-	
-	  var q = new NGL.Quaternion()
-	  var e = new NGL.Euler()
-	  var rotation = new UI.Vector3()
-	    .setRange(-6.28, 6.28)
-	    .onChange(function () {
-	      e.setFromVector3(rotation.getValue())
-	      q.setFromEuler(e)
-	      component.setRotation(q)
-	    })
-	
-	  // Scale
-	
-	  var scale = new UI.Number(1)
-	    .setRange(0.01, 100)
-	    .onChange(function () {
-	      component.setScale(scale.getValue())
-	    })
-	
-	  // Matrix
-	
-	  signals.matrixChanged.add(function () {
-	    position.setValue(component.position)
-	    rotation.setValue(e.setFromQuaternion(component.quaternion))
-	    scale.setValue(component.scale.x)
-	  })
-	
-	  // Component panel
-	
-	  var componentPanel = new UI.ComponentPanel(component)
-	    .setDisplay('inline-block')
-	    .setMargin('0px')
-	    .addMenuEntry('Representation', repr)
-	    .addMenuEntry(
-	      'File', new UI.Text(component.shape.path)
-	        .setMaxWidth('100px')
-	        .setWordWrap('break-word'))
-	    .addMenuEntry('Position', position)
-	    .addMenuEntry('Rotation', rotation)
-	    .addMenuEntry('Scale', scale)
-	
-	  // Fill container
-	
-	  container
-	    .addStatic(componentPanel)
-	    .add(reprContainer)
-	
-	  return container
-	}
-	
-	// Representation
-	
-	NGL.RepresentationElementWidget = function (element, stage) {
-	  var signals = element.signals
-	
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	    .setMarginLeft('20px')
-	
-	  signals.visibilityChanged.add(function (value) {
-	    toggle.setValue(value)
-	  })
-	
-	  signals.nameChanged.add(function (value) {
-	    name.setValue(value)
-	  })
-	
-	  signals.disposed.add(function () {
-	    menu.dispose()
-	    container.dispose()
-	  })
-	
-	  // Name
-	
-	  var name = new UI.EllipsisText(element.name)
-	    .setWidth('103px')
-	
-	    // Actions
-	
-	  var toggle = new UI.ToggleIcon(element.visible, 'eye', 'eye-slash')
-	    .setTitle('hide/show')
-	    .setCursor('pointer')
-	    .setMarginLeft('25px')
-	    .onClick(function () {
-	      element.setVisibility(!element.visible)
-	    })
-	
-	  var disposeIcon = new UI.DisposeIcon()
-	    .setMarginLeft('10px')
-	    .setDisposeFunction(function () {
-	      element.dispose()
-	    })
-	
-	  container
-	    .addStatic(name)
-	    .addStatic(toggle)
-	    .addStatic(disposeIcon)
-	
-	  // Selection
-	
-	  if ((element.parent.type === 'structure' ||
-	          element.parent.type === 'trajectory') &&
-	        element.repr.selection && element.repr.selection.type === 'selection'
-	  ) {
-	    container.add(
-	      new UI.SelectionPanel(element.repr.selection)
-	        .setMarginLeft('20px')
-	        .setInputWidth('194px')
-	    )
-	  }
-	
-	  // Menu
-	
-	  var menu = new UI.PopupMenu('bars', 'Representation')
-	    .setMarginLeft('45px')
-	    .setEntryLabelWidth('190px')
-	
-	  menu.addEntry('type', new UI.Text(element.repr.type))
-	
-	  // Parameters
-	
-	  var repr = element.repr
-	  var rp = repr.getParameters()
-	
-	  Object.keys(repr.parameters).forEach(function (name) {
-	    if (!repr.parameters[ name ]) return
-	    var p = Object.assign({}, repr.parameters[ name ])
-	    p.value = rp[ name ]
-	    if (p.label === undefined) p.label = name
-	    var input = NGL.createParameterInput(p)
-	
-	    if (!input) return
-	
-	    signals.parametersChanged.add(function (params) {
-	      if (typeof input.setValue === 'function') {
-	        input.setValue(params[ name ])
-	      }
-	    })
-	
-	    function setParam () {
-	      var po = {}
-	      po[ name ] = input.getValue()
-	      element.setParameters(po)
-	      stage.viewer.requestRender()
-	    }
-	
-	    var ua = navigator.userAgent
-	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
-	      input.onInput(setParam)
-	    } else {
-	      input.onChange(setParam)
-	    }
-	
-	    menu.addEntry(name, input)
-	  })
-	
-	  container
-	    .addStatic(menu)
-	
-	  return container
-	}
-	
-	// Trajectory
-	
-	NGL.TrajectoryElementWidget = function (element, stage) {
-	  var signals = element.signals
-	  var traj = element.trajectory
-	
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	    .setMarginLeft('20px')
-	
-	  signals.disposed.add(function () {
-	    menu.dispose()
-	    container.dispose()
-	  })
-	
-	  var frameCount = new UI.Panel()
-	    .setDisplay('inline')
-	    .add(new UI.Icon('spinner')
-	      .addClass('spin')
-	      .setMarginRight('99px')
-	    )
-	
-	  var frameTime = new UI.Panel()
-	    .setMarginLeft('5px')
-	    .setDisplay('inline')
-	
-	  function setFrame (value) {
-	    frame.setValue(value)
-	    if (traj.deltaTime && value >= 0) {
-	      var t = traj.getFrameTime(value) / 1000
-	      time.setValue(t.toFixed(9).replace(/\.?0+$/g, '') + 'ns')
-	    } else {
-	      time.setValue('')
-	    }
-	    frameRange.setValue(value)
-	    frameCount.clear().add(frame.setWidth('40px'))
-	    frameTime.clear().add(time.setWidth('90px'))
-	  }
-	
-	  function init (value) {
-	    frame.setRange(-1, value - 1)
-	    frameRange.setRange(-1, value - 1)
-	
-	    setFrame(traj.currentFrame)
-	
-	    if (element.parameters.defaultStep !== undefined) {
-	      step.setValue(element.parameters.defaultStep)
-	    } else {
-	      // 1000 = n / step
-	      step.setValue(Math.ceil((value + 1) / 100))
-	    }
-	
-	    player.setParameters({step: step.getValue()})
-	    player.setParameters({end: value - 1})
-	  }
-	
-	  signals.countChanged.add(init)
-	  signals.frameChanged.add(setFrame)
-	
-	  // Name
-	
-	  var name = new UI.EllipsisText(element.parameters.name)
-	    .setWidth('103px')
-	
-	  signals.nameChanged.add(function (value) {
-	    name.setValue(value)
-	  })
-	
-	  container.addStatic(name)
-	  container.addStatic(frameTime)
-	
-	  // frames
-	
-	  var frame = new UI.Integer(-1)
-	    .setWidth('40px')
-	    .setTextAlign('right')
-	    .setMarginLeft('5px')
-	    .setRange(-1, -1)
-	    .onChange(function (e) {
-	      traj.setFrame(frame.getValue())
-	      menu.setMenuDisplay('none')
-	    })
-	
-	  var time = new UI.Text()
-	    .setTextAlign('right')
-	    .setWidth('90px')
-	
-	  var step = new UI.Integer(1)
-	    .setWidth('50px')
-	    .setRange(1, 10000)
-	    .onChange(function () {
-	      player.setParameters({step: step.getValue()})
-	    })
-	
-	  var frameRow = new UI.Panel()
-	
-	  var frameRange = new UI.Range(-1, -1, -1, 1)
-	    .setWidth('147px')
-	    .setMargin('0px')
-	    .setPadding('0px')
-	    .setBorder('0px')
-	    .onInput(function (e) {
-	      var value = frameRange.getValue()
-	
-	      if (value === traj.currentFrame) {
-	        return
-	      }
-	
-	      if (traj.player && traj.player.isRunning) {
-	        traj.setPlayer()
-	        traj.setFrame(value)
-	      } else if (!traj.inProgress) {
-	        traj.setFrame(value)
-	      }
-	    })
-	
-	  var interpolateType = new UI.Select()
-	    .setColor('#444')
-	    .setOptions({
-	      '': 'none',
-	      'linear': 'linear',
-	      'spline': 'spline'
-	    })
-	    .setValue(element.parameters.defaultInterpolateType)
-	    .onChange(function () {
-	      player.setParameters({interpolateType: interpolateType.getValue()})
-	    })
-	
-	  var interpolateStep = new UI.Integer(element.parameters.defaultInterpolateStep)
-	    .setWidth('30px')
-	    .setRange(1, 50)
-	    .onChange(function () {
-	      player.setParameters({interpolateStep: interpolateStep.getValue()})
-	    })
-	
-	  var playDirection = new UI.Select()
-	    .setColor('#444')
-	    .setOptions({
-	      'forward': 'forward',
-	      'backward': 'backward',
-	      'bounce': 'bounce'
-	    })
-	    .setValue(element.parameters.defaultDirection)
-	    .onChange(function () {
-	      player.setParameters({direction: playDirection.getValue()})
-	    })
-	
-	  var playMode = new UI.Select()
-	    .setColor('#444')
-	    .setOptions({
-	      'loop': 'loop',
-	      'once': 'once'
-	    })
-	    .setValue(element.parameters.defaultMode)
-	    .onChange(function () {
-	      player.setParameters({mode: playMode.getValue()})
-	    })
-	
-	  // player
-	
-	  var timeout = new UI.Integer(element.parameters.defaultTimeout)
-	    .setWidth('30px')
-	    .setRange(10, 1000)
-	    .onChange(function () {
-	      player.setParameters({timeout: timeout.getValue()})
-	    })
-	
-	  var player = new NGL.TrajectoryPlayer(traj, {
-	    step: step.getValue(),
-	    timeout: timeout.getValue(),
-	    start: 0,
-	    end: traj.frameCount - 1,
-	    interpolateType: interpolateType.getValue(),
-	    interpolateStep: interpolateStep.getValue(),
-	    direction: playDirection.getValue(),
-	    mode: playMode.getValue()
-	  })
-	  traj.setPlayer(player)
-	
-	  var playerButton = new UI.ToggleIcon(true, 'play', 'pause')
-	    .setMarginRight('10px')
-	    .setMarginLeft('20px')
-	    .setCursor('pointer')
-	    .setWidth('12px')
-	    .setTitle('play')
-	    .onClick(function () {
-	      player.toggle()
-	    })
-	
-	  player.signals.startedRunning.add(function () {
-	    playerButton
-	      .setTitle('pause')
-	      .setValue(false)
-	  })
-	
-	  player.signals.haltedRunning.add(function () {
-	    playerButton
-	      .setTitle('play')
-	      .setValue(true)
-	  })
-	
-	  frameRow.add(playerButton, frameRange, frameCount)
-	
-	  // Selection
-	
-	  container.add(
-	    new UI.SelectionPanel(traj.selection)
-	      .setMarginLeft('20px')
-	      .setInputWidth('194px')
-	  )
-	
-	  // Options
-	
-	  var setCenterPbc = new UI.Checkbox(traj.centerPbc)
-	    .onChange(function () {
-	      element.setParameters({
-	        'centerPbc': setCenterPbc.getValue()
-	      })
-	    })
-	
-	  var setRemovePeriodicity = new UI.Checkbox(traj.removePeriodicity)
-	    .onChange(function () {
-	      element.setParameters({
-	        'removePeriodicity': setRemovePeriodicity.getValue()
-	      })
-	    })
-	
-	  var setRemovePbc = new UI.Checkbox(traj.removePbc)
-	    .onChange(function () {
-	      element.setParameters({
-	        'removePbc': setRemovePbc.getValue()
-	      })
-	    })
-	
-	  var setSuperpose = new UI.Checkbox(traj.superpose)
-	    .onChange(function () {
-	      element.setParameters({
-	        'superpose': setSuperpose.getValue()
-	      })
-	    })
-	
-	  var setDeltaTime = new UI.Number(traj.deltaTime)
-	    .setWidth('55px')
-	    .setRange(0, 1000000)
-	    .onChange(function () {
-	      element.setParameters({
-	        'deltaTime': setDeltaTime.getValue()
-	      })
-	    })
-	
-	  var setTimeOffset = new UI.Number(traj.timeOffset)
-	    .setWidth('55px')
-	    .setRange(0, 1000000000)
-	    .onChange(function () {
-	      element.setParameters({
-	        'timeOffset': setTimeOffset.getValue()
-	      })
-	    })
-	
-	  signals.parametersChanged.add(function (params) {
-	    setCenterPbc.setValue(traj.centerPbc)
-	    setRemovePeriodicity.setValue(traj.removePeriodicity)
-	    setRemovePbc.setValue(traj.removePbc)
-	    setSuperpose.setValue(traj.superpose)
-	    setDeltaTime.setValue(traj.deltaTime)
-	    setTimeOffset.setValue(traj.timeOffset)
-	    traj.setFrame(frame.getValue())
-	  })
-	
-	  // Dispose
-	
-	  var dispose = new UI.DisposeIcon()
-	    .setDisposeFunction(function () {
-	      element.parent.removeTrajectory(element)
-	    })
-	
-	  //
-	
-	  if (traj.frameCount) {
-	    init(traj.frameCount)
-	  }
-	
-	  // Menu
-	
-	  var menu = new UI.PopupMenu('bars', 'Trajectory')
-	    .setMarginLeft('10px')
-	    .setEntryLabelWidth('130px')
-	    .addEntry('Center', setCenterPbc)
-	    .addEntry('Remove Periodicity', setRemovePeriodicity)
-	    .addEntry('Remove PBC', setRemovePbc)
-	    .addEntry('Superpose', setSuperpose)
-	    .addEntry('Step size', step)
-	    .addEntry('Interpolation type', interpolateType)
-	    .addEntry('Interpolation steps', interpolateStep)
-	    .addEntry('Play timeout', timeout)
-	    .addEntry('Play direction', playDirection)
-	    .addEntry('Play mode', playMode)
-	    .addEntry('Delta time [ps]', setDeltaTime)
-	    .addEntry('Time offset [ps]', setTimeOffset)
-	    .addEntry('File',
-	      new UI.Text(traj.trajPath)
-	        .setMaxWidth('100px')
-	        .setWordWrap('break-word'))
-	    .addEntry('Dispose', dispose)
-	
-	  container
-	    .addStatic(menu)
-	
-	  container
-	    .add(frameRow)
-	
-	  return container
-	}
-	
-	// Listing
-	
-	NGL.DirectoryListingWidget = function (datasource, stage, heading, filter, callback) {
-	  // from http://stackoverflow.com/a/20463021/1435042
-	  function fileSizeSI (a, b, c, d, e) {
-	    return (b = Math, c = b.log, d = 1e3, e = c(a) / c(d) | 0, a / b.pow(d, e)).toFixed(2) +
-	            String.fromCharCode(160) + (e ? 'kMGTPEZY'[--e] + 'B' : 'Bytes')
-	  }
-	
-	  function getFolderDict (path) {
-	    path = path || ''
-	    var options = { '': '' }
-	    var full = []
-	    path.split('/').forEach(function (chunk) {
-	      full.push(chunk)
-	      options[ full.join('/') ] = chunk
-	    })
-	    return options
-	  }
-	
-	  var container = new UI.OverlayPanel()
-	
-	  var headingPanel = new UI.Panel()
-	    .setBorderBottom('1px solid #555')
-	    .setHeight('30px')
-	
-	  var listingPanel = new UI.Panel()
-	    .setMarginTop('10px')
-	    .setMinHeight('100px')
-	    .setMaxHeight('500px')
-	    .setPaddingRight('15px')
-	    .setOverflow('auto')
-	
-	  var folderSelect = new UI.Select()
-	    .setColor('#444')
-	    .setMarginLeft('20px')
-	    .setWidth('')
-	    .setMaxWidth('200px')
-	    .setOptions(getFolderDict())
-	    .onChange(function () {
-	      datasource.getListing(folderSelect.getValue())
-	        .then(onListingLoaded)
-	    })
-	
-	  heading = heading || 'Directoy listing'
-	
-	  headingPanel.add(new UI.Text(heading))
-	  headingPanel.add(folderSelect)
-	  headingPanel.add(
-	    new UI.Icon('times')
-	      .setCursor('pointer')
-	      .setMarginLeft('20px')
-	      .setFloat('right')
-	      .onClick(function () {
-	        container.dispose()
-	      })
-	  )
-	
-	  container.add(headingPanel)
-	  container.add(listingPanel)
-	
-	  function onListingLoaded (listing) {
-	    var folder = listing.path
-	    var data = listing.data
-	
-	    NGL.lastUsedDirectory = folder
-	    listingPanel.clear()
-	
-	    folderSelect
-	      .setOptions(getFolderDict(folder))
-	      .setValue(folder)
-	
-	    data.forEach(function (info) {
-	      var ext = info.path.split('.').pop().toLowerCase()
-	      if (filter && !info.dir && filter.indexOf(ext) === -1) {
-	        return
-	      }
-	
-	      var icon, name
-	      if (info.dir) {
-	        icon = 'folder-o'
-	        name = info.name
-	      } else {
-	        icon = 'file-o'
-	        name = info.name + String.fromCharCode(160) +
-	                '(' + fileSizeSI(info.size) + ')'
-	      }
-	
-	      var pathRow = new UI.Panel()
-	        .setDisplay('block')
-	        .setWhiteSpace('nowrap')
-	        .add(new UI.Icon(icon).setWidth('20px'))
-	        .add(new UI.Text(name))
-	        .onClick(function () {
-	          if (info.dir) {
-	            datasource.getListing(info.path)
-	              .then(onListingLoaded)
-	          } else {
-	            callback(info)
-	          }
-	        })
-	
-	      if (info.restricted) {
-	        pathRow.add(new UI.Icon('lock').setMarginLeft('5px'))
-	      }
-	
-	      listingPanel.add(pathRow)
-	    })
-	  }
-	
-	  datasource.getListing(NGL.lastUsedDirectory)
-	    .then(onListingLoaded)
-	
-	  return container
-	}
-
+	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
 /***/ }),
 /* 3 */
@@ -3935,1426 +1538,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 /***/ }),
 /* 7 */
-/***/ (function(module, exports) {
-
-	/**
-	 * @author mrdoob / http://mrdoob.com/
-	 * The MIT License, Copyright &copy; 2010-2016 three.js authors
-	 */
-	
-	// TODO changes by Alexander S. Rose
-	// - more events and properties
-	// - ctrlKey modifier for Number and Integer
-	// - UI.Element.prototype.getBox()
-	// - UI.Element.prototype.dispose()
-	// - UI.Element.prototype.setTitle()
-	// - UI.Element.prototype.getStyle()
-	
-	var UI = {}
-	
-	UI.Element = function () {}
-	
-	UI.Element.prototype = {
-	
-	  setId: function (id) {
-	    this.dom.id = id
-	
-	    return this
-	  },
-	
-	  setTitle: function (title) {
-	    this.dom.title = title
-	
-	    return this
-	  },
-	
-	  setClass: function (name) {
-	    this.dom.className = name
-	
-	    return this
-	  },
-	
-	  setStyle: function (style, array) {
-	    for (var i = 0; i < array.length; i++) {
-	      this.dom.style[ style ] = array[ i ]
-	    }
-	  },
-	
-	  getStyle: function (style) {
-	    return this.dom.style[ style ]
-	  },
-	
-	  getBox: function () {
-	    return this.dom.getBoundingClientRect()
-	  },
-	
-	  setDisabled: function (value) {
-	    this.dom.disabled = value
-	
-	    return this
-	  },
-	
-	  setTextContent: function (value) {
-	    this.dom.textContent = value
-	
-	    return this
-	  },
-	
-	  dispose: function () {
-	    this.dom.parentNode.removeChild(this.dom)
-	  }
-	
-	}
-	
-	// properties
-	
-	var properties = [
-	  'position', 'left', 'top', 'right', 'bottom', 'width', 'height', 'border',
-	  'borderLeft', 'borderTop', 'borderRight', 'borderBottom', 'borderColor',
-	  'display', 'overflow', 'overflowX', 'overflowY', 'margin', 'marginLeft',
-	  'marginTop', 'marginRight',
-	  'marginBottom', 'padding', 'paddingLeft', 'paddingTop', 'paddingRight',
-	  'paddingBottom', 'color', 'backgroundColor', 'opacity', 'fontSize',
-	  'fontWeight', 'fontStyle', 'fontFamily', 'textTransform', 'cursor',
-	  'verticalAlign', 'clear', 'float', 'zIndex', 'minHeight', 'maxHeight',
-	  'minWidth', 'maxWidth', 'wordBreak', 'wordWrap', 'spellcheck',
-	  'lineHeight', 'whiteSpace', 'textOverflow', 'textAlign', 'pointerEvents'
-	]
-	
-	properties.forEach(function (property) {
-	  var methodSuffix = property.substr(0, 1).toUpperCase() +
-	                        property.substr(1, property.length)
-	
-	  UI.Element.prototype[ 'set' + methodSuffix ] = function () {
-	    this.setStyle(property, arguments)
-	    return this
-	  }
-	
-	  UI.Element.prototype[ 'get' + methodSuffix ] = function () {
-	    return this.getStyle(property)
-	  }
-	})
-	
-	// events
-	
-	var events = [
-	  'KeyUp', 'KeyDown', 'KeyPress',
-	  'MouseOver', 'MouseOut', 'MouseDown', 'MouseUp', 'MouseMove',
-	  'Click', 'Change', 'Input', 'Scroll'
-	]
-	
-	events.forEach(function (event) {
-	  var method = 'on' + event
-	
-	  UI.Element.prototype[ method ] = function (callback) {
-	    this.dom.addEventListener(event.toLowerCase(), callback.bind(this), false)
-	
-	    return this
-	  }
-	})
-	
-	// Panel
-	
-	UI.Panel = function () {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('div')
-	  dom.className = 'Panel'
-	
-	  this.dom = dom
-	  this.children = []
-	
-	  return this
-	}
-	
-	UI.Panel.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Panel.prototype.add = function () {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.dom.appendChild(arguments[ i ].dom)
-	    this.children.push(arguments[ i ])
-	  }
-	
-	  return this
-	}
-	
-	UI.Panel.prototype.remove = function () {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.dom.removeChild(arguments[ i ].dom)
-	
-	    var idx = this.children.indexOf(arguments[ i ])
-	    if (idx !== -1) this.children.splice(idx, 1)
-	  }
-	
-	  return this
-	}
-	
-	UI.Panel.prototype.clear = function () {
-	  while (this.dom.children.length) {
-	    this.dom.removeChild(this.dom.lastChild)
-	  }
-	
-	  this.children.length = 0
-	
-	  return this
-	}
-	
-	// Collapsible Panel
-	
-	UI.CollapsiblePanel = function () {
-	  UI.Panel.call(this)
-	
-	  this.dom.className = 'Panel CollapsiblePanel'
-	
-	  this.button = document.createElement('div')
-	  this.button.className = 'CollapsiblePanelButton'
-	  this.dom.appendChild(this.button)
-	
-	  var scope = this
-	  this.button.addEventListener('click', function (event) {
-	    scope.toggle()
-	  }, false)
-	
-	  this.content = document.createElement('div')
-	  this.content.className = 'CollapsibleContent'
-	  this.dom.appendChild(this.content)
-	
-	  this.isCollapsed = false
-	
-	  return this
-	}
-	
-	UI.CollapsiblePanel.prototype = Object.create(UI.Panel.prototype)
-	
-	UI.CollapsiblePanel.prototype.addStatic = function () {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.dom.insertBefore(arguments[ i ].dom, this.content)
-	  }
-	
-	  return this
-	}
-	
-	UI.CollapsiblePanel.prototype.removeStatic = UI.Panel.prototype.remove
-	
-	UI.CollapsiblePanel.prototype.clearStatic = function () {
-	  this.dom.childNodes.forEach(function (child) {
-	    if (child !== this.content) {
-	      this.dom.removeChild(child)
-	    }
-	  })
-	}
-	
-	UI.CollapsiblePanel.prototype.add = function () {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.content.appendChild(arguments[ i ].dom)
-	  }
-	
-	  return this
-	}
-	
-	UI.CollapsiblePanel.prototype.remove = function () {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.content.removeChild(arguments[ i ].dom)
-	  }
-	
-	  return this
-	}
-	
-	UI.CollapsiblePanel.prototype.clear = function () {
-	  while (this.content.children.length) {
-	    this.content.removeChild(this.content.lastChild)
-	  }
-	}
-	
-	UI.CollapsiblePanel.prototype.toggle = function () {
-	  this.setCollapsed(!this.isCollapsed)
-	}
-	
-	UI.CollapsiblePanel.prototype.collapse = function () {
-	  this.setCollapsed(true)
-	}
-	
-	UI.CollapsiblePanel.prototype.expand = function () {
-	  this.setCollapsed(false)
-	}
-	
-	UI.CollapsiblePanel.prototype.setCollapsed = function (setCollapsed) {
-	  if (setCollapsed) {
-	    this.dom.classList.add('collapsed')
-	  } else {
-	    this.dom.classList.remove('collapsed')
-	  }
-	
-	  this.isCollapsed = setCollapsed
-	}
-	
-	// Text
-	
-	UI.Text = function (text) {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('span')
-	  dom.className = 'Text'
-	  dom.style.display = 'inline-block'
-	  dom.style.verticalAlign = 'middle'
-	
-	  this.dom = dom
-	  this.setValue(text)
-	
-	  return this
-	}
-	
-	UI.Text.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Text.prototype.setValue = function (value) {
-	  if (value !== undefined) {
-	    this.dom.textContent = value
-	  }
-	
-	  return this
-	}
-	
-	UI.Text.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
-	// Input
-	
-	UI.Input = function (value) {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Input'
-	  dom.style.padding = '2px'
-	  dom.style.border = '1px solid #ccc'
-	
-	  dom.addEventListener('keydown', function (event) {
-	    event.stopPropagation()
-	  }, false)
-	
-	  this.dom = dom
-	  this.setValue(value || '')
-	
-	  return this
-	}
-	
-	UI.Input.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Input.prototype.getValue = function () {
-	  return this.dom.value
-	}
-	
-	UI.Input.prototype.setValue = function (value) {
-	  this.dom.value = value
-	
-	  return this
-	}
-	
-	UI.Input.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
-	
-	// TextArea
-	
-	UI.TextArea = function () {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('textarea')
-	  dom.className = 'TextArea'
-	  dom.style.padding = '2px'
-	  dom.style.border = '1px solid #ccc'
-	
-	  dom.addEventListener('keydown', function (event) {
-	    event.stopPropagation()
-	  }, false)
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.TextArea.prototype = Object.create(UI.Element.prototype)
-	
-	UI.TextArea.prototype.getValue = function () {
-	  return this.dom.value
-	}
-	
-	UI.TextArea.prototype.setValue = function (value) {
-	  this.dom.value = value
-	
-	  return this
-	}
-	
-	// Select
-	
-	UI.Select = function () {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('select')
-	  dom.className = 'Select'
-	  dom.style.width = '64px'
-	  dom.style.height = '16px'
-	  dom.style.border = '0px'
-	  dom.style.padding = '0px'
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.Select.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Select.prototype.setMultiple = function (boolean) {
-	  this.dom.multiple = boolean
-	
-	  return this
-	}
-	
-	UI.Select.prototype.setOptions = function (options) {
-	  var selected = this.dom.value
-	
-	  while (this.dom.children.length > 0) {
-	    this.dom.removeChild(this.dom.firstChild)
-	  }
-	
-	  for (var key in options) {
-	    var option = document.createElement('option')
-	    option.value = key
-	    option.innerHTML = options[ key ]
-	    this.dom.appendChild(option)
-	  }
-	
-	  this.dom.value = selected
-	
-	  return this
-	}
-	
-	UI.Select.prototype.getValue = function () {
-	  return this.dom.value
-	}
-	
-	UI.Select.prototype.setValue = function (value) {
-	  this.dom.value = value
-	
-	  return this
-	}
-	
-	UI.Select.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
-	
-	// FancySelect
-	
-	UI.FancySelect = function () {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('div')
-	  dom.className = 'FancySelect'
-	  dom.tabIndex = 0 // keyup event is ignored without setting tabIndex
-	
-	  // Broadcast for object selection after arrow navigation
-	  var changeEvent = document.createEvent('HTMLEvents')
-	  changeEvent.initEvent('change', true, true)
-	
-	  // Prevent native scroll behavior
-	  dom.addEventListener('keydown', function (event) {
-	    switch (event.keyCode) {
-	      case 38: // up
-	      case 40: // down
-	        event.preventDefault()
-	        event.stopPropagation()
-	        break
-	    }
-	  }, false)
-	
-	  // Keybindings to support arrow navigation
-	  dom.addEventListener('keyup', function (event) {
-	    switch (event.keyCode) {
-	      case 38: // up
-	      case 40: // down
-	        scope.selectedIndex += (event.keyCode == 38) ? -1 : 1
-	
-	        if (scope.selectedIndex >= 0 && scope.selectedIndex < scope.options.length) {
-	          // Highlight selected dom elem and scroll parent if needed
-	          scope.setValue(scope.options[ scope.selectedIndex ].value)
-	
-	          scope.dom.dispatchEvent(changeEvent)
-	        }
-	
-	        break
-	    }
-	  }, false)
-	
-	  this.dom = dom
-	
-	  this.options = []
-	  this.selectedIndex = -1
-	  this.selectedValue = null
-	
-	  return this
-	}
-	
-	UI.FancySelect.prototype = Object.create(UI.Element.prototype)
-	
-	UI.FancySelect.prototype.setOptions = function (options) {
-	  var scope = this
-	
-	  var changeEvent = document.createEvent('HTMLEvents')
-	  changeEvent.initEvent('change', true, true)
-	
-	  while (scope.dom.children.length > 0) {
-	    scope.dom.removeChild(scope.dom.firstChild)
-	  }
-	
-	  scope.options = []
-	
-	  for (var i = 0; i < options.length; i++) {
-	    var option = options[ i ]
-	
-	    var div = document.createElement('div')
-	    div.className = 'option'
-	    div.innerHTML = option.html
-	    div.value = option.value
-	    scope.dom.appendChild(div)
-	
-	    scope.options.push(div)
-	
-	    div.addEventListener('click', function (event) {
-	      scope.setValue(this.value)
-	      scope.dom.dispatchEvent(changeEvent)
-	    }, false)
-	  }
-	
-	  return scope
-	}
-	
-	UI.FancySelect.prototype.getValue = function () {
-	  return this.selectedValue
-	}
-	
-	UI.FancySelect.prototype.setValue = function (value) {
-	  for (var i = 0; i < this.options.length; i++) {
-	    var element = this.options[ i ]
-	
-	    if (element.value === value) {
-	      element.classList.add('active')
-	
-	      // scroll into view
-	
-	      var y = element.offsetTop - this.dom.offsetTop
-	      var bottomY = y + element.offsetHeight
-	      var minScroll = bottomY - this.dom.offsetHeight
-	
-	      if (this.dom.scrollTop > y) {
-	        this.dom.scrollTop = y
-	      } else if (this.dom.scrollTop < minScroll) {
-	        this.dom.scrollTop = minScroll
-	      }
-	
-	      this.selectedIndex = i
-	    } else {
-	      element.classList.remove('active')
-	    }
-	  }
-	
-	  this.selectedValue = value
-	
-	  return this
-	}
-	
-	// Checkbox
-	
-	UI.Checkbox = function (boolean) {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Checkbox'
-	  dom.type = 'checkbox'
-	
-	  this.dom = dom
-	  this.setValue(boolean)
-	
-	  return this
-	}
-	
-	UI.Checkbox.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Checkbox.prototype.getValue = function () {
-	  return this.dom.checked
-	}
-	
-	UI.Checkbox.prototype.setValue = function (value) {
-	  if (value !== undefined) {
-	    this.dom.checked = value
-	  }
-	
-	  return this
-	}
-	
-	UI.Checkbox.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
-	// Color
-	
-	UI.Color = function () {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Color'
-	  dom.style.width = '64px'
-	  dom.style.height = '16px'
-	  dom.style.border = '0px'
-	  dom.style.padding = '0px'
-	  dom.style.backgroundColor = 'transparent'
-	
-	  try {
-	    dom.type = 'color'
-	    dom.value = '#ffffff'
-	  } catch (exception) {}
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.Color.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Color.prototype.getValue = function () {
-	  return this.dom.value
-	}
-	
-	UI.Color.prototype.getHexValue = function () {
-	  return parseInt(this.dom.value.substr(1), 16)
-	}
-	
-	UI.Color.prototype.setValue = function (value) {
-	  this.dom.value = value
-	
-	  return this
-	}
-	
-	UI.Color.prototype.setHexValue = function (hex) {
-	  this.dom.value = '#' + ('000000' + hex.toString(16)).slice(-6)
-	
-	  return this
-	}
-	
-	// Number
-	
-	UI.Number = function (number) {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Number'
-	  dom.value = '0.00'
-	
-	  dom.addEventListener('keydown', function (event) {
-	    event.stopPropagation()
-	
-	    if (event.keyCode === 13) dom.blur()
-	  }, false)
-	
-	  this.min = -Infinity
-	  this.max = Infinity
-	
-	  this.precision = 2
-	  this.step = 1
-	
-	  this.dom = dom
-	  this.setValue(number)
-	
-	  var changeEvent = document.createEvent('HTMLEvents')
-	  changeEvent.initEvent('change', true, true)
-	
-	  var distance = 0
-	  var onMouseDownValue = 0
-	
-	  var pointer = [ 0, 0 ]
-	  var prevPointer = [ 0, 0 ]
-	
-	  var onMouseDown = function (event) {
-	    event.preventDefault()
-	
-	    distance = 0
-	
-	    onMouseDownValue = parseFloat(dom.value)
-	
-	    prevPointer = [ event.clientX, event.clientY ]
-	
-	    document.addEventListener('mousemove', onMouseMove, false)
-	    document.addEventListener('mouseup', onMouseUp, false)
-	  }
-	
-	  var onMouseMove = function (event) {
-	    var currentValue = dom.value
-	
-	    pointer = [ event.clientX, event.clientY ]
-	
-	    distance += (pointer[ 0 ] - prevPointer[ 0 ]) - (pointer[ 1 ] - prevPointer[ 1 ])
-	
-	    var modifier = 50
-	    if (event.shiftKey) modifier = 5
-	    if (event.ctrlKey) modifier = 500
-	
-	    var number = onMouseDownValue + (distance / modifier) * scope.step
-	
-	    dom.value = Math.min(scope.max, Math.max(scope.min, number)).toFixed(scope.precision)
-	
-	    if (currentValue !== dom.value) dom.dispatchEvent(changeEvent)
-	
-	    prevPointer = [ event.clientX, event.clientY ]
-	  }
-	
-	  var onMouseUp = function (event) {
-	    document.removeEventListener('mousemove', onMouseMove, false)
-	    document.removeEventListener('mouseup', onMouseUp, false)
-	
-	    if (Math.abs(distance) < 2) {
-	      dom.focus()
-	      dom.select()
-	    }
-	  }
-	
-	  var onChange = function (event) {
-	    var number = parseFloat(dom.value)
-	
-	    dom.value = isNaN(number) === false ? number : 0
-	  }
-	
-	  var onFocus = function (event) {
-	    dom.style.backgroundColor = ''
-	    dom.style.borderColor = '#ccc'
-	    dom.style.cursor = ''
-	  }
-	
-	  var onBlur = function (event) {
-	    dom.style.backgroundColor = 'transparent'
-	    dom.style.borderColor = 'transparent'
-	    dom.style.cursor = 'col-resize'
-	  }
-	
-	  dom.addEventListener('mousedown', onMouseDown, false)
-	  dom.addEventListener('change', onChange, false)
-	  dom.addEventListener('focus', onFocus, false)
-	  dom.addEventListener('blur', onBlur, false)
-	
-	  return this
-	}
-	
-	UI.Number.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Number.prototype.getValue = function () {
-	  return parseFloat(this.dom.value)
-	}
-	
-	UI.Number.prototype.setValue = function (value) {
-	  if (isNaN(value)) {
-	    this.dom.value = NaN
-	  } else if (value !== undefined) {
-	    this.dom.value = value.toFixed(this.precision)
-	  }
-	
-	  return this
-	}
-	
-	UI.Number.prototype.setRange = function (min, max) {
-	  this.min = min
-	  this.max = max
-	
-	  return this
-	}
-	
-	UI.Number.prototype.setPrecision = function (precision) {
-	  this.precision = precision
-	  this.setValue(parseFloat(this.dom.value))
-	
-	  return this
-	}
-	
-	UI.Number.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
-	// Integer
-	
-	UI.Integer = function (number) {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Number'
-	  dom.value = '0.00'
-	
-	  dom.addEventListener('keydown', function (event) {
-	    event.stopPropagation()
-	  }, false)
-	
-	  this.min = -Infinity
-	  this.max = Infinity
-	
-	  this.step = 1
-	
-	  this.dom = dom
-	  this.setValue(number)
-	
-	  var changeEvent = document.createEvent('HTMLEvents')
-	  changeEvent.initEvent('change', true, true)
-	
-	  var distance = 0
-	  var onMouseDownValue = 0
-	
-	  var pointer = [ 0, 0 ]
-	  var prevPointer = [ 0, 0 ]
-	
-	  var onMouseDown = function (event) {
-	    event.preventDefault()
-	
-	    distance = 0
-	
-	    onMouseDownValue = parseFloat(dom.value)
-	
-	    prevPointer = [ event.clientX, event.clientY ]
-	
-	    document.addEventListener('mousemove', onMouseMove, false)
-	    document.addEventListener('mouseup', onMouseUp, false)
-	  }
-	
-	  var onMouseMove = function (event) {
-	    var currentValue = dom.value
-	
-	    pointer = [ event.clientX, event.clientY ]
-	
-	    distance += (pointer[ 0 ] - prevPointer[ 0 ]) - (pointer[ 1 ] - prevPointer[ 1 ])
-	
-	    var modifier = 50
-	    if (event.shiftKey) modifier = 5
-	    if (event.ctrlKey) modifier = 500
-	
-	    var number = onMouseDownValue + (distance / modifier) * scope.step
-	
-	    dom.value = Math.min(scope.max, Math.max(scope.min, number)) | 0
-	
-	    if (currentValue !== dom.value) dom.dispatchEvent(changeEvent)
-	
-	    prevPointer = [ event.clientX, event.clientY ]
-	  }
-	
-	  var onMouseUp = function (event) {
-	    document.removeEventListener('mousemove', onMouseMove, false)
-	    document.removeEventListener('mouseup', onMouseUp, false)
-	
-	    if (Math.abs(distance) < 2) {
-	      dom.focus()
-	      dom.select()
-	    }
-	  }
-	
-	  var onChange = function (event) {
-	    var number = parseInt(dom.value)
-	
-	    if (isNaN(number) === false) {
-	      dom.value = number
-	    }
-	  }
-	
-	  var onFocus = function (event) {
-	    dom.style.backgroundColor = ''
-	    dom.style.borderColor = '#ccc'
-	    dom.style.cursor = ''
-	  }
-	
-	  var onBlur = function (event) {
-	    dom.style.backgroundColor = 'transparent'
-	    dom.style.borderColor = 'transparent'
-	    dom.style.cursor = 'col-resize'
-	  }
-	
-	  dom.addEventListener('mousedown', onMouseDown, false)
-	  dom.addEventListener('change', onChange, false)
-	  dom.addEventListener('focus', onFocus, false)
-	  dom.addEventListener('blur', onBlur, false)
-	
-	  return this
-	}
-	
-	UI.Integer.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Integer.prototype.getValue = function () {
-	  return parseInt(this.dom.value)
-	}
-	
-	UI.Integer.prototype.setValue = function (value) {
-	  if (value !== undefined) {
-	    this.dom.value = value | 0
-	  }
-	
-	  return this
-	}
-	
-	UI.Integer.prototype.setRange = function (min, max) {
-	  this.min = min
-	  this.max = max
-	
-	  return this
-	}
-	
-	UI.Integer.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
-	
-	UI.Integer.prototype.setStep = function (step) {
-	  this.step = step
-	
-	  return this
-	}
-	// Break
-	
-	UI.Break = function () {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('br')
-	  dom.className = 'Break'
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.Break.prototype = Object.create(UI.Element.prototype)
-	
-	// HorizontalRule
-	
-	UI.HorizontalRule = function () {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('hr')
-	  dom.className = 'HorizontalRule'
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.HorizontalRule.prototype = Object.create(UI.Element.prototype)
-	
-	// Button
-	
-	UI.Button = function (value) {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('button')
-	  dom.className = 'Button'
-	
-	  this.dom = dom
-	  this.dom.textContent = value
-	
-	  return this
-	}
-	
-	UI.Button.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Button.prototype.setLabel = function (value) {
-	  this.dom.textContent = value
-	
-	  return this
-	}
-	
-	// Helper
-	
-	UI.MenubarHelper = {
-	
-	  createMenuContainer: function (name, optionsPanel) {
-	    var container = new UI.Panel()
-	    var title = new UI.Panel()
-	    title.setClass('title')
-	
-	    title.setTextContent(name)
-	    title.setMargin('0px')
-	    title.setPadding('8px')
-	
-	    container.setClass('menu')
-	    container.add(title)
-	    container.add(optionsPanel)
-	
-	    return container
-	  },
-	
-	  createOption: function (name, callbackHandler, icon) {
-	    var option = new UI.Panel()
-	    option.setClass('option')
-	
-	    if (icon) {
-	      option.add(new UI.Icon(icon).setWidth('20px'))
-	      option.add(new UI.Text(name))
-	    } else {
-	      option.setTextContent(name)
-	    }
-	
-	    option.onClick(callbackHandler)
-	
-	    return option
-	  },
-	
-	  createOptionsPanel: function (menuConfig) {
-	    var options = new UI.Panel()
-	    options.setClass('options')
-	
-	    menuConfig.forEach(function (option) {
-	      options.add(option)
-	    })
-	
-	    return options
-	  },
-	
-	  createInput: function (name, callbackHandler) {
-	    var panel = new UI.Panel()
-	      .setClass('option')
-	
-	    var text = new UI.Text()
-	      .setWidth('70px')
-	      .setValue(name)
-	
-	    var input = new UI.Input()
-	      .setWidth('40px')
-	      .onKeyDown(callbackHandler)
-	
-	    panel.add(text)
-	    panel.add(input)
-	
-	    return panel
-	  },
-	
-	  createCheckbox: function (name, value, callbackHandler) {
-	    var panel = new UI.Panel()
-	      .setClass('option')
-	
-	    var text = new UI.Text()
-	      .setWidth('70px')
-	      .setValue(name)
-	
-	    var checkbox = new UI.Checkbox()
-	      .setValue(value)
-	      .onClick(callbackHandler)
-	
-	    panel.add(checkbox)
-	    panel.add(text)
-	
-	    return panel
-	  },
-	
-	  createDivider: function () {
-	    return new UI.HorizontalRule()
-	  }
-	
-	}
-	
-	module.exports = {
-	    "UI": UI
-	}
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(9);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!./dark.css", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!./dark.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(10)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "\n/* text color */\n\n* {\n    color: #B8B8B8;\n}\n\ninput,\ntextarea,\nbutton,\nselect,\noption {\n    color: #111111;\n}\n\ninput[type=range]:focus:after {\n    color: #B8B8B8;\n}\n\na{\n    color: #719eff;\n}\n\ninput.Number, input.File {\n    color: #A1B56C;\n}\n\n\n/* background color */\n\n.OverlayPanel,\n#menubar,\n#menubar .menu .options,\n#sidebar,\n#toolbar\n{\n    background-color: #1C1F26;\n}\n\n\n/* border color */\n\n.OverlayPanel,\n#menubar .menu .options hr,\n#sidebar > .Panel,\n#sidebar > .Content > .Panel {\n    border-color: #444444;\n}\n\n\n/* special */\n\n#menubar .menu .options .option:hover,\n.option:hover > .Icon,\n.option:hover > .Text {\n    color: #181818;\n    background-color: #7CAFC2;\n}\n\n.highlight,\n.highlight > .Icon,\n.highlight > .Text {\n    color: #181818;\n    background-color: #7CAFC2;\n}\n\n.EllipsisMultilineText:after {\n    background: linear-gradient(to right, rgba(0, 0, 0, 0), #1C1F26 50%, #1C1F26);\n}\n", ""]);
-	
-	// exports
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	// css base code, injected by the css-loader
-	module.exports = function() {
-		var list = [];
-	
-		// return the list of modules as css string
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-	
-		// import a list of modules into the list
-		list.i = function(modules, mediaQuery) {
-			if(typeof modules === "string")
-				modules = [[null, modules, ""]];
-			var alreadyImportedModules = {};
-			for(var i = 0; i < this.length; i++) {
-				var id = this[i][0];
-				if(typeof id === "number")
-					alreadyImportedModules[id] = true;
-			}
-			for(i = 0; i < modules.length; i++) {
-				var item = modules[i];
-				// skip already imported module
-				// this implementation is not 100% perfect for weird media query combinations
-				//  when a module is imported multiple times with different media queries.
-				//  I hope this will never occur (Hey this way we have smaller bundles)
-				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-					if(mediaQuery && !item[2]) {
-						item[2] = mediaQuery;
-					} else if(mediaQuery) {
-						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-					}
-					list.push(item);
-				}
-			}
-		};
-		return list;
-	};
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	var stylesInDom = {},
-		memoize = function(fn) {
-			var memo;
-			return function () {
-				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-				return memo;
-			};
-		},
-		isOldIE = memoize(function() {
-			return /msie [6-9]\b/.test(self.navigator.userAgent.toLowerCase());
-		}),
-		getHeadElement = memoize(function () {
-			return document.head || document.getElementsByTagName("head")[0];
-		}),
-		singletonElement = null,
-		singletonCounter = 0,
-		styleElementsInsertedAtTop = [];
-	
-	module.exports = function(list, options) {
-		if(false) {
-			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-		}
-	
-		options = options || {};
-		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-		// tags it will allow on a page
-		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-	
-		// By default, add <style> tags to the bottom of <head>.
-		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-	
-		var styles = listToStyles(list);
-		addStylesToDom(styles, options);
-	
-		return function update(newList) {
-			var mayRemove = [];
-			for(var i = 0; i < styles.length; i++) {
-				var item = styles[i];
-				var domStyle = stylesInDom[item.id];
-				domStyle.refs--;
-				mayRemove.push(domStyle);
-			}
-			if(newList) {
-				var newStyles = listToStyles(newList);
-				addStylesToDom(newStyles, options);
-			}
-			for(var i = 0; i < mayRemove.length; i++) {
-				var domStyle = mayRemove[i];
-				if(domStyle.refs === 0) {
-					for(var j = 0; j < domStyle.parts.length; j++)
-						domStyle.parts[j]();
-					delete stylesInDom[domStyle.id];
-				}
-			}
-		};
-	}
-	
-	function addStylesToDom(styles, options) {
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			if(domStyle) {
-				domStyle.refs++;
-				for(var j = 0; j < domStyle.parts.length; j++) {
-					domStyle.parts[j](item.parts[j]);
-				}
-				for(; j < item.parts.length; j++) {
-					domStyle.parts.push(addStyle(item.parts[j], options));
-				}
-			} else {
-				var parts = [];
-				for(var j = 0; j < item.parts.length; j++) {
-					parts.push(addStyle(item.parts[j], options));
-				}
-				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-			}
-		}
-	}
-	
-	function listToStyles(list) {
-		var styles = [];
-		var newStyles = {};
-		for(var i = 0; i < list.length; i++) {
-			var item = list[i];
-			var id = item[0];
-			var css = item[1];
-			var media = item[2];
-			var sourceMap = item[3];
-			var part = {css: css, media: media, sourceMap: sourceMap};
-			if(!newStyles[id])
-				styles.push(newStyles[id] = {id: id, parts: [part]});
-			else
-				newStyles[id].parts.push(part);
-		}
-		return styles;
-	}
-	
-	function insertStyleElement(options, styleElement) {
-		var head = getHeadElement();
-		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-		if (options.insertAt === "top") {
-			if(!lastStyleElementInsertedAtTop) {
-				head.insertBefore(styleElement, head.firstChild);
-			} else if(lastStyleElementInsertedAtTop.nextSibling) {
-				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-			} else {
-				head.appendChild(styleElement);
-			}
-			styleElementsInsertedAtTop.push(styleElement);
-		} else if (options.insertAt === "bottom") {
-			head.appendChild(styleElement);
-		} else {
-			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-		}
-	}
-	
-	function removeStyleElement(styleElement) {
-		styleElement.parentNode.removeChild(styleElement);
-		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-		if(idx >= 0) {
-			styleElementsInsertedAtTop.splice(idx, 1);
-		}
-	}
-	
-	function createStyleElement(options) {
-		var styleElement = document.createElement("style");
-		styleElement.type = "text/css";
-		insertStyleElement(options, styleElement);
-		return styleElement;
-	}
-	
-	function createLinkElement(options) {
-		var linkElement = document.createElement("link");
-		linkElement.rel = "stylesheet";
-		insertStyleElement(options, linkElement);
-		return linkElement;
-	}
-	
-	function addStyle(obj, options) {
-		var styleElement, update, remove;
-	
-		if (options.singleton) {
-			var styleIndex = singletonCounter++;
-			styleElement = singletonElement || (singletonElement = createStyleElement(options));
-			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-		} else if(obj.sourceMap &&
-			typeof URL === "function" &&
-			typeof URL.createObjectURL === "function" &&
-			typeof URL.revokeObjectURL === "function" &&
-			typeof Blob === "function" &&
-			typeof btoa === "function") {
-			styleElement = createLinkElement(options);
-			update = updateLink.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-				if(styleElement.href)
-					URL.revokeObjectURL(styleElement.href);
-			};
-		} else {
-			styleElement = createStyleElement(options);
-			update = applyToTag.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-			};
-		}
-	
-		update(obj);
-	
-		return function updateStyle(newObj) {
-			if(newObj) {
-				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-					return;
-				update(obj = newObj);
-			} else {
-				remove();
-			}
-		};
-	}
-	
-	var replaceText = (function () {
-		var textStore = [];
-	
-		return function (index, replacement) {
-			textStore[index] = replacement;
-			return textStore.filter(Boolean).join('\n');
-		};
-	})();
-	
-	function applyToSingletonTag(styleElement, index, remove, obj) {
-		var css = remove ? "" : obj.css;
-	
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = replaceText(index, css);
-		} else {
-			var cssNode = document.createTextNode(css);
-			var childNodes = styleElement.childNodes;
-			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-			if (childNodes.length) {
-				styleElement.insertBefore(cssNode, childNodes[index]);
-			} else {
-				styleElement.appendChild(cssNode);
-			}
-		}
-	}
-	
-	function applyToTag(styleElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-	
-		if(media) {
-			styleElement.setAttribute("media", media)
-		}
-	
-		if(styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = css;
-		} else {
-			while(styleElement.firstChild) {
-				styleElement.removeChild(styleElement.firstChild);
-			}
-			styleElement.appendChild(document.createTextNode(css));
-		}
-	}
-	
-	function updateLink(linkElement, obj) {
-		var css = obj.css;
-		var sourceMap = obj.sourceMap;
-	
-		if(sourceMap) {
-			// http://stackoverflow.com/a/26603875
-			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-		}
-	
-		var blob = new Blob([css], { type: "text/css" });
-	
-		var oldSrc = linkElement.href;
-	
-		linkElement.href = URL.createObjectURL(blob);
-	
-		if(oldSrc)
-			URL.revokeObjectURL(oldSrc);
-	}
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/*
-	
-	 JS Signals <http://millermedeiros.github.com/js-signals/>
-	 Released under the MIT license
-	 Author: Miller Medeiros
-	 Version: 1.0.0 - Build: 268 (2012/11/29 05:48 PM)
-	*/
-	(function(i){function h(a,b,c,d,e){this._listener=b;this._isOnce=c;this.context=d;this._signal=a;this._priority=e||0}function g(a,b){if(typeof a!=="function")throw Error("listener is a required param of {fn}() and should be a Function.".replace("{fn}",b));}function e(){this._bindings=[];this._prevParams=null;var a=this;this.dispatch=function(){e.prototype.dispatch.apply(a,arguments)}}h.prototype={active:!0,params:null,execute:function(a){var b;this.active&&this._listener&&(a=this.params?this.params.concat(a):
-	a,b=this._listener.apply(this.context,a),this._isOnce&&this.detach());return b},detach:function(){return this.isBound()?this._signal.remove(this._listener,this.context):null},isBound:function(){return!!this._signal&&!!this._listener},isOnce:function(){return this._isOnce},getListener:function(){return this._listener},getSignal:function(){return this._signal},_destroy:function(){delete this._signal;delete this._listener;delete this.context},toString:function(){return"[SignalBinding isOnce:"+this._isOnce+
-	", isBound:"+this.isBound()+", active:"+this.active+"]"}};e.prototype={VERSION:"1.0.0",memorize:!1,_shouldPropagate:!0,active:!0,_registerListener:function(a,b,c,d){var e=this._indexOfListener(a,c);if(e!==-1){if(a=this._bindings[e],a.isOnce()!==b)throw Error("You cannot add"+(b?"":"Once")+"() then add"+(!b?"":"Once")+"() the same listener without removing the relationship first.");}else a=new h(this,a,b,c,d),this._addBinding(a);this.memorize&&this._prevParams&&a.execute(this._prevParams);return a},
-	_addBinding:function(a){var b=this._bindings.length;do--b;while(this._bindings[b]&&a._priority<=this._bindings[b]._priority);this._bindings.splice(b+1,0,a)},_indexOfListener:function(a,b){for(var c=this._bindings.length,d;c--;)if(d=this._bindings[c],d._listener===a&&d.context===b)return c;return-1},has:function(a,b){return this._indexOfListener(a,b)!==-1},add:function(a,b,c){g(a,"add");return this._registerListener(a,!1,b,c)},addOnce:function(a,b,c){g(a,"addOnce");return this._registerListener(a,
-	!0,b,c)},remove:function(a,b){g(a,"remove");var c=this._indexOfListener(a,b);c!==-1&&(this._bindings[c]._destroy(),this._bindings.splice(c,1));return a},removeAll:function(){for(var a=this._bindings.length;a--;)this._bindings[a]._destroy();this._bindings.length=0},getNumListeners:function(){return this._bindings.length},halt:function(){this._shouldPropagate=!1},dispatch:function(a){if(this.active){var b=Array.prototype.slice.call(arguments),c=this._bindings.length,d;if(this.memorize)this._prevParams=
-	b;if(c){d=this._bindings.slice();this._shouldPropagate=!0;do c--;while(d[c]&&this._shouldPropagate&&d[c].execute(b)!==!1)}}},forget:function(){this._prevParams=null},dispose:function(){this.removeAll();delete this._bindings;delete this._prevParams},toString:function(){return"[Signal active:"+this.active+" numListeners:"+this.getNumListeners()+"]"}};var f=e;f.Signal=e; true?!(__WEBPACK_AMD_DEFINE_RESULT__ = function(){return f}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):typeof module!=="undefined"&&module.exports?module.exports=f:i.signals=
-	f})(this);
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_13__;
-
-/***/ }),
-/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -15958,7 +12141,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 15 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, module) {//     Underscore.js 1.9.1
@@ -17654,10 +13837,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	  }
 	}());
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(16)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(9)(module)))
 
 /***/ }),
-/* 16 */
+/* 9 */
 /***/ (function(module, exports) {
 
 	module.exports = function(module) {
@@ -17673,7 +13856,26 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 17 */
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*
+	
+	 JS Signals <http://millermedeiros.github.com/js-signals/>
+	 Released under the MIT license
+	 Author: Miller Medeiros
+	 Version: 1.0.0 - Build: 268 (2012/11/29 05:48 PM)
+	*/
+	(function(i){function h(a,b,c,d,e){this._listener=b;this._isOnce=c;this.context=d;this._signal=a;this._priority=e||0}function g(a,b){if(typeof a!=="function")throw Error("listener is a required param of {fn}() and should be a Function.".replace("{fn}",b));}function e(){this._bindings=[];this._prevParams=null;var a=this;this.dispatch=function(){e.prototype.dispatch.apply(a,arguments)}}h.prototype={active:!0,params:null,execute:function(a){var b;this.active&&this._listener&&(a=this.params?this.params.concat(a):
+	a,b=this._listener.apply(this.context,a),this._isOnce&&this.detach());return b},detach:function(){return this.isBound()?this._signal.remove(this._listener,this.context):null},isBound:function(){return!!this._signal&&!!this._listener},isOnce:function(){return this._isOnce},getListener:function(){return this._listener},getSignal:function(){return this._signal},_destroy:function(){delete this._signal;delete this._listener;delete this.context},toString:function(){return"[SignalBinding isOnce:"+this._isOnce+
+	", isBound:"+this.isBound()+", active:"+this.active+"]"}};e.prototype={VERSION:"1.0.0",memorize:!1,_shouldPropagate:!0,active:!0,_registerListener:function(a,b,c,d){var e=this._indexOfListener(a,c);if(e!==-1){if(a=this._bindings[e],a.isOnce()!==b)throw Error("You cannot add"+(b?"":"Once")+"() then add"+(!b?"":"Once")+"() the same listener without removing the relationship first.");}else a=new h(this,a,b,c,d),this._addBinding(a);this.memorize&&this._prevParams&&a.execute(this._prevParams);return a},
+	_addBinding:function(a){var b=this._bindings.length;do--b;while(this._bindings[b]&&a._priority<=this._bindings[b]._priority);this._bindings.splice(b+1,0,a)},_indexOfListener:function(a,b){for(var c=this._bindings.length,d;c--;)if(d=this._bindings[c],d._listener===a&&d.context===b)return c;return-1},has:function(a,b){return this._indexOfListener(a,b)!==-1},add:function(a,b,c){g(a,"add");return this._registerListener(a,!1,b,c)},addOnce:function(a,b,c){g(a,"addOnce");return this._registerListener(a,
+	!0,b,c)},remove:function(a,b){g(a,"remove");var c=this._indexOfListener(a,b);c!==-1&&(this._bindings[c]._destroy(),this._bindings.splice(c,1));return a},removeAll:function(){for(var a=this._bindings.length;a--;)this._bindings[a]._destroy();this._bindings.length=0},getNumListeners:function(){return this._bindings.length},halt:function(){this._shouldPropagate=!1},dispatch:function(a){if(this.active){var b=Array.prototype.slice.call(arguments),c=this._bindings.length,d;if(this.memorize)this._prevParams=
+	b;if(c){d=this._bindings.slice();this._shouldPropagate=!0;do c--;while(d[c]&&this._shouldPropagate&&d[c].execute(b)!==!1)}}},forget:function(){this._prevParams=null},dispose:function(){this.removeAll();delete this._bindings;delete this._prevParams},toString:function(){return"[Signal active:"+this.active+" numListeners:"+this.getNumListeners()+"]"}};var f=e;f.Signal=e; true?!(__WEBPACK_AMD_DEFINE_RESULT__ = function(){return f}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):typeof module!=="undefined"&&module.exports?module.exports=f:i.signals=
+	f})(this);
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;if( typeof importScripts !== 'function' ){
@@ -17681,7 +13883,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	}
 
 /***/ }),
-/* 18 */
+/* 12 */
 /***/ (function(module, exports) {
 
 	if( typeof importScripts !== 'function' ){
@@ -17700,7 +13902,1054 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	}
 
 /***/ }),
-/* 19 */
+/* 13 */
+/***/ (function(module, exports) {
+
+	/**
+	 * @author mrdoob / http://mrdoob.com/
+	 * The MIT License, Copyright &copy; 2010-2016 three.js authors
+	 */
+	
+	// TODO changes by Alexander S. Rose
+	// - more events and properties
+	// - ctrlKey modifier for Number and Integer
+	// - UI.Element.prototype.getBox()
+	// - UI.Element.prototype.dispose()
+	// - UI.Element.prototype.setTitle()
+	// - UI.Element.prototype.getStyle()
+	
+	var UI = {}
+	
+	UI.Element = function () {}
+	
+	UI.Element.prototype = {
+	
+	  setId: function (id) {
+	    this.dom.id = id
+	
+	    return this
+	  },
+	
+	  setTitle: function (title) {
+	    this.dom.title = title
+	
+	    return this
+	  },
+	
+	  setClass: function (name) {
+	    this.dom.className = name
+	
+	    return this
+	  },
+	
+	  setStyle: function (style, array) {
+	    for (var i = 0; i < array.length; i++) {
+	      this.dom.style[ style ] = array[ i ]
+	    }
+	  },
+	
+	  getStyle: function (style) {
+	    return this.dom.style[ style ]
+	  },
+	
+	  getBox: function () {
+	    return this.dom.getBoundingClientRect()
+	  },
+	
+	  setDisabled: function (value) {
+	    this.dom.disabled = value
+	
+	    return this
+	  },
+	
+	  setTextContent: function (value) {
+	    this.dom.textContent = value
+	
+	    return this
+	  },
+	
+	  dispose: function () {
+	    this.dom.parentNode.removeChild(this.dom)
+	  }
+	
+	}
+	
+	// properties
+	
+	var properties = [
+	  'position', 'left', 'top', 'right', 'bottom', 'width', 'height', 'border',
+	  'borderLeft', 'borderTop', 'borderRight', 'borderBottom', 'borderColor',
+	  'display', 'overflow', 'overflowX', 'overflowY', 'margin', 'marginLeft',
+	  'marginTop', 'marginRight',
+	  'marginBottom', 'padding', 'paddingLeft', 'paddingTop', 'paddingRight',
+	  'paddingBottom', 'color', 'backgroundColor', 'opacity', 'fontSize',
+	  'fontWeight', 'fontStyle', 'fontFamily', 'textTransform', 'cursor',
+	  'verticalAlign', 'clear', 'float', 'zIndex', 'minHeight', 'maxHeight',
+	  'minWidth', 'maxWidth', 'wordBreak', 'wordWrap', 'spellcheck',
+	  'lineHeight', 'whiteSpace', 'textOverflow', 'textAlign', 'pointerEvents'
+	]
+	
+	properties.forEach(function (property) {
+	  var methodSuffix = property.substr(0, 1).toUpperCase() +
+	                        property.substr(1, property.length)
+	
+	  UI.Element.prototype[ 'set' + methodSuffix ] = function () {
+	    this.setStyle(property, arguments)
+	    return this
+	  }
+	
+	  UI.Element.prototype[ 'get' + methodSuffix ] = function () {
+	    return this.getStyle(property)
+	  }
+	})
+	
+	// events
+	
+	var events = [
+	  'KeyUp', 'KeyDown', 'KeyPress',
+	  'MouseOver', 'MouseOut', 'MouseDown', 'MouseUp', 'MouseMove',
+	  'Click', 'Change', 'Input', 'Scroll'
+	]
+	
+	events.forEach(function (event) {
+	  var method = 'on' + event
+	
+	  UI.Element.prototype[ method ] = function (callback) {
+	    this.dom.addEventListener(event.toLowerCase(), callback.bind(this), false)
+	
+	    return this
+	  }
+	})
+	
+	// Panel
+	
+	UI.Panel = function () {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('div')
+	  dom.className = 'Panel'
+	
+	  this.dom = dom
+	  this.children = []
+	
+	  return this
+	}
+	
+	UI.Panel.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Panel.prototype.add = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.appendChild(arguments[ i ].dom)
+	    this.children.push(arguments[ i ])
+	  }
+	
+	  return this
+	}
+	
+	UI.Panel.prototype.remove = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.removeChild(arguments[ i ].dom)
+	
+	    var idx = this.children.indexOf(arguments[ i ])
+	    if (idx !== -1) this.children.splice(idx, 1)
+	  }
+	
+	  return this
+	}
+	
+	UI.Panel.prototype.clear = function () {
+	  while (this.dom.children.length) {
+	    this.dom.removeChild(this.dom.lastChild)
+	  }
+	
+	  this.children.length = 0
+	
+	  return this
+	}
+	
+	// Collapsible Panel
+	
+	UI.CollapsiblePanel = function () {
+	  UI.Panel.call(this)
+	
+	  this.dom.className = 'Panel CollapsiblePanel'
+	
+	  this.button = document.createElement('div')
+	  this.button.className = 'CollapsiblePanelButton'
+	  this.dom.appendChild(this.button)
+	
+	  var scope = this
+	  this.button.addEventListener('click', function (event) {
+	    scope.toggle()
+	  }, false)
+	
+	  this.content = document.createElement('div')
+	  this.content.className = 'CollapsibleContent'
+	  this.dom.appendChild(this.content)
+	
+	  this.isCollapsed = false
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.CollapsiblePanel.prototype.addStatic = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.insertBefore(arguments[ i ].dom, this.content)
+	  }
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype.removeStatic = UI.Panel.prototype.remove
+	
+	UI.CollapsiblePanel.prototype.clearStatic = function () {
+	  this.dom.childNodes.forEach(function (child) {
+	    if (child !== this.content) {
+	      this.dom.removeChild(child)
+	    }
+	  })
+	}
+	
+	UI.CollapsiblePanel.prototype.add = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.content.appendChild(arguments[ i ].dom)
+	  }
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype.remove = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.content.removeChild(arguments[ i ].dom)
+	  }
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype.clear = function () {
+	  while (this.content.children.length) {
+	    this.content.removeChild(this.content.lastChild)
+	  }
+	}
+	
+	UI.CollapsiblePanel.prototype.toggle = function () {
+	  this.setCollapsed(!this.isCollapsed)
+	}
+	
+	UI.CollapsiblePanel.prototype.collapse = function () {
+	  this.setCollapsed(true)
+	}
+	
+	UI.CollapsiblePanel.prototype.expand = function () {
+	  this.setCollapsed(false)
+	}
+	
+	UI.CollapsiblePanel.prototype.setCollapsed = function (setCollapsed) {
+	  if (setCollapsed) {
+	    this.dom.classList.add('collapsed')
+	  } else {
+	    this.dom.classList.remove('collapsed')
+	  }
+	
+	  this.isCollapsed = setCollapsed
+	}
+	
+	// Text
+	
+	UI.Text = function (text) {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('span')
+	  dom.className = 'Text'
+	  dom.style.display = 'inline-block'
+	  dom.style.verticalAlign = 'middle'
+	
+	  this.dom = dom
+	  this.setValue(text)
+	
+	  return this
+	}
+	
+	UI.Text.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Text.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.textContent = value
+	  }
+	
+	  return this
+	}
+	
+	UI.Text.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	// Input
+	
+	UI.Input = function (value) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Input'
+	  dom.style.padding = '2px'
+	  dom.style.border = '1px solid #ccc'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	  }, false)
+	
+	  this.dom = dom
+	  this.setValue(value || '')
+	
+	  return this
+	}
+	
+	UI.Input.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Input.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.Input.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Input.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	
+	// TextArea
+	
+	UI.TextArea = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('textarea')
+	  dom.className = 'TextArea'
+	  dom.style.padding = '2px'
+	  dom.style.border = '1px solid #ccc'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	  }, false)
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.TextArea.prototype = Object.create(UI.Element.prototype)
+	
+	UI.TextArea.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.TextArea.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	// Select
+	
+	UI.Select = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('select')
+	  dom.className = 'Select'
+	  dom.style.width = '64px'
+	  dom.style.height = '16px'
+	  dom.style.border = '0px'
+	  dom.style.padding = '0px'
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Select.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Select.prototype.setMultiple = function (boolean) {
+	  this.dom.multiple = boolean
+	
+	  return this
+	}
+	
+	UI.Select.prototype.setOptions = function (options) {
+	  var selected = this.dom.value
+	
+	  while (this.dom.children.length > 0) {
+	    this.dom.removeChild(this.dom.firstChild)
+	  }
+	
+	  for (var key in options) {
+	    var option = document.createElement('option')
+	    option.value = key
+	    option.innerHTML = options[ key ]
+	    this.dom.appendChild(option)
+	  }
+	
+	  this.dom.value = selected
+	
+	  return this
+	}
+	
+	UI.Select.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.Select.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Select.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	
+	// FancySelect
+	
+	UI.FancySelect = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('div')
+	  dom.className = 'FancySelect'
+	  dom.tabIndex = 0 // keyup event is ignored without setting tabIndex
+	
+	  // Broadcast for object selection after arrow navigation
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  // Prevent native scroll behavior
+	  dom.addEventListener('keydown', function (event) {
+	    switch (event.keyCode) {
+	      case 38: // up
+	      case 40: // down
+	        event.preventDefault()
+	        event.stopPropagation()
+	        break
+	    }
+	  }, false)
+	
+	  // Keybindings to support arrow navigation
+	  dom.addEventListener('keyup', function (event) {
+	    switch (event.keyCode) {
+	      case 38: // up
+	      case 40: // down
+	        scope.selectedIndex += (event.keyCode == 38) ? -1 : 1
+	
+	        if (scope.selectedIndex >= 0 && scope.selectedIndex < scope.options.length) {
+	          // Highlight selected dom elem and scroll parent if needed
+	          scope.setValue(scope.options[ scope.selectedIndex ].value)
+	
+	          scope.dom.dispatchEvent(changeEvent)
+	        }
+	
+	        break
+	    }
+	  }, false)
+	
+	  this.dom = dom
+	
+	  this.options = []
+	  this.selectedIndex = -1
+	  this.selectedValue = null
+	
+	  return this
+	}
+	
+	UI.FancySelect.prototype = Object.create(UI.Element.prototype)
+	
+	UI.FancySelect.prototype.setOptions = function (options) {
+	  var scope = this
+	
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  while (scope.dom.children.length > 0) {
+	    scope.dom.removeChild(scope.dom.firstChild)
+	  }
+	
+	  scope.options = []
+	
+	  for (var i = 0; i < options.length; i++) {
+	    var option = options[ i ]
+	
+	    var div = document.createElement('div')
+	    div.className = 'option'
+	    div.innerHTML = option.html
+	    div.value = option.value
+	    scope.dom.appendChild(div)
+	
+	    scope.options.push(div)
+	
+	    div.addEventListener('click', function (event) {
+	      scope.setValue(this.value)
+	      scope.dom.dispatchEvent(changeEvent)
+	    }, false)
+	  }
+	
+	  return scope
+	}
+	
+	UI.FancySelect.prototype.getValue = function () {
+	  return this.selectedValue
+	}
+	
+	UI.FancySelect.prototype.setValue = function (value) {
+	  for (var i = 0; i < this.options.length; i++) {
+	    var element = this.options[ i ]
+	
+	    if (element.value === value) {
+	      element.classList.add('active')
+	
+	      // scroll into view
+	
+	      var y = element.offsetTop - this.dom.offsetTop
+	      var bottomY = y + element.offsetHeight
+	      var minScroll = bottomY - this.dom.offsetHeight
+	
+	      if (this.dom.scrollTop > y) {
+	        this.dom.scrollTop = y
+	      } else if (this.dom.scrollTop < minScroll) {
+	        this.dom.scrollTop = minScroll
+	      }
+	
+	      this.selectedIndex = i
+	    } else {
+	      element.classList.remove('active')
+	    }
+	  }
+	
+	  this.selectedValue = value
+	
+	  return this
+	}
+	
+	// Checkbox
+	
+	UI.Checkbox = function (boolean) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Checkbox'
+	  dom.type = 'checkbox'
+	
+	  this.dom = dom
+	  this.setValue(boolean)
+	
+	  return this
+	}
+	
+	UI.Checkbox.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Checkbox.prototype.getValue = function () {
+	  return this.dom.checked
+	}
+	
+	UI.Checkbox.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.checked = value
+	  }
+	
+	  return this
+	}
+	
+	UI.Checkbox.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	// Color
+	
+	UI.Color = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Color'
+	  dom.style.width = '64px'
+	  dom.style.height = '16px'
+	  dom.style.border = '0px'
+	  dom.style.padding = '0px'
+	  dom.style.backgroundColor = 'transparent'
+	
+	  try {
+	    dom.type = 'color'
+	    dom.value = '#ffffff'
+	  } catch (exception) {}
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Color.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Color.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.Color.prototype.getHexValue = function () {
+	  return parseInt(this.dom.value.substr(1), 16)
+	}
+	
+	UI.Color.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Color.prototype.setHexValue = function (hex) {
+	  this.dom.value = '#' + ('000000' + hex.toString(16)).slice(-6)
+	
+	  return this
+	}
+	
+	// Number
+	
+	UI.Number = function (number) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Number'
+	  dom.value = '0.00'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	
+	    if (event.keyCode === 13) dom.blur()
+	  }, false)
+	
+	  this.min = -Infinity
+	  this.max = Infinity
+	
+	  this.precision = 2
+	  this.step = 1
+	
+	  this.dom = dom
+	  this.setValue(number)
+	
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  var distance = 0
+	  var onMouseDownValue = 0
+	
+	  var pointer = [ 0, 0 ]
+	  var prevPointer = [ 0, 0 ]
+	
+	  var onMouseDown = function (event) {
+	    event.preventDefault()
+	
+	    distance = 0
+	
+	    onMouseDownValue = parseFloat(dom.value)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	
+	    document.addEventListener('mousemove', onMouseMove, false)
+	    document.addEventListener('mouseup', onMouseUp, false)
+	  }
+	
+	  var onMouseMove = function (event) {
+	    var currentValue = dom.value
+	
+	    pointer = [ event.clientX, event.clientY ]
+	
+	    distance += (pointer[ 0 ] - prevPointer[ 0 ]) - (pointer[ 1 ] - prevPointer[ 1 ])
+	
+	    var modifier = 50
+	    if (event.shiftKey) modifier = 5
+	    if (event.ctrlKey) modifier = 500
+	
+	    var number = onMouseDownValue + (distance / modifier) * scope.step
+	
+	    dom.value = Math.min(scope.max, Math.max(scope.min, number)).toFixed(scope.precision)
+	
+	    if (currentValue !== dom.value) dom.dispatchEvent(changeEvent)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	  }
+	
+	  var onMouseUp = function (event) {
+	    document.removeEventListener('mousemove', onMouseMove, false)
+	    document.removeEventListener('mouseup', onMouseUp, false)
+	
+	    if (Math.abs(distance) < 2) {
+	      dom.focus()
+	      dom.select()
+	    }
+	  }
+	
+	  var onChange = function (event) {
+	    var number = parseFloat(dom.value)
+	
+	    dom.value = isNaN(number) === false ? number : 0
+	  }
+	
+	  var onFocus = function (event) {
+	    dom.style.backgroundColor = ''
+	    dom.style.borderColor = '#ccc'
+	    dom.style.cursor = ''
+	  }
+	
+	  var onBlur = function (event) {
+	    dom.style.backgroundColor = 'transparent'
+	    dom.style.borderColor = 'transparent'
+	    dom.style.cursor = 'col-resize'
+	  }
+	
+	  dom.addEventListener('mousedown', onMouseDown, false)
+	  dom.addEventListener('change', onChange, false)
+	  dom.addEventListener('focus', onFocus, false)
+	  dom.addEventListener('blur', onBlur, false)
+	
+	  return this
+	}
+	
+	UI.Number.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Number.prototype.getValue = function () {
+	  return parseFloat(this.dom.value)
+	}
+	
+	UI.Number.prototype.setValue = function (value) {
+	  if (isNaN(value)) {
+	    this.dom.value = NaN
+	  } else if (value !== undefined) {
+	    this.dom.value = value.toFixed(this.precision)
+	  }
+	
+	  return this
+	}
+	
+	UI.Number.prototype.setRange = function (min, max) {
+	  this.min = min
+	  this.max = max
+	
+	  return this
+	}
+	
+	UI.Number.prototype.setPrecision = function (precision) {
+	  this.precision = precision
+	  this.setValue(parseFloat(this.dom.value))
+	
+	  return this
+	}
+	
+	UI.Number.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	// Integer
+	
+	UI.Integer = function (number) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Number'
+	  dom.value = '0.00'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	  }, false)
+	
+	  this.min = -Infinity
+	  this.max = Infinity
+	
+	  this.step = 1
+	
+	  this.dom = dom
+	  this.setValue(number)
+	
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  var distance = 0
+	  var onMouseDownValue = 0
+	
+	  var pointer = [ 0, 0 ]
+	  var prevPointer = [ 0, 0 ]
+	
+	  var onMouseDown = function (event) {
+	    event.preventDefault()
+	
+	    distance = 0
+	
+	    onMouseDownValue = parseFloat(dom.value)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	
+	    document.addEventListener('mousemove', onMouseMove, false)
+	    document.addEventListener('mouseup', onMouseUp, false)
+	  }
+	
+	  var onMouseMove = function (event) {
+	    var currentValue = dom.value
+	
+	    pointer = [ event.clientX, event.clientY ]
+	
+	    distance += (pointer[ 0 ] - prevPointer[ 0 ]) - (pointer[ 1 ] - prevPointer[ 1 ])
+	
+	    var modifier = 50
+	    if (event.shiftKey) modifier = 5
+	    if (event.ctrlKey) modifier = 500
+	
+	    var number = onMouseDownValue + (distance / modifier) * scope.step
+	
+	    dom.value = Math.min(scope.max, Math.max(scope.min, number)) | 0
+	
+	    if (currentValue !== dom.value) dom.dispatchEvent(changeEvent)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	  }
+	
+	  var onMouseUp = function (event) {
+	    document.removeEventListener('mousemove', onMouseMove, false)
+	    document.removeEventListener('mouseup', onMouseUp, false)
+	
+	    if (Math.abs(distance) < 2) {
+	      dom.focus()
+	      dom.select()
+	    }
+	  }
+	
+	  var onChange = function (event) {
+	    var number = parseInt(dom.value)
+	
+	    if (isNaN(number) === false) {
+	      dom.value = number
+	    }
+	  }
+	
+	  var onFocus = function (event) {
+	    dom.style.backgroundColor = ''
+	    dom.style.borderColor = '#ccc'
+	    dom.style.cursor = ''
+	  }
+	
+	  var onBlur = function (event) {
+	    dom.style.backgroundColor = 'transparent'
+	    dom.style.borderColor = 'transparent'
+	    dom.style.cursor = 'col-resize'
+	  }
+	
+	  dom.addEventListener('mousedown', onMouseDown, false)
+	  dom.addEventListener('change', onChange, false)
+	  dom.addEventListener('focus', onFocus, false)
+	  dom.addEventListener('blur', onBlur, false)
+	
+	  return this
+	}
+	
+	UI.Integer.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Integer.prototype.getValue = function () {
+	  return parseInt(this.dom.value)
+	}
+	
+	UI.Integer.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.value = value | 0
+	  }
+	
+	  return this
+	}
+	
+	UI.Integer.prototype.setRange = function (min, max) {
+	  this.min = min
+	  this.max = max
+	
+	  return this
+	}
+	
+	UI.Integer.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	
+	UI.Integer.prototype.setStep = function (step) {
+	  this.step = step
+	
+	  return this
+	}
+	// Break
+	
+	UI.Break = function () {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('br')
+	  dom.className = 'Break'
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Break.prototype = Object.create(UI.Element.prototype)
+	
+	// HorizontalRule
+	
+	UI.HorizontalRule = function () {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('hr')
+	  dom.className = 'HorizontalRule'
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.HorizontalRule.prototype = Object.create(UI.Element.prototype)
+	
+	// Button
+	
+	UI.Button = function (value) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('button')
+	  dom.className = 'Button'
+	
+	  this.dom = dom
+	  this.dom.textContent = value
+	
+	  return this
+	}
+	
+	UI.Button.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Button.prototype.setLabel = function (value) {
+	  this.dom.textContent = value
+	
+	  return this
+	}
+	
+	// Helper
+	
+	UI.MenubarHelper = {
+	
+	  createMenuContainer: function (name, optionsPanel) {
+	    var container = new UI.Panel()
+	    var title = new UI.Panel()
+	    title.setClass('title')
+	
+	    title.setTextContent(name)
+	    title.setMargin('0px')
+	    title.setPadding('8px')
+	
+	    container.setClass('menu')
+	    container.add(title)
+	    container.add(optionsPanel)
+	
+	    return container
+	  },
+	
+	  createOption: function (name, callbackHandler, icon) {
+	    var option = new UI.Panel()
+	    option.setClass('option')
+	
+	    if (icon) {
+	      option.add(new UI.Icon(icon).setWidth('20px'))
+	      option.add(new UI.Text(name))
+	    } else {
+	      option.setTextContent(name)
+	    }
+	
+	    option.onClick(callbackHandler)
+	
+	    return option
+	  },
+	
+	  createOptionsPanel: function (menuConfig) {
+	    var options = new UI.Panel()
+	    options.setClass('options')
+	
+	    menuConfig.forEach(function (option) {
+	      options.add(option)
+	    })
+	
+	    return options
+	  },
+	
+	  createInput: function (name, callbackHandler) {
+	    var panel = new UI.Panel()
+	      .setClass('option')
+	
+	    var text = new UI.Text()
+	      .setWidth('70px')
+	      .setValue(name)
+	
+	    var input = new UI.Input()
+	      .setWidth('40px')
+	      .onKeyDown(callbackHandler)
+	
+	    panel.add(text)
+	    panel.add(input)
+	
+	    return panel
+	  },
+	
+	  createCheckbox: function (name, value, callbackHandler) {
+	    var panel = new UI.Panel()
+	      .setClass('option')
+	
+	    var text = new UI.Text()
+	      .setWidth('70px')
+	      .setValue(name)
+	
+	    var checkbox = new UI.Checkbox()
+	      .setValue(value)
+	      .onClick(callbackHandler)
+	
+	    panel.add(checkbox)
+	    panel.add(text)
+	
+	    return panel
+	  },
+	
+	  createDivider: function () {
+	    return new UI.HorizontalRule()
+	  }
+	
+	}
+	
+	module.exports = {
+	    "UI": UI
+	}
+
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -17709,8 +14958,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	
 	// Html
 	
-	var UI = __webpack_require__(7).UI;
-	__webpack_require__(17)
+	var UI = __webpack_require__(13).UI;
+	__webpack_require__(11)
 	
 	UI.Html = function (html) {
 	  UI.Element.call(this)
@@ -18849,7 +16098,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 20 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -18860,7 +16109,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	// Color
 	
 	var NGL = __webpack_require__(3);
-	var UI = __webpack_require__(19).UI;
+	var UI = __webpack_require__(14).UI;
 	
 	UI.ColorPopupMenu = function () {
 	  var scope = this
@@ -19231,7 +16480,5378 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file  Gui
+	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
+	 */
+	var NGL = __webpack_require__(3);
+	var UI = __webpack_require__(13).UI;
+	var signals = __webpack_require__(10);
+	
+	
+	HTMLElement.prototype.getBoundingClientRect = (function () {
+	  // workaround for ie11 behavior with disconnected dom nodes
+	
+	  var _getBoundingClientRect = HTMLElement.prototype.getBoundingClientRect
+	
+	  return function getBoundingClientRect () {
+	    try {
+	      return _getBoundingClientRect.apply(this, arguments)
+	    } catch (e) {
+	      return {
+	        top: 0,
+	        left: 0,
+	        width: this.width,
+	        height: this.height
+	      }
+	    }
+	  }
+	}())
+	
+	NGL.Widget = function () {
+	
+	}
+	
+	NGL.Widget.prototype = {
+	  constructor: NGL.Widget
+	}
+	
+	NGL.createParameterInput = function (p, v) {
+	  if (!p) return
+	
+	  var value = v === undefined ? p.value : v
+	  var input
+	
+	  if (p.type === 'number') {
+	    input = new UI.Number(0)
+	      .setRange(p.min, p.max)
+	      .setPrecision(p.precision)
+	      .setValue(parseFloat(value))
+	  } else if (p.type === 'integer') {
+	    input = new UI.Integer(parseInt(value))
+	      .setRange(p.min, p.max)
+	  } else if (p.type === 'range') {
+	    input = new UI.Range(p.min, p.max, value, p.step)
+	      .setValue(parseFloat(value))
+	  } else if (p.type === 'boolean') {
+	    input = new UI.Checkbox(value)
+	  } else if (p.type === 'text') {
+	    input = new UI.Input(value)
+	  } else if (p.type === 'select') {
+	    input = new UI.Select()
+	      .setWidth('')
+	      .setOptions(p.options)
+	      .setValue(value)
+	  } else if (p.type === 'color') {
+	    input = new UI.ColorPopupMenu(p.label)
+	      .setValue(value)
+	  } else if (p.type === 'vector3') {
+	    input = new UI.Vector3(value)
+	      .setPrecision(p.precision)
+	  } else if (p.type === 'hidden') {
+	
+	    // nothing to display
+	
+	  } else {
+	    console.warn(
+	      'NGL.createParameterInput: unknown parameter type ' +
+	      "'" + p.type + "'"
+	    )
+	  }
+	
+	  return input
+	}
+	
+	/// /////////////
+	// Preferences
+	
+	NGL.Preferences = function (id, defaultParams) {
+	  this.signals = {
+	    keyChanged: new signals.Signal()
+	  }
+	
+	  this.id = id || 'ngl-gui'
+	  var dp = Object.assign({}, defaultParams)
+	
+	  this.storage = {
+	    impostor: true,
+	    quality: 'auto',
+	    sampleLevel: 0,
+	    theme: 'dark',
+	    backgroundColor: 'black',
+	    overview: false,
+	    rotateSpeed: 2.0,
+	    zoomSpeed: 1.2,
+	    panSpeed: 0.8,
+	    clipNear: 0,
+	    clipFar: 100,
+	    clipDist: 10,
+	    fogNear: 50,
+	    fogFar: 100,
+	    cameraFov: 40,
+	    cameraType: 'perspective',
+	    lightColor: 0xdddddd,
+	    lightIntensity: 1.0,
+	    ambientColor: 0xdddddd,
+	    ambientIntensity: 0.2,
+	    hoverTimeout: 0
+	  }
+	
+	  // overwrite default values with params
+	  for (var key in this.storage) {
+	    if (dp[ key ] !== undefined) {
+	      this.storage[ key ] = dp[ key ]
+	    }
+	  }
+	}
+	
+	NGL.Preferences.prototype = {
+	
+	  constructor: NGL.Preferences,
+	
+	  getKey: function (key) {
+	    return this.storage[ key ]
+	  },
+	
+	  setKey: function (key, value) {
+	    this.storage[ key ] = value
+	    this.signals.keyChanged.dispatch(key, value)
+	  },
+	}
+	
+	// Stage
+	
+	StageWidget = function (el, stage) {
+	  // `el` is notebook's cell element
+	  var viewport = new UI.Panel()
+	  viewport.setPosition("absolute")
+	  viewport.dom = stage.viewer.container
+	  this.el = el
+	  this.widgetList = []
+	
+	  // Turn off in Jupyter notebook so user can run the next cell.
+	  // ensure initial focus on viewer canvas for key-stroke listening
+	  // stage.viewer.renderer.domElement.focus()
+	
+	  var preferences = new NGL.Preferences('ngl-stage-widget', stage.getParameters())
+	
+	  var pp = {}
+	  for (var name in preferences.storage) {
+	    pp[ name ] = preferences.getKey(name)
+	  }
+	  stage.setParameters(pp)
+	
+	  preferences.signals.keyChanged.add(function (key, value) {
+	    var sp = {}
+	    sp[ key ] = value
+	    stage.setParameters(sp)
+	    // FIXME: remove?
+	    // if (key === 'theme') {
+	    //   setTheme(value)
+	    // }
+	  }, this)
+	
+	  //
+	
+	  var cssLinkElement = document.createElement('link')
+	  cssLinkElement.rel = 'stylesheet'
+	  cssLinkElement.id = 'theme'
+	
+	  function setTheme (value) {
+	    var cssPath, bgColor
+	    if (value === 'light') {
+	      cssPath = NGL.cssDirectory + 'light.css'
+	      bgColor = 'white'
+	    } else {
+	      cssPath = NGL.cssDirectory + 'dark.css'
+	      bgColor = 'black'
+	    }
+	    cssLinkElement.href = cssPath
+	    stage.setParameters({ backgroundColor: bgColor })
+	  }
+	
+	  // FIXME: remove?
+	  // setTheme(preferences.getKey('theme'))
+	  el.appendChild(cssLinkElement)
+	
+	  //
+	
+	  var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar')
+	  el.appendChild(toolbar.dom)
+	
+	  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar')
+	  el.appendChild(menubar.dom)
+	
+	  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar')
+	  el.appendChild(sidebar.dom)
+	
+	  this.widgetList.push(toolbar)
+	  this.widgetList.push(menubar)
+	  this.widgetList.push(sidebar)
+	
+	  //
+	
+	  // el.body.style.touchAction = 'none'
+	  el.style.touchAction = 'none'
+	
+	  //
+	
+	  stage.handleResize()
+	  // FIXME hack for ie11
+	  setTimeout(function () { stage.handleResize() }, 500)
+	
+	  //
+	
+	  var doResizeLeft = false
+	  var movedResizeLeft = false
+	  var minResizeLeft = false
+	  var handleResizeInNotebook
+	
+	  var handleResizeLeft = function (clientX) {
+	    if (clientX >= 50 && clientX <= window.innerWidth - 10) {
+	      sidebar.setWidth(window.innerWidth - clientX + 'px')
+	      viewport.setWidth(clientX + 'px')
+	      toolbar.setWidth(clientX + 'px')
+	      stage.handleResize()
+	    }
+	    var sidebarWidth = sidebar.dom.getBoundingClientRect().width
+	    if (clientX === undefined) {
+	      var mainWidth = window.innerWidth - sidebarWidth
+	      viewport.setWidth(mainWidth + 'px')
+	      toolbar.setWidth(mainWidth + 'px')
+	      stage.handleResize()
+	    }
+	    if (sidebarWidth <= 10) {
+	      minResizeLeft = true
+	    } else {
+	      minResizeLeft = false
+	    }
+	    handleResizeInNotebook();
+	  }
+	  handleResizeLeft = NGL.throttle(
+	    handleResizeLeft, 50, { leading: true, trailing: true }
+	  )
+	
+	  var handleResizeInNotebook = function(){
+	      // FIXME
+	      var sw = sidebar.dom.getBoundingClientRect().width
+	      var ew = el.getBoundingClientRect().width
+	      var w = ew - sw + 'px'
+	      stage.viewer.container.style.width = w 
+	      stage.handleResize()
+	  }
+	
+	  var resizeLeft = new UI.Panel()
+	    .setClass('ResizeLeft')
+	    .onMouseDown(function () {
+	      doResizeLeft = true
+	      movedResizeLeft = false
+	    })
+	    .onClick(function () {
+	      if (minResizeLeft) {
+	        handleResizeLeft(window.innerWidth - 300)
+	      } else if (!doResizeLeft && !movedResizeLeft) {
+	        handleResizeLeft(window.innerWidth - 10)
+	      }
+	    })
+	
+	  sidebar.add(resizeLeft)
+	
+	  window.addEventListener(
+	    'mousemove', function (event) {
+	      if (doResizeLeft) {
+	        document.body.style.cursor = 'col-resize'
+	        movedResizeLeft = true
+	        handleResizeLeft(event.clientX)
+	      }
+	    }, false
+	  )
+	
+	  window.addEventListener(
+	    'mouseup', function (event) {
+	      doResizeLeft = false
+	      document.body.style.cursor = ''
+	    }, false
+	  )
+	
+	  window.addEventListener(
+	    'resize', function (event) {
+	      handleResizeLeft()
+	    }, false
+	  )
+	
+	  //
+	
+	  document.addEventListener('dragover', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	    e.dataTransfer.dropEffect = 'none'
+	  }, false)
+	
+	  document.addEventListener('drop', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	  }, false)
+	
+	  this.viewport = viewport
+	  this.toolbar = toolbar
+	  this.menubar = menubar
+	  this.sidebar = sidebar
+	
+	  handleResizeInNotebook()
+	  return this
+	}
+	
+	StageWidget.prototype = {
+	   constructor: StageWidget,
+	
+	   dispose: function(){
+	       for (var i in this.widgetList){
+	           this.widgetList[i].dispose()
+	       }
+	   },
+	}
+	
+	// Viewport
+	
+	NGL.ViewportWidget = function (stage) {
+	  var viewer = stage.viewer
+	  var renderer = viewer.renderer
+	
+	  var container = new UI.Panel()
+	  container.dom = viewer.container
+	  container.setPosition('absolute')
+	
+	  var fileTypesOpen = NGL.flatten([
+	    NGL.ParserRegistry.getStructureExtensions(),
+	    NGL.ParserRegistry.getVolumeExtensions(),
+	    NGL.ParserRegistry.getSurfaceExtensions(),
+	    NGL.DecompressorRegistry.names
+	  ])
+	
+	  // event handlers
+	
+	  container.dom.addEventListener('dragover', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	    e.dataTransfer.dropEffect = 'copy'
+	  }, false)
+	
+	  container.dom.addEventListener('drop', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	
+	    var fn = function (file, callback) {
+	      var ext = file.name.split('.').pop().toLowerCase()
+	      if (NGL.ScriptExtensions.includes(ext)) {
+	        stage.loadScript(file).then(callback)
+	      } else if (fileTypesOpen.includes(ext)) {
+	        stage.loadFile(file, { defaultRepresentation: true }).then(callback)
+	      } else {
+	        console.error('unknown filetype: ' + ext)
+	        callback()
+	      }
+	    }
+	    var queue = new NGL.Queue(fn, e.dataTransfer.files)
+	  }, false)
+	
+	  return container
+	}
+	
+	// Toolbar
+	
+	NGL.ToolbarWidget = function (stage) {
+	  var container = new UI.Panel()
+	
+	  var messageText = new UI.Text()
+	  var messagePanel = new UI.Panel()
+	    .setDisplay('inline')
+	    .setFloat('left')
+	    .add(messageText)
+	
+	  var statsText = new UI.Text()
+	  var statsPanel = new UI.Panel()
+	    .setDisplay('inline')
+	    .setFloat('right')
+	    .add(statsText)
+	
+	  stage.signals.clicked.add(function (pickingProxy) {
+	    messageText.setValue(pickingProxy ? pickingProxy.getLabel() : 'nothing')
+	  })
+	
+	  stage.viewer.stats.signals.updated.add(function () {
+	    if (NGL.Debug) {
+	      statsText.setValue(
+	        stage.viewer.stats.lastDuration.toFixed(2) + ' ms | ' +
+	        stage.viewer.stats.lastFps + ' fps'
+	      )
+	    } else {
+	      statsText.setValue('')
+	    }
+	  })
+	
+	  container.add(messagePanel, statsPanel)
+	
+	  return container
+	}
+	
+	// Menubar
+	
+	NGL.MenubarWidget = function (stage, preferences) {
+	  var container = new UI.Panel()
+	
+	  container.add(new NGL.MenubarFileWidget(stage))
+	  container.add(new NGL.MenubarViewWidget(stage, preferences))
+	  if (NGL.examplesListUrl && NGL.examplesScriptUrl) {
+	    container.add(new NGL.MenubarExamplesWidget(stage))
+	  }
+	  container.add(new NGL.MenubarHelpWidget(stage, preferences))
+	
+	  container.add(
+	    new UI.Panel().setClass('menu').setFloat('right').add(
+	      new UI.Text('NGL Viewer ' + NGL.Version).setClass('title')
+	    )
+	  )
+	
+	  return container
+	}
+	
+	NGL.MenubarFileWidget = function (stage) {
+	  var fileTypesOpen = NGL.flatten([
+	    NGL.ParserRegistry.getStructureExtensions(),
+	    NGL.ParserRegistry.getVolumeExtensions(),
+	    NGL.ParserRegistry.getSurfaceExtensions(),
+	    NGL.DecompressorRegistry.names,
+	    NGL.ScriptExtensions
+	  ])
+	
+	  function fileInputOnChange (e) {
+	    var fn = function (file, callback) {
+	      var ext = file.name.split('.').pop().toLowerCase()
+	      if (NGL.ScriptExtensions.includes(ext)) {
+	        stage.loadScript(file).then(callback)
+	      } else if (fileTypesOpen.includes(ext)) {
+	        stage.loadFile(file, { defaultRepresentation: true }).then(callback)
+	      } else {
+	        console.error('unknown filetype: ' + ext)
+	        callback()
+	      }
+	    }
+	    var queue = new NGL.Queue(fn, e.target.files)
+	  }
+	
+	  var fileInput = document.createElement('input')
+	  fileInput.type = 'file'
+	  fileInput.multiple = true
+	  fileInput.style.display = 'none'
+	  fileInput.accept = '.' + fileTypesOpen.join(',.')
+	  fileInput.addEventListener('change', fileInputOnChange, false)
+	
+	  // export image
+	
+	  var exportImageWidget = new NGL.ExportImageWidget(stage)
+	    .setDisplay('none')
+	    .attach(stage.viewer.container.parentElement)
+	
+	  // event handlers
+	
+	  function onOpenOptionClick () {
+	    fileInput.click()
+	  }
+	
+	  function onImportOptionClick () {
+	    var dirWidget
+	    function onListingClick (info) {
+	      var ext = info.path.split('.').pop().toLowerCase()
+	      if (NGL.ScriptExtensions.includes(ext)) {
+	        stage.loadScript(NGL.ListingDatasource.getUrl(info.path))
+	        dirWidget.dispose()
+	      } else if (fileTypesOpen.includes(ext)) {
+	        stage.loadFile(NGL.ListingDatasource.getUrl(info.path), {
+	          defaultRepresentation: true
+	        })
+	        dirWidget.dispose()
+	      } else {
+	        console.error('unknown filetype: ' + ext)
+	      }
+	    }
+	
+	    dirWidget = new NGL.DirectoryListingWidget(
+	      NGL.ListingDatasource, stage, 'Import file',
+	      fileTypesOpen, onListingClick
+	    )
+	
+	    dirWidget
+	      .setOpacity('0.9')
+	      .setLeft('50px')
+	      .setTop('80px')
+	      .attach()
+	  }
+	
+	  function onExportImageOptionClick () {
+	    exportImageWidget
+	      .setOpacity('0.9')
+	      .setLeft('50px')
+	      .setTop('80px')
+	      .setDisplay('block')
+	  }
+	
+	  function onScreenshotOptionClick () {
+	    stage.makeImage({
+	      factor: 1,
+	      antialias: true,
+	      trim: false,
+	      transparent: false
+	    }).then(function (blob) {
+	      NGL.download(blob, 'screenshot.png')
+	    })
+	  }
+	
+	  function onPdbInputKeyDown (e) {
+	    if (e.keyCode === 13) {
+	      stage.loadFile('rcsb://' + e.target.value.trim(), {
+	        defaultRepresentation: true
+	      })
+	      e.target.value = ''
+	    }
+	  }
+	
+	  function onFirstModelOnlyChange (e) {
+	    stage.defaultFileParams.firstModelOnly = e.target.checked
+	  }
+	
+	  function onCAlphaOnlyChange (e) {
+	    stage.defaultFileParams.cAlphaOnly = e.target.checked
+	  }
+	
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var createInput = UI.MenubarHelper.createInput
+	  var createCheckbox = UI.MenubarHelper.createCheckbox
+	  var createDivider = UI.MenubarHelper.createDivider
+	
+	  var menuConfig = [
+	    createOption('Open...', onOpenOptionClick),
+	    createInput('PDB', onPdbInputKeyDown),
+	    createCheckbox('firstModelOnly', false, onFirstModelOnlyChange),
+	    createCheckbox('cAlphaOnly', false, onCAlphaOnlyChange),
+	    createDivider(),
+	    createOption('Screenshot', onScreenshotOptionClick, 'camera'),
+	    createOption('Export image...', onExportImageOptionClick)
+	  ]
+	
+	  if (NGL.ListingDatasource) {
+	    menuConfig.splice(
+	      1, 0, createOption('Import...', onImportOptionClick)
+	    )
+	  }
+	
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
+	  optionsPanel.dom.appendChild(fileInput)
+	
+	  return UI.MenubarHelper.createMenuContainer('File', optionsPanel)
+	}
+	
+	NGL.MenubarViewWidget = function (stage, preferences) {
+	  // event handlers
+	
+	  function onLightThemeOptionClick () {
+	    preferences.setKey('theme', 'light')
+	  }
+	
+	  function onDarkThemeOptionClick () {
+	    preferences.setKey('theme', 'dark')
+	  }
+	
+	  function onPerspectiveCameraOptionClick () {
+	    stage.setParameters({ cameraType: 'perspective' })
+	  }
+	
+	  function onOrthographicCameraOptionClick () {
+	    stage.setParameters({ cameraType: 'orthographic' })
+	  }
+	
+	  function onStereoCameraOptionClick () {
+	    stage.setParameters({ cameraType: 'stereo' })
+	  }
+	
+	  function onFullScreenOptionClick () {
+	    stage.toggleFullscreen(stage.viewer.container.parentElement);
+	  }
+	
+	  function onCenterOptionClick () {
+	    stage.autoView(1000)
+	  }
+	
+	  function onToggleSpinClick () {
+	    stage.toggleSpin()
+	  }
+	
+	  function onToggleRockClick () {
+	    stage.toggleRock()
+	  }
+	
+	  function onGetOrientationClick () {
+	    window.prompt(
+	      'Get orientation',
+	      JSON.stringify(
+	        stage.viewerControls.getOrientation().toArray(),
+	        function (k, v) {
+	          return v.toFixed ? Number(v.toFixed(2)) : v
+	        }
+	      )
+	    )
+	  }
+	
+	  function onSetOrientationClick () {
+	    stage.viewerControls.orient(
+	      JSON.parse(window.prompt('Set orientation'))
+	    )
+	  }
+	
+	  var that = this;
+	  stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	    const box = stage.viewer.container.parentElement.getBoundingClientRect()
+	    stage.setSize(box.width+"px", box.height+"px")
+	    stage.handleResize()
+	    var icon = menuConfig[ 7 ].children[ 0 ]
+	    if (isFullscreen) {
+	      icon.switchClass('compress', 'expand')
+	    } else {
+	      icon.switchClass('expand', 'compress')
+	    }
+	  })
+	
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var createDivider = UI.MenubarHelper.createDivider
+	
+	  var menuConfig = [
+	    createOption('Light theme', onLightThemeOptionClick),
+	    createOption('Dark theme', onDarkThemeOptionClick),
+	    createDivider(),
+	    createOption('Perspective', onPerspectiveCameraOptionClick),
+	    createOption('Orthographic', onOrthographicCameraOptionClick),
+	    createOption('Stereo', onStereoCameraOptionClick),
+	    createDivider(),
+	    createOption('Full screen', onFullScreenOptionClick, 'expand'),
+	    createOption('Center', onCenterOptionClick, 'bullseye'),
+	    createDivider(),
+	    createOption('Toggle spin', onToggleSpinClick),
+	    createOption('Toggle rock', onToggleRockClick),
+	    createDivider(),
+	    createOption('Get orientation', onGetOrientationClick),
+	    createOption('Set orientation', onSetOrientationClick)
+	  ]
+	
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
+	
+	  return UI.MenubarHelper.createMenuContainer('View', optionsPanel)
+	}
+	
+	NGL.MenubarExamplesWidget = function (stage) {
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel([])
+	  optionsPanel.setWidth('300px')
+	
+	  var xhr = new XMLHttpRequest()
+	  xhr.open('GET', NGL.examplesListUrl)
+	  xhr.responseType = 'json'
+	  xhr.onload = function (e) {
+	    var response = this.response
+	    if (typeof response === 'string') {
+	      // for ie11
+	      response = JSON.parse(response)
+	    }
+	    response.sort().forEach(function (name) {
+	      var option = createOption(name, function () {
+	        stage.loadScript(NGL.examplesScriptUrl + name + '.js')
+	      })
+	      optionsPanel.add(option)
+	    })
+	  }
+	  xhr.send()
+	
+	  return UI.MenubarHelper.createMenuContainer('Examples', optionsPanel)
+	}
+	
+	NGL.MenubarHelpWidget = function (stage, preferences) {
+	  // event handlers
+	
+	  function onOverviewOptionClick () {
+	    overviewWidget
+	      .setOpacity('0.9')
+	      .setDisplay('block')
+	      .setWidgetPosition(50, 80)
+	  }
+	
+	  function onDocOptionClick () {
+	    window.open(NGL.documentationUrl, '_blank')
+	  }
+	
+	  function onDebugOnClick () {
+	    NGL.setDebug(true)
+	    stage.viewer.updateHelper()
+	    stage.viewer.requestRender()
+	  }
+	
+	  function onDebugOffClick () {
+	    NGL.setDebug(false)
+	    stage.viewer.updateHelper()
+	    stage.viewer.requestRender()
+	  }
+	
+	  function onPreferencesOptionClick () {
+	    preferencesWidget
+	      .setOpacity('0.9')
+	      .setDisplay('block')
+	      .setWidgetPosition(50, 80)
+	  }
+	
+	  // export image
+	
+	  var preferencesWidget = new NGL.PreferencesWidget(stage, preferences)
+	    .setDisplay('none')
+	    .attach(stage.viewer.container.parentElement)
+	
+	  // overview
+	
+	  var overviewWidget = new NGL.OverviewWidget(stage, preferences)
+	    .setDisplay('none')
+	    .attach(stage.viewer.container.parentElement)
+	
+	  if (preferences.getKey('overview')) {
+	    onOverviewOptionClick()
+	  }
+	
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var createDivider = UI.MenubarHelper.createDivider
+	
+	  var menuConfig = [
+	    createOption('Overview', onOverviewOptionClick),
+	    createOption('Documentation', onDocOptionClick),
+	    createDivider(),
+	    createOption('Debug on', onDebugOnClick),
+	    createOption('Debug off', onDebugOffClick),
+	    createDivider(),
+	    createOption('Preferences', onPreferencesOptionClick, 'sliders')
+	  ]
+	
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
+	
+	  return UI.MenubarHelper.createMenuContainer('Help', optionsPanel)
+	}
+	
+	// Overview
+	
+	NGL.OverviewWidget = function (stage, preferences) {
+	  var container = new UI.OverlayPanel()
+	
+	  var xOffset = 0
+	  var yOffset = 0
+	
+	  var prevX = 0
+	  var prevY = 0
+	
+	  function onMousemove (e) {
+	    if (prevX === 0) {
+	      prevX = e.clientX
+	      prevY = e.clientY
+	    }
+	    xOffset -= prevX - e.clientX
+	    yOffset -= prevY - e.clientY
+	    prevX = e.clientX
+	    prevY = e.clientY
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	
+	  function setWidgetPosition (left, top) {
+	    xOffset = left
+	    yOffset = top
+	    prevX = 0
+	    prevY = 0
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	  container.setWidgetPosition = setWidgetPosition
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('25px')
+	    .setCursor('move')
+	    .onMouseDown(function (e) {
+	      if (e.which === 1) {
+	        document.addEventListener('mousemove', onMousemove)
+	      }
+	      document.addEventListener('mouseup', function (e) {
+	        document.removeEventListener('mousemove', onMousemove)
+	      })
+	    })
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setMaxWidth('600px')
+	    .setOverflow('auto')
+	
+	  headingPanel.add(
+	    new UI.Text('NGL Viewer').setFontStyle('italic'),
+	    new UI.Html('&nbsp;&mdash;&nbsp;Overview')
+	  )
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.setDisplay('none')
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  //
+	
+	  function addIcon (name, text) {
+	    var panel = new UI.Panel()
+	
+	    var icon = new UI.Icon(name)
+	      .setWidth('20px')
+	      .setFloat('left')
+	
+	    var label = new UI.Text(text)
+	      .setDisplay('inline')
+	      .setMarginLeft('5px')
+	
+	    panel
+	      .setMarginLeft('20px')
+	      .add(icon, label)
+	    listingPanel.add(panel)
+	  }
+	
+	  listingPanel
+	    .add(new UI.Panel().add(new UI.Html("To load a new structure use the <i>File</i> menu in the top left via drag'n'drop.")))
+	    .add(new UI.Break())
+	
+	  listingPanel
+	    .add(new UI.Panel().add(new UI.Text('A number of clickable icons provide common actions. Most icons can be clicked on, just try it or hover the mouse pointer over it to see a tooltip.')))
+	    .add(new UI.Break())
+	
+	  addIcon('eye', 'Controls the visibility of a component.')
+	  addIcon('trash-o', 'Deletes a component. Note that a second click is required to confirm the action.')
+	  addIcon('bullseye', 'Centers a component.')
+	  addIcon('bars', 'Opens a menu with further options.')
+	  addIcon('square', 'Opens a menu with coloring options.')
+	  addIcon('filter', 'Indicates atom-selection input fields.')
+	
+	  listingPanel
+	    .add(new UI.Text('Mouse controls'))
+	    .add(new UI.Html(
+	      '<ul>' +
+	          '<li>Left button hold and move to rotate camera around center.</li>' +
+	          '<li>Left button click to pick atom.</li>' +
+	          '<li>Middle button hold and move to zoom camera in and out.</li>' +
+	          '<li>Middle button click to center camera on atom.</li>' +
+	          '<li>Right button hold and move to translate camera in the screen plane.</li>' +
+	      '</ul>'
+	    ))
+	
+	  listingPanel
+	    .add(new UI.Panel().add(new UI.Html(
+	      'For more information please visit the ' +
+	      "<a href='" + NGL.documentationUrl + "' target='_blank'>documentation pages</a>."
+	    )))
+	
+	  var overview = preferences.getKey('overview')
+	  var showOverviewCheckbox = new UI.Checkbox(overview)
+	    .onClick(function () {
+	      preferences.setKey(
+	        'overview',
+	        showOverviewCheckbox.getValue()
+	      )
+	    })
+	
+	  listingPanel
+	    .add(new UI.HorizontalRule()
+	      .setBorderTop('1px solid #555')
+	      .setMarginTop('15px')
+	    )
+	    .add(new UI.Panel().add(
+	      showOverviewCheckbox,
+	      new UI.Text(
+	        'Show on startup. Always available from Menu > Help > Overview.'
+	      ).setMarginLeft('5px')
+	    ))
+	
+	  return container
+	}
+	
+	// Preferences
+	
+	NGL.PreferencesWidget = function (stage, preferences) {
+	  var container = new UI.OverlayPanel()
+	
+	  var xOffset = 0
+	  var yOffset = 0
+	
+	  var prevX = 0
+	  var prevY = 0
+	
+	  function onMousemove (e) {
+	    if (prevX === 0) {
+	      prevX = e.clientX
+	      prevY = e.clientY
+	    }
+	    xOffset -= prevX - e.clientX
+	    yOffset -= prevY - e.clientY
+	    prevX = e.clientX
+	    prevY = e.clientY
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	
+	  function setWidgetPosition (left, top) {
+	    xOffset = left
+	    yOffset = top
+	    prevX = 0
+	    prevY = 0
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	  container.setWidgetPosition = setWidgetPosition
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('25px')
+	    .setCursor('move')
+	    .onMouseDown(function (e) {
+	      if (e.which === 1) {
+	        document.addEventListener('mousemove', onMousemove)
+	      }
+	      document.addEventListener('mouseup', function (e) {
+	        document.removeEventListener('mousemove', onMousemove)
+	      })
+	    })
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setOverflow('auto')
+	
+	  headingPanel.add(new UI.Text('Preferences'))
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.setDisplay('none')
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  //
+	
+	  Object.keys(NGL.UIStageParameters).forEach(function (name) {
+	    var p = NGL.UIStageParameters[ name ]
+	    if (p.label === undefined) p.label = name
+	    var input = NGL.createParameterInput(p, stage.parameters[ name ])
+	
+	    if (!input) return
+	
+	    preferences.signals.keyChanged.add(function (key, value) {
+	      if (key === name) input.setValue(value)
+	    })
+	
+	    function setParam () {
+	      var sp = {}
+	      sp[ name ] = input.getValue()
+	      preferences.setKey(name, sp[ name ])
+	    }
+	
+	    var ua = navigator.userAgent
+	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	      input.onInput(setParam)
+	    } else {
+	      input.onChange(setParam)
+	    }
+	
+	    listingPanel
+	      .add(new UI.Text(name).setWidth('120px'))
+	      .add(input)
+	      .add(new UI.Break())
+	  })
+	
+	  return container
+	}
+	
+	// Export image
+	
+	NGL.ExportImageWidget = function (stage) {
+	  var container = new UI.OverlayPanel()
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('25px')
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setOverflow('auto')
+	
+	  headingPanel.add(new UI.Text('Image export'))
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.setDisplay('none')
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  var factorSelect = new UI.Select()
+	    .setOptions({
+	      '1': '1x',
+	      '2': '2x',
+	      '3': '3x',
+	      '4': '4x',
+	      '5': '5x',
+	      '6': '6x',
+	      '7': '7x',
+	      '8': '8x',
+	      '9': '9x',
+	      '10': '10x'
+	    })
+	    .setValue('4')
+	
+	  var antialiasCheckbox = new UI.Checkbox()
+	    .setValue(true)
+	
+	  var trimCheckbox = new UI.Checkbox()
+	    .setValue(false)
+	
+	  var transparentCheckbox = new UI.Checkbox()
+	    .setValue(false)
+	
+	  var progress = new UI.Progress()
+	    .setDisplay('none')
+	
+	  var exportButton = new UI.Button('export')
+	    .onClick(function () {
+	      exportButton.setDisplay('none')
+	      progress.setDisplay('inline-block')
+	      function onProgress (i, n, finished) {
+	        if (i === 1) {
+	          progress.setMax(n)
+	        }
+	        if (i >= n) {
+	          progress.setIndeterminate()
+	        } else {
+	          progress.setValue(i)
+	        }
+	        if (finished) {
+	          progress.setDisplay('none')
+	          exportButton.setDisplay('inline-block')
+	        }
+	      }
+	
+	      setTimeout(function () {
+	        stage.makeImage({
+	          factor: parseInt(factorSelect.getValue()),
+	          antialias: antialiasCheckbox.getValue(),
+	          trim: trimCheckbox.getValue(),
+	          transparent: transparentCheckbox.getValue(),
+	          onProgress: onProgress
+	        }).then(function (blob) {
+	          NGL.download(blob, 'screenshot.png')
+	        })
+	      }, 50)
+	    })
+	
+	  function addEntry (label, entry) {
+	    listingPanel
+	      .add(new UI.Text(label).setWidth('80px'))
+	      .add(entry || new UI.Panel())
+	      .add(new UI.Break())
+	  }
+	
+	  addEntry('scale', factorSelect)
+	  addEntry('antialias', antialiasCheckbox)
+	  addEntry('trim', trimCheckbox)
+	  addEntry('transparent', transparentCheckbox)
+	
+	  listingPanel.add(
+	    new UI.Break(),
+	    exportButton, progress
+	  )
+	
+	  return container
+	}
+	
+	// Sidebar
+	
+	NGL.SidebarWidget = function (stage) {
+	  var signals = stage.signals
+	  var container = new UI.Panel()
+	
+	  var widgetContainer = new UI.Panel()
+	    .setClass('Content')
+	
+	  var compList = []
+	  var widgetList = []
+	
+	  function handleComponent(component) {
+	    var widget
+	
+	    switch (component.type) {
+	      case 'structure':
+	        widget = new NGL.StructureComponentWidget(component, stage)
+	        break
+	
+	      case 'surface':
+	        widget = new NGL.SurfaceComponentWidget(component, stage)
+	        break
+	
+	      case 'volume':
+	        widget = new NGL.VolumeComponentWidget(component, stage)
+	        break
+	
+	      case 'shape':
+	        widget = new NGL.ShapeComponentWidget(component, stage)
+	        break
+	
+	      default:
+	        console.warn('NGL.SidebarWidget: component type unknown', component)
+	        return
+	    }
+	
+	    widgetContainer.add(widget)
+	
+	    compList.push(component)
+	    widgetList.push(widget)
+	
+	  }
+	
+	  // In case user adds components directly from notebook
+	  stage.compList.forEach(function(comp){
+	      handleComponent(comp)
+	  })
+	
+	  signals.componentAdded.add(handleComponent)
+	
+	  signals.componentRemoved.add(function (component) {
+	    var idx = compList.indexOf(component)
+	
+	    if (idx !== -1) {
+	      widgetList[ idx ].dispose()
+	
+	      compList.splice(idx, 1)
+	      widgetList.splice(idx, 1)
+	    }
+	  })
+	
+	  // actions
+	
+	  var expandAll = new UI.Icon('plus-square')
+	    .setTitle('expand all')
+	    .setCursor('pointer')
+	    .onClick(function () {
+	      widgetList.forEach(function (widget) {
+	        widget.expand()
+	      })
+	    })
+	
+	  var collapseAll = new UI.Icon('minus-square')
+	    .setTitle('collapse all')
+	    .setCursor('pointer')
+	    .setMarginLeft('10px')
+	    .onClick(function () {
+	      widgetList.forEach(function (widget) {
+	        widget.collapse()
+	      })
+	    })
+	
+	  var centerAll = new UI.Icon('bullseye')
+	    .setTitle('center all')
+	    .setCursor('pointer')
+	    .setMarginLeft('10px')
+	    .onClick(function () {
+	      stage.autoView(1000)
+	    })
+	
+	  var disposeAll = new UI.DisposeIcon()
+	    .setMarginLeft('10px')
+	    .setDisposeFunction(function () {
+	      stage.removeAllComponents()
+	    })
+	
+	  var settingsMenu = new UI.PopupMenu('cogs', 'Settings', 'window')
+	    .setIconTitle('settings')
+	    .setMarginLeft('10px')
+	  settingsMenu.entryLabelWidth = '120px'
+	
+	  // Busy indicator
+	
+	  var busy = new UI.Panel()
+	    .setDisplay('inline')
+	    .add(
+	      new UI.Icon('spinner')
+	        .addClass('spin')
+	        .setMarginLeft('45px')
+	    )
+	
+	  stage.tasks.signals.countChanged.add(function (delta, count) {
+	    if (count > 0) {
+	      actions.add(busy)
+	    } else {
+	      try {
+	        actions.remove(busy)
+	      } catch (e) {
+	        // already removed
+	      }
+	    }
+	  })
+	
+	  var paramNames = [
+	    'clipNear', 'clipFar', 'clipDist', 'fogNear', 'fogFar',
+	    'lightColor', 'lightIntensity', 'ambientColor', 'ambientIntensity'
+	  ]
+	
+	  paramNames.forEach(function (name) {
+	    var p = NGL.UIStageParameters[ name ]
+	    if (p.label === undefined) p.label = name
+	    var input = NGL.createParameterInput(p, stage.parameters[ name ])
+	
+	    if (!input) return
+	
+	    stage.signals.parametersChanged.add(function (params) {
+	      input.setValue(params[ name ])
+	    })
+	
+	    function setParam () {
+	      var sp = {}
+	      sp[ name ] = input.getValue()
+	      stage.setParameters(sp)
+	    }
+	
+	    var ua = navigator.userAgent
+	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	      input.onInput(setParam)
+	    } else {
+	      input.onChange(setParam)
+	    }
+	
+	    settingsMenu.addEntry(name, input)
+	  })
+	
+	  //
+	
+	  var actions = new UI.Panel()
+	    .setClass('Panel Sticky')
+	    .add(
+	      expandAll,
+	      collapseAll,
+	      centerAll,
+	      disposeAll,
+	      settingsMenu
+	    )
+	
+	  container.add(
+	    actions,
+	    widgetContainer
+	  )
+	
+	  return container
+	}
+	
+	// Component
+	
+	NGL.StructureComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	  var trajContainer = new UI.Panel()
+	
+	  function handleRepr(repr){
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  }
+	
+	  component.reprList.forEach(function(repr){
+	      handleRepr(repr)
+	  })
+	
+	  signals.representationAdded.add(handleRepr)
+	
+	  signals.trajectoryAdded.add(function (traj) {
+	    trajContainer.add(new NGL.TrajectoryElementWidget(traj, stage))
+	  })
+	
+	  signals.defaultAssemblyChanged.add(function () {
+	    assembly.setValue(component.parameters.defaultAssembly)
+	  })
+	
+	  // Selection
+	
+	  container.add(
+	    new UI.SelectionPanel(component.selection)
+	      .setMarginLeft('20px')
+	      .setInputWidth('214px')
+	  )
+	
+	  // Export PDB
+	
+	  var pdb = new UI.Button('export').onClick(function () {
+	    var pdbWriter = new NGL.PdbWriter(component.structure)
+	    pdbWriter.download('structure')
+	    componentPanel.setMenuDisplay('none')
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = { '': '[ add ]' }
+	      NGL.RepresentationRegistry.names.forEach(function (key) {
+	        reprOptions[ key ] = key
+	      })
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Assembly
+	
+	  var assembly = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var biomolDict = component.structure.biomolDict
+	      var assemblyOptions = {
+	        '': (component.structure.unitcell ? 'AU' : 'FULL')
+	      }
+	      Object.keys(biomolDict).forEach(function (k) {
+	        assemblyOptions[ k ] = k
+	      })
+	      return assemblyOptions
+	    })())
+	    .setValue(component.parameters.defaultAssembly)
+	    .onChange(function () {
+	      component.setDefaultAssembly(assembly.getValue())
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Open trajectory
+	
+	  var trajExt = []
+	  NGL.ParserRegistry.getTrajectoryExtensions().forEach(function (ext) {
+	    trajExt.push('.' + ext, '.' + ext + '.gz')
+	  })
+	
+	  function framesInputOnChange (e) {
+	    var fn = function (file, callback) {
+	      NGL.autoLoad(file).then(function (frames) {
+	        component.addTrajectory(frames)
+	        callback()
+	      })
+	    }
+	    var queue = new NGL.Queue(fn, e.target.files)
+	    e.target.value = ''
+	  }
+	
+	  var framesInput = document.createElement('input')
+	  framesInput.type = 'file'
+	  framesInput.multiple = true
+	  framesInput.style.display = 'none'
+	  framesInput.accept = trajExt.join(',')
+	  framesInput.addEventListener('change', framesInputOnChange, false)
+	
+	  var traj = new UI.Button('open').onClick(function () {
+	    framesInput.click()
+	    componentPanel.setMenuDisplay('none')
+	  })
+	
+	  // Import remote trajectory
+	
+	  var remoteTraj = new UI.Button('import').onClick(function () {
+	    componentPanel.setMenuDisplay('none')
+	
+	    // TODO list of extensions should be provided by trajectory datasource
+	    var remoteTrajExt = [
+	      'xtc', 'trr', 'netcdf', 'dcd', 'ncdf', 'nc', 'gro', 'pdb',
+	      'lammpstrj', 'xyz', 'mdcrd', 'gz', 'binpos', 'h5', 'dtr',
+	      'arc', 'tng', 'trj', 'trz'
+	    ]
+	    var dirWidget
+	
+	    function onListingClick (info) {
+	      var ext = info.path.split('.').pop().toLowerCase()
+	      if (remoteTrajExt.indexOf(ext) !== -1) {
+	        component.addTrajectory(info.path + '?struc=' + component.structure.path)
+	        dirWidget.dispose()
+	      } else {
+	        NGL.log('unknown trajectory type: ' + ext)
+	      }
+	    }
+	
+	    dirWidget = new NGL.DirectoryListingWidget(
+	      NGL.ListingDatasource, stage, 'Import trajectory',
+	      remoteTrajExt, onListingClick
+	    )
+	
+	    dirWidget
+	      .setOpacity('0.9')
+	      .setLeft('50px')
+	      .setTop('80px')
+	      .attach()
+	  })
+	
+	  // Superpose
+	
+	  function setSuperposeOptions () {
+	    var superposeOptions = { '': '[ structure ]' }
+	    stage.eachComponent(function (o, i) {
+	      if (o !== component) {
+	        superposeOptions[ i ] = o.name
+	      }
+	    }, NGL.StructureComponent)
+	    superpose.setOptions(superposeOptions)
+	  }
+	
+	  stage.signals.componentAdded.add(setSuperposeOptions)
+	  stage.signals.componentRemoved.add(setSuperposeOptions)
+	
+	  var superpose = new UI.Select()
+	    .setColor('#444')
+	    .onChange(function () {
+	      component.superpose(
+	        stage.compList[ superpose.getValue() ],
+	        true
+	      )
+	      component.autoView(1000)
+	      superpose.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  setSuperposeOptions()
+	
+	  // Principal axes
+	
+	  var alignAxes = new UI.Button('align').onClick(function () {
+	    var pa = component.structure.getPrincipalAxes()
+	    var q = pa.getRotationQuaternion()
+	    q.multiply(component.quaternion.clone().inverse())
+	    stage.animationControls.rotate(q)
+	    stage.animationControls.move(component.getCenter())
+	  })
+	
+	  // Measurements removal
+	
+	  var removeMeasurements = new UI.Button('remove').onClick(function () {
+	    component.removeAllMeasurements()
+	  })
+	
+	  // Annotations visibility
+	
+	  var showAnnotations = new UI.Button('show').onClick(function () {
+	    component.annotationList.forEach(function (annotation) {
+	      annotation.setVisibility(true)
+	    })
+	  })
+	
+	  var hideAnnotations = new UI.Button('hide').onClick(function () {
+	    component.annotationList.forEach(function (annotation) {
+	      annotation.setVisibility(false)
+	    })
+	  })
+	
+	  var annotationButtons = new UI.Panel()
+	    .setDisplay('inline-block')
+	    .add(showAnnotations, hideAnnotations)
+	
+	  // Open validation
+	
+	  function validationInputOnChange (e) {
+	    var fn = function (file, callback) {
+	      NGL.autoLoad(file, { ext: 'validation' }).then(function (validation) {
+	        component.structure.validation = validation
+	        callback()
+	      })
+	    }
+	    var queue = new NGL.Queue(fn, e.target.files)
+	  }
+	
+	  var validationInput = document.createElement('input')
+	  validationInput.type = 'file'
+	  validationInput.style.display = 'none'
+	  validationInput.accept = '.xml'
+	  validationInput.addEventListener('change', validationInputOnChange, false)
+	
+	  var vali = new UI.Button('open').onClick(function () {
+	    validationInput.click()
+	    componentPanel.setMenuDisplay('none')
+	  })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	  // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('PDB file', pdb)
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry('Assembly', assembly)
+	    .addMenuEntry('Superpose', superpose)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.structure.path)
+	        .setMaxWidth('100px')
+	        .setOverflow('auto')
+	      // .setWordWrap( "break-word" )
+	    )
+	    .addMenuEntry('Trajectory', traj)
+	    .addMenuEntry('Principal axes', alignAxes)
+	    .addMenuEntry('Measurements', removeMeasurements)
+	    .addMenuEntry('Annotations', annotationButtons)
+	    .addMenuEntry('Validation', vali)
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  if (NGL.ListingDatasource && NGL.TrajectoryDatasource) {
+	    componentPanel.addMenuEntry('Remote trajectory', remoteTraj)
+	  }
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(trajContainer)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	NGL.SurfaceComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	
+	  signals.representationAdded.add(function (repr) {
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = {
+	        '': '[ add ]',
+	        'surface': 'surface',
+	        'dot': 'dot'
+	      }
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	  // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.surface.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	NGL.VolumeComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	
+	  signals.representationAdded.add(function (repr) {
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = {
+	        '': '[ add ]',
+	        'surface': 'surface',
+	        'dot': 'dot',
+	        'slice': 'slice'
+	      }
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	  // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.volume.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	NGL.ShapeComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	
+	  signals.representationAdded.add(function (repr) {
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = {
+	        '': '[ add ]',
+	        'buffer': 'buffer'
+	      }
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	    // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.shape.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	// Representation
+	
+	NGL.RepresentationElementWidget = function (element, stage) {
+	  var signals = element.signals
+	
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	    .setMarginLeft('20px')
+	
+	  signals.visibilityChanged.add(function (value) {
+	    toggle.setValue(value)
+	  })
+	
+	  signals.nameChanged.add(function (value) {
+	    name.setValue(value)
+	  })
+	
+	  signals.disposed.add(function () {
+	    menu.dispose()
+	    container.dispose()
+	  })
+	
+	  // Name
+	
+	  var name = new UI.EllipsisText(element.name)
+	    .setWidth('103px')
+	
+	    // Actions
+	
+	  var toggle = new UI.ToggleIcon(element.visible, 'eye', 'eye-slash')
+	    .setTitle('hide/show')
+	    .setCursor('pointer')
+	    .setMarginLeft('25px')
+	    .onClick(function () {
+	      element.setVisibility(!element.visible)
+	    })
+	
+	  var disposeIcon = new UI.DisposeIcon()
+	    .setMarginLeft('10px')
+	    .setDisposeFunction(function () {
+	      element.dispose()
+	    })
+	
+	  container
+	    .addStatic(name)
+	    .addStatic(toggle)
+	    .addStatic(disposeIcon)
+	
+	  // Selection
+	
+	  if ((element.parent.type === 'structure' ||
+	          element.parent.type === 'trajectory') &&
+	        element.repr.selection && element.repr.selection.type === 'selection'
+	  ) {
+	    container.add(
+	      new UI.SelectionPanel(element.repr.selection)
+	        .setMarginLeft('20px')
+	        .setInputWidth('194px')
+	    )
+	  }
+	
+	  // Menu
+	
+	  var menu = new UI.PopupMenu('bars', 'Representation')
+	    .setMarginLeft('45px')
+	    .setEntryLabelWidth('190px')
+	
+	  menu.addEntry('type', new UI.Text(element.repr.type))
+	
+	  // Parameters
+	
+	  var repr = element.repr
+	  var rp = repr.getParameters()
+	
+	  Object.keys(repr.parameters).forEach(function (name) {
+	    if (!repr.parameters[ name ]) return
+	    var p = Object.assign({}, repr.parameters[ name ])
+	    p.value = rp[ name ]
+	    if (p.label === undefined) p.label = name
+	    var input = NGL.createParameterInput(p)
+	
+	    if (!input) return
+	
+	    signals.parametersChanged.add(function (params) {
+	      if (typeof input.setValue === 'function') {
+	        input.setValue(params[ name ])
+	      }
+	    })
+	
+	    function setParam () {
+	      var po = {}
+	      po[ name ] = input.getValue()
+	      element.setParameters(po)
+	      stage.viewer.requestRender()
+	    }
+	
+	    var ua = navigator.userAgent
+	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	      input.onInput(setParam)
+	    } else {
+	      input.onChange(setParam)
+	    }
+	
+	    menu.addEntry(name, input)
+	  })
+	
+	  container
+	    .addStatic(menu)
+	
+	  return container
+	}
+	
+	// Trajectory
+	
+	NGL.TrajectoryElementWidget = function (element, stage) {
+	  var signals = element.signals
+	  var traj = element.trajectory
+	
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	    .setMarginLeft('20px')
+	
+	  signals.disposed.add(function () {
+	    menu.dispose()
+	    container.dispose()
+	  })
+	
+	  var frameCount = new UI.Panel()
+	    .setDisplay('inline')
+	    .add(new UI.Icon('spinner')
+	      .addClass('spin')
+	      .setMarginRight('99px')
+	    )
+	
+	  var frameTime = new UI.Panel()
+	    .setMarginLeft('5px')
+	    .setDisplay('inline')
+	
+	  function setFrame (value) {
+	    frame.setValue(value)
+	    if (traj.deltaTime && value >= 0) {
+	      var t = traj.getFrameTime(value) / 1000
+	      time.setValue(t.toFixed(9).replace(/\.?0+$/g, '') + 'ns')
+	    } else {
+	      time.setValue('')
+	    }
+	    frameRange.setValue(value)
+	    frameCount.clear().add(frame.setWidth('40px'))
+	    frameTime.clear().add(time.setWidth('90px'))
+	  }
+	
+	  function init (value) {
+	    frame.setRange(-1, value - 1)
+	    frameRange.setRange(-1, value - 1)
+	
+	    setFrame(traj.currentFrame)
+	
+	    if (element.parameters.defaultStep !== undefined) {
+	      step.setValue(element.parameters.defaultStep)
+	    } else {
+	      // 1000 = n / step
+	      step.setValue(Math.ceil((value + 1) / 100))
+	    }
+	
+	    player.setParameters({step: step.getValue()})
+	    player.setParameters({end: value - 1})
+	  }
+	
+	  signals.countChanged.add(init)
+	  signals.frameChanged.add(setFrame)
+	
+	  // Name
+	
+	  var name = new UI.EllipsisText(element.parameters.name)
+	    .setWidth('103px')
+	
+	  signals.nameChanged.add(function (value) {
+	    name.setValue(value)
+	  })
+	
+	  container.addStatic(name)
+	  container.addStatic(frameTime)
+	
+	  // frames
+	
+	  var frame = new UI.Integer(-1)
+	    .setWidth('40px')
+	    .setTextAlign('right')
+	    .setMarginLeft('5px')
+	    .setRange(-1, -1)
+	    .onChange(function (e) {
+	      traj.setFrame(frame.getValue())
+	      menu.setMenuDisplay('none')
+	    })
+	
+	  var time = new UI.Text()
+	    .setTextAlign('right')
+	    .setWidth('90px')
+	
+	  var step = new UI.Integer(1)
+	    .setWidth('50px')
+	    .setRange(1, 10000)
+	    .onChange(function () {
+	      player.setParameters({step: step.getValue()})
+	    })
+	
+	  var frameRow = new UI.Panel()
+	
+	  var frameRange = new UI.Range(-1, -1, -1, 1)
+	    .setWidth('147px')
+	    .setMargin('0px')
+	    .setPadding('0px')
+	    .setBorder('0px')
+	    .onInput(function (e) {
+	      var value = frameRange.getValue()
+	
+	      if (value === traj.currentFrame) {
+	        return
+	      }
+	
+	      if (traj.player && traj.player.isRunning) {
+	        traj.setPlayer()
+	        traj.setFrame(value)
+	      } else if (!traj.inProgress) {
+	        traj.setFrame(value)
+	      }
+	    })
+	
+	  var interpolateType = new UI.Select()
+	    .setColor('#444')
+	    .setOptions({
+	      '': 'none',
+	      'linear': 'linear',
+	      'spline': 'spline'
+	    })
+	    .setValue(element.parameters.defaultInterpolateType)
+	    .onChange(function () {
+	      player.setParameters({interpolateType: interpolateType.getValue()})
+	    })
+	
+	  var interpolateStep = new UI.Integer(element.parameters.defaultInterpolateStep)
+	    .setWidth('30px')
+	    .setRange(1, 50)
+	    .onChange(function () {
+	      player.setParameters({interpolateStep: interpolateStep.getValue()})
+	    })
+	
+	  var playDirection = new UI.Select()
+	    .setColor('#444')
+	    .setOptions({
+	      'forward': 'forward',
+	      'backward': 'backward',
+	      'bounce': 'bounce'
+	    })
+	    .setValue(element.parameters.defaultDirection)
+	    .onChange(function () {
+	      player.setParameters({direction: playDirection.getValue()})
+	    })
+	
+	  var playMode = new UI.Select()
+	    .setColor('#444')
+	    .setOptions({
+	      'loop': 'loop',
+	      'once': 'once'
+	    })
+	    .setValue(element.parameters.defaultMode)
+	    .onChange(function () {
+	      player.setParameters({mode: playMode.getValue()})
+	    })
+	
+	  // player
+	
+	  var timeout = new UI.Integer(element.parameters.defaultTimeout)
+	    .setWidth('30px')
+	    .setRange(10, 1000)
+	    .onChange(function () {
+	      player.setParameters({timeout: timeout.getValue()})
+	    })
+	
+	  var player = new NGL.TrajectoryPlayer(traj, {
+	    step: step.getValue(),
+	    timeout: timeout.getValue(),
+	    start: 0,
+	    end: traj.frameCount - 1,
+	    interpolateType: interpolateType.getValue(),
+	    interpolateStep: interpolateStep.getValue(),
+	    direction: playDirection.getValue(),
+	    mode: playMode.getValue()
+	  })
+	  traj.setPlayer(player)
+	
+	  var playerButton = new UI.ToggleIcon(true, 'play', 'pause')
+	    .setMarginRight('10px')
+	    .setMarginLeft('20px')
+	    .setCursor('pointer')
+	    .setWidth('12px')
+	    .setTitle('play')
+	    .onClick(function () {
+	      player.toggle()
+	    })
+	
+	  player.signals.startedRunning.add(function () {
+	    playerButton
+	      .setTitle('pause')
+	      .setValue(false)
+	  })
+	
+	  player.signals.haltedRunning.add(function () {
+	    playerButton
+	      .setTitle('play')
+	      .setValue(true)
+	  })
+	
+	  frameRow.add(playerButton, frameRange, frameCount)
+	
+	  // Selection
+	
+	  container.add(
+	    new UI.SelectionPanel(traj.selection)
+	      .setMarginLeft('20px')
+	      .setInputWidth('194px')
+	  )
+	
+	  // Options
+	
+	  var setCenterPbc = new UI.Checkbox(traj.centerPbc)
+	    .onChange(function () {
+	      element.setParameters({
+	        'centerPbc': setCenterPbc.getValue()
+	      })
+	    })
+	
+	  var setRemovePeriodicity = new UI.Checkbox(traj.removePeriodicity)
+	    .onChange(function () {
+	      element.setParameters({
+	        'removePeriodicity': setRemovePeriodicity.getValue()
+	      })
+	    })
+	
+	  var setRemovePbc = new UI.Checkbox(traj.removePbc)
+	    .onChange(function () {
+	      element.setParameters({
+	        'removePbc': setRemovePbc.getValue()
+	      })
+	    })
+	
+	  var setSuperpose = new UI.Checkbox(traj.superpose)
+	    .onChange(function () {
+	      element.setParameters({
+	        'superpose': setSuperpose.getValue()
+	      })
+	    })
+	
+	  var setDeltaTime = new UI.Number(traj.deltaTime)
+	    .setWidth('55px')
+	    .setRange(0, 1000000)
+	    .onChange(function () {
+	      element.setParameters({
+	        'deltaTime': setDeltaTime.getValue()
+	      })
+	    })
+	
+	  var setTimeOffset = new UI.Number(traj.timeOffset)
+	    .setWidth('55px')
+	    .setRange(0, 1000000000)
+	    .onChange(function () {
+	      element.setParameters({
+	        'timeOffset': setTimeOffset.getValue()
+	      })
+	    })
+	
+	  signals.parametersChanged.add(function (params) {
+	    setCenterPbc.setValue(traj.centerPbc)
+	    setRemovePeriodicity.setValue(traj.removePeriodicity)
+	    setRemovePbc.setValue(traj.removePbc)
+	    setSuperpose.setValue(traj.superpose)
+	    setDeltaTime.setValue(traj.deltaTime)
+	    setTimeOffset.setValue(traj.timeOffset)
+	    traj.setFrame(frame.getValue())
+	  })
+	
+	  // Dispose
+	
+	  var dispose = new UI.DisposeIcon()
+	    .setDisposeFunction(function () {
+	      element.parent.removeTrajectory(element)
+	    })
+	
+	  //
+	
+	  if (traj.frameCount) {
+	    init(traj.frameCount)
+	  }
+	
+	  // Menu
+	
+	  var menu = new UI.PopupMenu('bars', 'Trajectory')
+	    .setMarginLeft('10px')
+	    .setEntryLabelWidth('130px')
+	    .addEntry('Center', setCenterPbc)
+	    .addEntry('Remove Periodicity', setRemovePeriodicity)
+	    .addEntry('Remove PBC', setRemovePbc)
+	    .addEntry('Superpose', setSuperpose)
+	    .addEntry('Step size', step)
+	    .addEntry('Interpolation type', interpolateType)
+	    .addEntry('Interpolation steps', interpolateStep)
+	    .addEntry('Play timeout', timeout)
+	    .addEntry('Play direction', playDirection)
+	    .addEntry('Play mode', playMode)
+	    .addEntry('Delta time [ps]', setDeltaTime)
+	    .addEntry('Time offset [ps]', setTimeOffset)
+	    .addEntry('File',
+	      new UI.Text(traj.trajPath)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addEntry('Dispose', dispose)
+	
+	  container
+	    .addStatic(menu)
+	
+	  container
+	    .add(frameRow)
+	
+	  return container
+	}
+	
+	// Listing
+	
+	NGL.DirectoryListingWidget = function (datasource, stage, heading, filter, callback) {
+	  // from http://stackoverflow.com/a/20463021/1435042
+	  function fileSizeSI (a, b, c, d, e) {
+	    return (b = Math, c = b.log, d = 1e3, e = c(a) / c(d) | 0, a / b.pow(d, e)).toFixed(2) +
+	            String.fromCharCode(160) + (e ? 'kMGTPEZY'[--e] + 'B' : 'Bytes')
+	  }
+	
+	  function getFolderDict (path) {
+	    path = path || ''
+	    var options = { '': '' }
+	    var full = []
+	    path.split('/').forEach(function (chunk) {
+	      full.push(chunk)
+	      options[ full.join('/') ] = chunk
+	    })
+	    return options
+	  }
+	
+	  var container = new UI.OverlayPanel()
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('30px')
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setPaddingRight('15px')
+	    .setOverflow('auto')
+	
+	  var folderSelect = new UI.Select()
+	    .setColor('#444')
+	    .setMarginLeft('20px')
+	    .setWidth('')
+	    .setMaxWidth('200px')
+	    .setOptions(getFolderDict())
+	    .onChange(function () {
+	      datasource.getListing(folderSelect.getValue())
+	        .then(onListingLoaded)
+	    })
+	
+	  heading = heading || 'Directoy listing'
+	
+	  headingPanel.add(new UI.Text(heading))
+	  headingPanel.add(folderSelect)
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.dispose()
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  function onListingLoaded (listing) {
+	    var folder = listing.path
+	    var data = listing.data
+	
+	    NGL.lastUsedDirectory = folder
+	    listingPanel.clear()
+	
+	    folderSelect
+	      .setOptions(getFolderDict(folder))
+	      .setValue(folder)
+	
+	    data.forEach(function (info) {
+	      var ext = info.path.split('.').pop().toLowerCase()
+	      if (filter && !info.dir && filter.indexOf(ext) === -1) {
+	        return
+	      }
+	
+	      var icon, name
+	      if (info.dir) {
+	        icon = 'folder-o'
+	        name = info.name
+	      } else {
+	        icon = 'file-o'
+	        name = info.name + String.fromCharCode(160) +
+	                '(' + fileSizeSI(info.size) + ')'
+	      }
+	
+	      var pathRow = new UI.Panel()
+	        .setDisplay('block')
+	        .setWhiteSpace('nowrap')
+	        .add(new UI.Icon(icon).setWidth('20px'))
+	        .add(new UI.Text(name))
+	        .onClick(function () {
+	          if (info.dir) {
+	            datasource.getListing(info.path)
+	              .then(onListingLoaded)
+	          } else {
+	            callback(info)
+	          }
+	        })
+	
+	      if (info.restricted) {
+	        pathRow.add(new UI.Icon('lock').setMarginLeft('5px'))
+	      }
+	
+	      listingPanel.add(pathRow)
+	    })
+	  }
+	
+	  datasource.getListing(NGL.lastUsedDirectory)
+	    .then(onListingLoaded)
+	
+	  return container
+	}
+	
+	module.exports = {
+	    "StageWidget": StageWidget
+	}
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Dialog 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Dialog
+	//>>group: Widgets
+	//>>description: Displays customizable dialog windows.
+	//>>docs: http://api.jqueryui.com/dialog/
+	//>>demos: http://jqueryui.com/dialog/
+	//>>css.structure: ../../themes/base/core.css
+	//>>css.structure: ../../themes/base/dialog.css
+	//>>css.theme: ../../themes/base/theme.css
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+				__webpack_require__(7),
+				__webpack_require__(18),
+				__webpack_require__(28),
+				__webpack_require__(29),
+				__webpack_require__(36),
+				__webpack_require__(38),
+				__webpack_require__(27),
+				__webpack_require__(39),
+				__webpack_require__(33),
+				__webpack_require__(34),
+				__webpack_require__(40),
+				__webpack_require__(41),
+				__webpack_require__(21),
+				__webpack_require__(20)
+			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	
+	$.widget( "ui.dialog", {
+		version: "1.12.1",
+		options: {
+			appendTo: "body",
+			autoOpen: true,
+			buttons: [],
+			classes: {
+				"ui-dialog": "ui-corner-all",
+				"ui-dialog-titlebar": "ui-corner-all"
+			},
+			closeOnEscape: true,
+			closeText: "Close",
+			draggable: true,
+			hide: null,
+			height: "auto",
+			maxHeight: null,
+			maxWidth: null,
+			minHeight: 150,
+			minWidth: 150,
+			modal: false,
+			position: {
+				my: "center",
+				at: "center",
+				of: window,
+				collision: "fit",
+	
+				// Ensure the titlebar is always visible
+				using: function( pos ) {
+					var topOffset = $( this ).css( pos ).offset().top;
+					if ( topOffset < 0 ) {
+						$( this ).css( "top", pos.top - topOffset );
+					}
+				}
+			},
+			resizable: true,
+			show: null,
+			title: null,
+			width: 300,
+	
+			// Callbacks
+			beforeClose: null,
+			close: null,
+			drag: null,
+			dragStart: null,
+			dragStop: null,
+			focus: null,
+			open: null,
+			resize: null,
+			resizeStart: null,
+			resizeStop: null
+		},
+	
+		sizeRelatedOptions: {
+			buttons: true,
+			height: true,
+			maxHeight: true,
+			maxWidth: true,
+			minHeight: true,
+			minWidth: true,
+			width: true
+		},
+	
+		resizableRelatedOptions: {
+			maxHeight: true,
+			maxWidth: true,
+			minHeight: true,
+			minWidth: true
+		},
+	
+		_create: function() {
+			this.originalCss = {
+				display: this.element[ 0 ].style.display,
+				width: this.element[ 0 ].style.width,
+				minHeight: this.element[ 0 ].style.minHeight,
+				maxHeight: this.element[ 0 ].style.maxHeight,
+				height: this.element[ 0 ].style.height
+			};
+			this.originalPosition = {
+				parent: this.element.parent(),
+				index: this.element.parent().children().index( this.element )
+			};
+			this.originalTitle = this.element.attr( "title" );
+			if ( this.options.title == null && this.originalTitle != null ) {
+				this.options.title = this.originalTitle;
+			}
+	
+			// Dialogs can't be disabled
+			if ( this.options.disabled ) {
+				this.options.disabled = false;
+			}
+	
+			this._createWrapper();
+	
+			this.element
+				.show()
+				.removeAttr( "title" )
+				.appendTo( this.uiDialog );
+	
+			this._addClass( "ui-dialog-content", "ui-widget-content" );
+	
+			this._createTitlebar();
+			this._createButtonPane();
+	
+			if ( this.options.draggable && $.fn.draggable ) {
+				this._makeDraggable();
+			}
+			if ( this.options.resizable && $.fn.resizable ) {
+				this._makeResizable();
+			}
+	
+			this._isOpen = false;
+	
+			this._trackFocus();
+		},
+	
+		_init: function() {
+			if ( this.options.autoOpen ) {
+				this.open();
+			}
+		},
+	
+		_appendTo: function() {
+			var element = this.options.appendTo;
+			if ( element && ( element.jquery || element.nodeType ) ) {
+				return $( element );
+			}
+			return this.document.find( element || "body" ).eq( 0 );
+		},
+	
+		_destroy: function() {
+			var next,
+				originalPosition = this.originalPosition;
+	
+			this._untrackInstance();
+			this._destroyOverlay();
+	
+			this.element
+				.removeUniqueId()
+				.css( this.originalCss )
+	
+				// Without detaching first, the following becomes really slow
+				.detach();
+	
+			this.uiDialog.remove();
+	
+			if ( this.originalTitle ) {
+				this.element.attr( "title", this.originalTitle );
+			}
+	
+			next = originalPosition.parent.children().eq( originalPosition.index );
+	
+			// Don't try to place the dialog next to itself (#8613)
+			if ( next.length && next[ 0 ] !== this.element[ 0 ] ) {
+				next.before( this.element );
+			} else {
+				originalPosition.parent.append( this.element );
+			}
+		},
+	
+		widget: function() {
+			return this.uiDialog;
+		},
+	
+		disable: $.noop,
+		enable: $.noop,
+	
+		close: function( event ) {
+			var that = this;
+	
+			if ( !this._isOpen || this._trigger( "beforeClose", event ) === false ) {
+				return;
+			}
+	
+			this._isOpen = false;
+			this._focusedElement = null;
+			this._destroyOverlay();
+			this._untrackInstance();
+	
+			if ( !this.opener.filter( ":focusable" ).trigger( "focus" ).length ) {
+	
+				// Hiding a focused element doesn't trigger blur in WebKit
+				// so in case we have nothing to focus on, explicitly blur the active element
+				// https://bugs.webkit.org/show_bug.cgi?id=47182
+				$.ui.safeBlur( $.ui.safeActiveElement( this.document[ 0 ] ) );
+			}
+	
+			this._hide( this.uiDialog, this.options.hide, function() {
+				that._trigger( "close", event );
+			} );
+		},
+	
+		isOpen: function() {
+			return this._isOpen;
+		},
+	
+		moveToTop: function() {
+			this._moveToTop();
+		},
+	
+		_moveToTop: function( event, silent ) {
+			var moved = false,
+				zIndices = this.uiDialog.siblings( ".ui-front:visible" ).map( function() {
+					return +$( this ).css( "z-index" );
+				} ).get(),
+				zIndexMax = Math.max.apply( null, zIndices );
+	
+			if ( zIndexMax >= +this.uiDialog.css( "z-index" ) ) {
+				this.uiDialog.css( "z-index", zIndexMax + 1 );
+				moved = true;
+			}
+	
+			if ( moved && !silent ) {
+				this._trigger( "focus", event );
+			}
+			return moved;
+		},
+	
+		open: function() {
+			var that = this;
+			if ( this._isOpen ) {
+				if ( this._moveToTop() ) {
+					this._focusTabbable();
+				}
+				return;
+			}
+	
+			this._isOpen = true;
+			this.opener = $( $.ui.safeActiveElement( this.document[ 0 ] ) );
+	
+			this._size();
+			this._position();
+			this._createOverlay();
+			this._moveToTop( null, true );
+	
+			// Ensure the overlay is moved to the top with the dialog, but only when
+			// opening. The overlay shouldn't move after the dialog is open so that
+			// modeless dialogs opened after the modal dialog stack properly.
+			if ( this.overlay ) {
+				this.overlay.css( "z-index", this.uiDialog.css( "z-index" ) - 1 );
+			}
+	
+			this._show( this.uiDialog, this.options.show, function() {
+				that._focusTabbable();
+				that._trigger( "focus" );
+			} );
+	
+			// Track the dialog immediately upon openening in case a focus event
+			// somehow occurs outside of the dialog before an element inside the
+			// dialog is focused (#10152)
+			this._makeFocusTarget();
+	
+			this._trigger( "open" );
+		},
+	
+		_focusTabbable: function() {
+	
+			// Set focus to the first match:
+			// 1. An element that was focused previously
+			// 2. First element inside the dialog matching [autofocus]
+			// 3. Tabbable element inside the content element
+			// 4. Tabbable element inside the buttonpane
+			// 5. The close button
+			// 6. The dialog itself
+			var hasFocus = this._focusedElement;
+			if ( !hasFocus ) {
+				hasFocus = this.element.find( "[autofocus]" );
+			}
+			if ( !hasFocus.length ) {
+				hasFocus = this.element.find( ":tabbable" );
+			}
+			if ( !hasFocus.length ) {
+				hasFocus = this.uiDialogButtonPane.find( ":tabbable" );
+			}
+			if ( !hasFocus.length ) {
+				hasFocus = this.uiDialogTitlebarClose.filter( ":tabbable" );
+			}
+			if ( !hasFocus.length ) {
+				hasFocus = this.uiDialog;
+			}
+			hasFocus.eq( 0 ).trigger( "focus" );
+		},
+	
+		_keepFocus: function( event ) {
+			function checkFocus() {
+				var activeElement = $.ui.safeActiveElement( this.document[ 0 ] ),
+					isActive = this.uiDialog[ 0 ] === activeElement ||
+						$.contains( this.uiDialog[ 0 ], activeElement );
+				if ( !isActive ) {
+					this._focusTabbable();
+				}
+			}
+			event.preventDefault();
+			checkFocus.call( this );
+	
+			// support: IE
+			// IE <= 8 doesn't prevent moving focus even with event.preventDefault()
+			// so we check again later
+			this._delay( checkFocus );
+		},
+	
+		_createWrapper: function() {
+			this.uiDialog = $( "<div>" )
+				.hide()
+				.attr( {
+	
+					// Setting tabIndex makes the div focusable
+					tabIndex: -1,
+					role: "dialog"
+				} )
+				.appendTo( this._appendTo() );
+	
+			this._addClass( this.uiDialog, "ui-dialog", "ui-widget ui-widget-content ui-front" );
+			this._on( this.uiDialog, {
+				keydown: function( event ) {
+					if ( this.options.closeOnEscape && !event.isDefaultPrevented() && event.keyCode &&
+							event.keyCode === $.ui.keyCode.ESCAPE ) {
+						event.preventDefault();
+						this.close( event );
+						return;
+					}
+	
+					// Prevent tabbing out of dialogs
+					if ( event.keyCode !== $.ui.keyCode.TAB || event.isDefaultPrevented() ) {
+						return;
+					}
+					var tabbables = this.uiDialog.find( ":tabbable" ),
+						first = tabbables.filter( ":first" ),
+						last = tabbables.filter( ":last" );
+	
+					if ( ( event.target === last[ 0 ] || event.target === this.uiDialog[ 0 ] ) &&
+							!event.shiftKey ) {
+						this._delay( function() {
+							first.trigger( "focus" );
+						} );
+						event.preventDefault();
+					} else if ( ( event.target === first[ 0 ] ||
+							event.target === this.uiDialog[ 0 ] ) && event.shiftKey ) {
+						this._delay( function() {
+							last.trigger( "focus" );
+						} );
+						event.preventDefault();
+					}
+				},
+				mousedown: function( event ) {
+					if ( this._moveToTop( event ) ) {
+						this._focusTabbable();
+					}
+				}
+			} );
+	
+			// We assume that any existing aria-describedby attribute means
+			// that the dialog content is marked up properly
+			// otherwise we brute force the content as the description
+			if ( !this.element.find( "[aria-describedby]" ).length ) {
+				this.uiDialog.attr( {
+					"aria-describedby": this.element.uniqueId().attr( "id" )
+				} );
+			}
+		},
+	
+		_createTitlebar: function() {
+			var uiDialogTitle;
+	
+			this.uiDialogTitlebar = $( "<div>" );
+			this._addClass( this.uiDialogTitlebar,
+				"ui-dialog-titlebar", "ui-widget-header ui-helper-clearfix" );
+			this._on( this.uiDialogTitlebar, {
+				mousedown: function( event ) {
+	
+					// Don't prevent click on close button (#8838)
+					// Focusing a dialog that is partially scrolled out of view
+					// causes the browser to scroll it into view, preventing the click event
+					if ( !$( event.target ).closest( ".ui-dialog-titlebar-close" ) ) {
+	
+						// Dialog isn't getting focus when dragging (#8063)
+						this.uiDialog.trigger( "focus" );
+					}
+				}
+			} );
+	
+			// Support: IE
+			// Use type="button" to prevent enter keypresses in textboxes from closing the
+			// dialog in IE (#9312)
+			this.uiDialogTitlebarClose = $( "<button type='button'></button>" )
+				.button( {
+					label: $( "<a>" ).text( this.options.closeText ).html(),
+					icon: "ui-icon-closethick",
+					showLabel: false
+				} )
+				.appendTo( this.uiDialogTitlebar );
+	
+			this._addClass( this.uiDialogTitlebarClose, "ui-dialog-titlebar-close" );
+			this._on( this.uiDialogTitlebarClose, {
+				click: function( event ) {
+					event.preventDefault();
+					this.close( event );
+				}
+			} );
+	
+			uiDialogTitle = $( "<span>" ).uniqueId().prependTo( this.uiDialogTitlebar );
+			this._addClass( uiDialogTitle, "ui-dialog-title" );
+			this._title( uiDialogTitle );
+	
+			this.uiDialogTitlebar.prependTo( this.uiDialog );
+	
+			this.uiDialog.attr( {
+				"aria-labelledby": uiDialogTitle.attr( "id" )
+			} );
+		},
+	
+		_title: function( title ) {
+			if ( this.options.title ) {
+				title.text( this.options.title );
+			} else {
+				title.html( "&#160;" );
+			}
+		},
+	
+		_createButtonPane: function() {
+			this.uiDialogButtonPane = $( "<div>" );
+			this._addClass( this.uiDialogButtonPane, "ui-dialog-buttonpane",
+				"ui-widget-content ui-helper-clearfix" );
+	
+			this.uiButtonSet = $( "<div>" )
+				.appendTo( this.uiDialogButtonPane );
+			this._addClass( this.uiButtonSet, "ui-dialog-buttonset" );
+	
+			this._createButtons();
+		},
+	
+		_createButtons: function() {
+			var that = this,
+				buttons = this.options.buttons;
+	
+			// If we already have a button pane, remove it
+			this.uiDialogButtonPane.remove();
+			this.uiButtonSet.empty();
+	
+			if ( $.isEmptyObject( buttons ) || ( $.isArray( buttons ) && !buttons.length ) ) {
+				this._removeClass( this.uiDialog, "ui-dialog-buttons" );
+				return;
+			}
+	
+			$.each( buttons, function( name, props ) {
+				var click, buttonOptions;
+				props = $.isFunction( props ) ?
+					{ click: props, text: name } :
+					props;
+	
+				// Default to a non-submitting button
+				props = $.extend( { type: "button" }, props );
+	
+				// Change the context for the click callback to be the main element
+				click = props.click;
+				buttonOptions = {
+					icon: props.icon,
+					iconPosition: props.iconPosition,
+					showLabel: props.showLabel,
+	
+					// Deprecated options
+					icons: props.icons,
+					text: props.text
+				};
+	
+				delete props.click;
+				delete props.icon;
+				delete props.iconPosition;
+				delete props.showLabel;
+	
+				// Deprecated options
+				delete props.icons;
+				if ( typeof props.text === "boolean" ) {
+					delete props.text;
+				}
+	
+				$( "<button></button>", props )
+					.button( buttonOptions )
+					.appendTo( that.uiButtonSet )
+					.on( "click", function() {
+						click.apply( that.element[ 0 ], arguments );
+					} );
+			} );
+			this._addClass( this.uiDialog, "ui-dialog-buttons" );
+			this.uiDialogButtonPane.appendTo( this.uiDialog );
+		},
+	
+		_makeDraggable: function() {
+			var that = this,
+				options = this.options;
+	
+			function filteredUi( ui ) {
+				return {
+					position: ui.position,
+					offset: ui.offset
+				};
+			}
+	
+			this.uiDialog.draggable( {
+				cancel: ".ui-dialog-content, .ui-dialog-titlebar-close",
+				handle: ".ui-dialog-titlebar",
+				containment: "document",
+				start: function( event, ui ) {
+					that._addClass( $( this ), "ui-dialog-dragging" );
+					that._blockFrames();
+					that._trigger( "dragStart", event, filteredUi( ui ) );
+				},
+				drag: function( event, ui ) {
+					that._trigger( "drag", event, filteredUi( ui ) );
+				},
+				stop: function( event, ui ) {
+					var left = ui.offset.left - that.document.scrollLeft(),
+						top = ui.offset.top - that.document.scrollTop();
+	
+					options.position = {
+						my: "left top",
+						at: "left" + ( left >= 0 ? "+" : "" ) + left + " " +
+							"top" + ( top >= 0 ? "+" : "" ) + top,
+						of: that.window
+					};
+					that._removeClass( $( this ), "ui-dialog-dragging" );
+					that._unblockFrames();
+					that._trigger( "dragStop", event, filteredUi( ui ) );
+				}
+			} );
+		},
+	
+		_makeResizable: function() {
+			var that = this,
+				options = this.options,
+				handles = options.resizable,
+	
+				// .ui-resizable has position: relative defined in the stylesheet
+				// but dialogs have to use absolute or fixed positioning
+				position = this.uiDialog.css( "position" ),
+				resizeHandles = typeof handles === "string" ?
+					handles :
+					"n,e,s,w,se,sw,ne,nw";
+	
+			function filteredUi( ui ) {
+				return {
+					originalPosition: ui.originalPosition,
+					originalSize: ui.originalSize,
+					position: ui.position,
+					size: ui.size
+				};
+			}
+	
+			this.uiDialog.resizable( {
+				cancel: ".ui-dialog-content",
+				containment: "document",
+				alsoResize: this.element,
+				maxWidth: options.maxWidth,
+				maxHeight: options.maxHeight,
+				minWidth: options.minWidth,
+				minHeight: this._minHeight(),
+				handles: resizeHandles,
+				start: function( event, ui ) {
+					that._addClass( $( this ), "ui-dialog-resizing" );
+					that._blockFrames();
+					that._trigger( "resizeStart", event, filteredUi( ui ) );
+				},
+				resize: function( event, ui ) {
+					that._trigger( "resize", event, filteredUi( ui ) );
+				},
+				stop: function( event, ui ) {
+					var offset = that.uiDialog.offset(),
+						left = offset.left - that.document.scrollLeft(),
+						top = offset.top - that.document.scrollTop();
+	
+					options.height = that.uiDialog.height();
+					options.width = that.uiDialog.width();
+					options.position = {
+						my: "left top",
+						at: "left" + ( left >= 0 ? "+" : "" ) + left + " " +
+							"top" + ( top >= 0 ? "+" : "" ) + top,
+						of: that.window
+					};
+					that._removeClass( $( this ), "ui-dialog-resizing" );
+					that._unblockFrames();
+					that._trigger( "resizeStop", event, filteredUi( ui ) );
+				}
+			} )
+				.css( "position", position );
+		},
+	
+		_trackFocus: function() {
+			this._on( this.widget(), {
+				focusin: function( event ) {
+					this._makeFocusTarget();
+					this._focusedElement = $( event.target );
+				}
+			} );
+		},
+	
+		_makeFocusTarget: function() {
+			this._untrackInstance();
+			this._trackingInstances().unshift( this );
+		},
+	
+		_untrackInstance: function() {
+			var instances = this._trackingInstances(),
+				exists = $.inArray( this, instances );
+			if ( exists !== -1 ) {
+				instances.splice( exists, 1 );
+			}
+		},
+	
+		_trackingInstances: function() {
+			var instances = this.document.data( "ui-dialog-instances" );
+			if ( !instances ) {
+				instances = [];
+				this.document.data( "ui-dialog-instances", instances );
+			}
+			return instances;
+		},
+	
+		_minHeight: function() {
+			var options = this.options;
+	
+			return options.height === "auto" ?
+				options.minHeight :
+				Math.min( options.minHeight, options.height );
+		},
+	
+		_position: function() {
+	
+			// Need to show the dialog to get the actual offset in the position plugin
+			var isVisible = this.uiDialog.is( ":visible" );
+			if ( !isVisible ) {
+				this.uiDialog.show();
+			}
+			this.uiDialog.position( this.options.position );
+			if ( !isVisible ) {
+				this.uiDialog.hide();
+			}
+		},
+	
+		_setOptions: function( options ) {
+			var that = this,
+				resize = false,
+				resizableOptions = {};
+	
+			$.each( options, function( key, value ) {
+				that._setOption( key, value );
+	
+				if ( key in that.sizeRelatedOptions ) {
+					resize = true;
+				}
+				if ( key in that.resizableRelatedOptions ) {
+					resizableOptions[ key ] = value;
+				}
+			} );
+	
+			if ( resize ) {
+				this._size();
+				this._position();
+			}
+			if ( this.uiDialog.is( ":data(ui-resizable)" ) ) {
+				this.uiDialog.resizable( "option", resizableOptions );
+			}
+		},
+	
+		_setOption: function( key, value ) {
+			var isDraggable, isResizable,
+				uiDialog = this.uiDialog;
+	
+			if ( key === "disabled" ) {
+				return;
+			}
+	
+			this._super( key, value );
+	
+			if ( key === "appendTo" ) {
+				this.uiDialog.appendTo( this._appendTo() );
+			}
+	
+			if ( key === "buttons" ) {
+				this._createButtons();
+			}
+	
+			if ( key === "closeText" ) {
+				this.uiDialogTitlebarClose.button( {
+	
+					// Ensure that we always pass a string
+					label: $( "<a>" ).text( "" + this.options.closeText ).html()
+				} );
+			}
+	
+			if ( key === "draggable" ) {
+				isDraggable = uiDialog.is( ":data(ui-draggable)" );
+				if ( isDraggable && !value ) {
+					uiDialog.draggable( "destroy" );
+				}
+	
+				if ( !isDraggable && value ) {
+					this._makeDraggable();
+				}
+			}
+	
+			if ( key === "position" ) {
+				this._position();
+			}
+	
+			if ( key === "resizable" ) {
+	
+				// currently resizable, becoming non-resizable
+				isResizable = uiDialog.is( ":data(ui-resizable)" );
+				if ( isResizable && !value ) {
+					uiDialog.resizable( "destroy" );
+				}
+	
+				// Currently resizable, changing handles
+				if ( isResizable && typeof value === "string" ) {
+					uiDialog.resizable( "option", "handles", value );
+				}
+	
+				// Currently non-resizable, becoming resizable
+				if ( !isResizable && value !== false ) {
+					this._makeResizable();
+				}
+			}
+	
+			if ( key === "title" ) {
+				this._title( this.uiDialogTitlebar.find( ".ui-dialog-title" ) );
+			}
+		},
+	
+		_size: function() {
+	
+			// If the user has resized the dialog, the .ui-dialog and .ui-dialog-content
+			// divs will both have width and height set, so we need to reset them
+			var nonContentHeight, minContentHeight, maxContentHeight,
+				options = this.options;
+	
+			// Reset content sizing
+			this.element.show().css( {
+				width: "auto",
+				minHeight: 0,
+				maxHeight: "none",
+				height: 0
+			} );
+	
+			if ( options.minWidth > options.width ) {
+				options.width = options.minWidth;
+			}
+	
+			// Reset wrapper sizing
+			// determine the height of all the non-content elements
+			nonContentHeight = this.uiDialog.css( {
+				height: "auto",
+				width: options.width
+			} )
+				.outerHeight();
+			minContentHeight = Math.max( 0, options.minHeight - nonContentHeight );
+			maxContentHeight = typeof options.maxHeight === "number" ?
+				Math.max( 0, options.maxHeight - nonContentHeight ) :
+				"none";
+	
+			if ( options.height === "auto" ) {
+				this.element.css( {
+					minHeight: minContentHeight,
+					maxHeight: maxContentHeight,
+					height: "auto"
+				} );
+			} else {
+				this.element.height( Math.max( 0, options.height - nonContentHeight ) );
+			}
+	
+			if ( this.uiDialog.is( ":data(ui-resizable)" ) ) {
+				this.uiDialog.resizable( "option", "minHeight", this._minHeight() );
+			}
+		},
+	
+		_blockFrames: function() {
+			this.iframeBlocks = this.document.find( "iframe" ).map( function() {
+				var iframe = $( this );
+	
+				return $( "<div>" )
+					.css( {
+						position: "absolute",
+						width: iframe.outerWidth(),
+						height: iframe.outerHeight()
+					} )
+					.appendTo( iframe.parent() )
+					.offset( iframe.offset() )[ 0 ];
+			} );
+		},
+	
+		_unblockFrames: function() {
+			if ( this.iframeBlocks ) {
+				this.iframeBlocks.remove();
+				delete this.iframeBlocks;
+			}
+		},
+	
+		_allowInteraction: function( event ) {
+			if ( $( event.target ).closest( ".ui-dialog" ).length ) {
+				return true;
+			}
+	
+			// TODO: Remove hack when datepicker implements
+			// the .ui-front logic (#8989)
+			return !!$( event.target ).closest( ".ui-datepicker" ).length;
+		},
+	
+		_createOverlay: function() {
+			if ( !this.options.modal ) {
+				return;
+			}
+	
+			// We use a delay in case the overlay is created from an
+			// event that we're going to be cancelling (#2804)
+			var isOpening = true;
+			this._delay( function() {
+				isOpening = false;
+			} );
+	
+			if ( !this.document.data( "ui-dialog-overlays" ) ) {
+	
+				// Prevent use of anchors and inputs
+				// Using _on() for an event handler shared across many instances is
+				// safe because the dialogs stack and must be closed in reverse order
+				this._on( this.document, {
+					focusin: function( event ) {
+						if ( isOpening ) {
+							return;
+						}
+	
+						if ( !this._allowInteraction( event ) ) {
+							event.preventDefault();
+							this._trackingInstances()[ 0 ]._focusTabbable();
+						}
+					}
+				} );
+			}
+	
+			this.overlay = $( "<div>" )
+				.appendTo( this._appendTo() );
+	
+			this._addClass( this.overlay, null, "ui-widget-overlay ui-front" );
+			this._on( this.overlay, {
+				mousedown: "_keepFocus"
+			} );
+			this.document.data( "ui-dialog-overlays",
+				( this.document.data( "ui-dialog-overlays" ) || 0 ) + 1 );
+		},
+	
+		_destroyOverlay: function() {
+			if ( !this.options.modal ) {
+				return;
+			}
+	
+			if ( this.overlay ) {
+				var overlays = this.document.data( "ui-dialog-overlays" ) - 1;
+	
+				if ( !overlays ) {
+					this._off( this.document, "focusin" );
+					this.document.removeData( "ui-dialog-overlays" );
+				} else {
+					this.document.data( "ui-dialog-overlays", overlays );
+				}
+	
+				this.overlay.remove();
+				this.overlay = null;
+			}
+		}
+	} );
+	
+	// DEPRECATED
+	// TODO: switch return back to widget declaration at top of file when this is removed
+	if ( $.uiBackCompat !== false ) {
+	
+		// Backcompat for dialogClass option
+		$.widget( "ui.dialog", $.ui.dialog, {
+			options: {
+				dialogClass: ""
+			},
+			_createWrapper: function() {
+				this._super();
+				this.uiDialog.addClass( this.options.dialogClass );
+			},
+			_setOption: function( key, value ) {
+				if ( key === "dialogClass" ) {
+					this.uiDialog
+						.removeClass( this.options.dialogClass )
+						.addClass( value );
+				}
+				this._superApply( arguments );
+			}
+		} );
+	}
+	
+	return $.ui.dialog;
+	
+	} ) );
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Button 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Button
+	//>>group: Widgets
+	//>>description: Enhances a form with themeable buttons.
+	//>>docs: http://api.jqueryui.com/button/
+	//>>demos: http://jqueryui.com/button/
+	//>>css.structure: ../../themes/base/core.css
+	//>>css.structure: ../../themes/base/button.css
+	//>>css.theme: ../../themes/base/theme.css
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+				__webpack_require__(7),
+	
+				// These are only for backcompat
+				// TODO: Remove after 1.12
+				__webpack_require__(19),
+				__webpack_require__(22),
+	
+				__webpack_require__(27),
+				__webpack_require__(20)
+			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	
+	$.widget( "ui.button", {
+		version: "1.12.1",
+		defaultElement: "<button>",
+		options: {
+			classes: {
+				"ui-button": "ui-corner-all"
+			},
+			disabled: null,
+			icon: null,
+			iconPosition: "beginning",
+			label: null,
+			showLabel: true
+		},
+	
+		_getCreateOptions: function() {
+			var disabled,
+	
+				// This is to support cases like in jQuery Mobile where the base widget does have
+				// an implementation of _getCreateOptions
+				options = this._super() || {};
+	
+			this.isInput = this.element.is( "input" );
+	
+			disabled = this.element[ 0 ].disabled;
+			if ( disabled != null ) {
+				options.disabled = disabled;
+			}
+	
+			this.originalLabel = this.isInput ? this.element.val() : this.element.html();
+			if ( this.originalLabel ) {
+				options.label = this.originalLabel;
+			}
+	
+			return options;
+		},
+	
+		_create: function() {
+			if ( !this.option.showLabel & !this.options.icon ) {
+				this.options.showLabel = true;
+			}
+	
+			// We have to check the option again here even though we did in _getCreateOptions,
+			// because null may have been passed on init which would override what was set in
+			// _getCreateOptions
+			if ( this.options.disabled == null ) {
+				this.options.disabled = this.element[ 0 ].disabled || false;
+			}
+	
+			this.hasTitle = !!this.element.attr( "title" );
+	
+			// Check to see if the label needs to be set or if its already correct
+			if ( this.options.label && this.options.label !== this.originalLabel ) {
+				if ( this.isInput ) {
+					this.element.val( this.options.label );
+				} else {
+					this.element.html( this.options.label );
+				}
+			}
+			this._addClass( "ui-button", "ui-widget" );
+			this._setOption( "disabled", this.options.disabled );
+			this._enhance();
+	
+			if ( this.element.is( "a" ) ) {
+				this._on( {
+					"keyup": function( event ) {
+						if ( event.keyCode === $.ui.keyCode.SPACE ) {
+							event.preventDefault();
+	
+							// Support: PhantomJS <= 1.9, IE 8 Only
+							// If a native click is available use it so we actually cause navigation
+							// otherwise just trigger a click event
+							if ( this.element[ 0 ].click ) {
+								this.element[ 0 ].click();
+							} else {
+								this.element.trigger( "click" );
+							}
+						}
+					}
+				} );
+			}
+		},
+	
+		_enhance: function() {
+			if ( !this.element.is( "button" ) ) {
+				this.element.attr( "role", "button" );
+			}
+	
+			if ( this.options.icon ) {
+				this._updateIcon( "icon", this.options.icon );
+				this._updateTooltip();
+			}
+		},
+	
+		_updateTooltip: function() {
+			this.title = this.element.attr( "title" );
+	
+			if ( !this.options.showLabel && !this.title ) {
+				this.element.attr( "title", this.options.label );
+			}
+		},
+	
+		_updateIcon: function( option, value ) {
+			var icon = option !== "iconPosition",
+				position = icon ? this.options.iconPosition : value,
+				displayBlock = position === "top" || position === "bottom";
+	
+			// Create icon
+			if ( !this.icon ) {
+				this.icon = $( "<span>" );
+	
+				this._addClass( this.icon, "ui-button-icon", "ui-icon" );
+	
+				if ( !this.options.showLabel ) {
+					this._addClass( "ui-button-icon-only" );
+				}
+			} else if ( icon ) {
+	
+				// If we are updating the icon remove the old icon class
+				this._removeClass( this.icon, null, this.options.icon );
+			}
+	
+			// If we are updating the icon add the new icon class
+			if ( icon ) {
+				this._addClass( this.icon, null, value );
+			}
+	
+			this._attachIcon( position );
+	
+			// If the icon is on top or bottom we need to add the ui-widget-icon-block class and remove
+			// the iconSpace if there is one.
+			if ( displayBlock ) {
+				this._addClass( this.icon, null, "ui-widget-icon-block" );
+				if ( this.iconSpace ) {
+					this.iconSpace.remove();
+				}
+			} else {
+	
+				// Position is beginning or end so remove the ui-widget-icon-block class and add the
+				// space if it does not exist
+				if ( !this.iconSpace ) {
+					this.iconSpace = $( "<span> </span>" );
+					this._addClass( this.iconSpace, "ui-button-icon-space" );
+				}
+				this._removeClass( this.icon, null, "ui-wiget-icon-block" );
+				this._attachIconSpace( position );
+			}
+		},
+	
+		_destroy: function() {
+			this.element.removeAttr( "role" );
+	
+			if ( this.icon ) {
+				this.icon.remove();
+			}
+			if ( this.iconSpace ) {
+				this.iconSpace.remove();
+			}
+			if ( !this.hasTitle ) {
+				this.element.removeAttr( "title" );
+			}
+		},
+	
+		_attachIconSpace: function( iconPosition ) {
+			this.icon[ /^(?:end|bottom)/.test( iconPosition ) ? "before" : "after" ]( this.iconSpace );
+		},
+	
+		_attachIcon: function( iconPosition ) {
+			this.element[ /^(?:end|bottom)/.test( iconPosition ) ? "append" : "prepend" ]( this.icon );
+		},
+	
+		_setOptions: function( options ) {
+			var newShowLabel = options.showLabel === undefined ?
+					this.options.showLabel :
+					options.showLabel,
+				newIcon = options.icon === undefined ? this.options.icon : options.icon;
+	
+			if ( !newShowLabel && !newIcon ) {
+				options.showLabel = true;
+			}
+			this._super( options );
+		},
+	
+		_setOption: function( key, value ) {
+			if ( key === "icon" ) {
+				if ( value ) {
+					this._updateIcon( key, value );
+				} else if ( this.icon ) {
+					this.icon.remove();
+					if ( this.iconSpace ) {
+						this.iconSpace.remove();
+					}
+				}
+			}
+	
+			if ( key === "iconPosition" ) {
+				this._updateIcon( key, value );
+			}
+	
+			// Make sure we can't end up with a button that has neither text nor icon
+			if ( key === "showLabel" ) {
+					this._toggleClass( "ui-button-icon-only", null, !value );
+					this._updateTooltip();
+			}
+	
+			if ( key === "label" ) {
+				if ( this.isInput ) {
+					this.element.val( value );
+				} else {
+	
+					// If there is an icon, append it, else nothing then append the value
+					// this avoids removal of the icon when setting label text
+					this.element.html( value );
+					if ( this.icon ) {
+						this._attachIcon( this.options.iconPosition );
+						this._attachIconSpace( this.options.iconPosition );
+					}
+				}
+			}
+	
+			this._super( key, value );
+	
+			if ( key === "disabled" ) {
+				this._toggleClass( null, "ui-state-disabled", value );
+				this.element[ 0 ].disabled = value;
+				if ( value ) {
+					this.element.blur();
+				}
+			}
+		},
+	
+		refresh: function() {
+	
+			// Make sure to only check disabled if its an element that supports this otherwise
+			// check for the disabled class to determine state
+			var isDisabled = this.element.is( "input, button" ) ?
+				this.element[ 0 ].disabled : this.element.hasClass( "ui-button-disabled" );
+	
+			if ( isDisabled !== this.options.disabled ) {
+				this._setOptions( { disabled: isDisabled } );
+			}
+	
+			this._updateTooltip();
+		}
+	} );
+	
+	// DEPRECATED
+	if ( $.uiBackCompat !== false ) {
+	
+		// Text and Icons options
+		$.widget( "ui.button", $.ui.button, {
+			options: {
+				text: true,
+				icons: {
+					primary: null,
+					secondary: null
+				}
+			},
+	
+			_create: function() {
+				if ( this.options.showLabel && !this.options.text ) {
+					this.options.showLabel = this.options.text;
+				}
+				if ( !this.options.showLabel && this.options.text ) {
+					this.options.text = this.options.showLabel;
+				}
+				if ( !this.options.icon && ( this.options.icons.primary ||
+						this.options.icons.secondary ) ) {
+					if ( this.options.icons.primary ) {
+						this.options.icon = this.options.icons.primary;
+					} else {
+						this.options.icon = this.options.icons.secondary;
+						this.options.iconPosition = "end";
+					}
+				} else if ( this.options.icon ) {
+					this.options.icons.primary = this.options.icon;
+				}
+				this._super();
+			},
+	
+			_setOption: function( key, value ) {
+				if ( key === "text" ) {
+					this._super( "showLabel", value );
+					return;
+				}
+				if ( key === "showLabel" ) {
+					this.options.text = value;
+				}
+				if ( key === "icon" ) {
+					this.options.icons.primary = value;
+				}
+				if ( key === "icons" ) {
+					if ( value.primary ) {
+						this._super( "icon", value.primary );
+						this._super( "iconPosition", "beginning" );
+					} else if ( value.secondary ) {
+						this._super( "icon", value.secondary );
+						this._super( "iconPosition", "end" );
+					}
+				}
+				this._superApply( arguments );
+			}
+		} );
+	
+		$.fn.button = ( function( orig ) {
+			return function() {
+				if ( !this.length || ( this.length && this[ 0 ].tagName !== "INPUT" ) ||
+						( this.length && this[ 0 ].tagName === "INPUT" && (
+							this.attr( "type" ) !== "checkbox" && this.attr( "type" ) !== "radio"
+						) ) ) {
+					return orig.apply( this, arguments );
+				}
+				if ( !$.ui.checkboxradio ) {
+					$.error( "Checkboxradio widget missing" );
+				}
+				if ( arguments.length === 0 ) {
+					return this.checkboxradio( {
+						"icon": false
+					} );
+				}
+				return this.checkboxradio.apply( this, arguments );
+			};
+		} )( $.fn.button );
+	
+		$.fn.buttonset = function() {
+			if ( !$.ui.controlgroup ) {
+				$.error( "Controlgroup widget missing" );
+			}
+			if ( arguments[ 0 ] === "option" && arguments[ 1 ] === "items" && arguments[ 2 ] ) {
+				return this.controlgroup.apply( this,
+					[ arguments[ 0 ], "items.button", arguments[ 2 ] ] );
+			}
+			if ( arguments[ 0 ] === "option" && arguments[ 1 ] === "items" ) {
+				return this.controlgroup.apply( this, [ arguments[ 0 ], "items.button" ] );
+			}
+			if ( typeof arguments[ 0 ] === "object" && arguments[ 0 ].items ) {
+				arguments[ 0 ].items = {
+					button: arguments[ 0 ].items
+				};
+			}
+			return this.controlgroup.apply( this, arguments );
+		};
+	}
+	
+	return $.ui.button;
+	
+	} ) );
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Controlgroup 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Controlgroup
+	//>>group: Widgets
+	//>>description: Visually groups form control widgets
+	//>>docs: http://api.jqueryui.com/controlgroup/
+	//>>demos: http://jqueryui.com/controlgroup/
+	//>>css.structure: ../../themes/base/core.css
+	//>>css.structure: ../../themes/base/controlgroup.css
+	//>>css.theme: ../../themes/base/theme.css
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+				__webpack_require__(7),
+				__webpack_require__(20)
+			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	var controlgroupCornerRegex = /ui-corner-([a-z]){2,6}/g;
+	
+	return $.widget( "ui.controlgroup", {
+		version: "1.12.1",
+		defaultElement: "<div>",
+		options: {
+			direction: "horizontal",
+			disabled: null,
+			onlyVisible: true,
+			items: {
+				"button": "input[type=button], input[type=submit], input[type=reset], button, a",
+				"controlgroupLabel": ".ui-controlgroup-label",
+				"checkboxradio": "input[type='checkbox'], input[type='radio']",
+				"selectmenu": "select",
+				"spinner": ".ui-spinner-input"
+			}
+		},
+	
+		_create: function() {
+			this._enhance();
+		},
+	
+		// To support the enhanced option in jQuery Mobile, we isolate DOM manipulation
+		_enhance: function() {
+			this.element.attr( "role", "toolbar" );
+			this.refresh();
+		},
+	
+		_destroy: function() {
+			this._callChildMethod( "destroy" );
+			this.childWidgets.removeData( "ui-controlgroup-data" );
+			this.element.removeAttr( "role" );
+			if ( this.options.items.controlgroupLabel ) {
+				this.element
+					.find( this.options.items.controlgroupLabel )
+					.find( ".ui-controlgroup-label-contents" )
+					.contents().unwrap();
+			}
+		},
+	
+		_initWidgets: function() {
+			var that = this,
+				childWidgets = [];
+	
+			// First we iterate over each of the items options
+			$.each( this.options.items, function( widget, selector ) {
+				var labels;
+				var options = {};
+	
+				// Make sure the widget has a selector set
+				if ( !selector ) {
+					return;
+				}
+	
+				if ( widget === "controlgroupLabel" ) {
+					labels = that.element.find( selector );
+					labels.each( function() {
+						var element = $( this );
+	
+						if ( element.children( ".ui-controlgroup-label-contents" ).length ) {
+							return;
+						}
+						element.contents()
+							.wrapAll( "<span class='ui-controlgroup-label-contents'></span>" );
+					} );
+					that._addClass( labels, null, "ui-widget ui-widget-content ui-state-default" );
+					childWidgets = childWidgets.concat( labels.get() );
+					return;
+				}
+	
+				// Make sure the widget actually exists
+				if ( !$.fn[ widget ] ) {
+					return;
+				}
+	
+				// We assume everything is in the middle to start because we can't determine
+				// first / last elements until all enhancments are done.
+				if ( that[ "_" + widget + "Options" ] ) {
+					options = that[ "_" + widget + "Options" ]( "middle" );
+				} else {
+					options = { classes: {} };
+				}
+	
+				// Find instances of this widget inside controlgroup and init them
+				that.element
+					.find( selector )
+					.each( function() {
+						var element = $( this );
+						var instance = element[ widget ]( "instance" );
+	
+						// We need to clone the default options for this type of widget to avoid
+						// polluting the variable options which has a wider scope than a single widget.
+						var instanceOptions = $.widget.extend( {}, options );
+	
+						// If the button is the child of a spinner ignore it
+						// TODO: Find a more generic solution
+						if ( widget === "button" && element.parent( ".ui-spinner" ).length ) {
+							return;
+						}
+	
+						// Create the widget if it doesn't exist
+						if ( !instance ) {
+							instance = element[ widget ]()[ widget ]( "instance" );
+						}
+						if ( instance ) {
+							instanceOptions.classes =
+								that._resolveClassesValues( instanceOptions.classes, instance );
+						}
+						element[ widget ]( instanceOptions );
+	
+						// Store an instance of the controlgroup to be able to reference
+						// from the outermost element for changing options and refresh
+						var widgetElement = element[ widget ]( "widget" );
+						$.data( widgetElement[ 0 ], "ui-controlgroup-data",
+							instance ? instance : element[ widget ]( "instance" ) );
+	
+						childWidgets.push( widgetElement[ 0 ] );
+					} );
+			} );
+	
+			this.childWidgets = $( $.unique( childWidgets ) );
+			this._addClass( this.childWidgets, "ui-controlgroup-item" );
+		},
+	
+		_callChildMethod: function( method ) {
+			this.childWidgets.each( function() {
+				var element = $( this ),
+					data = element.data( "ui-controlgroup-data" );
+				if ( data && data[ method ] ) {
+					data[ method ]();
+				}
+			} );
+		},
+	
+		_updateCornerClass: function( element, position ) {
+			var remove = "ui-corner-top ui-corner-bottom ui-corner-left ui-corner-right ui-corner-all";
+			var add = this._buildSimpleOptions( position, "label" ).classes.label;
+	
+			this._removeClass( element, null, remove );
+			this._addClass( element, null, add );
+		},
+	
+		_buildSimpleOptions: function( position, key ) {
+			var direction = this.options.direction === "vertical";
+			var result = {
+				classes: {}
+			};
+			result.classes[ key ] = {
+				"middle": "",
+				"first": "ui-corner-" + ( direction ? "top" : "left" ),
+				"last": "ui-corner-" + ( direction ? "bottom" : "right" ),
+				"only": "ui-corner-all"
+			}[ position ];
+	
+			return result;
+		},
+	
+		_spinnerOptions: function( position ) {
+			var options = this._buildSimpleOptions( position, "ui-spinner" );
+	
+			options.classes[ "ui-spinner-up" ] = "";
+			options.classes[ "ui-spinner-down" ] = "";
+	
+			return options;
+		},
+	
+		_buttonOptions: function( position ) {
+			return this._buildSimpleOptions( position, "ui-button" );
+		},
+	
+		_checkboxradioOptions: function( position ) {
+			return this._buildSimpleOptions( position, "ui-checkboxradio-label" );
+		},
+	
+		_selectmenuOptions: function( position ) {
+			var direction = this.options.direction === "vertical";
+			return {
+				width: direction ? "auto" : false,
+				classes: {
+					middle: {
+						"ui-selectmenu-button-open": "",
+						"ui-selectmenu-button-closed": ""
+					},
+					first: {
+						"ui-selectmenu-button-open": "ui-corner-" + ( direction ? "top" : "tl" ),
+						"ui-selectmenu-button-closed": "ui-corner-" + ( direction ? "top" : "left" )
+					},
+					last: {
+						"ui-selectmenu-button-open": direction ? "" : "ui-corner-tr",
+						"ui-selectmenu-button-closed": "ui-corner-" + ( direction ? "bottom" : "right" )
+					},
+					only: {
+						"ui-selectmenu-button-open": "ui-corner-top",
+						"ui-selectmenu-button-closed": "ui-corner-all"
+					}
+	
+				}[ position ]
+			};
+		},
+	
+		_resolveClassesValues: function( classes, instance ) {
+			var result = {};
+			$.each( classes, function( key ) {
+				var current = instance.options.classes[ key ] || "";
+				current = $.trim( current.replace( controlgroupCornerRegex, "" ) );
+				result[ key ] = ( current + " " + classes[ key ] ).replace( /\s+/g, " " );
+			} );
+			return result;
+		},
+	
+		_setOption: function( key, value ) {
+			if ( key === "direction" ) {
+				this._removeClass( "ui-controlgroup-" + this.options.direction );
+			}
+	
+			this._super( key, value );
+			if ( key === "disabled" ) {
+				this._callChildMethod( value ? "disable" : "enable" );
+				return;
+			}
+	
+			this.refresh();
+		},
+	
+		refresh: function() {
+			var children,
+				that = this;
+	
+			this._addClass( "ui-controlgroup ui-controlgroup-" + this.options.direction );
+	
+			if ( this.options.direction === "horizontal" ) {
+				this._addClass( null, "ui-helper-clearfix" );
+			}
+			this._initWidgets();
+	
+			children = this.childWidgets;
+	
+			// We filter here because we need to track all childWidgets not just the visible ones
+			if ( this.options.onlyVisible ) {
+				children = children.filter( ":visible" );
+			}
+	
+			if ( children.length ) {
+	
+				// We do this last because we need to make sure all enhancment is done
+				// before determining first and last
+				$.each( [ "first", "last" ], function( index, value ) {
+					var instance = children[ value ]().data( "ui-controlgroup-data" );
+	
+					if ( instance && that[ "_" + instance.widgetName + "Options" ] ) {
+						var options = that[ "_" + instance.widgetName + "Options" ](
+							children.length === 1 ? "only" : value
+						);
+						options.classes = that._resolveClassesValues( options.classes, instance );
+						instance.element[ instance.widgetName ]( options );
+					} else {
+						that._updateCornerClass( children[ value ](), value );
+					}
+				} );
+	
+				// Finally call the refresh method on each of the child widgets.
+				this._callChildMethod( "refresh" );
+			}
+		}
+	} );
+	} ) );
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Widget 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Widget
+	//>>group: Core
+	//>>description: Provides a factory for creating stateful widgets with a common API.
+	//>>docs: http://api.jqueryui.com/jQuery.widget/
+	//>>demos: http://jqueryui.com/widget/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	
+	var widgetUuid = 0;
+	var widgetSlice = Array.prototype.slice;
+	
+	$.cleanData = ( function( orig ) {
+		return function( elems ) {
+			var events, elem, i;
+			for ( i = 0; ( elem = elems[ i ] ) != null; i++ ) {
+				try {
+	
+					// Only trigger remove when necessary to save time
+					events = $._data( elem, "events" );
+					if ( events && events.remove ) {
+						$( elem ).triggerHandler( "remove" );
+					}
+	
+				// Http://bugs.jquery.com/ticket/8235
+				} catch ( e ) {}
+			}
+			orig( elems );
+		};
+	} )( $.cleanData );
+	
+	$.widget = function( name, base, prototype ) {
+		var existingConstructor, constructor, basePrototype;
+	
+		// ProxiedPrototype allows the provided prototype to remain unmodified
+		// so that it can be used as a mixin for multiple widgets (#8876)
+		var proxiedPrototype = {};
+	
+		var namespace = name.split( "." )[ 0 ];
+		name = name.split( "." )[ 1 ];
+		var fullName = namespace + "-" + name;
+	
+		if ( !prototype ) {
+			prototype = base;
+			base = $.Widget;
+		}
+	
+		if ( $.isArray( prototype ) ) {
+			prototype = $.extend.apply( null, [ {} ].concat( prototype ) );
+		}
+	
+		// Create selector for plugin
+		$.expr[ ":" ][ fullName.toLowerCase() ] = function( elem ) {
+			return !!$.data( elem, fullName );
+		};
+	
+		$[ namespace ] = $[ namespace ] || {};
+		existingConstructor = $[ namespace ][ name ];
+		constructor = $[ namespace ][ name ] = function( options, element ) {
+	
+			// Allow instantiation without "new" keyword
+			if ( !this._createWidget ) {
+				return new constructor( options, element );
+			}
+	
+			// Allow instantiation without initializing for simple inheritance
+			// must use "new" keyword (the code above always passes args)
+			if ( arguments.length ) {
+				this._createWidget( options, element );
+			}
+		};
+	
+		// Extend with the existing constructor to carry over any static properties
+		$.extend( constructor, existingConstructor, {
+			version: prototype.version,
+	
+			// Copy the object used to create the prototype in case we need to
+			// redefine the widget later
+			_proto: $.extend( {}, prototype ),
+	
+			// Track widgets that inherit from this widget in case this widget is
+			// redefined after a widget inherits from it
+			_childConstructors: []
+		} );
+	
+		basePrototype = new base();
+	
+		// We need to make the options hash a property directly on the new instance
+		// otherwise we'll modify the options hash on the prototype that we're
+		// inheriting from
+		basePrototype.options = $.widget.extend( {}, basePrototype.options );
+		$.each( prototype, function( prop, value ) {
+			if ( !$.isFunction( value ) ) {
+				proxiedPrototype[ prop ] = value;
+				return;
+			}
+			proxiedPrototype[ prop ] = ( function() {
+				function _super() {
+					return base.prototype[ prop ].apply( this, arguments );
+				}
+	
+				function _superApply( args ) {
+					return base.prototype[ prop ].apply( this, args );
+				}
+	
+				return function() {
+					var __super = this._super;
+					var __superApply = this._superApply;
+					var returnValue;
+	
+					this._super = _super;
+					this._superApply = _superApply;
+	
+					returnValue = value.apply( this, arguments );
+	
+					this._super = __super;
+					this._superApply = __superApply;
+	
+					return returnValue;
+				};
+			} )();
+		} );
+		constructor.prototype = $.widget.extend( basePrototype, {
+	
+			// TODO: remove support for widgetEventPrefix
+			// always use the name + a colon as the prefix, e.g., draggable:start
+			// don't prefix for widgets that aren't DOM-based
+			widgetEventPrefix: existingConstructor ? ( basePrototype.widgetEventPrefix || name ) : name
+		}, proxiedPrototype, {
+			constructor: constructor,
+			namespace: namespace,
+			widgetName: name,
+			widgetFullName: fullName
+		} );
+	
+		// If this widget is being redefined then we need to find all widgets that
+		// are inheriting from it and redefine all of them so that they inherit from
+		// the new version of this widget. We're essentially trying to replace one
+		// level in the prototype chain.
+		if ( existingConstructor ) {
+			$.each( existingConstructor._childConstructors, function( i, child ) {
+				var childPrototype = child.prototype;
+	
+				// Redefine the child widget using the same prototype that was
+				// originally used, but inherit from the new version of the base
+				$.widget( childPrototype.namespace + "." + childPrototype.widgetName, constructor,
+					child._proto );
+			} );
+	
+			// Remove the list of existing child constructors from the old constructor
+			// so the old child constructors can be garbage collected
+			delete existingConstructor._childConstructors;
+		} else {
+			base._childConstructors.push( constructor );
+		}
+	
+		$.widget.bridge( name, constructor );
+	
+		return constructor;
+	};
+	
+	$.widget.extend = function( target ) {
+		var input = widgetSlice.call( arguments, 1 );
+		var inputIndex = 0;
+		var inputLength = input.length;
+		var key;
+		var value;
+	
+		for ( ; inputIndex < inputLength; inputIndex++ ) {
+			for ( key in input[ inputIndex ] ) {
+				value = input[ inputIndex ][ key ];
+				if ( input[ inputIndex ].hasOwnProperty( key ) && value !== undefined ) {
+	
+					// Clone objects
+					if ( $.isPlainObject( value ) ) {
+						target[ key ] = $.isPlainObject( target[ key ] ) ?
+							$.widget.extend( {}, target[ key ], value ) :
+	
+							// Don't extend strings, arrays, etc. with objects
+							$.widget.extend( {}, value );
+	
+					// Copy everything else by reference
+					} else {
+						target[ key ] = value;
+					}
+				}
+			}
+		}
+		return target;
+	};
+	
+	$.widget.bridge = function( name, object ) {
+		var fullName = object.prototype.widgetFullName || name;
+		$.fn[ name ] = function( options ) {
+			var isMethodCall = typeof options === "string";
+			var args = widgetSlice.call( arguments, 1 );
+			var returnValue = this;
+	
+			if ( isMethodCall ) {
+	
+				// If this is an empty collection, we need to have the instance method
+				// return undefined instead of the jQuery instance
+				if ( !this.length && options === "instance" ) {
+					returnValue = undefined;
+				} else {
+					this.each( function() {
+						var methodValue;
+						var instance = $.data( this, fullName );
+	
+						if ( options === "instance" ) {
+							returnValue = instance;
+							return false;
+						}
+	
+						if ( !instance ) {
+							return $.error( "cannot call methods on " + name +
+								" prior to initialization; " +
+								"attempted to call method '" + options + "'" );
+						}
+	
+						if ( !$.isFunction( instance[ options ] ) || options.charAt( 0 ) === "_" ) {
+							return $.error( "no such method '" + options + "' for " + name +
+								" widget instance" );
+						}
+	
+						methodValue = instance[ options ].apply( instance, args );
+	
+						if ( methodValue !== instance && methodValue !== undefined ) {
+							returnValue = methodValue && methodValue.jquery ?
+								returnValue.pushStack( methodValue.get() ) :
+								methodValue;
+							return false;
+						}
+					} );
+				}
+			} else {
+	
+				// Allow multiple hashes to be passed on init
+				if ( args.length ) {
+					options = $.widget.extend.apply( null, [ options ].concat( args ) );
+				}
+	
+				this.each( function() {
+					var instance = $.data( this, fullName );
+					if ( instance ) {
+						instance.option( options || {} );
+						if ( instance._init ) {
+							instance._init();
+						}
+					} else {
+						$.data( this, fullName, new object( options, this ) );
+					}
+				} );
+			}
+	
+			return returnValue;
+		};
+	};
+	
+	$.Widget = function( /* options, element */ ) {};
+	$.Widget._childConstructors = [];
+	
+	$.Widget.prototype = {
+		widgetName: "widget",
+		widgetEventPrefix: "",
+		defaultElement: "<div>",
+	
+		options: {
+			classes: {},
+			disabled: false,
+	
+			// Callbacks
+			create: null
+		},
+	
+		_createWidget: function( options, element ) {
+			element = $( element || this.defaultElement || this )[ 0 ];
+			this.element = $( element );
+			this.uuid = widgetUuid++;
+			this.eventNamespace = "." + this.widgetName + this.uuid;
+	
+			this.bindings = $();
+			this.hoverable = $();
+			this.focusable = $();
+			this.classesElementLookup = {};
+	
+			if ( element !== this ) {
+				$.data( element, this.widgetFullName, this );
+				this._on( true, this.element, {
+					remove: function( event ) {
+						if ( event.target === element ) {
+							this.destroy();
+						}
+					}
+				} );
+				this.document = $( element.style ?
+	
+					// Element within the document
+					element.ownerDocument :
+	
+					// Element is window or document
+					element.document || element );
+				this.window = $( this.document[ 0 ].defaultView || this.document[ 0 ].parentWindow );
+			}
+	
+			this.options = $.widget.extend( {},
+				this.options,
+				this._getCreateOptions(),
+				options );
+	
+			this._create();
+	
+			if ( this.options.disabled ) {
+				this._setOptionDisabled( this.options.disabled );
+			}
+	
+			this._trigger( "create", null, this._getCreateEventData() );
+			this._init();
+		},
+	
+		_getCreateOptions: function() {
+			return {};
+		},
+	
+		_getCreateEventData: $.noop,
+	
+		_create: $.noop,
+	
+		_init: $.noop,
+	
+		destroy: function() {
+			var that = this;
+	
+			this._destroy();
+			$.each( this.classesElementLookup, function( key, value ) {
+				that._removeClass( value, key );
+			} );
+	
+			// We can probably remove the unbind calls in 2.0
+			// all event bindings should go through this._on()
+			this.element
+				.off( this.eventNamespace )
+				.removeData( this.widgetFullName );
+			this.widget()
+				.off( this.eventNamespace )
+				.removeAttr( "aria-disabled" );
+	
+			// Clean up events and states
+			this.bindings.off( this.eventNamespace );
+		},
+	
+		_destroy: $.noop,
+	
+		widget: function() {
+			return this.element;
+		},
+	
+		option: function( key, value ) {
+			var options = key;
+			var parts;
+			var curOption;
+			var i;
+	
+			if ( arguments.length === 0 ) {
+	
+				// Don't return a reference to the internal hash
+				return $.widget.extend( {}, this.options );
+			}
+	
+			if ( typeof key === "string" ) {
+	
+				// Handle nested keys, e.g., "foo.bar" => { foo: { bar: ___ } }
+				options = {};
+				parts = key.split( "." );
+				key = parts.shift();
+				if ( parts.length ) {
+					curOption = options[ key ] = $.widget.extend( {}, this.options[ key ] );
+					for ( i = 0; i < parts.length - 1; i++ ) {
+						curOption[ parts[ i ] ] = curOption[ parts[ i ] ] || {};
+						curOption = curOption[ parts[ i ] ];
+					}
+					key = parts.pop();
+					if ( arguments.length === 1 ) {
+						return curOption[ key ] === undefined ? null : curOption[ key ];
+					}
+					curOption[ key ] = value;
+				} else {
+					if ( arguments.length === 1 ) {
+						return this.options[ key ] === undefined ? null : this.options[ key ];
+					}
+					options[ key ] = value;
+				}
+			}
+	
+			this._setOptions( options );
+	
+			return this;
+		},
+	
+		_setOptions: function( options ) {
+			var key;
+	
+			for ( key in options ) {
+				this._setOption( key, options[ key ] );
+			}
+	
+			return this;
+		},
+	
+		_setOption: function( key, value ) {
+			if ( key === "classes" ) {
+				this._setOptionClasses( value );
+			}
+	
+			this.options[ key ] = value;
+	
+			if ( key === "disabled" ) {
+				this._setOptionDisabled( value );
+			}
+	
+			return this;
+		},
+	
+		_setOptionClasses: function( value ) {
+			var classKey, elements, currentElements;
+	
+			for ( classKey in value ) {
+				currentElements = this.classesElementLookup[ classKey ];
+				if ( value[ classKey ] === this.options.classes[ classKey ] ||
+						!currentElements ||
+						!currentElements.length ) {
+					continue;
+				}
+	
+				// We are doing this to create a new jQuery object because the _removeClass() call
+				// on the next line is going to destroy the reference to the current elements being
+				// tracked. We need to save a copy of this collection so that we can add the new classes
+				// below.
+				elements = $( currentElements.get() );
+				this._removeClass( currentElements, classKey );
+	
+				// We don't use _addClass() here, because that uses this.options.classes
+				// for generating the string of classes. We want to use the value passed in from
+				// _setOption(), this is the new value of the classes option which was passed to
+				// _setOption(). We pass this value directly to _classes().
+				elements.addClass( this._classes( {
+					element: elements,
+					keys: classKey,
+					classes: value,
+					add: true
+				} ) );
+			}
+		},
+	
+		_setOptionDisabled: function( value ) {
+			this._toggleClass( this.widget(), this.widgetFullName + "-disabled", null, !!value );
+	
+			// If the widget is becoming disabled, then nothing is interactive
+			if ( value ) {
+				this._removeClass( this.hoverable, null, "ui-state-hover" );
+				this._removeClass( this.focusable, null, "ui-state-focus" );
+			}
+		},
+	
+		enable: function() {
+			return this._setOptions( { disabled: false } );
+		},
+	
+		disable: function() {
+			return this._setOptions( { disabled: true } );
+		},
+	
+		_classes: function( options ) {
+			var full = [];
+			var that = this;
+	
+			options = $.extend( {
+				element: this.element,
+				classes: this.options.classes || {}
+			}, options );
+	
+			function processClassString( classes, checkOption ) {
+				var current, i;
+				for ( i = 0; i < classes.length; i++ ) {
+					current = that.classesElementLookup[ classes[ i ] ] || $();
+					if ( options.add ) {
+						current = $( $.unique( current.get().concat( options.element.get() ) ) );
+					} else {
+						current = $( current.not( options.element ).get() );
+					}
+					that.classesElementLookup[ classes[ i ] ] = current;
+					full.push( classes[ i ] );
+					if ( checkOption && options.classes[ classes[ i ] ] ) {
+						full.push( options.classes[ classes[ i ] ] );
+					}
+				}
+			}
+	
+			this._on( options.element, {
+				"remove": "_untrackClassesElement"
+			} );
+	
+			if ( options.keys ) {
+				processClassString( options.keys.match( /\S+/g ) || [], true );
+			}
+			if ( options.extra ) {
+				processClassString( options.extra.match( /\S+/g ) || [] );
+			}
+	
+			return full.join( " " );
+		},
+	
+		_untrackClassesElement: function( event ) {
+			var that = this;
+			$.each( that.classesElementLookup, function( key, value ) {
+				if ( $.inArray( event.target, value ) !== -1 ) {
+					that.classesElementLookup[ key ] = $( value.not( event.target ).get() );
+				}
+			} );
+		},
+	
+		_removeClass: function( element, keys, extra ) {
+			return this._toggleClass( element, keys, extra, false );
+		},
+	
+		_addClass: function( element, keys, extra ) {
+			return this._toggleClass( element, keys, extra, true );
+		},
+	
+		_toggleClass: function( element, keys, extra, add ) {
+			add = ( typeof add === "boolean" ) ? add : extra;
+			var shift = ( typeof element === "string" || element === null ),
+				options = {
+					extra: shift ? keys : extra,
+					keys: shift ? element : keys,
+					element: shift ? this.element : element,
+					add: add
+				};
+			options.element.toggleClass( this._classes( options ), add );
+			return this;
+		},
+	
+		_on: function( suppressDisabledCheck, element, handlers ) {
+			var delegateElement;
+			var instance = this;
+	
+			// No suppressDisabledCheck flag, shuffle arguments
+			if ( typeof suppressDisabledCheck !== "boolean" ) {
+				handlers = element;
+				element = suppressDisabledCheck;
+				suppressDisabledCheck = false;
+			}
+	
+			// No element argument, shuffle and use this.element
+			if ( !handlers ) {
+				handlers = element;
+				element = this.element;
+				delegateElement = this.widget();
+			} else {
+				element = delegateElement = $( element );
+				this.bindings = this.bindings.add( element );
+			}
+	
+			$.each( handlers, function( event, handler ) {
+				function handlerProxy() {
+	
+					// Allow widgets to customize the disabled handling
+					// - disabled as an array instead of boolean
+					// - disabled class as method for disabling individual parts
+					if ( !suppressDisabledCheck &&
+							( instance.options.disabled === true ||
+							$( this ).hasClass( "ui-state-disabled" ) ) ) {
+						return;
+					}
+					return ( typeof handler === "string" ? instance[ handler ] : handler )
+						.apply( instance, arguments );
+				}
+	
+				// Copy the guid so direct unbinding works
+				if ( typeof handler !== "string" ) {
+					handlerProxy.guid = handler.guid =
+						handler.guid || handlerProxy.guid || $.guid++;
+				}
+	
+				var match = event.match( /^([\w:-]*)\s*(.*)$/ );
+				var eventName = match[ 1 ] + instance.eventNamespace;
+				var selector = match[ 2 ];
+	
+				if ( selector ) {
+					delegateElement.on( eventName, selector, handlerProxy );
+				} else {
+					element.on( eventName, handlerProxy );
+				}
+			} );
+		},
+	
+		_off: function( element, eventName ) {
+			eventName = ( eventName || "" ).split( " " ).join( this.eventNamespace + " " ) +
+				this.eventNamespace;
+			element.off( eventName ).off( eventName );
+	
+			// Clear the stack to avoid memory leaks (#10056)
+			this.bindings = $( this.bindings.not( element ).get() );
+			this.focusable = $( this.focusable.not( element ).get() );
+			this.hoverable = $( this.hoverable.not( element ).get() );
+		},
+	
+		_delay: function( handler, delay ) {
+			function handlerProxy() {
+				return ( typeof handler === "string" ? instance[ handler ] : handler )
+					.apply( instance, arguments );
+			}
+			var instance = this;
+			return setTimeout( handlerProxy, delay || 0 );
+		},
+	
+		_hoverable: function( element ) {
+			this.hoverable = this.hoverable.add( element );
+			this._on( element, {
+				mouseenter: function( event ) {
+					this._addClass( $( event.currentTarget ), null, "ui-state-hover" );
+				},
+				mouseleave: function( event ) {
+					this._removeClass( $( event.currentTarget ), null, "ui-state-hover" );
+				}
+			} );
+		},
+	
+		_focusable: function( element ) {
+			this.focusable = this.focusable.add( element );
+			this._on( element, {
+				focusin: function( event ) {
+					this._addClass( $( event.currentTarget ), null, "ui-state-focus" );
+				},
+				focusout: function( event ) {
+					this._removeClass( $( event.currentTarget ), null, "ui-state-focus" );
+				}
+			} );
+		},
+	
+		_trigger: function( type, event, data ) {
+			var prop, orig;
+			var callback = this.options[ type ];
+	
+			data = data || {};
+			event = $.Event( event );
+			event.type = ( type === this.widgetEventPrefix ?
+				type :
+				this.widgetEventPrefix + type ).toLowerCase();
+	
+			// The original event may come from any element
+			// so we need to reset the target on the new event
+			event.target = this.element[ 0 ];
+	
+			// Copy original event properties over to the new event
+			orig = event.originalEvent;
+			if ( orig ) {
+				for ( prop in orig ) {
+					if ( !( prop in event ) ) {
+						event[ prop ] = orig[ prop ];
+					}
+				}
+			}
+	
+			this.element.trigger( event, data );
+			return !( $.isFunction( callback ) &&
+				callback.apply( this.element[ 0 ], [ event ].concat( data ) ) === false ||
+				event.isDefaultPrevented() );
+		}
+	};
+	
+	$.each( { show: "fadeIn", hide: "fadeOut" }, function( method, defaultEffect ) {
+		$.Widget.prototype[ "_" + method ] = function( element, options, callback ) {
+			if ( typeof options === "string" ) {
+				options = { effect: options };
+			}
+	
+			var hasOptions;
+			var effectName = !options ?
+				method :
+				options === true || typeof options === "number" ?
+					defaultEffect :
+					options.effect || defaultEffect;
+	
+			options = options || {};
+			if ( typeof options === "number" ) {
+				options = { duration: options };
+			}
+	
+			hasOptions = !$.isEmptyObject( options );
+			options.complete = callback;
+	
+			if ( options.delay ) {
+				element.delay( options.delay );
+			}
+	
+			if ( hasOptions && $.effects && $.effects.effect[ effectName ] ) {
+				element[ method ]( options );
+			} else if ( effectName !== method && element[ effectName ] ) {
+				element[ effectName ]( options.duration, options.easing, callback );
+			} else {
+				element.queue( function( next ) {
+					$( this )[ method ]();
+					if ( callback ) {
+						callback.call( element[ 0 ] );
+					}
+					next();
+				} );
+			}
+		};
+	} );
+	
+	return $.widget;
+	
+	} ) );
+
+
+/***/ }),
 /* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	$.ui = $.ui || {};
+	
+	return $.ui.version = "1.12.1";
+	
+	} ) );
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Checkboxradio 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Checkboxradio
+	//>>group: Widgets
+	//>>description: Enhances a form with multiple themeable checkboxes or radio buttons.
+	//>>docs: http://api.jqueryui.com/checkboxradio/
+	//>>demos: http://jqueryui.com/checkboxradio/
+	//>>css.structure: ../../themes/base/core.css
+	//>>css.structure: ../../themes/base/button.css
+	//>>css.structure: ../../themes/base/checkboxradio.css
+	//>>css.theme: ../../themes/base/theme.css
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+				__webpack_require__(7),
+				__webpack_require__(23),
+				__webpack_require__(24),
+				__webpack_require__(26),
+				__webpack_require__(20)
+			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	
+	$.widget( "ui.checkboxradio", [ $.ui.formResetMixin, {
+		version: "1.12.1",
+		options: {
+			disabled: null,
+			label: null,
+			icon: true,
+			classes: {
+				"ui-checkboxradio-label": "ui-corner-all",
+				"ui-checkboxradio-icon": "ui-corner-all"
+			}
+		},
+	
+		_getCreateOptions: function() {
+			var disabled, labels;
+			var that = this;
+			var options = this._super() || {};
+	
+			// We read the type here, because it makes more sense to throw a element type error first,
+			// rather then the error for lack of a label. Often if its the wrong type, it
+			// won't have a label (e.g. calling on a div, btn, etc)
+			this._readType();
+	
+			labels = this.element.labels();
+	
+			// If there are multiple labels, use the last one
+			this.label = $( labels[ labels.length - 1 ] );
+			if ( !this.label.length ) {
+				$.error( "No label found for checkboxradio widget" );
+			}
+	
+			this.originalLabel = "";
+	
+			// We need to get the label text but this may also need to make sure it does not contain the
+			// input itself.
+			this.label.contents().not( this.element[ 0 ] ).each( function() {
+	
+				// The label contents could be text, html, or a mix. We concat each element to get a
+				// string representation of the label, without the input as part of it.
+				that.originalLabel += this.nodeType === 3 ? $( this ).text() : this.outerHTML;
+			} );
+	
+			// Set the label option if we found label text
+			if ( this.originalLabel ) {
+				options.label = this.originalLabel;
+			}
+	
+			disabled = this.element[ 0 ].disabled;
+			if ( disabled != null ) {
+				options.disabled = disabled;
+			}
+			return options;
+		},
+	
+		_create: function() {
+			var checked = this.element[ 0 ].checked;
+	
+			this._bindFormResetHandler();
+	
+			if ( this.options.disabled == null ) {
+				this.options.disabled = this.element[ 0 ].disabled;
+			}
+	
+			this._setOption( "disabled", this.options.disabled );
+			this._addClass( "ui-checkboxradio", "ui-helper-hidden-accessible" );
+			this._addClass( this.label, "ui-checkboxradio-label", "ui-button ui-widget" );
+	
+			if ( this.type === "radio" ) {
+				this._addClass( this.label, "ui-checkboxradio-radio-label" );
+			}
+	
+			if ( this.options.label && this.options.label !== this.originalLabel ) {
+				this._updateLabel();
+			} else if ( this.originalLabel ) {
+				this.options.label = this.originalLabel;
+			}
+	
+			this._enhance();
+	
+			if ( checked ) {
+				this._addClass( this.label, "ui-checkboxradio-checked", "ui-state-active" );
+				if ( this.icon ) {
+					this._addClass( this.icon, null, "ui-state-hover" );
+				}
+			}
+	
+			this._on( {
+				change: "_toggleClasses",
+				focus: function() {
+					this._addClass( this.label, null, "ui-state-focus ui-visual-focus" );
+				},
+				blur: function() {
+					this._removeClass( this.label, null, "ui-state-focus ui-visual-focus" );
+				}
+			} );
+		},
+	
+		_readType: function() {
+			var nodeName = this.element[ 0 ].nodeName.toLowerCase();
+			this.type = this.element[ 0 ].type;
+			if ( nodeName !== "input" || !/radio|checkbox/.test( this.type ) ) {
+				$.error( "Can't create checkboxradio on element.nodeName=" + nodeName +
+					" and element.type=" + this.type );
+			}
+		},
+	
+		// Support jQuery Mobile enhanced option
+		_enhance: function() {
+			this._updateIcon( this.element[ 0 ].checked );
+		},
+	
+		widget: function() {
+			return this.label;
+		},
+	
+		_getRadioGroup: function() {
+			var group;
+			var name = this.element[ 0 ].name;
+			var nameSelector = "input[name='" + $.ui.escapeSelector( name ) + "']";
+	
+			if ( !name ) {
+				return $( [] );
+			}
+	
+			if ( this.form.length ) {
+				group = $( this.form[ 0 ].elements ).filter( nameSelector );
+			} else {
+	
+				// Not inside a form, check all inputs that also are not inside a form
+				group = $( nameSelector ).filter( function() {
+					return $( this ).form().length === 0;
+				} );
+			}
+	
+			return group.not( this.element );
+		},
+	
+		_toggleClasses: function() {
+			var checked = this.element[ 0 ].checked;
+			this._toggleClass( this.label, "ui-checkboxradio-checked", "ui-state-active", checked );
+	
+			if ( this.options.icon && this.type === "checkbox" ) {
+				this._toggleClass( this.icon, null, "ui-icon-check ui-state-checked", checked )
+					._toggleClass( this.icon, null, "ui-icon-blank", !checked );
+			}
+	
+			if ( this.type === "radio" ) {
+				this._getRadioGroup()
+					.each( function() {
+						var instance = $( this ).checkboxradio( "instance" );
+	
+						if ( instance ) {
+							instance._removeClass( instance.label,
+								"ui-checkboxradio-checked", "ui-state-active" );
+						}
+					} );
+			}
+		},
+	
+		_destroy: function() {
+			this._unbindFormResetHandler();
+	
+			if ( this.icon ) {
+				this.icon.remove();
+				this.iconSpace.remove();
+			}
+		},
+	
+		_setOption: function( key, value ) {
+	
+			// We don't allow the value to be set to nothing
+			if ( key === "label" && !value ) {
+				return;
+			}
+	
+			this._super( key, value );
+	
+			if ( key === "disabled" ) {
+				this._toggleClass( this.label, null, "ui-state-disabled", value );
+				this.element[ 0 ].disabled = value;
+	
+				// Don't refresh when setting disabled
+				return;
+			}
+			this.refresh();
+		},
+	
+		_updateIcon: function( checked ) {
+			var toAdd = "ui-icon ui-icon-background ";
+	
+			if ( this.options.icon ) {
+				if ( !this.icon ) {
+					this.icon = $( "<span>" );
+					this.iconSpace = $( "<span> </span>" );
+					this._addClass( this.iconSpace, "ui-checkboxradio-icon-space" );
+				}
+	
+				if ( this.type === "checkbox" ) {
+					toAdd += checked ? "ui-icon-check ui-state-checked" : "ui-icon-blank";
+					this._removeClass( this.icon, null, checked ? "ui-icon-blank" : "ui-icon-check" );
+				} else {
+					toAdd += "ui-icon-blank";
+				}
+				this._addClass( this.icon, "ui-checkboxradio-icon", toAdd );
+				if ( !checked ) {
+					this._removeClass( this.icon, null, "ui-icon-check ui-state-checked" );
+				}
+				this.icon.prependTo( this.label ).after( this.iconSpace );
+			} else if ( this.icon !== undefined ) {
+				this.icon.remove();
+				this.iconSpace.remove();
+				delete this.icon;
+			}
+		},
+	
+		_updateLabel: function() {
+	
+			// Remove the contents of the label ( minus the icon, icon space, and input )
+			var contents = this.label.contents().not( this.element[ 0 ] );
+			if ( this.icon ) {
+				contents = contents.not( this.icon[ 0 ] );
+			}
+			if ( this.iconSpace ) {
+				contents = contents.not( this.iconSpace[ 0 ] );
+			}
+			contents.remove();
+	
+			this.label.append( this.options.label );
+		},
+	
+		refresh: function() {
+			var checked = this.element[ 0 ].checked,
+				isDisabled = this.element[ 0 ].disabled;
+	
+			this._updateIcon( checked );
+			this._toggleClass( this.label, "ui-checkboxradio-checked", "ui-state-active", checked );
+			if ( this.options.label !== null ) {
+				this._updateLabel();
+			}
+	
+			if ( isDisabled !== this.options.disabled ) {
+				this._setOptions( { "disabled": isDisabled } );
+			}
+		}
+	
+	} ] );
+	
+	return $.ui.checkboxradio;
+	
+	} ) );
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	// Internal use only
+	return $.ui.escapeSelector = ( function() {
+		var selectorEscape = /([!"#$%&'()*+,./:;<=>?@[\]^`{|}~])/g;
+		return function( selector ) {
+			return selector.replace( selectorEscape, "\\$1" );
+		};
+	} )();
+	
+	} ) );
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Form Reset Mixin 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Form Reset Mixin
+	//>>group: Core
+	//>>description: Refresh input widgets when their form is reset
+	//>>docs: http://api.jqueryui.com/form-reset-mixin/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+				__webpack_require__(7),
+				__webpack_require__(25),
+				__webpack_require__(21)
+			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	
+	return $.ui.formResetMixin = {
+		_formResetHandler: function() {
+			var form = $( this );
+	
+			// Wait for the form reset to actually happen before refreshing
+			setTimeout( function() {
+				var instances = form.data( "ui-form-reset-instances" );
+				$.each( instances, function() {
+					this.refresh();
+				} );
+			} );
+		},
+	
+		_bindFormResetHandler: function() {
+			this.form = this.element.form();
+			if ( !this.form.length ) {
+				return;
+			}
+	
+			var instances = this.form.data( "ui-form-reset-instances" ) || [];
+			if ( !instances.length ) {
+	
+				// We don't use _on() here because we use a single event handler per form
+				this.form.on( "reset.ui-form-reset", this._formResetHandler );
+			}
+			instances.push( this );
+			this.form.data( "ui-form-reset-instances", instances );
+		},
+	
+		_unbindFormResetHandler: function() {
+			if ( !this.form.length ) {
+				return;
+			}
+	
+			var instances = this.form.data( "ui-form-reset-instances" );
+			instances.splice( $.inArray( this, instances ), 1 );
+			if ( instances.length ) {
+				this.form.data( "ui-form-reset-instances", instances );
+			} else {
+				this.form
+					.removeData( "ui-form-reset-instances" )
+					.off( "reset.ui-form-reset" );
+			}
+		}
+	};
+	
+	} ) );
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	// Support: IE8 Only
+	// IE8 does not support the form attribute and when it is supplied. It overwrites the form prop
+	// with a string, so we need to find the proper form.
+	return $.fn.form = function() {
+		return typeof this[ 0 ].form === "string" ? this.closest( "form" ) : $( this[ 0 ].form );
+	};
+	
+	} ) );
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Labels 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: labels
+	//>>group: Core
+	//>>description: Find all the labels associated with a given input
+	//>>docs: http://api.jqueryui.com/labels/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21), __webpack_require__(23) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	return $.fn.labels = function() {
+		var ancestor, selector, id, labels, ancestors;
+	
+		// Check control.labels first
+		if ( this[ 0 ].labels && this[ 0 ].labels.length ) {
+			return this.pushStack( this[ 0 ].labels );
+		}
+	
+		// Support: IE <= 11, FF <= 37, Android <= 2.3 only
+		// Above browsers do not support control.labels. Everything below is to support them
+		// as well as document fragments. control.labels does not work on document fragments
+		labels = this.eq( 0 ).parents( "label" );
+	
+		// Look for the label based on the id
+		id = this.attr( "id" );
+		if ( id ) {
+	
+			// We don't search against the document in case the element
+			// is disconnected from the DOM
+			ancestor = this.eq( 0 ).parents().last();
+	
+			// Get a full set of top level ancestors
+			ancestors = ancestor.add( ancestor.length ? ancestor.siblings() : this.siblings() );
+	
+			// Create a selector for the label based on the id
+			selector = "label[for='" + $.ui.escapeSelector( id ) + "']";
+	
+			labels = labels.add( ancestors.find( selector ).addBack( selector ) );
+	
+		}
+	
+		// Return whatever we have found for labels
+		return this.pushStack( labels );
+	};
+	
+	} ) );
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Keycode 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Keycode
+	//>>group: Core
+	//>>description: Provide keycodes as keynames
+	//>>docs: http://api.jqueryui.com/jQuery.ui.keyCode/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	return $.ui.keyCode = {
+		BACKSPACE: 8,
+		COMMA: 188,
+		DELETE: 46,
+		DOWN: 40,
+		END: 35,
+		ENTER: 13,
+		ESCAPE: 27,
+		HOME: 36,
+		LEFT: 37,
+		PAGE_DOWN: 34,
+		PAGE_UP: 33,
+		PERIOD: 190,
+		RIGHT: 39,
+		SPACE: 32,
+		TAB: 9,
+		UP: 38
+	};
+	
+	} ) );
+
+
+/***/ }),
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -19255,15 +21875,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(14),
-				__webpack_require__(22),
-				__webpack_require__(26),
-				__webpack_require__(27),
-				__webpack_require__(28),
+				__webpack_require__(7),
 				__webpack_require__(29),
-				__webpack_require__(30),
-				__webpack_require__(24),
-				__webpack_require__(25)
+				__webpack_require__(31),
+				__webpack_require__(32),
+				__webpack_require__(33),
+				__webpack_require__(34),
+				__webpack_require__(35),
+				__webpack_require__(21),
+				__webpack_require__(20)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -20487,7 +23107,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 22 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20509,10 +23129,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(14),
-				__webpack_require__(23),
-				__webpack_require__(24),
-				__webpack_require__(25)
+				__webpack_require__(7),
+				__webpack_require__(30),
+				__webpack_require__(21),
+				__webpack_require__(20)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -20719,14 +23339,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 23 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -20740,769 +23360,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	$.ui = $.ui || {};
-	
-	return $.ui.version = "1.12.1";
-	
-	} ) );
-
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Widget 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Widget
-	//>>group: Core
-	//>>description: Provides a factory for creating stateful widgets with a common API.
-	//>>docs: http://api.jqueryui.com/jQuery.widget/
-	//>>demos: http://jqueryui.com/widget/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	var widgetUuid = 0;
-	var widgetSlice = Array.prototype.slice;
-	
-	$.cleanData = ( function( orig ) {
-		return function( elems ) {
-			var events, elem, i;
-			for ( i = 0; ( elem = elems[ i ] ) != null; i++ ) {
-				try {
-	
-					// Only trigger remove when necessary to save time
-					events = $._data( elem, "events" );
-					if ( events && events.remove ) {
-						$( elem ).triggerHandler( "remove" );
-					}
-	
-				// Http://bugs.jquery.com/ticket/8235
-				} catch ( e ) {}
-			}
-			orig( elems );
-		};
-	} )( $.cleanData );
-	
-	$.widget = function( name, base, prototype ) {
-		var existingConstructor, constructor, basePrototype;
-	
-		// ProxiedPrototype allows the provided prototype to remain unmodified
-		// so that it can be used as a mixin for multiple widgets (#8876)
-		var proxiedPrototype = {};
-	
-		var namespace = name.split( "." )[ 0 ];
-		name = name.split( "." )[ 1 ];
-		var fullName = namespace + "-" + name;
-	
-		if ( !prototype ) {
-			prototype = base;
-			base = $.Widget;
-		}
-	
-		if ( $.isArray( prototype ) ) {
-			prototype = $.extend.apply( null, [ {} ].concat( prototype ) );
-		}
-	
-		// Create selector for plugin
-		$.expr[ ":" ][ fullName.toLowerCase() ] = function( elem ) {
-			return !!$.data( elem, fullName );
-		};
-	
-		$[ namespace ] = $[ namespace ] || {};
-		existingConstructor = $[ namespace ][ name ];
-		constructor = $[ namespace ][ name ] = function( options, element ) {
-	
-			// Allow instantiation without "new" keyword
-			if ( !this._createWidget ) {
-				return new constructor( options, element );
-			}
-	
-			// Allow instantiation without initializing for simple inheritance
-			// must use "new" keyword (the code above always passes args)
-			if ( arguments.length ) {
-				this._createWidget( options, element );
-			}
-		};
-	
-		// Extend with the existing constructor to carry over any static properties
-		$.extend( constructor, existingConstructor, {
-			version: prototype.version,
-	
-			// Copy the object used to create the prototype in case we need to
-			// redefine the widget later
-			_proto: $.extend( {}, prototype ),
-	
-			// Track widgets that inherit from this widget in case this widget is
-			// redefined after a widget inherits from it
-			_childConstructors: []
-		} );
-	
-		basePrototype = new base();
-	
-		// We need to make the options hash a property directly on the new instance
-		// otherwise we'll modify the options hash on the prototype that we're
-		// inheriting from
-		basePrototype.options = $.widget.extend( {}, basePrototype.options );
-		$.each( prototype, function( prop, value ) {
-			if ( !$.isFunction( value ) ) {
-				proxiedPrototype[ prop ] = value;
-				return;
-			}
-			proxiedPrototype[ prop ] = ( function() {
-				function _super() {
-					return base.prototype[ prop ].apply( this, arguments );
-				}
-	
-				function _superApply( args ) {
-					return base.prototype[ prop ].apply( this, args );
-				}
-	
-				return function() {
-					var __super = this._super;
-					var __superApply = this._superApply;
-					var returnValue;
-	
-					this._super = _super;
-					this._superApply = _superApply;
-	
-					returnValue = value.apply( this, arguments );
-	
-					this._super = __super;
-					this._superApply = __superApply;
-	
-					return returnValue;
-				};
-			} )();
-		} );
-		constructor.prototype = $.widget.extend( basePrototype, {
-	
-			// TODO: remove support for widgetEventPrefix
-			// always use the name + a colon as the prefix, e.g., draggable:start
-			// don't prefix for widgets that aren't DOM-based
-			widgetEventPrefix: existingConstructor ? ( basePrototype.widgetEventPrefix || name ) : name
-		}, proxiedPrototype, {
-			constructor: constructor,
-			namespace: namespace,
-			widgetName: name,
-			widgetFullName: fullName
-		} );
-	
-		// If this widget is being redefined then we need to find all widgets that
-		// are inheriting from it and redefine all of them so that they inherit from
-		// the new version of this widget. We're essentially trying to replace one
-		// level in the prototype chain.
-		if ( existingConstructor ) {
-			$.each( existingConstructor._childConstructors, function( i, child ) {
-				var childPrototype = child.prototype;
-	
-				// Redefine the child widget using the same prototype that was
-				// originally used, but inherit from the new version of the base
-				$.widget( childPrototype.namespace + "." + childPrototype.widgetName, constructor,
-					child._proto );
-			} );
-	
-			// Remove the list of existing child constructors from the old constructor
-			// so the old child constructors can be garbage collected
-			delete existingConstructor._childConstructors;
-		} else {
-			base._childConstructors.push( constructor );
-		}
-	
-		$.widget.bridge( name, constructor );
-	
-		return constructor;
-	};
-	
-	$.widget.extend = function( target ) {
-		var input = widgetSlice.call( arguments, 1 );
-		var inputIndex = 0;
-		var inputLength = input.length;
-		var key;
-		var value;
-	
-		for ( ; inputIndex < inputLength; inputIndex++ ) {
-			for ( key in input[ inputIndex ] ) {
-				value = input[ inputIndex ][ key ];
-				if ( input[ inputIndex ].hasOwnProperty( key ) && value !== undefined ) {
-	
-					// Clone objects
-					if ( $.isPlainObject( value ) ) {
-						target[ key ] = $.isPlainObject( target[ key ] ) ?
-							$.widget.extend( {}, target[ key ], value ) :
-	
-							// Don't extend strings, arrays, etc. with objects
-							$.widget.extend( {}, value );
-	
-					// Copy everything else by reference
-					} else {
-						target[ key ] = value;
-					}
-				}
-			}
-		}
-		return target;
-	};
-	
-	$.widget.bridge = function( name, object ) {
-		var fullName = object.prototype.widgetFullName || name;
-		$.fn[ name ] = function( options ) {
-			var isMethodCall = typeof options === "string";
-			var args = widgetSlice.call( arguments, 1 );
-			var returnValue = this;
-	
-			if ( isMethodCall ) {
-	
-				// If this is an empty collection, we need to have the instance method
-				// return undefined instead of the jQuery instance
-				if ( !this.length && options === "instance" ) {
-					returnValue = undefined;
-				} else {
-					this.each( function() {
-						var methodValue;
-						var instance = $.data( this, fullName );
-	
-						if ( options === "instance" ) {
-							returnValue = instance;
-							return false;
-						}
-	
-						if ( !instance ) {
-							return $.error( "cannot call methods on " + name +
-								" prior to initialization; " +
-								"attempted to call method '" + options + "'" );
-						}
-	
-						if ( !$.isFunction( instance[ options ] ) || options.charAt( 0 ) === "_" ) {
-							return $.error( "no such method '" + options + "' for " + name +
-								" widget instance" );
-						}
-	
-						methodValue = instance[ options ].apply( instance, args );
-	
-						if ( methodValue !== instance && methodValue !== undefined ) {
-							returnValue = methodValue && methodValue.jquery ?
-								returnValue.pushStack( methodValue.get() ) :
-								methodValue;
-							return false;
-						}
-					} );
-				}
-			} else {
-	
-				// Allow multiple hashes to be passed on init
-				if ( args.length ) {
-					options = $.widget.extend.apply( null, [ options ].concat( args ) );
-				}
-	
-				this.each( function() {
-					var instance = $.data( this, fullName );
-					if ( instance ) {
-						instance.option( options || {} );
-						if ( instance._init ) {
-							instance._init();
-						}
-					} else {
-						$.data( this, fullName, new object( options, this ) );
-					}
-				} );
-			}
-	
-			return returnValue;
-		};
-	};
-	
-	$.Widget = function( /* options, element */ ) {};
-	$.Widget._childConstructors = [];
-	
-	$.Widget.prototype = {
-		widgetName: "widget",
-		widgetEventPrefix: "",
-		defaultElement: "<div>",
-	
-		options: {
-			classes: {},
-			disabled: false,
-	
-			// Callbacks
-			create: null
-		},
-	
-		_createWidget: function( options, element ) {
-			element = $( element || this.defaultElement || this )[ 0 ];
-			this.element = $( element );
-			this.uuid = widgetUuid++;
-			this.eventNamespace = "." + this.widgetName + this.uuid;
-	
-			this.bindings = $();
-			this.hoverable = $();
-			this.focusable = $();
-			this.classesElementLookup = {};
-	
-			if ( element !== this ) {
-				$.data( element, this.widgetFullName, this );
-				this._on( true, this.element, {
-					remove: function( event ) {
-						if ( event.target === element ) {
-							this.destroy();
-						}
-					}
-				} );
-				this.document = $( element.style ?
-	
-					// Element within the document
-					element.ownerDocument :
-	
-					// Element is window or document
-					element.document || element );
-				this.window = $( this.document[ 0 ].defaultView || this.document[ 0 ].parentWindow );
-			}
-	
-			this.options = $.widget.extend( {},
-				this.options,
-				this._getCreateOptions(),
-				options );
-	
-			this._create();
-	
-			if ( this.options.disabled ) {
-				this._setOptionDisabled( this.options.disabled );
-			}
-	
-			this._trigger( "create", null, this._getCreateEventData() );
-			this._init();
-		},
-	
-		_getCreateOptions: function() {
-			return {};
-		},
-	
-		_getCreateEventData: $.noop,
-	
-		_create: $.noop,
-	
-		_init: $.noop,
-	
-		destroy: function() {
-			var that = this;
-	
-			this._destroy();
-			$.each( this.classesElementLookup, function( key, value ) {
-				that._removeClass( value, key );
-			} );
-	
-			// We can probably remove the unbind calls in 2.0
-			// all event bindings should go through this._on()
-			this.element
-				.off( this.eventNamespace )
-				.removeData( this.widgetFullName );
-			this.widget()
-				.off( this.eventNamespace )
-				.removeAttr( "aria-disabled" );
-	
-			// Clean up events and states
-			this.bindings.off( this.eventNamespace );
-		},
-	
-		_destroy: $.noop,
-	
-		widget: function() {
-			return this.element;
-		},
-	
-		option: function( key, value ) {
-			var options = key;
-			var parts;
-			var curOption;
-			var i;
-	
-			if ( arguments.length === 0 ) {
-	
-				// Don't return a reference to the internal hash
-				return $.widget.extend( {}, this.options );
-			}
-	
-			if ( typeof key === "string" ) {
-	
-				// Handle nested keys, e.g., "foo.bar" => { foo: { bar: ___ } }
-				options = {};
-				parts = key.split( "." );
-				key = parts.shift();
-				if ( parts.length ) {
-					curOption = options[ key ] = $.widget.extend( {}, this.options[ key ] );
-					for ( i = 0; i < parts.length - 1; i++ ) {
-						curOption[ parts[ i ] ] = curOption[ parts[ i ] ] || {};
-						curOption = curOption[ parts[ i ] ];
-					}
-					key = parts.pop();
-					if ( arguments.length === 1 ) {
-						return curOption[ key ] === undefined ? null : curOption[ key ];
-					}
-					curOption[ key ] = value;
-				} else {
-					if ( arguments.length === 1 ) {
-						return this.options[ key ] === undefined ? null : this.options[ key ];
-					}
-					options[ key ] = value;
-				}
-			}
-	
-			this._setOptions( options );
-	
-			return this;
-		},
-	
-		_setOptions: function( options ) {
-			var key;
-	
-			for ( key in options ) {
-				this._setOption( key, options[ key ] );
-			}
-	
-			return this;
-		},
-	
-		_setOption: function( key, value ) {
-			if ( key === "classes" ) {
-				this._setOptionClasses( value );
-			}
-	
-			this.options[ key ] = value;
-	
-			if ( key === "disabled" ) {
-				this._setOptionDisabled( value );
-			}
-	
-			return this;
-		},
-	
-		_setOptionClasses: function( value ) {
-			var classKey, elements, currentElements;
-	
-			for ( classKey in value ) {
-				currentElements = this.classesElementLookup[ classKey ];
-				if ( value[ classKey ] === this.options.classes[ classKey ] ||
-						!currentElements ||
-						!currentElements.length ) {
-					continue;
-				}
-	
-				// We are doing this to create a new jQuery object because the _removeClass() call
-				// on the next line is going to destroy the reference to the current elements being
-				// tracked. We need to save a copy of this collection so that we can add the new classes
-				// below.
-				elements = $( currentElements.get() );
-				this._removeClass( currentElements, classKey );
-	
-				// We don't use _addClass() here, because that uses this.options.classes
-				// for generating the string of classes. We want to use the value passed in from
-				// _setOption(), this is the new value of the classes option which was passed to
-				// _setOption(). We pass this value directly to _classes().
-				elements.addClass( this._classes( {
-					element: elements,
-					keys: classKey,
-					classes: value,
-					add: true
-				} ) );
-			}
-		},
-	
-		_setOptionDisabled: function( value ) {
-			this._toggleClass( this.widget(), this.widgetFullName + "-disabled", null, !!value );
-	
-			// If the widget is becoming disabled, then nothing is interactive
-			if ( value ) {
-				this._removeClass( this.hoverable, null, "ui-state-hover" );
-				this._removeClass( this.focusable, null, "ui-state-focus" );
-			}
-		},
-	
-		enable: function() {
-			return this._setOptions( { disabled: false } );
-		},
-	
-		disable: function() {
-			return this._setOptions( { disabled: true } );
-		},
-	
-		_classes: function( options ) {
-			var full = [];
-			var that = this;
-	
-			options = $.extend( {
-				element: this.element,
-				classes: this.options.classes || {}
-			}, options );
-	
-			function processClassString( classes, checkOption ) {
-				var current, i;
-				for ( i = 0; i < classes.length; i++ ) {
-					current = that.classesElementLookup[ classes[ i ] ] || $();
-					if ( options.add ) {
-						current = $( $.unique( current.get().concat( options.element.get() ) ) );
-					} else {
-						current = $( current.not( options.element ).get() );
-					}
-					that.classesElementLookup[ classes[ i ] ] = current;
-					full.push( classes[ i ] );
-					if ( checkOption && options.classes[ classes[ i ] ] ) {
-						full.push( options.classes[ classes[ i ] ] );
-					}
-				}
-			}
-	
-			this._on( options.element, {
-				"remove": "_untrackClassesElement"
-			} );
-	
-			if ( options.keys ) {
-				processClassString( options.keys.match( /\S+/g ) || [], true );
-			}
-			if ( options.extra ) {
-				processClassString( options.extra.match( /\S+/g ) || [] );
-			}
-	
-			return full.join( " " );
-		},
-	
-		_untrackClassesElement: function( event ) {
-			var that = this;
-			$.each( that.classesElementLookup, function( key, value ) {
-				if ( $.inArray( event.target, value ) !== -1 ) {
-					that.classesElementLookup[ key ] = $( value.not( event.target ).get() );
-				}
-			} );
-		},
-	
-		_removeClass: function( element, keys, extra ) {
-			return this._toggleClass( element, keys, extra, false );
-		},
-	
-		_addClass: function( element, keys, extra ) {
-			return this._toggleClass( element, keys, extra, true );
-		},
-	
-		_toggleClass: function( element, keys, extra, add ) {
-			add = ( typeof add === "boolean" ) ? add : extra;
-			var shift = ( typeof element === "string" || element === null ),
-				options = {
-					extra: shift ? keys : extra,
-					keys: shift ? element : keys,
-					element: shift ? this.element : element,
-					add: add
-				};
-			options.element.toggleClass( this._classes( options ), add );
-			return this;
-		},
-	
-		_on: function( suppressDisabledCheck, element, handlers ) {
-			var delegateElement;
-			var instance = this;
-	
-			// No suppressDisabledCheck flag, shuffle arguments
-			if ( typeof suppressDisabledCheck !== "boolean" ) {
-				handlers = element;
-				element = suppressDisabledCheck;
-				suppressDisabledCheck = false;
-			}
-	
-			// No element argument, shuffle and use this.element
-			if ( !handlers ) {
-				handlers = element;
-				element = this.element;
-				delegateElement = this.widget();
-			} else {
-				element = delegateElement = $( element );
-				this.bindings = this.bindings.add( element );
-			}
-	
-			$.each( handlers, function( event, handler ) {
-				function handlerProxy() {
-	
-					// Allow widgets to customize the disabled handling
-					// - disabled as an array instead of boolean
-					// - disabled class as method for disabling individual parts
-					if ( !suppressDisabledCheck &&
-							( instance.options.disabled === true ||
-							$( this ).hasClass( "ui-state-disabled" ) ) ) {
-						return;
-					}
-					return ( typeof handler === "string" ? instance[ handler ] : handler )
-						.apply( instance, arguments );
-				}
-	
-				// Copy the guid so direct unbinding works
-				if ( typeof handler !== "string" ) {
-					handlerProxy.guid = handler.guid =
-						handler.guid || handlerProxy.guid || $.guid++;
-				}
-	
-				var match = event.match( /^([\w:-]*)\s*(.*)$/ );
-				var eventName = match[ 1 ] + instance.eventNamespace;
-				var selector = match[ 2 ];
-	
-				if ( selector ) {
-					delegateElement.on( eventName, selector, handlerProxy );
-				} else {
-					element.on( eventName, handlerProxy );
-				}
-			} );
-		},
-	
-		_off: function( element, eventName ) {
-			eventName = ( eventName || "" ).split( " " ).join( this.eventNamespace + " " ) +
-				this.eventNamespace;
-			element.off( eventName ).off( eventName );
-	
-			// Clear the stack to avoid memory leaks (#10056)
-			this.bindings = $( this.bindings.not( element ).get() );
-			this.focusable = $( this.focusable.not( element ).get() );
-			this.hoverable = $( this.hoverable.not( element ).get() );
-		},
-	
-		_delay: function( handler, delay ) {
-			function handlerProxy() {
-				return ( typeof handler === "string" ? instance[ handler ] : handler )
-					.apply( instance, arguments );
-			}
-			var instance = this;
-			return setTimeout( handlerProxy, delay || 0 );
-		},
-	
-		_hoverable: function( element ) {
-			this.hoverable = this.hoverable.add( element );
-			this._on( element, {
-				mouseenter: function( event ) {
-					this._addClass( $( event.currentTarget ), null, "ui-state-hover" );
-				},
-				mouseleave: function( event ) {
-					this._removeClass( $( event.currentTarget ), null, "ui-state-hover" );
-				}
-			} );
-		},
-	
-		_focusable: function( element ) {
-			this.focusable = this.focusable.add( element );
-			this._on( element, {
-				focusin: function( event ) {
-					this._addClass( $( event.currentTarget ), null, "ui-state-focus" );
-				},
-				focusout: function( event ) {
-					this._removeClass( $( event.currentTarget ), null, "ui-state-focus" );
-				}
-			} );
-		},
-	
-		_trigger: function( type, event, data ) {
-			var prop, orig;
-			var callback = this.options[ type ];
-	
-			data = data || {};
-			event = $.Event( event );
-			event.type = ( type === this.widgetEventPrefix ?
-				type :
-				this.widgetEventPrefix + type ).toLowerCase();
-	
-			// The original event may come from any element
-			// so we need to reset the target on the new event
-			event.target = this.element[ 0 ];
-	
-			// Copy original event properties over to the new event
-			orig = event.originalEvent;
-			if ( orig ) {
-				for ( prop in orig ) {
-					if ( !( prop in event ) ) {
-						event[ prop ] = orig[ prop ];
-					}
-				}
-			}
-	
-			this.element.trigger( event, data );
-			return !( $.isFunction( callback ) &&
-				callback.apply( this.element[ 0 ], [ event ].concat( data ) ) === false ||
-				event.isDefaultPrevented() );
-		}
-	};
-	
-	$.each( { show: "fadeIn", hide: "fadeOut" }, function( method, defaultEffect ) {
-		$.Widget.prototype[ "_" + method ] = function( element, options, callback ) {
-			if ( typeof options === "string" ) {
-				options = { effect: options };
-			}
-	
-			var hasOptions;
-			var effectName = !options ?
-				method :
-				options === true || typeof options === "number" ?
-					defaultEffect :
-					options.effect || defaultEffect;
-	
-			options = options || {};
-			if ( typeof options === "number" ) {
-				options = { duration: options };
-			}
-	
-			hasOptions = !$.isEmptyObject( options );
-			options.complete = callback;
-	
-			if ( options.delay ) {
-				element.delay( options.delay );
-			}
-	
-			if ( hasOptions && $.effects && $.effects.effect[ effectName ] ) {
-				element[ method ]( options );
-			} else if ( effectName !== method && element[ effectName ] ) {
-				element[ effectName ]( options.duration, options.easing, callback );
-			} else {
-				element.queue( function( next ) {
-					$( this )[ method ]();
-					if ( callback ) {
-						callback.call( element[ 0 ] );
-					}
-					next();
-				} );
-			}
-		};
-	} );
-	
-	return $.widget;
-	
-	} ) );
-
-
-/***/ }),
-/* 26 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -21523,7 +23381,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21547,14 +23405,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 27 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21597,14 +23455,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 28 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21643,14 +23501,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 29 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21670,7 +23528,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 30 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -21691,7 +23549,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21721,2954 +23579,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Slider 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Slider
-	//>>group: Widgets
-	//>>description: Displays a flexible slider with ranges and accessibility via keyboard.
-	//>>docs: http://api.jqueryui.com/slider/
-	//>>demos: http://jqueryui.com/slider/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/slider.css
-	//>>css.theme: ../../themes/base/theme.css
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(14),
-				__webpack_require__(22),
-				__webpack_require__(32),
-				__webpack_require__(24),
-				__webpack_require__(25)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	return $.widget( "ui.slider", $.ui.mouse, {
-		version: "1.12.1",
-		widgetEventPrefix: "slide",
-	
-		options: {
-			animate: false,
-			classes: {
-				"ui-slider": "ui-corner-all",
-				"ui-slider-handle": "ui-corner-all",
-	
-				// Note: ui-widget-header isn't the most fittingly semantic framework class for this
-				// element, but worked best visually with a variety of themes
-				"ui-slider-range": "ui-corner-all ui-widget-header"
-			},
-			distance: 0,
-			max: 100,
-			min: 0,
-			orientation: "horizontal",
-			range: false,
-			step: 1,
-			value: 0,
-			values: null,
-	
-			// Callbacks
-			change: null,
-			slide: null,
-			start: null,
-			stop: null
-		},
-	
-		// Number of pages in a slider
-		// (how many times can you page up/down to go through the whole range)
-		numPages: 5,
-	
-		_create: function() {
-			this._keySliding = false;
-			this._mouseSliding = false;
-			this._animateOff = true;
-			this._handleIndex = null;
-			this._detectOrientation();
-			this._mouseInit();
-			this._calculateNewMax();
-	
-			this._addClass( "ui-slider ui-slider-" + this.orientation,
-				"ui-widget ui-widget-content" );
-	
-			this._refresh();
-	
-			this._animateOff = false;
-		},
-	
-		_refresh: function() {
-			this._createRange();
-			this._createHandles();
-			this._setupEvents();
-			this._refreshValue();
-		},
-	
-		_createHandles: function() {
-			var i, handleCount,
-				options = this.options,
-				existingHandles = this.element.find( ".ui-slider-handle" ),
-				handle = "<span tabindex='0'></span>",
-				handles = [];
-	
-			handleCount = ( options.values && options.values.length ) || 1;
-	
-			if ( existingHandles.length > handleCount ) {
-				existingHandles.slice( handleCount ).remove();
-				existingHandles = existingHandles.slice( 0, handleCount );
-			}
-	
-			for ( i = existingHandles.length; i < handleCount; i++ ) {
-				handles.push( handle );
-			}
-	
-			this.handles = existingHandles.add( $( handles.join( "" ) ).appendTo( this.element ) );
-	
-			this._addClass( this.handles, "ui-slider-handle", "ui-state-default" );
-	
-			this.handle = this.handles.eq( 0 );
-	
-			this.handles.each( function( i ) {
-				$( this )
-					.data( "ui-slider-handle-index", i )
-					.attr( "tabIndex", 0 );
-			} );
-		},
-	
-		_createRange: function() {
-			var options = this.options;
-	
-			if ( options.range ) {
-				if ( options.range === true ) {
-					if ( !options.values ) {
-						options.values = [ this._valueMin(), this._valueMin() ];
-					} else if ( options.values.length && options.values.length !== 2 ) {
-						options.values = [ options.values[ 0 ], options.values[ 0 ] ];
-					} else if ( $.isArray( options.values ) ) {
-						options.values = options.values.slice( 0 );
-					}
-				}
-	
-				if ( !this.range || !this.range.length ) {
-					this.range = $( "<div>" )
-						.appendTo( this.element );
-	
-					this._addClass( this.range, "ui-slider-range" );
-				} else {
-					this._removeClass( this.range, "ui-slider-range-min ui-slider-range-max" );
-	
-					// Handle range switching from true to min/max
-					this.range.css( {
-						"left": "",
-						"bottom": ""
-					} );
-				}
-				if ( options.range === "min" || options.range === "max" ) {
-					this._addClass( this.range, "ui-slider-range-" + options.range );
-				}
-			} else {
-				if ( this.range ) {
-					this.range.remove();
-				}
-				this.range = null;
-			}
-		},
-	
-		_setupEvents: function() {
-			this._off( this.handles );
-			this._on( this.handles, this._handleEvents );
-			this._hoverable( this.handles );
-			this._focusable( this.handles );
-		},
-	
-		_destroy: function() {
-			this.handles.remove();
-			if ( this.range ) {
-				this.range.remove();
-			}
-	
-			this._mouseDestroy();
-		},
-	
-		_mouseCapture: function( event ) {
-			var position, normValue, distance, closestHandle, index, allowed, offset, mouseOverHandle,
-				that = this,
-				o = this.options;
-	
-			if ( o.disabled ) {
-				return false;
-			}
-	
-			this.elementSize = {
-				width: this.element.outerWidth(),
-				height: this.element.outerHeight()
-			};
-			this.elementOffset = this.element.offset();
-	
-			position = { x: event.pageX, y: event.pageY };
-			normValue = this._normValueFromMouse( position );
-			distance = this._valueMax() - this._valueMin() + 1;
-			this.handles.each( function( i ) {
-				var thisDistance = Math.abs( normValue - that.values( i ) );
-				if ( ( distance > thisDistance ) ||
-					( distance === thisDistance &&
-						( i === that._lastChangedValue || that.values( i ) === o.min ) ) ) {
-					distance = thisDistance;
-					closestHandle = $( this );
-					index = i;
-				}
-			} );
-	
-			allowed = this._start( event, index );
-			if ( allowed === false ) {
-				return false;
-			}
-			this._mouseSliding = true;
-	
-			this._handleIndex = index;
-	
-			this._addClass( closestHandle, null, "ui-state-active" );
-			closestHandle.trigger( "focus" );
-	
-			offset = closestHandle.offset();
-			mouseOverHandle = !$( event.target ).parents().addBack().is( ".ui-slider-handle" );
-			this._clickOffset = mouseOverHandle ? { left: 0, top: 0 } : {
-				left: event.pageX - offset.left - ( closestHandle.width() / 2 ),
-				top: event.pageY - offset.top -
-					( closestHandle.height() / 2 ) -
-					( parseInt( closestHandle.css( "borderTopWidth" ), 10 ) || 0 ) -
-					( parseInt( closestHandle.css( "borderBottomWidth" ), 10 ) || 0 ) +
-					( parseInt( closestHandle.css( "marginTop" ), 10 ) || 0 )
-			};
-	
-			if ( !this.handles.hasClass( "ui-state-hover" ) ) {
-				this._slide( event, index, normValue );
-			}
-			this._animateOff = true;
-			return true;
-		},
-	
-		_mouseStart: function() {
-			return true;
-		},
-	
-		_mouseDrag: function( event ) {
-			var position = { x: event.pageX, y: event.pageY },
-				normValue = this._normValueFromMouse( position );
-	
-			this._slide( event, this._handleIndex, normValue );
-	
-			return false;
-		},
-	
-		_mouseStop: function( event ) {
-			this._removeClass( this.handles, null, "ui-state-active" );
-			this._mouseSliding = false;
-	
-			this._stop( event, this._handleIndex );
-			this._change( event, this._handleIndex );
-	
-			this._handleIndex = null;
-			this._clickOffset = null;
-			this._animateOff = false;
-	
-			return false;
-		},
-	
-		_detectOrientation: function() {
-			this.orientation = ( this.options.orientation === "vertical" ) ? "vertical" : "horizontal";
-		},
-	
-		_normValueFromMouse: function( position ) {
-			var pixelTotal,
-				pixelMouse,
-				percentMouse,
-				valueTotal,
-				valueMouse;
-	
-			if ( this.orientation === "horizontal" ) {
-				pixelTotal = this.elementSize.width;
-				pixelMouse = position.x - this.elementOffset.left -
-					( this._clickOffset ? this._clickOffset.left : 0 );
-			} else {
-				pixelTotal = this.elementSize.height;
-				pixelMouse = position.y - this.elementOffset.top -
-					( this._clickOffset ? this._clickOffset.top : 0 );
-			}
-	
-			percentMouse = ( pixelMouse / pixelTotal );
-			if ( percentMouse > 1 ) {
-				percentMouse = 1;
-			}
-			if ( percentMouse < 0 ) {
-				percentMouse = 0;
-			}
-			if ( this.orientation === "vertical" ) {
-				percentMouse = 1 - percentMouse;
-			}
-	
-			valueTotal = this._valueMax() - this._valueMin();
-			valueMouse = this._valueMin() + percentMouse * valueTotal;
-	
-			return this._trimAlignValue( valueMouse );
-		},
-	
-		_uiHash: function( index, value, values ) {
-			var uiHash = {
-				handle: this.handles[ index ],
-				handleIndex: index,
-				value: value !== undefined ? value : this.value()
-			};
-	
-			if ( this._hasMultipleValues() ) {
-				uiHash.value = value !== undefined ? value : this.values( index );
-				uiHash.values = values || this.values();
-			}
-	
-			return uiHash;
-		},
-	
-		_hasMultipleValues: function() {
-			return this.options.values && this.options.values.length;
-		},
-	
-		_start: function( event, index ) {
-			return this._trigger( "start", event, this._uiHash( index ) );
-		},
-	
-		_slide: function( event, index, newVal ) {
-			var allowed, otherVal,
-				currentValue = this.value(),
-				newValues = this.values();
-	
-			if ( this._hasMultipleValues() ) {
-				otherVal = this.values( index ? 0 : 1 );
-				currentValue = this.values( index );
-	
-				if ( this.options.values.length === 2 && this.options.range === true ) {
-					newVal =  index === 0 ? Math.min( otherVal, newVal ) : Math.max( otherVal, newVal );
-				}
-	
-				newValues[ index ] = newVal;
-			}
-	
-			if ( newVal === currentValue ) {
-				return;
-			}
-	
-			allowed = this._trigger( "slide", event, this._uiHash( index, newVal, newValues ) );
-	
-			// A slide can be canceled by returning false from the slide callback
-			if ( allowed === false ) {
-				return;
-			}
-	
-			if ( this._hasMultipleValues() ) {
-				this.values( index, newVal );
-			} else {
-				this.value( newVal );
-			}
-		},
-	
-		_stop: function( event, index ) {
-			this._trigger( "stop", event, this._uiHash( index ) );
-		},
-	
-		_change: function( event, index ) {
-			if ( !this._keySliding && !this._mouseSliding ) {
-	
-				//store the last changed value index for reference when handles overlap
-				this._lastChangedValue = index;
-				this._trigger( "change", event, this._uiHash( index ) );
-			}
-		},
-	
-		value: function( newValue ) {
-			if ( arguments.length ) {
-				this.options.value = this._trimAlignValue( newValue );
-				this._refreshValue();
-				this._change( null, 0 );
-				return;
-			}
-	
-			return this._value();
-		},
-	
-		values: function( index, newValue ) {
-			var vals,
-				newValues,
-				i;
-	
-			if ( arguments.length > 1 ) {
-				this.options.values[ index ] = this._trimAlignValue( newValue );
-				this._refreshValue();
-				this._change( null, index );
-				return;
-			}
-	
-			if ( arguments.length ) {
-				if ( $.isArray( arguments[ 0 ] ) ) {
-					vals = this.options.values;
-					newValues = arguments[ 0 ];
-					for ( i = 0; i < vals.length; i += 1 ) {
-						vals[ i ] = this._trimAlignValue( newValues[ i ] );
-						this._change( null, i );
-					}
-					this._refreshValue();
-				} else {
-					if ( this._hasMultipleValues() ) {
-						return this._values( index );
-					} else {
-						return this.value();
-					}
-				}
-			} else {
-				return this._values();
-			}
-		},
-	
-		_setOption: function( key, value ) {
-			var i,
-				valsLength = 0;
-	
-			if ( key === "range" && this.options.range === true ) {
-				if ( value === "min" ) {
-					this.options.value = this._values( 0 );
-					this.options.values = null;
-				} else if ( value === "max" ) {
-					this.options.value = this._values( this.options.values.length - 1 );
-					this.options.values = null;
-				}
-			}
-	
-			if ( $.isArray( this.options.values ) ) {
-				valsLength = this.options.values.length;
-			}
-	
-			this._super( key, value );
-	
-			switch ( key ) {
-				case "orientation":
-					this._detectOrientation();
-					this._removeClass( "ui-slider-horizontal ui-slider-vertical" )
-						._addClass( "ui-slider-" + this.orientation );
-					this._refreshValue();
-					if ( this.options.range ) {
-						this._refreshRange( value );
-					}
-	
-					// Reset positioning from previous orientation
-					this.handles.css( value === "horizontal" ? "bottom" : "left", "" );
-					break;
-				case "value":
-					this._animateOff = true;
-					this._refreshValue();
-					this._change( null, 0 );
-					this._animateOff = false;
-					break;
-				case "values":
-					this._animateOff = true;
-					this._refreshValue();
-	
-					// Start from the last handle to prevent unreachable handles (#9046)
-					for ( i = valsLength - 1; i >= 0; i-- ) {
-						this._change( null, i );
-					}
-					this._animateOff = false;
-					break;
-				case "step":
-				case "min":
-				case "max":
-					this._animateOff = true;
-					this._calculateNewMax();
-					this._refreshValue();
-					this._animateOff = false;
-					break;
-				case "range":
-					this._animateOff = true;
-					this._refresh();
-					this._animateOff = false;
-					break;
-			}
-		},
-	
-		_setOptionDisabled: function( value ) {
-			this._super( value );
-	
-			this._toggleClass( null, "ui-state-disabled", !!value );
-		},
-	
-		//internal value getter
-		// _value() returns value trimmed by min and max, aligned by step
-		_value: function() {
-			var val = this.options.value;
-			val = this._trimAlignValue( val );
-	
-			return val;
-		},
-	
-		//internal values getter
-		// _values() returns array of values trimmed by min and max, aligned by step
-		// _values( index ) returns single value trimmed by min and max, aligned by step
-		_values: function( index ) {
-			var val,
-				vals,
-				i;
-	
-			if ( arguments.length ) {
-				val = this.options.values[ index ];
-				val = this._trimAlignValue( val );
-	
-				return val;
-			} else if ( this._hasMultipleValues() ) {
-	
-				// .slice() creates a copy of the array
-				// this copy gets trimmed by min and max and then returned
-				vals = this.options.values.slice();
-				for ( i = 0; i < vals.length; i += 1 ) {
-					vals[ i ] = this._trimAlignValue( vals[ i ] );
-				}
-	
-				return vals;
-			} else {
-				return [];
-			}
-		},
-	
-		// Returns the step-aligned value that val is closest to, between (inclusive) min and max
-		_trimAlignValue: function( val ) {
-			if ( val <= this._valueMin() ) {
-				return this._valueMin();
-			}
-			if ( val >= this._valueMax() ) {
-				return this._valueMax();
-			}
-			var step = ( this.options.step > 0 ) ? this.options.step : 1,
-				valModStep = ( val - this._valueMin() ) % step,
-				alignValue = val - valModStep;
-	
-			if ( Math.abs( valModStep ) * 2 >= step ) {
-				alignValue += ( valModStep > 0 ) ? step : ( -step );
-			}
-	
-			// Since JavaScript has problems with large floats, round
-			// the final value to 5 digits after the decimal point (see #4124)
-			return parseFloat( alignValue.toFixed( 5 ) );
-		},
-	
-		_calculateNewMax: function() {
-			var max = this.options.max,
-				min = this._valueMin(),
-				step = this.options.step,
-				aboveMin = Math.round( ( max - min ) / step ) * step;
-			max = aboveMin + min;
-			if ( max > this.options.max ) {
-	
-				//If max is not divisible by step, rounding off may increase its value
-				max -= step;
-			}
-			this.max = parseFloat( max.toFixed( this._precision() ) );
-		},
-	
-		_precision: function() {
-			var precision = this._precisionOf( this.options.step );
-			if ( this.options.min !== null ) {
-				precision = Math.max( precision, this._precisionOf( this.options.min ) );
-			}
-			return precision;
-		},
-	
-		_precisionOf: function( num ) {
-			var str = num.toString(),
-				decimal = str.indexOf( "." );
-			return decimal === -1 ? 0 : str.length - decimal - 1;
-		},
-	
-		_valueMin: function() {
-			return this.options.min;
-		},
-	
-		_valueMax: function() {
-			return this.max;
-		},
-	
-		_refreshRange: function( orientation ) {
-			if ( orientation === "vertical" ) {
-				this.range.css( { "width": "", "left": "" } );
-			}
-			if ( orientation === "horizontal" ) {
-				this.range.css( { "height": "", "bottom": "" } );
-			}
-		},
-	
-		_refreshValue: function() {
-			var lastValPercent, valPercent, value, valueMin, valueMax,
-				oRange = this.options.range,
-				o = this.options,
-				that = this,
-				animate = ( !this._animateOff ) ? o.animate : false,
-				_set = {};
-	
-			if ( this._hasMultipleValues() ) {
-				this.handles.each( function( i ) {
-					valPercent = ( that.values( i ) - that._valueMin() ) / ( that._valueMax() -
-						that._valueMin() ) * 100;
-					_set[ that.orientation === "horizontal" ? "left" : "bottom" ] = valPercent + "%";
-					$( this ).stop( 1, 1 )[ animate ? "animate" : "css" ]( _set, o.animate );
-					if ( that.options.range === true ) {
-						if ( that.orientation === "horizontal" ) {
-							if ( i === 0 ) {
-								that.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-									left: valPercent + "%"
-								}, o.animate );
-							}
-							if ( i === 1 ) {
-								that.range[ animate ? "animate" : "css" ]( {
-									width: ( valPercent - lastValPercent ) + "%"
-								}, {
-									queue: false,
-									duration: o.animate
-								} );
-							}
-						} else {
-							if ( i === 0 ) {
-								that.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-									bottom: ( valPercent ) + "%"
-								}, o.animate );
-							}
-							if ( i === 1 ) {
-								that.range[ animate ? "animate" : "css" ]( {
-									height: ( valPercent - lastValPercent ) + "%"
-								}, {
-									queue: false,
-									duration: o.animate
-								} );
-							}
-						}
-					}
-					lastValPercent = valPercent;
-				} );
-			} else {
-				value = this.value();
-				valueMin = this._valueMin();
-				valueMax = this._valueMax();
-				valPercent = ( valueMax !== valueMin ) ?
-						( value - valueMin ) / ( valueMax - valueMin ) * 100 :
-						0;
-				_set[ this.orientation === "horizontal" ? "left" : "bottom" ] = valPercent + "%";
-				this.handle.stop( 1, 1 )[ animate ? "animate" : "css" ]( _set, o.animate );
-	
-				if ( oRange === "min" && this.orientation === "horizontal" ) {
-					this.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-						width: valPercent + "%"
-					}, o.animate );
-				}
-				if ( oRange === "max" && this.orientation === "horizontal" ) {
-					this.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-						width: ( 100 - valPercent ) + "%"
-					}, o.animate );
-				}
-				if ( oRange === "min" && this.orientation === "vertical" ) {
-					this.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-						height: valPercent + "%"
-					}, o.animate );
-				}
-				if ( oRange === "max" && this.orientation === "vertical" ) {
-					this.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-						height: ( 100 - valPercent ) + "%"
-					}, o.animate );
-				}
-			}
-		},
-	
-		_handleEvents: {
-			keydown: function( event ) {
-				var allowed, curVal, newVal, step,
-					index = $( event.target ).data( "ui-slider-handle-index" );
-	
-				switch ( event.keyCode ) {
-					case $.ui.keyCode.HOME:
-					case $.ui.keyCode.END:
-					case $.ui.keyCode.PAGE_UP:
-					case $.ui.keyCode.PAGE_DOWN:
-					case $.ui.keyCode.UP:
-					case $.ui.keyCode.RIGHT:
-					case $.ui.keyCode.DOWN:
-					case $.ui.keyCode.LEFT:
-						event.preventDefault();
-						if ( !this._keySliding ) {
-							this._keySliding = true;
-							this._addClass( $( event.target ), null, "ui-state-active" );
-							allowed = this._start( event, index );
-							if ( allowed === false ) {
-								return;
-							}
-						}
-						break;
-				}
-	
-				step = this.options.step;
-				if ( this._hasMultipleValues() ) {
-					curVal = newVal = this.values( index );
-				} else {
-					curVal = newVal = this.value();
-				}
-	
-				switch ( event.keyCode ) {
-					case $.ui.keyCode.HOME:
-						newVal = this._valueMin();
-						break;
-					case $.ui.keyCode.END:
-						newVal = this._valueMax();
-						break;
-					case $.ui.keyCode.PAGE_UP:
-						newVal = this._trimAlignValue(
-							curVal + ( ( this._valueMax() - this._valueMin() ) / this.numPages )
-						);
-						break;
-					case $.ui.keyCode.PAGE_DOWN:
-						newVal = this._trimAlignValue(
-							curVal - ( ( this._valueMax() - this._valueMin() ) / this.numPages ) );
-						break;
-					case $.ui.keyCode.UP:
-					case $.ui.keyCode.RIGHT:
-						if ( curVal === this._valueMax() ) {
-							return;
-						}
-						newVal = this._trimAlignValue( curVal + step );
-						break;
-					case $.ui.keyCode.DOWN:
-					case $.ui.keyCode.LEFT:
-						if ( curVal === this._valueMin() ) {
-							return;
-						}
-						newVal = this._trimAlignValue( curVal - step );
-						break;
-				}
-	
-				this._slide( event, index, newVal );
-			},
-			keyup: function( event ) {
-				var index = $( event.target ).data( "ui-slider-handle-index" );
-	
-				if ( this._keySliding ) {
-					this._keySliding = false;
-					this._stop( event, index );
-					this._change( event, index );
-					this._removeClass( $( event.target ), null, "ui-state-active" );
-				}
-			}
-		}
-	} );
-	
-	} ) );
-
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Keycode 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Keycode
-	//>>group: Core
-	//>>description: Provide keycodes as keynames
-	//>>docs: http://api.jqueryui.com/jQuery.ui.keyCode/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	return $.ui.keyCode = {
-		BACKSPACE: 8,
-		COMMA: 188,
-		DELETE: 46,
-		DOWN: 40,
-		END: 35,
-		ENTER: 13,
-		ESCAPE: 27,
-		HOME: 36,
-		LEFT: 37,
-		PAGE_DOWN: 34,
-		PAGE_UP: 33,
-		PERIOD: 190,
-		RIGHT: 39,
-		SPACE: 32,
-		TAB: 9,
-		UP: 38
-	};
-	
-	} ) );
-
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Dialog 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Dialog
-	//>>group: Widgets
-	//>>description: Displays customizable dialog windows.
-	//>>docs: http://api.jqueryui.com/dialog/
-	//>>demos: http://jqueryui.com/dialog/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/dialog.css
-	//>>css.theme: ../../themes/base/theme.css
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(14),
-				__webpack_require__(34),
-				__webpack_require__(21),
-				__webpack_require__(22),
-				__webpack_require__(41),
-				__webpack_require__(43),
-				__webpack_require__(32),
-				__webpack_require__(44),
-				__webpack_require__(28),
-				__webpack_require__(29),
-				__webpack_require__(45),
-				__webpack_require__(46),
-				__webpack_require__(24),
-				__webpack_require__(25)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	$.widget( "ui.dialog", {
-		version: "1.12.1",
-		options: {
-			appendTo: "body",
-			autoOpen: true,
-			buttons: [],
-			classes: {
-				"ui-dialog": "ui-corner-all",
-				"ui-dialog-titlebar": "ui-corner-all"
-			},
-			closeOnEscape: true,
-			closeText: "Close",
-			draggable: true,
-			hide: null,
-			height: "auto",
-			maxHeight: null,
-			maxWidth: null,
-			minHeight: 150,
-			minWidth: 150,
-			modal: false,
-			position: {
-				my: "center",
-				at: "center",
-				of: window,
-				collision: "fit",
-	
-				// Ensure the titlebar is always visible
-				using: function( pos ) {
-					var topOffset = $( this ).css( pos ).offset().top;
-					if ( topOffset < 0 ) {
-						$( this ).css( "top", pos.top - topOffset );
-					}
-				}
-			},
-			resizable: true,
-			show: null,
-			title: null,
-			width: 300,
-	
-			// Callbacks
-			beforeClose: null,
-			close: null,
-			drag: null,
-			dragStart: null,
-			dragStop: null,
-			focus: null,
-			open: null,
-			resize: null,
-			resizeStart: null,
-			resizeStop: null
-		},
-	
-		sizeRelatedOptions: {
-			buttons: true,
-			height: true,
-			maxHeight: true,
-			maxWidth: true,
-			minHeight: true,
-			minWidth: true,
-			width: true
-		},
-	
-		resizableRelatedOptions: {
-			maxHeight: true,
-			maxWidth: true,
-			minHeight: true,
-			minWidth: true
-		},
-	
-		_create: function() {
-			this.originalCss = {
-				display: this.element[ 0 ].style.display,
-				width: this.element[ 0 ].style.width,
-				minHeight: this.element[ 0 ].style.minHeight,
-				maxHeight: this.element[ 0 ].style.maxHeight,
-				height: this.element[ 0 ].style.height
-			};
-			this.originalPosition = {
-				parent: this.element.parent(),
-				index: this.element.parent().children().index( this.element )
-			};
-			this.originalTitle = this.element.attr( "title" );
-			if ( this.options.title == null && this.originalTitle != null ) {
-				this.options.title = this.originalTitle;
-			}
-	
-			// Dialogs can't be disabled
-			if ( this.options.disabled ) {
-				this.options.disabled = false;
-			}
-	
-			this._createWrapper();
-	
-			this.element
-				.show()
-				.removeAttr( "title" )
-				.appendTo( this.uiDialog );
-	
-			this._addClass( "ui-dialog-content", "ui-widget-content" );
-	
-			this._createTitlebar();
-			this._createButtonPane();
-	
-			if ( this.options.draggable && $.fn.draggable ) {
-				this._makeDraggable();
-			}
-			if ( this.options.resizable && $.fn.resizable ) {
-				this._makeResizable();
-			}
-	
-			this._isOpen = false;
-	
-			this._trackFocus();
-		},
-	
-		_init: function() {
-			if ( this.options.autoOpen ) {
-				this.open();
-			}
-		},
-	
-		_appendTo: function() {
-			var element = this.options.appendTo;
-			if ( element && ( element.jquery || element.nodeType ) ) {
-				return $( element );
-			}
-			return this.document.find( element || "body" ).eq( 0 );
-		},
-	
-		_destroy: function() {
-			var next,
-				originalPosition = this.originalPosition;
-	
-			this._untrackInstance();
-			this._destroyOverlay();
-	
-			this.element
-				.removeUniqueId()
-				.css( this.originalCss )
-	
-				// Without detaching first, the following becomes really slow
-				.detach();
-	
-			this.uiDialog.remove();
-	
-			if ( this.originalTitle ) {
-				this.element.attr( "title", this.originalTitle );
-			}
-	
-			next = originalPosition.parent.children().eq( originalPosition.index );
-	
-			// Don't try to place the dialog next to itself (#8613)
-			if ( next.length && next[ 0 ] !== this.element[ 0 ] ) {
-				next.before( this.element );
-			} else {
-				originalPosition.parent.append( this.element );
-			}
-		},
-	
-		widget: function() {
-			return this.uiDialog;
-		},
-	
-		disable: $.noop,
-		enable: $.noop,
-	
-		close: function( event ) {
-			var that = this;
-	
-			if ( !this._isOpen || this._trigger( "beforeClose", event ) === false ) {
-				return;
-			}
-	
-			this._isOpen = false;
-			this._focusedElement = null;
-			this._destroyOverlay();
-			this._untrackInstance();
-	
-			if ( !this.opener.filter( ":focusable" ).trigger( "focus" ).length ) {
-	
-				// Hiding a focused element doesn't trigger blur in WebKit
-				// so in case we have nothing to focus on, explicitly blur the active element
-				// https://bugs.webkit.org/show_bug.cgi?id=47182
-				$.ui.safeBlur( $.ui.safeActiveElement( this.document[ 0 ] ) );
-			}
-	
-			this._hide( this.uiDialog, this.options.hide, function() {
-				that._trigger( "close", event );
-			} );
-		},
-	
-		isOpen: function() {
-			return this._isOpen;
-		},
-	
-		moveToTop: function() {
-			this._moveToTop();
-		},
-	
-		_moveToTop: function( event, silent ) {
-			var moved = false,
-				zIndices = this.uiDialog.siblings( ".ui-front:visible" ).map( function() {
-					return +$( this ).css( "z-index" );
-				} ).get(),
-				zIndexMax = Math.max.apply( null, zIndices );
-	
-			if ( zIndexMax >= +this.uiDialog.css( "z-index" ) ) {
-				this.uiDialog.css( "z-index", zIndexMax + 1 );
-				moved = true;
-			}
-	
-			if ( moved && !silent ) {
-				this._trigger( "focus", event );
-			}
-			return moved;
-		},
-	
-		open: function() {
-			var that = this;
-			if ( this._isOpen ) {
-				if ( this._moveToTop() ) {
-					this._focusTabbable();
-				}
-				return;
-			}
-	
-			this._isOpen = true;
-			this.opener = $( $.ui.safeActiveElement( this.document[ 0 ] ) );
-	
-			this._size();
-			this._position();
-			this._createOverlay();
-			this._moveToTop( null, true );
-	
-			// Ensure the overlay is moved to the top with the dialog, but only when
-			// opening. The overlay shouldn't move after the dialog is open so that
-			// modeless dialogs opened after the modal dialog stack properly.
-			if ( this.overlay ) {
-				this.overlay.css( "z-index", this.uiDialog.css( "z-index" ) - 1 );
-			}
-	
-			this._show( this.uiDialog, this.options.show, function() {
-				that._focusTabbable();
-				that._trigger( "focus" );
-			} );
-	
-			// Track the dialog immediately upon openening in case a focus event
-			// somehow occurs outside of the dialog before an element inside the
-			// dialog is focused (#10152)
-			this._makeFocusTarget();
-	
-			this._trigger( "open" );
-		},
-	
-		_focusTabbable: function() {
-	
-			// Set focus to the first match:
-			// 1. An element that was focused previously
-			// 2. First element inside the dialog matching [autofocus]
-			// 3. Tabbable element inside the content element
-			// 4. Tabbable element inside the buttonpane
-			// 5. The close button
-			// 6. The dialog itself
-			var hasFocus = this._focusedElement;
-			if ( !hasFocus ) {
-				hasFocus = this.element.find( "[autofocus]" );
-			}
-			if ( !hasFocus.length ) {
-				hasFocus = this.element.find( ":tabbable" );
-			}
-			if ( !hasFocus.length ) {
-				hasFocus = this.uiDialogButtonPane.find( ":tabbable" );
-			}
-			if ( !hasFocus.length ) {
-				hasFocus = this.uiDialogTitlebarClose.filter( ":tabbable" );
-			}
-			if ( !hasFocus.length ) {
-				hasFocus = this.uiDialog;
-			}
-			hasFocus.eq( 0 ).trigger( "focus" );
-		},
-	
-		_keepFocus: function( event ) {
-			function checkFocus() {
-				var activeElement = $.ui.safeActiveElement( this.document[ 0 ] ),
-					isActive = this.uiDialog[ 0 ] === activeElement ||
-						$.contains( this.uiDialog[ 0 ], activeElement );
-				if ( !isActive ) {
-					this._focusTabbable();
-				}
-			}
-			event.preventDefault();
-			checkFocus.call( this );
-	
-			// support: IE
-			// IE <= 8 doesn't prevent moving focus even with event.preventDefault()
-			// so we check again later
-			this._delay( checkFocus );
-		},
-	
-		_createWrapper: function() {
-			this.uiDialog = $( "<div>" )
-				.hide()
-				.attr( {
-	
-					// Setting tabIndex makes the div focusable
-					tabIndex: -1,
-					role: "dialog"
-				} )
-				.appendTo( this._appendTo() );
-	
-			this._addClass( this.uiDialog, "ui-dialog", "ui-widget ui-widget-content ui-front" );
-			this._on( this.uiDialog, {
-				keydown: function( event ) {
-					if ( this.options.closeOnEscape && !event.isDefaultPrevented() && event.keyCode &&
-							event.keyCode === $.ui.keyCode.ESCAPE ) {
-						event.preventDefault();
-						this.close( event );
-						return;
-					}
-	
-					// Prevent tabbing out of dialogs
-					if ( event.keyCode !== $.ui.keyCode.TAB || event.isDefaultPrevented() ) {
-						return;
-					}
-					var tabbables = this.uiDialog.find( ":tabbable" ),
-						first = tabbables.filter( ":first" ),
-						last = tabbables.filter( ":last" );
-	
-					if ( ( event.target === last[ 0 ] || event.target === this.uiDialog[ 0 ] ) &&
-							!event.shiftKey ) {
-						this._delay( function() {
-							first.trigger( "focus" );
-						} );
-						event.preventDefault();
-					} else if ( ( event.target === first[ 0 ] ||
-							event.target === this.uiDialog[ 0 ] ) && event.shiftKey ) {
-						this._delay( function() {
-							last.trigger( "focus" );
-						} );
-						event.preventDefault();
-					}
-				},
-				mousedown: function( event ) {
-					if ( this._moveToTop( event ) ) {
-						this._focusTabbable();
-					}
-				}
-			} );
-	
-			// We assume that any existing aria-describedby attribute means
-			// that the dialog content is marked up properly
-			// otherwise we brute force the content as the description
-			if ( !this.element.find( "[aria-describedby]" ).length ) {
-				this.uiDialog.attr( {
-					"aria-describedby": this.element.uniqueId().attr( "id" )
-				} );
-			}
-		},
-	
-		_createTitlebar: function() {
-			var uiDialogTitle;
-	
-			this.uiDialogTitlebar = $( "<div>" );
-			this._addClass( this.uiDialogTitlebar,
-				"ui-dialog-titlebar", "ui-widget-header ui-helper-clearfix" );
-			this._on( this.uiDialogTitlebar, {
-				mousedown: function( event ) {
-	
-					// Don't prevent click on close button (#8838)
-					// Focusing a dialog that is partially scrolled out of view
-					// causes the browser to scroll it into view, preventing the click event
-					if ( !$( event.target ).closest( ".ui-dialog-titlebar-close" ) ) {
-	
-						// Dialog isn't getting focus when dragging (#8063)
-						this.uiDialog.trigger( "focus" );
-					}
-				}
-			} );
-	
-			// Support: IE
-			// Use type="button" to prevent enter keypresses in textboxes from closing the
-			// dialog in IE (#9312)
-			this.uiDialogTitlebarClose = $( "<button type='button'></button>" )
-				.button( {
-					label: $( "<a>" ).text( this.options.closeText ).html(),
-					icon: "ui-icon-closethick",
-					showLabel: false
-				} )
-				.appendTo( this.uiDialogTitlebar );
-	
-			this._addClass( this.uiDialogTitlebarClose, "ui-dialog-titlebar-close" );
-			this._on( this.uiDialogTitlebarClose, {
-				click: function( event ) {
-					event.preventDefault();
-					this.close( event );
-				}
-			} );
-	
-			uiDialogTitle = $( "<span>" ).uniqueId().prependTo( this.uiDialogTitlebar );
-			this._addClass( uiDialogTitle, "ui-dialog-title" );
-			this._title( uiDialogTitle );
-	
-			this.uiDialogTitlebar.prependTo( this.uiDialog );
-	
-			this.uiDialog.attr( {
-				"aria-labelledby": uiDialogTitle.attr( "id" )
-			} );
-		},
-	
-		_title: function( title ) {
-			if ( this.options.title ) {
-				title.text( this.options.title );
-			} else {
-				title.html( "&#160;" );
-			}
-		},
-	
-		_createButtonPane: function() {
-			this.uiDialogButtonPane = $( "<div>" );
-			this._addClass( this.uiDialogButtonPane, "ui-dialog-buttonpane",
-				"ui-widget-content ui-helper-clearfix" );
-	
-			this.uiButtonSet = $( "<div>" )
-				.appendTo( this.uiDialogButtonPane );
-			this._addClass( this.uiButtonSet, "ui-dialog-buttonset" );
-	
-			this._createButtons();
-		},
-	
-		_createButtons: function() {
-			var that = this,
-				buttons = this.options.buttons;
-	
-			// If we already have a button pane, remove it
-			this.uiDialogButtonPane.remove();
-			this.uiButtonSet.empty();
-	
-			if ( $.isEmptyObject( buttons ) || ( $.isArray( buttons ) && !buttons.length ) ) {
-				this._removeClass( this.uiDialog, "ui-dialog-buttons" );
-				return;
-			}
-	
-			$.each( buttons, function( name, props ) {
-				var click, buttonOptions;
-				props = $.isFunction( props ) ?
-					{ click: props, text: name } :
-					props;
-	
-				// Default to a non-submitting button
-				props = $.extend( { type: "button" }, props );
-	
-				// Change the context for the click callback to be the main element
-				click = props.click;
-				buttonOptions = {
-					icon: props.icon,
-					iconPosition: props.iconPosition,
-					showLabel: props.showLabel,
-	
-					// Deprecated options
-					icons: props.icons,
-					text: props.text
-				};
-	
-				delete props.click;
-				delete props.icon;
-				delete props.iconPosition;
-				delete props.showLabel;
-	
-				// Deprecated options
-				delete props.icons;
-				if ( typeof props.text === "boolean" ) {
-					delete props.text;
-				}
-	
-				$( "<button></button>", props )
-					.button( buttonOptions )
-					.appendTo( that.uiButtonSet )
-					.on( "click", function() {
-						click.apply( that.element[ 0 ], arguments );
-					} );
-			} );
-			this._addClass( this.uiDialog, "ui-dialog-buttons" );
-			this.uiDialogButtonPane.appendTo( this.uiDialog );
-		},
-	
-		_makeDraggable: function() {
-			var that = this,
-				options = this.options;
-	
-			function filteredUi( ui ) {
-				return {
-					position: ui.position,
-					offset: ui.offset
-				};
-			}
-	
-			this.uiDialog.draggable( {
-				cancel: ".ui-dialog-content, .ui-dialog-titlebar-close",
-				handle: ".ui-dialog-titlebar",
-				containment: "document",
-				start: function( event, ui ) {
-					that._addClass( $( this ), "ui-dialog-dragging" );
-					that._blockFrames();
-					that._trigger( "dragStart", event, filteredUi( ui ) );
-				},
-				drag: function( event, ui ) {
-					that._trigger( "drag", event, filteredUi( ui ) );
-				},
-				stop: function( event, ui ) {
-					var left = ui.offset.left - that.document.scrollLeft(),
-						top = ui.offset.top - that.document.scrollTop();
-	
-					options.position = {
-						my: "left top",
-						at: "left" + ( left >= 0 ? "+" : "" ) + left + " " +
-							"top" + ( top >= 0 ? "+" : "" ) + top,
-						of: that.window
-					};
-					that._removeClass( $( this ), "ui-dialog-dragging" );
-					that._unblockFrames();
-					that._trigger( "dragStop", event, filteredUi( ui ) );
-				}
-			} );
-		},
-	
-		_makeResizable: function() {
-			var that = this,
-				options = this.options,
-				handles = options.resizable,
-	
-				// .ui-resizable has position: relative defined in the stylesheet
-				// but dialogs have to use absolute or fixed positioning
-				position = this.uiDialog.css( "position" ),
-				resizeHandles = typeof handles === "string" ?
-					handles :
-					"n,e,s,w,se,sw,ne,nw";
-	
-			function filteredUi( ui ) {
-				return {
-					originalPosition: ui.originalPosition,
-					originalSize: ui.originalSize,
-					position: ui.position,
-					size: ui.size
-				};
-			}
-	
-			this.uiDialog.resizable( {
-				cancel: ".ui-dialog-content",
-				containment: "document",
-				alsoResize: this.element,
-				maxWidth: options.maxWidth,
-				maxHeight: options.maxHeight,
-				minWidth: options.minWidth,
-				minHeight: this._minHeight(),
-				handles: resizeHandles,
-				start: function( event, ui ) {
-					that._addClass( $( this ), "ui-dialog-resizing" );
-					that._blockFrames();
-					that._trigger( "resizeStart", event, filteredUi( ui ) );
-				},
-				resize: function( event, ui ) {
-					that._trigger( "resize", event, filteredUi( ui ) );
-				},
-				stop: function( event, ui ) {
-					var offset = that.uiDialog.offset(),
-						left = offset.left - that.document.scrollLeft(),
-						top = offset.top - that.document.scrollTop();
-	
-					options.height = that.uiDialog.height();
-					options.width = that.uiDialog.width();
-					options.position = {
-						my: "left top",
-						at: "left" + ( left >= 0 ? "+" : "" ) + left + " " +
-							"top" + ( top >= 0 ? "+" : "" ) + top,
-						of: that.window
-					};
-					that._removeClass( $( this ), "ui-dialog-resizing" );
-					that._unblockFrames();
-					that._trigger( "resizeStop", event, filteredUi( ui ) );
-				}
-			} )
-				.css( "position", position );
-		},
-	
-		_trackFocus: function() {
-			this._on( this.widget(), {
-				focusin: function( event ) {
-					this._makeFocusTarget();
-					this._focusedElement = $( event.target );
-				}
-			} );
-		},
-	
-		_makeFocusTarget: function() {
-			this._untrackInstance();
-			this._trackingInstances().unshift( this );
-		},
-	
-		_untrackInstance: function() {
-			var instances = this._trackingInstances(),
-				exists = $.inArray( this, instances );
-			if ( exists !== -1 ) {
-				instances.splice( exists, 1 );
-			}
-		},
-	
-		_trackingInstances: function() {
-			var instances = this.document.data( "ui-dialog-instances" );
-			if ( !instances ) {
-				instances = [];
-				this.document.data( "ui-dialog-instances", instances );
-			}
-			return instances;
-		},
-	
-		_minHeight: function() {
-			var options = this.options;
-	
-			return options.height === "auto" ?
-				options.minHeight :
-				Math.min( options.minHeight, options.height );
-		},
-	
-		_position: function() {
-	
-			// Need to show the dialog to get the actual offset in the position plugin
-			var isVisible = this.uiDialog.is( ":visible" );
-			if ( !isVisible ) {
-				this.uiDialog.show();
-			}
-			this.uiDialog.position( this.options.position );
-			if ( !isVisible ) {
-				this.uiDialog.hide();
-			}
-		},
-	
-		_setOptions: function( options ) {
-			var that = this,
-				resize = false,
-				resizableOptions = {};
-	
-			$.each( options, function( key, value ) {
-				that._setOption( key, value );
-	
-				if ( key in that.sizeRelatedOptions ) {
-					resize = true;
-				}
-				if ( key in that.resizableRelatedOptions ) {
-					resizableOptions[ key ] = value;
-				}
-			} );
-	
-			if ( resize ) {
-				this._size();
-				this._position();
-			}
-			if ( this.uiDialog.is( ":data(ui-resizable)" ) ) {
-				this.uiDialog.resizable( "option", resizableOptions );
-			}
-		},
-	
-		_setOption: function( key, value ) {
-			var isDraggable, isResizable,
-				uiDialog = this.uiDialog;
-	
-			if ( key === "disabled" ) {
-				return;
-			}
-	
-			this._super( key, value );
-	
-			if ( key === "appendTo" ) {
-				this.uiDialog.appendTo( this._appendTo() );
-			}
-	
-			if ( key === "buttons" ) {
-				this._createButtons();
-			}
-	
-			if ( key === "closeText" ) {
-				this.uiDialogTitlebarClose.button( {
-	
-					// Ensure that we always pass a string
-					label: $( "<a>" ).text( "" + this.options.closeText ).html()
-				} );
-			}
-	
-			if ( key === "draggable" ) {
-				isDraggable = uiDialog.is( ":data(ui-draggable)" );
-				if ( isDraggable && !value ) {
-					uiDialog.draggable( "destroy" );
-				}
-	
-				if ( !isDraggable && value ) {
-					this._makeDraggable();
-				}
-			}
-	
-			if ( key === "position" ) {
-				this._position();
-			}
-	
-			if ( key === "resizable" ) {
-	
-				// currently resizable, becoming non-resizable
-				isResizable = uiDialog.is( ":data(ui-resizable)" );
-				if ( isResizable && !value ) {
-					uiDialog.resizable( "destroy" );
-				}
-	
-				// Currently resizable, changing handles
-				if ( isResizable && typeof value === "string" ) {
-					uiDialog.resizable( "option", "handles", value );
-				}
-	
-				// Currently non-resizable, becoming resizable
-				if ( !isResizable && value !== false ) {
-					this._makeResizable();
-				}
-			}
-	
-			if ( key === "title" ) {
-				this._title( this.uiDialogTitlebar.find( ".ui-dialog-title" ) );
-			}
-		},
-	
-		_size: function() {
-	
-			// If the user has resized the dialog, the .ui-dialog and .ui-dialog-content
-			// divs will both have width and height set, so we need to reset them
-			var nonContentHeight, minContentHeight, maxContentHeight,
-				options = this.options;
-	
-			// Reset content sizing
-			this.element.show().css( {
-				width: "auto",
-				minHeight: 0,
-				maxHeight: "none",
-				height: 0
-			} );
-	
-			if ( options.minWidth > options.width ) {
-				options.width = options.minWidth;
-			}
-	
-			// Reset wrapper sizing
-			// determine the height of all the non-content elements
-			nonContentHeight = this.uiDialog.css( {
-				height: "auto",
-				width: options.width
-			} )
-				.outerHeight();
-			minContentHeight = Math.max( 0, options.minHeight - nonContentHeight );
-			maxContentHeight = typeof options.maxHeight === "number" ?
-				Math.max( 0, options.maxHeight - nonContentHeight ) :
-				"none";
-	
-			if ( options.height === "auto" ) {
-				this.element.css( {
-					minHeight: minContentHeight,
-					maxHeight: maxContentHeight,
-					height: "auto"
-				} );
-			} else {
-				this.element.height( Math.max( 0, options.height - nonContentHeight ) );
-			}
-	
-			if ( this.uiDialog.is( ":data(ui-resizable)" ) ) {
-				this.uiDialog.resizable( "option", "minHeight", this._minHeight() );
-			}
-		},
-	
-		_blockFrames: function() {
-			this.iframeBlocks = this.document.find( "iframe" ).map( function() {
-				var iframe = $( this );
-	
-				return $( "<div>" )
-					.css( {
-						position: "absolute",
-						width: iframe.outerWidth(),
-						height: iframe.outerHeight()
-					} )
-					.appendTo( iframe.parent() )
-					.offset( iframe.offset() )[ 0 ];
-			} );
-		},
-	
-		_unblockFrames: function() {
-			if ( this.iframeBlocks ) {
-				this.iframeBlocks.remove();
-				delete this.iframeBlocks;
-			}
-		},
-	
-		_allowInteraction: function( event ) {
-			if ( $( event.target ).closest( ".ui-dialog" ).length ) {
-				return true;
-			}
-	
-			// TODO: Remove hack when datepicker implements
-			// the .ui-front logic (#8989)
-			return !!$( event.target ).closest( ".ui-datepicker" ).length;
-		},
-	
-		_createOverlay: function() {
-			if ( !this.options.modal ) {
-				return;
-			}
-	
-			// We use a delay in case the overlay is created from an
-			// event that we're going to be cancelling (#2804)
-			var isOpening = true;
-			this._delay( function() {
-				isOpening = false;
-			} );
-	
-			if ( !this.document.data( "ui-dialog-overlays" ) ) {
-	
-				// Prevent use of anchors and inputs
-				// Using _on() for an event handler shared across many instances is
-				// safe because the dialogs stack and must be closed in reverse order
-				this._on( this.document, {
-					focusin: function( event ) {
-						if ( isOpening ) {
-							return;
-						}
-	
-						if ( !this._allowInteraction( event ) ) {
-							event.preventDefault();
-							this._trackingInstances()[ 0 ]._focusTabbable();
-						}
-					}
-				} );
-			}
-	
-			this.overlay = $( "<div>" )
-				.appendTo( this._appendTo() );
-	
-			this._addClass( this.overlay, null, "ui-widget-overlay ui-front" );
-			this._on( this.overlay, {
-				mousedown: "_keepFocus"
-			} );
-			this.document.data( "ui-dialog-overlays",
-				( this.document.data( "ui-dialog-overlays" ) || 0 ) + 1 );
-		},
-	
-		_destroyOverlay: function() {
-			if ( !this.options.modal ) {
-				return;
-			}
-	
-			if ( this.overlay ) {
-				var overlays = this.document.data( "ui-dialog-overlays" ) - 1;
-	
-				if ( !overlays ) {
-					this._off( this.document, "focusin" );
-					this.document.removeData( "ui-dialog-overlays" );
-				} else {
-					this.document.data( "ui-dialog-overlays", overlays );
-				}
-	
-				this.overlay.remove();
-				this.overlay = null;
-			}
-		}
-	} );
-	
-	// DEPRECATED
-	// TODO: switch return back to widget declaration at top of file when this is removed
-	if ( $.uiBackCompat !== false ) {
-	
-		// Backcompat for dialogClass option
-		$.widget( "ui.dialog", $.ui.dialog, {
-			options: {
-				dialogClass: ""
-			},
-			_createWrapper: function() {
-				this._super();
-				this.uiDialog.addClass( this.options.dialogClass );
-			},
-			_setOption: function( key, value ) {
-				if ( key === "dialogClass" ) {
-					this.uiDialog
-						.removeClass( this.options.dialogClass )
-						.addClass( value );
-				}
-				this._superApply( arguments );
-			}
-		} );
-	}
-	
-	return $.ui.dialog;
-	
-	} ) );
-
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Button 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Button
-	//>>group: Widgets
-	//>>description: Enhances a form with themeable buttons.
-	//>>docs: http://api.jqueryui.com/button/
-	//>>demos: http://jqueryui.com/button/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/button.css
-	//>>css.theme: ../../themes/base/theme.css
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(14),
-	
-				// These are only for backcompat
-				// TODO: Remove after 1.12
-				__webpack_require__(35),
-				__webpack_require__(36),
-	
-				__webpack_require__(32),
-				__webpack_require__(25)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	$.widget( "ui.button", {
-		version: "1.12.1",
-		defaultElement: "<button>",
-		options: {
-			classes: {
-				"ui-button": "ui-corner-all"
-			},
-			disabled: null,
-			icon: null,
-			iconPosition: "beginning",
-			label: null,
-			showLabel: true
-		},
-	
-		_getCreateOptions: function() {
-			var disabled,
-	
-				// This is to support cases like in jQuery Mobile where the base widget does have
-				// an implementation of _getCreateOptions
-				options = this._super() || {};
-	
-			this.isInput = this.element.is( "input" );
-	
-			disabled = this.element[ 0 ].disabled;
-			if ( disabled != null ) {
-				options.disabled = disabled;
-			}
-	
-			this.originalLabel = this.isInput ? this.element.val() : this.element.html();
-			if ( this.originalLabel ) {
-				options.label = this.originalLabel;
-			}
-	
-			return options;
-		},
-	
-		_create: function() {
-			if ( !this.option.showLabel & !this.options.icon ) {
-				this.options.showLabel = true;
-			}
-	
-			// We have to check the option again here even though we did in _getCreateOptions,
-			// because null may have been passed on init which would override what was set in
-			// _getCreateOptions
-			if ( this.options.disabled == null ) {
-				this.options.disabled = this.element[ 0 ].disabled || false;
-			}
-	
-			this.hasTitle = !!this.element.attr( "title" );
-	
-			// Check to see if the label needs to be set or if its already correct
-			if ( this.options.label && this.options.label !== this.originalLabel ) {
-				if ( this.isInput ) {
-					this.element.val( this.options.label );
-				} else {
-					this.element.html( this.options.label );
-				}
-			}
-			this._addClass( "ui-button", "ui-widget" );
-			this._setOption( "disabled", this.options.disabled );
-			this._enhance();
-	
-			if ( this.element.is( "a" ) ) {
-				this._on( {
-					"keyup": function( event ) {
-						if ( event.keyCode === $.ui.keyCode.SPACE ) {
-							event.preventDefault();
-	
-							// Support: PhantomJS <= 1.9, IE 8 Only
-							// If a native click is available use it so we actually cause navigation
-							// otherwise just trigger a click event
-							if ( this.element[ 0 ].click ) {
-								this.element[ 0 ].click();
-							} else {
-								this.element.trigger( "click" );
-							}
-						}
-					}
-				} );
-			}
-		},
-	
-		_enhance: function() {
-			if ( !this.element.is( "button" ) ) {
-				this.element.attr( "role", "button" );
-			}
-	
-			if ( this.options.icon ) {
-				this._updateIcon( "icon", this.options.icon );
-				this._updateTooltip();
-			}
-		},
-	
-		_updateTooltip: function() {
-			this.title = this.element.attr( "title" );
-	
-			if ( !this.options.showLabel && !this.title ) {
-				this.element.attr( "title", this.options.label );
-			}
-		},
-	
-		_updateIcon: function( option, value ) {
-			var icon = option !== "iconPosition",
-				position = icon ? this.options.iconPosition : value,
-				displayBlock = position === "top" || position === "bottom";
-	
-			// Create icon
-			if ( !this.icon ) {
-				this.icon = $( "<span>" );
-	
-				this._addClass( this.icon, "ui-button-icon", "ui-icon" );
-	
-				if ( !this.options.showLabel ) {
-					this._addClass( "ui-button-icon-only" );
-				}
-			} else if ( icon ) {
-	
-				// If we are updating the icon remove the old icon class
-				this._removeClass( this.icon, null, this.options.icon );
-			}
-	
-			// If we are updating the icon add the new icon class
-			if ( icon ) {
-				this._addClass( this.icon, null, value );
-			}
-	
-			this._attachIcon( position );
-	
-			// If the icon is on top or bottom we need to add the ui-widget-icon-block class and remove
-			// the iconSpace if there is one.
-			if ( displayBlock ) {
-				this._addClass( this.icon, null, "ui-widget-icon-block" );
-				if ( this.iconSpace ) {
-					this.iconSpace.remove();
-				}
-			} else {
-	
-				// Position is beginning or end so remove the ui-widget-icon-block class and add the
-				// space if it does not exist
-				if ( !this.iconSpace ) {
-					this.iconSpace = $( "<span> </span>" );
-					this._addClass( this.iconSpace, "ui-button-icon-space" );
-				}
-				this._removeClass( this.icon, null, "ui-wiget-icon-block" );
-				this._attachIconSpace( position );
-			}
-		},
-	
-		_destroy: function() {
-			this.element.removeAttr( "role" );
-	
-			if ( this.icon ) {
-				this.icon.remove();
-			}
-			if ( this.iconSpace ) {
-				this.iconSpace.remove();
-			}
-			if ( !this.hasTitle ) {
-				this.element.removeAttr( "title" );
-			}
-		},
-	
-		_attachIconSpace: function( iconPosition ) {
-			this.icon[ /^(?:end|bottom)/.test( iconPosition ) ? "before" : "after" ]( this.iconSpace );
-		},
-	
-		_attachIcon: function( iconPosition ) {
-			this.element[ /^(?:end|bottom)/.test( iconPosition ) ? "append" : "prepend" ]( this.icon );
-		},
-	
-		_setOptions: function( options ) {
-			var newShowLabel = options.showLabel === undefined ?
-					this.options.showLabel :
-					options.showLabel,
-				newIcon = options.icon === undefined ? this.options.icon : options.icon;
-	
-			if ( !newShowLabel && !newIcon ) {
-				options.showLabel = true;
-			}
-			this._super( options );
-		},
-	
-		_setOption: function( key, value ) {
-			if ( key === "icon" ) {
-				if ( value ) {
-					this._updateIcon( key, value );
-				} else if ( this.icon ) {
-					this.icon.remove();
-					if ( this.iconSpace ) {
-						this.iconSpace.remove();
-					}
-				}
-			}
-	
-			if ( key === "iconPosition" ) {
-				this._updateIcon( key, value );
-			}
-	
-			// Make sure we can't end up with a button that has neither text nor icon
-			if ( key === "showLabel" ) {
-					this._toggleClass( "ui-button-icon-only", null, !value );
-					this._updateTooltip();
-			}
-	
-			if ( key === "label" ) {
-				if ( this.isInput ) {
-					this.element.val( value );
-				} else {
-	
-					// If there is an icon, append it, else nothing then append the value
-					// this avoids removal of the icon when setting label text
-					this.element.html( value );
-					if ( this.icon ) {
-						this._attachIcon( this.options.iconPosition );
-						this._attachIconSpace( this.options.iconPosition );
-					}
-				}
-			}
-	
-			this._super( key, value );
-	
-			if ( key === "disabled" ) {
-				this._toggleClass( null, "ui-state-disabled", value );
-				this.element[ 0 ].disabled = value;
-				if ( value ) {
-					this.element.blur();
-				}
-			}
-		},
-	
-		refresh: function() {
-	
-			// Make sure to only check disabled if its an element that supports this otherwise
-			// check for the disabled class to determine state
-			var isDisabled = this.element.is( "input, button" ) ?
-				this.element[ 0 ].disabled : this.element.hasClass( "ui-button-disabled" );
-	
-			if ( isDisabled !== this.options.disabled ) {
-				this._setOptions( { disabled: isDisabled } );
-			}
-	
-			this._updateTooltip();
-		}
-	} );
-	
-	// DEPRECATED
-	if ( $.uiBackCompat !== false ) {
-	
-		// Text and Icons options
-		$.widget( "ui.button", $.ui.button, {
-			options: {
-				text: true,
-				icons: {
-					primary: null,
-					secondary: null
-				}
-			},
-	
-			_create: function() {
-				if ( this.options.showLabel && !this.options.text ) {
-					this.options.showLabel = this.options.text;
-				}
-				if ( !this.options.showLabel && this.options.text ) {
-					this.options.text = this.options.showLabel;
-				}
-				if ( !this.options.icon && ( this.options.icons.primary ||
-						this.options.icons.secondary ) ) {
-					if ( this.options.icons.primary ) {
-						this.options.icon = this.options.icons.primary;
-					} else {
-						this.options.icon = this.options.icons.secondary;
-						this.options.iconPosition = "end";
-					}
-				} else if ( this.options.icon ) {
-					this.options.icons.primary = this.options.icon;
-				}
-				this._super();
-			},
-	
-			_setOption: function( key, value ) {
-				if ( key === "text" ) {
-					this._super( "showLabel", value );
-					return;
-				}
-				if ( key === "showLabel" ) {
-					this.options.text = value;
-				}
-				if ( key === "icon" ) {
-					this.options.icons.primary = value;
-				}
-				if ( key === "icons" ) {
-					if ( value.primary ) {
-						this._super( "icon", value.primary );
-						this._super( "iconPosition", "beginning" );
-					} else if ( value.secondary ) {
-						this._super( "icon", value.secondary );
-						this._super( "iconPosition", "end" );
-					}
-				}
-				this._superApply( arguments );
-			}
-		} );
-	
-		$.fn.button = ( function( orig ) {
-			return function() {
-				if ( !this.length || ( this.length && this[ 0 ].tagName !== "INPUT" ) ||
-						( this.length && this[ 0 ].tagName === "INPUT" && (
-							this.attr( "type" ) !== "checkbox" && this.attr( "type" ) !== "radio"
-						) ) ) {
-					return orig.apply( this, arguments );
-				}
-				if ( !$.ui.checkboxradio ) {
-					$.error( "Checkboxradio widget missing" );
-				}
-				if ( arguments.length === 0 ) {
-					return this.checkboxradio( {
-						"icon": false
-					} );
-				}
-				return this.checkboxradio.apply( this, arguments );
-			};
-		} )( $.fn.button );
-	
-		$.fn.buttonset = function() {
-			if ( !$.ui.controlgroup ) {
-				$.error( "Controlgroup widget missing" );
-			}
-			if ( arguments[ 0 ] === "option" && arguments[ 1 ] === "items" && arguments[ 2 ] ) {
-				return this.controlgroup.apply( this,
-					[ arguments[ 0 ], "items.button", arguments[ 2 ] ] );
-			}
-			if ( arguments[ 0 ] === "option" && arguments[ 1 ] === "items" ) {
-				return this.controlgroup.apply( this, [ arguments[ 0 ], "items.button" ] );
-			}
-			if ( typeof arguments[ 0 ] === "object" && arguments[ 0 ].items ) {
-				arguments[ 0 ].items = {
-					button: arguments[ 0 ].items
-				};
-			}
-			return this.controlgroup.apply( this, arguments );
-		};
-	}
-	
-	return $.ui.button;
-	
-	} ) );
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Controlgroup 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Controlgroup
-	//>>group: Widgets
-	//>>description: Visually groups form control widgets
-	//>>docs: http://api.jqueryui.com/controlgroup/
-	//>>demos: http://jqueryui.com/controlgroup/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/controlgroup.css
-	//>>css.theme: ../../themes/base/theme.css
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(14),
-				__webpack_require__(25)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	var controlgroupCornerRegex = /ui-corner-([a-z]){2,6}/g;
-	
-	return $.widget( "ui.controlgroup", {
-		version: "1.12.1",
-		defaultElement: "<div>",
-		options: {
-			direction: "horizontal",
-			disabled: null,
-			onlyVisible: true,
-			items: {
-				"button": "input[type=button], input[type=submit], input[type=reset], button, a",
-				"controlgroupLabel": ".ui-controlgroup-label",
-				"checkboxradio": "input[type='checkbox'], input[type='radio']",
-				"selectmenu": "select",
-				"spinner": ".ui-spinner-input"
-			}
-		},
-	
-		_create: function() {
-			this._enhance();
-		},
-	
-		// To support the enhanced option in jQuery Mobile, we isolate DOM manipulation
-		_enhance: function() {
-			this.element.attr( "role", "toolbar" );
-			this.refresh();
-		},
-	
-		_destroy: function() {
-			this._callChildMethod( "destroy" );
-			this.childWidgets.removeData( "ui-controlgroup-data" );
-			this.element.removeAttr( "role" );
-			if ( this.options.items.controlgroupLabel ) {
-				this.element
-					.find( this.options.items.controlgroupLabel )
-					.find( ".ui-controlgroup-label-contents" )
-					.contents().unwrap();
-			}
-		},
-	
-		_initWidgets: function() {
-			var that = this,
-				childWidgets = [];
-	
-			// First we iterate over each of the items options
-			$.each( this.options.items, function( widget, selector ) {
-				var labels;
-				var options = {};
-	
-				// Make sure the widget has a selector set
-				if ( !selector ) {
-					return;
-				}
-	
-				if ( widget === "controlgroupLabel" ) {
-					labels = that.element.find( selector );
-					labels.each( function() {
-						var element = $( this );
-	
-						if ( element.children( ".ui-controlgroup-label-contents" ).length ) {
-							return;
-						}
-						element.contents()
-							.wrapAll( "<span class='ui-controlgroup-label-contents'></span>" );
-					} );
-					that._addClass( labels, null, "ui-widget ui-widget-content ui-state-default" );
-					childWidgets = childWidgets.concat( labels.get() );
-					return;
-				}
-	
-				// Make sure the widget actually exists
-				if ( !$.fn[ widget ] ) {
-					return;
-				}
-	
-				// We assume everything is in the middle to start because we can't determine
-				// first / last elements until all enhancments are done.
-				if ( that[ "_" + widget + "Options" ] ) {
-					options = that[ "_" + widget + "Options" ]( "middle" );
-				} else {
-					options = { classes: {} };
-				}
-	
-				// Find instances of this widget inside controlgroup and init them
-				that.element
-					.find( selector )
-					.each( function() {
-						var element = $( this );
-						var instance = element[ widget ]( "instance" );
-	
-						// We need to clone the default options for this type of widget to avoid
-						// polluting the variable options which has a wider scope than a single widget.
-						var instanceOptions = $.widget.extend( {}, options );
-	
-						// If the button is the child of a spinner ignore it
-						// TODO: Find a more generic solution
-						if ( widget === "button" && element.parent( ".ui-spinner" ).length ) {
-							return;
-						}
-	
-						// Create the widget if it doesn't exist
-						if ( !instance ) {
-							instance = element[ widget ]()[ widget ]( "instance" );
-						}
-						if ( instance ) {
-							instanceOptions.classes =
-								that._resolveClassesValues( instanceOptions.classes, instance );
-						}
-						element[ widget ]( instanceOptions );
-	
-						// Store an instance of the controlgroup to be able to reference
-						// from the outermost element for changing options and refresh
-						var widgetElement = element[ widget ]( "widget" );
-						$.data( widgetElement[ 0 ], "ui-controlgroup-data",
-							instance ? instance : element[ widget ]( "instance" ) );
-	
-						childWidgets.push( widgetElement[ 0 ] );
-					} );
-			} );
-	
-			this.childWidgets = $( $.unique( childWidgets ) );
-			this._addClass( this.childWidgets, "ui-controlgroup-item" );
-		},
-	
-		_callChildMethod: function( method ) {
-			this.childWidgets.each( function() {
-				var element = $( this ),
-					data = element.data( "ui-controlgroup-data" );
-				if ( data && data[ method ] ) {
-					data[ method ]();
-				}
-			} );
-		},
-	
-		_updateCornerClass: function( element, position ) {
-			var remove = "ui-corner-top ui-corner-bottom ui-corner-left ui-corner-right ui-corner-all";
-			var add = this._buildSimpleOptions( position, "label" ).classes.label;
-	
-			this._removeClass( element, null, remove );
-			this._addClass( element, null, add );
-		},
-	
-		_buildSimpleOptions: function( position, key ) {
-			var direction = this.options.direction === "vertical";
-			var result = {
-				classes: {}
-			};
-			result.classes[ key ] = {
-				"middle": "",
-				"first": "ui-corner-" + ( direction ? "top" : "left" ),
-				"last": "ui-corner-" + ( direction ? "bottom" : "right" ),
-				"only": "ui-corner-all"
-			}[ position ];
-	
-			return result;
-		},
-	
-		_spinnerOptions: function( position ) {
-			var options = this._buildSimpleOptions( position, "ui-spinner" );
-	
-			options.classes[ "ui-spinner-up" ] = "";
-			options.classes[ "ui-spinner-down" ] = "";
-	
-			return options;
-		},
-	
-		_buttonOptions: function( position ) {
-			return this._buildSimpleOptions( position, "ui-button" );
-		},
-	
-		_checkboxradioOptions: function( position ) {
-			return this._buildSimpleOptions( position, "ui-checkboxradio-label" );
-		},
-	
-		_selectmenuOptions: function( position ) {
-			var direction = this.options.direction === "vertical";
-			return {
-				width: direction ? "auto" : false,
-				classes: {
-					middle: {
-						"ui-selectmenu-button-open": "",
-						"ui-selectmenu-button-closed": ""
-					},
-					first: {
-						"ui-selectmenu-button-open": "ui-corner-" + ( direction ? "top" : "tl" ),
-						"ui-selectmenu-button-closed": "ui-corner-" + ( direction ? "top" : "left" )
-					},
-					last: {
-						"ui-selectmenu-button-open": direction ? "" : "ui-corner-tr",
-						"ui-selectmenu-button-closed": "ui-corner-" + ( direction ? "bottom" : "right" )
-					},
-					only: {
-						"ui-selectmenu-button-open": "ui-corner-top",
-						"ui-selectmenu-button-closed": "ui-corner-all"
-					}
-	
-				}[ position ]
-			};
-		},
-	
-		_resolveClassesValues: function( classes, instance ) {
-			var result = {};
-			$.each( classes, function( key ) {
-				var current = instance.options.classes[ key ] || "";
-				current = $.trim( current.replace( controlgroupCornerRegex, "" ) );
-				result[ key ] = ( current + " " + classes[ key ] ).replace( /\s+/g, " " );
-			} );
-			return result;
-		},
-	
-		_setOption: function( key, value ) {
-			if ( key === "direction" ) {
-				this._removeClass( "ui-controlgroup-" + this.options.direction );
-			}
-	
-			this._super( key, value );
-			if ( key === "disabled" ) {
-				this._callChildMethod( value ? "disable" : "enable" );
-				return;
-			}
-	
-			this.refresh();
-		},
-	
-		refresh: function() {
-			var children,
-				that = this;
-	
-			this._addClass( "ui-controlgroup ui-controlgroup-" + this.options.direction );
-	
-			if ( this.options.direction === "horizontal" ) {
-				this._addClass( null, "ui-helper-clearfix" );
-			}
-			this._initWidgets();
-	
-			children = this.childWidgets;
-	
-			// We filter here because we need to track all childWidgets not just the visible ones
-			if ( this.options.onlyVisible ) {
-				children = children.filter( ":visible" );
-			}
-	
-			if ( children.length ) {
-	
-				// We do this last because we need to make sure all enhancment is done
-				// before determining first and last
-				$.each( [ "first", "last" ], function( index, value ) {
-					var instance = children[ value ]().data( "ui-controlgroup-data" );
-	
-					if ( instance && that[ "_" + instance.widgetName + "Options" ] ) {
-						var options = that[ "_" + instance.widgetName + "Options" ](
-							children.length === 1 ? "only" : value
-						);
-						options.classes = that._resolveClassesValues( options.classes, instance );
-						instance.element[ instance.widgetName ]( options );
-					} else {
-						that._updateCornerClass( children[ value ](), value );
-					}
-				} );
-	
-				// Finally call the refresh method on each of the child widgets.
-				this._callChildMethod( "refresh" );
-			}
-		}
-	} );
-	} ) );
-
-
-/***/ }),
 /* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Checkboxradio 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Checkboxradio
-	//>>group: Widgets
-	//>>description: Enhances a form with multiple themeable checkboxes or radio buttons.
-	//>>docs: http://api.jqueryui.com/checkboxradio/
-	//>>demos: http://jqueryui.com/checkboxradio/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/button.css
-	//>>css.structure: ../../themes/base/checkboxradio.css
-	//>>css.theme: ../../themes/base/theme.css
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(14),
-				__webpack_require__(37),
-				__webpack_require__(38),
-				__webpack_require__(40),
-				__webpack_require__(25)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	$.widget( "ui.checkboxradio", [ $.ui.formResetMixin, {
-		version: "1.12.1",
-		options: {
-			disabled: null,
-			label: null,
-			icon: true,
-			classes: {
-				"ui-checkboxradio-label": "ui-corner-all",
-				"ui-checkboxradio-icon": "ui-corner-all"
-			}
-		},
-	
-		_getCreateOptions: function() {
-			var disabled, labels;
-			var that = this;
-			var options = this._super() || {};
-	
-			// We read the type here, because it makes more sense to throw a element type error first,
-			// rather then the error for lack of a label. Often if its the wrong type, it
-			// won't have a label (e.g. calling on a div, btn, etc)
-			this._readType();
-	
-			labels = this.element.labels();
-	
-			// If there are multiple labels, use the last one
-			this.label = $( labels[ labels.length - 1 ] );
-			if ( !this.label.length ) {
-				$.error( "No label found for checkboxradio widget" );
-			}
-	
-			this.originalLabel = "";
-	
-			// We need to get the label text but this may also need to make sure it does not contain the
-			// input itself.
-			this.label.contents().not( this.element[ 0 ] ).each( function() {
-	
-				// The label contents could be text, html, or a mix. We concat each element to get a
-				// string representation of the label, without the input as part of it.
-				that.originalLabel += this.nodeType === 3 ? $( this ).text() : this.outerHTML;
-			} );
-	
-			// Set the label option if we found label text
-			if ( this.originalLabel ) {
-				options.label = this.originalLabel;
-			}
-	
-			disabled = this.element[ 0 ].disabled;
-			if ( disabled != null ) {
-				options.disabled = disabled;
-			}
-			return options;
-		},
-	
-		_create: function() {
-			var checked = this.element[ 0 ].checked;
-	
-			this._bindFormResetHandler();
-	
-			if ( this.options.disabled == null ) {
-				this.options.disabled = this.element[ 0 ].disabled;
-			}
-	
-			this._setOption( "disabled", this.options.disabled );
-			this._addClass( "ui-checkboxradio", "ui-helper-hidden-accessible" );
-			this._addClass( this.label, "ui-checkboxradio-label", "ui-button ui-widget" );
-	
-			if ( this.type === "radio" ) {
-				this._addClass( this.label, "ui-checkboxradio-radio-label" );
-			}
-	
-			if ( this.options.label && this.options.label !== this.originalLabel ) {
-				this._updateLabel();
-			} else if ( this.originalLabel ) {
-				this.options.label = this.originalLabel;
-			}
-	
-			this._enhance();
-	
-			if ( checked ) {
-				this._addClass( this.label, "ui-checkboxradio-checked", "ui-state-active" );
-				if ( this.icon ) {
-					this._addClass( this.icon, null, "ui-state-hover" );
-				}
-			}
-	
-			this._on( {
-				change: "_toggleClasses",
-				focus: function() {
-					this._addClass( this.label, null, "ui-state-focus ui-visual-focus" );
-				},
-				blur: function() {
-					this._removeClass( this.label, null, "ui-state-focus ui-visual-focus" );
-				}
-			} );
-		},
-	
-		_readType: function() {
-			var nodeName = this.element[ 0 ].nodeName.toLowerCase();
-			this.type = this.element[ 0 ].type;
-			if ( nodeName !== "input" || !/radio|checkbox/.test( this.type ) ) {
-				$.error( "Can't create checkboxradio on element.nodeName=" + nodeName +
-					" and element.type=" + this.type );
-			}
-		},
-	
-		// Support jQuery Mobile enhanced option
-		_enhance: function() {
-			this._updateIcon( this.element[ 0 ].checked );
-		},
-	
-		widget: function() {
-			return this.label;
-		},
-	
-		_getRadioGroup: function() {
-			var group;
-			var name = this.element[ 0 ].name;
-			var nameSelector = "input[name='" + $.ui.escapeSelector( name ) + "']";
-	
-			if ( !name ) {
-				return $( [] );
-			}
-	
-			if ( this.form.length ) {
-				group = $( this.form[ 0 ].elements ).filter( nameSelector );
-			} else {
-	
-				// Not inside a form, check all inputs that also are not inside a form
-				group = $( nameSelector ).filter( function() {
-					return $( this ).form().length === 0;
-				} );
-			}
-	
-			return group.not( this.element );
-		},
-	
-		_toggleClasses: function() {
-			var checked = this.element[ 0 ].checked;
-			this._toggleClass( this.label, "ui-checkboxradio-checked", "ui-state-active", checked );
-	
-			if ( this.options.icon && this.type === "checkbox" ) {
-				this._toggleClass( this.icon, null, "ui-icon-check ui-state-checked", checked )
-					._toggleClass( this.icon, null, "ui-icon-blank", !checked );
-			}
-	
-			if ( this.type === "radio" ) {
-				this._getRadioGroup()
-					.each( function() {
-						var instance = $( this ).checkboxradio( "instance" );
-	
-						if ( instance ) {
-							instance._removeClass( instance.label,
-								"ui-checkboxradio-checked", "ui-state-active" );
-						}
-					} );
-			}
-		},
-	
-		_destroy: function() {
-			this._unbindFormResetHandler();
-	
-			if ( this.icon ) {
-				this.icon.remove();
-				this.iconSpace.remove();
-			}
-		},
-	
-		_setOption: function( key, value ) {
-	
-			// We don't allow the value to be set to nothing
-			if ( key === "label" && !value ) {
-				return;
-			}
-	
-			this._super( key, value );
-	
-			if ( key === "disabled" ) {
-				this._toggleClass( this.label, null, "ui-state-disabled", value );
-				this.element[ 0 ].disabled = value;
-	
-				// Don't refresh when setting disabled
-				return;
-			}
-			this.refresh();
-		},
-	
-		_updateIcon: function( checked ) {
-			var toAdd = "ui-icon ui-icon-background ";
-	
-			if ( this.options.icon ) {
-				if ( !this.icon ) {
-					this.icon = $( "<span>" );
-					this.iconSpace = $( "<span> </span>" );
-					this._addClass( this.iconSpace, "ui-checkboxradio-icon-space" );
-				}
-	
-				if ( this.type === "checkbox" ) {
-					toAdd += checked ? "ui-icon-check ui-state-checked" : "ui-icon-blank";
-					this._removeClass( this.icon, null, checked ? "ui-icon-blank" : "ui-icon-check" );
-				} else {
-					toAdd += "ui-icon-blank";
-				}
-				this._addClass( this.icon, "ui-checkboxradio-icon", toAdd );
-				if ( !checked ) {
-					this._removeClass( this.icon, null, "ui-icon-check ui-state-checked" );
-				}
-				this.icon.prependTo( this.label ).after( this.iconSpace );
-			} else if ( this.icon !== undefined ) {
-				this.icon.remove();
-				this.iconSpace.remove();
-				delete this.icon;
-			}
-		},
-	
-		_updateLabel: function() {
-	
-			// Remove the contents of the label ( minus the icon, icon space, and input )
-			var contents = this.label.contents().not( this.element[ 0 ] );
-			if ( this.icon ) {
-				contents = contents.not( this.icon[ 0 ] );
-			}
-			if ( this.iconSpace ) {
-				contents = contents.not( this.iconSpace[ 0 ] );
-			}
-			contents.remove();
-	
-			this.label.append( this.options.label );
-		},
-	
-		refresh: function() {
-			var checked = this.element[ 0 ].checked,
-				isDisabled = this.element[ 0 ].disabled;
-	
-			this._updateIcon( checked );
-			this._toggleClass( this.label, "ui-checkboxradio-checked", "ui-state-active", checked );
-			if ( this.options.label !== null ) {
-				this._updateLabel();
-			}
-	
-			if ( isDisabled !== this.options.disabled ) {
-				this._setOptions( { "disabled": isDisabled } );
-			}
-		}
-	
-	} ] );
-	
-	return $.ui.checkboxradio;
-	
-	} ) );
-
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	// Internal use only
-	return $.ui.escapeSelector = ( function() {
-		var selectorEscape = /([!"#$%&'()*+,./:;<=>?@[\]^`{|}~])/g;
-		return function( selector ) {
-			return selector.replace( selectorEscape, "\\$1" );
-		};
-	} )();
-	
-	} ) );
-
-
-/***/ }),
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Form Reset Mixin 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Form Reset Mixin
-	//>>group: Core
-	//>>description: Refresh input widgets when their form is reset
-	//>>docs: http://api.jqueryui.com/form-reset-mixin/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(14),
-				__webpack_require__(39),
-				__webpack_require__(24)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	return $.ui.formResetMixin = {
-		_formResetHandler: function() {
-			var form = $( this );
-	
-			// Wait for the form reset to actually happen before refreshing
-			setTimeout( function() {
-				var instances = form.data( "ui-form-reset-instances" );
-				$.each( instances, function() {
-					this.refresh();
-				} );
-			} );
-		},
-	
-		_bindFormResetHandler: function() {
-			this.form = this.element.form();
-			if ( !this.form.length ) {
-				return;
-			}
-	
-			var instances = this.form.data( "ui-form-reset-instances" ) || [];
-			if ( !instances.length ) {
-	
-				// We don't use _on() here because we use a single event handler per form
-				this.form.on( "reset.ui-form-reset", this._formResetHandler );
-			}
-			instances.push( this );
-			this.form.data( "ui-form-reset-instances", instances );
-		},
-	
-		_unbindFormResetHandler: function() {
-			if ( !this.form.length ) {
-				return;
-			}
-	
-			var instances = this.form.data( "ui-form-reset-instances" );
-			instances.splice( $.inArray( this, instances ), 1 );
-			if ( instances.length ) {
-				this.form.data( "ui-form-reset-instances", instances );
-			} else {
-				this.form
-					.removeData( "ui-form-reset-instances" )
-					.off( "reset.ui-form-reset" );
-			}
-		}
-	};
-	
-	} ) );
-
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	// Support: IE8 Only
-	// IE8 does not support the form attribute and when it is supplied. It overwrites the form prop
-	// with a string, so we need to find the proper form.
-	return $.fn.form = function() {
-		return typeof this[ 0 ].form === "string" ? this.closest( "form" ) : $( this[ 0 ].form );
-	};
-	
-	} ) );
-
-
-/***/ }),
-/* 40 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Labels 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: labels
-	//>>group: Core
-	//>>description: Find all the labels associated with a given input
-	//>>docs: http://api.jqueryui.com/labels/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24), __webpack_require__(37) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	return $.fn.labels = function() {
-		var ancestor, selector, id, labels, ancestors;
-	
-		// Check control.labels first
-		if ( this[ 0 ].labels && this[ 0 ].labels.length ) {
-			return this.pushStack( this[ 0 ].labels );
-		}
-	
-		// Support: IE <= 11, FF <= 37, Android <= 2.3 only
-		// Above browsers do not support control.labels. Everything below is to support them
-		// as well as document fragments. control.labels does not work on document fragments
-		labels = this.eq( 0 ).parents( "label" );
-	
-		// Look for the label based on the id
-		id = this.attr( "id" );
-		if ( id ) {
-	
-			// We don't search against the document in case the element
-			// is disconnected from the DOM
-			ancestor = this.eq( 0 ).parents().last();
-	
-			// Get a full set of top level ancestors
-			ancestors = ancestor.add( ancestor.length ? ancestor.siblings() : this.siblings() );
-	
-			// Create a selector for the label based on the id
-			selector = "label[for='" + $.ui.escapeSelector( id ) + "']";
-	
-			labels = labels.add( ancestors.find( selector ).addBack( selector ) );
-	
-		}
-	
-		// Return whatever we have found for labels
-		return this.pushStack( labels );
-	};
-	
-	} ) );
-
-
-/***/ }),
-/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -24694,12 +23605,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(14),
-				__webpack_require__(22),
-				__webpack_require__(42),
-				__webpack_require__(27),
-				__webpack_require__(24),
-				__webpack_require__(25)
+				__webpack_require__(7),
+				__webpack_require__(29),
+				__webpack_require__(37),
+				__webpack_require__(32),
+				__webpack_require__(21),
+				__webpack_require__(20)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -25875,7 +24786,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 42 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -25897,7 +24808,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -25927,7 +24838,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 43 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -25948,7 +24859,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -26017,7 +24928,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 44 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -26041,7 +24952,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -26521,7 +25432,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 45 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -26542,7 +25453,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24), __webpack_require__(43) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21), __webpack_require__(38) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -26562,7 +25473,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 46 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -26583,7 +25494,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(14), __webpack_require__(24) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -26617,16 +25528,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 47 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(48);
+	var content = __webpack_require__(43);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
+	var update = __webpack_require__(72)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -26643,13 +25554,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	}
 
 /***/ }),
-/* 48 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
-	exports.i(__webpack_require__(49), "");
-	exports.i(__webpack_require__(69), "");
+	exports.i(__webpack_require__(45), "");
+	exports.i(__webpack_require__(65), "");
 	
 	// module
 	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n */\n", ""]);
@@ -26658,11 +25569,71 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 49 */
+/* 44 */
+/***/ (function(module, exports) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+	
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+	
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ }),
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
+	exports.i(__webpack_require__(46), "");
+	exports.i(__webpack_require__(47), "");
+	exports.i(__webpack_require__(48), "");
+	exports.i(__webpack_require__(49), "");
 	exports.i(__webpack_require__(50), "");
 	exports.i(__webpack_require__(51), "");
 	exports.i(__webpack_require__(52), "");
@@ -26678,10 +25649,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	exports.i(__webpack_require__(62), "");
 	exports.i(__webpack_require__(63), "");
 	exports.i(__webpack_require__(64), "");
-	exports.i(__webpack_require__(65), "");
-	exports.i(__webpack_require__(66), "");
-	exports.i(__webpack_require__(67), "");
-	exports.i(__webpack_require__(68), "");
 	
 	// module
 	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n */\n", ""]);
@@ -26690,10 +25657,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 50 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26704,10 +25671,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 51 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26718,10 +25685,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 52 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26732,10 +25699,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 53 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26746,10 +25713,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 54 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26760,10 +25727,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 55 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26774,10 +25741,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 56 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26788,10 +25755,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 57 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26802,10 +25769,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 58 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26816,10 +25783,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 59 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26830,10 +25797,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 60 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26844,10 +25811,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 61 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26858,10 +25825,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 62 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26872,10 +25839,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 63 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26886,10 +25853,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 64 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26900,10 +25867,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 65 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26914,10 +25881,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 66 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26928,10 +25895,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 67 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26942,10 +25909,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 68 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -26956,66 +25923,318 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 69 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
 	// module
-	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n *\n * To view and modify this theme, visit http://jqueryui.com/themeroller/\n */\n\n\n/* Component containers\n----------------------------------*/\n.ui-widget {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em/*{fsDefault}*/;\n}\n.ui-widget .ui-widget {\n\tfont-size: 1em;\n}\n.ui-widget input,\n.ui-widget select,\n.ui-widget textarea,\n.ui-widget button {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em;\n}\n.ui-widget.ui-widget-content {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n}\n.ui-widget-content {\n\tborder: 1px solid #dddddd/*{borderColorContent}*/;\n\tbackground: #ffffff/*{bgColorContent}*/ /*{bgImgUrlContent}*/ /*{bgContentXPos}*/ /*{bgContentYPos}*/ /*{bgContentRepeat}*/;\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-content a {\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-header {\n\tborder: 1px solid #dddddd/*{borderColorHeader}*/;\n\tbackground: #e9e9e9/*{bgColorHeader}*/ /*{bgImgUrlHeader}*/ /*{bgHeaderXPos}*/ /*{bgHeaderYPos}*/ /*{bgHeaderRepeat}*/;\n\tcolor: #333333/*{fcHeader}*/;\n\tfont-weight: bold;\n}\n.ui-widget-header a {\n\tcolor: #333333/*{fcHeader}*/;\n}\n\n/* Interaction states\n----------------------------------*/\n.ui-state-default,\n.ui-widget-content .ui-state-default,\n.ui-widget-header .ui-state-default,\n.ui-button,\n\n/* We use html here because we need a greater specificity to make sure disabled\nworks properly when clicked or hovered */\nhtml .ui-button.ui-state-disabled:hover,\nhtml .ui-button.ui-state-disabled:active {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n\tbackground: #f6f6f6/*{bgColorDefault}*/ /*{bgImgUrlDefault}*/ /*{bgDefaultXPos}*/ /*{bgDefaultYPos}*/ /*{bgDefaultRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #454545/*{fcDefault}*/;\n}\n.ui-state-default a,\n.ui-state-default a:link,\n.ui-state-default a:visited,\na.ui-button,\na:link.ui-button,\na:visited.ui-button,\n.ui-button {\n\tcolor: #454545/*{fcDefault}*/;\n\ttext-decoration: none;\n}\n.ui-state-hover,\n.ui-widget-content .ui-state-hover,\n.ui-widget-header .ui-state-hover,\n.ui-state-focus,\n.ui-widget-content .ui-state-focus,\n.ui-widget-header .ui-state-focus,\n.ui-button:hover,\n.ui-button:focus {\n\tborder: 1px solid #cccccc/*{borderColorHover}*/;\n\tbackground: #ededed/*{bgColorHover}*/ /*{bgImgUrlHover}*/ /*{bgHoverXPos}*/ /*{bgHoverYPos}*/ /*{bgHoverRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #2b2b2b/*{fcHover}*/;\n}\n.ui-state-hover a,\n.ui-state-hover a:hover,\n.ui-state-hover a:link,\n.ui-state-hover a:visited,\n.ui-state-focus a,\n.ui-state-focus a:hover,\n.ui-state-focus a:link,\n.ui-state-focus a:visited,\na.ui-button:hover,\na.ui-button:focus {\n\tcolor: #2b2b2b/*{fcHover}*/;\n\ttext-decoration: none;\n}\n\n.ui-visual-focus {\n\tbox-shadow: 0 0 3px 1px rgb(94, 158, 214);\n}\n.ui-state-active,\n.ui-widget-content .ui-state-active,\n.ui-widget-header .ui-state-active,\na.ui-button:active,\n.ui-button:active,\n.ui-button.ui-state-active:hover {\n\tborder: 1px solid #003eff/*{borderColorActive}*/;\n\tbackground: #007fff/*{bgColorActive}*/ /*{bgImgUrlActive}*/ /*{bgActiveXPos}*/ /*{bgActiveYPos}*/ /*{bgActiveRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #ffffff/*{fcActive}*/;\n}\n.ui-icon-background,\n.ui-state-active .ui-icon-background {\n\tborder: #003eff/*{borderColorActive}*/;\n\tbackground-color: #ffffff/*{fcActive}*/;\n}\n.ui-state-active a,\n.ui-state-active a:link,\n.ui-state-active a:visited {\n\tcolor: #ffffff/*{fcActive}*/;\n\ttext-decoration: none;\n}\n\n/* Interaction Cues\n----------------------------------*/\n.ui-state-highlight,\n.ui-widget-content .ui-state-highlight,\n.ui-widget-header .ui-state-highlight {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/ /*{bgImgUrlHighlight}*/ /*{bgHighlightXPos}*/ /*{bgHighlightYPos}*/ /*{bgHighlightRepeat}*/;\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-checked {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/;\n}\n.ui-state-highlight a,\n.ui-widget-content .ui-state-highlight a,\n.ui-widget-header .ui-state-highlight a {\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-error,\n.ui-widget-content .ui-state-error,\n.ui-widget-header .ui-state-error {\n\tborder: 1px solid #f1a899/*{borderColorError}*/;\n\tbackground: #fddfdf/*{bgColorError}*/ /*{bgImgUrlError}*/ /*{bgErrorXPos}*/ /*{bgErrorYPos}*/ /*{bgErrorRepeat}*/;\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error a,\n.ui-widget-content .ui-state-error a,\n.ui-widget-header .ui-state-error a {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error-text,\n.ui-widget-content .ui-state-error-text,\n.ui-widget-header .ui-state-error-text {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-priority-primary,\n.ui-widget-content .ui-priority-primary,\n.ui-widget-header .ui-priority-primary {\n\tfont-weight: bold;\n}\n.ui-priority-secondary,\n.ui-widget-content .ui-priority-secondary,\n.ui-widget-header .ui-priority-secondary {\n\topacity: .7;\n\tfilter:Alpha(Opacity=70); /* support: IE8 */\n\tfont-weight: normal;\n}\n.ui-state-disabled,\n.ui-widget-content .ui-state-disabled,\n.ui-widget-header .ui-state-disabled {\n\topacity: .35;\n\tfilter:Alpha(Opacity=35); /* support: IE8 */\n\tbackground-image: none;\n}\n.ui-state-disabled .ui-icon {\n\tfilter:Alpha(Opacity=35); /* support: IE8 - See #6059 */\n}\n\n/* Icons\n----------------------------------*/\n\n/* states and images */\n.ui-icon {\n\twidth: 16px;\n\theight: 16px;\n}\n.ui-icon,\n.ui-widget-content .ui-icon {\n\tbackground-image: url(" + __webpack_require__(70) + ");\n}\n.ui-widget-header .ui-icon {\n\tbackground-image: url(" + __webpack_require__(70) + ");\n}\n.ui-state-hover .ui-icon,\n.ui-state-focus .ui-icon,\n.ui-button:hover .ui-icon,\n.ui-button:focus .ui-icon {\n\tbackground-image: url(" + __webpack_require__(71) + ");\n}\n.ui-state-active .ui-icon,\n.ui-button:active .ui-icon {\n\tbackground-image: url(" + __webpack_require__(72) + ");\n}\n.ui-state-highlight .ui-icon,\n.ui-button .ui-state-highlight.ui-icon {\n\tbackground-image: url(" + __webpack_require__(73) + ");\n}\n.ui-state-error .ui-icon,\n.ui-state-error-text .ui-icon {\n\tbackground-image: url(" + __webpack_require__(74) + ");\n}\n.ui-button .ui-icon {\n\tbackground-image: url(" + __webpack_require__(75) + ");\n}\n\n/* positioning */\n.ui-icon-blank { background-position: 16px 16px; }\n.ui-icon-caret-1-n { background-position: 0 0; }\n.ui-icon-caret-1-ne { background-position: -16px 0; }\n.ui-icon-caret-1-e { background-position: -32px 0; }\n.ui-icon-caret-1-se { background-position: -48px 0; }\n.ui-icon-caret-1-s { background-position: -65px 0; }\n.ui-icon-caret-1-sw { background-position: -80px 0; }\n.ui-icon-caret-1-w { background-position: -96px 0; }\n.ui-icon-caret-1-nw { background-position: -112px 0; }\n.ui-icon-caret-2-n-s { background-position: -128px 0; }\n.ui-icon-caret-2-e-w { background-position: -144px 0; }\n.ui-icon-triangle-1-n { background-position: 0 -16px; }\n.ui-icon-triangle-1-ne { background-position: -16px -16px; }\n.ui-icon-triangle-1-e { background-position: -32px -16px; }\n.ui-icon-triangle-1-se { background-position: -48px -16px; }\n.ui-icon-triangle-1-s { background-position: -65px -16px; }\n.ui-icon-triangle-1-sw { background-position: -80px -16px; }\n.ui-icon-triangle-1-w { background-position: -96px -16px; }\n.ui-icon-triangle-1-nw { background-position: -112px -16px; }\n.ui-icon-triangle-2-n-s { background-position: -128px -16px; }\n.ui-icon-triangle-2-e-w { background-position: -144px -16px; }\n.ui-icon-arrow-1-n { background-position: 0 -32px; }\n.ui-icon-arrow-1-ne { background-position: -16px -32px; }\n.ui-icon-arrow-1-e { background-position: -32px -32px; }\n.ui-icon-arrow-1-se { background-position: -48px -32px; }\n.ui-icon-arrow-1-s { background-position: -65px -32px; }\n.ui-icon-arrow-1-sw { background-position: -80px -32px; }\n.ui-icon-arrow-1-w { background-position: -96px -32px; }\n.ui-icon-arrow-1-nw { background-position: -112px -32px; }\n.ui-icon-arrow-2-n-s { background-position: -128px -32px; }\n.ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }\n.ui-icon-arrow-2-e-w { background-position: -160px -32px; }\n.ui-icon-arrow-2-se-nw { background-position: -176px -32px; }\n.ui-icon-arrowstop-1-n { background-position: -192px -32px; }\n.ui-icon-arrowstop-1-e { background-position: -208px -32px; }\n.ui-icon-arrowstop-1-s { background-position: -224px -32px; }\n.ui-icon-arrowstop-1-w { background-position: -240px -32px; }\n.ui-icon-arrowthick-1-n { background-position: 1px -48px; }\n.ui-icon-arrowthick-1-ne { background-position: -16px -48px; }\n.ui-icon-arrowthick-1-e { background-position: -32px -48px; }\n.ui-icon-arrowthick-1-se { background-position: -48px -48px; }\n.ui-icon-arrowthick-1-s { background-position: -64px -48px; }\n.ui-icon-arrowthick-1-sw { background-position: -80px -48px; }\n.ui-icon-arrowthick-1-w { background-position: -96px -48px; }\n.ui-icon-arrowthick-1-nw { background-position: -112px -48px; }\n.ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }\n.ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }\n.ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }\n.ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }\n.ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }\n.ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }\n.ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }\n.ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }\n.ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }\n.ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }\n.ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }\n.ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }\n.ui-icon-arrowreturn-1-w { background-position: -64px -64px; }\n.ui-icon-arrowreturn-1-n { background-position: -80px -64px; }\n.ui-icon-arrowreturn-1-e { background-position: -96px -64px; }\n.ui-icon-arrowreturn-1-s { background-position: -112px -64px; }\n.ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }\n.ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }\n.ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }\n.ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }\n.ui-icon-arrow-4 { background-position: 0 -80px; }\n.ui-icon-arrow-4-diag { background-position: -16px -80px; }\n.ui-icon-extlink { background-position: -32px -80px; }\n.ui-icon-newwin { background-position: -48px -80px; }\n.ui-icon-refresh { background-position: -64px -80px; }\n.ui-icon-shuffle { background-position: -80px -80px; }\n.ui-icon-transfer-e-w { background-position: -96px -80px; }\n.ui-icon-transferthick-e-w { background-position: -112px -80px; }\n.ui-icon-folder-collapsed { background-position: 0 -96px; }\n.ui-icon-folder-open { background-position: -16px -96px; }\n.ui-icon-document { background-position: -32px -96px; }\n.ui-icon-document-b { background-position: -48px -96px; }\n.ui-icon-note { background-position: -64px -96px; }\n.ui-icon-mail-closed { background-position: -80px -96px; }\n.ui-icon-mail-open { background-position: -96px -96px; }\n.ui-icon-suitcase { background-position: -112px -96px; }\n.ui-icon-comment { background-position: -128px -96px; }\n.ui-icon-person { background-position: -144px -96px; }\n.ui-icon-print { background-position: -160px -96px; }\n.ui-icon-trash { background-position: -176px -96px; }\n.ui-icon-locked { background-position: -192px -96px; }\n.ui-icon-unlocked { background-position: -208px -96px; }\n.ui-icon-bookmark { background-position: -224px -96px; }\n.ui-icon-tag { background-position: -240px -96px; }\n.ui-icon-home { background-position: 0 -112px; }\n.ui-icon-flag { background-position: -16px -112px; }\n.ui-icon-calendar { background-position: -32px -112px; }\n.ui-icon-cart { background-position: -48px -112px; }\n.ui-icon-pencil { background-position: -64px -112px; }\n.ui-icon-clock { background-position: -80px -112px; }\n.ui-icon-disk { background-position: -96px -112px; }\n.ui-icon-calculator { background-position: -112px -112px; }\n.ui-icon-zoomin { background-position: -128px -112px; }\n.ui-icon-zoomout { background-position: -144px -112px; }\n.ui-icon-search { background-position: -160px -112px; }\n.ui-icon-wrench { background-position: -176px -112px; }\n.ui-icon-gear { background-position: -192px -112px; }\n.ui-icon-heart { background-position: -208px -112px; }\n.ui-icon-star { background-position: -224px -112px; }\n.ui-icon-link { background-position: -240px -112px; }\n.ui-icon-cancel { background-position: 0 -128px; }\n.ui-icon-plus { background-position: -16px -128px; }\n.ui-icon-plusthick { background-position: -32px -128px; }\n.ui-icon-minus { background-position: -48px -128px; }\n.ui-icon-minusthick { background-position: -64px -128px; }\n.ui-icon-close { background-position: -80px -128px; }\n.ui-icon-closethick { background-position: -96px -128px; }\n.ui-icon-key { background-position: -112px -128px; }\n.ui-icon-lightbulb { background-position: -128px -128px; }\n.ui-icon-scissors { background-position: -144px -128px; }\n.ui-icon-clipboard { background-position: -160px -128px; }\n.ui-icon-copy { background-position: -176px -128px; }\n.ui-icon-contact { background-position: -192px -128px; }\n.ui-icon-image { background-position: -208px -128px; }\n.ui-icon-video { background-position: -224px -128px; }\n.ui-icon-script { background-position: -240px -128px; }\n.ui-icon-alert { background-position: 0 -144px; }\n.ui-icon-info { background-position: -16px -144px; }\n.ui-icon-notice { background-position: -32px -144px; }\n.ui-icon-help { background-position: -48px -144px; }\n.ui-icon-check { background-position: -64px -144px; }\n.ui-icon-bullet { background-position: -80px -144px; }\n.ui-icon-radio-on { background-position: -96px -144px; }\n.ui-icon-radio-off { background-position: -112px -144px; }\n.ui-icon-pin-w { background-position: -128px -144px; }\n.ui-icon-pin-s { background-position: -144px -144px; }\n.ui-icon-play { background-position: 0 -160px; }\n.ui-icon-pause { background-position: -16px -160px; }\n.ui-icon-seek-next { background-position: -32px -160px; }\n.ui-icon-seek-prev { background-position: -48px -160px; }\n.ui-icon-seek-end { background-position: -64px -160px; }\n.ui-icon-seek-start { background-position: -80px -160px; }\n/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */\n.ui-icon-seek-first { background-position: -80px -160px; }\n.ui-icon-stop { background-position: -96px -160px; }\n.ui-icon-eject { background-position: -112px -160px; }\n.ui-icon-volume-off { background-position: -128px -160px; }\n.ui-icon-volume-on { background-position: -144px -160px; }\n.ui-icon-power { background-position: 0 -176px; }\n.ui-icon-signal-diag { background-position: -16px -176px; }\n.ui-icon-signal { background-position: -32px -176px; }\n.ui-icon-battery-0 { background-position: -48px -176px; }\n.ui-icon-battery-1 { background-position: -64px -176px; }\n.ui-icon-battery-2 { background-position: -80px -176px; }\n.ui-icon-battery-3 { background-position: -96px -176px; }\n.ui-icon-circle-plus { background-position: 0 -192px; }\n.ui-icon-circle-minus { background-position: -16px -192px; }\n.ui-icon-circle-close { background-position: -32px -192px; }\n.ui-icon-circle-triangle-e { background-position: -48px -192px; }\n.ui-icon-circle-triangle-s { background-position: -64px -192px; }\n.ui-icon-circle-triangle-w { background-position: -80px -192px; }\n.ui-icon-circle-triangle-n { background-position: -96px -192px; }\n.ui-icon-circle-arrow-e { background-position: -112px -192px; }\n.ui-icon-circle-arrow-s { background-position: -128px -192px; }\n.ui-icon-circle-arrow-w { background-position: -144px -192px; }\n.ui-icon-circle-arrow-n { background-position: -160px -192px; }\n.ui-icon-circle-zoomin { background-position: -176px -192px; }\n.ui-icon-circle-zoomout { background-position: -192px -192px; }\n.ui-icon-circle-check { background-position: -208px -192px; }\n.ui-icon-circlesmall-plus { background-position: 0 -208px; }\n.ui-icon-circlesmall-minus { background-position: -16px -208px; }\n.ui-icon-circlesmall-close { background-position: -32px -208px; }\n.ui-icon-squaresmall-plus { background-position: -48px -208px; }\n.ui-icon-squaresmall-minus { background-position: -64px -208px; }\n.ui-icon-squaresmall-close { background-position: -80px -208px; }\n.ui-icon-grip-dotted-vertical { background-position: 0 -224px; }\n.ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }\n.ui-icon-grip-solid-vertical { background-position: -32px -224px; }\n.ui-icon-grip-solid-horizontal { background-position: -48px -224px; }\n.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }\n.ui-icon-grip-diagonal-se { background-position: -80px -224px; }\n\n\n/* Misc visuals\n----------------------------------*/\n\n/* Corner radius */\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-left,\n.ui-corner-tl {\n\tborder-top-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-right,\n.ui-corner-tr {\n\tborder-top-right-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-left,\n.ui-corner-bl {\n\tborder-bottom-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-right,\n.ui-corner-br {\n\tborder-bottom-right-radius: 3px/*{cornerRadius}*/;\n}\n\n/* Overlays */\n.ui-widget-overlay {\n\tbackground: #aaaaaa/*{bgColorOverlay}*/ /*{bgImgUrlOverlay}*/ /*{bgOverlayXPos}*/ /*{bgOverlayYPos}*/ /*{bgOverlayRepeat}*/;\n\topacity: .3/*{opacityOverlay}*/;\n\tfilter: Alpha(Opacity=30)/*{opacityFilterOverlay}*/; /* support: IE8 */\n}\n.ui-widget-shadow {\n\t-webkit-box-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n\tbox-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n}\n", ""]);
+	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n *\n * To view and modify this theme, visit http://jqueryui.com/themeroller/\n */\n\n\n/* Component containers\n----------------------------------*/\n.ui-widget {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em/*{fsDefault}*/;\n}\n.ui-widget .ui-widget {\n\tfont-size: 1em;\n}\n.ui-widget input,\n.ui-widget select,\n.ui-widget textarea,\n.ui-widget button {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em;\n}\n.ui-widget.ui-widget-content {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n}\n.ui-widget-content {\n\tborder: 1px solid #dddddd/*{borderColorContent}*/;\n\tbackground: #ffffff/*{bgColorContent}*/ /*{bgImgUrlContent}*/ /*{bgContentXPos}*/ /*{bgContentYPos}*/ /*{bgContentRepeat}*/;\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-content a {\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-header {\n\tborder: 1px solid #dddddd/*{borderColorHeader}*/;\n\tbackground: #e9e9e9/*{bgColorHeader}*/ /*{bgImgUrlHeader}*/ /*{bgHeaderXPos}*/ /*{bgHeaderYPos}*/ /*{bgHeaderRepeat}*/;\n\tcolor: #333333/*{fcHeader}*/;\n\tfont-weight: bold;\n}\n.ui-widget-header a {\n\tcolor: #333333/*{fcHeader}*/;\n}\n\n/* Interaction states\n----------------------------------*/\n.ui-state-default,\n.ui-widget-content .ui-state-default,\n.ui-widget-header .ui-state-default,\n.ui-button,\n\n/* We use html here because we need a greater specificity to make sure disabled\nworks properly when clicked or hovered */\nhtml .ui-button.ui-state-disabled:hover,\nhtml .ui-button.ui-state-disabled:active {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n\tbackground: #f6f6f6/*{bgColorDefault}*/ /*{bgImgUrlDefault}*/ /*{bgDefaultXPos}*/ /*{bgDefaultYPos}*/ /*{bgDefaultRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #454545/*{fcDefault}*/;\n}\n.ui-state-default a,\n.ui-state-default a:link,\n.ui-state-default a:visited,\na.ui-button,\na:link.ui-button,\na:visited.ui-button,\n.ui-button {\n\tcolor: #454545/*{fcDefault}*/;\n\ttext-decoration: none;\n}\n.ui-state-hover,\n.ui-widget-content .ui-state-hover,\n.ui-widget-header .ui-state-hover,\n.ui-state-focus,\n.ui-widget-content .ui-state-focus,\n.ui-widget-header .ui-state-focus,\n.ui-button:hover,\n.ui-button:focus {\n\tborder: 1px solid #cccccc/*{borderColorHover}*/;\n\tbackground: #ededed/*{bgColorHover}*/ /*{bgImgUrlHover}*/ /*{bgHoverXPos}*/ /*{bgHoverYPos}*/ /*{bgHoverRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #2b2b2b/*{fcHover}*/;\n}\n.ui-state-hover a,\n.ui-state-hover a:hover,\n.ui-state-hover a:link,\n.ui-state-hover a:visited,\n.ui-state-focus a,\n.ui-state-focus a:hover,\n.ui-state-focus a:link,\n.ui-state-focus a:visited,\na.ui-button:hover,\na.ui-button:focus {\n\tcolor: #2b2b2b/*{fcHover}*/;\n\ttext-decoration: none;\n}\n\n.ui-visual-focus {\n\tbox-shadow: 0 0 3px 1px rgb(94, 158, 214);\n}\n.ui-state-active,\n.ui-widget-content .ui-state-active,\n.ui-widget-header .ui-state-active,\na.ui-button:active,\n.ui-button:active,\n.ui-button.ui-state-active:hover {\n\tborder: 1px solid #003eff/*{borderColorActive}*/;\n\tbackground: #007fff/*{bgColorActive}*/ /*{bgImgUrlActive}*/ /*{bgActiveXPos}*/ /*{bgActiveYPos}*/ /*{bgActiveRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #ffffff/*{fcActive}*/;\n}\n.ui-icon-background,\n.ui-state-active .ui-icon-background {\n\tborder: #003eff/*{borderColorActive}*/;\n\tbackground-color: #ffffff/*{fcActive}*/;\n}\n.ui-state-active a,\n.ui-state-active a:link,\n.ui-state-active a:visited {\n\tcolor: #ffffff/*{fcActive}*/;\n\ttext-decoration: none;\n}\n\n/* Interaction Cues\n----------------------------------*/\n.ui-state-highlight,\n.ui-widget-content .ui-state-highlight,\n.ui-widget-header .ui-state-highlight {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/ /*{bgImgUrlHighlight}*/ /*{bgHighlightXPos}*/ /*{bgHighlightYPos}*/ /*{bgHighlightRepeat}*/;\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-checked {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/;\n}\n.ui-state-highlight a,\n.ui-widget-content .ui-state-highlight a,\n.ui-widget-header .ui-state-highlight a {\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-error,\n.ui-widget-content .ui-state-error,\n.ui-widget-header .ui-state-error {\n\tborder: 1px solid #f1a899/*{borderColorError}*/;\n\tbackground: #fddfdf/*{bgColorError}*/ /*{bgImgUrlError}*/ /*{bgErrorXPos}*/ /*{bgErrorYPos}*/ /*{bgErrorRepeat}*/;\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error a,\n.ui-widget-content .ui-state-error a,\n.ui-widget-header .ui-state-error a {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error-text,\n.ui-widget-content .ui-state-error-text,\n.ui-widget-header .ui-state-error-text {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-priority-primary,\n.ui-widget-content .ui-priority-primary,\n.ui-widget-header .ui-priority-primary {\n\tfont-weight: bold;\n}\n.ui-priority-secondary,\n.ui-widget-content .ui-priority-secondary,\n.ui-widget-header .ui-priority-secondary {\n\topacity: .7;\n\tfilter:Alpha(Opacity=70); /* support: IE8 */\n\tfont-weight: normal;\n}\n.ui-state-disabled,\n.ui-widget-content .ui-state-disabled,\n.ui-widget-header .ui-state-disabled {\n\topacity: .35;\n\tfilter:Alpha(Opacity=35); /* support: IE8 */\n\tbackground-image: none;\n}\n.ui-state-disabled .ui-icon {\n\tfilter:Alpha(Opacity=35); /* support: IE8 - See #6059 */\n}\n\n/* Icons\n----------------------------------*/\n\n/* states and images */\n.ui-icon {\n\twidth: 16px;\n\theight: 16px;\n}\n.ui-icon,\n.ui-widget-content .ui-icon {\n\tbackground-image: url(" + __webpack_require__(66) + ");\n}\n.ui-widget-header .ui-icon {\n\tbackground-image: url(" + __webpack_require__(66) + ");\n}\n.ui-state-hover .ui-icon,\n.ui-state-focus .ui-icon,\n.ui-button:hover .ui-icon,\n.ui-button:focus .ui-icon {\n\tbackground-image: url(" + __webpack_require__(67) + ");\n}\n.ui-state-active .ui-icon,\n.ui-button:active .ui-icon {\n\tbackground-image: url(" + __webpack_require__(68) + ");\n}\n.ui-state-highlight .ui-icon,\n.ui-button .ui-state-highlight.ui-icon {\n\tbackground-image: url(" + __webpack_require__(69) + ");\n}\n.ui-state-error .ui-icon,\n.ui-state-error-text .ui-icon {\n\tbackground-image: url(" + __webpack_require__(70) + ");\n}\n.ui-button .ui-icon {\n\tbackground-image: url(" + __webpack_require__(71) + ");\n}\n\n/* positioning */\n.ui-icon-blank { background-position: 16px 16px; }\n.ui-icon-caret-1-n { background-position: 0 0; }\n.ui-icon-caret-1-ne { background-position: -16px 0; }\n.ui-icon-caret-1-e { background-position: -32px 0; }\n.ui-icon-caret-1-se { background-position: -48px 0; }\n.ui-icon-caret-1-s { background-position: -65px 0; }\n.ui-icon-caret-1-sw { background-position: -80px 0; }\n.ui-icon-caret-1-w { background-position: -96px 0; }\n.ui-icon-caret-1-nw { background-position: -112px 0; }\n.ui-icon-caret-2-n-s { background-position: -128px 0; }\n.ui-icon-caret-2-e-w { background-position: -144px 0; }\n.ui-icon-triangle-1-n { background-position: 0 -16px; }\n.ui-icon-triangle-1-ne { background-position: -16px -16px; }\n.ui-icon-triangle-1-e { background-position: -32px -16px; }\n.ui-icon-triangle-1-se { background-position: -48px -16px; }\n.ui-icon-triangle-1-s { background-position: -65px -16px; }\n.ui-icon-triangle-1-sw { background-position: -80px -16px; }\n.ui-icon-triangle-1-w { background-position: -96px -16px; }\n.ui-icon-triangle-1-nw { background-position: -112px -16px; }\n.ui-icon-triangle-2-n-s { background-position: -128px -16px; }\n.ui-icon-triangle-2-e-w { background-position: -144px -16px; }\n.ui-icon-arrow-1-n { background-position: 0 -32px; }\n.ui-icon-arrow-1-ne { background-position: -16px -32px; }\n.ui-icon-arrow-1-e { background-position: -32px -32px; }\n.ui-icon-arrow-1-se { background-position: -48px -32px; }\n.ui-icon-arrow-1-s { background-position: -65px -32px; }\n.ui-icon-arrow-1-sw { background-position: -80px -32px; }\n.ui-icon-arrow-1-w { background-position: -96px -32px; }\n.ui-icon-arrow-1-nw { background-position: -112px -32px; }\n.ui-icon-arrow-2-n-s { background-position: -128px -32px; }\n.ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }\n.ui-icon-arrow-2-e-w { background-position: -160px -32px; }\n.ui-icon-arrow-2-se-nw { background-position: -176px -32px; }\n.ui-icon-arrowstop-1-n { background-position: -192px -32px; }\n.ui-icon-arrowstop-1-e { background-position: -208px -32px; }\n.ui-icon-arrowstop-1-s { background-position: -224px -32px; }\n.ui-icon-arrowstop-1-w { background-position: -240px -32px; }\n.ui-icon-arrowthick-1-n { background-position: 1px -48px; }\n.ui-icon-arrowthick-1-ne { background-position: -16px -48px; }\n.ui-icon-arrowthick-1-e { background-position: -32px -48px; }\n.ui-icon-arrowthick-1-se { background-position: -48px -48px; }\n.ui-icon-arrowthick-1-s { background-position: -64px -48px; }\n.ui-icon-arrowthick-1-sw { background-position: -80px -48px; }\n.ui-icon-arrowthick-1-w { background-position: -96px -48px; }\n.ui-icon-arrowthick-1-nw { background-position: -112px -48px; }\n.ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }\n.ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }\n.ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }\n.ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }\n.ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }\n.ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }\n.ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }\n.ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }\n.ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }\n.ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }\n.ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }\n.ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }\n.ui-icon-arrowreturn-1-w { background-position: -64px -64px; }\n.ui-icon-arrowreturn-1-n { background-position: -80px -64px; }\n.ui-icon-arrowreturn-1-e { background-position: -96px -64px; }\n.ui-icon-arrowreturn-1-s { background-position: -112px -64px; }\n.ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }\n.ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }\n.ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }\n.ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }\n.ui-icon-arrow-4 { background-position: 0 -80px; }\n.ui-icon-arrow-4-diag { background-position: -16px -80px; }\n.ui-icon-extlink { background-position: -32px -80px; }\n.ui-icon-newwin { background-position: -48px -80px; }\n.ui-icon-refresh { background-position: -64px -80px; }\n.ui-icon-shuffle { background-position: -80px -80px; }\n.ui-icon-transfer-e-w { background-position: -96px -80px; }\n.ui-icon-transferthick-e-w { background-position: -112px -80px; }\n.ui-icon-folder-collapsed { background-position: 0 -96px; }\n.ui-icon-folder-open { background-position: -16px -96px; }\n.ui-icon-document { background-position: -32px -96px; }\n.ui-icon-document-b { background-position: -48px -96px; }\n.ui-icon-note { background-position: -64px -96px; }\n.ui-icon-mail-closed { background-position: -80px -96px; }\n.ui-icon-mail-open { background-position: -96px -96px; }\n.ui-icon-suitcase { background-position: -112px -96px; }\n.ui-icon-comment { background-position: -128px -96px; }\n.ui-icon-person { background-position: -144px -96px; }\n.ui-icon-print { background-position: -160px -96px; }\n.ui-icon-trash { background-position: -176px -96px; }\n.ui-icon-locked { background-position: -192px -96px; }\n.ui-icon-unlocked { background-position: -208px -96px; }\n.ui-icon-bookmark { background-position: -224px -96px; }\n.ui-icon-tag { background-position: -240px -96px; }\n.ui-icon-home { background-position: 0 -112px; }\n.ui-icon-flag { background-position: -16px -112px; }\n.ui-icon-calendar { background-position: -32px -112px; }\n.ui-icon-cart { background-position: -48px -112px; }\n.ui-icon-pencil { background-position: -64px -112px; }\n.ui-icon-clock { background-position: -80px -112px; }\n.ui-icon-disk { background-position: -96px -112px; }\n.ui-icon-calculator { background-position: -112px -112px; }\n.ui-icon-zoomin { background-position: -128px -112px; }\n.ui-icon-zoomout { background-position: -144px -112px; }\n.ui-icon-search { background-position: -160px -112px; }\n.ui-icon-wrench { background-position: -176px -112px; }\n.ui-icon-gear { background-position: -192px -112px; }\n.ui-icon-heart { background-position: -208px -112px; }\n.ui-icon-star { background-position: -224px -112px; }\n.ui-icon-link { background-position: -240px -112px; }\n.ui-icon-cancel { background-position: 0 -128px; }\n.ui-icon-plus { background-position: -16px -128px; }\n.ui-icon-plusthick { background-position: -32px -128px; }\n.ui-icon-minus { background-position: -48px -128px; }\n.ui-icon-minusthick { background-position: -64px -128px; }\n.ui-icon-close { background-position: -80px -128px; }\n.ui-icon-closethick { background-position: -96px -128px; }\n.ui-icon-key { background-position: -112px -128px; }\n.ui-icon-lightbulb { background-position: -128px -128px; }\n.ui-icon-scissors { background-position: -144px -128px; }\n.ui-icon-clipboard { background-position: -160px -128px; }\n.ui-icon-copy { background-position: -176px -128px; }\n.ui-icon-contact { background-position: -192px -128px; }\n.ui-icon-image { background-position: -208px -128px; }\n.ui-icon-video { background-position: -224px -128px; }\n.ui-icon-script { background-position: -240px -128px; }\n.ui-icon-alert { background-position: 0 -144px; }\n.ui-icon-info { background-position: -16px -144px; }\n.ui-icon-notice { background-position: -32px -144px; }\n.ui-icon-help { background-position: -48px -144px; }\n.ui-icon-check { background-position: -64px -144px; }\n.ui-icon-bullet { background-position: -80px -144px; }\n.ui-icon-radio-on { background-position: -96px -144px; }\n.ui-icon-radio-off { background-position: -112px -144px; }\n.ui-icon-pin-w { background-position: -128px -144px; }\n.ui-icon-pin-s { background-position: -144px -144px; }\n.ui-icon-play { background-position: 0 -160px; }\n.ui-icon-pause { background-position: -16px -160px; }\n.ui-icon-seek-next { background-position: -32px -160px; }\n.ui-icon-seek-prev { background-position: -48px -160px; }\n.ui-icon-seek-end { background-position: -64px -160px; }\n.ui-icon-seek-start { background-position: -80px -160px; }\n/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */\n.ui-icon-seek-first { background-position: -80px -160px; }\n.ui-icon-stop { background-position: -96px -160px; }\n.ui-icon-eject { background-position: -112px -160px; }\n.ui-icon-volume-off { background-position: -128px -160px; }\n.ui-icon-volume-on { background-position: -144px -160px; }\n.ui-icon-power { background-position: 0 -176px; }\n.ui-icon-signal-diag { background-position: -16px -176px; }\n.ui-icon-signal { background-position: -32px -176px; }\n.ui-icon-battery-0 { background-position: -48px -176px; }\n.ui-icon-battery-1 { background-position: -64px -176px; }\n.ui-icon-battery-2 { background-position: -80px -176px; }\n.ui-icon-battery-3 { background-position: -96px -176px; }\n.ui-icon-circle-plus { background-position: 0 -192px; }\n.ui-icon-circle-minus { background-position: -16px -192px; }\n.ui-icon-circle-close { background-position: -32px -192px; }\n.ui-icon-circle-triangle-e { background-position: -48px -192px; }\n.ui-icon-circle-triangle-s { background-position: -64px -192px; }\n.ui-icon-circle-triangle-w { background-position: -80px -192px; }\n.ui-icon-circle-triangle-n { background-position: -96px -192px; }\n.ui-icon-circle-arrow-e { background-position: -112px -192px; }\n.ui-icon-circle-arrow-s { background-position: -128px -192px; }\n.ui-icon-circle-arrow-w { background-position: -144px -192px; }\n.ui-icon-circle-arrow-n { background-position: -160px -192px; }\n.ui-icon-circle-zoomin { background-position: -176px -192px; }\n.ui-icon-circle-zoomout { background-position: -192px -192px; }\n.ui-icon-circle-check { background-position: -208px -192px; }\n.ui-icon-circlesmall-plus { background-position: 0 -208px; }\n.ui-icon-circlesmall-minus { background-position: -16px -208px; }\n.ui-icon-circlesmall-close { background-position: -32px -208px; }\n.ui-icon-squaresmall-plus { background-position: -48px -208px; }\n.ui-icon-squaresmall-minus { background-position: -64px -208px; }\n.ui-icon-squaresmall-close { background-position: -80px -208px; }\n.ui-icon-grip-dotted-vertical { background-position: 0 -224px; }\n.ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }\n.ui-icon-grip-solid-vertical { background-position: -32px -224px; }\n.ui-icon-grip-solid-horizontal { background-position: -48px -224px; }\n.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }\n.ui-icon-grip-diagonal-se { background-position: -80px -224px; }\n\n\n/* Misc visuals\n----------------------------------*/\n\n/* Corner radius */\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-left,\n.ui-corner-tl {\n\tborder-top-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-right,\n.ui-corner-tr {\n\tborder-top-right-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-left,\n.ui-corner-bl {\n\tborder-bottom-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-right,\n.ui-corner-br {\n\tborder-bottom-right-radius: 3px/*{cornerRadius}*/;\n}\n\n/* Overlays */\n.ui-widget-overlay {\n\tbackground: #aaaaaa/*{bgColorOverlay}*/ /*{bgImgUrlOverlay}*/ /*{bgOverlayXPos}*/ /*{bgOverlayYPos}*/ /*{bgOverlayRepeat}*/;\n\topacity: .3/*{opacityOverlay}*/;\n\tfilter: Alpha(Opacity=30)/*{opacityFilterOverlay}*/; /* support: IE8 */\n}\n.ui-widget-shadow {\n\t-webkit-box-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n\tbox-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n}\n", ""]);
 	
 	// exports
 
 
 /***/ }),
-/* 70 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "a4c733ec4baef9ad3896d4e34a8a5448.png";
 
 /***/ }),
-/* 71 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "971364734f3b603e5d363a2634898b42.png";
 
 /***/ }),
-/* 72 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "bf27228a7d3957983584fa7698121ea1.png";
 
 /***/ }),
-/* 73 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "208a290102a4ada58a04de354a1354d7.png";
 
 /***/ }),
-/* 74 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "0de3b51742ed3ac61435875bccd8973b.png";
 
 /***/ }),
-/* 75 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "73a1fd052c9d84c0ee0bea3ee85892ed.png";
 
 /***/ }),
-/* 76 */
+/* 72 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(self.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0,
+		styleElementsInsertedAtTop = [];
+	
+	module.exports = function(list, options) {
+		if(false) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+	
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+	
+		// By default, add <style> tags to the bottom of <head>.
+		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+	
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+	
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+	
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+	
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+	
+	function insertStyleElement(options, styleElement) {
+		var head = getHeadElement();
+		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+		if (options.insertAt === "top") {
+			if(!lastStyleElementInsertedAtTop) {
+				head.insertBefore(styleElement, head.firstChild);
+			} else if(lastStyleElementInsertedAtTop.nextSibling) {
+				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+			} else {
+				head.appendChild(styleElement);
+			}
+			styleElementsInsertedAtTop.push(styleElement);
+		} else if (options.insertAt === "bottom") {
+			head.appendChild(styleElement);
+		} else {
+			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+		}
+	}
+	
+	function removeStyleElement(styleElement) {
+		styleElement.parentNode.removeChild(styleElement);
+		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+		if(idx >= 0) {
+			styleElementsInsertedAtTop.splice(idx, 1);
+		}
+	}
+	
+	function createStyleElement(options) {
+		var styleElement = document.createElement("style");
+		styleElement.type = "text/css";
+		insertStyleElement(options, styleElement);
+		return styleElement;
+	}
+	
+	function createLinkElement(options) {
+		var linkElement = document.createElement("link");
+		linkElement.rel = "stylesheet";
+		insertStyleElement(options, linkElement);
+		return linkElement;
+	}
+	
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+	
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement(options));
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else if(obj.sourceMap &&
+			typeof URL === "function" &&
+			typeof URL.createObjectURL === "function" &&
+			typeof URL.revokeObjectURL === "function" &&
+			typeof Blob === "function" &&
+			typeof btoa === "function") {
+			styleElement = createLinkElement(options);
+			update = updateLink.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+				if(styleElement.href)
+					URL.revokeObjectURL(styleElement.href);
+			};
+		} else {
+			styleElement = createStyleElement(options);
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+			};
+		}
+	
+		update(obj);
+	
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+	
+	var replaceText = (function () {
+		var textStore = [];
+	
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+	
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+	
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+	
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+	
+		if(media) {
+			styleElement.setAttribute("media", media)
+		}
+	
+		if(styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+	
+	function updateLink(linkElement, obj) {
+		var css = obj.css;
+		var sourceMap = obj.sourceMap;
+	
+		if(sourceMap) {
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+	
+		var blob = new Blob([css], { type: "text/css" });
+	
+		var oldSrc = linkElement.href;
+	
+		linkElement.href = URL.createObjectURL(blob);
+	
+		if(oldSrc)
+			URL.revokeObjectURL(oldSrc);
+	}
+
+
+/***/ }),
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(77);
+	var content = __webpack_require__(74);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
+	var update = __webpack_require__(72)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -27032,10 +26251,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	}
 
 /***/ }),
-/* 77 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -27046,16 +26265,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 78 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(79);
+	var content = __webpack_require__(76);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
+	var update = __webpack_require__(72)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -27072,10 +26291,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	}
 
 /***/ }),
-/* 79 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -27086,7 +26305,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 
 
 /***/ }),
-/* 80 */
+/* 77 */
 /***/ (function(module, exports) {
 
 	module.exports = {"name":"nglview-js-widgets","version":"2.2.0","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.0.0"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
