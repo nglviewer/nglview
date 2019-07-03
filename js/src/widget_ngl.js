@@ -84,8 +84,11 @@ var NGLView = widgets.DOMWidgetView.extend({
             var that = this;
             var width = this.$el.parent().width() + "px";
             var height = "300px";
-
             this.setSize(width, height);
+            this.createFullscreenBtn(); // FIXME: move up?
+            this.createIPlayer(); // FIXME: move up?
+            this.GUIStyleChanged(); // must be called after displaying to get correct width and height
+
             this.$container.resizable(
                 "option", "maxWidth", this.$el.parent().width()
             );
@@ -177,9 +180,6 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
         }, this);
 
-        this.createFullscreenBtn(); // FIXME: move up?
-        this.createIPlayer(); // FIXME: move up?
-        this.GUIStyleChanged();
         var container = this.stage.viewer.container;
         that = this;
         container.addEventListener('mouseover', function(e) {

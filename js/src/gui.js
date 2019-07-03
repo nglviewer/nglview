@@ -255,6 +255,10 @@ StageWidget = function (el, stage) {
       var sw = sidebar.dom.getBoundingClientRect().width
       var ew = el.getBoundingClientRect().width
       var w = ew - sw + 'px'
+
+      // for debug
+      console.log('handleResizeInNotebook, ew sw and w width', ew, sw, w)
+      console.log('handleResizeInNotebook, el height ', el.getBoundingClientRect().height)
       stage.viewer.container.style.width = w 
       stage.handleResize()
   }

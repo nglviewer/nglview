@@ -155,8 +155,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            var that = this;
 	            var width = this.$el.parent().width() + "px";
 	            var height = "300px";
-	
 	            this.setSize(width, height);
+	            this.createFullscreenBtn(); // FIXME: move up?
+	            this.createIPlayer(); // FIXME: move up?
+	            this.GUIStyleChanged(); // must be called after displaying to get correct width and height
+	
 	            this.$container.resizable(
 	                "option", "maxWidth", this.$el.parent().width()
 	            );
@@ -248,9 +251,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }
 	        }, this);
 	
-	        this.createFullscreenBtn(); // FIXME: move up?
-	        this.createIPlayer(); // FIXME: move up?
-	        this.GUIStyleChanged();
 	        var container = this.stage.viewer.container;
 	        that = this;
 	        container.addEventListener('mouseover', function(e) {
@@ -16762,6 +16762,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	      var sw = sidebar.dom.getBoundingClientRect().width
 	      var ew = el.getBoundingClientRect().width
 	      var w = ew - sw + 'px'
+	
+	      // for debug
+	      console.log('handleResizeInNotebook, ew sw and w width', ew, sw, w)
+	      console.log('handleResizeInNotebook, el height ', el.getBoundingClientRect().height)
 	      stage.viewer.container.style.width = w 
 	      stage.handleResize()
 	  }
