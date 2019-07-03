@@ -720,13 +720,13 @@ NGL.MenubarHelpWidget = function (stage, preferences) {
 
   var preferencesWidget = new NGL.PreferencesWidget(stage, preferences)
     .setDisplay('none')
-    .attach()
+    .attach(stage.viewer.container.parentElement)
 
   // overview
 
   var overviewWidget = new NGL.OverviewWidget(stage, preferences)
     .setDisplay('none')
-    .attach()
+    .attach(stage.viewer.container.parentElement)
 
   if (preferences.getKey('overview')) {
     onOverviewOptionClick()
