@@ -300,13 +300,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    mouseover_display: function(type){
+	        var that = this;
 	        if (this.fullscreen_btn_pview){
 	            this.fullscreen_btn_pview.then(function(v){
 	                v.el.style.display = type
-	                console.log(this.stage_widget);
-	                if (this.stage_widget){
+	                if (that.stage_widget){
 	                    // If NGL's GUI exists, use its fullscreen button.
-	                    console.log("Disable ipywidgets' fullscreen button")
 	                    v.el.style.display = 'none'
 	                }
 	            })
