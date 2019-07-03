@@ -303,6 +303,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        if (this.fullscreen_btn_pview){
 	            this.fullscreen_btn_pview.then(function(v){
 	                v.el.style.display = type
+	                console.log(this.stage_widget);
+	                if (this.stage_widget){
+	                    // If NGL's GUI exists, use its fullscreen button.
+	                    console.log("Disable ipywidgets' fullscreen button")
+	                    v.el.style.display = 'none'
+	                }
 	            })
 	        }
 	
@@ -845,9 +851,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        if (style === 'ngl'){
 	            console.log("Creating NGL GUI");
 	            this.createNglGUI();
-	            this.fullscreen_btn_pview.then(function(v){
-	                v.el.style.display = 'none'
-	            })
 	        }else{
 	            if (this.stage_widget){
 	                this.stage_widget.dispose()

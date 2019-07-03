@@ -229,9 +229,14 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     mouseover_display: function(type){
+        var that = this;
         if (this.fullscreen_btn_pview){
             this.fullscreen_btn_pview.then(function(v){
                 v.el.style.display = type
+                if (that.stage_widget){
+                    // If NGL's GUI exists, use its fullscreen button.
+                    v.el.style.display = 'none'
+                }
             })
         }
 
@@ -774,9 +779,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         if (style === 'ngl'){
             console.log("Creating NGL GUI");
             this.createNglGUI();
-            this.fullscreen_btn_pview.then(function(v){
-                v.el.style.display = 'none'
-            })
         }else{
             if (this.stage_widget){
                 this.stage_widget.dispose()
