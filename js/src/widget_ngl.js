@@ -37,6 +37,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         // maximum number of frames.
         // this.model.on("change:max_frame", this.maxFrameChanged, this);
         this.model.on("change:_parameters", this.parametersChanged, this);
+        this.model.on("change:_gui_style", this.GUIStyleChanged, this);
         this.model.set('_ngl_version', NGL.Version);
         this._synced_model_ids = this.model.get("_synced_model_ids");
         this.stage_widget = undefined
@@ -182,6 +183,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
         this.createFullscreenBtn(); // FIXME: move up?
         this.createIPlayer(); // FIXME: move up?
+        this.GUIStyleChanged();
         var container = this.stage.viewer.container;
         that = this;
         container.addEventListener('mouseover', function(e) {
@@ -764,6 +766,23 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.stage.viewer.container.style.width = width;
         this.stage.viewer.container.style.height = height;
         this.stage.handleResize();
+    },
+
+    GUIStyleChanged: function(){
+        var style = this.model.get("_gui_style");
+        console.log('style ' + style);
+        if (style === 'ngl'){
+            console.log("Creating NGL GUI");
+            this.createNglGUI();
+            this.fullscreen_btn_pview.then(function(v){
+                v.el.style.display = 'none'
+            })
+        }else{
+            if (this.stage_widget){
+                this.stage_widget.dispose()
+                this.stage_widget = undefined
+            }
+        }
     },
 
     parametersChanged: function() {
