@@ -107,7 +107,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	var NGLView = widgets.DOMWidgetView.extend({
 	    render: function() {
 	        // maximum number of frames.
-	        this.model.on("change:max_frame", this.maxFrameChanged, this);
+	        // this.model.on("change:max_frame", this.maxFrameChanged, this);
 	        this.model.on("change:_parameters", this.parametersChanged, this);
 	        this.model.set('_ngl_version', NGL.Version);
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
@@ -299,13 +299,21 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	    },
 	
 	    mouseover_display: function(type){
-	        this.fullscreen_btn_pview.then(function(v){
-	            v.el.style.display = type
-	        })
+	        if (this.fullscreen_btn_pview){
+	            this.fullscreen_btn_pview.then(function(v){
+	                v.el.style.display = type
+	            })
+	        }
 	
-	        this.player_pview.then(function(v){
-	            v.el.style.display = type
-	        })
+	        var that = this;
+	        if (this.player_pview){
+	            this.player_pview.then(function(v){
+	                v.el.style.display = type
+	                if (that.model.get("max_frame") <= 1){
+	                    v.el.style.display = 'none' // always hide if there's no trajectory.
+	                }
+	            })
+	        }
 	    },
 	
 	    serialize_camera_orientation: function(){
@@ -487,16 +495,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	        }
 	    },
 	
-	    maxFrameChanged: function() {
-	        var max_frame = this.model.get("max_frame");
-	        this.player_pview.then(function(v){
-	            if (max_frame > 0){
-	                v.el.style.display = 'block'
-	            }else{
-	                v.el.style.display = 'none'
-	            }
-	        })
-	    },
+	    // maxFrameChanged: function() {
+	    //     var max_frame = this.model.get("max_frame");
+	    //     this.player_pview.then(function(v){
+	    //         if (max_frame > 0){
+	    //             v.el.style.display = 'block'
+	    //         }else{
+	    //             v.el.style.display = 'none'
+	    //         }
+	    //     })
+	    // },
 	
 	    createView: function(trait_name){
 	        // Create a view for the model with given `trait_name`
@@ -526,9 +534,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	                pe.style.left = '10%'
 	                pe.style.opacity = '0.7'
 	                that.stage.viewer.container.append(view.el);
-	                if (that.model.get("max_frame") <= 0){
-	                    pe.style.display = 'none';
-	                }
+	                pe.style.display = 'none'
 	            })
 	    },
 	
