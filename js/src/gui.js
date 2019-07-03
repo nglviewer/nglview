@@ -278,6 +278,19 @@ StageWidget = function (el, stage) {
     })
 
   sidebar.add(resizeLeft)
+  this.viewport = viewport
+  this.toolbar = toolbar
+  this.menubar = menubar
+  this.sidebar = sidebar
+
+  handleResizeInNotebook()
+
+  stage.signals.fullscreenChanged.add(function (isFullscreen) {
+    const box = stage.viewer.container.parentElement.getBoundingClientRect()
+    console.log("in StageWidget")
+    stage.setSize(box.width+"px", isFullscreen?box.height+'px':'300px')
+    stage.handleResize()
+  })
 
   window.addEventListener(
     'mousemove', function (event) {
@@ -315,12 +328,6 @@ StageWidget = function (el, stage) {
     e.preventDefault()
   }, false)
 
-  this.viewport = viewport
-  this.toolbar = toolbar
-  this.menubar = menubar
-  this.sidebar = sidebar
-
-  handleResizeInNotebook()
   return this
 }
 
@@ -634,9 +641,9 @@ NGL.MenubarViewWidget = function (stage, preferences) {
 
   var that = this;
   stage.signals.fullscreenChanged.add(function (isFullscreen) {
-    const box = stage.viewer.container.parentElement.getBoundingClientRect()
-    stage.setSize(box.width+"px", box.height+"px")
-    stage.handleResize()
+    // const box = stage.viewer.container.parentElement.getBoundingClientRect()
+    // stage.setSize(box.width+"px", box.height+"px")
+    // stage.handleResize()
     var icon = menuConfig[ 7 ].children[ 0 ]
     if (isFullscreen) {
       icon.switchClass('compress', 'expand')
