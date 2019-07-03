@@ -252,16 +252,20 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	            }
 	        }, this);
 	
+	        this.createFullscreenBtn(); // FIXME: move up?
+	        this.createIPlayer(); // FIXME: move up?
 	        var container = this.stage.viewer.container;
 	        that = this;
 	        container.addEventListener('mouseover', function(e) {
 	            that._ngl_focused = 1;
 	            e; // linter
+	            that.mouseover_display('block')
 	        }, false);
 	
 	        container.addEventListener('mouseout', function(e) {
 	            that._ngl_focused = 0;
 	            e; // linter
+	            that.mouseover_display('none')
 	        }, false);
 	
 	        that = this;
@@ -292,7 +296,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	        var state_params = this.stage.getParameters();
 	        this.model.set('_ngl_original_stage_parameters', state_params);
 	        this.touch();
-	        this.createIPlayer();
+	    },
+	
+	    mouseover_display: function(type){
+	        this.fullscreen_btn_pview.then(function(v){
+	            v.el.style.display = type
+	        })
+	
+	        this.player_pview.then(function(v){
+	            v.el.style.display = type
+	        })
 	    },
 	
 	    serialize_camera_orientation: function(){
@@ -546,6 +559,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	           pe.style.right = '5%'
 	           pe.style.opacity = '0.7'
 	           pe.style.width = '35px'
+	           pe.style.display = 'none'
 	           stage.viewer.container.append(view.el);
 	           stage.signals.fullscreenChanged.add(function (isFullscreen) {
 	             if (isFullscreen) {
@@ -567,6 +581,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	                pe.style.zIndex = 100
 	                pe.style.top = '5%'
 	                pe.style.right = '10%'
+	                pe.style.width = '300px'
+	                that.stage.viewer.container.append(view.el);
 	            })
 	    },
 	
@@ -1774,14 +1790,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_13__) { ret
 	
 	  var preferencesWidget = new NGL.PreferencesWidget(stage, preferences)
 	    .setDisplay('none')
-	    .attach()
 	    .attach(stage.viewer.container.parentElement)
 	
 	  // overview
 	
 	  var overviewWidget = new NGL.OverviewWidget(stage, preferences)
 	    .setDisplay('none')
-	    .attach()
+	    .attach(stage.viewer.container.parentElement)
 	
 	  if (preferences.getKey('overview')) {
 	    onOverviewOptionClick()
