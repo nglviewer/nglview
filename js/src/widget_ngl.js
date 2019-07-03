@@ -37,12 +37,12 @@ var NGLView = widgets.DOMWidgetView.extend({
         // maximum number of frames.
         // this.model.on("change:max_frame", this.maxFrameChanged, this);
         this.model.on("change:_parameters", this.parametersChanged, this);
-        this.model.on("change:_gui_style", this.GUIStyleChanged, this);
+        this.model.on("change:gui_style", this.GUIStyleChanged, this);
         this.model.set('_ngl_version', NGL.Version);
         this._synced_model_ids = this.model.get("_synced_model_ids");
         this.stage_widget = undefined
 
-        this.model.on("msg:custom", function(msg){ 
+        this.model.on("msg:custom", function(msg){
             if ('ngl_view_id' in msg){
                 var key = msg.ngl_view_id;
                 console.log(key);
@@ -115,7 +115,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                             var pview = model.views[k];
                             pview.then(function(view){
                                 // not sync with itself
-                                if (view != that){ 
+                                if (view != that){
                                     view.stage.viewerControls.orient(m);
                                 }
                             })
@@ -125,94 +125,9 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
         }.bind(this));
 
-        // init toggle fullscreen
-        // $(this.stage.viewer.container).dblclick(function(e) {
-        //     if (!e.ctrlKey){
-        //         this.stage.toggleFullscreen();
-        //     }
-        // }.bind(this));
-
         // init picking handling
-        this.$pickingInfo = $("<div></div>")
-            .css("position", "absolute")
-            .css("top", "5%")
-            .css("left", "3%")
-            .css("background-color", "white")
-            .css("padding", "2px 5px 2px 5px")
-            .css("opacity", "0.7")
-            .appendTo(this.$container);
-
-        var that = this;
-
-        this.stage.signals.clicked.add(function (pd) {
-            if (pd) {
-                this.model.set('picked', {}); //refresh signal
-                this.touch();
-
-                var pd2 = {};
-                var pickingText = "";
-                if (pd.atom) {
-                    pd2.atom1 = pd.atom.toObject();
-                    pd2.atom1.name = pd.atom.qualifiedName();
-                    pickingText = "Atom: " + pd2.atom1.name;
-                } else if (pd.bond) {
-                    pd2.bond = pd.bond.toObject();
-                    pd2.atom1 = pd.bond.atom1.toObject();
-                    pd2.atom1.name = pd.bond.atom1.qualifiedName();
-                    pd2.atom2 = pd.bond.atom2.toObject();
-                    pd2.atom2.name = pd.bond.atom2.qualifiedName();
-                    pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
-                }
-                if (pd.instance) pd2.instance = pd.instance;
-                
-                var n_components = this.stage.compList.length;
-                for (var i = 0; i < n_components; i++) {
-                    var comp = this.stage.compList[i];
-                    if (comp.uuid == pd.component.uuid) {
-                        pd2.component = i;
-                    }
-                }
-
-                this.model.set('picked', pd2);
-                this.touch();
-                
-                this.$pickingInfo.text(pickingText);
-            }
-        }, this);
-
-        var container = this.stage.viewer.container;
-        that = this;
-        container.addEventListener('mouseover', function(e) {
-            that._ngl_focused = 1;
-            e; // linter
-            that.mouseover_display('block')
-        }, false);
-
-        container.addEventListener('mouseout', function(e) {
-            that._ngl_focused = 0;
-            e; // linter
-            that.mouseover_display('none')
-        }, false);
-
-        that = this;
-        this.stage.signals.componentAdded.add(function() {
-            var len = this.stage.compList.length;
-            this.model.set("n_components", len);
-            this.touch();
-            var comp = this.stage.compList[len - 1];
-            comp.signals.representationRemoved.add(function() {
-                that.request_repr_dict();
-            });
-            comp.signals.representationAdded.add(function() {
-                that.request_repr_dict();
-            });
-        }, this);
-
-        this.stage.signals.componentRemoved.add(function() {
-            this.model.set("n_components", this.stage.compList.length);
-            this.touch();
-        }, this);
-
+        this.handlePicking()
+        this.handleSignals()
         // for callbacks from Python
         // must be after initializing NGL.Stage
         this.send({
@@ -222,6 +137,88 @@ var NGLView = widgets.DOMWidgetView.extend({
         var state_params = this.stage.getParameters();
         this.model.set('_ngl_original_stage_parameters', state_params);
         this.touch();
+    },
+
+    handleSignals: function(){
+      var container = this.stage.viewer.container;
+      that = this;
+      container.addEventListener('mouseover', function(e) {
+          that._ngl_focused = 1;
+          e; // linter
+          that.mouseover_display('block')
+      }, false);
+
+      container.addEventListener('mouseout', function(e) {
+          that._ngl_focused = 0;
+          e; // linter
+          that.mouseover_display('none')
+      }, false);
+
+      this.stage.signals.componentAdded.add(function() {
+          var len = this.stage.compList.length;
+          this.model.set("n_components", len);
+          this.touch();
+          var comp = this.stage.compList[len - 1];
+          comp.signals.representationRemoved.add(function() {
+              that.request_repr_dict();
+          });
+          comp.signals.representationAdded.add(function() {
+              that.request_repr_dict();
+          });
+      }, this);
+
+      this.stage.signals.componentRemoved.add(function() {
+          this.model.set("n_components", this.stage.compList.length);
+          this.touch();
+      }, this);
+    },
+
+    handlePicking: function(){
+      this.$pickingInfo = $("<div></div>")
+          .css("position", "absolute")
+          .css("top", "5%")
+          .css("left", "3%")
+          .css("background-color", "white")
+          .css("padding", "2px 5px 2px 5px")
+          .css("opacity", "0.7")
+          .appendTo(this.$container);
+
+      var that = this;
+      this.stage.signals.clicked.add(function (pd) {
+          if (pd) {
+              this.model.set('picked', {}); //refresh signal
+              this.touch();
+
+              var pd2 = {};
+              var pickingText = "";
+              if (pd.atom) {
+                  pd2.atom1 = pd.atom.toObject();
+                  pd2.atom1.name = pd.atom.qualifiedName();
+                  pickingText = "Atom: " + pd2.atom1.name;
+              } else if (pd.bond) {
+                  pd2.bond = pd.bond.toObject();
+                  pd2.atom1 = pd.bond.atom1.toObject();
+                  pd2.atom1.name = pd.bond.atom1.qualifiedName();
+                  pd2.atom2 = pd.bond.atom2.toObject();
+                  pd2.atom2.name = pd.bond.atom2.qualifiedName();
+                  pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
+              }
+              if (pd.instance) pd2.instance = pd.instance;
+
+              var n_components = this.stage.compList.length;
+              for (var i = 0; i < n_components; i++) {
+                  var comp = this.stage.compList[i];
+                  if (comp.uuid == pd.component.uuid) {
+                      pd2.component = i;
+                  }
+              }
+
+              this.model.set('picked', pd2);
+              this.touch();
+
+              this.$pickingInfo.text(pickingText);
+          }
+      }, this);
     },
 
     mouseover_display: function(type){
@@ -772,11 +769,12 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     GUIStyleChanged: function(){
-        var style = this.model.get("_gui_style");
+        var style = this.model.get("gui_style");
         console.log('style ' + style);
         if (style === 'ngl'){
             console.log("Creating NGL GUI");
             this.createNglGUI();
+            this.$pickingText.hide();
         }else{
             if (this.stage_widget){
                 this.stage_widget.dispose()
@@ -907,7 +905,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             new_args.push(msg.kwargs);
 
             // handle color
-            if (msg.methodName == 'addRepresentation' && 
+            if (msg.methodName == 'addRepresentation' &&
                 msg.reconstruc_color_scheme){
                 msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
             }

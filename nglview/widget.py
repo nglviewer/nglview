@@ -159,7 +159,7 @@ class NGLWidget(DOMWidget):
     _ngl_msg = None
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
-    _gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
+    gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
     _hold_image = Bool(False).tag(sync=False)
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
