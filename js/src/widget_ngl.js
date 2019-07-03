@@ -75,11 +75,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.stage.setParameters(stage_params);
         this.$container = $(this.stage.viewer.container);
         this.$el.append(this.$container);
-        this.$container.resizable({
-            resize: function(event, ui) {
-                this.setSize(ui.size.width + "px", ui.size.height + "px");
-            }.bind(this)
-        });
+        this.handleResizable()
         this.displayed.then(function() {
             this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
             // more than two views at the same time (e.g: in a Box)
@@ -530,6 +526,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     createNglGUI: function(){
       this.stage_widget = new StageWidget(this.el, this.stage);
+      this.$container.resizable("disable");
     },
 
 
@@ -759,7 +756,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    handleResize: function() {
+    handleResizable: function() {
         this.$container.resizable({
             resize: function(event, ui) {
                 this.setSize(ui.size.width + "px", ui.size.height + "px");
@@ -783,6 +780,10 @@ var NGLView = widgets.DOMWidgetView.extend({
             if (this.stage_widget){
                 this.stage_widget.dispose()
                 this.stage_widget = undefined
+                this.$container.resizable("enable")
+                var width = this.$el.parent().width() + "px";
+                var height = this.$el.parent().height() + "px";
+                this.setSize(width, height);
             }
         }
     },
