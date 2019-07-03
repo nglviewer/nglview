@@ -53,22 +53,24 @@ select {
     margin-left: 1px;
 }
 
-// NOTE (FIXME): turning this on will affect notebook
-// textarea {
-// 	white-space: pre;
-// 	word-wrap: normal;
-// }
-// 
-// 	textarea.success {
-// 		border-color: #8b8 !important;
-// 	}
-// 
-// 	textarea.fail {
-// 		border-color: #f00 !important;
-// 		background-color: rgba(255,0,0,0.05);
-// 	}
-// 
-// textarea, input { outline: none; } /* osx */
+/* NOTE (FIXME): turning this on will affect notebook */
+
+/**
+textarea {
+	white-space: pre;
+	word-wrap: normal;
+}
+
+	textarea.success {
+		border-color: #8b8 !important;
+	}
+
+	textarea.fail {
+		border-color: #f00 !important;
+		background-color: rgba(255,0,0,0.05);
+	}
+
+textarea, input { outline: none; } /* osx */
 
 input.Number {
     font-size: 12px;                            /** TODO: Use of !imporant is not ideal **/
