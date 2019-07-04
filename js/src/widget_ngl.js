@@ -41,29 +41,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.model.set('_ngl_version', NGL.Version);
         this._synced_model_ids = this.model.get("_synced_model_ids");
         this.stage_widget = undefined
-
-        this.model.on("msg:custom", function(msg){
-            if ('ngl_view_id' in msg){
-                var key = msg.ngl_view_id;
-                console.log(key);
-                this.model.views[key].then(function(v){
-                    v.on_msg(msg);
-                })
-            }
-            else{this.on_msg(msg);}
-        }, this);
-
-        if (this.model.comm) {
-            // for embeding in website
-            this.model.comm.on_msg(function(msg) {
-                var buffers = msg.buffers;
-                var content = msg.content.data.content;
-                if (buffers.length && content) {
-                    content.buffers = buffers;
-                }
-                this.model._handle_comm_msg.call(this.model, msg);
-            }.bind(this));
-        }
+        this.handleMessage()
 
         var stage_params = this.model.get("_ngl_full_stage_parameters");
         if (!("backgroundColor" in stage_params)){
@@ -104,39 +82,48 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
         }.bind(this));
 
-        this.stage.viewerControls.signals.changed.add(function() {
-            var that = this;
-            this.serialize_camera_orientation();
-            var m = this.stage.viewerControls.getOrientation();
-            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
-                that._synced_model_ids.forEach(function(mid){
-                    that.model.widget_manager.get_model(mid).then(function(model){
-                        for (var k in model.views){
-                            var pview = model.views[k];
-                            pview.then(function(view){
-                                // not sync with itself
-                                if (view != that){
-                                    view.stage.viewerControls.orient(m);
-                                }
-                            })
-                        }
-                    })
-                })
-            }
-        }.bind(this));
-
         // init picking handling
         this.handlePicking()
         this.handleSignals()
-        // for callbacks from Python
-        // must be after initializing NGL.Stage
-        this.send({
-            'type': 'request_loaded',
-            'data': true
-        })
-        var state_params = this.stage.getParameters();
-        this.model.set('_ngl_original_stage_parameters', state_params);
-        this.touch();
+        this.finalizeDisplay()
+    },
+
+    handleMessage(){
+        this.model.on("msg:custom", function(msg){
+            if ('ngl_view_id' in msg){
+                var key = msg.ngl_view_id;
+                console.log(key);
+                this.model.views[key].then(function(v){
+                    v.on_msg(msg);
+                })
+            }
+            else{this.on_msg(msg);}
+        }, this);
+
+        if (this.model.comm) {
+            // for embeding in website
+            this.model.comm.on_msg(function(msg) {
+                var buffers = msg.buffers;
+                var content = msg.content.data.content;
+                if (buffers.length && content) {
+                    content.buffers = buffers;
+                }
+                this.model._handle_comm_msg.call(this.model, msg);
+            }.bind(this));
+        }
+    },
+
+
+    finalizeDisplay: function(){
+      // for callbacks from Python
+      // must be after initializing NGL.Stage
+      this.send({
+          'type': 'request_loaded',
+          'data': true
+      })
+      var state_params = this.stage.getParameters();
+      this.model.set('_ngl_original_stage_parameters', state_params);
+      this.touch();
     },
 
     handleSignals: function(){
@@ -171,6 +158,28 @@ var NGLView = widgets.DOMWidgetView.extend({
           this.model.set("n_components", this.stage.compList.length);
           this.touch();
       }, this);
+
+      this.stage.viewerControls.signals.changed.add(function() {
+          var that = this;
+          this.serialize_camera_orientation();
+          var m = this.stage.viewerControls.getOrientation();
+          if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
+              that._synced_model_ids.forEach(function(mid){
+                  that.model.widget_manager.get_model(mid).then(function(model){
+                      for (var k in model.views){
+                          var pview = model.views[k];
+                          pview.then(function(view){
+                              // not sync with itself
+                              if (view != that){
+                                  view.stage.viewerControls.orient(m);
+                              }
+                          })
+                      }
+                  })
+              })
+          }
+      }.bind(this));
+
     },
 
     handlePicking: function(){
