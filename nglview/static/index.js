@@ -16925,7 +16925,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    // const box = stage.viewer.container.parentElement.getBoundingClientRect()
 	    // stage.setSize(box.width+"px", box.height+"px")
 	    // stage.handleResize()
-	    var icon = menuConfig[ 7 ].children[ 0 ]
+	    var icon = menuConfig[ 4 ].children[ 0 ]
 	    if (isFullscreen) {
 	      icon.switchClass('compress', 'expand')
 	    } else {
@@ -16939,9 +16939,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	  var createDivider = UI.MenubarHelper.createDivider
 	
 	  var menuConfig = [
-	    createOption('Light theme', onLightThemeOptionClick),
-	    createOption('Dark theme', onDarkThemeOptionClick),
-	    createDivider(),
+	    // createOption('Light theme', onLightThemeOptionClick),
+	    // createOption('Dark theme', onDarkThemeOptionClick),
+	    // createDivider(),
 	    createOption('Perspective', onPerspectiveCameraOptionClick),
 	    createOption('Orthographic', onOrthographicCameraOptionClick),
 	    createOption('Stereo', onStereoCameraOptionClick),
@@ -16951,9 +16951,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    createDivider(),
 	    createOption('Toggle spin', onToggleSpinClick),
 	    createOption('Toggle rock', onToggleRockClick),
-	    createDivider(),
-	    createOption('Get orientation', onGetOrientationClick),
-	    createOption('Set orientation', onSetOrientationClick)
+	    // createDivider(),
+	    // createOption('Get orientation', onGetOrientationClick),
+	    // createOption('Set orientation', onSetOrientationClick)
 	  ]
 	
 	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
@@ -17045,11 +17045,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	  var menuConfig = [
 	    createOption('Overview', onOverviewOptionClick),
-	    createOption('Documentation', onDocOptionClick),
-	    createDivider(),
-	    createOption('Debug on', onDebugOnClick),
-	    createOption('Debug off', onDebugOffClick),
-	    createDivider(),
+	    // createOption('Documentation', onDocOptionClick),
+	    // createDivider(),
+	    // createOption('Debug on', onDebugOnClick),
+	    // createOption('Debug off', onDebugOffClick),
+	    // createDivider(),
 	    createOption('Preferences', onPreferencesOptionClick, 'sliders')
 	  ]
 	
