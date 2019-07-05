@@ -9,7 +9,6 @@ require("./lib/colorpicker.min.js")
 require("./ui/ui.js")
 require("./ui/ui.extra.js")
 require("./ui/ui.ngl.js")
-var UI = require("./ui/ui.ngl.js").UI
 var StageWidget = require("./gui").StageWidget
 // require('jquery-ui/ui/widgets/draggable');
 // require('jquery-ui/ui/widgets/slider');
@@ -36,7 +35,7 @@ var NGLModel = widgets.DOMWidgetModel.extend({
 var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
         // maximum number of frames.
-        this.model.on("change:max_frame", this.maxFrameChanged, this);
+        // this.model.on("change:max_frame", this.maxFrameChanged, this);
         this.model.on("change:_parameters", this.parametersChanged, this);
         this.model.on("change:gui_style", this.GUIStyleChanged, this);
         this.model.set('_ngl_version', NGL.Version);
@@ -233,12 +232,14 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     mouseover_display: function(type){
         var that = this;
-        if (this.btn_fullscreen){
-            this.btn_fullscreen.dom.style.display = type
-            if (that.stage_widget){
-                // If NGL's GUI exists, use its fullscreen button.
-                this.btn_fullscreen.dom.style.display = 'none'
-            }
+        if (this.fullscreen_btn_pview){
+            this.fullscreen_btn_pview.then(function(v){
+                v.el.style.display = type
+                if (that.stage_widget){
+                    // If NGL's GUI exists, use its fullscreen button.
+                    v.el.style.display = 'none'
+                }
+            })
         }
 
         var that = this;
@@ -431,16 +432,16 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    maxFrameChanged: function() {
-        var max_frame = this.model.get("max_frame");
-        this.player_pview.then(function(v){
-            if ((max_frame > 0) & !this.stage_widget){
-                v.el.style.display = 'block'
-            }else{
-                v.el.style.display = 'none'
-            }
-        })
-    },
+    // maxFrameChanged: function() {
+    //     var max_frame = this.model.get("max_frame");
+    //     this.player_pview.then(function(v){
+    //         if (max_frame > 0){
+    //             v.el.style.display = 'block'
+    //         }else{
+    //             v.el.style.display = 'none'
+    //         }
+    //     })
+    // },
 
     createView: function(trait_name){
         // Create a view for the model with given `trait_name`
@@ -471,37 +472,48 @@ var NGLView = widgets.DOMWidgetView.extend({
                 pe.style.opacity = '0.7'
                 that.stage.viewer.container.append(view.el);
                 pe.style.display = 'none'
-                that.maxFrameChanged()
             })
     },
 
-    createFullscreenBtn: function(){
-        var icon = new UI.Icon('expand').setWidth('20px')
-        var that = this
-        var stage = this.stage
-        icon.dom.onclick = function(){
-            that.stage.toggleFullscreen()
-        }
-        this.btn_fullscreen = icon
-        var pe = icon.dom
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.top = '5%'
-        pe.style.right = '5%'
-        pe.style.opacity = '0.7'
-        pe.style.width = '35px'
-        pe.style.display = 'block'
-        stage.viewer.container.append(icon.dom);
-        stage.signals.fullscreenChanged.add(function (isFullscreen) {
-          if (isFullscreen) {
-            icon.switchClass("expand", "compress")
-            console.log("switching to compress")
-          } else {
-            icon.switchClass("compress", "expand")
-            console.log("switching to expand")
-          }
+    createImageBtn: function(){
+        this.image_btn_pview = this.createView("_ibtn_image");
+        var that = this;
+        this.image_btn_pview.then(function(view){
+           var pe = view.el
+           pe.style.position = 'absolute'
+           pe.style.zIndex = 100
+           pe.style.top = '5%'
+           pe.style.right = '10%'
+           pe.style.opacity = '0.7'
+           pe.style.width = '35px'
+           that.stage.viewer.container.append(view.el);
         })
     },
+
+    createFullscreenBtn: function(){
+        this.fullscreen_btn_pview = this.createView("_ibtn_fullscreen");
+        var that = this;
+        var stage = that.stage;
+        this.fullscreen_btn_pview.then(function(view){
+           var pe = view.el
+           pe.style.position = 'absolute'
+           pe.style.zIndex = 100
+           pe.style.top = '5%'
+           pe.style.right = '5%'
+           pe.style.opacity = '0.7'
+           pe.style.width = '35px'
+           pe.style.display = 'none'
+           stage.viewer.container.append(view.el);
+           stage.signals.fullscreenChanged.add(function (isFullscreen) {
+             if (isFullscreen) {
+               view.model.set("icon", "compress")
+             } else {
+               view.model.set("icon", "expand")
+             }
+           })
+        })
+    },
+
 
     createGUI: function(){
         this.pgui_view = this.createView("_igui");
