@@ -1,0 +1,2 @@
+@developers: Make sure to run `view._set_serialization` in the last cell 
+then save the widget state.
