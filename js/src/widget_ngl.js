@@ -232,8 +232,8 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     mouseover_display: function(type){
         var that = this;
-        if (this.fullscreen_btn_pview){
-            this.fullscreen_btn_pview.then(function(v){
+        if (this.btn_pview_fullscreen){
+            this.btn_pview_fullscreen.then(function(v){
                 v.el.style.display = type
                 if (that.stage_widget){
                     // If NGL's GUI exists, use its fullscreen button.
@@ -246,6 +246,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         if (this.player_pview){
             this.player_pview.then(function(v){
                 v.el.style.display = type
+                console.log('max_frame ' + that.model.get("max_frame"))
                 if (that.model.get("max_frame") <= 1){
                     v.el.style.display = 'none' // always hide if there's no trajectory.
                 }
@@ -491,10 +492,10 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     createFullscreenBtn: function(){
-        this.fullscreen_btn_pview = this.createView("_ibtn_fullscreen");
+        this.btn_pview_fullscreen = this.createView("_ibtn_fullscreen");
         var that = this;
         var stage = that.stage;
-        this.fullscreen_btn_pview.then(function(view){
+        this.btn_pview_fullscreen.then(function(view){
            var pe = view.el
            pe.style.position = 'absolute'
            pe.style.zIndex = 100
@@ -502,7 +503,11 @@ var NGLView = widgets.DOMWidgetView.extend({
            pe.style.right = '5%'
            pe.style.opacity = '0.7'
            pe.style.width = '35px'
+           pe.style.background = 'transparent'
            pe.style.display = 'none'
+           pe.onclick = function(){
+               that.stage.toggleFullscreen();
+           }
            stage.viewer.container.append(view.el);
            stage.signals.fullscreenChanged.add(function (isFullscreen) {
              if (isFullscreen) {
