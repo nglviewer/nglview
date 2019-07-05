@@ -201,7 +201,6 @@ def test_API_promise_to_have():
     view._handle_n_components_changed(change=dict(new=1, old=0))
     view.on_loaded(change=dict(new=True))
     view.on_loaded(change=dict(new=False))
-    view._refresh_render()
     view.sync_view()
 
     view._first_time_loaded = False
@@ -845,7 +844,6 @@ def test_player_simple():
     w = player._make_widget_preference()
     w.children[0].value = 1.
     player._show_download_image()
-    player._make_button_url('dummy_url', description='dummy_url')
     player._make_text_picked()
     player._refresh(component_slider, repr_slider)
     player._make_widget_repr()
@@ -893,7 +891,6 @@ def test_player_click_button():
         view.player.widget_repr_control_buttons.children,
         [
             view.player._show_download_image(),
-            view.player._make_button_url("", ""),
             view.player._make_button_center(),
             view.player.widget_export_image.children[0].children[0],
             view.player.widget_repr_add.children[0],

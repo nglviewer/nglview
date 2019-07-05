@@ -1,12 +1,22 @@
 var Jupyter
-var widgets = require("@jupyter-widgets/base");
-var NGL = require('ngl');
-var $ = require('jquery');
-var _ = require('underscore');
-require('jquery-ui/ui/widgets/draggable');
-require('jquery-ui/ui/widgets/slider');
-require('jquery-ui/ui/widgets/dialog');
-require('jquery-ui/themes/base/all.css');
+var widgets = require("@jupyter-widgets/base")
+var NGL = require('ngl')
+var $ = require('jquery')
+var _ = require('underscore')
+require("./lib/signals.min.js")
+require("./lib/tether.min.js")
+require("./lib/colorpicker.min.js")
+require("./ui/ui.js")
+require("./ui/ui.extra.js")
+require("./ui/ui.ngl.js")
+var StageWidget = require("./gui").StageWidget
+// require('jquery-ui/ui/widgets/draggable');
+// require('jquery-ui/ui/widgets/slider');
+require('jquery-ui/ui/widgets/dialog')
+require('jquery-ui/themes/base/all.css')
+// require('./css/dark.css');  // How to switch theme?
+require('./css/light.css');
+require('./css/main.css')
 
 
 var NGLModel = widgets.DOMWidgetModel.extend({
@@ -25,12 +35,61 @@ var NGLModel = widgets.DOMWidgetModel.extend({
 var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
         // maximum number of frames.
-        this.model.on("change:max_frame", this.maxFrameChanged, this);
+        // this.model.on("change:max_frame", this.maxFrameChanged, this);
         this.model.on("change:_parameters", this.parametersChanged, this);
+        this.model.on("change:gui_style", this.GUIStyleChanged, this);
         this.model.set('_ngl_version', NGL.Version);
         this._synced_model_ids = this.model.get("_synced_model_ids");
+        this.stage_widget = undefined
+        this.handleMessage()
 
-        this.model.on("msg:custom", function(msg){ 
+        var stage_params = this.model.get("_ngl_full_stage_parameters");
+        if (!("backgroundColor" in stage_params)){
+            stage_params["backgroundColor"] = "white"
+        }
+        // init NGL stage
+        NGL.useWorker = false;
+        this.stage = new NGL.Stage(undefined);
+        this.stage.setParameters(stage_params);
+        this.$container = $(this.stage.viewer.container);
+        this.$el.append(this.$container);
+        this.handleResizable()
+        this.displayed.then(function() {
+            this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
+            // more than two views at the same time (e.g: in a Box)
+            this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
+            this.touch();
+            var that = this;
+            var width = this.$el.parent().width() + "px";
+            var height = "300px";
+            this.setSize(width, height);
+            this.createFullscreenBtn(); // FIXME: move up?
+            this.createIPlayer(); // FIXME: move up?
+            this.GUIStyleChanged(); // must be called after displaying to get correct width and height
+
+            this.$container.resizable(
+                "option", "maxWidth", this.$el.parent().width()
+            );
+            if (this.model.get("_ngl_serialize")){
+                that.handle_embed();
+            }else{
+                this.requestUpdateStageParameters();
+                if (this.model.views.length == 1){
+                    this.serialize_camera_orientation();
+                }else{
+                    this.set_camera_orientation(that.model.get("_camera_orientation"));
+                }
+            }
+        }.bind(this));
+
+        // init picking handling
+        this.handlePicking()
+        this.handleSignals()
+        this.finalizeDisplay()
+    },
+
+    handleMessage(){
+        this.model.on("msg:custom", function(msg){
             if ('ngl_view_id' in msg){
                 var key = msg.ngl_view_id;
                 console.log(key);
@@ -52,183 +111,146 @@ var NGLView = widgets.DOMWidgetView.extend({
                 this.model._handle_comm_msg.call(this.model, msg);
             }.bind(this));
         }
+    },
 
-        var stage_params = this.model.get("_ngl_full_stage_parameters");
-        if (!("backgroundColor" in stage_params)){
-            stage_params["backgroundColor"] = "white"
-        }
-        // init NGL stage
-        NGL.useWorker = false;
-        this.stage = new NGL.Stage(undefined);
-        this.stage.setParameters(stage_params);
-        this.$container = $(this.stage.viewer.container);
-        this.$el.append(this.$container);
-        this.$container.resizable({
-            resize: function(event, ui) {
-                this.setSize(ui.size.width + "px", ui.size.height + "px");
-            }.bind(this)
-        });
-        this.displayed.then(function() {
-            this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
-            // more than two views at the same time (e.g: in a Box)
-            this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
-            this.touch();
-            var that = this;
-            var width = this.$el.parent().width() + "px";
-            var height = "300px";
 
-            this.setSize(width, height);
-            this.$container.resizable(
-                "option", "maxWidth", this.$el.parent().width()
-            );
-            if (this.model.get("_ngl_serialize")){
-                that.handle_embed();
-            }else{
-                this.requestUpdateStageParameters();
-                if (this.model.views.length == 1){
-                    this.serialize_camera_orientation();
-                }else{
-                    this.set_camera_orientation(that.model.get("_camera_orientation"));
-                }
-            }
-        }.bind(this));
+    finalizeDisplay: function(){
+      // for callbacks from Python
+      // must be after initializing NGL.Stage
+      this.send({
+          'type': 'request_loaded',
+          'data': true
+      })
+      var state_params = this.stage.getParameters();
+      this.model.set('_ngl_original_stage_parameters', state_params);
+      this.touch();
+    },
 
-        this.stage.viewerControls.signals.changed.add(function() {
-            var that = this;
-            this.serialize_camera_orientation();
-            var m = this.stage.viewerControls.getOrientation();
-            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
-                that._synced_model_ids.forEach(function(mid){
-                    that.model.widget_manager.get_model(mid).then(function(model){
-                        for (var k in model.views){
-                            var pview = model.views[k];
-                            pview.then(function(view){
-                                // not sync with itself
-                                if (view != that){ 
-                                    view.stage.viewerControls.orient(m);
-                                }
-                            })
-                        }
-                    })
-                })
-            }
-        }.bind(this));
+    handleSignals: function(){
+      var container = this.stage.viewer.container;
+      that = this;
+      container.addEventListener('mouseover', function(e) {
+          that._ngl_focused = 1;
+          e; // linter
+          that.mouseover_display('block')
+      }, false);
 
-        // init toggle fullscreen
-        $(this.stage.viewer.container).dblclick(function(e) {
-            if (!e.ctrlKey){
-                this.stage.toggleFullscreen();
-            }
-        }.bind(this));
+      container.addEventListener('mouseout', function(e) {
+          that._ngl_focused = 0;
+          e; // linter
+          that.mouseover_display('none')
+      }, false);
 
-        // init picking handling
-        this.$pickingInfo = $("<div></div>")
-            .css("position", "absolute")
-            .css("top", "5%")
-            .css("left", "3%")
-            .css("background-color", "white")
-            .css("padding", "2px 5px 2px 5px")
-            .css("opacity", "0.7")
-            .appendTo(this.$container);
+      this.stage.signals.componentAdded.add(function() {
+          var len = this.stage.compList.length;
+          this.model.set("n_components", len);
+          this.touch();
+          var comp = this.stage.compList[len - 1];
+          comp.signals.representationRemoved.add(function() {
+              that.request_repr_dict();
+          });
+          comp.signals.representationAdded.add(function() {
+              that.request_repr_dict();
+          });
+      }, this);
 
-        var $inputNotebookCommand = $('<input id="input_notebook_command" type="text" style="border:1px solid skyblue" size="50"></input>');
+      this.stage.signals.componentRemoved.add(function() {
+          this.model.set("n_components", this.stage.compList.length);
+          this.touch();
+      }, this);
+
+      this.stage.viewerControls.signals.changed.add(function() {
+          var that = this;
+          this.serialize_camera_orientation();
+          var m = this.stage.viewerControls.getOrientation();
+          if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
+              that._synced_model_ids.forEach(function(mid){
+                  that.model.widget_manager.get_model(mid).then(function(model){
+                      for (var k in model.views){
+                          var pview = model.views[k];
+                          pview.then(function(view){
+                              // not sync with itself
+                              if (view != that){
+                                  view.stage.viewerControls.orient(m);
+                              }
+                          })
+                      }
+                  })
+              })
+          }
+      }.bind(this));
+
+    },
+
+    handlePicking: function(){
+      this.$pickingInfo = $("<div></div>")
+          .css("position", "absolute")
+          .css("top", "5%")
+          .css("left", "3%")
+          .css("background-color", "white")
+          .css("padding", "2px 5px 2px 5px")
+          .css("opacity", "0.7")
+          .appendTo(this.$container);
+
+      var that = this;
+      this.stage.signals.clicked.add(function (pd) {
+          if (pd) {
+              this.model.set('picked', {}); //refresh signal
+              this.touch();
+
+              var pd2 = {};
+              var pickingText = "";
+              if (pd.atom) {
+                  pd2.atom1 = pd.atom.toObject();
+                  pd2.atom1.name = pd.atom.qualifiedName();
+                  pickingText = "Atom: " + pd2.atom1.name;
+              } else if (pd.bond) {
+                  pd2.bond = pd.bond.toObject();
+                  pd2.atom1 = pd.bond.atom1.toObject();
+                  pd2.atom1.name = pd.bond.atom1.qualifiedName();
+                  pd2.atom2 = pd.bond.atom2.toObject();
+                  pd2.atom2.name = pd.bond.atom2.qualifiedName();
+                  pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
+              }
+              if (pd.instance) pd2.instance = pd.instance;
+
+              var n_components = this.stage.compList.length;
+              for (var i = 0; i < n_components; i++) {
+                  var comp = this.stage.compList[i];
+                  if (comp.uuid == pd.component.uuid) {
+                      pd2.component = i;
+                  }
+              }
+
+              this.model.set('picked', pd2);
+              this.touch();
+
+              this.$pickingInfo.text(pickingText);
+          }
+      }, this);
+    },
+
+    mouseover_display: function(type){
         var that = this;
-
-        $inputNotebookCommand.keypress(function(e) {
-            var command = $("#input_notebook_command").val();
-            if (e.which == 13) {
-                $("#input_notebook_command").val("")
-                Jupyter.notebook.kernel.execute(command);
-            }
-        });
-
-        this.$notebook_text = $("<div></div>")
-            .css("position", "absolute")
-            .css("bottom", "5%")
-            .css("left", "3%")
-            .css("padding", "2px 5px 2px 5px")
-            .css("opacity", "0.7")
-            .append($inputNotebookCommand)
-            .appendTo(this.$container);
-        this.$notebook_text.hide();
-
-        this.stage.signals.clicked.add(function (pd) {
-            if (pd) {
-                this.model.set('picked', {}); //refresh signal
-                this.touch();
-
-                var pd2 = {};
-                var pickingText = "";
-                if (pd.atom) {
-                    pd2.atom1 = pd.atom.toObject();
-                    pd2.atom1.name = pd.atom.qualifiedName();
-                    pickingText = "Atom: " + pd2.atom1.name;
-                } else if (pd.bond) {
-                    pd2.bond = pd.bond.toObject();
-                    pd2.atom1 = pd.bond.atom1.toObject();
-                    pd2.atom1.name = pd.bond.atom1.qualifiedName();
-                    pd2.atom2 = pd.bond.atom2.toObject();
-                    pd2.atom2.name = pd.bond.atom2.qualifiedName();
-                    pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
+        if (this.fullscreen_btn_pview){
+            this.fullscreen_btn_pview.then(function(v){
+                v.el.style.display = type
+                if (that.stage_widget){
+                    // If NGL's GUI exists, use its fullscreen button.
+                    v.el.style.display = 'none'
                 }
-                if (pd.instance) pd2.instance = pd.instance;
-                
-                var n_components = this.stage.compList.length;
-                for (var i = 0; i < n_components; i++) {
-                    var comp = this.stage.compList[i];
-                    if (comp.uuid == pd.component.uuid) {
-                        pd2.component = i;
-                    }
+            })
+        }
+
+        var that = this;
+        if (this.player_pview){
+            this.player_pview.then(function(v){
+                v.el.style.display = type
+                if (that.model.get("max_frame") <= 1){
+                    v.el.style.display = 'none' // always hide if there's no trajectory.
                 }
-
-                this.model.set('picked', pd2);
-                this.touch();
-                
-                this.$pickingInfo.text(pickingText);
-            }
-        }, this);
-
-        var container = this.stage.viewer.container;
-        that = this;
-        container.addEventListener('mouseover', function(e) {
-            that._ngl_focused = 1;
-            e; // linter
-        }, false);
-
-        container.addEventListener('mouseout', function(e) {
-            that._ngl_focused = 0;
-            e; // linter
-        }, false);
-
-        that = this;
-        this.stage.signals.componentAdded.add(function() {
-            var len = this.stage.compList.length;
-            this.model.set("n_components", len);
-            this.touch();
-            var comp = this.stage.compList[len - 1];
-            comp.signals.representationRemoved.add(function() {
-                that.request_repr_dict();
-            });
-            comp.signals.representationAdded.add(function() {
-                that.request_repr_dict();
-            });
-        }, this);
-
-        this.stage.signals.componentRemoved.add(function() {
-            this.model.set("n_components", this.stage.compList.length);
-            this.touch();
-        }, this);
-
-        // for callbacks from Python
-        // must be after initializing NGL.Stage
-        this.send({
-            'type': 'request_loaded',
-            'data': true
-        })
-        var state_params = this.stage.getParameters();
-        this.model.set('_ngl_original_stage_parameters', state_params);
-        this.touch();
-        this.createIPlayer();
+            })
+        }
     },
 
     serialize_camera_orientation: function(){
@@ -305,6 +327,13 @@ var NGLView = widgets.DOMWidgetView.extend({
                     })
                 }
             }
+
+            // fire any msg with "fire_embed"
+            that.model.get("_ngl_msg_archive").forEach(function(msg){
+                if (msg.fire_embed){
+                    that.on_msg(msg);
+                }
+            })
         }); // Promise.all
     },
 
@@ -320,14 +349,6 @@ var NGLView = widgets.DOMWidgetView.extend({
                 this.updateCoordinates(coordinates, traj_index);
             }
         }
-    },
-
-    hideNotebookCommandBox: function() {
-        this.$notebook_text.hide();
-    },
-
-    showNotebookCommandBox: function() {
-        this.$notebook_text.show();
     },
 
     requestFrame: function() {
@@ -411,20 +432,21 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    maxFrameChanged: function() {
-        var max_frame = this.model.get("max_frame");
-        this.player_pview.then(function(v){
-            if (max_frame > 0){
-                v.el.style.display = 'block'
-            }else{
-                v.el.style.display = 'none'
-            }
-        })
-    },
+    // maxFrameChanged: function() {
+    //     var max_frame = this.model.get("max_frame");
+    //     this.player_pview.then(function(v){
+    //         if (max_frame > 0){
+    //             v.el.style.display = 'block'
+    //         }else{
+    //             v.el.style.display = 'none'
+    //         }
+    //     })
+    // },
 
     createView: function(trait_name){
         // Create a view for the model with given `trait_name`
         // e.g: in backend, 'view.<trait_name>`
+        console.log("Creating view for model " + trait_name);
         var manager = this.model.widget_manager;
         var model_id = this.model.get(trait_name).replace("IPY_MODEL_", "");
         return this.model.widget_manager.get_model(model_id).then(function(model){
@@ -449,11 +471,49 @@ var NGLView = widgets.DOMWidgetView.extend({
                 pe.style.left = '10%'
                 pe.style.opacity = '0.7'
                 that.stage.viewer.container.append(view.el);
-                if (that.model.get("max_frame") <= 0){
-                    pe.style.display = 'none';
-                }
+                pe.style.display = 'none'
             })
     },
+
+    createImageBtn: function(){
+        this.image_btn_pview = this.createView("_ibtn_image");
+        var that = this;
+        this.image_btn_pview.then(function(view){
+           var pe = view.el
+           pe.style.position = 'absolute'
+           pe.style.zIndex = 100
+           pe.style.top = '5%'
+           pe.style.right = '10%'
+           pe.style.opacity = '0.7'
+           pe.style.width = '35px'
+           that.stage.viewer.container.append(view.el);
+        })
+    },
+
+    createFullscreenBtn: function(){
+        this.fullscreen_btn_pview = this.createView("_ibtn_fullscreen");
+        var that = this;
+        var stage = that.stage;
+        this.fullscreen_btn_pview.then(function(view){
+           var pe = view.el
+           pe.style.position = 'absolute'
+           pe.style.zIndex = 100
+           pe.style.top = '5%'
+           pe.style.right = '5%'
+           pe.style.opacity = '0.7'
+           pe.style.width = '35px'
+           pe.style.display = 'none'
+           stage.viewer.container.append(view.el);
+           stage.signals.fullscreenChanged.add(function (isFullscreen) {
+             if (isFullscreen) {
+               view.model.set("icon", "compress")
+             } else {
+               view.model.set("icon", "expand")
+             }
+           })
+        })
+    },
+
 
     createGUI: function(){
         this.pgui_view = this.createView("_igui");
@@ -464,8 +524,18 @@ var NGLView = widgets.DOMWidgetView.extend({
                 pe.style.zIndex = 100
                 pe.style.top = '5%'
                 pe.style.right = '10%'
+                pe.style.width = '300px'
+                that.stage.viewer.container.append(view.el);
             })
     },
+
+
+    createNglGUI: function(){
+      console.log("Creating NGL GUI")
+      this.stage_widget = new StageWidget(this.el, this.stage);
+      // this.$container.resizable("disable");
+    },
+
 
     setVisibilityForRepr: function(component_index, repr_index, value) {
         // value = True/False
@@ -693,7 +763,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    handleResize: function() {
+    handleResizable: function() {
         this.$container.resizable({
             resize: function(event, ui) {
                 this.setSize(ui.size.width + "px", ui.size.height + "px");
@@ -707,81 +777,22 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.stage.handleResize();
     },
 
-    openNotebookCommandDialog: function() {
-        var that = this;
-        var dialog = this.$notebook_text.dialog({
-            draggable: true,
-            resizable: true,
-            modal: false,
-            show: {
-                effect: "blind",
-                duration: 150
-            },
-            close: function(event, ui) {
-                that.$container.append(that.$notebook_text);
-                that.$notebook_text.dialog('destroy');
-                event; ui; // to pass eslint; ack;
-            },
-        });
-        dialog.css({
-            overflow: 'hidden'
-        });
-        dialog.prev('.ui-dialog-titlebar')
-            .css({
-                'background': 'transparent',
-                'border': 'none'
-            });
-        Jupyter.keyboard_manager.register_events(dialog);
-    },
-
-    setDialog: function() {
-        var $nb_container = Jupyter.notebook.container;
-        var that = this;
-        var dialog = this.$container.dialog({
-            title: "NGLView",
-            draggable: true,
-            resizable: true,
-            modal: false,
-            width: window.innerWidth - $nb_container.width() - $nb_container.offset().left - 50,
-            height: 'auto',
-            position: {
-                my: 'right',
-                at: 'right',
-                of: window
-            },
-            show: {
-                effect: "blind",
-                duration: 150
-            },
-            close: function(event, ui) {
-                that.$el.append(that.$container);
-                that.$container.dialog('destroy');
-                that.handleResize();
-                event; ui; // to pass eslint; ack;
-            },
-            resize: function(event, ui) {
-                that.stage.handleResize();
-                that.setSize(ui.size.width + "px", ui.size.height + "px");
-            }.bind(that),
-        });
-        dialog.css({
-            overflow: 'hidden'
-        });
-        dialog.prev('.ui-dialog-titlebar')
-            .css({
-                'background': 'transparent',
-                'border': 'none'
-            });
-    },
-
-    resizeNotebook: function(width) {
-        var $nb_container = Jupyter.notebook.container;
-        $nb_container.width(width);
-
-        if (this.$container.dialog) {
-            this.$container.dialog({
-                width: $nb_container.offset().left
-            });
+    GUIStyleChanged: function(){
+        var style = this.model.get("gui_style");
+        console.log('style ' + style);
+        if (style === 'ngl'){
+            console.log("Creating NGL GUI");
+            this.createNglGUI();
+            this.$pickingText.hide();
+        }else{
+            if (this.stage_widget){
+                this.stage_widget.dispose()
+                this.stage_widget = undefined
+                this.$container.resizable("enable")
+                var width = this.$el.parent().width() + "px";
+                var height = this.$el.parent().height() + "px";
+                this.setSize(width, height);
+            }
         }
     },
 
@@ -832,21 +843,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-
-    cleanOutput: function() {
-
-        var cells = Jupyter.notebook.get_cells();
-
-        for (var i = 0; i < cells.length; i++) {
-            var cell = cells[i];
-            if (cell.output_area.outputs.length > 0) {
-                var out = cell.output_area.outputs[0];
-                if (out.output_type == 'display_data') {
-                    cell.clear_output();
-                }
-            }
-        }
-    },
 
     _handle_loading_file_finished: function() {
         this.send({'type': 'async_message', 'data': 'ok'});
@@ -918,7 +914,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             new_args.push(msg.kwargs);
 
             // handle color
-            if (msg.methodName == 'addRepresentation' && 
+            if (msg.methodName == 'addRepresentation' &&
                 msg.reconstruc_color_scheme){
                 msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
             }

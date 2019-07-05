@@ -62,7 +62,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    }
 	}
 	
-	module.exports['version'] = __webpack_require__(67).version;
+	module.exports['version'] = __webpack_require__(77).version;
 
 
 /***/ }),
@@ -70,14 +70,24 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /***/ (function(module, exports, __webpack_require__) {
 
 	var Jupyter
-	var widgets = __webpack_require__(2);
-	var NGL = __webpack_require__(3);
-	var $ = __webpack_require__(7);
-	var _ = __webpack_require__(8);
-	__webpack_require__(10);
-	__webpack_require__(20);
-	__webpack_require__(22);
-	__webpack_require__(36);
+	var widgets = __webpack_require__(2)
+	var NGL = __webpack_require__(3)
+	var $ = __webpack_require__(7)
+	var _ = __webpack_require__(8)
+	__webpack_require__(10)
+	__webpack_require__(11)
+	__webpack_require__(12)
+	__webpack_require__(13)
+	__webpack_require__(14)
+	__webpack_require__(15)
+	var StageWidget = __webpack_require__(16).StageWidget
+	// require('jquery-ui/ui/widgets/draggable');
+	// require('jquery-ui/ui/widgets/slider');
+	__webpack_require__(17)
+	__webpack_require__(42)
+	// require('./css/dark.css');  // How to switch theme?
+	__webpack_require__(73);
+	__webpack_require__(75)
 	
 	
 	var NGLModel = widgets.DOMWidgetModel.extend({
@@ -85,10 +95,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
 	            _model_name: 'NGLModel',
 	            _model_module: 'nglview-js-widgets',
-	            _model_module_version: __webpack_require__(67).version,
+	            _model_module_version: __webpack_require__(77).version,
 	            _view_name: "NGLView",
 	            _view_module: "nglview-js-widgets",
-	            _view_module_version: __webpack_require__(67).version,
+	            _view_module_version: __webpack_require__(77).version,
 	        });
 	    }
 	})
@@ -96,12 +106,61 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	var NGLView = widgets.DOMWidgetView.extend({
 	    render: function() {
 	        // maximum number of frames.
-	        this.model.on("change:max_frame", this.maxFrameChanged, this);
+	        // this.model.on("change:max_frame", this.maxFrameChanged, this);
 	        this.model.on("change:_parameters", this.parametersChanged, this);
+	        this.model.on("change:gui_style", this.GUIStyleChanged, this);
 	        this.model.set('_ngl_version', NGL.Version);
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
+	        this.stage_widget = undefined
+	        this.handleMessage()
 	
-	        this.model.on("msg:custom", function(msg){ 
+	        var stage_params = this.model.get("_ngl_full_stage_parameters");
+	        if (!("backgroundColor" in stage_params)){
+	            stage_params["backgroundColor"] = "white"
+	        }
+	        // init NGL stage
+	        NGL.useWorker = false;
+	        this.stage = new NGL.Stage(undefined);
+	        this.stage.setParameters(stage_params);
+	        this.$container = $(this.stage.viewer.container);
+	        this.$el.append(this.$container);
+	        this.handleResizable()
+	        this.displayed.then(function() {
+	            this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
+	            // more than two views at the same time (e.g: in a Box)
+	            this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
+	            this.touch();
+	            var that = this;
+	            var width = this.$el.parent().width() + "px";
+	            var height = "300px";
+	            this.setSize(width, height);
+	            this.createFullscreenBtn(); // FIXME: move up?
+	            this.createIPlayer(); // FIXME: move up?
+	            this.GUIStyleChanged(); // must be called after displaying to get correct width and height
+	
+	            this.$container.resizable(
+	                "option", "maxWidth", this.$el.parent().width()
+	            );
+	            if (this.model.get("_ngl_serialize")){
+	                that.handle_embed();
+	            }else{
+	                this.requestUpdateStageParameters();
+	                if (this.model.views.length == 1){
+	                    this.serialize_camera_orientation();
+	                }else{
+	                    this.set_camera_orientation(that.model.get("_camera_orientation"));
+	                }
+	            }
+	        }.bind(this));
+	
+	        // init picking handling
+	        this.handlePicking()
+	        this.handleSignals()
+	        this.finalizeDisplay()
+	    },
+	
+	    handleMessage(){
+	        this.model.on("msg:custom", function(msg){
 	            if ('ngl_view_id' in msg){
 	                var key = msg.ngl_view_id;
 	                console.log(key);
@@ -123,183 +182,146 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                this.model._handle_comm_msg.call(this.model, msg);
 	            }.bind(this));
 	        }
+	    },
 	
-	        var stage_params = this.model.get("_ngl_full_stage_parameters");
-	        if (!("backgroundColor" in stage_params)){
-	            stage_params["backgroundColor"] = "white"
-	        }
-	        // init NGL stage
-	        NGL.useWorker = false;
-	        this.stage = new NGL.Stage(undefined);
-	        this.stage.setParameters(stage_params);
-	        this.$container = $(this.stage.viewer.container);
-	        this.$el.append(this.$container);
-	        this.$container.resizable({
-	            resize: function(event, ui) {
-	                this.setSize(ui.size.width + "px", ui.size.height + "px");
-	            }.bind(this)
-	        });
-	        this.displayed.then(function() {
-	            this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
-	            // more than two views at the same time (e.g: in a Box)
-	            this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
-	            this.touch();
-	            var that = this;
-	            var width = this.$el.parent().width() + "px";
-	            var height = "300px";
 	
-	            this.setSize(width, height);
-	            this.$container.resizable(
-	                "option", "maxWidth", this.$el.parent().width()
-	            );
-	            if (this.model.get("_ngl_serialize")){
-	                that.handle_embed();
-	            }else{
-	                this.requestUpdateStageParameters();
-	                if (this.model.views.length == 1){
-	                    this.serialize_camera_orientation();
-	                }else{
-	                    this.set_camera_orientation(that.model.get("_camera_orientation"));
-	                }
-	            }
-	        }.bind(this));
+	    finalizeDisplay: function(){
+	      // for callbacks from Python
+	      // must be after initializing NGL.Stage
+	      this.send({
+	          'type': 'request_loaded',
+	          'data': true
+	      })
+	      var state_params = this.stage.getParameters();
+	      this.model.set('_ngl_original_stage_parameters', state_params);
+	      this.touch();
+	    },
 	
-	        this.stage.viewerControls.signals.changed.add(function() {
-	            var that = this;
-	            this.serialize_camera_orientation();
-	            var m = this.stage.viewerControls.getOrientation();
-	            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
-	                that._synced_model_ids.forEach(function(mid){
-	                    that.model.widget_manager.get_model(mid).then(function(model){
-	                        for (var k in model.views){
-	                            var pview = model.views[k];
-	                            pview.then(function(view){
-	                                // not sync with itself
-	                                if (view != that){ 
-	                                    view.stage.viewerControls.orient(m);
-	                                }
-	                            })
-	                        }
-	                    })
-	                })
-	            }
-	        }.bind(this));
+	    handleSignals: function(){
+	      var container = this.stage.viewer.container;
+	      that = this;
+	      container.addEventListener('mouseover', function(e) {
+	          that._ngl_focused = 1;
+	          e; // linter
+	          that.mouseover_display('block')
+	      }, false);
 	
-	        // init toggle fullscreen
-	        $(this.stage.viewer.container).dblclick(function(e) {
-	            if (!e.ctrlKey){
-	                this.stage.toggleFullscreen();
-	            }
-	        }.bind(this));
+	      container.addEventListener('mouseout', function(e) {
+	          that._ngl_focused = 0;
+	          e; // linter
+	          that.mouseover_display('none')
+	      }, false);
 	
-	        // init picking handling
-	        this.$pickingInfo = $("<div></div>")
-	            .css("position", "absolute")
-	            .css("top", "5%")
-	            .css("left", "3%")
-	            .css("background-color", "white")
-	            .css("padding", "2px 5px 2px 5px")
-	            .css("opacity", "0.7")
-	            .appendTo(this.$container);
+	      this.stage.signals.componentAdded.add(function() {
+	          var len = this.stage.compList.length;
+	          this.model.set("n_components", len);
+	          this.touch();
+	          var comp = this.stage.compList[len - 1];
+	          comp.signals.representationRemoved.add(function() {
+	              that.request_repr_dict();
+	          });
+	          comp.signals.representationAdded.add(function() {
+	              that.request_repr_dict();
+	          });
+	      }, this);
 	
-	        var $inputNotebookCommand = $('<input id="input_notebook_command" type="text" style="border:1px solid skyblue" size="50"></input>');
+	      this.stage.signals.componentRemoved.add(function() {
+	          this.model.set("n_components", this.stage.compList.length);
+	          this.touch();
+	      }, this);
+	
+	      this.stage.viewerControls.signals.changed.add(function() {
+	          var that = this;
+	          this.serialize_camera_orientation();
+	          var m = this.stage.viewerControls.getOrientation();
+	          if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
+	              that._synced_model_ids.forEach(function(mid){
+	                  that.model.widget_manager.get_model(mid).then(function(model){
+	                      for (var k in model.views){
+	                          var pview = model.views[k];
+	                          pview.then(function(view){
+	                              // not sync with itself
+	                              if (view != that){
+	                                  view.stage.viewerControls.orient(m);
+	                              }
+	                          })
+	                      }
+	                  })
+	              })
+	          }
+	      }.bind(this));
+	
+	    },
+	
+	    handlePicking: function(){
+	      this.$pickingInfo = $("<div></div>")
+	          .css("position", "absolute")
+	          .css("top", "5%")
+	          .css("left", "3%")
+	          .css("background-color", "white")
+	          .css("padding", "2px 5px 2px 5px")
+	          .css("opacity", "0.7")
+	          .appendTo(this.$container);
+	
+	      var that = this;
+	      this.stage.signals.clicked.add(function (pd) {
+	          if (pd) {
+	              this.model.set('picked', {}); //refresh signal
+	              this.touch();
+	
+	              var pd2 = {};
+	              var pickingText = "";
+	              if (pd.atom) {
+	                  pd2.atom1 = pd.atom.toObject();
+	                  pd2.atom1.name = pd.atom.qualifiedName();
+	                  pickingText = "Atom: " + pd2.atom1.name;
+	              } else if (pd.bond) {
+	                  pd2.bond = pd.bond.toObject();
+	                  pd2.atom1 = pd.bond.atom1.toObject();
+	                  pd2.atom1.name = pd.bond.atom1.qualifiedName();
+	                  pd2.atom2 = pd.bond.atom2.toObject();
+	                  pd2.atom2.name = pd.bond.atom2.qualifiedName();
+	                  pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
+	              }
+	              if (pd.instance) pd2.instance = pd.instance;
+	
+	              var n_components = this.stage.compList.length;
+	              for (var i = 0; i < n_components; i++) {
+	                  var comp = this.stage.compList[i];
+	                  if (comp.uuid == pd.component.uuid) {
+	                      pd2.component = i;
+	                  }
+	              }
+	
+	              this.model.set('picked', pd2);
+	              this.touch();
+	
+	              this.$pickingInfo.text(pickingText);
+	          }
+	      }, this);
+	    },
+	
+	    mouseover_display: function(type){
 	        var that = this;
-	
-	        $inputNotebookCommand.keypress(function(e) {
-	            var command = $("#input_notebook_command").val();
-	            if (e.which == 13) {
-	                $("#input_notebook_command").val("")
-	                Jupyter.notebook.kernel.execute(command);
-	            }
-	        });
-	
-	        this.$notebook_text = $("<div></div>")
-	            .css("position", "absolute")
-	            .css("bottom", "5%")
-	            .css("left", "3%")
-	            .css("padding", "2px 5px 2px 5px")
-	            .css("opacity", "0.7")
-	            .append($inputNotebookCommand)
-	            .appendTo(this.$container);
-	        this.$notebook_text.hide();
-	
-	        this.stage.signals.clicked.add(function (pd) {
-	            if (pd) {
-	                this.model.set('picked', {}); //refresh signal
-	                this.touch();
-	
-	                var pd2 = {};
-	                var pickingText = "";
-	                if (pd.atom) {
-	                    pd2.atom1 = pd.atom.toObject();
-	                    pd2.atom1.name = pd.atom.qualifiedName();
-	                    pickingText = "Atom: " + pd2.atom1.name;
-	                } else if (pd.bond) {
-	                    pd2.bond = pd.bond.toObject();
-	                    pd2.atom1 = pd.bond.atom1.toObject();
-	                    pd2.atom1.name = pd.bond.atom1.qualifiedName();
-	                    pd2.atom2 = pd.bond.atom2.toObject();
-	                    pd2.atom2.name = pd.bond.atom2.qualifiedName();
-	                    pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
+	        if (this.fullscreen_btn_pview){
+	            this.fullscreen_btn_pview.then(function(v){
+	                v.el.style.display = type
+	                if (that.stage_widget){
+	                    // If NGL's GUI exists, use its fullscreen button.
+	                    v.el.style.display = 'none'
 	                }
-	                if (pd.instance) pd2.instance = pd.instance;
-	                
-	                var n_components = this.stage.compList.length;
-	                for (var i = 0; i < n_components; i++) {
-	                    var comp = this.stage.compList[i];
-	                    if (comp.uuid == pd.component.uuid) {
-	                        pd2.component = i;
-	                    }
+	            })
+	        }
+	
+	        var that = this;
+	        if (this.player_pview){
+	            this.player_pview.then(function(v){
+	                v.el.style.display = type
+	                if (that.model.get("max_frame") <= 1){
+	                    v.el.style.display = 'none' // always hide if there's no trajectory.
 	                }
-	
-	                this.model.set('picked', pd2);
-	                this.touch();
-	                
-	                this.$pickingInfo.text(pickingText);
-	            }
-	        }, this);
-	
-	        var container = this.stage.viewer.container;
-	        that = this;
-	        container.addEventListener('mouseover', function(e) {
-	            that._ngl_focused = 1;
-	            e; // linter
-	        }, false);
-	
-	        container.addEventListener('mouseout', function(e) {
-	            that._ngl_focused = 0;
-	            e; // linter
-	        }, false);
-	
-	        that = this;
-	        this.stage.signals.componentAdded.add(function() {
-	            var len = this.stage.compList.length;
-	            this.model.set("n_components", len);
-	            this.touch();
-	            var comp = this.stage.compList[len - 1];
-	            comp.signals.representationRemoved.add(function() {
-	                that.request_repr_dict();
-	            });
-	            comp.signals.representationAdded.add(function() {
-	                that.request_repr_dict();
-	            });
-	        }, this);
-	
-	        this.stage.signals.componentRemoved.add(function() {
-	            this.model.set("n_components", this.stage.compList.length);
-	            this.touch();
-	        }, this);
-	
-	        // for callbacks from Python
-	        // must be after initializing NGL.Stage
-	        this.send({
-	            'type': 'request_loaded',
-	            'data': true
-	        })
-	        var state_params = this.stage.getParameters();
-	        this.model.set('_ngl_original_stage_parameters', state_params);
-	        this.touch();
-	        this.createIPlayer();
+	            })
+	        }
 	    },
 	
 	    serialize_camera_orientation: function(){
@@ -376,6 +398,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                    })
 	                }
 	            }
+	
+	            // fire any msg with "fire_embed"
+	            that.model.get("_ngl_msg_archive").forEach(function(msg){
+	                if (msg.fire_embed){
+	                    that.on_msg(msg);
+	                }
+	            })
 	        }); // Promise.all
 	    },
 	
@@ -391,14 +420,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                this.updateCoordinates(coordinates, traj_index);
 	            }
 	        }
-	    },
-	
-	    hideNotebookCommandBox: function() {
-	        this.$notebook_text.hide();
-	    },
-	
-	    showNotebookCommandBox: function() {
-	        this.$notebook_text.show();
 	    },
 	
 	    requestFrame: function() {
@@ -482,20 +503,21 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	    },
 	
-	    maxFrameChanged: function() {
-	        var max_frame = this.model.get("max_frame");
-	        this.player_pview.then(function(v){
-	            if (max_frame > 0){
-	                v.el.style.display = 'block'
-	            }else{
-	                v.el.style.display = 'none'
-	            }
-	        })
-	    },
+	    // maxFrameChanged: function() {
+	    //     var max_frame = this.model.get("max_frame");
+	    //     this.player_pview.then(function(v){
+	    //         if (max_frame > 0){
+	    //             v.el.style.display = 'block'
+	    //         }else{
+	    //             v.el.style.display = 'none'
+	    //         }
+	    //     })
+	    // },
 	
 	    createView: function(trait_name){
 	        // Create a view for the model with given `trait_name`
 	        // e.g: in backend, 'view.<trait_name>`
+	        console.log("Creating view for model " + trait_name);
 	        var manager = this.model.widget_manager;
 	        var model_id = this.model.get(trait_name).replace("IPY_MODEL_", "");
 	        return this.model.widget_manager.get_model(model_id).then(function(model){
@@ -520,11 +542,49 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                pe.style.left = '10%'
 	                pe.style.opacity = '0.7'
 	                that.stage.viewer.container.append(view.el);
-	                if (that.model.get("max_frame") <= 0){
-	                    pe.style.display = 'none';
-	                }
+	                pe.style.display = 'none'
 	            })
 	    },
+	
+	    createImageBtn: function(){
+	        this.image_btn_pview = this.createView("_ibtn_image");
+	        var that = this;
+	        this.image_btn_pview.then(function(view){
+	           var pe = view.el
+	           pe.style.position = 'absolute'
+	           pe.style.zIndex = 100
+	           pe.style.top = '5%'
+	           pe.style.right = '10%'
+	           pe.style.opacity = '0.7'
+	           pe.style.width = '35px'
+	           that.stage.viewer.container.append(view.el);
+	        })
+	    },
+	
+	    createFullscreenBtn: function(){
+	        this.fullscreen_btn_pview = this.createView("_ibtn_fullscreen");
+	        var that = this;
+	        var stage = that.stage;
+	        this.fullscreen_btn_pview.then(function(view){
+	           var pe = view.el
+	           pe.style.position = 'absolute'
+	           pe.style.zIndex = 100
+	           pe.style.top = '5%'
+	           pe.style.right = '5%'
+	           pe.style.opacity = '0.7'
+	           pe.style.width = '35px'
+	           pe.style.display = 'none'
+	           stage.viewer.container.append(view.el);
+	           stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	             if (isFullscreen) {
+	               view.model.set("icon", "compress")
+	             } else {
+	               view.model.set("icon", "expand")
+	             }
+	           })
+	        })
+	    },
+	
 	
 	    createGUI: function(){
 	        this.pgui_view = this.createView("_igui");
@@ -535,8 +595,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                pe.style.zIndex = 100
 	                pe.style.top = '5%'
 	                pe.style.right = '10%'
+	                pe.style.width = '300px'
+	                that.stage.viewer.container.append(view.el);
 	            })
 	    },
+	
+	
+	    createNglGUI: function(){
+	      console.log("Creating NGL GUI")
+	      this.stage_widget = new StageWidget(this.el, this.stage);
+	      // this.$container.resizable("disable");
+	    },
+	
 	
 	    setVisibilityForRepr: function(component_index, repr_index, value) {
 	        // value = True/False
@@ -764,7 +834,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	    },
 	
-	    handleResize: function() {
+	    handleResizable: function() {
 	        this.$container.resizable({
 	            resize: function(event, ui) {
 	                this.setSize(ui.size.width + "px", ui.size.height + "px");
@@ -778,81 +848,22 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.stage.handleResize();
 	    },
 	
-	    openNotebookCommandDialog: function() {
-	        var that = this;
-	        var dialog = this.$notebook_text.dialog({
-	            draggable: true,
-	            resizable: true,
-	            modal: false,
-	            show: {
-	                effect: "blind",
-	                duration: 150
-	            },
-	            close: function(event, ui) {
-	                that.$container.append(that.$notebook_text);
-	                that.$notebook_text.dialog('destroy');
-	                event; ui; // to pass eslint; ack;
-	            },
-	        });
-	        dialog.css({
-	            overflow: 'hidden'
-	        });
-	        dialog.prev('.ui-dialog-titlebar')
-	            .css({
-	                'background': 'transparent',
-	                'border': 'none'
-	            });
-	        Jupyter.keyboard_manager.register_events(dialog);
-	    },
-	
-	    setDialog: function() {
-	        var $nb_container = Jupyter.notebook.container;
-	        var that = this;
-	        var dialog = this.$container.dialog({
-	            title: "NGLView",
-	            draggable: true,
-	            resizable: true,
-	            modal: false,
-	            width: window.innerWidth - $nb_container.width() - $nb_container.offset().left - 50,
-	            height: 'auto',
-	            position: {
-	                my: 'right',
-	                at: 'right',
-	                of: window
-	            },
-	            show: {
-	                effect: "blind",
-	                duration: 150
-	            },
-	            close: function(event, ui) {
-	                that.$el.append(that.$container);
-	                that.$container.dialog('destroy');
-	                that.handleResize();
-	                event; ui; // to pass eslint; ack;
-	            },
-	            resize: function(event, ui) {
-	                that.stage.handleResize();
-	                that.setSize(ui.size.width + "px", ui.size.height + "px");
-	            }.bind(that),
-	        });
-	        dialog.css({
-	            overflow: 'hidden'
-	        });
-	        dialog.prev('.ui-dialog-titlebar')
-	            .css({
-	                'background': 'transparent',
-	                'border': 'none'
-	            });
-	    },
-	
-	    resizeNotebook: function(width) {
-	        var $nb_container = Jupyter.notebook.container;
-	        $nb_container.width(width);
-	
-	        if (this.$container.dialog) {
-	            this.$container.dialog({
-	                width: $nb_container.offset().left
-	            });
+	    GUIStyleChanged: function(){
+	        var style = this.model.get("gui_style");
+	        console.log('style ' + style);
+	        if (style === 'ngl'){
+	            console.log("Creating NGL GUI");
+	            this.createNglGUI();
+	            this.$pickingText.hide();
+	        }else{
+	            if (this.stage_widget){
+	                this.stage_widget.dispose()
+	                this.stage_widget = undefined
+	                this.$container.resizable("enable")
+	                var width = this.$el.parent().width() + "px";
+	                var height = this.$el.parent().height() + "px";
+	                this.setSize(width, height);
+	            }
 	        }
 	    },
 	
@@ -903,21 +914,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	    },
 	
-	
-	    cleanOutput: function() {
-	
-	        var cells = Jupyter.notebook.get_cells();
-	
-	        for (var i = 0; i < cells.length; i++) {
-	            var cell = cells[i];
-	            if (cell.output_area.outputs.length > 0) {
-	                var out = cell.output_area.outputs[0];
-	                if (out.output_type == 'display_data') {
-	                    cell.clear_output();
-	                }
-	            }
-	        }
-	    },
 	
 	    _handle_loading_file_finished: function() {
 	        this.send({'type': 'async_message', 'data': 'ok'});
@@ -989,7 +985,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            new_args.push(msg.kwargs);
 	
 	            // handle color
-	            if (msg.methodName == 'addRepresentation' && 
+	            if (msg.methodName == 'addRepresentation' &&
 	                msg.reconstruc_color_scheme){
 	                msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
 	            }
@@ -13659,6 +13655,8012 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*
+	
+	 JS Signals <http://millermedeiros.github.com/js-signals/>
+	 Released under the MIT license
+	 Author: Miller Medeiros
+	 Version: 1.0.0 - Build: 268 (2012/11/29 05:48 PM)
+	*/
+	(function(i){function h(a,b,c,d,e){this._listener=b;this._isOnce=c;this.context=d;this._signal=a;this._priority=e||0}function g(a,b){if(typeof a!=="function")throw Error("listener is a required param of {fn}() and should be a Function.".replace("{fn}",b));}function e(){this._bindings=[];this._prevParams=null;var a=this;this.dispatch=function(){e.prototype.dispatch.apply(a,arguments)}}h.prototype={active:!0,params:null,execute:function(a){var b;this.active&&this._listener&&(a=this.params?this.params.concat(a):
+	a,b=this._listener.apply(this.context,a),this._isOnce&&this.detach());return b},detach:function(){return this.isBound()?this._signal.remove(this._listener,this.context):null},isBound:function(){return!!this._signal&&!!this._listener},isOnce:function(){return this._isOnce},getListener:function(){return this._listener},getSignal:function(){return this._signal},_destroy:function(){delete this._signal;delete this._listener;delete this.context},toString:function(){return"[SignalBinding isOnce:"+this._isOnce+
+	", isBound:"+this.isBound()+", active:"+this.active+"]"}};e.prototype={VERSION:"1.0.0",memorize:!1,_shouldPropagate:!0,active:!0,_registerListener:function(a,b,c,d){var e=this._indexOfListener(a,c);if(e!==-1){if(a=this._bindings[e],a.isOnce()!==b)throw Error("You cannot add"+(b?"":"Once")+"() then add"+(!b?"":"Once")+"() the same listener without removing the relationship first.");}else a=new h(this,a,b,c,d),this._addBinding(a);this.memorize&&this._prevParams&&a.execute(this._prevParams);return a},
+	_addBinding:function(a){var b=this._bindings.length;do--b;while(this._bindings[b]&&a._priority<=this._bindings[b]._priority);this._bindings.splice(b+1,0,a)},_indexOfListener:function(a,b){for(var c=this._bindings.length,d;c--;)if(d=this._bindings[c],d._listener===a&&d.context===b)return c;return-1},has:function(a,b){return this._indexOfListener(a,b)!==-1},add:function(a,b,c){g(a,"add");return this._registerListener(a,!1,b,c)},addOnce:function(a,b,c){g(a,"addOnce");return this._registerListener(a,
+	!0,b,c)},remove:function(a,b){g(a,"remove");var c=this._indexOfListener(a,b);c!==-1&&(this._bindings[c]._destroy(),this._bindings.splice(c,1));return a},removeAll:function(){for(var a=this._bindings.length;a--;)this._bindings[a]._destroy();this._bindings.length=0},getNumListeners:function(){return this._bindings.length},halt:function(){this._shouldPropagate=!1},dispatch:function(a){if(this.active){var b=Array.prototype.slice.call(arguments),c=this._bindings.length,d;if(this.memorize)this._prevParams=
+	b;if(c){d=this._bindings.slice();this._shouldPropagate=!0;do c--;while(d[c]&&this._shouldPropagate&&d[c].execute(b)!==!1)}}},forget:function(){this._prevParams=null},dispose:function(){this.removeAll();delete this._bindings;delete this._prevParams},toString:function(){return"[Signal active:"+this.active+" numListeners:"+this.getNumListeners()+"]"}};var f=e;f.Signal=e; true?!(__WEBPACK_AMD_DEFINE_RESULT__ = function(){return f}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):typeof module!=="undefined"&&module.exports?module.exports=f:i.signals=
+	f})(this);
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;if( typeof importScripts !== 'function' ){
+	!function(t,e){ true?!(__WEBPACK_AMD_DEFINE_FACTORY__ = (e), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):"object"==typeof exports?module.exports=e(require,exports,module):t.Tether=e()}(this,function(t,e,o){"use strict";function i(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function n(t){var e=getComputedStyle(t),o=e.position;if("fixed"===o)return t;for(var i=t;i=i.parentNode;){var n=void 0;try{n=getComputedStyle(i)}catch(r){}if("undefined"==typeof n||null===n)return i;var s=n.overflow,a=n.overflowX,f=n.overflowY;if(/(auto|scroll)/.test(s+f+a)&&("absolute"!==o||["relative","absolute","fixed"].indexOf(n.position)>=0))return i}return document.body}function r(t){var e=void 0;t===document?(e=document,t=document.documentElement):e=t.ownerDocument;var o=e.documentElement,i={},n=t.getBoundingClientRect();for(var r in n)i[r]=n[r];var s=x(e);return i.top-=s.top,i.left-=s.left,"undefined"==typeof i.width&&(i.width=document.body.scrollWidth-i.left-i.right),"undefined"==typeof i.height&&(i.height=document.body.scrollHeight-i.top-i.bottom),i.top=i.top-o.clientTop,i.left=i.left-o.clientLeft,i.right=e.body.clientWidth-i.width-i.left,i.bottom=e.body.clientHeight-i.height-i.top,i}function s(t){return t.offsetParent||document.documentElement}function a(){var t=document.createElement("div");t.style.width="100%",t.style.height="200px";var e=document.createElement("div");f(e.style,{position:"absolute",top:0,left:0,pointerEvents:"none",visibility:"hidden",width:"200px",height:"150px",overflow:"hidden"}),e.appendChild(t),document.body.appendChild(e);var o=t.offsetWidth;e.style.overflow="scroll";var i=t.offsetWidth;o===i&&(i=e.clientWidth),document.body.removeChild(e);var n=o-i;return{width:n,height:n}}function f(){var t=arguments.length<=0||void 0===arguments[0]?{}:arguments[0],e=[];return Array.prototype.push.apply(e,arguments),e.slice(1).forEach(function(e){if(e)for(var o in e)({}).hasOwnProperty.call(e,o)&&(t[o]=e[o])}),t}function h(t,e){if("undefined"!=typeof t.classList)e.split(" ").forEach(function(e){e.trim()&&t.classList.remove(e)});else{var o=new RegExp("(^| )"+e.split(" ").join("|")+"( |$)","gi"),i=u(t).replace(o," ");p(t,i)}}function l(t,e){if("undefined"!=typeof t.classList)e.split(" ").forEach(function(e){e.trim()&&t.classList.add(e)});else{h(t,e);var o=u(t)+(" "+e);p(t,o)}}function d(t,e){if("undefined"!=typeof t.classList)return t.classList.contains(e);var o=u(t);return new RegExp("(^| )"+e+"( |$)","gi").test(o)}function u(t){return t.className instanceof SVGAnimatedString?t.className.baseVal:t.className}function p(t,e){t.setAttribute("class",e)}function c(t,e,o){o.forEach(function(o){-1===e.indexOf(o)&&d(t,o)&&h(t,o)}),e.forEach(function(e){d(t,e)||l(t,e)})}function i(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function g(t,e){var o=arguments.length<=2||void 0===arguments[2]?1:arguments[2];return t+o>=e&&e>=t-o}function m(){return"undefined"!=typeof performance&&"undefined"!=typeof performance.now?performance.now():+new Date}function v(){for(var t={top:0,left:0},e=arguments.length,o=Array(e),i=0;e>i;i++)o[i]=arguments[i];return o.forEach(function(e){var o=e.top,i=e.left;"string"==typeof o&&(o=parseFloat(o,10)),"string"==typeof i&&(i=parseFloat(i,10)),t.top+=o,t.left+=i}),t}function y(t,e){return"string"==typeof t.left&&-1!==t.left.indexOf("%")&&(t.left=parseFloat(t.left,10)/100*e.width),"string"==typeof t.top&&-1!==t.top.indexOf("%")&&(t.top=parseFloat(t.top,10)/100*e.height),t}function b(t,e){return"scrollParent"===e?e=t.scrollParent:"window"===e&&(e=[pageXOffset,pageYOffset,innerWidth+pageXOffset,innerHeight+pageYOffset]),e===document&&(e=e.documentElement),"undefined"!=typeof e.nodeType&&!function(){var t=r(e),o=t,i=getComputedStyle(e);e=[o.left,o.top,t.width+o.left,t.height+o.top],U.forEach(function(t,o){t=t[0].toUpperCase()+t.substr(1),"Top"===t||"Left"===t?e[o]+=parseFloat(i["border"+t+"Width"]):e[o]-=parseFloat(i["border"+t+"Width"])})}(),e}var w=function(){function t(t,e){for(var o=0;o<e.length;o++){var i=e[o];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(t,i.key,i)}}return function(e,o,i){return o&&t(e.prototype,o),i&&t(e,i),e}}(),C=void 0;"undefined"==typeof C&&(C={modules:[]});var O=function(){var t=0;return function(){return++t}}(),E={},x=function(t){var e=t._tetherZeroElement;"undefined"==typeof e&&(e=t.createElement("div"),e.setAttribute("data-tether-id",O()),f(e.style,{top:0,left:0,position:"absolute"}),t.body.appendChild(e),t._tetherZeroElement=e);var o=e.getAttribute("data-tether-id");if("undefined"==typeof E[o]){E[o]={};var i=e.getBoundingClientRect();for(var n in i)E[o][n]=i[n];T(function(){delete E[o]})}return E[o]},A=[],T=function(t){A.push(t)},S=function(){for(var t=void 0;t=A.pop();)t()},W=function(){function t(){i(this,t)}return w(t,[{key:"on",value:function(t,e,o){var i=arguments.length<=3||void 0===arguments[3]?!1:arguments[3];"undefined"==typeof this.bindings&&(this.bindings={}),"undefined"==typeof this.bindings[t]&&(this.bindings[t]=[]),this.bindings[t].push({handler:e,ctx:o,once:i})}},{key:"once",value:function(t,e,o){this.on(t,e,o,!0)}},{key:"off",value:function(t,e){if("undefined"==typeof this.bindings||"undefined"==typeof this.bindings[t])if("undefined"==typeof e)delete this.bindings[t];else for(var o=0;o<this.bindings[t].length;)this.bindings[t][o].handler===e?this.bindings[t].splice(o,1):++o}},{key:"trigger",value:function(t){if("undefined"!=typeof this.bindings&&this.bindings[t])for(var e=0;e<this.bindings[t].length;){var o=this.bindings[t][e],i=o.handler,n=o.ctx,r=o.once,s=n;"undefined"==typeof s&&(s=this);for(var a=arguments.length,f=Array(a>1?a-1:0),h=1;a>h;h++)f[h-1]=arguments[h];i.apply(s,f),r?this.bindings[t].splice(e,1):++e}}}]),t}();C.Utils={getScrollParent:n,getBounds:r,getOffsetParent:s,extend:f,addClass:l,removeClass:h,hasClass:d,updateClasses:c,defer:T,flush:S,uniqueId:O,Evented:W,getScrollBarSize:a};var M=function(){function t(t,e){var o=[],i=!0,n=!1,r=void 0;try{for(var s,a=t[Symbol.iterator]();!(i=(s=a.next()).done)&&(o.push(s.value),!e||o.length!==e);i=!0);}catch(f){n=!0,r=f}finally{try{!i&&a["return"]&&a["return"]()}finally{if(n)throw r}}return o}return function(e,o){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return t(e,o);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),w=function(){function t(t,e){for(var o=0;o<e.length;o++){var i=e[o];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(t,i.key,i)}}return function(e,o,i){return o&&t(e.prototype,o),i&&t(e,i),e}}();if("undefined"==typeof C)throw new Error("You must include the utils.js file before tether.js");var P=C.Utils,n=P.getScrollParent,r=P.getBounds,s=P.getOffsetParent,f=P.extend,l=P.addClass,h=P.removeClass,c=P.updateClasses,T=P.defer,S=P.flush,a=P.getScrollBarSize,k=function(){for(var t=document.createElement("div"),e=["transform","webkitTransform","OTransform","MozTransform","msTransform"],o=0;o<e.length;++o){var i=e[o];if(void 0!==t.style[i])return i}}(),B=[],_=function(){B.forEach(function(t){t.position(!1)}),S()};!function(){var t=null,e=null,o=null,i=function n(){return"undefined"!=typeof e&&e>16?(e=Math.min(e-16,250),void(o=setTimeout(n,250))):void("undefined"!=typeof t&&m()-t<10||("undefined"!=typeof o&&(clearTimeout(o),o=null),t=m(),_(),e=m()-t))};["resize","scroll","touchmove"].forEach(function(t){window.addEventListener(t,i)})}();var z={center:"center",left:"right",right:"left"},F={middle:"middle",top:"bottom",bottom:"top"},L={top:0,left:0,middle:"50%",center:"50%",bottom:"100%",right:"100%"},Y=function(t,e){var o=t.left,i=t.top;return"auto"===o&&(o=z[e.left]),"auto"===i&&(i=F[e.top]),{left:o,top:i}},H=function(t){var e=t.left,o=t.top;return"undefined"!=typeof L[t.left]&&(e=L[t.left]),"undefined"!=typeof L[t.top]&&(o=L[t.top]),{left:e,top:o}},X=function(t){var e=t.split(" "),o=M(e,2),i=o[0],n=o[1];return{top:i,left:n}},j=X,N=function(){function t(e){var o=this;i(this,t),this.position=this.position.bind(this),B.push(this),this.history=[],this.setOptions(e,!1),C.modules.forEach(function(t){"undefined"!=typeof t.initialize&&t.initialize.call(o)}),this.position()}return w(t,[{key:"getClass",value:function(){var t=arguments.length<=0||void 0===arguments[0]?"":arguments[0],e=this.options.classes;return"undefined"!=typeof e&&e[t]?this.options.classes[t]:this.options.classPrefix?this.options.classPrefix+"-"+t:t}},{key:"setOptions",value:function(t){var e=this,o=arguments.length<=1||void 0===arguments[1]?!0:arguments[1],i={offset:"0 0",targetOffset:"0 0",targetAttachment:"auto auto",classPrefix:"tether"};this.options=f(i,t);var r=this.options,s=r.element,a=r.target,h=r.targetModifier;if(this.element=s,this.target=a,this.targetModifier=h,"viewport"===this.target?(this.target=document.body,this.targetModifier="visible"):"scroll-handle"===this.target&&(this.target=document.body,this.targetModifier="scroll-handle"),["element","target"].forEach(function(t){if("undefined"==typeof e[t])throw new Error("Tether Error: Both element and target must be defined");"undefined"!=typeof e[t].jquery?e[t]=e[t][0]:"string"==typeof e[t]&&(e[t]=document.querySelector(e[t]))}),l(this.element,this.getClass("element")),this.options.addTargetClasses!==!1&&l(this.target,this.getClass("target")),!this.options.attachment)throw new Error("Tether Error: You must provide an attachment");this.targetAttachment=j(this.options.targetAttachment),this.attachment=j(this.options.attachment),this.offset=X(this.options.offset),this.targetOffset=X(this.options.targetOffset),"undefined"!=typeof this.scrollParent&&this.disable(),this.scrollParent="scroll-handle"===this.targetModifier?this.target:n(this.target),this.options.enabled!==!1&&this.enable(o)}},{key:"getTargetBounds",value:function(){if("undefined"==typeof this.targetModifier)return r(this.target);if("visible"===this.targetModifier){if(this.target===document.body)return{top:pageYOffset,left:pageXOffset,height:innerHeight,width:innerWidth};var t=r(this.target),e={height:t.height,width:t.width,top:t.top,left:t.left};return e.height=Math.min(e.height,t.height-(pageYOffset-t.top)),e.height=Math.min(e.height,t.height-(t.top+t.height-(pageYOffset+innerHeight))),e.height=Math.min(innerHeight,e.height),e.height-=2,e.width=Math.min(e.width,t.width-(pageXOffset-t.left)),e.width=Math.min(e.width,t.width-(t.left+t.width-(pageXOffset+innerWidth))),e.width=Math.min(innerWidth,e.width),e.width-=2,e.top<pageYOffset&&(e.top=pageYOffset),e.left<pageXOffset&&(e.left=pageXOffset),e}if("scroll-handle"===this.targetModifier){var t=void 0,o=this.target;o===document.body?(o=document.documentElement,t={left:pageXOffset,top:pageYOffset,height:innerHeight,width:innerWidth}):t=r(o);var i=getComputedStyle(o),n=o.scrollWidth>o.clientWidth||[i.overflow,i.overflowX].indexOf("scroll")>=0||this.target!==document.body,s=0;n&&(s=15);var a=t.height-parseFloat(i.borderTopWidth)-parseFloat(i.borderBottomWidth)-s,e={width:15,height:.975*a*(a/o.scrollHeight),left:t.left+t.width-parseFloat(i.borderLeftWidth)-15},f=0;408>a&&this.target===document.body&&(f=-11e-5*Math.pow(a,2)-.00727*a+22.58),this.target!==document.body&&(e.height=Math.max(e.height,24));var h=this.target.scrollTop/(o.scrollHeight-a);return e.top=h*(a-e.height-f)+t.top+parseFloat(i.borderTopWidth),this.target===document.body&&(e.height=Math.max(e.height,24)),e}}},{key:"clearCache",value:function(){this._cache={}}},{key:"cache",value:function(t,e){return"undefined"==typeof this._cache&&(this._cache={}),"undefined"==typeof this._cache[t]&&(this._cache[t]=e.call(this)),this._cache[t]}},{key:"enable",value:function(){var t=arguments.length<=0||void 0===arguments[0]?!0:arguments[0];this.options.addTargetClasses!==!1&&l(this.target,this.getClass("enabled")),l(this.element,this.getClass("enabled")),this.enabled=!0,this.scrollParent!==document&&this.scrollParent.addEventListener("scroll",this.position),t&&this.position()}},{key:"disable",value:function(){h(this.target,this.getClass("enabled")),h(this.element,this.getClass("enabled")),this.enabled=!1,"undefined"!=typeof this.scrollParent&&this.scrollParent.removeEventListener("scroll",this.position)}},{key:"destroy",value:function(){var t=this;this.disable(),B.forEach(function(e,o){return e===t?void B.splice(o,1):void 0})}},{key:"updateAttachClasses",value:function(t,e){var o=this;t=t||this.attachment,e=e||this.targetAttachment;var i=["left","top","bottom","right","middle","center"];"undefined"!=typeof this._addAttachClasses&&this._addAttachClasses.length&&this._addAttachClasses.splice(0,this._addAttachClasses.length),"undefined"==typeof this._addAttachClasses&&(this._addAttachClasses=[]);var n=this._addAttachClasses;t.top&&n.push(this.getClass("element-attached")+"-"+t.top),t.left&&n.push(this.getClass("element-attached")+"-"+t.left),e.top&&n.push(this.getClass("target-attached")+"-"+e.top),e.left&&n.push(this.getClass("target-attached")+"-"+e.left);var r=[];i.forEach(function(t){r.push(o.getClass("element-attached")+"-"+t),r.push(o.getClass("target-attached")+"-"+t)}),T(function(){"undefined"!=typeof o._addAttachClasses&&(c(o.element,o._addAttachClasses,r),o.options.addTargetClasses!==!1&&c(o.target,o._addAttachClasses,r),delete o._addAttachClasses)})}},{key:"position",value:function(){var t=this,e=arguments.length<=0||void 0===arguments[0]?!0:arguments[0];if(this.enabled){this.clearCache();var o=Y(this.targetAttachment,this.attachment);this.updateAttachClasses(this.attachment,o);var i=this.cache("element-bounds",function(){return r(t.element)}),n=i.width,f=i.height;if(0===n&&0===f&&"undefined"!=typeof this.lastSize){var h=this.lastSize;n=h.width,f=h.height}else this.lastSize={width:n,height:f};var l=this.cache("target-bounds",function(){return t.getTargetBounds()}),d=l,u=y(H(this.attachment),{width:n,height:f}),p=y(H(o),d),c=y(this.offset,{width:n,height:f}),g=y(this.targetOffset,d);u=v(u,c),p=v(p,g);for(var m=l.left+p.left-u.left,b=l.top+p.top-u.top,w=0;w<C.modules.length;++w){var O=C.modules[w],E=O.position.call(this,{left:m,top:b,targetAttachment:o,targetPos:l,elementPos:i,offset:u,targetOffset:p,manualOffset:c,manualTargetOffset:g,scrollbarSize:A,attachment:this.attachment});if(E===!1)return!1;"undefined"!=typeof E&&"object"==typeof E&&(b=E.top,m=E.left)}var x={page:{top:b,left:m},viewport:{top:b-pageYOffset,bottom:pageYOffset-b-f+innerHeight,left:m-pageXOffset,right:pageXOffset-m-n+innerWidth}},A=void 0;return document.body.scrollWidth>window.innerWidth&&(A=this.cache("scrollbar-size",a),x.viewport.bottom-=A.height),document.body.scrollHeight>window.innerHeight&&(A=this.cache("scrollbar-size",a),x.viewport.right-=A.width),(-1===["","static"].indexOf(document.body.style.position)||-1===["","static"].indexOf(document.body.parentElement.style.position))&&(x.page.bottom=document.body.scrollHeight-b-f,x.page.right=document.body.scrollWidth-m-n),"undefined"!=typeof this.options.optimizations&&this.options.optimizations.moveElement!==!1&&"undefined"==typeof this.targetModifier&&!function(){var e=t.cache("target-offsetparent",function(){return s(t.target)}),o=t.cache("target-offsetparent-bounds",function(){return r(e)}),i=getComputedStyle(e),n=o,a={};if(["Top","Left","Bottom","Right"].forEach(function(t){a[t.toLowerCase()]=parseFloat(i["border"+t+"Width"])}),o.right=document.body.scrollWidth-o.left-n.width+a.right,o.bottom=document.body.scrollHeight-o.top-n.height+a.bottom,x.page.top>=o.top+a.top&&x.page.bottom>=o.bottom&&x.page.left>=o.left+a.left&&x.page.right>=o.right){var f=e.scrollTop,h=e.scrollLeft;x.offset={top:x.page.top-o.top+f-a.top,left:x.page.left-o.left+h-a.left}}}(),this.move(x),this.history.unshift(x),this.history.length>3&&this.history.pop(),e&&S(),!0}}},{key:"move",value:function(t){var e=this;if("undefined"!=typeof this.element.parentNode){var o={};for(var i in t){o[i]={};for(var n in t[i]){for(var r=!1,a=0;a<this.history.length;++a){var h=this.history[a];if("undefined"!=typeof h[i]&&!g(h[i][n],t[i][n])){r=!0;break}}r||(o[i][n]=!0)}}var l={top:"",left:"",right:"",bottom:""},d=function(t,o){var i="undefined"!=typeof e.options.optimizations,n=i?e.options.optimizations.gpu:null;if(n!==!1){var r=void 0,s=void 0;t.top?(l.top=0,r=o.top):(l.bottom=0,r=-o.bottom),t.left?(l.left=0,s=o.left):(l.right=0,s=-o.right),l[k]="translateX("+Math.round(s)+"px) translateY("+Math.round(r)+"px)","msTransform"!==k&&(l[k]+=" translateZ(0)")}else t.top?l.top=o.top+"px":l.bottom=o.bottom+"px",t.left?l.left=o.left+"px":l.right=o.right+"px"},u=!1;if((o.page.top||o.page.bottom)&&(o.page.left||o.page.right)?(l.position="absolute",d(o.page,t.page)):(o.viewport.top||o.viewport.bottom)&&(o.viewport.left||o.viewport.right)?(l.position="fixed",d(o.viewport,t.viewport)):"undefined"!=typeof o.offset&&o.offset.top&&o.offset.left?!function(){l.position="absolute";var i=e.cache("target-offsetparent",function(){return s(e.target)});s(e.element)!==i&&T(function(){e.element.parentNode.removeChild(e.element),i.appendChild(e.element)}),d(o.offset,t.offset),u=!0}():(l.position="absolute",d({top:!0,left:!0},t.page)),!u){for(var p=!0,c=this.element.parentNode;c&&"BODY"!==c.tagName;){if("static"!==getComputedStyle(c).position){p=!1;break}c=c.parentNode}p||(this.element.parentNode.removeChild(this.element),document.body.appendChild(this.element))}var m={},v=!1;for(var n in l){var y=l[n],b=this.element.style[n];""!==b&&""!==y&&["top","left","bottom","right"].indexOf(n)>=0&&(b=parseFloat(b),y=parseFloat(y)),b!==y&&(v=!0,m[n]=y)}v&&T(function(){f(e.element.style,m)})}}}]),t}();N.modules=[],C.position=_;var R=f(N,C),M=function(){function t(t,e){var o=[],i=!0,n=!1,r=void 0;try{for(var s,a=t[Symbol.iterator]();!(i=(s=a.next()).done)&&(o.push(s.value),!e||o.length!==e);i=!0);}catch(f){n=!0,r=f}finally{try{!i&&a["return"]&&a["return"]()}finally{if(n)throw r}}return o}return function(e,o){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return t(e,o);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),P=C.Utils,r=P.getBounds,f=P.extend,c=P.updateClasses,T=P.defer,U=["left","top","right","bottom"];C.modules.push({position:function(t){var e=this,o=t.top,i=t.left,n=t.targetAttachment;if(!this.options.constraints)return!0;var s=this.cache("element-bounds",function(){return r(e.element)}),a=s.height,h=s.width;if(0===h&&0===a&&"undefined"!=typeof this.lastSize){var l=this.lastSize;h=l.width,a=l.height}var d=this.cache("target-bounds",function(){return e.getTargetBounds()}),u=d.height,p=d.width,g=[this.getClass("pinned"),this.getClass("out-of-bounds")];this.options.constraints.forEach(function(t){var e=t.outOfBoundsClass,o=t.pinnedClass;e&&g.push(e),o&&g.push(o)}),g.forEach(function(t){["left","top","right","bottom"].forEach(function(e){g.push(t+"-"+e)})});var m=[],v=f({},n),y=f({},this.attachment);return this.options.constraints.forEach(function(t){var r=t.to,s=t.attachment,f=t.pin;"undefined"==typeof s&&(s="");var l=void 0,d=void 0;if(s.indexOf(" ")>=0){var c=s.split(" "),g=M(c,2);d=g[0],l=g[1]}else l=d=s;var w=b(e,r);("target"===d||"both"===d)&&(o<w[1]&&"top"===v.top&&(o+=u,v.top="bottom"),o+a>w[3]&&"bottom"===v.top&&(o-=u,v.top="top")),"together"===d&&(o<w[1]&&"top"===v.top&&("bottom"===y.top?(o+=u,v.top="bottom",o+=a,y.top="top"):"top"===y.top&&(o+=u,v.top="bottom",o-=a,y.top="bottom")),o+a>w[3]&&"bottom"===v.top&&("top"===y.top?(o-=u,v.top="top",o-=a,y.top="bottom"):"bottom"===y.top&&(o-=u,v.top="top",o+=a,y.top="top")),"middle"===v.top&&(o+a>w[3]&&"top"===y.top?(o-=a,y.top="bottom"):o<w[1]&&"bottom"===y.top&&(o+=a,y.top="top"))),("target"===l||"both"===l)&&(i<w[0]&&"left"===v.left&&(i+=p,v.left="right"),i+h>w[2]&&"right"===v.left&&(i-=p,v.left="left")),"together"===l&&(i<w[0]&&"left"===v.left?"right"===y.left?(i+=p,v.left="right",i+=h,y.left="left"):"left"===y.left&&(i+=p,v.left="right",i-=h,y.left="right"):i+h>w[2]&&"right"===v.left?"left"===y.left?(i-=p,v.left="left",i-=h,y.left="right"):"right"===y.left&&(i-=p,v.left="left",i+=h,y.left="left"):"center"===v.left&&(i+h>w[2]&&"left"===y.left?(i-=h,y.left="right"):i<w[0]&&"right"===y.left&&(i+=h,y.left="left"))),("element"===d||"both"===d)&&(o<w[1]&&"bottom"===y.top&&(o+=a,y.top="top"),o+a>w[3]&&"top"===y.top&&(o-=a,y.top="bottom")),("element"===l||"both"===l)&&(i<w[0]&&"right"===y.left&&(i+=h,y.left="left"),i+h>w[2]&&"left"===y.left&&(i-=h,y.left="right")),"string"==typeof f?f=f.split(",").map(function(t){return t.trim()}):f===!0&&(f=["top","left","right","bottom"]),f=f||[];var C=[],O=[];o<w[1]&&(f.indexOf("top")>=0?(o=w[1],C.push("top")):O.push("top")),o+a>w[3]&&(f.indexOf("bottom")>=0?(o=w[3]-a,C.push("bottom")):O.push("bottom")),i<w[0]&&(f.indexOf("left")>=0?(i=w[0],C.push("left")):O.push("left")),i+h>w[2]&&(f.indexOf("right")>=0?(i=w[2]-h,C.push("right")):O.push("right")),C.length&&!function(){var t=void 0;t="undefined"!=typeof e.options.pinnedClass?e.options.pinnedClass:e.getClass("pinned"),m.push(t),C.forEach(function(e){m.push(t+"-"+e)})}(),O.length&&!function(){var t=void 0;t="undefined"!=typeof e.options.outOfBoundsClass?e.options.outOfBoundsClass:e.getClass("out-of-bounds"),m.push(t),O.forEach(function(e){m.push(t+"-"+e)})}(),(C.indexOf("left")>=0||C.indexOf("right")>=0)&&(y.left=v.left=!1),(C.indexOf("top")>=0||C.indexOf("bottom")>=0)&&(y.top=v.top=!1),(v.top!==n.top||v.left!==n.left||y.top!==e.attachment.top||y.left!==e.attachment.left)&&e.updateAttachClasses(y,v)}),T(function(){e.options.addTargetClasses!==!1&&c(e.target,m,g),c(e.element,m,g)}),{top:o,left:i}}});var P=C.Utils,r=P.getBounds,c=P.updateClasses,T=P.defer;C.modules.push({position:function(t){var e=this,o=t.top,i=t.left,n=this.cache("element-bounds",function(){return r(e.element)}),s=n.height,a=n.width,f=this.getTargetBounds(),h=o+s,l=i+a,d=[];o<=f.bottom&&h>=f.top&&["left","right"].forEach(function(t){var e=f[t];(e===i||e===l)&&d.push(t)}),i<=f.right&&l>=f.left&&["top","bottom"].forEach(function(t){var e=f[t];(e===o||e===h)&&d.push(t)});var u=[],p=[],g=["left","top","right","bottom"];return u.push(this.getClass("abutted")),g.forEach(function(t){u.push(e.getClass("abutted")+"-"+t)}),d.length&&p.push(this.getClass("abutted")),d.forEach(function(t){p.push(e.getClass("abutted")+"-"+t)}),T(function(){e.options.addTargetClasses!==!1&&c(e.target,p,u),c(e.element,p,u)}),!0}});var M=function(){function t(t,e){var o=[],i=!0,n=!1,r=void 0;try{for(var s,a=t[Symbol.iterator]();!(i=(s=a.next()).done)&&(o.push(s.value),!e||o.length!==e);i=!0);}catch(f){n=!0,r=f}finally{try{!i&&a["return"]&&a["return"]()}finally{if(n)throw r}}return o}return function(e,o){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return t(e,o);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}();return C.modules.push({position:function(t){var e=t.top,o=t.left;if(this.options.shift){var i=this.options.shift;"function"==typeof this.options.shift&&(i=this.options.shift.call(this,{top:e,left:o}));var n=void 0,r=void 0;if("string"==typeof i){i=i.split(" "),i[1]=i[1]||i[0];var s=M(i,2);n=s[0],r=s[1],n=parseFloat(n,10),r=parseFloat(r,10)}else n=i.top,r=i.left;return e+=n,o+=r,{top:e,left:o}}}}),R});
+	}
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+	if( typeof importScripts !== 'function' ){
+	(function(w,l,r){function s(a,c){var d=c.getBoundingClientRect();return{x:Math.max(Math.min(a.clientX-d.left,c.clientWidth),0),y:Math.max(Math.min(a.clientY-d.top,c.clientHeight),0)}}function f(a,c,d){a=l.createElementNS("http://www.w3.org/2000/svg",a);for(var b in c)a.setAttribute(b,c[b]);Array.isArray(d)||(d=[d]);c=0;for(b=d[0]&&d.length||0;c<b;c++)a.appendChild(d[c]);return a}function k(a){var c,d,b,e,h=a.h%360/60;e=a.v*a.s;b=e*(1-Math.abs(h%2-1));c=d=a=a.v-e;h=~~h;c+=[e,b,0,0,b,e][h];d+=[b,e,
+	e,b,0,0][h];a+=[0,0,b,e,e,b][h];b=Math.floor(255*c);d=Math.floor(255*d);a=Math.floor(255*a);return{r:b,g:d,b:a,hex:"#"+(16777216|a|d<<8|b<<16).toString(16).slice(1)}}function m(a){var c=a.r,d=a.g,b=a.b;if(1<a.r||1<a.g||1<a.b)c/=255,d/=255,b/=255;var e;a=Math.max(c,d,b);e=a-Math.min(c,d,b);c=(0==e?0:a==c?(d-b)/e+(d<b?6:0):a==d?(b-c)/e+2:(c-d)/e+4)%6*60;return{h:c,s:0==e?0:e/a,v:a}}function x(a,c,d){return function(b){b=s(b,c);a.h=b.y/c.offsetHeight*360;var e=k({h:a.h,s:1,v:1}),h=k({h:a.h,s:a.s,v:a.v});
+	d.style.backgroundColor=e.hex;a.callback&&a.callback(h.hex,{h:a.h,s:a.s,v:a.v},{r:h.r,g:h.g,b:h.b},r,b)}}function y(a,c){return function(d){d=s(d,c);var b=c.offsetHeight;a.s=d.x/c.offsetWidth;a.v=(b-d.y)/b;b=k(a);a.callback&&a.callback(b.hex,{h:a.h,s:a.s,v:a.v},{r:b.r,g:b.g,b:b.b},d)}}function g(a,c,d){if(!(this instanceof g))return new g(a,c,d);this.h=0;this.v=this.s=1;d?(this.callback=d,this.pickerElement=c,this.slideElement=a):(a.innerHTML='<div class="picker-wrapper"><div class="picker"></div><div class="picker-indicator"></div></div><div class="slide-wrapper"><div class="slide"></div><div class="slide-indicator"></div></div>',
+	this.slideElement=a.getElementsByClassName("slide")[0],this.pickerElement=a.getElementsByClassName("picker")[0],this.slideIndicator=a.getElementsByClassName("slide-indicator")[0],this.pickerIndicator=a.getElementsByClassName("picker-indicator")[0],g.positionIndicators(this.slideIndicator,this.pickerIndicator,{x:0,y:0},{x:0,y:0}),this.callback=function(a,b,d,e,f){g.positionIndicators(this.slideIndicator,this.pickerIndicator,f,e);c(a,b,d)});this.slide_listener=x(this,this.slideElement,this.pickerElement);
+	this.picker_listener=y(this,this.pickerElement);d||this.fixIndicators(this.slideIndicator,this.pickerIndicator);a=t.cloneNode(!0);d=u.cloneNode(!0);var b=a.getElementsByTagName("defs")[0].firstChild,e=a.getElementsByTagName("rect")[0];b.id="gradient-hsv-"+n;e.setAttribute("fill","url(#"+b.id+")");b=d.getElementsByTagName("defs")[0];b=[b.firstChild,b.lastChild];e=d.getElementsByTagName("rect");b[0].id="gradient-black-"+n;b[1].id="gradient-white-"+n;e[0].setAttribute("fill","url(#"+b[1].id+")");e[1].setAttribute("fill",
+	"url(#"+b[0].id+")");this.slideElement.appendChild(a);this.pickerElement.appendChild(d);n++;p(this.slideElement,this.slide_listener);p(this.pickerElement,this.picker_listener)}function p(a,c){function d(a){e&&c(a)}function b(a){d(a);e=!1;l.removeEventListener("mouseup",b,!1);l.removeEventListener("mousemove",d,!1)}var e=!1;a.addEventListener("mousedown",function(a){e=!0;a.preventDefault();l.addEventListener("mouseup",b,!0);l.addEventListener("mousemove",d,!1)},!1)}function q(a,c,d,b){a.h=c.h%360;
+	a.s=c.s;a.v=c.v;c=k(a);var e={y:a.h*a.slideElement.offsetHeight/360,x:0},f=a.pickerElement.offsetHeight,f={x:a.s*a.pickerElement.offsetWidth,y:f-a.v*f};a.pickerElement.style.backgroundColor=k({h:a.h,s:1,v:1}).hex;a.callback&&a.callback(b||c.hex,{h:a.h,s:a.s,v:a.v},d||{r:c.r,g:c.g,b:c.b},f,e);return a}var u,t,v={xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"100%",height:"100%"};t=f("svg",v,[f("defs",{},f("linearGradient",{id:"gradient-hsv",x1:"0%",y1:"100%",x2:"0%",y2:"0%"},[f("stop",{offset:"0%",
+	"stop-color":"#FF0000","stop-opacity":"1"}),f("stop",{offset:"13%","stop-color":"#FF00FF","stop-opacity":"1"}),f("stop",{offset:"25%","stop-color":"#8000FF","stop-opacity":"1"}),f("stop",{offset:"38%","stop-color":"#0040FF","stop-opacity":"1"}),f("stop",{offset:"50%","stop-color":"#00FFFF","stop-opacity":"1"}),f("stop",{offset:"63%","stop-color":"#00FF40","stop-opacity":"1"}),f("stop",{offset:"75%","stop-color":"#0BED00","stop-opacity":"1"}),f("stop",{offset:"88%","stop-color":"#FFFF00","stop-opacity":"1"}),
+	f("stop",{offset:"100%","stop-color":"#FF0000","stop-opacity":"1"})])),f("rect",{x:"0",y:"0",width:"100%",height:"100%",fill:"url(#gradient-hsv)"})]);u=f("svg",v,[f("defs",{},[f("linearGradient",{id:"gradient-black",x1:"0%",y1:"100%",x2:"0%",y2:"0%"},[f("stop",{offset:"0%","stop-color":"#000000","stop-opacity":"1"}),f("stop",{offset:"100%","stop-color":"#CC9A81","stop-opacity":"0"})]),f("linearGradient",{id:"gradient-white",x1:"0%",y1:"100%",x2:"100%",y2:"100%"},[f("stop",{offset:"0%","stop-color":"#FFFFFF",
+	"stop-opacity":"1"}),f("stop",{offset:"100%","stop-color":"#CC9A81","stop-opacity":"0"})])]),f("rect",{x:"0",y:"0",width:"100%",height:"100%",fill:"url(#gradient-white)"}),f("rect",{x:"0",y:"0",width:"100%",height:"100%",fill:"url(#gradient-black)"})]);var n=0;g.hsv2rgb=function(a){a=k(a);delete a.hex;return a};g.hsv2hex=function(a){return k(a).hex};g.rgb2hsv=m;g.rgb2hex=function(a){return k(m(a)).hex};g.hex2hsv=function(a){return m(g.hex2rgb(a))};g.hex2rgb=function(a){return{r:parseInt(a.substr(1,
+	2),16),g:parseInt(a.substr(3,2),16),b:parseInt(a.substr(5,2),16)}};g.prototype.setHsv=function(a){return q(this,a)};g.prototype.setRgb=function(a){return q(this,m(a),a)};g.prototype.setHex=function(a){return q(this,g.hex2hsv(a),r,a)};g.positionIndicators=function(a,c,d,b){d&&(a.style.top=d.y-a.offsetHeight/2+"px");b&&(c.style.top=b.y-c.offsetHeight/2+"px",c.style.left=b.x-c.offsetWidth/2+"px")};g.prototype.fixIndicators=function(a,c){p(a,this.slide_listener);p(c,this.picker_listener)};w.ColorPicker=
+	g})(window,window.document);
+	}
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+	/**
+	 * @author mrdoob / http://mrdoob.com/
+	 * The MIT License, Copyright &copy; 2010-2016 three.js authors
+	 */
+	
+	// TODO changes by Alexander S. Rose
+	// - more events and properties
+	// - ctrlKey modifier for Number and Integer
+	// - UI.Element.prototype.getBox()
+	// - UI.Element.prototype.dispose()
+	// - UI.Element.prototype.setTitle()
+	// - UI.Element.prototype.getStyle()
+	
+	var UI = {}
+	
+	UI.Element = function () {}
+	
+	UI.Element.prototype = {
+	
+	  setId: function (id) {
+	    this.dom.id = id
+	
+	    return this
+	  },
+	
+	  setTitle: function (title) {
+	    this.dom.title = title
+	
+	    return this
+	  },
+	
+	  setClass: function (name) {
+	    this.dom.className = name
+	
+	    return this
+	  },
+	
+	  setStyle: function (style, array) {
+	    for (var i = 0; i < array.length; i++) {
+	      this.dom.style[ style ] = array[ i ]
+	    }
+	  },
+	
+	  getStyle: function (style) {
+	    return this.dom.style[ style ]
+	  },
+	
+	  getBox: function () {
+	    return this.dom.getBoundingClientRect()
+	  },
+	
+	  setDisabled: function (value) {
+	    this.dom.disabled = value
+	
+	    return this
+	  },
+	
+	  setTextContent: function (value) {
+	    this.dom.textContent = value
+	
+	    return this
+	  },
+	
+	  dispose: function () {
+	    this.dom.parentNode.removeChild(this.dom)
+	  }
+	
+	}
+	
+	// properties
+	
+	var properties = [
+	  'position', 'left', 'top', 'right', 'bottom', 'width', 'height', 'border',
+	  'borderLeft', 'borderTop', 'borderRight', 'borderBottom', 'borderColor',
+	  'display', 'overflow', 'overflowX', 'overflowY', 'margin', 'marginLeft',
+	  'marginTop', 'marginRight',
+	  'marginBottom', 'padding', 'paddingLeft', 'paddingTop', 'paddingRight',
+	  'paddingBottom', 'color', 'backgroundColor', 'opacity', 'fontSize',
+	  'fontWeight', 'fontStyle', 'fontFamily', 'textTransform', 'cursor',
+	  'verticalAlign', 'clear', 'float', 'zIndex', 'minHeight', 'maxHeight',
+	  'minWidth', 'maxWidth', 'wordBreak', 'wordWrap', 'spellcheck',
+	  'lineHeight', 'whiteSpace', 'textOverflow', 'textAlign', 'pointerEvents'
+	]
+	
+	properties.forEach(function (property) {
+	  var methodSuffix = property.substr(0, 1).toUpperCase() +
+	                        property.substr(1, property.length)
+	
+	  UI.Element.prototype[ 'set' + methodSuffix ] = function () {
+	    this.setStyle(property, arguments)
+	    return this
+	  }
+	
+	  UI.Element.prototype[ 'get' + methodSuffix ] = function () {
+	    return this.getStyle(property)
+	  }
+	})
+	
+	// events
+	
+	var events = [
+	  'KeyUp', 'KeyDown', 'KeyPress',
+	  'MouseOver', 'MouseOut', 'MouseDown', 'MouseUp', 'MouseMove',
+	  'Click', 'Change', 'Input', 'Scroll'
+	]
+	
+	events.forEach(function (event) {
+	  var method = 'on' + event
+	
+	  UI.Element.prototype[ method ] = function (callback) {
+	    this.dom.addEventListener(event.toLowerCase(), callback.bind(this), false)
+	
+	    return this
+	  }
+	})
+	
+	// Panel
+	
+	UI.Panel = function () {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('div')
+	  dom.className = 'Panel'
+	
+	  this.dom = dom
+	  this.children = []
+	
+	  return this
+	}
+	
+	UI.Panel.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Panel.prototype.add = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.appendChild(arguments[ i ].dom)
+	    this.children.push(arguments[ i ])
+	  }
+	
+	  return this
+	}
+	
+	UI.Panel.prototype.remove = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.removeChild(arguments[ i ].dom)
+	
+	    var idx = this.children.indexOf(arguments[ i ])
+	    if (idx !== -1) this.children.splice(idx, 1)
+	  }
+	
+	  return this
+	}
+	
+	UI.Panel.prototype.clear = function () {
+	  while (this.dom.children.length) {
+	    this.dom.removeChild(this.dom.lastChild)
+	  }
+	
+	  this.children.length = 0
+	
+	  return this
+	}
+	
+	// Collapsible Panel
+	
+	UI.CollapsiblePanel = function () {
+	  UI.Panel.call(this)
+	
+	  this.dom.className = 'Panel CollapsiblePanel'
+	
+	  this.button = document.createElement('div')
+	  this.button.className = 'CollapsiblePanelButton'
+	  this.dom.appendChild(this.button)
+	
+	  var scope = this
+	  this.button.addEventListener('click', function (event) {
+	    scope.toggle()
+	  }, false)
+	
+	  this.content = document.createElement('div')
+	  this.content.className = 'CollapsibleContent'
+	  this.dom.appendChild(this.content)
+	
+	  this.isCollapsed = false
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.CollapsiblePanel.prototype.addStatic = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.insertBefore(arguments[ i ].dom, this.content)
+	  }
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype.removeStatic = UI.Panel.prototype.remove
+	
+	UI.CollapsiblePanel.prototype.clearStatic = function () {
+	  this.dom.childNodes.forEach(function (child) {
+	    if (child !== this.content) {
+	      this.dom.removeChild(child)
+	    }
+	  })
+	}
+	
+	UI.CollapsiblePanel.prototype.add = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.content.appendChild(arguments[ i ].dom)
+	  }
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype.remove = function () {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.content.removeChild(arguments[ i ].dom)
+	  }
+	
+	  return this
+	}
+	
+	UI.CollapsiblePanel.prototype.clear = function () {
+	  while (this.content.children.length) {
+	    this.content.removeChild(this.content.lastChild)
+	  }
+	}
+	
+	UI.CollapsiblePanel.prototype.toggle = function () {
+	  this.setCollapsed(!this.isCollapsed)
+	}
+	
+	UI.CollapsiblePanel.prototype.collapse = function () {
+	  this.setCollapsed(true)
+	}
+	
+	UI.CollapsiblePanel.prototype.expand = function () {
+	  this.setCollapsed(false)
+	}
+	
+	UI.CollapsiblePanel.prototype.setCollapsed = function (setCollapsed) {
+	  if (setCollapsed) {
+	    this.dom.classList.add('collapsed')
+	  } else {
+	    this.dom.classList.remove('collapsed')
+	  }
+	
+	  this.isCollapsed = setCollapsed
+	}
+	
+	// Text
+	
+	UI.Text = function (text) {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('span')
+	  dom.className = 'Text'
+	  dom.style.display = 'inline-block'
+	  dom.style.verticalAlign = 'middle'
+	
+	  this.dom = dom
+	  this.setValue(text)
+	
+	  return this
+	}
+	
+	UI.Text.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Text.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.textContent = value
+	  }
+	
+	  return this
+	}
+	
+	UI.Text.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	// Input
+	
+	UI.Input = function (value) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Input'
+	  dom.style.padding = '2px'
+	  dom.style.border = '1px solid #ccc'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	  }, false)
+	
+	  this.dom = dom
+	  this.setValue(value || '')
+	
+	  return this
+	}
+	
+	UI.Input.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Input.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.Input.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Input.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	
+	// TextArea
+	
+	UI.TextArea = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('textarea')
+	  dom.className = 'TextArea'
+	  dom.style.padding = '2px'
+	  dom.style.border = '1px solid #ccc'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	  }, false)
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.TextArea.prototype = Object.create(UI.Element.prototype)
+	
+	UI.TextArea.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.TextArea.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	// Select
+	
+	UI.Select = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('select')
+	  dom.className = 'Select'
+	  dom.style.width = '64px'
+	  dom.style.height = '16px'
+	  dom.style.border = '0px'
+	  dom.style.padding = '0px'
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Select.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Select.prototype.setMultiple = function (boolean) {
+	  this.dom.multiple = boolean
+	
+	  return this
+	}
+	
+	UI.Select.prototype.setOptions = function (options) {
+	  var selected = this.dom.value
+	
+	  while (this.dom.children.length > 0) {
+	    this.dom.removeChild(this.dom.firstChild)
+	  }
+	
+	  for (var key in options) {
+	    var option = document.createElement('option')
+	    option.value = key
+	    option.innerHTML = options[ key ]
+	    this.dom.appendChild(option)
+	  }
+	
+	  this.dom.value = selected
+	
+	  return this
+	}
+	
+	UI.Select.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.Select.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Select.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	
+	// FancySelect
+	
+	UI.FancySelect = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('div')
+	  dom.className = 'FancySelect'
+	  dom.tabIndex = 0 // keyup event is ignored without setting tabIndex
+	
+	  // Broadcast for object selection after arrow navigation
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  // Prevent native scroll behavior
+	  dom.addEventListener('keydown', function (event) {
+	    switch (event.keyCode) {
+	      case 38: // up
+	      case 40: // down
+	        event.preventDefault()
+	        event.stopPropagation()
+	        break
+	    }
+	  }, false)
+	
+	  // Keybindings to support arrow navigation
+	  dom.addEventListener('keyup', function (event) {
+	    switch (event.keyCode) {
+	      case 38: // up
+	      case 40: // down
+	        scope.selectedIndex += (event.keyCode == 38) ? -1 : 1
+	
+	        if (scope.selectedIndex >= 0 && scope.selectedIndex < scope.options.length) {
+	          // Highlight selected dom elem and scroll parent if needed
+	          scope.setValue(scope.options[ scope.selectedIndex ].value)
+	
+	          scope.dom.dispatchEvent(changeEvent)
+	        }
+	
+	        break
+	    }
+	  }, false)
+	
+	  this.dom = dom
+	
+	  this.options = []
+	  this.selectedIndex = -1
+	  this.selectedValue = null
+	
+	  return this
+	}
+	
+	UI.FancySelect.prototype = Object.create(UI.Element.prototype)
+	
+	UI.FancySelect.prototype.setOptions = function (options) {
+	  var scope = this
+	
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  while (scope.dom.children.length > 0) {
+	    scope.dom.removeChild(scope.dom.firstChild)
+	  }
+	
+	  scope.options = []
+	
+	  for (var i = 0; i < options.length; i++) {
+	    var option = options[ i ]
+	
+	    var div = document.createElement('div')
+	    div.className = 'option'
+	    div.innerHTML = option.html
+	    div.value = option.value
+	    scope.dom.appendChild(div)
+	
+	    scope.options.push(div)
+	
+	    div.addEventListener('click', function (event) {
+	      scope.setValue(this.value)
+	      scope.dom.dispatchEvent(changeEvent)
+	    }, false)
+	  }
+	
+	  return scope
+	}
+	
+	UI.FancySelect.prototype.getValue = function () {
+	  return this.selectedValue
+	}
+	
+	UI.FancySelect.prototype.setValue = function (value) {
+	  for (var i = 0; i < this.options.length; i++) {
+	    var element = this.options[ i ]
+	
+	    if (element.value === value) {
+	      element.classList.add('active')
+	
+	      // scroll into view
+	
+	      var y = element.offsetTop - this.dom.offsetTop
+	      var bottomY = y + element.offsetHeight
+	      var minScroll = bottomY - this.dom.offsetHeight
+	
+	      if (this.dom.scrollTop > y) {
+	        this.dom.scrollTop = y
+	      } else if (this.dom.scrollTop < minScroll) {
+	        this.dom.scrollTop = minScroll
+	      }
+	
+	      this.selectedIndex = i
+	    } else {
+	      element.classList.remove('active')
+	    }
+	  }
+	
+	  this.selectedValue = value
+	
+	  return this
+	}
+	
+	// Checkbox
+	
+	UI.Checkbox = function (boolean) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Checkbox'
+	  dom.type = 'checkbox'
+	
+	  this.dom = dom
+	  this.setValue(boolean)
+	
+	  return this
+	}
+	
+	UI.Checkbox.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Checkbox.prototype.getValue = function () {
+	  return this.dom.checked
+	}
+	
+	UI.Checkbox.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.checked = value
+	  }
+	
+	  return this
+	}
+	
+	UI.Checkbox.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	// Color
+	
+	UI.Color = function () {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Color'
+	  dom.style.width = '64px'
+	  dom.style.height = '16px'
+	  dom.style.border = '0px'
+	  dom.style.padding = '0px'
+	  dom.style.backgroundColor = 'transparent'
+	
+	  try {
+	    dom.type = 'color'
+	    dom.value = '#ffffff'
+	  } catch (exception) {}
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Color.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Color.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.Color.prototype.getHexValue = function () {
+	  return parseInt(this.dom.value.substr(1), 16)
+	}
+	
+	UI.Color.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Color.prototype.setHexValue = function (hex) {
+	  this.dom.value = '#' + ('000000' + hex.toString(16)).slice(-6)
+	
+	  return this
+	}
+	
+	// Number
+	
+	UI.Number = function (number) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Number'
+	  dom.value = '0.00'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	
+	    if (event.keyCode === 13) dom.blur()
+	  }, false)
+	
+	  this.min = -Infinity
+	  this.max = Infinity
+	
+	  this.precision = 2
+	  this.step = 1
+	
+	  this.dom = dom
+	  this.setValue(number)
+	
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  var distance = 0
+	  var onMouseDownValue = 0
+	
+	  var pointer = [ 0, 0 ]
+	  var prevPointer = [ 0, 0 ]
+	
+	  var onMouseDown = function (event) {
+	    event.preventDefault()
+	
+	    distance = 0
+	
+	    onMouseDownValue = parseFloat(dom.value)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	
+	    document.addEventListener('mousemove', onMouseMove, false)
+	    document.addEventListener('mouseup', onMouseUp, false)
+	  }
+	
+	  var onMouseMove = function (event) {
+	    var currentValue = dom.value
+	
+	    pointer = [ event.clientX, event.clientY ]
+	
+	    distance += (pointer[ 0 ] - prevPointer[ 0 ]) - (pointer[ 1 ] - prevPointer[ 1 ])
+	
+	    var modifier = 50
+	    if (event.shiftKey) modifier = 5
+	    if (event.ctrlKey) modifier = 500
+	
+	    var number = onMouseDownValue + (distance / modifier) * scope.step
+	
+	    dom.value = Math.min(scope.max, Math.max(scope.min, number)).toFixed(scope.precision)
+	
+	    if (currentValue !== dom.value) dom.dispatchEvent(changeEvent)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	  }
+	
+	  var onMouseUp = function (event) {
+	    document.removeEventListener('mousemove', onMouseMove, false)
+	    document.removeEventListener('mouseup', onMouseUp, false)
+	
+	    if (Math.abs(distance) < 2) {
+	      dom.focus()
+	      dom.select()
+	    }
+	  }
+	
+	  var onChange = function (event) {
+	    var number = parseFloat(dom.value)
+	
+	    dom.value = isNaN(number) === false ? number : 0
+	  }
+	
+	  var onFocus = function (event) {
+	    dom.style.backgroundColor = ''
+	    dom.style.borderColor = '#ccc'
+	    dom.style.cursor = ''
+	  }
+	
+	  var onBlur = function (event) {
+	    dom.style.backgroundColor = 'transparent'
+	    dom.style.borderColor = 'transparent'
+	    dom.style.cursor = 'col-resize'
+	  }
+	
+	  dom.addEventListener('mousedown', onMouseDown, false)
+	  dom.addEventListener('change', onChange, false)
+	  dom.addEventListener('focus', onFocus, false)
+	  dom.addEventListener('blur', onBlur, false)
+	
+	  return this
+	}
+	
+	UI.Number.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Number.prototype.getValue = function () {
+	  return parseFloat(this.dom.value)
+	}
+	
+	UI.Number.prototype.setValue = function (value) {
+	  if (isNaN(value)) {
+	    this.dom.value = NaN
+	  } else if (value !== undefined) {
+	    this.dom.value = value.toFixed(this.precision)
+	  }
+	
+	  return this
+	}
+	
+	UI.Number.prototype.setRange = function (min, max) {
+	  this.min = min
+	  this.max = max
+	
+	  return this
+	}
+	
+	UI.Number.prototype.setPrecision = function (precision) {
+	  this.precision = precision
+	  this.setValue(parseFloat(this.dom.value))
+	
+	  return this
+	}
+	
+	UI.Number.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	// Integer
+	
+	UI.Integer = function (number) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Number'
+	  dom.value = '0.00'
+	
+	  dom.addEventListener('keydown', function (event) {
+	    event.stopPropagation()
+	  }, false)
+	
+	  this.min = -Infinity
+	  this.max = Infinity
+	
+	  this.step = 1
+	
+	  this.dom = dom
+	  this.setValue(number)
+	
+	  var changeEvent = document.createEvent('HTMLEvents')
+	  changeEvent.initEvent('change', true, true)
+	
+	  var distance = 0
+	  var onMouseDownValue = 0
+	
+	  var pointer = [ 0, 0 ]
+	  var prevPointer = [ 0, 0 ]
+	
+	  var onMouseDown = function (event) {
+	    event.preventDefault()
+	
+	    distance = 0
+	
+	    onMouseDownValue = parseFloat(dom.value)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	
+	    document.addEventListener('mousemove', onMouseMove, false)
+	    document.addEventListener('mouseup', onMouseUp, false)
+	  }
+	
+	  var onMouseMove = function (event) {
+	    var currentValue = dom.value
+	
+	    pointer = [ event.clientX, event.clientY ]
+	
+	    distance += (pointer[ 0 ] - prevPointer[ 0 ]) - (pointer[ 1 ] - prevPointer[ 1 ])
+	
+	    var modifier = 50
+	    if (event.shiftKey) modifier = 5
+	    if (event.ctrlKey) modifier = 500
+	
+	    var number = onMouseDownValue + (distance / modifier) * scope.step
+	
+	    dom.value = Math.min(scope.max, Math.max(scope.min, number)) | 0
+	
+	    if (currentValue !== dom.value) dom.dispatchEvent(changeEvent)
+	
+	    prevPointer = [ event.clientX, event.clientY ]
+	  }
+	
+	  var onMouseUp = function (event) {
+	    document.removeEventListener('mousemove', onMouseMove, false)
+	    document.removeEventListener('mouseup', onMouseUp, false)
+	
+	    if (Math.abs(distance) < 2) {
+	      dom.focus()
+	      dom.select()
+	    }
+	  }
+	
+	  var onChange = function (event) {
+	    var number = parseInt(dom.value)
+	
+	    if (isNaN(number) === false) {
+	      dom.value = number
+	    }
+	  }
+	
+	  var onFocus = function (event) {
+	    dom.style.backgroundColor = ''
+	    dom.style.borderColor = '#ccc'
+	    dom.style.cursor = ''
+	  }
+	
+	  var onBlur = function (event) {
+	    dom.style.backgroundColor = 'transparent'
+	    dom.style.borderColor = 'transparent'
+	    dom.style.cursor = 'col-resize'
+	  }
+	
+	  dom.addEventListener('mousedown', onMouseDown, false)
+	  dom.addEventListener('change', onChange, false)
+	  dom.addEventListener('focus', onFocus, false)
+	  dom.addEventListener('blur', onBlur, false)
+	
+	  return this
+	}
+	
+	UI.Integer.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Integer.prototype.getValue = function () {
+	  return parseInt(this.dom.value)
+	}
+	
+	UI.Integer.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.value = value | 0
+	  }
+	
+	  return this
+	}
+	
+	UI.Integer.prototype.setRange = function (min, max) {
+	  this.min = min
+	  this.max = max
+	
+	  return this
+	}
+	
+	UI.Integer.prototype.setName = function (value) {
+	  this.dom.name = value
+	
+	  return this
+	}
+	
+	UI.Integer.prototype.setStep = function (step) {
+	  this.step = step
+	
+	  return this
+	}
+	// Break
+	
+	UI.Break = function () {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('br')
+	  dom.className = 'Break'
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Break.prototype = Object.create(UI.Element.prototype)
+	
+	// HorizontalRule
+	
+	UI.HorizontalRule = function () {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('hr')
+	  dom.className = 'HorizontalRule'
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.HorizontalRule.prototype = Object.create(UI.Element.prototype)
+	
+	// Button
+	
+	UI.Button = function (value) {
+	  UI.Element.call(this)
+	
+	  var scope = this
+	
+	  var dom = document.createElement('button')
+	  dom.className = 'Button'
+	
+	  this.dom = dom
+	  this.dom.textContent = value
+	
+	  return this
+	}
+	
+	UI.Button.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Button.prototype.setLabel = function (value) {
+	  this.dom.textContent = value
+	
+	  return this
+	}
+	
+	// Helper
+	
+	UI.MenubarHelper = {
+	
+	  createMenuContainer: function (name, optionsPanel) {
+	    var container = new UI.Panel()
+	    var title = new UI.Panel()
+	    title.setClass('title')
+	
+	    title.setTextContent(name)
+	    title.setMargin('0px')
+	    title.setPadding('8px')
+	
+	    container.setClass('menu')
+	    container.add(title)
+	    container.add(optionsPanel)
+	
+	    return container
+	  },
+	
+	  createOption: function (name, callbackHandler, icon) {
+	    var option = new UI.Panel()
+	    option.setClass('option')
+	
+	    if (icon) {
+	      option.add(new UI.Icon(icon).setWidth('20px'))
+	      option.add(new UI.Text(name))
+	    } else {
+	      option.setTextContent(name)
+	    }
+	
+	    option.onClick(callbackHandler)
+	
+	    return option
+	  },
+	
+	  createOptionsPanel: function (menuConfig) {
+	    var options = new UI.Panel()
+	    options.setClass('options')
+	
+	    menuConfig.forEach(function (option) {
+	      options.add(option)
+	    })
+	
+	    return options
+	  },
+	
+	  createInput: function (name, callbackHandler) {
+	    var panel = new UI.Panel()
+	      .setClass('option')
+	
+	    var text = new UI.Text()
+	      .setWidth('70px')
+	      .setValue(name)
+	
+	    var input = new UI.Input()
+	      .setWidth('40px')
+	      .onKeyDown(callbackHandler)
+	
+	    panel.add(text)
+	    panel.add(input)
+	
+	    return panel
+	  },
+	
+	  createCheckbox: function (name, value, callbackHandler) {
+	    var panel = new UI.Panel()
+	      .setClass('option')
+	
+	    var text = new UI.Text()
+	      .setWidth('70px')
+	      .setValue(name)
+	
+	    var checkbox = new UI.Checkbox()
+	      .setValue(value)
+	      .onClick(callbackHandler)
+	
+	    panel.add(checkbox)
+	    panel.add(text)
+	
+	    return panel
+	  },
+	
+	  createDivider: function () {
+	    return new UI.HorizontalRule()
+	  }
+	
+	}
+	
+	module.exports = {
+	    "UI": UI
+	}
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/**
+	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
+	 */
+	
+	// Html
+	
+	var UI = __webpack_require__(13).UI;
+	__webpack_require__(11)
+	
+	UI.Html = function (html) {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('span')
+	  dom.className = 'Html'
+	  dom.style.cursor = 'default'
+	  dom.style.display = 'inline-block'
+	  dom.style.verticalAlign = 'middle'
+	
+	  this.dom = dom
+	  this.setValue(html)
+	
+	  return this
+	}
+	
+	UI.Html.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Html.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.innerHTML = value
+	  }
+	
+	  return this
+	}
+	
+	// Form
+	
+	UI.Form = function () {
+	  UI.Panel.call(this)
+	
+	  var dom = document.createElement('form')
+	  dom.className = 'Form'
+	  dom.method = 'post'
+	  dom.action = ''
+	  dom.target = '_blank'
+	  dom.enctype = 'multipart/form-data'
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Form.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.Form.prototype.setMethod = function (value) {
+	  this.dom.method = value
+	
+	  return this
+	}
+	
+	UI.Form.prototype.setAction = function (value) {
+	  this.dom.action = value
+	
+	  return this
+	}
+	
+	UI.Form.prototype.setTarget = function (value) {
+	  this.dom.target = value
+	
+	  return this
+	}
+	
+	UI.Form.prototype.setEnctype = function (value) {
+	  this.dom.enctype = value
+	
+	  return this
+	}
+	
+	// File
+	
+	UI.File = function () {
+	  UI.Input.call(this)
+	
+	  this.dom.className = 'File'
+	  this.dom.type = 'file'
+	  this.dom.multiple = false
+	
+	  return this
+	}
+	
+	UI.File.prototype = Object.create(UI.Input.prototype)
+	
+	UI.File.prototype.setMultiple = function (value) {
+	  this.dom.multiple = value
+	
+	  return this
+	}
+	
+	UI.File.prototype.getFiles = function (value) {
+	  return this.dom.files
+	}
+	
+	// Hidden
+	
+	UI.Hidden = function () {
+	  UI.Input.call(this)
+	
+	  this.dom.type = 'hidden'
+	
+	  return this
+	}
+	
+	UI.Hidden.prototype = Object.create(UI.Input.prototype)
+	
+	// Toggle Button
+	
+	UI.ToggleButton = function (labelA, labelB, callbackA, callbackB) {
+	  UI.Button.call(this, labelB)
+	
+	  var flag = true
+	
+	  this.onClick(function () {
+	    if (flag) {
+	      flag = false
+	      this.setLabel(labelA)
+	      callbackB()
+	    } else {
+	      flag = true
+	      this.setLabel(labelB)
+	      callbackA()
+	    }
+	  }.bind(this))
+	
+	  return this
+	}
+	
+	UI.ToggleButton.prototype = Object.create(UI.Button.prototype)
+	
+	// Ellipsis Text
+	
+	UI.EllipsisText = function (text) {
+	  UI.Text.call(this, text)
+	
+	  this.setWhiteSpace('nowrap')
+	  this.setOverflow('hidden')
+	  this.setTextOverflow('ellipsis')
+	
+	  return this
+	}
+	
+	UI.EllipsisText.prototype = Object.create(UI.Text.prototype)
+	
+	UI.EllipsisText.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.dom.textContent = value
+	    this.setTitle(value)
+	  }
+	
+	  return this
+	}
+	
+	// Ellipsis Multiline Text
+	
+	UI.EllipsisMultilineText = function (text) {
+	  // http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/
+	
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('span')
+	  dom.className = 'EllipsisMultilineText'
+	  dom.style.cursor = 'default'
+	  dom.style.display = 'inline-block'
+	  dom.style.verticalAlign = 'middle'
+	
+	  var content = document.createElement('p')
+	  dom.appendChild(content)
+	
+	  this.dom = dom
+	  this.content = content
+	
+	  this.setValue(text)
+	
+	  return this
+	}
+	
+	UI.EllipsisMultilineText.prototype = Object.create(UI.Element.prototype)
+	
+	UI.EllipsisMultilineText.prototype.setValue = function (value) {
+	  if (value !== undefined) {
+	    this.content.textContent = value
+	    this.setTitle(value)
+	  }
+	
+	  return this
+	}
+	
+	// Overlay Panel
+	
+	UI.OverlayPanel = function () {
+	  UI.Panel.call(this)
+	
+	  this.dom.className = 'Panel OverlayPanel'
+	  this.dom.tabIndex = '-1'
+	  this.dom.style.outline = 'none'
+	
+	  return this
+	}
+	
+	UI.OverlayPanel.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.OverlayPanel.prototype.attach = function (node) {
+	  node = node || document.body
+	
+	  node.appendChild(this.dom)
+	
+	  return this
+	}
+	
+	// Icon (requires font awesome)
+	
+	UI.Icon = function (value) {
+	  UI.Panel.call(this)
+	
+	  var dom = document.createElement('span')
+	  dom.className = 'Icon fa'
+	
+	  this.dom = dom
+	
+	  if (value) this.addClass.apply(this, arguments)
+	
+	  return this
+	}
+	
+	UI.Icon.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.Icon.prototype.hasClass = function (value) {
+	  return this.dom.classList.contains('fa-' + value)
+	}
+	
+	UI.Icon.prototype.addClass = function (value) {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.classList.add('fa-' + arguments[ i ])
+	  }
+	
+	  return this
+	}
+	
+	UI.Icon.prototype.setClass = function (value) {
+	  this.dom.className = 'Icon fa'
+	
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.classList.add('fa-' + arguments[ i ])
+	  }
+	
+	  return this
+	}
+	
+	UI.Icon.prototype.removeClass = function (value) {
+	  for (var i = 0; i < arguments.length; i++) {
+	    this.dom.classList.remove('fa-' + arguments[ i ])
+	  }
+	
+	  return this
+	}
+	
+	UI.Icon.prototype.switchClass = function (newValue, oldValue) {
+	  this.removeClass(oldValue, newValue)
+	  this.addClass(newValue)
+	
+	  return this
+	}
+	
+	// Toggle Icon
+	
+	UI.ToggleIcon = function (value, classTrue, classFalse) {
+	  UI.Icon.call(this, value ? classTrue : classFalse)
+	
+	  this.value = value
+	  this.classTrue = classTrue
+	  this.classFalse = classFalse
+	
+	  return this
+	}
+	
+	UI.ToggleIcon.prototype = Object.create(UI.Icon.prototype)
+	
+	UI.ToggleIcon.prototype.setValue = function (value) {
+	  this.value = value
+	
+	  if (value) {
+	    this.switchClass(this.classTrue, this.classFalse)
+	  } else {
+	    this.switchClass(this.classFalse, this.classTrue)
+	  }
+	
+	  return this
+	}
+	
+	UI.ToggleIcon.prototype.getValue = function () {
+	  return this.value
+	}
+	
+	// Dispose Icon
+	
+	UI.DisposeIcon = function () {
+	  UI.Icon.call(this, 'trash-o')
+	
+	  var flag = false
+	  var scope = this
+	
+	  this.setTitle('delete')
+	  this.setCursor('pointer')
+	
+	  this.onClick(function () {
+	    if (flag === true) {
+	      if (typeof scope.disposeFunction === 'function') {
+	        scope.disposeFunction()
+	      }
+	    } else {
+	      scope.setColor('rgb(178, 34, 34)')
+	      scope.dom.classList.add('deleteInfo')
+	      flag = true
+	
+	      setTimeout(function () {
+	        scope.setColor('#888')
+	        scope.dom.classList.remove('deleteInfo')
+	        flag = false
+	      }, 1500)
+	    }
+	  })
+	
+	  return this
+	}
+	
+	UI.DisposeIcon.prototype = Object.create(UI.Icon.prototype)
+	
+	UI.DisposeIcon.prototype.setDisposeFunction = function (fn) {
+	  this.disposeFunction = fn
+	
+	  return this
+	}
+	
+	// Progress
+	
+	UI.Progress = function (max, value) {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('progress')
+	  dom.className = 'Progress'
+	
+	  dom.max = max || 1.0
+	  if (value !== undefined) dom.value = value
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Progress.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Progress.prototype.getValue = function () {
+	  return this.dom.value
+	}
+	
+	UI.Progress.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Progress.prototype.setMax = function (value) {
+	  this.dom.max = value
+	
+	  return this
+	}
+	
+	UI.Progress.prototype.setIndeterminate = function () {
+	  this.dom.removeAttribute('value')
+	
+	  return this
+	}
+	
+	// Range
+	
+	UI.Range = function (min, max, value, step) {
+	  UI.Element.call(this)
+	
+	  var dom = document.createElement('input')
+	  dom.className = 'Range'
+	  dom.type = 'range'
+	
+	  dom.min = min.toPrecision(3)
+	  dom.max = max.toPrecision(3)
+	  dom.value = value.toPrecision(3)
+	  dom.step = step.toPrecision(3)
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.Range.prototype = Object.create(UI.Element.prototype)
+	
+	UI.Range.prototype.getValue = function () {
+	  return parseFloat(this.dom.value)
+	}
+	
+	UI.Range.prototype.setRange = function (min, max) {
+	  this.dom.min = min
+	  this.dom.max = max
+	
+	  return this
+	}
+	
+	UI.Range.prototype.setValue = function (value) {
+	  this.dom.value = value
+	
+	  return this
+	}
+	
+	UI.Range.prototype.setStep = function (value) {
+	  this.dom.step = value
+	
+	  return this
+	}
+	
+	// AdaptiveTextArea
+	
+	UI.AdaptiveTextArea = function () {
+	  // http://www.brianchu.com/blog/2013/11/02/creating-an-auto-growing-text-input/
+	
+	  UI.Element.call(this)
+	
+	  var container = document.createElement('div')
+	  container.className = 'AdaptiveTextAreaContainer'
+	
+	  var textarea = document.createElement('textarea')
+	  textarea.className = 'AdaptiveTextArea'
+	
+	  var size = document.createElement('div')
+	  size.className = 'AdaptiveTextAreaSize'
+	
+	  container.appendChild(textarea)
+	  container.appendChild(size)
+	
+	  textarea.addEventListener('input', function (event) {
+	    size.innerHTML = textarea.value + '\n'
+	  }, false)
+	
+	  this.textarea = textarea
+	  this.size = size
+	  this.dom = container
+	
+	  return this
+	}
+	
+	UI.AdaptiveTextArea.prototype = Object.create(UI.Element.prototype)
+	
+	UI.AdaptiveTextArea.prototype.getValue = function () {
+	  return this.textarea.value
+	}
+	
+	UI.AdaptiveTextArea.prototype.setValue = function (value) {
+	  this.textarea.value = value
+	  this.size.innerHTML = value + '\n'
+	
+	  return this
+	}
+	
+	UI.AdaptiveTextArea.prototype.setSpellcheck = function (value) {
+	  this.textarea.spellcheck = value
+	
+	  return this
+	}
+	
+	UI.AdaptiveTextArea.prototype.setBackgroundColor = function (value) {
+	  this.textarea.style.backgroundColor = value
+	
+	  return this
+	}
+	
+	// Virtual List
+	
+	UI.VirtualList = function (items, itemHeight, height, generatorFn) {
+	  // based on Virtual DOM List
+	  // https://github.com/sergi/virtual-list
+	  // The MIT License (MIT)
+	  // Copyright (C) 2013 Sergi Mansilla
+	
+	  UI.Element.call(this)
+	
+	  items = items || []
+	  itemHeight = itemHeight || 20
+	  height = height || 300
+	  generatorFn = generatorFn || function () {}
+	
+	  var dom = document.createElement('div')
+	  dom.className = 'VirtualList'
+	  dom.style.height = height + 'px'
+	
+	  var totalRows = items.length
+	  var screenItemsCount = Math.ceil(height / itemHeight)
+	  var cachedItemsCount = screenItemsCount * 3
+	  var lastRepaintY
+	  var maxBuffer = screenItemsCount * itemHeight
+	  var lastScrolled = 0
+	  var renderChunkCallback = function () {}
+	
+	  var list = document.createElement('div')
+	  list.style.width = '100%'
+	  list.style.height = height + 'px'
+	  list.style[ 'overflow-y' ] = 'auto'
+	  list.style.position = 'relative'
+	  list.style.padding = 0
+	
+	  var scroller = document.createElement('div')
+	  scroller.style.opacity = 0
+	  scroller.style.position = 'absolute'
+	  scroller.style.top = 0
+	  scroller.style.left = 0
+	  scroller.style.width = '1px'
+	  scroller.style.height = (itemHeight * totalRows) + 'px'
+	
+	  function createRow (i) {
+	    var item = generatorFn(i)
+	    item.classList.add('VirtualListRow')
+	    item.style.height = itemHeight + 'px'
+	    item.style.top = (i * itemHeight) + 'px'
+	    return item
+	  }
+	
+	  function renderChunk (from) {
+	    var finalItem = Math.min(totalRows, from + cachedItemsCount)
+	    renderChunkCallback(from, finalItem)
+	    // Append all the new rows in a document fragment
+	    // that we will later append to the parent node
+	    var fragment = document.createDocumentFragment()
+	    for (var i = from; i < finalItem; i++) {
+	      fragment.appendChild(createRow(i))
+	    }
+	    // Hide and mark obsolete nodes for deletion.
+	    for (var j = 1, l = list.childNodes.length; j < l; j++) {
+	      list.childNodes[ j ].style.display = 'none'
+	      list.childNodes[ j ].setAttribute('data-rm', '1')
+	    }
+	    list.appendChild(fragment)
+	  };
+	
+	  // As soon as scrolling has stopped, this interval asynchronously
+	  // removes all the nodes that are not used anymore
+	  var rmNodeInterval = setInterval(function () {
+	    // check if list is still attached to dom
+	    var element = dom
+	    while (element !== document && element.parentNode) {
+	      element = element.parentNode
+	    }
+	    // if list not attached to dom, clear interval
+	    if (element !== document) {
+	      clearInterval(rmNodeInterval)
+	    }
+	    // remove tagged nodes
+	    if (Date.now() - lastScrolled > 100) {
+	      var badNodes = list.querySelectorAll('[data-rm="1"]')
+	      for (var i = 0, l = badNodes.length; i < l; i++) {
+	        list.removeChild(badNodes[ i ])
+	      }
+	    }
+	  }, 500)
+	
+	  function onScroll (e) {
+	    var scrollTop = e.target.scrollTop // Triggers reflow
+	    if (!lastRepaintY || Math.abs(scrollTop - lastRepaintY) > maxBuffer) {
+	      var first = Math.floor(scrollTop / itemHeight)
+	      renderChunk(Math.max(0, first - screenItemsCount))
+	      lastRepaintY = scrollTop
+	    }
+	    lastScrolled = Date.now()
+	    e.preventDefault && e.preventDefault()
+	  }
+	
+	  // API
+	
+	  this.setItems = function (value) {
+	    items = value
+	    totalRows = items.length
+	    scroller.style.height = (itemHeight * totalRows) + 'px'
+	    renderChunk(0)
+	    return this
+	  }
+	
+	  this.setItemHeight = function (value) {
+	    itemHeight = value
+	    screenItemsCount = Math.ceil(height / itemHeight)
+	    cachedItemsCount = screenItemsCount * 3
+	    maxBuffer = screenItemsCount * itemHeight
+	    scroller.style.height = (itemHeight * totalRows) + 'px'
+	    renderChunk(0)
+	    return this
+	  }
+	
+	  this.setHeight = function (value) {
+	    UI.Element.prototype.setHeight.call(this, value + 'px')
+	    height = value
+	    screenItemsCount = Math.ceil(height / itemHeight)
+	    cachedItemsCount = screenItemsCount * 3
+	    maxBuffer = screenItemsCount * itemHeight
+	    list.style.height = height + 'px'
+	    scroller.style.height = height + 'px'
+	    renderChunk(0)
+	    return this
+	  }
+	
+	  this.setGeneratorFn = function (value) {
+	    generatorFn = value
+	    renderChunk(0)
+	    return this
+	  }
+	
+	  this.setRenderChunkCallback = function (value) {
+	    renderChunkCallback = value
+	  }
+	
+	  this.redraw = function () {
+	    var first = Math.floor(list.scrollTop / itemHeight)
+	    renderChunk(Math.max(0, first - screenItemsCount))
+	    lastRepaintY = list.scrollTop
+	    return this
+	  }
+	
+	  //
+	
+	  list.appendChild(scroller)
+	  dom.appendChild(list)
+	  list.addEventListener('scroll', onScroll)
+	  renderChunk(0)
+	
+	  this.dom = dom
+	
+	  return this
+	}
+	
+	UI.VirtualList.prototype = Object.create(UI.Element.prototype)
+	
+	// Virtual Table
+	
+	UI.VirtualTable = function (items, itemHeight, height, columns, params) {
+	  var p = params || {}
+	
+	  UI.Panel.call(this)
+	
+	  // this.setOverflow( "scroll" );
+	
+	  var defaultWidth = p.defaultWidth !== undefined ? p.defaultWidth : 30
+	  var defaultMargin = p.defaultMargin !== undefined ? p.defaultMargin : 5
+	  var defaultAlign = p.defaultAlign !== undefined ? p.defaultAlign : 'left'
+	  var onRowSelect = p.onRowSelect
+	
+	  // header
+	
+	  var header = new UI.Panel()
+	    .setWhiteSpace('nowrap')
+	    .setDisplay('inline-block')
+	    .setOverflow('')
+	    .setWidth('100%')
+	
+	  var fullWidth = 0
+	
+	  var selected = []
+	
+	  var numericalSort = function (a, b) {
+	    return a - b
+	  }
+	
+	  var lexicalSort = function (a, b) {
+	    return a.localeCompare(b)
+	  }
+	
+	  var sortColumn = function (idx, flag) {
+	    var sort
+	    if (typeof items[ 0 ][ idx ] === 'string') {
+	      sort = lexicalSort
+	    } else {
+	      sort = numericalSort
+	    }
+	    items.sort(function (a, b) {
+	      if (flag) {
+	        return sort(b[ idx ], a[ idx ])
+	      } else {
+	        return sort(a[ idx ], b[ idx ])
+	      }
+	    })
+	    virtualList.redraw()
+	    return this
+	  }
+	
+	  var selectRow = function (event, idx) {
+	    selected.length = 0
+	    if (onRowSelect) onRowSelect(event, idx)
+	    if (idx !== undefined) {
+	      selected.push(items[ idx ][ 0 ])
+	    }
+	    virtualList.redraw()
+	    return this
+	  }
+	
+	  columns.forEach(function (col) {
+	    var width = col.width || defaultWidth
+	    var margin = col.margin || defaultMargin
+	
+	    var text = new UI.EllipsisText()
+	      .setValue(col.name)
+	      .setWidth(width + 'px')
+	      .setTextAlign(col.align || defaultAlign)
+	      .setMarginLeft(margin + 'px')
+	      .setMarginRight(margin + 'px')
+	      .setCursor('pointer')
+	      .onClick(function (e) {
+	        var flag = col.__sortFlag === 'ASC'
+	        sortColumn(col.index, flag)
+	        if (flag) {
+	          col.__sortFlag = 'DESC'
+	        } else {
+	          col.__sortFlag = 'ASC'
+	        }
+	      })
+	
+	    header.add(text)
+	
+	    fullWidth += width + 2 * margin
+	  })
+	
+	  // list
+	
+	  var generatorFn = function (index) {
+	    var panel = new UI.Panel()
+	
+	    columns.forEach(function (col) {
+	      var value = items[ index ][ col.index ]
+	      if (col.format) value = col.format(value)
+	
+	      var width = col.width || defaultWidth
+	      var margin = col.margin || defaultMargin
+	
+	      var element
+	      if (typeof value === 'object') {
+	        element = value
+	      } else {
+	        element = new UI.Text()
+	          .setValue(value)
+	      }
+	
+	      element
+	        .setWidth(width + 'px')
+	        .setTextAlign(col.align || defaultAlign)
+	        .setMarginLeft(margin + 'px')
+	        .setMarginRight(margin + 'px')
+	        .onClick(function (event) {
+	          if (typeof col.onClick === 'function') {
+	            col.onClick(event, index, value)
+	          }
+	        })
+	        .onMouseOver(function (event) {
+	          if (typeof col.onMouseOver === 'function') {
+	            col.onMouseOver(event, index, value)
+	          }
+	        })
+	        .onMouseOut(function (event) {
+	          if (typeof col.onMouseOut === 'function') {
+	            col.onMouseOut(event, index, value)
+	          }
+	        })
+	
+	      panel.add(element)
+	    })
+	
+	    panel
+	      .setCursor('pointer')
+	      .onClick(function (event) {
+	        selectRow(event, index)
+	      })
+	
+	    if (selected.indexOf(items[ index ][ 0 ]) !== -1) {
+	      panel.dom.classList.add('highlight')
+	    }
+	
+	    return panel.dom
+	  }
+	
+	  var virtualList = new UI.VirtualList(
+	    items, itemHeight, height, generatorFn
+	  ).setWidth((fullWidth + 20) + 'px')
+	
+	  //
+	
+	  this.add(header, virtualList)
+	
+	  // API
+	
+	  this.header = header
+	  this.list = virtualList
+	  this.sortColumn = sortColumn
+	  this.selectRow = function (idx) {
+	    selectRow(undefined, idx)
+	  }
+	
+	  return this
+	}
+	
+	UI.VirtualTable.prototype = Object.create(UI.Panel.prototype)
+	
+	// Popup Menu (requires Tether)
+	
+	UI.PopupMenu = function (iconClass, heading, constraintTo) {
+	  constraintTo = constraintTo || 'scrollParent'
+	
+	  UI.Panel.call(this)
+	
+	  var entryLabelWidth = '100px'
+	
+	  var icon = new UI.Icon(iconClass || 'bars')
+	
+	  var panel = new UI.OverlayPanel()
+	    .setDisplay('none')
+	    .attach(this.dom)
+	
+	  var xOffset = 0
+	  var yOffset = 0
+	
+	  var prevX = 0
+	  var prevY = 0
+	
+	  function onMousemove (e) {
+	    if (prevX === 0) {
+	      prevX = e.clientX
+	      prevY = e.clientY
+	    }
+	    xOffset += prevX - e.clientX
+	    yOffset += prevY - e.clientY
+	    prevX = e.clientX
+	    prevY = e.clientY
+	    tether.setOptions({
+	      element: panel.dom,
+	      target: icon.dom,
+	      attachment: 'top right',
+	      targetAttachment: 'top left',
+	      offset: yOffset + 'px ' + xOffset + 'px',
+	      constraints: [{
+	        to: constraintTo,
+	        pin: ['top', 'bottom']
+	      }]
+	    })
+	    tether.position()
+	  }
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setMarginBottom('10px')
+	    .setHeight('25px')
+	    .setCursor('move')
+	    .onMouseDown(function (e) {
+	      if (e.which === 1) {
+	        document.addEventListener('mousemove', onMousemove)
+	      }
+	      document.addEventListener('mouseup', function (e) {
+	        document.removeEventListener('mousemove', onMousemove)
+	      })
+	    })
+	
+	  headingPanel
+	    .add(
+	      new UI.Icon('times')
+	        .setFloat('right')
+	        .setCursor('pointer')
+	        .onClick(function () {
+	          this.setMenuDisplay('none')
+	        }.bind(this))
+	    )
+	    .add(
+	      new UI.Text(heading)
+	    )
+	
+	  panel.add(headingPanel)
+	
+	  var tether
+	
+	  icon.setTitle('menu')
+	  icon.setCursor('pointer')
+	  icon.onClick(function (e) {
+	    if (panel.getDisplay() === 'block') {
+	      this.setMenuDisplay('none')
+	      tether.destroy()
+	      return
+	    }
+	
+	    panel.setMaxHeight((window.innerHeight / 1.2) + 'px')
+	    this.setMenuDisplay('block')
+	
+	    xOffset = 5
+	    yOffset = 0
+	
+	    tether = new Tether({
+	      element: panel.dom,
+	      target: icon.dom,
+	      attachment: 'top right',
+	      targetAttachment: 'top left',
+	      offset: '0px 5px',
+	      constraints: [{
+	        to: constraintTo,
+	        attachment: 'element',
+	        pin: ['top', 'bottom']
+	      }]
+	    })
+	
+	    tether.position()
+	  }.bind(this))
+	
+	  this.add(icon)
+	
+	  this.setClass('')
+	    .setDisplay('inline')
+	
+	  this.icon = icon
+	  this.panel = panel
+	  this.entryLabelWidth = entryLabelWidth
+	
+	  return this
+	}
+	
+	UI.PopupMenu.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.PopupMenu.prototype.addEntry = function (label, entry) {
+	  this.panel
+	    .add(new UI.Text(label)
+	      // .setWhiteSpace( "nowrap" )
+	      .setWidth(this.entryLabelWidth))
+	    .add(entry || new UI.Panel())
+	    .add(new UI.Break())
+	
+	  return this
+	}
+	
+	UI.PopupMenu.prototype.setEntryLabelWidth = function (value) {
+	  this.entryLabelWidth = value
+	
+	  return this
+	}
+	
+	UI.PopupMenu.prototype.setMenuDisplay = function (value) {
+	  this.panel.setDisplay(value)
+	
+	  if (value !== 'none') this.panel.dom.focus()
+	
+	  return this
+	}
+	
+	UI.PopupMenu.prototype.setIconTitle = function (value) {
+	  this.icon.setTitle(value)
+	
+	  return this
+	}
+	
+	UI.PopupMenu.prototype.dispose = function () {
+	  this.panel.dispose()
+	
+	  UI.Element.prototype.dispose.call(this)
+	}
+	
+	// Collapsible Icon Panel
+	
+	UI.CollapsibleIconPanel = function (iconClass1, iconClass2) {
+	  UI.Panel.call(this)
+	
+	  this.dom.className = 'Panel CollapsiblePanel'
+	
+	  if (iconClass1 === undefined) {
+	    // iconClass1 = iconClass1 || "plus-square";
+	    // iconClass2 = iconClass2 || "minus-square";
+	
+	    iconClass1 = iconClass1 || 'chevron-down'
+	    iconClass2 = iconClass2 || 'chevron-right'
+	  }
+	
+	  this.button = new UI.Icon(iconClass1)
+	    .setTitle('expand/collapse')
+	    .setCursor('pointer')
+	    .setWidth('12px')
+	    .setMarginRight('6px')
+	  this.addStatic(this.button)
+	
+	  var scope = this
+	  this.button.dom.addEventListener('click', function (event) {
+	    scope.toggle()
+	  }, false)
+	
+	  this.content = document.createElement('div')
+	  this.content.className = 'CollapsibleContent'
+	  this.dom.appendChild(this.content)
+	
+	  this.isCollapsed = false
+	
+	  this.iconClass1 = iconClass1
+	  this.iconClass2 = iconClass2
+	
+	  return this
+	}
+	
+	UI.CollapsibleIconPanel.prototype = Object.create(UI.CollapsiblePanel.prototype)
+	
+	UI.CollapsibleIconPanel.prototype.setCollapsed = function (setCollapsed) {
+	  if (setCollapsed) {
+	    this.dom.classList.add('collapsed')
+	
+	    if (this.iconClass2) {
+	      this.button.switchClass(this.iconClass2, this.iconClass1)
+	    } else {
+	      this.button.addClass('rotate-90')
+	    }
+	  } else {
+	    this.dom.classList.remove('collapsed')
+	
+	    if (this.iconClass2) {
+	      this.button.switchClass(this.iconClass1, this.iconClass2)
+	    } else {
+	      this.button.removeClass('rotate-90')
+	    }
+	  }
+	
+	  this.isCollapsed = setCollapsed
+	}
+	
+	// Color picker (requires FlexiColorPicker)
+	// https://github.com/DavidDurman/FlexiColorPicker
+	// https://github.com/zvin/FlexiColorPicker
+	
+	UI.ColorPicker = function () {
+	  var scope = this
+	
+	  UI.Panel.call(this)
+	
+	  // slider
+	
+	  this.slideWrapper = new UI.Panel()
+	    .setClass('slide-wrapper')
+	
+	  this.sliderIndicator = new UI.Panel()
+	    .setClass('slide-indicator')
+	
+	  this.slider = new UI.Panel()
+	    .setClass('slide')
+	    .setWidth('25px')
+	    .setHeight('80px')
+	
+	  this.slideWrapper.add(
+	    this.slider,
+	    this.sliderIndicator
+	  )
+	
+	  // picker
+	
+	  this.pickerWrapper = new UI.Panel()
+	    .setClass('picker-wrapper')
+	
+	  this.pickerIndicator = new UI.Panel()
+	    .setClass('picker-indicator')
+	
+	  this.picker = new UI.Panel()
+	    .setClass('picker')
+	    .setWidth('130px')
+	    .setHeight('80px')
+	
+	  this.pickerWrapper.add(
+	    this.picker,
+	    this.pickerIndicator
+	  )
+	
+	  // event
+	
+	  var changeEvent = document.createEvent('Event')
+	  changeEvent.initEvent('change', true, true)
+	
+	  // finalize
+	
+	  this.add(
+	    this.pickerWrapper,
+	    this.slideWrapper
+	  )
+	
+	  this.colorPicker = ColorPicker(
+	
+	    this.slider.dom,
+	    this.picker.dom,
+	
+	    function (hex, hsv, rgb, pickerCoordinate, sliderCoordinate) {
+	      if (!pickerCoordinate && sliderCoordinate && hsv.s < 0.05) {
+	        hsv.s = 0.5
+	        hsv.v = 0.7
+	        scope.colorPicker.setHsv(hsv)
+	
+	        return
+	      }
+	
+	      ColorPicker.positionIndicators(
+	        scope.sliderIndicator.dom, scope.pickerIndicator.dom,
+	        sliderCoordinate, pickerCoordinate
+	      )
+	
+	      scope.hex = hex
+	      scope.hsv = hsv
+	      scope.rgb = rgb
+	
+	      if (!scope._settingValue) {
+	        scope.dom.dispatchEvent(changeEvent)
+	      }
+	    }
+	
+	  )
+	
+	  this.colorPicker.fixIndicators(
+	    this.sliderIndicator.dom,
+	    this.pickerIndicator.dom
+	  )
+	
+	  return this
+	}
+	
+	UI.ColorPicker.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.ColorPicker.prototype.setValue = function (value) {
+	  if (value !== this.hex) {
+	    this._settingValue = true
+	    this.colorPicker.setHex(value)
+	    this._settingValue = false
+	  }
+	
+	  return this
+	}
+	
+	UI.ColorPicker.prototype.getValue = function () {
+	  return this.hex
+	}
+	
+	module.exports = {
+	    "UI": UI
+	}
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file UI NGL
+	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
+	 */
+	
+	// Color
+	
+	var NGL = __webpack_require__(3);
+	var UI = __webpack_require__(14).UI;
+	
+	UI.ColorPopupMenu = function () {
+	  var scope = this
+	
+	  UI.Panel.call(this)
+	
+	  this.iconText = new UI.Text('')
+	    .setCursor('pointer')
+	    .setClass('fa-stack-1x')
+	    .setFontFamily('Arial, sans-serif')
+	    .setColor('#111')
+	
+	  this.iconSquare = new UI.Icon('square', 'stack-1x')
+	  // .setMarginTop( "0.05em" );
+	
+	  this.menu = new UI.PopupMenu('stack', 'Color')
+	
+	  this.menu.icon
+	    .setTitle('color')
+	    .setWidth('1em').setHeight('1em').setLineHeight('1em')
+	    .add(this.iconSquare)
+	    .add(this.iconText)
+	
+	  var changeEvent = document.createEvent('Event')
+	  changeEvent.initEvent('change', true, true)
+	
+	  this.colorInput = new UI.Input()
+	    .onChange(function () {
+	      scope.setColor(scope.colorInput.getValue())
+	      scope.dom.dispatchEvent(changeEvent)
+	    })
+	
+	  this.colorPicker = new UI.ColorPicker()
+	    .setDisplay('inline-block')
+	    .onChange(function (e) {
+	      scope.setColor(scope.colorPicker.getValue())
+	      scope.dom.dispatchEvent(changeEvent)
+	    })
+	
+	  this.menu
+	    .addEntry('Input', this.colorInput)
+	    .addEntry('Picker', this.colorPicker)
+	
+	  this.add(this.menu)
+	
+	  this.setClass('')
+	    .setDisplay('inline')
+	
+	  return this
+	}
+	
+	UI.ColorPopupMenu.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.ColorPopupMenu.prototype.setColor = (function () {
+	  var c = new NGL.Color()
+	
+	  return function (value) {
+	    c.set(value)
+	    value = '#' + c.getHexString()
+	
+	    this.colorInput
+	      .setBackgroundColor(value)
+	      .setValue(value)
+	
+	    this.colorPicker.setValue(value)
+	
+	    this.iconSquare.setColor(value)
+	
+	    // perceived brightness (http://alienryderflex.com/hsp.html)
+	    var brightness = Math.sqrt(
+	      c.r * 255 * c.r * 255 * 0.241 +
+	              c.g * 255 * c.g * 255 * 0.691 +
+	              c.b * 255 * c.b * 255 * 0.068
+	    )
+	
+	    if (brightness > 130) {
+	      this.iconText.setColor('#000000')
+	      this.colorInput.setColor('#000000')
+	    } else {
+	      this.iconText.setColor('#FFFFFF')
+	      this.colorInput.setColor('#FFFFFF')
+	    }
+	
+	    return this
+	  }
+	}())
+	
+	UI.ColorPopupMenu.prototype.getColor = function () {
+	  return this.colorInput.getValue()
+	}
+	
+	UI.ColorPopupMenu.prototype.getValue = function () {
+	  return this.getColor()
+	}
+	
+	UI.ColorPopupMenu.prototype.setValue = function (value) {
+	  this.setColor(value)
+	
+	  return this
+	}
+	
+	UI.ColorPopupMenu.prototype.dispose = function () {
+	  this.menu.dispose()
+	
+	  UI.Panel.prototype.dispose.call(this)
+	}
+	
+	// Vector3
+	
+	UI.Vector3 = function (value) {
+	  UI.Panel.call(this).setDisplay('inline-block')
+	
+	  this.xNumber = new UI.Number(0).setWidth('40px')
+	  this.yNumber = new UI.Number(0).setWidth('40px')
+	  this.zNumber = new UI.Number(0).setWidth('40px')
+	
+	  this.add(this.xNumber, this.yNumber, this.zNumber)
+	  this.setValue(value)
+	
+	  var changeEvent = document.createEvent('Event')
+	  changeEvent.initEvent('change', true, true)
+	
+	  this.xNumber.onChange(function () {
+	    this.dom.dispatchEvent(changeEvent)
+	  }.bind(this))
+	  this.yNumber.onChange(function () {
+	    this.dom.dispatchEvent(changeEvent)
+	  }.bind(this))
+	  this.zNumber.onChange(function () {
+	    this.dom.dispatchEvent(changeEvent)
+	  }.bind(this))
+	
+	  return this
+	}
+	
+	UI.Vector3.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.Vector3.prototype.getValue = function () {
+	  return {
+	    x: this.xNumber.getValue(),
+	    y: this.yNumber.getValue(),
+	    z: this.zNumber.getValue()
+	  }
+	}
+	
+	UI.Vector3.prototype.setValue = function (value) {
+	  if (value) {
+	    this.xNumber.setValue(value.x)
+	    this.yNumber.setValue(value.y)
+	    this.zNumber.setValue(value.z)
+	  }
+	
+	  return this
+	}
+	
+	UI.Vector3.prototype.setPrecision = function (precision) {
+	  this.xNumber.setPrecision(precision)
+	  this.yNumber.setPrecision(precision)
+	  this.zNumber.setPrecision(precision)
+	
+	  return this
+	}
+	
+	UI.Vector3.prototype.setRange = function (min, max) {
+	  this.xNumber.setRange(min, max)
+	  this.yNumber.setRange(min, max)
+	  this.zNumber.setRange(min, max)
+	
+	  return this
+	}
+	
+	// Selection
+	
+	UI.SelectionInput = function (selection) {
+	  UI.AdaptiveTextArea.call(this)
+	
+	  this.setSpellcheck(false)
+	
+	  if (!(selection.type === 'selection')) {
+	    NGL.error('UI.SelectionInput: not a selection', selection)
+	
+	    return this
+	  }
+	
+	  this.setValue(selection.string)
+	
+	  this.selection = selection
+	
+	  var scope = this
+	
+	  var signals = selection.signals
+	
+	  signals.stringChanged.add(function (string) {
+	    scope.setValue(string)
+	  })
+	
+	  this.onEnter()
+	
+	  return this
+	}
+	
+	UI.SelectionInput.prototype = Object.create(UI.AdaptiveTextArea.prototype)
+	
+	UI.SelectionInput.prototype.setValue = function (value) {
+	  UI.AdaptiveTextArea.prototype.setValue.call(this, value)
+	
+	  return this
+	}
+	
+	UI.SelectionInput.prototype.onEnter = function (callback) {
+	  // TODO more a private method
+	
+	  var scope = this
+	
+	  var check = function (string) {
+	    var selection = new NGL.Selection(string)
+	
+	    return !selection.selection[ 'error' ]
+	  }
+	
+	  this.onKeyPress(function (e) {
+	    var value = scope.getValue()
+	    var character = String.fromCharCode(e.which)
+	
+	    if (e.keyCode === 13) {
+	      e.preventDefault()
+	
+	      if (check(value)) {
+	        if (typeof callback === 'function') {
+	          callback(value)
+	        } else {
+	          scope.selection.setString(value)
+	        }
+	
+	        scope.setBackgroundColor('white')
+	      } else {
+	        scope.setBackgroundColor('tomato')
+	      }
+	    } else if (scope.selection.string !== value + character) {
+	      scope.setBackgroundColor('skyblue')
+	    } else {
+	      scope.setBackgroundColor('white')
+	    }
+	  })
+	
+	  this.onKeyUp(function (e) {
+	    var value = scope.getValue()
+	
+	    if (!check(value)) {
+	      scope.setBackgroundColor('tomato')
+	    } else if (scope.selection.string === scope.getValue()) {
+	      scope.setBackgroundColor('white')
+	    } else {
+	      scope.setBackgroundColor('skyblue')
+	    }
+	  })
+	
+	  return this
+	}
+	
+	UI.SelectionPanel = function (selection) {
+	  UI.Panel.call(this)
+	
+	  this.icon = new UI.Icon('filter')
+	    .setTitle('filter selection')
+	    .addClass('lg')
+	    .setMarginRight('10px')
+	
+	  this.input = new UI.SelectionInput(selection)
+	
+	  this.add(this.icon, this.input)
+	
+	  return this
+	}
+	
+	UI.SelectionPanel.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.SelectionPanel.prototype.setInputWidth = function (value) {
+	  this.input.setWidth(value)
+	
+	  return this
+	}
+	
+	// Component
+	
+	UI.ComponentPanel = function (component) {
+	  UI.Panel.call(this)
+	
+	  var stage = component.stage
+	  var signals = component.signals
+	
+	  signals.nameChanged.add(function (value) {
+	    name.setValue(value)
+	  })
+	
+	  signals.visibilityChanged.add(function (value) {
+	    toggle.setValue(value)
+	  })
+	
+	  signals.disposed.add(function () {
+	    menu.dispose()
+	  })
+	
+	  // Name
+	
+	  var name = new UI.EllipsisText(component.name)
+	    .setWidth('100px')
+	
+	    // Actions
+	
+	  var toggle = new UI.ToggleIcon(component.visible, 'eye', 'eye-slash')
+	    .setTitle('hide/show')
+	    .setCursor('pointer')
+	    .setMarginLeft('25px')
+	    .onClick(function () {
+	      component.setVisibility(!component.visible)
+	    })
+	
+	  var center = new UI.Icon('bullseye')
+	    .setTitle('center')
+	    .setCursor('pointer')
+	    .setMarginLeft('10px')
+	    .onClick(function () {
+	      component.autoView(1000)
+	    })
+	
+	  var dispose = new UI.DisposeIcon()
+	    .setMarginLeft('10px')
+	    .setDisposeFunction(function () {
+	      stage.removeComponent(component)
+	    })
+	
+	    // Menu
+	
+	  var menu = new UI.PopupMenu('bars', component.type)
+	    .setMarginLeft('46px')
+	    .setEntryLabelWidth('110px')
+	
+	    //
+	
+	  this.add(name, toggle, center, dispose, menu)
+	
+	  //
+	
+	  this.menu = menu
+	
+	  return this
+	}
+	
+	UI.ComponentPanel.prototype = Object.create(UI.Panel.prototype)
+	
+	UI.ComponentPanel.prototype.addMenuEntry = function (label, entry) {
+	  this.menu.addEntry(label, entry)
+	
+	  return this
+	}
+	
+	UI.ComponentPanel.prototype.setMenuDisplay = function (value) {
+	  this.menu.setMenuDisplay(value)
+	
+	  return this
+	}
+	
+	
+	module.exports = {
+	    "UI": UI
+	}
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file  Gui
+	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
+	 */
+	var NGL = __webpack_require__(3);
+	var UI = __webpack_require__(13).UI;
+	var signals = __webpack_require__(10);
+	
+	
+	HTMLElement.prototype.getBoundingClientRect = (function () {
+	  // workaround for ie11 behavior with disconnected dom nodes
+	
+	  var _getBoundingClientRect = HTMLElement.prototype.getBoundingClientRect
+	
+	  return function getBoundingClientRect () {
+	    try {
+	      return _getBoundingClientRect.apply(this, arguments)
+	    } catch (e) {
+	      return {
+	        top: 0,
+	        left: 0,
+	        width: this.width,
+	        height: this.height
+	      }
+	    }
+	  }
+	}())
+	
+	NGL.Widget = function () {
+	
+	}
+	
+	NGL.Widget.prototype = {
+	  constructor: NGL.Widget
+	}
+	
+	NGL.createParameterInput = function (p, v) {
+	  if (!p) return
+	
+	  var value = v === undefined ? p.value : v
+	  var input
+	
+	  if (p.type === 'number') {
+	    input = new UI.Number(0)
+	      .setRange(p.min, p.max)
+	      .setPrecision(p.precision)
+	      .setValue(parseFloat(value))
+	  } else if (p.type === 'integer') {
+	    input = new UI.Integer(parseInt(value))
+	      .setRange(p.min, p.max)
+	  } else if (p.type === 'range') {
+	    input = new UI.Range(p.min, p.max, value, p.step)
+	      .setValue(parseFloat(value))
+	  } else if (p.type === 'boolean') {
+	    input = new UI.Checkbox(value)
+	  } else if (p.type === 'text') {
+	    input = new UI.Input(value)
+	  } else if (p.type === 'select') {
+	    input = new UI.Select()
+	      .setWidth('')
+	      .setOptions(p.options)
+	      .setValue(value)
+	  } else if (p.type === 'color') {
+	    input = new UI.ColorPopupMenu(p.label)
+	      .setValue(value)
+	  } else if (p.type === 'vector3') {
+	    input = new UI.Vector3(value)
+	      .setPrecision(p.precision)
+	  } else if (p.type === 'hidden') {
+	
+	    // nothing to display
+	
+	  } else {
+	    console.warn(
+	      'NGL.createParameterInput: unknown parameter type ' +
+	      "'" + p.type + "'"
+	    )
+	  }
+	
+	  return input
+	}
+	
+	/// /////////////
+	// Preferences
+	
+	NGL.Preferences = function (id, defaultParams) {
+	  this.signals = {
+	    keyChanged: new signals.Signal()
+	  }
+	
+	  this.id = id || 'ngl-gui'
+	  var dp = Object.assign({}, defaultParams)
+	
+	  this.storage = {
+	    impostor: true,
+	    quality: 'auto',
+	    sampleLevel: 0,
+	    theme: 'dark',
+	    backgroundColor: 'black',
+	    overview: false,
+	    rotateSpeed: 2.0,
+	    zoomSpeed: 1.2,
+	    panSpeed: 0.8,
+	    clipNear: 0,
+	    clipFar: 100,
+	    clipDist: 10,
+	    fogNear: 50,
+	    fogFar: 100,
+	    cameraFov: 40,
+	    cameraType: 'perspective',
+	    lightColor: 0xdddddd,
+	    lightIntensity: 1.0,
+	    ambientColor: 0xdddddd,
+	    ambientIntensity: 0.2,
+	    hoverTimeout: 0
+	  }
+	
+	  // overwrite default values with params
+	  for (var key in this.storage) {
+	    if (dp[ key ] !== undefined) {
+	      this.storage[ key ] = dp[ key ]
+	    }
+	  }
+	}
+	
+	NGL.Preferences.prototype = {
+	
+	  constructor: NGL.Preferences,
+	
+	  getKey: function (key) {
+	    return this.storage[ key ]
+	  },
+	
+	  setKey: function (key, value) {
+	    this.storage[ key ] = value
+	    this.signals.keyChanged.dispatch(key, value)
+	  },
+	}
+	
+	// Stage
+	
+	StageWidget = function (el, stage) {
+	  // `el` is notebook's cell element
+	  var viewport = new UI.Panel()
+	  viewport.setPosition("absolute")
+	  viewport.dom = stage.viewer.container
+	  this.el = el
+	  this.widgetList = []
+	
+	  // Turn off in Jupyter notebook so user can run the next cell.
+	  // ensure initial focus on viewer canvas for key-stroke listening
+	  // stage.viewer.renderer.domElement.focus()
+	
+	  var preferences = new NGL.Preferences('ngl-stage-widget', stage.getParameters())
+	
+	  var pp = {}
+	  for (var name in preferences.storage) {
+	    pp[ name ] = preferences.getKey(name)
+	  }
+	  stage.setParameters(pp)
+	
+	  preferences.signals.keyChanged.add(function (key, value) {
+	    var sp = {}
+	    sp[ key ] = value
+	    stage.setParameters(sp)
+	    // FIXME: remove?
+	    // if (key === 'theme') {
+	    //   setTheme(value)
+	    // }
+	  }, this)
+	
+	  //
+	
+	  var cssLinkElement = document.createElement('link')
+	  cssLinkElement.rel = 'stylesheet'
+	  cssLinkElement.id = 'theme'
+	
+	  function setTheme (value) {
+	    var cssPath, bgColor
+	    if (value === 'light') {
+	      cssPath = NGL.cssDirectory + 'light.css'
+	      bgColor = 'white'
+	    } else {
+	      cssPath = NGL.cssDirectory + 'dark.css'
+	      bgColor = 'black'
+	    }
+	    cssLinkElement.href = cssPath
+	    stage.setParameters({ backgroundColor: bgColor })
+	  }
+	
+	  // FIXME: remove?
+	  // setTheme(preferences.getKey('theme'))
+	  el.appendChild(cssLinkElement)
+	
+	  //
+	
+	  var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar')
+	  el.appendChild(toolbar.dom)
+	
+	  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar')
+	  el.appendChild(menubar.dom)
+	
+	  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar')
+	  el.appendChild(sidebar.dom)
+	
+	  this.widgetList.push(toolbar)
+	  this.widgetList.push(menubar)
+	  this.widgetList.push(sidebar)
+	
+	  //
+	
+	  // el.body.style.touchAction = 'none'
+	  el.style.touchAction = 'none'
+	
+	  //
+	
+	  stage.handleResize()
+	  // FIXME hack for ie11
+	  setTimeout(function () { stage.handleResize() }, 500)
+	
+	  //
+	
+	  var doResizeLeft = false
+	  var movedResizeLeft = false
+	  var minResizeLeft = false
+	  var handleResizeInNotebook
+	
+	  var handleResizeLeft = function (clientX) {
+	    if (clientX >= 50 && clientX <= window.innerWidth - 10) {
+	      sidebar.setWidth(window.innerWidth - clientX + 'px')
+	      viewport.setWidth(clientX + 'px')
+	      toolbar.setWidth(clientX + 'px')
+	      stage.handleResize()
+	    }
+	    var sidebarWidth = sidebar.dom.getBoundingClientRect().width
+	    if (clientX === undefined) {
+	      var mainWidth = window.innerWidth - sidebarWidth
+	      viewport.setWidth(mainWidth + 'px')
+	      toolbar.setWidth(mainWidth + 'px')
+	      stage.handleResize()
+	    }
+	    if (sidebarWidth <= 10) {
+	      minResizeLeft = true
+	    } else {
+	      minResizeLeft = false
+	    }
+	    handleResizeInNotebook();
+	  }
+	  handleResizeLeft = NGL.throttle(
+	    handleResizeLeft, 50, { leading: true, trailing: true }
+	  )
+	
+	  var handleResizeInNotebook = function(){
+	      // FIXME
+	      var sw = sidebar.dom.getBoundingClientRect().width
+	      var ew = el.getBoundingClientRect().width
+	      var w = ew - sw + 'px'
+	
+	      // for debug
+	      console.log('handleResizeInNotebook, ew sw and w width', ew, sw, w)
+	      console.log('handleResizeInNotebook, el height ', el.getBoundingClientRect().height)
+	      stage.viewer.container.style.width = w 
+	      stage.handleResize()
+	  }
+	
+	  var resizeLeft = new UI.Panel()
+	    .setClass('ResizeLeft')
+	    .onMouseDown(function () {
+	      doResizeLeft = true
+	      movedResizeLeft = false
+	    })
+	    .onClick(function () {
+	      if (minResizeLeft) {
+	        handleResizeLeft(window.innerWidth - 300)
+	      } else if (!doResizeLeft && !movedResizeLeft) {
+	        handleResizeLeft(window.innerWidth - 10)
+	      }
+	    })
+	
+	  sidebar.add(resizeLeft)
+	  this.viewport = viewport
+	  this.toolbar = toolbar
+	  this.menubar = menubar
+	  this.sidebar = sidebar
+	
+	  handleResizeInNotebook()
+	
+	  stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	    const box = stage.viewer.container.parentElement.getBoundingClientRect()
+	    console.log("in StageWidget")
+	    stage.setSize(box.width+"px", isFullscreen?box.height+'px':'300px')
+	    stage.handleResize()
+	  })
+	
+	  window.addEventListener(
+	    'mousemove', function (event) {
+	      if (doResizeLeft) {
+	        document.body.style.cursor = 'col-resize'
+	        movedResizeLeft = true
+	        handleResizeLeft(event.clientX)
+	      }
+	    }, false
+	  )
+	
+	  window.addEventListener(
+	    'mouseup', function (event) {
+	      doResizeLeft = false
+	      document.body.style.cursor = ''
+	    }, false
+	  )
+	
+	  window.addEventListener(
+	    'resize', function (event) {
+	      handleResizeLeft()
+	    }, false
+	  )
+	
+	  //
+	
+	  document.addEventListener('dragover', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	    e.dataTransfer.dropEffect = 'none'
+	  }, false)
+	
+	  document.addEventListener('drop', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	  }, false)
+	
+	  return this
+	}
+	
+	StageWidget.prototype = {
+	   constructor: StageWidget,
+	
+	   dispose: function(){
+	       for (var i in this.widgetList){
+	           this.widgetList[i].dispose()
+	       }
+	   },
+	}
+	
+	// Viewport
+	
+	NGL.ViewportWidget = function (stage) {
+	  var viewer = stage.viewer
+	  var renderer = viewer.renderer
+	
+	  var container = new UI.Panel()
+	  container.dom = viewer.container
+	  container.setPosition('absolute')
+	
+	  var fileTypesOpen = NGL.flatten([
+	    NGL.ParserRegistry.getStructureExtensions(),
+	    NGL.ParserRegistry.getVolumeExtensions(),
+	    NGL.ParserRegistry.getSurfaceExtensions(),
+	    NGL.DecompressorRegistry.names
+	  ])
+	
+	  // event handlers
+	
+	  container.dom.addEventListener('dragover', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	    e.dataTransfer.dropEffect = 'copy'
+	  }, false)
+	
+	  container.dom.addEventListener('drop', function (e) {
+	    e.stopPropagation()
+	    e.preventDefault()
+	
+	    var fn = function (file, callback) {
+	      var ext = file.name.split('.').pop().toLowerCase()
+	      if (NGL.ScriptExtensions.includes(ext)) {
+	        stage.loadScript(file).then(callback)
+	      } else if (fileTypesOpen.includes(ext)) {
+	        stage.loadFile(file, { defaultRepresentation: true }).then(callback)
+	      } else {
+	        console.error('unknown filetype: ' + ext)
+	        callback()
+	      }
+	    }
+	    var queue = new NGL.Queue(fn, e.dataTransfer.files)
+	  }, false)
+	
+	  return container
+	}
+	
+	// Toolbar
+	
+	NGL.ToolbarWidget = function (stage) {
+	  var container = new UI.Panel()
+	
+	  var messageText = new UI.Text()
+	  var messagePanel = new UI.Panel()
+	    .setDisplay('inline')
+	    .setFloat('left')
+	    .add(messageText)
+	
+	  var statsText = new UI.Text()
+	  var statsPanel = new UI.Panel()
+	    .setDisplay('inline')
+	    .setFloat('right')
+	    .add(statsText)
+	
+	  stage.signals.clicked.add(function (pickingProxy) {
+	    messageText.setValue(pickingProxy ? pickingProxy.getLabel() : 'nothing')
+	  })
+	
+	  stage.viewer.stats.signals.updated.add(function () {
+	    if (NGL.Debug) {
+	      statsText.setValue(
+	        stage.viewer.stats.lastDuration.toFixed(2) + ' ms | ' +
+	        stage.viewer.stats.lastFps + ' fps'
+	      )
+	    } else {
+	      statsText.setValue('')
+	    }
+	  })
+	
+	  container.add(messagePanel, statsPanel)
+	
+	  return container
+	}
+	
+	// Menubar
+	
+	NGL.MenubarWidget = function (stage, preferences) {
+	  var container = new UI.Panel()
+	
+	  container.add(new NGL.MenubarFileWidget(stage))
+	  container.add(new NGL.MenubarViewWidget(stage, preferences))
+	  if (NGL.examplesListUrl && NGL.examplesScriptUrl) {
+	    container.add(new NGL.MenubarExamplesWidget(stage))
+	  }
+	  container.add(new NGL.MenubarHelpWidget(stage, preferences))
+	
+	  container.add(
+	    new UI.Panel().setClass('menu').setFloat('right').add(
+	      new UI.Text('NGL Viewer ' + NGL.Version).setClass('title')
+	    )
+	  )
+	
+	  return container
+	}
+	
+	NGL.MenubarFileWidget = function (stage) {
+	  var fileTypesOpen = NGL.flatten([
+	    NGL.ParserRegistry.getStructureExtensions(),
+	    NGL.ParserRegistry.getVolumeExtensions(),
+	    NGL.ParserRegistry.getSurfaceExtensions(),
+	    NGL.DecompressorRegistry.names,
+	    NGL.ScriptExtensions
+	  ])
+	
+	  function fileInputOnChange (e) {
+	    var fn = function (file, callback) {
+	      var ext = file.name.split('.').pop().toLowerCase()
+	      if (NGL.ScriptExtensions.includes(ext)) {
+	        stage.loadScript(file).then(callback)
+	      } else if (fileTypesOpen.includes(ext)) {
+	        stage.loadFile(file, { defaultRepresentation: true }).then(callback)
+	      } else {
+	        console.error('unknown filetype: ' + ext)
+	        callback()
+	      }
+	    }
+	    var queue = new NGL.Queue(fn, e.target.files)
+	  }
+	
+	  var fileInput = document.createElement('input')
+	  fileInput.type = 'file'
+	  fileInput.multiple = true
+	  fileInput.style.display = 'none'
+	  fileInput.accept = '.' + fileTypesOpen.join(',.')
+	  fileInput.addEventListener('change', fileInputOnChange, false)
+	
+	  // export image
+	
+	  var exportImageWidget = new NGL.ExportImageWidget(stage)
+	    .setDisplay('none')
+	    .attach(stage.viewer.container.parentElement)
+	
+	  // event handlers
+	
+	  function onOpenOptionClick () {
+	    fileInput.click()
+	  }
+	
+	  function onImportOptionClick () {
+	    var dirWidget
+	    function onListingClick (info) {
+	      var ext = info.path.split('.').pop().toLowerCase()
+	      if (NGL.ScriptExtensions.includes(ext)) {
+	        stage.loadScript(NGL.ListingDatasource.getUrl(info.path))
+	        dirWidget.dispose()
+	      } else if (fileTypesOpen.includes(ext)) {
+	        stage.loadFile(NGL.ListingDatasource.getUrl(info.path), {
+	          defaultRepresentation: true
+	        })
+	        dirWidget.dispose()
+	      } else {
+	        console.error('unknown filetype: ' + ext)
+	      }
+	    }
+	
+	    dirWidget = new NGL.DirectoryListingWidget(
+	      NGL.ListingDatasource, stage, 'Import file',
+	      fileTypesOpen, onListingClick
+	    )
+	
+	    dirWidget
+	      .setOpacity('0.9')
+	      .setLeft('50px')
+	      .setTop('80px')
+	      .attach()
+	  }
+	
+	  function onExportImageOptionClick () {
+	    exportImageWidget
+	      .setOpacity('0.9')
+	      .setLeft('50px')
+	      .setTop('80px')
+	      .setDisplay('block')
+	  }
+	
+	  function onScreenshotOptionClick () {
+	    stage.makeImage({
+	      factor: 1,
+	      antialias: true,
+	      trim: false,
+	      transparent: false
+	    }).then(function (blob) {
+	      NGL.download(blob, 'screenshot.png')
+	    })
+	  }
+	
+	  function onPdbInputKeyDown (e) {
+	    if (e.keyCode === 13) {
+	      stage.loadFile('rcsb://' + e.target.value.trim(), {
+	        defaultRepresentation: true
+	      })
+	      e.target.value = ''
+	    }
+	  }
+	
+	  function onFirstModelOnlyChange (e) {
+	    stage.defaultFileParams.firstModelOnly = e.target.checked
+	  }
+	
+	  function onCAlphaOnlyChange (e) {
+	    stage.defaultFileParams.cAlphaOnly = e.target.checked
+	  }
+	
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var createInput = UI.MenubarHelper.createInput
+	  var createCheckbox = UI.MenubarHelper.createCheckbox
+	  var createDivider = UI.MenubarHelper.createDivider
+	
+	  var menuConfig = [
+	    createOption('Open...', onOpenOptionClick),
+	    createInput('PDB', onPdbInputKeyDown),
+	    createCheckbox('firstModelOnly', false, onFirstModelOnlyChange),
+	    createCheckbox('cAlphaOnly', false, onCAlphaOnlyChange),
+	    createDivider(),
+	    createOption('Screenshot', onScreenshotOptionClick, 'camera'),
+	    createOption('Export image...', onExportImageOptionClick)
+	  ]
+	
+	  if (NGL.ListingDatasource) {
+	    menuConfig.splice(
+	      1, 0, createOption('Import...', onImportOptionClick)
+	    )
+	  }
+	
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
+	  optionsPanel.dom.appendChild(fileInput)
+	
+	  return UI.MenubarHelper.createMenuContainer('File', optionsPanel)
+	}
+	
+	NGL.MenubarViewWidget = function (stage, preferences) {
+	  // event handlers
+	
+	  function onLightThemeOptionClick () {
+	    preferences.setKey('theme', 'light')
+	  }
+	
+	  function onDarkThemeOptionClick () {
+	    preferences.setKey('theme', 'dark')
+	  }
+	
+	  function onPerspectiveCameraOptionClick () {
+	    stage.setParameters({ cameraType: 'perspective' })
+	  }
+	
+	  function onOrthographicCameraOptionClick () {
+	    stage.setParameters({ cameraType: 'orthographic' })
+	  }
+	
+	  function onStereoCameraOptionClick () {
+	    stage.setParameters({ cameraType: 'stereo' })
+	  }
+	
+	  function onFullScreenOptionClick () {
+	    stage.toggleFullscreen(stage.viewer.container.parentElement);
+	  }
+	
+	  function onCenterOptionClick () {
+	    stage.autoView(1000)
+	  }
+	
+	  function onToggleSpinClick () {
+	    stage.toggleSpin()
+	  }
+	
+	  function onToggleRockClick () {
+	    stage.toggleRock()
+	  }
+	
+	  function onGetOrientationClick () {
+	    window.prompt(
+	      'Get orientation',
+	      JSON.stringify(
+	        stage.viewerControls.getOrientation().toArray(),
+	        function (k, v) {
+	          return v.toFixed ? Number(v.toFixed(2)) : v
+	        }
+	      )
+	    )
+	  }
+	
+	  function onSetOrientationClick () {
+	    stage.viewerControls.orient(
+	      JSON.parse(window.prompt('Set orientation'))
+	    )
+	  }
+	
+	  var that = this;
+	  stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	    // const box = stage.viewer.container.parentElement.getBoundingClientRect()
+	    // stage.setSize(box.width+"px", box.height+"px")
+	    // stage.handleResize()
+	    var icon = menuConfig[ 4 ].children[ 0 ]
+	    if (isFullscreen) {
+	      icon.switchClass('compress', 'expand')
+	    } else {
+	      icon.switchClass('expand', 'compress')
+	    }
+	  })
+	
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var createDivider = UI.MenubarHelper.createDivider
+	
+	  var menuConfig = [
+	    // createOption('Light theme', onLightThemeOptionClick),
+	    // createOption('Dark theme', onDarkThemeOptionClick),
+	    // createDivider(),
+	    createOption('Perspective', onPerspectiveCameraOptionClick),
+	    createOption('Orthographic', onOrthographicCameraOptionClick),
+	    createOption('Stereo', onStereoCameraOptionClick),
+	    createDivider(),
+	    createOption('Full screen', onFullScreenOptionClick, 'expand'),
+	    createOption('Center', onCenterOptionClick, 'bullseye'),
+	    createDivider(),
+	    createOption('Toggle spin', onToggleSpinClick),
+	    createOption('Toggle rock', onToggleRockClick),
+	    // createDivider(),
+	    // createOption('Get orientation', onGetOrientationClick),
+	    // createOption('Set orientation', onSetOrientationClick)
+	  ]
+	
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
+	
+	  return UI.MenubarHelper.createMenuContainer('View', optionsPanel)
+	}
+	
+	NGL.MenubarExamplesWidget = function (stage) {
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel([])
+	  optionsPanel.setWidth('300px')
+	
+	  var xhr = new XMLHttpRequest()
+	  xhr.open('GET', NGL.examplesListUrl)
+	  xhr.responseType = 'json'
+	  xhr.onload = function (e) {
+	    var response = this.response
+	    if (typeof response === 'string') {
+	      // for ie11
+	      response = JSON.parse(response)
+	    }
+	    response.sort().forEach(function (name) {
+	      var option = createOption(name, function () {
+	        stage.loadScript(NGL.examplesScriptUrl + name + '.js')
+	      })
+	      optionsPanel.add(option)
+	    })
+	  }
+	  xhr.send()
+	
+	  return UI.MenubarHelper.createMenuContainer('Examples', optionsPanel)
+	}
+	
+	NGL.MenubarHelpWidget = function (stage, preferences) {
+	  // event handlers
+	
+	  function onOverviewOptionClick () {
+	    overviewWidget
+	      .setOpacity('0.9')
+	      .setDisplay('block')
+	      .setWidgetPosition(50, 80)
+	  }
+	
+	  function onDocOptionClick () {
+	    window.open(NGL.documentationUrl, '_blank')
+	  }
+	
+	  function onDebugOnClick () {
+	    NGL.setDebug(true)
+	    stage.viewer.updateHelper()
+	    stage.viewer.requestRender()
+	  }
+	
+	  function onDebugOffClick () {
+	    NGL.setDebug(false)
+	    stage.viewer.updateHelper()
+	    stage.viewer.requestRender()
+	  }
+	
+	  function onPreferencesOptionClick () {
+	    preferencesWidget
+	      .setOpacity('0.9')
+	      .setDisplay('block')
+	      .setWidgetPosition(50, 80)
+	  }
+	
+	  // export image
+	
+	  var preferencesWidget = new NGL.PreferencesWidget(stage, preferences)
+	    .setDisplay('none')
+	    .attach(stage.viewer.container.parentElement)
+	
+	  // overview
+	
+	  var overviewWidget = new NGL.OverviewWidget(stage, preferences)
+	    .setDisplay('none')
+	    .attach(stage.viewer.container.parentElement)
+	
+	  if (preferences.getKey('overview')) {
+	    onOverviewOptionClick()
+	  }
+	
+	  // configure menu contents
+	
+	  var createOption = UI.MenubarHelper.createOption
+	  var createDivider = UI.MenubarHelper.createDivider
+	
+	  var menuConfig = [
+	    createOption('Overview', onOverviewOptionClick),
+	    // createOption('Documentation', onDocOptionClick),
+	    // createDivider(),
+	    // createOption('Debug on', onDebugOnClick),
+	    // createOption('Debug off', onDebugOffClick),
+	    // createDivider(),
+	    createOption('Preferences', onPreferencesOptionClick, 'sliders')
+	  ]
+	
+	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
+	
+	  return UI.MenubarHelper.createMenuContainer('Help', optionsPanel)
+	}
+	
+	// Overview
+	
+	NGL.OverviewWidget = function (stage, preferences) {
+	  var container = new UI.OverlayPanel()
+	
+	  var xOffset = 0
+	  var yOffset = 0
+	
+	  var prevX = 0
+	  var prevY = 0
+	
+	  function onMousemove (e) {
+	    if (prevX === 0) {
+	      prevX = e.clientX
+	      prevY = e.clientY
+	    }
+	    xOffset -= prevX - e.clientX
+	    yOffset -= prevY - e.clientY
+	    prevX = e.clientX
+	    prevY = e.clientY
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	
+	  function setWidgetPosition (left, top) {
+	    xOffset = left
+	    yOffset = top
+	    prevX = 0
+	    prevY = 0
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	  container.setWidgetPosition = setWidgetPosition
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('25px')
+	    .setCursor('move')
+	    .onMouseDown(function (e) {
+	      if (e.which === 1) {
+	        document.addEventListener('mousemove', onMousemove)
+	      }
+	      document.addEventListener('mouseup', function (e) {
+	        document.removeEventListener('mousemove', onMousemove)
+	      })
+	    })
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setMaxWidth('600px')
+	    .setOverflow('auto')
+	
+	  headingPanel.add(
+	    new UI.Text('NGL Viewer').setFontStyle('italic'),
+	    new UI.Html('&nbsp;&mdash;&nbsp;Overview')
+	  )
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.setDisplay('none')
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  //
+	
+	  function addIcon (name, text) {
+	    var panel = new UI.Panel()
+	
+	    var icon = new UI.Icon(name)
+	      .setWidth('20px')
+	      .setFloat('left')
+	
+	    var label = new UI.Text(text)
+	      .setDisplay('inline')
+	      .setMarginLeft('5px')
+	
+	    panel
+	      .setMarginLeft('20px')
+	      .add(icon, label)
+	    listingPanel.add(panel)
+	  }
+	
+	  listingPanel
+	    .add(new UI.Panel().add(new UI.Html("To load a new structure use the <i>File</i> menu in the top left via drag'n'drop.")))
+	    .add(new UI.Break())
+	
+	  listingPanel
+	    .add(new UI.Panel().add(new UI.Text('A number of clickable icons provide common actions. Most icons can be clicked on, just try it or hover the mouse pointer over it to see a tooltip.')))
+	    .add(new UI.Break())
+	
+	  addIcon('eye', 'Controls the visibility of a component.')
+	  addIcon('trash-o', 'Deletes a component. Note that a second click is required to confirm the action.')
+	  addIcon('bullseye', 'Centers a component.')
+	  addIcon('bars', 'Opens a menu with further options.')
+	  addIcon('square', 'Opens a menu with coloring options.')
+	  addIcon('filter', 'Indicates atom-selection input fields.')
+	
+	  listingPanel
+	    .add(new UI.Text('Mouse controls'))
+	    .add(new UI.Html(
+	      '<ul>' +
+	          '<li>Left button hold and move to rotate camera around center.</li>' +
+	          '<li>Left button click to pick atom.</li>' +
+	          '<li>Middle button hold and move to zoom camera in and out.</li>' +
+	          '<li>Middle button click to center camera on atom.</li>' +
+	          '<li>Right button hold and move to translate camera in the screen plane.</li>' +
+	      '</ul>'
+	    ))
+	
+	  listingPanel
+	    .add(new UI.Panel().add(new UI.Html(
+	      'For more information please visit the ' +
+	      "<a href='" + NGL.documentationUrl + "' target='_blank'>documentation pages</a>."
+	    )))
+	
+	  var overview = preferences.getKey('overview')
+	  var showOverviewCheckbox = new UI.Checkbox(overview)
+	    .onClick(function () {
+	      preferences.setKey(
+	        'overview',
+	        showOverviewCheckbox.getValue()
+	      )
+	    })
+	
+	  listingPanel
+	    .add(new UI.HorizontalRule()
+	      .setBorderTop('1px solid #555')
+	      .setMarginTop('15px')
+	    )
+	    .add(new UI.Panel().add(
+	      showOverviewCheckbox,
+	      new UI.Text(
+	        'Show on startup. Always available from Menu > Help > Overview.'
+	      ).setMarginLeft('5px')
+	    ))
+	
+	  return container
+	}
+	
+	// Preferences
+	
+	NGL.PreferencesWidget = function (stage, preferences) {
+	  var container = new UI.OverlayPanel()
+	
+	  var xOffset = 0
+	  var yOffset = 0
+	
+	  var prevX = 0
+	  var prevY = 0
+	
+	  function onMousemove (e) {
+	    if (prevX === 0) {
+	      prevX = e.clientX
+	      prevY = e.clientY
+	    }
+	    xOffset -= prevX - e.clientX
+	    yOffset -= prevY - e.clientY
+	    prevX = e.clientX
+	    prevY = e.clientY
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	
+	  function setWidgetPosition (left, top) {
+	    xOffset = left
+	    yOffset = top
+	    prevX = 0
+	    prevY = 0
+	    container.dom.style.top = yOffset + 'px'
+	    container.dom.style.left = xOffset + 'px'
+	  }
+	  container.setWidgetPosition = setWidgetPosition
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('25px')
+	    .setCursor('move')
+	    .onMouseDown(function (e) {
+	      if (e.which === 1) {
+	        document.addEventListener('mousemove', onMousemove)
+	      }
+	      document.addEventListener('mouseup', function (e) {
+	        document.removeEventListener('mousemove', onMousemove)
+	      })
+	    })
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setOverflow('auto')
+	
+	  headingPanel.add(new UI.Text('Preferences'))
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.setDisplay('none')
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  //
+	
+	  Object.keys(NGL.UIStageParameters).forEach(function (name) {
+	    var p = NGL.UIStageParameters[ name ]
+	    if (p.label === undefined) p.label = name
+	    var input = NGL.createParameterInput(p, stage.parameters[ name ])
+	
+	    if (!input) return
+	
+	    preferences.signals.keyChanged.add(function (key, value) {
+	      if (key === name) input.setValue(value)
+	    })
+	
+	    function setParam () {
+	      var sp = {}
+	      sp[ name ] = input.getValue()
+	      preferences.setKey(name, sp[ name ])
+	    }
+	
+	    var ua = navigator.userAgent
+	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	      input.onInput(setParam)
+	    } else {
+	      input.onChange(setParam)
+	    }
+	
+	    listingPanel
+	      .add(new UI.Text(name).setWidth('120px'))
+	      .add(input)
+	      .add(new UI.Break())
+	  })
+	
+	  return container
+	}
+	
+	// Export image
+	
+	NGL.ExportImageWidget = function (stage) {
+	  var container = new UI.OverlayPanel()
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('25px')
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setOverflow('auto')
+	
+	  headingPanel.add(new UI.Text('Image export'))
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.setDisplay('none')
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  var factorSelect = new UI.Select()
+	    .setOptions({
+	      '1': '1x',
+	      '2': '2x',
+	      '3': '3x',
+	      '4': '4x',
+	      '5': '5x',
+	      '6': '6x',
+	      '7': '7x',
+	      '8': '8x',
+	      '9': '9x',
+	      '10': '10x'
+	    })
+	    .setValue('4')
+	
+	  var antialiasCheckbox = new UI.Checkbox()
+	    .setValue(true)
+	
+	  var trimCheckbox = new UI.Checkbox()
+	    .setValue(false)
+	
+	  var transparentCheckbox = new UI.Checkbox()
+	    .setValue(false)
+	
+	  var progress = new UI.Progress()
+	    .setDisplay('none')
+	
+	  var exportButton = new UI.Button('export')
+	    .onClick(function () {
+	      exportButton.setDisplay('none')
+	      progress.setDisplay('inline-block')
+	      function onProgress (i, n, finished) {
+	        if (i === 1) {
+	          progress.setMax(n)
+	        }
+	        if (i >= n) {
+	          progress.setIndeterminate()
+	        } else {
+	          progress.setValue(i)
+	        }
+	        if (finished) {
+	          progress.setDisplay('none')
+	          exportButton.setDisplay('inline-block')
+	        }
+	      }
+	
+	      setTimeout(function () {
+	        stage.makeImage({
+	          factor: parseInt(factorSelect.getValue()),
+	          antialias: antialiasCheckbox.getValue(),
+	          trim: trimCheckbox.getValue(),
+	          transparent: transparentCheckbox.getValue(),
+	          onProgress: onProgress
+	        }).then(function (blob) {
+	          NGL.download(blob, 'screenshot.png')
+	        })
+	      }, 50)
+	    })
+	
+	  function addEntry (label, entry) {
+	    listingPanel
+	      .add(new UI.Text(label).setWidth('80px'))
+	      .add(entry || new UI.Panel())
+	      .add(new UI.Break())
+	  }
+	
+	  addEntry('scale', factorSelect)
+	  addEntry('antialias', antialiasCheckbox)
+	  addEntry('trim', trimCheckbox)
+	  addEntry('transparent', transparentCheckbox)
+	
+	  listingPanel.add(
+	    new UI.Break(),
+	    exportButton, progress
+	  )
+	
+	  return container
+	}
+	
+	// Sidebar
+	
+	NGL.SidebarWidget = function (stage) {
+	  var signals = stage.signals
+	  var container = new UI.Panel()
+	
+	  var widgetContainer = new UI.Panel()
+	    .setClass('Content')
+	
+	  var compList = []
+	  var widgetList = []
+	
+	  function handleComponent(component) {
+	    var widget
+	
+	    switch (component.type) {
+	      case 'structure':
+	        widget = new NGL.StructureComponentWidget(component, stage)
+	        break
+	
+	      case 'surface':
+	        widget = new NGL.SurfaceComponentWidget(component, stage)
+	        break
+	
+	      case 'volume':
+	        widget = new NGL.VolumeComponentWidget(component, stage)
+	        break
+	
+	      case 'shape':
+	        widget = new NGL.ShapeComponentWidget(component, stage)
+	        break
+	
+	      default:
+	        console.warn('NGL.SidebarWidget: component type unknown', component)
+	        return
+	    }
+	
+	    widgetContainer.add(widget)
+	
+	    compList.push(component)
+	    widgetList.push(widget)
+	
+	  }
+	
+	  // In case user adds components directly from notebook
+	  stage.compList.forEach(function(comp){
+	      handleComponent(comp)
+	  })
+	
+	  signals.componentAdded.add(handleComponent)
+	
+	  signals.componentRemoved.add(function (component) {
+	    var idx = compList.indexOf(component)
+	
+	    if (idx !== -1) {
+	      widgetList[ idx ].dispose()
+	
+	      compList.splice(idx, 1)
+	      widgetList.splice(idx, 1)
+	    }
+	  })
+	
+	  // actions
+	
+	  var expandAll = new UI.Icon('plus-square')
+	    .setTitle('expand all')
+	    .setCursor('pointer')
+	    .onClick(function () {
+	      widgetList.forEach(function (widget) {
+	        widget.expand()
+	      })
+	    })
+	
+	  var collapseAll = new UI.Icon('minus-square')
+	    .setTitle('collapse all')
+	    .setCursor('pointer')
+	    .setMarginLeft('10px')
+	    .onClick(function () {
+	      widgetList.forEach(function (widget) {
+	        widget.collapse()
+	      })
+	    })
+	
+	  var centerAll = new UI.Icon('bullseye')
+	    .setTitle('center all')
+	    .setCursor('pointer')
+	    .setMarginLeft('10px')
+	    .onClick(function () {
+	      stage.autoView(1000)
+	    })
+	
+	  var disposeAll = new UI.DisposeIcon()
+	    .setMarginLeft('10px')
+	    .setDisposeFunction(function () {
+	      stage.removeAllComponents()
+	    })
+	
+	  var settingsMenu = new UI.PopupMenu('cogs', 'Settings', 'window')
+	    .setIconTitle('settings')
+	    .setMarginLeft('10px')
+	  settingsMenu.entryLabelWidth = '120px'
+	
+	  // Busy indicator
+	
+	  var busy = new UI.Panel()
+	    .setDisplay('inline')
+	    .add(
+	      new UI.Icon('spinner')
+	        .addClass('spin')
+	        .setMarginLeft('45px')
+	    )
+	
+	  stage.tasks.signals.countChanged.add(function (delta, count) {
+	    if (count > 0) {
+	      actions.add(busy)
+	    } else {
+	      try {
+	        actions.remove(busy)
+	      } catch (e) {
+	        // already removed
+	      }
+	    }
+	  })
+	
+	  var paramNames = [
+	    'clipNear', 'clipFar', 'clipDist', 'fogNear', 'fogFar',
+	    'lightColor', 'lightIntensity', 'ambientColor', 'ambientIntensity'
+	  ]
+	
+	  paramNames.forEach(function (name) {
+	    var p = NGL.UIStageParameters[ name ]
+	    if (p.label === undefined) p.label = name
+	    var input = NGL.createParameterInput(p, stage.parameters[ name ])
+	
+	    if (!input) return
+	
+	    stage.signals.parametersChanged.add(function (params) {
+	      input.setValue(params[ name ])
+	    })
+	
+	    function setParam () {
+	      var sp = {}
+	      sp[ name ] = input.getValue()
+	      stage.setParameters(sp)
+	    }
+	
+	    var ua = navigator.userAgent
+	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	      input.onInput(setParam)
+	    } else {
+	      input.onChange(setParam)
+	    }
+	
+	    settingsMenu.addEntry(name, input)
+	  })
+	
+	  //
+	
+	  var actions = new UI.Panel()
+	    .setClass('Panel Sticky')
+	    .add(
+	      expandAll,
+	      collapseAll,
+	      centerAll,
+	      disposeAll,
+	      settingsMenu
+	    )
+	
+	  container.add(
+	    actions,
+	    widgetContainer
+	  )
+	
+	  return container
+	}
+	
+	// Component
+	
+	NGL.StructureComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	  var trajContainer = new UI.Panel()
+	
+	  function handleRepr(repr){
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  }
+	
+	  component.reprList.forEach(function(repr){
+	      handleRepr(repr)
+	  })
+	
+	  signals.representationAdded.add(handleRepr)
+	
+	  signals.trajectoryAdded.add(function (traj) {
+	    trajContainer.add(new NGL.TrajectoryElementWidget(traj, stage))
+	  })
+	
+	  signals.defaultAssemblyChanged.add(function () {
+	    assembly.setValue(component.parameters.defaultAssembly)
+	  })
+	
+	  // Selection
+	
+	  container.add(
+	    new UI.SelectionPanel(component.selection)
+	      .setMarginLeft('20px')
+	      .setInputWidth('214px')
+	  )
+	
+	  // Export PDB
+	
+	  var pdb = new UI.Button('export').onClick(function () {
+	    var pdbWriter = new NGL.PdbWriter(component.structure)
+	    pdbWriter.download('structure')
+	    componentPanel.setMenuDisplay('none')
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = { '': '[ add ]' }
+	      NGL.RepresentationRegistry.names.forEach(function (key) {
+	        reprOptions[ key ] = key
+	      })
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Assembly
+	
+	  var assembly = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var biomolDict = component.structure.biomolDict
+	      var assemblyOptions = {
+	        '': (component.structure.unitcell ? 'AU' : 'FULL')
+	      }
+	      Object.keys(biomolDict).forEach(function (k) {
+	        assemblyOptions[ k ] = k
+	      })
+	      return assemblyOptions
+	    })())
+	    .setValue(component.parameters.defaultAssembly)
+	    .onChange(function () {
+	      component.setDefaultAssembly(assembly.getValue())
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Open trajectory
+	
+	  var trajExt = []
+	  NGL.ParserRegistry.getTrajectoryExtensions().forEach(function (ext) {
+	    trajExt.push('.' + ext, '.' + ext + '.gz')
+	  })
+	
+	  function framesInputOnChange (e) {
+	    var fn = function (file, callback) {
+	      NGL.autoLoad(file).then(function (frames) {
+	        component.addTrajectory(frames)
+	        callback()
+	      })
+	    }
+	    var queue = new NGL.Queue(fn, e.target.files)
+	    e.target.value = ''
+	  }
+	
+	  var framesInput = document.createElement('input')
+	  framesInput.type = 'file'
+	  framesInput.multiple = true
+	  framesInput.style.display = 'none'
+	  framesInput.accept = trajExt.join(',')
+	  framesInput.addEventListener('change', framesInputOnChange, false)
+	
+	  var traj = new UI.Button('open').onClick(function () {
+	    framesInput.click()
+	    componentPanel.setMenuDisplay('none')
+	  })
+	
+	  // Import remote trajectory
+	
+	  var remoteTraj = new UI.Button('import').onClick(function () {
+	    componentPanel.setMenuDisplay('none')
+	
+	    // TODO list of extensions should be provided by trajectory datasource
+	    var remoteTrajExt = [
+	      'xtc', 'trr', 'netcdf', 'dcd', 'ncdf', 'nc', 'gro', 'pdb',
+	      'lammpstrj', 'xyz', 'mdcrd', 'gz', 'binpos', 'h5', 'dtr',
+	      'arc', 'tng', 'trj', 'trz'
+	    ]
+	    var dirWidget
+	
+	    function onListingClick (info) {
+	      var ext = info.path.split('.').pop().toLowerCase()
+	      if (remoteTrajExt.indexOf(ext) !== -1) {
+	        component.addTrajectory(info.path + '?struc=' + component.structure.path)
+	        dirWidget.dispose()
+	      } else {
+	        NGL.log('unknown trajectory type: ' + ext)
+	      }
+	    }
+	
+	    dirWidget = new NGL.DirectoryListingWidget(
+	      NGL.ListingDatasource, stage, 'Import trajectory',
+	      remoteTrajExt, onListingClick
+	    )
+	
+	    dirWidget
+	      .setOpacity('0.9')
+	      .setLeft('50px')
+	      .setTop('80px')
+	      .attach()
+	  })
+	
+	  // Superpose
+	
+	  function setSuperposeOptions () {
+	    var superposeOptions = { '': '[ structure ]' }
+	    stage.eachComponent(function (o, i) {
+	      if (o !== component) {
+	        superposeOptions[ i ] = o.name
+	      }
+	    }, NGL.StructureComponent)
+	    superpose.setOptions(superposeOptions)
+	  }
+	
+	  stage.signals.componentAdded.add(setSuperposeOptions)
+	  stage.signals.componentRemoved.add(setSuperposeOptions)
+	
+	  var superpose = new UI.Select()
+	    .setColor('#444')
+	    .onChange(function () {
+	      component.superpose(
+	        stage.compList[ superpose.getValue() ],
+	        true
+	      )
+	      component.autoView(1000)
+	      superpose.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  setSuperposeOptions()
+	
+	  // Principal axes
+	
+	  var alignAxes = new UI.Button('align').onClick(function () {
+	    var pa = component.structure.getPrincipalAxes()
+	    var q = pa.getRotationQuaternion()
+	    q.multiply(component.quaternion.clone().inverse())
+	    stage.animationControls.rotate(q)
+	    stage.animationControls.move(component.getCenter())
+	  })
+	
+	  // Measurements removal
+	
+	  var removeMeasurements = new UI.Button('remove').onClick(function () {
+	    component.removeAllMeasurements()
+	  })
+	
+	  // Annotations visibility
+	
+	  var showAnnotations = new UI.Button('show').onClick(function () {
+	    component.annotationList.forEach(function (annotation) {
+	      annotation.setVisibility(true)
+	    })
+	  })
+	
+	  var hideAnnotations = new UI.Button('hide').onClick(function () {
+	    component.annotationList.forEach(function (annotation) {
+	      annotation.setVisibility(false)
+	    })
+	  })
+	
+	  var annotationButtons = new UI.Panel()
+	    .setDisplay('inline-block')
+	    .add(showAnnotations, hideAnnotations)
+	
+	  // Open validation
+	
+	  function validationInputOnChange (e) {
+	    var fn = function (file, callback) {
+	      NGL.autoLoad(file, { ext: 'validation' }).then(function (validation) {
+	        component.structure.validation = validation
+	        callback()
+	      })
+	    }
+	    var queue = new NGL.Queue(fn, e.target.files)
+	  }
+	
+	  var validationInput = document.createElement('input')
+	  validationInput.type = 'file'
+	  validationInput.style.display = 'none'
+	  validationInput.accept = '.xml'
+	  validationInput.addEventListener('change', validationInputOnChange, false)
+	
+	  var vali = new UI.Button('open').onClick(function () {
+	    validationInput.click()
+	    componentPanel.setMenuDisplay('none')
+	  })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	  // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('PDB file', pdb)
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry('Assembly', assembly)
+	    .addMenuEntry('Superpose', superpose)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.structure.path)
+	        .setMaxWidth('100px')
+	        .setOverflow('auto')
+	      // .setWordWrap( "break-word" )
+	    )
+	    .addMenuEntry('Trajectory', traj)
+	    .addMenuEntry('Principal axes', alignAxes)
+	    .addMenuEntry('Measurements', removeMeasurements)
+	    .addMenuEntry('Annotations', annotationButtons)
+	    .addMenuEntry('Validation', vali)
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  if (NGL.ListingDatasource && NGL.TrajectoryDatasource) {
+	    componentPanel.addMenuEntry('Remote trajectory', remoteTraj)
+	  }
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(trajContainer)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	NGL.SurfaceComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	
+	  signals.representationAdded.add(function (repr) {
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = {
+	        '': '[ add ]',
+	        'surface': 'surface',
+	        'dot': 'dot'
+	      }
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	  // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.surface.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	NGL.VolumeComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	
+	  signals.representationAdded.add(function (repr) {
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = {
+	        '': '[ add ]',
+	        'surface': 'surface',
+	        'dot': 'dot',
+	        'slice': 'slice'
+	      }
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	  // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.volume.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	NGL.ShapeComponentWidget = function (component, stage) {
+	  var signals = component.signals
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	
+	  var reprContainer = new UI.Panel()
+	
+	  signals.representationAdded.add(function (repr) {
+	    reprContainer.add(
+	      new NGL.RepresentationElementWidget(repr, stage)
+	    )
+	  })
+	
+	  // Add representation
+	
+	  var repr = new UI.Select()
+	    .setColor('#444')
+	    .setOptions((function () {
+	      var reprOptions = {
+	        '': '[ add ]',
+	        'buffer': 'buffer'
+	      }
+	      return reprOptions
+	    })())
+	    .onChange(function () {
+	      component.addRepresentation(repr.getValue())
+	      repr.setValue('')
+	      componentPanel.setMenuDisplay('none')
+	    })
+	
+	  // Position
+	
+	  var position = new UI.Vector3()
+	    .onChange(function () {
+	      component.setPosition(position.getValue())
+	    })
+	
+	    // Rotation
+	
+	  var q = new NGL.Quaternion()
+	  var e = new NGL.Euler()
+	  var rotation = new UI.Vector3()
+	    .setRange(-6.28, 6.28)
+	    .onChange(function () {
+	      e.setFromVector3(rotation.getValue())
+	      q.setFromEuler(e)
+	      component.setRotation(q)
+	    })
+	
+	  // Scale
+	
+	  var scale = new UI.Number(1)
+	    .setRange(0.01, 100)
+	    .onChange(function () {
+	      component.setScale(scale.getValue())
+	    })
+	
+	  // Matrix
+	
+	  signals.matrixChanged.add(function () {
+	    position.setValue(component.position)
+	    rotation.setValue(e.setFromQuaternion(component.quaternion))
+	    scale.setValue(component.scale.x)
+	  })
+	
+	  // Component panel
+	
+	  var componentPanel = new UI.ComponentPanel(component)
+	    .setDisplay('inline-block')
+	    .setMargin('0px')
+	    .addMenuEntry('Representation', repr)
+	    .addMenuEntry(
+	      'File', new UI.Text(component.shape.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addMenuEntry('Position', position)
+	    .addMenuEntry('Rotation', rotation)
+	    .addMenuEntry('Scale', scale)
+	
+	  // Fill container
+	
+	  container
+	    .addStatic(componentPanel)
+	    .add(reprContainer)
+	
+	  return container
+	}
+	
+	// Representation
+	
+	NGL.RepresentationElementWidget = function (element, stage) {
+	  var signals = element.signals
+	
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	    .setMarginLeft('20px')
+	
+	  signals.visibilityChanged.add(function (value) {
+	    toggle.setValue(value)
+	  })
+	
+	  signals.nameChanged.add(function (value) {
+	    name.setValue(value)
+	  })
+	
+	  signals.disposed.add(function () {
+	    menu.dispose()
+	    container.dispose()
+	  })
+	
+	  // Name
+	
+	  var name = new UI.EllipsisText(element.name)
+	    .setWidth('103px')
+	
+	    // Actions
+	
+	  var toggle = new UI.ToggleIcon(element.visible, 'eye', 'eye-slash')
+	    .setTitle('hide/show')
+	    .setCursor('pointer')
+	    .setMarginLeft('25px')
+	    .onClick(function () {
+	      element.setVisibility(!element.visible)
+	    })
+	
+	  var disposeIcon = new UI.DisposeIcon()
+	    .setMarginLeft('10px')
+	    .setDisposeFunction(function () {
+	      element.dispose()
+	    })
+	
+	  container
+	    .addStatic(name)
+	    .addStatic(toggle)
+	    .addStatic(disposeIcon)
+	
+	  // Selection
+	
+	  if ((element.parent.type === 'structure' ||
+	          element.parent.type === 'trajectory') &&
+	        element.repr.selection && element.repr.selection.type === 'selection'
+	  ) {
+	    container.add(
+	      new UI.SelectionPanel(element.repr.selection)
+	        .setMarginLeft('20px')
+	        .setInputWidth('194px')
+	    )
+	  }
+	
+	  // Menu
+	
+	  var menu = new UI.PopupMenu('bars', 'Representation')
+	    .setMarginLeft('45px')
+	    .setEntryLabelWidth('190px')
+	
+	  menu.addEntry('type', new UI.Text(element.repr.type))
+	
+	  // Parameters
+	
+	  var repr = element.repr
+	  var rp = repr.getParameters()
+	
+	  Object.keys(repr.parameters).forEach(function (name) {
+	    if (!repr.parameters[ name ]) return
+	    var p = Object.assign({}, repr.parameters[ name ])
+	    p.value = rp[ name ]
+	    if (p.label === undefined) p.label = name
+	    var input = NGL.createParameterInput(p)
+	
+	    if (!input) return
+	
+	    signals.parametersChanged.add(function (params) {
+	      if (typeof input.setValue === 'function') {
+	        input.setValue(params[ name ])
+	      }
+	    })
+	
+	    function setParam () {
+	      var po = {}
+	      po[ name ] = input.getValue()
+	      element.setParameters(po)
+	      stage.viewer.requestRender()
+	    }
+	
+	    var ua = navigator.userAgent
+	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	      input.onInput(setParam)
+	    } else {
+	      input.onChange(setParam)
+	    }
+	
+	    menu.addEntry(name, input)
+	  })
+	
+	  container
+	    .addStatic(menu)
+	
+	  return container
+	}
+	
+	// Trajectory
+	
+	NGL.TrajectoryElementWidget = function (element, stage) {
+	  var signals = element.signals
+	  var traj = element.trajectory
+	
+	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	    .setMarginLeft('20px')
+	
+	  signals.disposed.add(function () {
+	    menu.dispose()
+	    container.dispose()
+	  })
+	
+	  var frameCount = new UI.Panel()
+	    .setDisplay('inline')
+	    .add(new UI.Icon('spinner')
+	      .addClass('spin')
+	      .setMarginRight('99px')
+	    )
+	
+	  var frameTime = new UI.Panel()
+	    .setMarginLeft('5px')
+	    .setDisplay('inline')
+	
+	  function setFrame (value) {
+	    frame.setValue(value)
+	    if (traj.deltaTime && value >= 0) {
+	      var t = traj.getFrameTime(value) / 1000
+	      time.setValue(t.toFixed(9).replace(/\.?0+$/g, '') + 'ns')
+	    } else {
+	      time.setValue('')
+	    }
+	    frameRange.setValue(value)
+	    frameCount.clear().add(frame.setWidth('40px'))
+	    frameTime.clear().add(time.setWidth('90px'))
+	  }
+	
+	  function init (value) {
+	    frame.setRange(-1, value - 1)
+	    frameRange.setRange(-1, value - 1)
+	
+	    setFrame(traj.currentFrame)
+	
+	    if (element.parameters.defaultStep !== undefined) {
+	      step.setValue(element.parameters.defaultStep)
+	    } else {
+	      // 1000 = n / step
+	      step.setValue(Math.ceil((value + 1) / 100))
+	    }
+	
+	    player.setParameters({step: step.getValue()})
+	    player.setParameters({end: value - 1})
+	  }
+	
+	  signals.countChanged.add(init)
+	  signals.frameChanged.add(setFrame)
+	
+	  // Name
+	
+	  var name = new UI.EllipsisText(element.parameters.name)
+	    .setWidth('103px')
+	
+	  signals.nameChanged.add(function (value) {
+	    name.setValue(value)
+	  })
+	
+	  container.addStatic(name)
+	  container.addStatic(frameTime)
+	
+	  // frames
+	
+	  var frame = new UI.Integer(-1)
+	    .setWidth('40px')
+	    .setTextAlign('right')
+	    .setMarginLeft('5px')
+	    .setRange(-1, -1)
+	    .onChange(function (e) {
+	      traj.setFrame(frame.getValue())
+	      menu.setMenuDisplay('none')
+	    })
+	
+	  var time = new UI.Text()
+	    .setTextAlign('right')
+	    .setWidth('90px')
+	
+	  var step = new UI.Integer(1)
+	    .setWidth('50px')
+	    .setRange(1, 10000)
+	    .onChange(function () {
+	      player.setParameters({step: step.getValue()})
+	    })
+	
+	  var frameRow = new UI.Panel()
+	
+	  var frameRange = new UI.Range(-1, -1, -1, 1)
+	    .setWidth('147px')
+	    .setMargin('0px')
+	    .setPadding('0px')
+	    .setBorder('0px')
+	    .onInput(function (e) {
+	      var value = frameRange.getValue()
+	
+	      if (value === traj.currentFrame) {
+	        return
+	      }
+	
+	      if (traj.player && traj.player.isRunning) {
+	        traj.setPlayer()
+	        traj.setFrame(value)
+	      } else if (!traj.inProgress) {
+	        traj.setFrame(value)
+	      }
+	    })
+	
+	  var interpolateType = new UI.Select()
+	    .setColor('#444')
+	    .setOptions({
+	      '': 'none',
+	      'linear': 'linear',
+	      'spline': 'spline'
+	    })
+	    .setValue(element.parameters.defaultInterpolateType)
+	    .onChange(function () {
+	      player.setParameters({interpolateType: interpolateType.getValue()})
+	    })
+	
+	  var interpolateStep = new UI.Integer(element.parameters.defaultInterpolateStep)
+	    .setWidth('30px')
+	    .setRange(1, 50)
+	    .onChange(function () {
+	      player.setParameters({interpolateStep: interpolateStep.getValue()})
+	    })
+	
+	  var playDirection = new UI.Select()
+	    .setColor('#444')
+	    .setOptions({
+	      'forward': 'forward',
+	      'backward': 'backward',
+	      'bounce': 'bounce'
+	    })
+	    .setValue(element.parameters.defaultDirection)
+	    .onChange(function () {
+	      player.setParameters({direction: playDirection.getValue()})
+	    })
+	
+	  var playMode = new UI.Select()
+	    .setColor('#444')
+	    .setOptions({
+	      'loop': 'loop',
+	      'once': 'once'
+	    })
+	    .setValue(element.parameters.defaultMode)
+	    .onChange(function () {
+	      player.setParameters({mode: playMode.getValue()})
+	    })
+	
+	  // player
+	
+	  var timeout = new UI.Integer(element.parameters.defaultTimeout)
+	    .setWidth('30px')
+	    .setRange(10, 1000)
+	    .onChange(function () {
+	      player.setParameters({timeout: timeout.getValue()})
+	    })
+	
+	  var player = new NGL.TrajectoryPlayer(traj, {
+	    step: step.getValue(),
+	    timeout: timeout.getValue(),
+	    start: 0,
+	    end: traj.frameCount - 1,
+	    interpolateType: interpolateType.getValue(),
+	    interpolateStep: interpolateStep.getValue(),
+	    direction: playDirection.getValue(),
+	    mode: playMode.getValue()
+	  })
+	  traj.setPlayer(player)
+	
+	  var playerButton = new UI.ToggleIcon(true, 'play', 'pause')
+	    .setMarginRight('10px')
+	    .setMarginLeft('20px')
+	    .setCursor('pointer')
+	    .setWidth('12px')
+	    .setTitle('play')
+	    .onClick(function () {
+	      player.toggle()
+	    })
+	
+	  player.signals.startedRunning.add(function () {
+	    playerButton
+	      .setTitle('pause')
+	      .setValue(false)
+	  })
+	
+	  player.signals.haltedRunning.add(function () {
+	    playerButton
+	      .setTitle('play')
+	      .setValue(true)
+	  })
+	
+	  frameRow.add(playerButton, frameRange, frameCount)
+	
+	  // Selection
+	
+	  container.add(
+	    new UI.SelectionPanel(traj.selection)
+	      .setMarginLeft('20px')
+	      .setInputWidth('194px')
+	  )
+	
+	  // Options
+	
+	  var setCenterPbc = new UI.Checkbox(traj.centerPbc)
+	    .onChange(function () {
+	      element.setParameters({
+	        'centerPbc': setCenterPbc.getValue()
+	      })
+	    })
+	
+	  var setRemovePeriodicity = new UI.Checkbox(traj.removePeriodicity)
+	    .onChange(function () {
+	      element.setParameters({
+	        'removePeriodicity': setRemovePeriodicity.getValue()
+	      })
+	    })
+	
+	  var setRemovePbc = new UI.Checkbox(traj.removePbc)
+	    .onChange(function () {
+	      element.setParameters({
+	        'removePbc': setRemovePbc.getValue()
+	      })
+	    })
+	
+	  var setSuperpose = new UI.Checkbox(traj.superpose)
+	    .onChange(function () {
+	      element.setParameters({
+	        'superpose': setSuperpose.getValue()
+	      })
+	    })
+	
+	  var setDeltaTime = new UI.Number(traj.deltaTime)
+	    .setWidth('55px')
+	    .setRange(0, 1000000)
+	    .onChange(function () {
+	      element.setParameters({
+	        'deltaTime': setDeltaTime.getValue()
+	      })
+	    })
+	
+	  var setTimeOffset = new UI.Number(traj.timeOffset)
+	    .setWidth('55px')
+	    .setRange(0, 1000000000)
+	    .onChange(function () {
+	      element.setParameters({
+	        'timeOffset': setTimeOffset.getValue()
+	      })
+	    })
+	
+	  signals.parametersChanged.add(function (params) {
+	    setCenterPbc.setValue(traj.centerPbc)
+	    setRemovePeriodicity.setValue(traj.removePeriodicity)
+	    setRemovePbc.setValue(traj.removePbc)
+	    setSuperpose.setValue(traj.superpose)
+	    setDeltaTime.setValue(traj.deltaTime)
+	    setTimeOffset.setValue(traj.timeOffset)
+	    traj.setFrame(frame.getValue())
+	  })
+	
+	  // Dispose
+	
+	  var dispose = new UI.DisposeIcon()
+	    .setDisposeFunction(function () {
+	      element.parent.removeTrajectory(element)
+	    })
+	
+	  //
+	
+	  if (traj.frameCount) {
+	    init(traj.frameCount)
+	  }
+	
+	  // Menu
+	
+	  var menu = new UI.PopupMenu('bars', 'Trajectory')
+	    .setMarginLeft('10px')
+	    .setEntryLabelWidth('130px')
+	    .addEntry('Center', setCenterPbc)
+	    .addEntry('Remove Periodicity', setRemovePeriodicity)
+	    .addEntry('Remove PBC', setRemovePbc)
+	    .addEntry('Superpose', setSuperpose)
+	    .addEntry('Step size', step)
+	    .addEntry('Interpolation type', interpolateType)
+	    .addEntry('Interpolation steps', interpolateStep)
+	    .addEntry('Play timeout', timeout)
+	    .addEntry('Play direction', playDirection)
+	    .addEntry('Play mode', playMode)
+	    .addEntry('Delta time [ps]', setDeltaTime)
+	    .addEntry('Time offset [ps]', setTimeOffset)
+	    .addEntry('File',
+	      new UI.Text(traj.trajPath)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	    .addEntry('Dispose', dispose)
+	
+	  container
+	    .addStatic(menu)
+	
+	  container
+	    .add(frameRow)
+	
+	  return container
+	}
+	
+	// Listing
+	
+	NGL.DirectoryListingWidget = function (datasource, stage, heading, filter, callback) {
+	  // from http://stackoverflow.com/a/20463021/1435042
+	  function fileSizeSI (a, b, c, d, e) {
+	    return (b = Math, c = b.log, d = 1e3, e = c(a) / c(d) | 0, a / b.pow(d, e)).toFixed(2) +
+	            String.fromCharCode(160) + (e ? 'kMGTPEZY'[--e] + 'B' : 'Bytes')
+	  }
+	
+	  function getFolderDict (path) {
+	    path = path || ''
+	    var options = { '': '' }
+	    var full = []
+	    path.split('/').forEach(function (chunk) {
+	      full.push(chunk)
+	      options[ full.join('/') ] = chunk
+	    })
+	    return options
+	  }
+	
+	  var container = new UI.OverlayPanel()
+	
+	  var headingPanel = new UI.Panel()
+	    .setBorderBottom('1px solid #555')
+	    .setHeight('30px')
+	
+	  var listingPanel = new UI.Panel()
+	    .setMarginTop('10px')
+	    .setMinHeight('100px')
+	    .setMaxHeight('500px')
+	    .setPaddingRight('15px')
+	    .setOverflow('auto')
+	
+	  var folderSelect = new UI.Select()
+	    .setColor('#444')
+	    .setMarginLeft('20px')
+	    .setWidth('')
+	    .setMaxWidth('200px')
+	    .setOptions(getFolderDict())
+	    .onChange(function () {
+	      datasource.getListing(folderSelect.getValue())
+	        .then(onListingLoaded)
+	    })
+	
+	  heading = heading || 'Directoy listing'
+	
+	  headingPanel.add(new UI.Text(heading))
+	  headingPanel.add(folderSelect)
+	  headingPanel.add(
+	    new UI.Icon('times')
+	      .setCursor('pointer')
+	      .setMarginLeft('20px')
+	      .setFloat('right')
+	      .onClick(function () {
+	        container.dispose()
+	      })
+	  )
+	
+	  container.add(headingPanel)
+	  container.add(listingPanel)
+	
+	  function onListingLoaded (listing) {
+	    var folder = listing.path
+	    var data = listing.data
+	
+	    NGL.lastUsedDirectory = folder
+	    listingPanel.clear()
+	
+	    folderSelect
+	      .setOptions(getFolderDict(folder))
+	      .setValue(folder)
+	
+	    data.forEach(function (info) {
+	      var ext = info.path.split('.').pop().toLowerCase()
+	      if (filter && !info.dir && filter.indexOf(ext) === -1) {
+	        return
+	      }
+	
+	      var icon, name
+	      if (info.dir) {
+	        icon = 'folder-o'
+	        name = info.name
+	      } else {
+	        icon = 'file-o'
+	        name = info.name + String.fromCharCode(160) +
+	                '(' + fileSizeSI(info.size) + ')'
+	      }
+	
+	      var pathRow = new UI.Panel()
+	        .setDisplay('block')
+	        .setWhiteSpace('nowrap')
+	        .add(new UI.Icon(icon).setWidth('20px'))
+	        .add(new UI.Text(name))
+	        .onClick(function () {
+	          if (info.dir) {
+	            datasource.getListing(info.path)
+	              .then(onListingLoaded)
+	          } else {
+	            callback(info)
+	          }
+	        })
+	
+	      if (info.restricted) {
+	        pathRow.add(new UI.Icon('lock').setMarginLeft('5px'))
+	      }
+	
+	      listingPanel.add(pathRow)
+	    })
+	  }
+	
+	  datasource.getListing(NGL.lastUsedDirectory)
+	    .then(onListingLoaded)
+	
+	  return container
+	}
+	
+	module.exports = {
+	    "StageWidget": StageWidget
+	}
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Dialog 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Dialog
+	//>>group: Widgets
+	//>>description: Displays customizable dialog windows.
+	//>>docs: http://api.jqueryui.com/dialog/
+	//>>demos: http://jqueryui.com/dialog/
+	//>>css.structure: ../../themes/base/core.css
+	//>>css.structure: ../../themes/base/dialog.css
+	//>>css.theme: ../../themes/base/theme.css
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+				__webpack_require__(7),
+				__webpack_require__(18),
+				__webpack_require__(28),
+				__webpack_require__(29),
+				__webpack_require__(36),
+				__webpack_require__(38),
+				__webpack_require__(27),
+				__webpack_require__(41),
+				__webpack_require__(35),
+				__webpack_require__(33),
+				__webpack_require__(39),
+				__webpack_require__(40),
+				__webpack_require__(21),
+				__webpack_require__(20)
+			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	
+	$.widget( "ui.dialog", {
+		version: "1.12.1",
+		options: {
+			appendTo: "body",
+			autoOpen: true,
+			buttons: [],
+			classes: {
+				"ui-dialog": "ui-corner-all",
+				"ui-dialog-titlebar": "ui-corner-all"
+			},
+			closeOnEscape: true,
+			closeText: "Close",
+			draggable: true,
+			hide: null,
+			height: "auto",
+			maxHeight: null,
+			maxWidth: null,
+			minHeight: 150,
+			minWidth: 150,
+			modal: false,
+			position: {
+				my: "center",
+				at: "center",
+				of: window,
+				collision: "fit",
+	
+				// Ensure the titlebar is always visible
+				using: function( pos ) {
+					var topOffset = $( this ).css( pos ).offset().top;
+					if ( topOffset < 0 ) {
+						$( this ).css( "top", pos.top - topOffset );
+					}
+				}
+			},
+			resizable: true,
+			show: null,
+			title: null,
+			width: 300,
+	
+			// Callbacks
+			beforeClose: null,
+			close: null,
+			drag: null,
+			dragStart: null,
+			dragStop: null,
+			focus: null,
+			open: null,
+			resize: null,
+			resizeStart: null,
+			resizeStop: null
+		},
+	
+		sizeRelatedOptions: {
+			buttons: true,
+			height: true,
+			maxHeight: true,
+			maxWidth: true,
+			minHeight: true,
+			minWidth: true,
+			width: true
+		},
+	
+		resizableRelatedOptions: {
+			maxHeight: true,
+			maxWidth: true,
+			minHeight: true,
+			minWidth: true
+		},
+	
+		_create: function() {
+			this.originalCss = {
+				display: this.element[ 0 ].style.display,
+				width: this.element[ 0 ].style.width,
+				minHeight: this.element[ 0 ].style.minHeight,
+				maxHeight: this.element[ 0 ].style.maxHeight,
+				height: this.element[ 0 ].style.height
+			};
+			this.originalPosition = {
+				parent: this.element.parent(),
+				index: this.element.parent().children().index( this.element )
+			};
+			this.originalTitle = this.element.attr( "title" );
+			if ( this.options.title == null && this.originalTitle != null ) {
+				this.options.title = this.originalTitle;
+			}
+	
+			// Dialogs can't be disabled
+			if ( this.options.disabled ) {
+				this.options.disabled = false;
+			}
+	
+			this._createWrapper();
+	
+			this.element
+				.show()
+				.removeAttr( "title" )
+				.appendTo( this.uiDialog );
+	
+			this._addClass( "ui-dialog-content", "ui-widget-content" );
+	
+			this._createTitlebar();
+			this._createButtonPane();
+	
+			if ( this.options.draggable && $.fn.draggable ) {
+				this._makeDraggable();
+			}
+			if ( this.options.resizable && $.fn.resizable ) {
+				this._makeResizable();
+			}
+	
+			this._isOpen = false;
+	
+			this._trackFocus();
+		},
+	
+		_init: function() {
+			if ( this.options.autoOpen ) {
+				this.open();
+			}
+		},
+	
+		_appendTo: function() {
+			var element = this.options.appendTo;
+			if ( element && ( element.jquery || element.nodeType ) ) {
+				return $( element );
+			}
+			return this.document.find( element || "body" ).eq( 0 );
+		},
+	
+		_destroy: function() {
+			var next,
+				originalPosition = this.originalPosition;
+	
+			this._untrackInstance();
+			this._destroyOverlay();
+	
+			this.element
+				.removeUniqueId()
+				.css( this.originalCss )
+	
+				// Without detaching first, the following becomes really slow
+				.detach();
+	
+			this.uiDialog.remove();
+	
+			if ( this.originalTitle ) {
+				this.element.attr( "title", this.originalTitle );
+			}
+	
+			next = originalPosition.parent.children().eq( originalPosition.index );
+	
+			// Don't try to place the dialog next to itself (#8613)
+			if ( next.length && next[ 0 ] !== this.element[ 0 ] ) {
+				next.before( this.element );
+			} else {
+				originalPosition.parent.append( this.element );
+			}
+		},
+	
+		widget: function() {
+			return this.uiDialog;
+		},
+	
+		disable: $.noop,
+		enable: $.noop,
+	
+		close: function( event ) {
+			var that = this;
+	
+			if ( !this._isOpen || this._trigger( "beforeClose", event ) === false ) {
+				return;
+			}
+	
+			this._isOpen = false;
+			this._focusedElement = null;
+			this._destroyOverlay();
+			this._untrackInstance();
+	
+			if ( !this.opener.filter( ":focusable" ).trigger( "focus" ).length ) {
+	
+				// Hiding a focused element doesn't trigger blur in WebKit
+				// so in case we have nothing to focus on, explicitly blur the active element
+				// https://bugs.webkit.org/show_bug.cgi?id=47182
+				$.ui.safeBlur( $.ui.safeActiveElement( this.document[ 0 ] ) );
+			}
+	
+			this._hide( this.uiDialog, this.options.hide, function() {
+				that._trigger( "close", event );
+			} );
+		},
+	
+		isOpen: function() {
+			return this._isOpen;
+		},
+	
+		moveToTop: function() {
+			this._moveToTop();
+		},
+	
+		_moveToTop: function( event, silent ) {
+			var moved = false,
+				zIndices = this.uiDialog.siblings( ".ui-front:visible" ).map( function() {
+					return +$( this ).css( "z-index" );
+				} ).get(),
+				zIndexMax = Math.max.apply( null, zIndices );
+	
+			if ( zIndexMax >= +this.uiDialog.css( "z-index" ) ) {
+				this.uiDialog.css( "z-index", zIndexMax + 1 );
+				moved = true;
+			}
+	
+			if ( moved && !silent ) {
+				this._trigger( "focus", event );
+			}
+			return moved;
+		},
+	
+		open: function() {
+			var that = this;
+			if ( this._isOpen ) {
+				if ( this._moveToTop() ) {
+					this._focusTabbable();
+				}
+				return;
+			}
+	
+			this._isOpen = true;
+			this.opener = $( $.ui.safeActiveElement( this.document[ 0 ] ) );
+	
+			this._size();
+			this._position();
+			this._createOverlay();
+			this._moveToTop( null, true );
+	
+			// Ensure the overlay is moved to the top with the dialog, but only when
+			// opening. The overlay shouldn't move after the dialog is open so that
+			// modeless dialogs opened after the modal dialog stack properly.
+			if ( this.overlay ) {
+				this.overlay.css( "z-index", this.uiDialog.css( "z-index" ) - 1 );
+			}
+	
+			this._show( this.uiDialog, this.options.show, function() {
+				that._focusTabbable();
+				that._trigger( "focus" );
+			} );
+	
+			// Track the dialog immediately upon openening in case a focus event
+			// somehow occurs outside of the dialog before an element inside the
+			// dialog is focused (#10152)
+			this._makeFocusTarget();
+	
+			this._trigger( "open" );
+		},
+	
+		_focusTabbable: function() {
+	
+			// Set focus to the first match:
+			// 1. An element that was focused previously
+			// 2. First element inside the dialog matching [autofocus]
+			// 3. Tabbable element inside the content element
+			// 4. Tabbable element inside the buttonpane
+			// 5. The close button
+			// 6. The dialog itself
+			var hasFocus = this._focusedElement;
+			if ( !hasFocus ) {
+				hasFocus = this.element.find( "[autofocus]" );
+			}
+			if ( !hasFocus.length ) {
+				hasFocus = this.element.find( ":tabbable" );
+			}
+			if ( !hasFocus.length ) {
+				hasFocus = this.uiDialogButtonPane.find( ":tabbable" );
+			}
+			if ( !hasFocus.length ) {
+				hasFocus = this.uiDialogTitlebarClose.filter( ":tabbable" );
+			}
+			if ( !hasFocus.length ) {
+				hasFocus = this.uiDialog;
+			}
+			hasFocus.eq( 0 ).trigger( "focus" );
+		},
+	
+		_keepFocus: function( event ) {
+			function checkFocus() {
+				var activeElement = $.ui.safeActiveElement( this.document[ 0 ] ),
+					isActive = this.uiDialog[ 0 ] === activeElement ||
+						$.contains( this.uiDialog[ 0 ], activeElement );
+				if ( !isActive ) {
+					this._focusTabbable();
+				}
+			}
+			event.preventDefault();
+			checkFocus.call( this );
+	
+			// support: IE
+			// IE <= 8 doesn't prevent moving focus even with event.preventDefault()
+			// so we check again later
+			this._delay( checkFocus );
+		},
+	
+		_createWrapper: function() {
+			this.uiDialog = $( "<div>" )
+				.hide()
+				.attr( {
+	
+					// Setting tabIndex makes the div focusable
+					tabIndex: -1,
+					role: "dialog"
+				} )
+				.appendTo( this._appendTo() );
+	
+			this._addClass( this.uiDialog, "ui-dialog", "ui-widget ui-widget-content ui-front" );
+			this._on( this.uiDialog, {
+				keydown: function( event ) {
+					if ( this.options.closeOnEscape && !event.isDefaultPrevented() && event.keyCode &&
+							event.keyCode === $.ui.keyCode.ESCAPE ) {
+						event.preventDefault();
+						this.close( event );
+						return;
+					}
+	
+					// Prevent tabbing out of dialogs
+					if ( event.keyCode !== $.ui.keyCode.TAB || event.isDefaultPrevented() ) {
+						return;
+					}
+					var tabbables = this.uiDialog.find( ":tabbable" ),
+						first = tabbables.filter( ":first" ),
+						last = tabbables.filter( ":last" );
+	
+					if ( ( event.target === last[ 0 ] || event.target === this.uiDialog[ 0 ] ) &&
+							!event.shiftKey ) {
+						this._delay( function() {
+							first.trigger( "focus" );
+						} );
+						event.preventDefault();
+					} else if ( ( event.target === first[ 0 ] ||
+							event.target === this.uiDialog[ 0 ] ) && event.shiftKey ) {
+						this._delay( function() {
+							last.trigger( "focus" );
+						} );
+						event.preventDefault();
+					}
+				},
+				mousedown: function( event ) {
+					if ( this._moveToTop( event ) ) {
+						this._focusTabbable();
+					}
+				}
+			} );
+	
+			// We assume that any existing aria-describedby attribute means
+			// that the dialog content is marked up properly
+			// otherwise we brute force the content as the description
+			if ( !this.element.find( "[aria-describedby]" ).length ) {
+				this.uiDialog.attr( {
+					"aria-describedby": this.element.uniqueId().attr( "id" )
+				} );
+			}
+		},
+	
+		_createTitlebar: function() {
+			var uiDialogTitle;
+	
+			this.uiDialogTitlebar = $( "<div>" );
+			this._addClass( this.uiDialogTitlebar,
+				"ui-dialog-titlebar", "ui-widget-header ui-helper-clearfix" );
+			this._on( this.uiDialogTitlebar, {
+				mousedown: function( event ) {
+	
+					// Don't prevent click on close button (#8838)
+					// Focusing a dialog that is partially scrolled out of view
+					// causes the browser to scroll it into view, preventing the click event
+					if ( !$( event.target ).closest( ".ui-dialog-titlebar-close" ) ) {
+	
+						// Dialog isn't getting focus when dragging (#8063)
+						this.uiDialog.trigger( "focus" );
+					}
+				}
+			} );
+	
+			// Support: IE
+			// Use type="button" to prevent enter keypresses in textboxes from closing the
+			// dialog in IE (#9312)
+			this.uiDialogTitlebarClose = $( "<button type='button'></button>" )
+				.button( {
+					label: $( "<a>" ).text( this.options.closeText ).html(),
+					icon: "ui-icon-closethick",
+					showLabel: false
+				} )
+				.appendTo( this.uiDialogTitlebar );
+	
+			this._addClass( this.uiDialogTitlebarClose, "ui-dialog-titlebar-close" );
+			this._on( this.uiDialogTitlebarClose, {
+				click: function( event ) {
+					event.preventDefault();
+					this.close( event );
+				}
+			} );
+	
+			uiDialogTitle = $( "<span>" ).uniqueId().prependTo( this.uiDialogTitlebar );
+			this._addClass( uiDialogTitle, "ui-dialog-title" );
+			this._title( uiDialogTitle );
+	
+			this.uiDialogTitlebar.prependTo( this.uiDialog );
+	
+			this.uiDialog.attr( {
+				"aria-labelledby": uiDialogTitle.attr( "id" )
+			} );
+		},
+	
+		_title: function( title ) {
+			if ( this.options.title ) {
+				title.text( this.options.title );
+			} else {
+				title.html( "&#160;" );
+			}
+		},
+	
+		_createButtonPane: function() {
+			this.uiDialogButtonPane = $( "<div>" );
+			this._addClass( this.uiDialogButtonPane, "ui-dialog-buttonpane",
+				"ui-widget-content ui-helper-clearfix" );
+	
+			this.uiButtonSet = $( "<div>" )
+				.appendTo( this.uiDialogButtonPane );
+			this._addClass( this.uiButtonSet, "ui-dialog-buttonset" );
+	
+			this._createButtons();
+		},
+	
+		_createButtons: function() {
+			var that = this,
+				buttons = this.options.buttons;
+	
+			// If we already have a button pane, remove it
+			this.uiDialogButtonPane.remove();
+			this.uiButtonSet.empty();
+	
+			if ( $.isEmptyObject( buttons ) || ( $.isArray( buttons ) && !buttons.length ) ) {
+				this._removeClass( this.uiDialog, "ui-dialog-buttons" );
+				return;
+			}
+	
+			$.each( buttons, function( name, props ) {
+				var click, buttonOptions;
+				props = $.isFunction( props ) ?
+					{ click: props, text: name } :
+					props;
+	
+				// Default to a non-submitting button
+				props = $.extend( { type: "button" }, props );
+	
+				// Change the context for the click callback to be the main element
+				click = props.click;
+				buttonOptions = {
+					icon: props.icon,
+					iconPosition: props.iconPosition,
+					showLabel: props.showLabel,
+	
+					// Deprecated options
+					icons: props.icons,
+					text: props.text
+				};
+	
+				delete props.click;
+				delete props.icon;
+				delete props.iconPosition;
+				delete props.showLabel;
+	
+				// Deprecated options
+				delete props.icons;
+				if ( typeof props.text === "boolean" ) {
+					delete props.text;
+				}
+	
+				$( "<button></button>", props )
+					.button( buttonOptions )
+					.appendTo( that.uiButtonSet )
+					.on( "click", function() {
+						click.apply( that.element[ 0 ], arguments );
+					} );
+			} );
+			this._addClass( this.uiDialog, "ui-dialog-buttons" );
+			this.uiDialogButtonPane.appendTo( this.uiDialog );
+		},
+	
+		_makeDraggable: function() {
+			var that = this,
+				options = this.options;
+	
+			function filteredUi( ui ) {
+				return {
+					position: ui.position,
+					offset: ui.offset
+				};
+			}
+	
+			this.uiDialog.draggable( {
+				cancel: ".ui-dialog-content, .ui-dialog-titlebar-close",
+				handle: ".ui-dialog-titlebar",
+				containment: "document",
+				start: function( event, ui ) {
+					that._addClass( $( this ), "ui-dialog-dragging" );
+					that._blockFrames();
+					that._trigger( "dragStart", event, filteredUi( ui ) );
+				},
+				drag: function( event, ui ) {
+					that._trigger( "drag", event, filteredUi( ui ) );
+				},
+				stop: function( event, ui ) {
+					var left = ui.offset.left - that.document.scrollLeft(),
+						top = ui.offset.top - that.document.scrollTop();
+	
+					options.position = {
+						my: "left top",
+						at: "left" + ( left >= 0 ? "+" : "" ) + left + " " +
+							"top" + ( top >= 0 ? "+" : "" ) + top,
+						of: that.window
+					};
+					that._removeClass( $( this ), "ui-dialog-dragging" );
+					that._unblockFrames();
+					that._trigger( "dragStop", event, filteredUi( ui ) );
+				}
+			} );
+		},
+	
+		_makeResizable: function() {
+			var that = this,
+				options = this.options,
+				handles = options.resizable,
+	
+				// .ui-resizable has position: relative defined in the stylesheet
+				// but dialogs have to use absolute or fixed positioning
+				position = this.uiDialog.css( "position" ),
+				resizeHandles = typeof handles === "string" ?
+					handles :
+					"n,e,s,w,se,sw,ne,nw";
+	
+			function filteredUi( ui ) {
+				return {
+					originalPosition: ui.originalPosition,
+					originalSize: ui.originalSize,
+					position: ui.position,
+					size: ui.size
+				};
+			}
+	
+			this.uiDialog.resizable( {
+				cancel: ".ui-dialog-content",
+				containment: "document",
+				alsoResize: this.element,
+				maxWidth: options.maxWidth,
+				maxHeight: options.maxHeight,
+				minWidth: options.minWidth,
+				minHeight: this._minHeight(),
+				handles: resizeHandles,
+				start: function( event, ui ) {
+					that._addClass( $( this ), "ui-dialog-resizing" );
+					that._blockFrames();
+					that._trigger( "resizeStart", event, filteredUi( ui ) );
+				},
+				resize: function( event, ui ) {
+					that._trigger( "resize", event, filteredUi( ui ) );
+				},
+				stop: function( event, ui ) {
+					var offset = that.uiDialog.offset(),
+						left = offset.left - that.document.scrollLeft(),
+						top = offset.top - that.document.scrollTop();
+	
+					options.height = that.uiDialog.height();
+					options.width = that.uiDialog.width();
+					options.position = {
+						my: "left top",
+						at: "left" + ( left >= 0 ? "+" : "" ) + left + " " +
+							"top" + ( top >= 0 ? "+" : "" ) + top,
+						of: that.window
+					};
+					that._removeClass( $( this ), "ui-dialog-resizing" );
+					that._unblockFrames();
+					that._trigger( "resizeStop", event, filteredUi( ui ) );
+				}
+			} )
+				.css( "position", position );
+		},
+	
+		_trackFocus: function() {
+			this._on( this.widget(), {
+				focusin: function( event ) {
+					this._makeFocusTarget();
+					this._focusedElement = $( event.target );
+				}
+			} );
+		},
+	
+		_makeFocusTarget: function() {
+			this._untrackInstance();
+			this._trackingInstances().unshift( this );
+		},
+	
+		_untrackInstance: function() {
+			var instances = this._trackingInstances(),
+				exists = $.inArray( this, instances );
+			if ( exists !== -1 ) {
+				instances.splice( exists, 1 );
+			}
+		},
+	
+		_trackingInstances: function() {
+			var instances = this.document.data( "ui-dialog-instances" );
+			if ( !instances ) {
+				instances = [];
+				this.document.data( "ui-dialog-instances", instances );
+			}
+			return instances;
+		},
+	
+		_minHeight: function() {
+			var options = this.options;
+	
+			return options.height === "auto" ?
+				options.minHeight :
+				Math.min( options.minHeight, options.height );
+		},
+	
+		_position: function() {
+	
+			// Need to show the dialog to get the actual offset in the position plugin
+			var isVisible = this.uiDialog.is( ":visible" );
+			if ( !isVisible ) {
+				this.uiDialog.show();
+			}
+			this.uiDialog.position( this.options.position );
+			if ( !isVisible ) {
+				this.uiDialog.hide();
+			}
+		},
+	
+		_setOptions: function( options ) {
+			var that = this,
+				resize = false,
+				resizableOptions = {};
+	
+			$.each( options, function( key, value ) {
+				that._setOption( key, value );
+	
+				if ( key in that.sizeRelatedOptions ) {
+					resize = true;
+				}
+				if ( key in that.resizableRelatedOptions ) {
+					resizableOptions[ key ] = value;
+				}
+			} );
+	
+			if ( resize ) {
+				this._size();
+				this._position();
+			}
+			if ( this.uiDialog.is( ":data(ui-resizable)" ) ) {
+				this.uiDialog.resizable( "option", resizableOptions );
+			}
+		},
+	
+		_setOption: function( key, value ) {
+			var isDraggable, isResizable,
+				uiDialog = this.uiDialog;
+	
+			if ( key === "disabled" ) {
+				return;
+			}
+	
+			this._super( key, value );
+	
+			if ( key === "appendTo" ) {
+				this.uiDialog.appendTo( this._appendTo() );
+			}
+	
+			if ( key === "buttons" ) {
+				this._createButtons();
+			}
+	
+			if ( key === "closeText" ) {
+				this.uiDialogTitlebarClose.button( {
+	
+					// Ensure that we always pass a string
+					label: $( "<a>" ).text( "" + this.options.closeText ).html()
+				} );
+			}
+	
+			if ( key === "draggable" ) {
+				isDraggable = uiDialog.is( ":data(ui-draggable)" );
+				if ( isDraggable && !value ) {
+					uiDialog.draggable( "destroy" );
+				}
+	
+				if ( !isDraggable && value ) {
+					this._makeDraggable();
+				}
+			}
+	
+			if ( key === "position" ) {
+				this._position();
+			}
+	
+			if ( key === "resizable" ) {
+	
+				// currently resizable, becoming non-resizable
+				isResizable = uiDialog.is( ":data(ui-resizable)" );
+				if ( isResizable && !value ) {
+					uiDialog.resizable( "destroy" );
+				}
+	
+				// Currently resizable, changing handles
+				if ( isResizable && typeof value === "string" ) {
+					uiDialog.resizable( "option", "handles", value );
+				}
+	
+				// Currently non-resizable, becoming resizable
+				if ( !isResizable && value !== false ) {
+					this._makeResizable();
+				}
+			}
+	
+			if ( key === "title" ) {
+				this._title( this.uiDialogTitlebar.find( ".ui-dialog-title" ) );
+			}
+		},
+	
+		_size: function() {
+	
+			// If the user has resized the dialog, the .ui-dialog and .ui-dialog-content
+			// divs will both have width and height set, so we need to reset them
+			var nonContentHeight, minContentHeight, maxContentHeight,
+				options = this.options;
+	
+			// Reset content sizing
+			this.element.show().css( {
+				width: "auto",
+				minHeight: 0,
+				maxHeight: "none",
+				height: 0
+			} );
+	
+			if ( options.minWidth > options.width ) {
+				options.width = options.minWidth;
+			}
+	
+			// Reset wrapper sizing
+			// determine the height of all the non-content elements
+			nonContentHeight = this.uiDialog.css( {
+				height: "auto",
+				width: options.width
+			} )
+				.outerHeight();
+			minContentHeight = Math.max( 0, options.minHeight - nonContentHeight );
+			maxContentHeight = typeof options.maxHeight === "number" ?
+				Math.max( 0, options.maxHeight - nonContentHeight ) :
+				"none";
+	
+			if ( options.height === "auto" ) {
+				this.element.css( {
+					minHeight: minContentHeight,
+					maxHeight: maxContentHeight,
+					height: "auto"
+				} );
+			} else {
+				this.element.height( Math.max( 0, options.height - nonContentHeight ) );
+			}
+	
+			if ( this.uiDialog.is( ":data(ui-resizable)" ) ) {
+				this.uiDialog.resizable( "option", "minHeight", this._minHeight() );
+			}
+		},
+	
+		_blockFrames: function() {
+			this.iframeBlocks = this.document.find( "iframe" ).map( function() {
+				var iframe = $( this );
+	
+				return $( "<div>" )
+					.css( {
+						position: "absolute",
+						width: iframe.outerWidth(),
+						height: iframe.outerHeight()
+					} )
+					.appendTo( iframe.parent() )
+					.offset( iframe.offset() )[ 0 ];
+			} );
+		},
+	
+		_unblockFrames: function() {
+			if ( this.iframeBlocks ) {
+				this.iframeBlocks.remove();
+				delete this.iframeBlocks;
+			}
+		},
+	
+		_allowInteraction: function( event ) {
+			if ( $( event.target ).closest( ".ui-dialog" ).length ) {
+				return true;
+			}
+	
+			// TODO: Remove hack when datepicker implements
+			// the .ui-front logic (#8989)
+			return !!$( event.target ).closest( ".ui-datepicker" ).length;
+		},
+	
+		_createOverlay: function() {
+			if ( !this.options.modal ) {
+				return;
+			}
+	
+			// We use a delay in case the overlay is created from an
+			// event that we're going to be cancelling (#2804)
+			var isOpening = true;
+			this._delay( function() {
+				isOpening = false;
+			} );
+	
+			if ( !this.document.data( "ui-dialog-overlays" ) ) {
+	
+				// Prevent use of anchors and inputs
+				// Using _on() for an event handler shared across many instances is
+				// safe because the dialogs stack and must be closed in reverse order
+				this._on( this.document, {
+					focusin: function( event ) {
+						if ( isOpening ) {
+							return;
+						}
+	
+						if ( !this._allowInteraction( event ) ) {
+							event.preventDefault();
+							this._trackingInstances()[ 0 ]._focusTabbable();
+						}
+					}
+				} );
+			}
+	
+			this.overlay = $( "<div>" )
+				.appendTo( this._appendTo() );
+	
+			this._addClass( this.overlay, null, "ui-widget-overlay ui-front" );
+			this._on( this.overlay, {
+				mousedown: "_keepFocus"
+			} );
+			this.document.data( "ui-dialog-overlays",
+				( this.document.data( "ui-dialog-overlays" ) || 0 ) + 1 );
+		},
+	
+		_destroyOverlay: function() {
+			if ( !this.options.modal ) {
+				return;
+			}
+	
+			if ( this.overlay ) {
+				var overlays = this.document.data( "ui-dialog-overlays" ) - 1;
+	
+				if ( !overlays ) {
+					this._off( this.document, "focusin" );
+					this.document.removeData( "ui-dialog-overlays" );
+				} else {
+					this.document.data( "ui-dialog-overlays", overlays );
+				}
+	
+				this.overlay.remove();
+				this.overlay = null;
+			}
+		}
+	} );
+	
+	// DEPRECATED
+	// TODO: switch return back to widget declaration at top of file when this is removed
+	if ( $.uiBackCompat !== false ) {
+	
+		// Backcompat for dialogClass option
+		$.widget( "ui.dialog", $.ui.dialog, {
+			options: {
+				dialogClass: ""
+			},
+			_createWrapper: function() {
+				this._super();
+				this.uiDialog.addClass( this.options.dialogClass );
+			},
+			_setOption: function( key, value ) {
+				if ( key === "dialogClass" ) {
+					this.uiDialog
+						.removeClass( this.options.dialogClass )
+						.addClass( value );
+				}
+				this._superApply( arguments );
+			}
+		} );
+	}
+	
+	return $.ui.dialog;
+	
+	} ) );
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Button 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Button
+	//>>group: Widgets
+	//>>description: Enhances a form with themeable buttons.
+	//>>docs: http://api.jqueryui.com/button/
+	//>>demos: http://jqueryui.com/button/
+	//>>css.structure: ../../themes/base/core.css
+	//>>css.structure: ../../themes/base/button.css
+	//>>css.theme: ../../themes/base/theme.css
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+				__webpack_require__(7),
+	
+				// These are only for backcompat
+				// TODO: Remove after 1.12
+				__webpack_require__(19),
+				__webpack_require__(22),
+	
+				__webpack_require__(27),
+				__webpack_require__(20)
+			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	
+	$.widget( "ui.button", {
+		version: "1.12.1",
+		defaultElement: "<button>",
+		options: {
+			classes: {
+				"ui-button": "ui-corner-all"
+			},
+			disabled: null,
+			icon: null,
+			iconPosition: "beginning",
+			label: null,
+			showLabel: true
+		},
+	
+		_getCreateOptions: function() {
+			var disabled,
+	
+				// This is to support cases like in jQuery Mobile where the base widget does have
+				// an implementation of _getCreateOptions
+				options = this._super() || {};
+	
+			this.isInput = this.element.is( "input" );
+	
+			disabled = this.element[ 0 ].disabled;
+			if ( disabled != null ) {
+				options.disabled = disabled;
+			}
+	
+			this.originalLabel = this.isInput ? this.element.val() : this.element.html();
+			if ( this.originalLabel ) {
+				options.label = this.originalLabel;
+			}
+	
+			return options;
+		},
+	
+		_create: function() {
+			if ( !this.option.showLabel & !this.options.icon ) {
+				this.options.showLabel = true;
+			}
+	
+			// We have to check the option again here even though we did in _getCreateOptions,
+			// because null may have been passed on init which would override what was set in
+			// _getCreateOptions
+			if ( this.options.disabled == null ) {
+				this.options.disabled = this.element[ 0 ].disabled || false;
+			}
+	
+			this.hasTitle = !!this.element.attr( "title" );
+	
+			// Check to see if the label needs to be set or if its already correct
+			if ( this.options.label && this.options.label !== this.originalLabel ) {
+				if ( this.isInput ) {
+					this.element.val( this.options.label );
+				} else {
+					this.element.html( this.options.label );
+				}
+			}
+			this._addClass( "ui-button", "ui-widget" );
+			this._setOption( "disabled", this.options.disabled );
+			this._enhance();
+	
+			if ( this.element.is( "a" ) ) {
+				this._on( {
+					"keyup": function( event ) {
+						if ( event.keyCode === $.ui.keyCode.SPACE ) {
+							event.preventDefault();
+	
+							// Support: PhantomJS <= 1.9, IE 8 Only
+							// If a native click is available use it so we actually cause navigation
+							// otherwise just trigger a click event
+							if ( this.element[ 0 ].click ) {
+								this.element[ 0 ].click();
+							} else {
+								this.element.trigger( "click" );
+							}
+						}
+					}
+				} );
+			}
+		},
+	
+		_enhance: function() {
+			if ( !this.element.is( "button" ) ) {
+				this.element.attr( "role", "button" );
+			}
+	
+			if ( this.options.icon ) {
+				this._updateIcon( "icon", this.options.icon );
+				this._updateTooltip();
+			}
+		},
+	
+		_updateTooltip: function() {
+			this.title = this.element.attr( "title" );
+	
+			if ( !this.options.showLabel && !this.title ) {
+				this.element.attr( "title", this.options.label );
+			}
+		},
+	
+		_updateIcon: function( option, value ) {
+			var icon = option !== "iconPosition",
+				position = icon ? this.options.iconPosition : value,
+				displayBlock = position === "top" || position === "bottom";
+	
+			// Create icon
+			if ( !this.icon ) {
+				this.icon = $( "<span>" );
+	
+				this._addClass( this.icon, "ui-button-icon", "ui-icon" );
+	
+				if ( !this.options.showLabel ) {
+					this._addClass( "ui-button-icon-only" );
+				}
+			} else if ( icon ) {
+	
+				// If we are updating the icon remove the old icon class
+				this._removeClass( this.icon, null, this.options.icon );
+			}
+	
+			// If we are updating the icon add the new icon class
+			if ( icon ) {
+				this._addClass( this.icon, null, value );
+			}
+	
+			this._attachIcon( position );
+	
+			// If the icon is on top or bottom we need to add the ui-widget-icon-block class and remove
+			// the iconSpace if there is one.
+			if ( displayBlock ) {
+				this._addClass( this.icon, null, "ui-widget-icon-block" );
+				if ( this.iconSpace ) {
+					this.iconSpace.remove();
+				}
+			} else {
+	
+				// Position is beginning or end so remove the ui-widget-icon-block class and add the
+				// space if it does not exist
+				if ( !this.iconSpace ) {
+					this.iconSpace = $( "<span> </span>" );
+					this._addClass( this.iconSpace, "ui-button-icon-space" );
+				}
+				this._removeClass( this.icon, null, "ui-wiget-icon-block" );
+				this._attachIconSpace( position );
+			}
+		},
+	
+		_destroy: function() {
+			this.element.removeAttr( "role" );
+	
+			if ( this.icon ) {
+				this.icon.remove();
+			}
+			if ( this.iconSpace ) {
+				this.iconSpace.remove();
+			}
+			if ( !this.hasTitle ) {
+				this.element.removeAttr( "title" );
+			}
+		},
+	
+		_attachIconSpace: function( iconPosition ) {
+			this.icon[ /^(?:end|bottom)/.test( iconPosition ) ? "before" : "after" ]( this.iconSpace );
+		},
+	
+		_attachIcon: function( iconPosition ) {
+			this.element[ /^(?:end|bottom)/.test( iconPosition ) ? "append" : "prepend" ]( this.icon );
+		},
+	
+		_setOptions: function( options ) {
+			var newShowLabel = options.showLabel === undefined ?
+					this.options.showLabel :
+					options.showLabel,
+				newIcon = options.icon === undefined ? this.options.icon : options.icon;
+	
+			if ( !newShowLabel && !newIcon ) {
+				options.showLabel = true;
+			}
+			this._super( options );
+		},
+	
+		_setOption: function( key, value ) {
+			if ( key === "icon" ) {
+				if ( value ) {
+					this._updateIcon( key, value );
+				} else if ( this.icon ) {
+					this.icon.remove();
+					if ( this.iconSpace ) {
+						this.iconSpace.remove();
+					}
+				}
+			}
+	
+			if ( key === "iconPosition" ) {
+				this._updateIcon( key, value );
+			}
+	
+			// Make sure we can't end up with a button that has neither text nor icon
+			if ( key === "showLabel" ) {
+					this._toggleClass( "ui-button-icon-only", null, !value );
+					this._updateTooltip();
+			}
+	
+			if ( key === "label" ) {
+				if ( this.isInput ) {
+					this.element.val( value );
+				} else {
+	
+					// If there is an icon, append it, else nothing then append the value
+					// this avoids removal of the icon when setting label text
+					this.element.html( value );
+					if ( this.icon ) {
+						this._attachIcon( this.options.iconPosition );
+						this._attachIconSpace( this.options.iconPosition );
+					}
+				}
+			}
+	
+			this._super( key, value );
+	
+			if ( key === "disabled" ) {
+				this._toggleClass( null, "ui-state-disabled", value );
+				this.element[ 0 ].disabled = value;
+				if ( value ) {
+					this.element.blur();
+				}
+			}
+		},
+	
+		refresh: function() {
+	
+			// Make sure to only check disabled if its an element that supports this otherwise
+			// check for the disabled class to determine state
+			var isDisabled = this.element.is( "input, button" ) ?
+				this.element[ 0 ].disabled : this.element.hasClass( "ui-button-disabled" );
+	
+			if ( isDisabled !== this.options.disabled ) {
+				this._setOptions( { disabled: isDisabled } );
+			}
+	
+			this._updateTooltip();
+		}
+	} );
+	
+	// DEPRECATED
+	if ( $.uiBackCompat !== false ) {
+	
+		// Text and Icons options
+		$.widget( "ui.button", $.ui.button, {
+			options: {
+				text: true,
+				icons: {
+					primary: null,
+					secondary: null
+				}
+			},
+	
+			_create: function() {
+				if ( this.options.showLabel && !this.options.text ) {
+					this.options.showLabel = this.options.text;
+				}
+				if ( !this.options.showLabel && this.options.text ) {
+					this.options.text = this.options.showLabel;
+				}
+				if ( !this.options.icon && ( this.options.icons.primary ||
+						this.options.icons.secondary ) ) {
+					if ( this.options.icons.primary ) {
+						this.options.icon = this.options.icons.primary;
+					} else {
+						this.options.icon = this.options.icons.secondary;
+						this.options.iconPosition = "end";
+					}
+				} else if ( this.options.icon ) {
+					this.options.icons.primary = this.options.icon;
+				}
+				this._super();
+			},
+	
+			_setOption: function( key, value ) {
+				if ( key === "text" ) {
+					this._super( "showLabel", value );
+					return;
+				}
+				if ( key === "showLabel" ) {
+					this.options.text = value;
+				}
+				if ( key === "icon" ) {
+					this.options.icons.primary = value;
+				}
+				if ( key === "icons" ) {
+					if ( value.primary ) {
+						this._super( "icon", value.primary );
+						this._super( "iconPosition", "beginning" );
+					} else if ( value.secondary ) {
+						this._super( "icon", value.secondary );
+						this._super( "iconPosition", "end" );
+					}
+				}
+				this._superApply( arguments );
+			}
+		} );
+	
+		$.fn.button = ( function( orig ) {
+			return function() {
+				if ( !this.length || ( this.length && this[ 0 ].tagName !== "INPUT" ) ||
+						( this.length && this[ 0 ].tagName === "INPUT" && (
+							this.attr( "type" ) !== "checkbox" && this.attr( "type" ) !== "radio"
+						) ) ) {
+					return orig.apply( this, arguments );
+				}
+				if ( !$.ui.checkboxradio ) {
+					$.error( "Checkboxradio widget missing" );
+				}
+				if ( arguments.length === 0 ) {
+					return this.checkboxradio( {
+						"icon": false
+					} );
+				}
+				return this.checkboxradio.apply( this, arguments );
+			};
+		} )( $.fn.button );
+	
+		$.fn.buttonset = function() {
+			if ( !$.ui.controlgroup ) {
+				$.error( "Controlgroup widget missing" );
+			}
+			if ( arguments[ 0 ] === "option" && arguments[ 1 ] === "items" && arguments[ 2 ] ) {
+				return this.controlgroup.apply( this,
+					[ arguments[ 0 ], "items.button", arguments[ 2 ] ] );
+			}
+			if ( arguments[ 0 ] === "option" && arguments[ 1 ] === "items" ) {
+				return this.controlgroup.apply( this, [ arguments[ 0 ], "items.button" ] );
+			}
+			if ( typeof arguments[ 0 ] === "object" && arguments[ 0 ].items ) {
+				arguments[ 0 ].items = {
+					button: arguments[ 0 ].items
+				};
+			}
+			return this.controlgroup.apply( this, arguments );
+		};
+	}
+	
+	return $.ui.button;
+	
+	} ) );
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Controlgroup 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Controlgroup
+	//>>group: Widgets
+	//>>description: Visually groups form control widgets
+	//>>docs: http://api.jqueryui.com/controlgroup/
+	//>>demos: http://jqueryui.com/controlgroup/
+	//>>css.structure: ../../themes/base/core.css
+	//>>css.structure: ../../themes/base/controlgroup.css
+	//>>css.theme: ../../themes/base/theme.css
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+				__webpack_require__(7),
+				__webpack_require__(20)
+			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	var controlgroupCornerRegex = /ui-corner-([a-z]){2,6}/g;
+	
+	return $.widget( "ui.controlgroup", {
+		version: "1.12.1",
+		defaultElement: "<div>",
+		options: {
+			direction: "horizontal",
+			disabled: null,
+			onlyVisible: true,
+			items: {
+				"button": "input[type=button], input[type=submit], input[type=reset], button, a",
+				"controlgroupLabel": ".ui-controlgroup-label",
+				"checkboxradio": "input[type='checkbox'], input[type='radio']",
+				"selectmenu": "select",
+				"spinner": ".ui-spinner-input"
+			}
+		},
+	
+		_create: function() {
+			this._enhance();
+		},
+	
+		// To support the enhanced option in jQuery Mobile, we isolate DOM manipulation
+		_enhance: function() {
+			this.element.attr( "role", "toolbar" );
+			this.refresh();
+		},
+	
+		_destroy: function() {
+			this._callChildMethod( "destroy" );
+			this.childWidgets.removeData( "ui-controlgroup-data" );
+			this.element.removeAttr( "role" );
+			if ( this.options.items.controlgroupLabel ) {
+				this.element
+					.find( this.options.items.controlgroupLabel )
+					.find( ".ui-controlgroup-label-contents" )
+					.contents().unwrap();
+			}
+		},
+	
+		_initWidgets: function() {
+			var that = this,
+				childWidgets = [];
+	
+			// First we iterate over each of the items options
+			$.each( this.options.items, function( widget, selector ) {
+				var labels;
+				var options = {};
+	
+				// Make sure the widget has a selector set
+				if ( !selector ) {
+					return;
+				}
+	
+				if ( widget === "controlgroupLabel" ) {
+					labels = that.element.find( selector );
+					labels.each( function() {
+						var element = $( this );
+	
+						if ( element.children( ".ui-controlgroup-label-contents" ).length ) {
+							return;
+						}
+						element.contents()
+							.wrapAll( "<span class='ui-controlgroup-label-contents'></span>" );
+					} );
+					that._addClass( labels, null, "ui-widget ui-widget-content ui-state-default" );
+					childWidgets = childWidgets.concat( labels.get() );
+					return;
+				}
+	
+				// Make sure the widget actually exists
+				if ( !$.fn[ widget ] ) {
+					return;
+				}
+	
+				// We assume everything is in the middle to start because we can't determine
+				// first / last elements until all enhancments are done.
+				if ( that[ "_" + widget + "Options" ] ) {
+					options = that[ "_" + widget + "Options" ]( "middle" );
+				} else {
+					options = { classes: {} };
+				}
+	
+				// Find instances of this widget inside controlgroup and init them
+				that.element
+					.find( selector )
+					.each( function() {
+						var element = $( this );
+						var instance = element[ widget ]( "instance" );
+	
+						// We need to clone the default options for this type of widget to avoid
+						// polluting the variable options which has a wider scope than a single widget.
+						var instanceOptions = $.widget.extend( {}, options );
+	
+						// If the button is the child of a spinner ignore it
+						// TODO: Find a more generic solution
+						if ( widget === "button" && element.parent( ".ui-spinner" ).length ) {
+							return;
+						}
+	
+						// Create the widget if it doesn't exist
+						if ( !instance ) {
+							instance = element[ widget ]()[ widget ]( "instance" );
+						}
+						if ( instance ) {
+							instanceOptions.classes =
+								that._resolveClassesValues( instanceOptions.classes, instance );
+						}
+						element[ widget ]( instanceOptions );
+	
+						// Store an instance of the controlgroup to be able to reference
+						// from the outermost element for changing options and refresh
+						var widgetElement = element[ widget ]( "widget" );
+						$.data( widgetElement[ 0 ], "ui-controlgroup-data",
+							instance ? instance : element[ widget ]( "instance" ) );
+	
+						childWidgets.push( widgetElement[ 0 ] );
+					} );
+			} );
+	
+			this.childWidgets = $( $.unique( childWidgets ) );
+			this._addClass( this.childWidgets, "ui-controlgroup-item" );
+		},
+	
+		_callChildMethod: function( method ) {
+			this.childWidgets.each( function() {
+				var element = $( this ),
+					data = element.data( "ui-controlgroup-data" );
+				if ( data && data[ method ] ) {
+					data[ method ]();
+				}
+			} );
+		},
+	
+		_updateCornerClass: function( element, position ) {
+			var remove = "ui-corner-top ui-corner-bottom ui-corner-left ui-corner-right ui-corner-all";
+			var add = this._buildSimpleOptions( position, "label" ).classes.label;
+	
+			this._removeClass( element, null, remove );
+			this._addClass( element, null, add );
+		},
+	
+		_buildSimpleOptions: function( position, key ) {
+			var direction = this.options.direction === "vertical";
+			var result = {
+				classes: {}
+			};
+			result.classes[ key ] = {
+				"middle": "",
+				"first": "ui-corner-" + ( direction ? "top" : "left" ),
+				"last": "ui-corner-" + ( direction ? "bottom" : "right" ),
+				"only": "ui-corner-all"
+			}[ position ];
+	
+			return result;
+		},
+	
+		_spinnerOptions: function( position ) {
+			var options = this._buildSimpleOptions( position, "ui-spinner" );
+	
+			options.classes[ "ui-spinner-up" ] = "";
+			options.classes[ "ui-spinner-down" ] = "";
+	
+			return options;
+		},
+	
+		_buttonOptions: function( position ) {
+			return this._buildSimpleOptions( position, "ui-button" );
+		},
+	
+		_checkboxradioOptions: function( position ) {
+			return this._buildSimpleOptions( position, "ui-checkboxradio-label" );
+		},
+	
+		_selectmenuOptions: function( position ) {
+			var direction = this.options.direction === "vertical";
+			return {
+				width: direction ? "auto" : false,
+				classes: {
+					middle: {
+						"ui-selectmenu-button-open": "",
+						"ui-selectmenu-button-closed": ""
+					},
+					first: {
+						"ui-selectmenu-button-open": "ui-corner-" + ( direction ? "top" : "tl" ),
+						"ui-selectmenu-button-closed": "ui-corner-" + ( direction ? "top" : "left" )
+					},
+					last: {
+						"ui-selectmenu-button-open": direction ? "" : "ui-corner-tr",
+						"ui-selectmenu-button-closed": "ui-corner-" + ( direction ? "bottom" : "right" )
+					},
+					only: {
+						"ui-selectmenu-button-open": "ui-corner-top",
+						"ui-selectmenu-button-closed": "ui-corner-all"
+					}
+	
+				}[ position ]
+			};
+		},
+	
+		_resolveClassesValues: function( classes, instance ) {
+			var result = {};
+			$.each( classes, function( key ) {
+				var current = instance.options.classes[ key ] || "";
+				current = $.trim( current.replace( controlgroupCornerRegex, "" ) );
+				result[ key ] = ( current + " " + classes[ key ] ).replace( /\s+/g, " " );
+			} );
+			return result;
+		},
+	
+		_setOption: function( key, value ) {
+			if ( key === "direction" ) {
+				this._removeClass( "ui-controlgroup-" + this.options.direction );
+			}
+	
+			this._super( key, value );
+			if ( key === "disabled" ) {
+				this._callChildMethod( value ? "disable" : "enable" );
+				return;
+			}
+	
+			this.refresh();
+		},
+	
+		refresh: function() {
+			var children,
+				that = this;
+	
+			this._addClass( "ui-controlgroup ui-controlgroup-" + this.options.direction );
+	
+			if ( this.options.direction === "horizontal" ) {
+				this._addClass( null, "ui-helper-clearfix" );
+			}
+			this._initWidgets();
+	
+			children = this.childWidgets;
+	
+			// We filter here because we need to track all childWidgets not just the visible ones
+			if ( this.options.onlyVisible ) {
+				children = children.filter( ":visible" );
+			}
+	
+			if ( children.length ) {
+	
+				// We do this last because we need to make sure all enhancment is done
+				// before determining first and last
+				$.each( [ "first", "last" ], function( index, value ) {
+					var instance = children[ value ]().data( "ui-controlgroup-data" );
+	
+					if ( instance && that[ "_" + instance.widgetName + "Options" ] ) {
+						var options = that[ "_" + instance.widgetName + "Options" ](
+							children.length === 1 ? "only" : value
+						);
+						options.classes = that._resolveClassesValues( options.classes, instance );
+						instance.element[ instance.widgetName ]( options );
+					} else {
+						that._updateCornerClass( children[ value ](), value );
+					}
+				} );
+	
+				// Finally call the refresh method on each of the child widgets.
+				this._callChildMethod( "refresh" );
+			}
+		}
+	} );
+	} ) );
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Widget 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Widget
+	//>>group: Core
+	//>>description: Provides a factory for creating stateful widgets with a common API.
+	//>>docs: http://api.jqueryui.com/jQuery.widget/
+	//>>demos: http://jqueryui.com/widget/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	
+	var widgetUuid = 0;
+	var widgetSlice = Array.prototype.slice;
+	
+	$.cleanData = ( function( orig ) {
+		return function( elems ) {
+			var events, elem, i;
+			for ( i = 0; ( elem = elems[ i ] ) != null; i++ ) {
+				try {
+	
+					// Only trigger remove when necessary to save time
+					events = $._data( elem, "events" );
+					if ( events && events.remove ) {
+						$( elem ).triggerHandler( "remove" );
+					}
+	
+				// Http://bugs.jquery.com/ticket/8235
+				} catch ( e ) {}
+			}
+			orig( elems );
+		};
+	} )( $.cleanData );
+	
+	$.widget = function( name, base, prototype ) {
+		var existingConstructor, constructor, basePrototype;
+	
+		// ProxiedPrototype allows the provided prototype to remain unmodified
+		// so that it can be used as a mixin for multiple widgets (#8876)
+		var proxiedPrototype = {};
+	
+		var namespace = name.split( "." )[ 0 ];
+		name = name.split( "." )[ 1 ];
+		var fullName = namespace + "-" + name;
+	
+		if ( !prototype ) {
+			prototype = base;
+			base = $.Widget;
+		}
+	
+		if ( $.isArray( prototype ) ) {
+			prototype = $.extend.apply( null, [ {} ].concat( prototype ) );
+		}
+	
+		// Create selector for plugin
+		$.expr[ ":" ][ fullName.toLowerCase() ] = function( elem ) {
+			return !!$.data( elem, fullName );
+		};
+	
+		$[ namespace ] = $[ namespace ] || {};
+		existingConstructor = $[ namespace ][ name ];
+		constructor = $[ namespace ][ name ] = function( options, element ) {
+	
+			// Allow instantiation without "new" keyword
+			if ( !this._createWidget ) {
+				return new constructor( options, element );
+			}
+	
+			// Allow instantiation without initializing for simple inheritance
+			// must use "new" keyword (the code above always passes args)
+			if ( arguments.length ) {
+				this._createWidget( options, element );
+			}
+		};
+	
+		// Extend with the existing constructor to carry over any static properties
+		$.extend( constructor, existingConstructor, {
+			version: prototype.version,
+	
+			// Copy the object used to create the prototype in case we need to
+			// redefine the widget later
+			_proto: $.extend( {}, prototype ),
+	
+			// Track widgets that inherit from this widget in case this widget is
+			// redefined after a widget inherits from it
+			_childConstructors: []
+		} );
+	
+		basePrototype = new base();
+	
+		// We need to make the options hash a property directly on the new instance
+		// otherwise we'll modify the options hash on the prototype that we're
+		// inheriting from
+		basePrototype.options = $.widget.extend( {}, basePrototype.options );
+		$.each( prototype, function( prop, value ) {
+			if ( !$.isFunction( value ) ) {
+				proxiedPrototype[ prop ] = value;
+				return;
+			}
+			proxiedPrototype[ prop ] = ( function() {
+				function _super() {
+					return base.prototype[ prop ].apply( this, arguments );
+				}
+	
+				function _superApply( args ) {
+					return base.prototype[ prop ].apply( this, args );
+				}
+	
+				return function() {
+					var __super = this._super;
+					var __superApply = this._superApply;
+					var returnValue;
+	
+					this._super = _super;
+					this._superApply = _superApply;
+	
+					returnValue = value.apply( this, arguments );
+	
+					this._super = __super;
+					this._superApply = __superApply;
+	
+					return returnValue;
+				};
+			} )();
+		} );
+		constructor.prototype = $.widget.extend( basePrototype, {
+	
+			// TODO: remove support for widgetEventPrefix
+			// always use the name + a colon as the prefix, e.g., draggable:start
+			// don't prefix for widgets that aren't DOM-based
+			widgetEventPrefix: existingConstructor ? ( basePrototype.widgetEventPrefix || name ) : name
+		}, proxiedPrototype, {
+			constructor: constructor,
+			namespace: namespace,
+			widgetName: name,
+			widgetFullName: fullName
+		} );
+	
+		// If this widget is being redefined then we need to find all widgets that
+		// are inheriting from it and redefine all of them so that they inherit from
+		// the new version of this widget. We're essentially trying to replace one
+		// level in the prototype chain.
+		if ( existingConstructor ) {
+			$.each( existingConstructor._childConstructors, function( i, child ) {
+				var childPrototype = child.prototype;
+	
+				// Redefine the child widget using the same prototype that was
+				// originally used, but inherit from the new version of the base
+				$.widget( childPrototype.namespace + "." + childPrototype.widgetName, constructor,
+					child._proto );
+			} );
+	
+			// Remove the list of existing child constructors from the old constructor
+			// so the old child constructors can be garbage collected
+			delete existingConstructor._childConstructors;
+		} else {
+			base._childConstructors.push( constructor );
+		}
+	
+		$.widget.bridge( name, constructor );
+	
+		return constructor;
+	};
+	
+	$.widget.extend = function( target ) {
+		var input = widgetSlice.call( arguments, 1 );
+		var inputIndex = 0;
+		var inputLength = input.length;
+		var key;
+		var value;
+	
+		for ( ; inputIndex < inputLength; inputIndex++ ) {
+			for ( key in input[ inputIndex ] ) {
+				value = input[ inputIndex ][ key ];
+				if ( input[ inputIndex ].hasOwnProperty( key ) && value !== undefined ) {
+	
+					// Clone objects
+					if ( $.isPlainObject( value ) ) {
+						target[ key ] = $.isPlainObject( target[ key ] ) ?
+							$.widget.extend( {}, target[ key ], value ) :
+	
+							// Don't extend strings, arrays, etc. with objects
+							$.widget.extend( {}, value );
+	
+					// Copy everything else by reference
+					} else {
+						target[ key ] = value;
+					}
+				}
+			}
+		}
+		return target;
+	};
+	
+	$.widget.bridge = function( name, object ) {
+		var fullName = object.prototype.widgetFullName || name;
+		$.fn[ name ] = function( options ) {
+			var isMethodCall = typeof options === "string";
+			var args = widgetSlice.call( arguments, 1 );
+			var returnValue = this;
+	
+			if ( isMethodCall ) {
+	
+				// If this is an empty collection, we need to have the instance method
+				// return undefined instead of the jQuery instance
+				if ( !this.length && options === "instance" ) {
+					returnValue = undefined;
+				} else {
+					this.each( function() {
+						var methodValue;
+						var instance = $.data( this, fullName );
+	
+						if ( options === "instance" ) {
+							returnValue = instance;
+							return false;
+						}
+	
+						if ( !instance ) {
+							return $.error( "cannot call methods on " + name +
+								" prior to initialization; " +
+								"attempted to call method '" + options + "'" );
+						}
+	
+						if ( !$.isFunction( instance[ options ] ) || options.charAt( 0 ) === "_" ) {
+							return $.error( "no such method '" + options + "' for " + name +
+								" widget instance" );
+						}
+	
+						methodValue = instance[ options ].apply( instance, args );
+	
+						if ( methodValue !== instance && methodValue !== undefined ) {
+							returnValue = methodValue && methodValue.jquery ?
+								returnValue.pushStack( methodValue.get() ) :
+								methodValue;
+							return false;
+						}
+					} );
+				}
+			} else {
+	
+				// Allow multiple hashes to be passed on init
+				if ( args.length ) {
+					options = $.widget.extend.apply( null, [ options ].concat( args ) );
+				}
+	
+				this.each( function() {
+					var instance = $.data( this, fullName );
+					if ( instance ) {
+						instance.option( options || {} );
+						if ( instance._init ) {
+							instance._init();
+						}
+					} else {
+						$.data( this, fullName, new object( options, this ) );
+					}
+				} );
+			}
+	
+			return returnValue;
+		};
+	};
+	
+	$.Widget = function( /* options, element */ ) {};
+	$.Widget._childConstructors = [];
+	
+	$.Widget.prototype = {
+		widgetName: "widget",
+		widgetEventPrefix: "",
+		defaultElement: "<div>",
+	
+		options: {
+			classes: {},
+			disabled: false,
+	
+			// Callbacks
+			create: null
+		},
+	
+		_createWidget: function( options, element ) {
+			element = $( element || this.defaultElement || this )[ 0 ];
+			this.element = $( element );
+			this.uuid = widgetUuid++;
+			this.eventNamespace = "." + this.widgetName + this.uuid;
+	
+			this.bindings = $();
+			this.hoverable = $();
+			this.focusable = $();
+			this.classesElementLookup = {};
+	
+			if ( element !== this ) {
+				$.data( element, this.widgetFullName, this );
+				this._on( true, this.element, {
+					remove: function( event ) {
+						if ( event.target === element ) {
+							this.destroy();
+						}
+					}
+				} );
+				this.document = $( element.style ?
+	
+					// Element within the document
+					element.ownerDocument :
+	
+					// Element is window or document
+					element.document || element );
+				this.window = $( this.document[ 0 ].defaultView || this.document[ 0 ].parentWindow );
+			}
+	
+			this.options = $.widget.extend( {},
+				this.options,
+				this._getCreateOptions(),
+				options );
+	
+			this._create();
+	
+			if ( this.options.disabled ) {
+				this._setOptionDisabled( this.options.disabled );
+			}
+	
+			this._trigger( "create", null, this._getCreateEventData() );
+			this._init();
+		},
+	
+		_getCreateOptions: function() {
+			return {};
+		},
+	
+		_getCreateEventData: $.noop,
+	
+		_create: $.noop,
+	
+		_init: $.noop,
+	
+		destroy: function() {
+			var that = this;
+	
+			this._destroy();
+			$.each( this.classesElementLookup, function( key, value ) {
+				that._removeClass( value, key );
+			} );
+	
+			// We can probably remove the unbind calls in 2.0
+			// all event bindings should go through this._on()
+			this.element
+				.off( this.eventNamespace )
+				.removeData( this.widgetFullName );
+			this.widget()
+				.off( this.eventNamespace )
+				.removeAttr( "aria-disabled" );
+	
+			// Clean up events and states
+			this.bindings.off( this.eventNamespace );
+		},
+	
+		_destroy: $.noop,
+	
+		widget: function() {
+			return this.element;
+		},
+	
+		option: function( key, value ) {
+			var options = key;
+			var parts;
+			var curOption;
+			var i;
+	
+			if ( arguments.length === 0 ) {
+	
+				// Don't return a reference to the internal hash
+				return $.widget.extend( {}, this.options );
+			}
+	
+			if ( typeof key === "string" ) {
+	
+				// Handle nested keys, e.g., "foo.bar" => { foo: { bar: ___ } }
+				options = {};
+				parts = key.split( "." );
+				key = parts.shift();
+				if ( parts.length ) {
+					curOption = options[ key ] = $.widget.extend( {}, this.options[ key ] );
+					for ( i = 0; i < parts.length - 1; i++ ) {
+						curOption[ parts[ i ] ] = curOption[ parts[ i ] ] || {};
+						curOption = curOption[ parts[ i ] ];
+					}
+					key = parts.pop();
+					if ( arguments.length === 1 ) {
+						return curOption[ key ] === undefined ? null : curOption[ key ];
+					}
+					curOption[ key ] = value;
+				} else {
+					if ( arguments.length === 1 ) {
+						return this.options[ key ] === undefined ? null : this.options[ key ];
+					}
+					options[ key ] = value;
+				}
+			}
+	
+			this._setOptions( options );
+	
+			return this;
+		},
+	
+		_setOptions: function( options ) {
+			var key;
+	
+			for ( key in options ) {
+				this._setOption( key, options[ key ] );
+			}
+	
+			return this;
+		},
+	
+		_setOption: function( key, value ) {
+			if ( key === "classes" ) {
+				this._setOptionClasses( value );
+			}
+	
+			this.options[ key ] = value;
+	
+			if ( key === "disabled" ) {
+				this._setOptionDisabled( value );
+			}
+	
+			return this;
+		},
+	
+		_setOptionClasses: function( value ) {
+			var classKey, elements, currentElements;
+	
+			for ( classKey in value ) {
+				currentElements = this.classesElementLookup[ classKey ];
+				if ( value[ classKey ] === this.options.classes[ classKey ] ||
+						!currentElements ||
+						!currentElements.length ) {
+					continue;
+				}
+	
+				// We are doing this to create a new jQuery object because the _removeClass() call
+				// on the next line is going to destroy the reference to the current elements being
+				// tracked. We need to save a copy of this collection so that we can add the new classes
+				// below.
+				elements = $( currentElements.get() );
+				this._removeClass( currentElements, classKey );
+	
+				// We don't use _addClass() here, because that uses this.options.classes
+				// for generating the string of classes. We want to use the value passed in from
+				// _setOption(), this is the new value of the classes option which was passed to
+				// _setOption(). We pass this value directly to _classes().
+				elements.addClass( this._classes( {
+					element: elements,
+					keys: classKey,
+					classes: value,
+					add: true
+				} ) );
+			}
+		},
+	
+		_setOptionDisabled: function( value ) {
+			this._toggleClass( this.widget(), this.widgetFullName + "-disabled", null, !!value );
+	
+			// If the widget is becoming disabled, then nothing is interactive
+			if ( value ) {
+				this._removeClass( this.hoverable, null, "ui-state-hover" );
+				this._removeClass( this.focusable, null, "ui-state-focus" );
+			}
+		},
+	
+		enable: function() {
+			return this._setOptions( { disabled: false } );
+		},
+	
+		disable: function() {
+			return this._setOptions( { disabled: true } );
+		},
+	
+		_classes: function( options ) {
+			var full = [];
+			var that = this;
+	
+			options = $.extend( {
+				element: this.element,
+				classes: this.options.classes || {}
+			}, options );
+	
+			function processClassString( classes, checkOption ) {
+				var current, i;
+				for ( i = 0; i < classes.length; i++ ) {
+					current = that.classesElementLookup[ classes[ i ] ] || $();
+					if ( options.add ) {
+						current = $( $.unique( current.get().concat( options.element.get() ) ) );
+					} else {
+						current = $( current.not( options.element ).get() );
+					}
+					that.classesElementLookup[ classes[ i ] ] = current;
+					full.push( classes[ i ] );
+					if ( checkOption && options.classes[ classes[ i ] ] ) {
+						full.push( options.classes[ classes[ i ] ] );
+					}
+				}
+			}
+	
+			this._on( options.element, {
+				"remove": "_untrackClassesElement"
+			} );
+	
+			if ( options.keys ) {
+				processClassString( options.keys.match( /\S+/g ) || [], true );
+			}
+			if ( options.extra ) {
+				processClassString( options.extra.match( /\S+/g ) || [] );
+			}
+	
+			return full.join( " " );
+		},
+	
+		_untrackClassesElement: function( event ) {
+			var that = this;
+			$.each( that.classesElementLookup, function( key, value ) {
+				if ( $.inArray( event.target, value ) !== -1 ) {
+					that.classesElementLookup[ key ] = $( value.not( event.target ).get() );
+				}
+			} );
+		},
+	
+		_removeClass: function( element, keys, extra ) {
+			return this._toggleClass( element, keys, extra, false );
+		},
+	
+		_addClass: function( element, keys, extra ) {
+			return this._toggleClass( element, keys, extra, true );
+		},
+	
+		_toggleClass: function( element, keys, extra, add ) {
+			add = ( typeof add === "boolean" ) ? add : extra;
+			var shift = ( typeof element === "string" || element === null ),
+				options = {
+					extra: shift ? keys : extra,
+					keys: shift ? element : keys,
+					element: shift ? this.element : element,
+					add: add
+				};
+			options.element.toggleClass( this._classes( options ), add );
+			return this;
+		},
+	
+		_on: function( suppressDisabledCheck, element, handlers ) {
+			var delegateElement;
+			var instance = this;
+	
+			// No suppressDisabledCheck flag, shuffle arguments
+			if ( typeof suppressDisabledCheck !== "boolean" ) {
+				handlers = element;
+				element = suppressDisabledCheck;
+				suppressDisabledCheck = false;
+			}
+	
+			// No element argument, shuffle and use this.element
+			if ( !handlers ) {
+				handlers = element;
+				element = this.element;
+				delegateElement = this.widget();
+			} else {
+				element = delegateElement = $( element );
+				this.bindings = this.bindings.add( element );
+			}
+	
+			$.each( handlers, function( event, handler ) {
+				function handlerProxy() {
+	
+					// Allow widgets to customize the disabled handling
+					// - disabled as an array instead of boolean
+					// - disabled class as method for disabling individual parts
+					if ( !suppressDisabledCheck &&
+							( instance.options.disabled === true ||
+							$( this ).hasClass( "ui-state-disabled" ) ) ) {
+						return;
+					}
+					return ( typeof handler === "string" ? instance[ handler ] : handler )
+						.apply( instance, arguments );
+				}
+	
+				// Copy the guid so direct unbinding works
+				if ( typeof handler !== "string" ) {
+					handlerProxy.guid = handler.guid =
+						handler.guid || handlerProxy.guid || $.guid++;
+				}
+	
+				var match = event.match( /^([\w:-]*)\s*(.*)$/ );
+				var eventName = match[ 1 ] + instance.eventNamespace;
+				var selector = match[ 2 ];
+	
+				if ( selector ) {
+					delegateElement.on( eventName, selector, handlerProxy );
+				} else {
+					element.on( eventName, handlerProxy );
+				}
+			} );
+		},
+	
+		_off: function( element, eventName ) {
+			eventName = ( eventName || "" ).split( " " ).join( this.eventNamespace + " " ) +
+				this.eventNamespace;
+			element.off( eventName ).off( eventName );
+	
+			// Clear the stack to avoid memory leaks (#10056)
+			this.bindings = $( this.bindings.not( element ).get() );
+			this.focusable = $( this.focusable.not( element ).get() );
+			this.hoverable = $( this.hoverable.not( element ).get() );
+		},
+	
+		_delay: function( handler, delay ) {
+			function handlerProxy() {
+				return ( typeof handler === "string" ? instance[ handler ] : handler )
+					.apply( instance, arguments );
+			}
+			var instance = this;
+			return setTimeout( handlerProxy, delay || 0 );
+		},
+	
+		_hoverable: function( element ) {
+			this.hoverable = this.hoverable.add( element );
+			this._on( element, {
+				mouseenter: function( event ) {
+					this._addClass( $( event.currentTarget ), null, "ui-state-hover" );
+				},
+				mouseleave: function( event ) {
+					this._removeClass( $( event.currentTarget ), null, "ui-state-hover" );
+				}
+			} );
+		},
+	
+		_focusable: function( element ) {
+			this.focusable = this.focusable.add( element );
+			this._on( element, {
+				focusin: function( event ) {
+					this._addClass( $( event.currentTarget ), null, "ui-state-focus" );
+				},
+				focusout: function( event ) {
+					this._removeClass( $( event.currentTarget ), null, "ui-state-focus" );
+				}
+			} );
+		},
+	
+		_trigger: function( type, event, data ) {
+			var prop, orig;
+			var callback = this.options[ type ];
+	
+			data = data || {};
+			event = $.Event( event );
+			event.type = ( type === this.widgetEventPrefix ?
+				type :
+				this.widgetEventPrefix + type ).toLowerCase();
+	
+			// The original event may come from any element
+			// so we need to reset the target on the new event
+			event.target = this.element[ 0 ];
+	
+			// Copy original event properties over to the new event
+			orig = event.originalEvent;
+			if ( orig ) {
+				for ( prop in orig ) {
+					if ( !( prop in event ) ) {
+						event[ prop ] = orig[ prop ];
+					}
+				}
+			}
+	
+			this.element.trigger( event, data );
+			return !( $.isFunction( callback ) &&
+				callback.apply( this.element[ 0 ], [ event ].concat( data ) ) === false ||
+				event.isDefaultPrevented() );
+		}
+	};
+	
+	$.each( { show: "fadeIn", hide: "fadeOut" }, function( method, defaultEffect ) {
+		$.Widget.prototype[ "_" + method ] = function( element, options, callback ) {
+			if ( typeof options === "string" ) {
+				options = { effect: options };
+			}
+	
+			var hasOptions;
+			var effectName = !options ?
+				method :
+				options === true || typeof options === "number" ?
+					defaultEffect :
+					options.effect || defaultEffect;
+	
+			options = options || {};
+			if ( typeof options === "number" ) {
+				options = { duration: options };
+			}
+	
+			hasOptions = !$.isEmptyObject( options );
+			options.complete = callback;
+	
+			if ( options.delay ) {
+				element.delay( options.delay );
+			}
+	
+			if ( hasOptions && $.effects && $.effects.effect[ effectName ] ) {
+				element[ method ]( options );
+			} else if ( effectName !== method && element[ effectName ] ) {
+				element[ effectName ]( options.duration, options.easing, callback );
+			} else {
+				element.queue( function( next ) {
+					$( this )[ method ]();
+					if ( callback ) {
+						callback.call( element[ 0 ] );
+					}
+					next();
+				} );
+			}
+		};
+	} );
+	
+	return $.widget;
+	
+	} ) );
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	$.ui = $.ui || {};
+	
+	return $.ui.version = "1.12.1";
+	
+	} ) );
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Checkboxradio 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Checkboxradio
+	//>>group: Widgets
+	//>>description: Enhances a form with multiple themeable checkboxes or radio buttons.
+	//>>docs: http://api.jqueryui.com/checkboxradio/
+	//>>demos: http://jqueryui.com/checkboxradio/
+	//>>css.structure: ../../themes/base/core.css
+	//>>css.structure: ../../themes/base/button.css
+	//>>css.structure: ../../themes/base/checkboxradio.css
+	//>>css.theme: ../../themes/base/theme.css
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+				__webpack_require__(7),
+				__webpack_require__(23),
+				__webpack_require__(24),
+				__webpack_require__(26),
+				__webpack_require__(20)
+			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	
+	$.widget( "ui.checkboxradio", [ $.ui.formResetMixin, {
+		version: "1.12.1",
+		options: {
+			disabled: null,
+			label: null,
+			icon: true,
+			classes: {
+				"ui-checkboxradio-label": "ui-corner-all",
+				"ui-checkboxradio-icon": "ui-corner-all"
+			}
+		},
+	
+		_getCreateOptions: function() {
+			var disabled, labels;
+			var that = this;
+			var options = this._super() || {};
+	
+			// We read the type here, because it makes more sense to throw a element type error first,
+			// rather then the error for lack of a label. Often if its the wrong type, it
+			// won't have a label (e.g. calling on a div, btn, etc)
+			this._readType();
+	
+			labels = this.element.labels();
+	
+			// If there are multiple labels, use the last one
+			this.label = $( labels[ labels.length - 1 ] );
+			if ( !this.label.length ) {
+				$.error( "No label found for checkboxradio widget" );
+			}
+	
+			this.originalLabel = "";
+	
+			// We need to get the label text but this may also need to make sure it does not contain the
+			// input itself.
+			this.label.contents().not( this.element[ 0 ] ).each( function() {
+	
+				// The label contents could be text, html, or a mix. We concat each element to get a
+				// string representation of the label, without the input as part of it.
+				that.originalLabel += this.nodeType === 3 ? $( this ).text() : this.outerHTML;
+			} );
+	
+			// Set the label option if we found label text
+			if ( this.originalLabel ) {
+				options.label = this.originalLabel;
+			}
+	
+			disabled = this.element[ 0 ].disabled;
+			if ( disabled != null ) {
+				options.disabled = disabled;
+			}
+			return options;
+		},
+	
+		_create: function() {
+			var checked = this.element[ 0 ].checked;
+	
+			this._bindFormResetHandler();
+	
+			if ( this.options.disabled == null ) {
+				this.options.disabled = this.element[ 0 ].disabled;
+			}
+	
+			this._setOption( "disabled", this.options.disabled );
+			this._addClass( "ui-checkboxradio", "ui-helper-hidden-accessible" );
+			this._addClass( this.label, "ui-checkboxradio-label", "ui-button ui-widget" );
+	
+			if ( this.type === "radio" ) {
+				this._addClass( this.label, "ui-checkboxradio-radio-label" );
+			}
+	
+			if ( this.options.label && this.options.label !== this.originalLabel ) {
+				this._updateLabel();
+			} else if ( this.originalLabel ) {
+				this.options.label = this.originalLabel;
+			}
+	
+			this._enhance();
+	
+			if ( checked ) {
+				this._addClass( this.label, "ui-checkboxradio-checked", "ui-state-active" );
+				if ( this.icon ) {
+					this._addClass( this.icon, null, "ui-state-hover" );
+				}
+			}
+	
+			this._on( {
+				change: "_toggleClasses",
+				focus: function() {
+					this._addClass( this.label, null, "ui-state-focus ui-visual-focus" );
+				},
+				blur: function() {
+					this._removeClass( this.label, null, "ui-state-focus ui-visual-focus" );
+				}
+			} );
+		},
+	
+		_readType: function() {
+			var nodeName = this.element[ 0 ].nodeName.toLowerCase();
+			this.type = this.element[ 0 ].type;
+			if ( nodeName !== "input" || !/radio|checkbox/.test( this.type ) ) {
+				$.error( "Can't create checkboxradio on element.nodeName=" + nodeName +
+					" and element.type=" + this.type );
+			}
+		},
+	
+		// Support jQuery Mobile enhanced option
+		_enhance: function() {
+			this._updateIcon( this.element[ 0 ].checked );
+		},
+	
+		widget: function() {
+			return this.label;
+		},
+	
+		_getRadioGroup: function() {
+			var group;
+			var name = this.element[ 0 ].name;
+			var nameSelector = "input[name='" + $.ui.escapeSelector( name ) + "']";
+	
+			if ( !name ) {
+				return $( [] );
+			}
+	
+			if ( this.form.length ) {
+				group = $( this.form[ 0 ].elements ).filter( nameSelector );
+			} else {
+	
+				// Not inside a form, check all inputs that also are not inside a form
+				group = $( nameSelector ).filter( function() {
+					return $( this ).form().length === 0;
+				} );
+			}
+	
+			return group.not( this.element );
+		},
+	
+		_toggleClasses: function() {
+			var checked = this.element[ 0 ].checked;
+			this._toggleClass( this.label, "ui-checkboxradio-checked", "ui-state-active", checked );
+	
+			if ( this.options.icon && this.type === "checkbox" ) {
+				this._toggleClass( this.icon, null, "ui-icon-check ui-state-checked", checked )
+					._toggleClass( this.icon, null, "ui-icon-blank", !checked );
+			}
+	
+			if ( this.type === "radio" ) {
+				this._getRadioGroup()
+					.each( function() {
+						var instance = $( this ).checkboxradio( "instance" );
+	
+						if ( instance ) {
+							instance._removeClass( instance.label,
+								"ui-checkboxradio-checked", "ui-state-active" );
+						}
+					} );
+			}
+		},
+	
+		_destroy: function() {
+			this._unbindFormResetHandler();
+	
+			if ( this.icon ) {
+				this.icon.remove();
+				this.iconSpace.remove();
+			}
+		},
+	
+		_setOption: function( key, value ) {
+	
+			// We don't allow the value to be set to nothing
+			if ( key === "label" && !value ) {
+				return;
+			}
+	
+			this._super( key, value );
+	
+			if ( key === "disabled" ) {
+				this._toggleClass( this.label, null, "ui-state-disabled", value );
+				this.element[ 0 ].disabled = value;
+	
+				// Don't refresh when setting disabled
+				return;
+			}
+			this.refresh();
+		},
+	
+		_updateIcon: function( checked ) {
+			var toAdd = "ui-icon ui-icon-background ";
+	
+			if ( this.options.icon ) {
+				if ( !this.icon ) {
+					this.icon = $( "<span>" );
+					this.iconSpace = $( "<span> </span>" );
+					this._addClass( this.iconSpace, "ui-checkboxradio-icon-space" );
+				}
+	
+				if ( this.type === "checkbox" ) {
+					toAdd += checked ? "ui-icon-check ui-state-checked" : "ui-icon-blank";
+					this._removeClass( this.icon, null, checked ? "ui-icon-blank" : "ui-icon-check" );
+				} else {
+					toAdd += "ui-icon-blank";
+				}
+				this._addClass( this.icon, "ui-checkboxradio-icon", toAdd );
+				if ( !checked ) {
+					this._removeClass( this.icon, null, "ui-icon-check ui-state-checked" );
+				}
+				this.icon.prependTo( this.label ).after( this.iconSpace );
+			} else if ( this.icon !== undefined ) {
+				this.icon.remove();
+				this.iconSpace.remove();
+				delete this.icon;
+			}
+		},
+	
+		_updateLabel: function() {
+	
+			// Remove the contents of the label ( minus the icon, icon space, and input )
+			var contents = this.label.contents().not( this.element[ 0 ] );
+			if ( this.icon ) {
+				contents = contents.not( this.icon[ 0 ] );
+			}
+			if ( this.iconSpace ) {
+				contents = contents.not( this.iconSpace[ 0 ] );
+			}
+			contents.remove();
+	
+			this.label.append( this.options.label );
+		},
+	
+		refresh: function() {
+			var checked = this.element[ 0 ].checked,
+				isDisabled = this.element[ 0 ].disabled;
+	
+			this._updateIcon( checked );
+			this._toggleClass( this.label, "ui-checkboxradio-checked", "ui-state-active", checked );
+			if ( this.options.label !== null ) {
+				this._updateLabel();
+			}
+	
+			if ( isDisabled !== this.options.disabled ) {
+				this._setOptions( { "disabled": isDisabled } );
+			}
+		}
+	
+	} ] );
+	
+	return $.ui.checkboxradio;
+	
+	} ) );
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	// Internal use only
+	return $.ui.escapeSelector = ( function() {
+		var selectorEscape = /([!"#$%&'()*+,./:;<=>?@[\]^`{|}~])/g;
+		return function( selector ) {
+			return selector.replace( selectorEscape, "\\$1" );
+		};
+	} )();
+	
+	} ) );
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Form Reset Mixin 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Form Reset Mixin
+	//>>group: Core
+	//>>description: Refresh input widgets when their form is reset
+	//>>docs: http://api.jqueryui.com/form-reset-mixin/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+				__webpack_require__(7),
+				__webpack_require__(25),
+				__webpack_require__(21)
+			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	}( function( $ ) {
+	
+	return $.ui.formResetMixin = {
+		_formResetHandler: function() {
+			var form = $( this );
+	
+			// Wait for the form reset to actually happen before refreshing
+			setTimeout( function() {
+				var instances = form.data( "ui-form-reset-instances" );
+				$.each( instances, function() {
+					this.refresh();
+				} );
+			} );
+		},
+	
+		_bindFormResetHandler: function() {
+			this.form = this.element.form();
+			if ( !this.form.length ) {
+				return;
+			}
+	
+			var instances = this.form.data( "ui-form-reset-instances" ) || [];
+			if ( !instances.length ) {
+	
+				// We don't use _on() here because we use a single event handler per form
+				this.form.on( "reset.ui-form-reset", this._formResetHandler );
+			}
+			instances.push( this );
+			this.form.data( "ui-form-reset-instances", instances );
+		},
+	
+		_unbindFormResetHandler: function() {
+			if ( !this.form.length ) {
+				return;
+			}
+	
+			var instances = this.form.data( "ui-form-reset-instances" );
+			instances.splice( $.inArray( this, instances ), 1 );
+			if ( instances.length ) {
+				this.form.data( "ui-form-reset-instances", instances );
+			} else {
+				this.form
+					.removeData( "ui-form-reset-instances" )
+					.off( "reset.ui-form-reset" );
+			}
+		}
+	};
+	
+	} ) );
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	// Support: IE8 Only
+	// IE8 does not support the form attribute and when it is supplied. It overwrites the form prop
+	// with a string, so we need to find the proper form.
+	return $.fn.form = function() {
+		return typeof this[ 0 ].form === "string" ? this.closest( "form" ) : $( this[ 0 ].form );
+	};
+	
+	} ) );
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Labels 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: labels
+	//>>group: Core
+	//>>description: Find all the labels associated with a given input
+	//>>docs: http://api.jqueryui.com/labels/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21), __webpack_require__(23) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	return $.fn.labels = function() {
+		var ancestor, selector, id, labels, ancestors;
+	
+		// Check control.labels first
+		if ( this[ 0 ].labels && this[ 0 ].labels.length ) {
+			return this.pushStack( this[ 0 ].labels );
+		}
+	
+		// Support: IE <= 11, FF <= 37, Android <= 2.3 only
+		// Above browsers do not support control.labels. Everything below is to support them
+		// as well as document fragments. control.labels does not work on document fragments
+		labels = this.eq( 0 ).parents( "label" );
+	
+		// Look for the label based on the id
+		id = this.attr( "id" );
+		if ( id ) {
+	
+			// We don't search against the document in case the element
+			// is disconnected from the DOM
+			ancestor = this.eq( 0 ).parents().last();
+	
+			// Get a full set of top level ancestors
+			ancestors = ancestor.add( ancestor.length ? ancestor.siblings() : this.siblings() );
+	
+			// Create a selector for the label based on the id
+			selector = "label[for='" + $.ui.escapeSelector( id ) + "']";
+	
+			labels = labels.add( ancestors.find( selector ).addBack( selector ) );
+	
+		}
+	
+		// Return whatever we have found for labels
+		return this.pushStack( labels );
+	};
+	
+	} ) );
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Keycode 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: Keycode
+	//>>group: Core
+	//>>description: Provide keycodes as keynames
+	//>>docs: http://api.jqueryui.com/jQuery.ui.keyCode/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	return $.ui.keyCode = {
+		BACKSPACE: 8,
+		COMMA: 188,
+		DELETE: 46,
+		DOWN: 40,
+		END: 35,
+		ENTER: 13,
+		ESCAPE: 27,
+		HOME: 36,
+		LEFT: 37,
+		PAGE_DOWN: 34,
+		PAGE_UP: 33,
+		PERIOD: 190,
+		RIGHT: 39,
+		SPACE: 32,
+		TAB: 9,
+		UP: 38
+	};
+	
+	} ) );
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	 * jQuery UI Draggable 1.12.1
 	 * http://jqueryui.com
@@ -13681,14 +21683,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 				__webpack_require__(7),
-				__webpack_require__(11),
-				__webpack_require__(15),
-				__webpack_require__(16),
-				__webpack_require__(19),
-				__webpack_require__(17),
-				__webpack_require__(18),
-				__webpack_require__(13),
-				__webpack_require__(14)
+				__webpack_require__(29),
+				__webpack_require__(31),
+				__webpack_require__(32),
+				__webpack_require__(35),
+				__webpack_require__(33),
+				__webpack_require__(34),
+				__webpack_require__(21),
+				__webpack_require__(20)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -14912,7 +22914,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 11 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -14935,9 +22937,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 				__webpack_require__(7),
-				__webpack_require__(12),
-				__webpack_require__(13),
-				__webpack_require__(14)
+				__webpack_require__(30),
+				__webpack_require__(21),
+				__webpack_require__(20)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -15144,14 +23146,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 12 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -15165,769 +23167,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	$.ui = $.ui || {};
-	
-	return $.ui.version = "1.12.1";
-	
-	} ) );
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Widget 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Widget
-	//>>group: Core
-	//>>description: Provides a factory for creating stateful widgets with a common API.
-	//>>docs: http://api.jqueryui.com/jQuery.widget/
-	//>>demos: http://jqueryui.com/widget/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	var widgetUuid = 0;
-	var widgetSlice = Array.prototype.slice;
-	
-	$.cleanData = ( function( orig ) {
-		return function( elems ) {
-			var events, elem, i;
-			for ( i = 0; ( elem = elems[ i ] ) != null; i++ ) {
-				try {
-	
-					// Only trigger remove when necessary to save time
-					events = $._data( elem, "events" );
-					if ( events && events.remove ) {
-						$( elem ).triggerHandler( "remove" );
-					}
-	
-				// Http://bugs.jquery.com/ticket/8235
-				} catch ( e ) {}
-			}
-			orig( elems );
-		};
-	} )( $.cleanData );
-	
-	$.widget = function( name, base, prototype ) {
-		var existingConstructor, constructor, basePrototype;
-	
-		// ProxiedPrototype allows the provided prototype to remain unmodified
-		// so that it can be used as a mixin for multiple widgets (#8876)
-		var proxiedPrototype = {};
-	
-		var namespace = name.split( "." )[ 0 ];
-		name = name.split( "." )[ 1 ];
-		var fullName = namespace + "-" + name;
-	
-		if ( !prototype ) {
-			prototype = base;
-			base = $.Widget;
-		}
-	
-		if ( $.isArray( prototype ) ) {
-			prototype = $.extend.apply( null, [ {} ].concat( prototype ) );
-		}
-	
-		// Create selector for plugin
-		$.expr[ ":" ][ fullName.toLowerCase() ] = function( elem ) {
-			return !!$.data( elem, fullName );
-		};
-	
-		$[ namespace ] = $[ namespace ] || {};
-		existingConstructor = $[ namespace ][ name ];
-		constructor = $[ namespace ][ name ] = function( options, element ) {
-	
-			// Allow instantiation without "new" keyword
-			if ( !this._createWidget ) {
-				return new constructor( options, element );
-			}
-	
-			// Allow instantiation without initializing for simple inheritance
-			// must use "new" keyword (the code above always passes args)
-			if ( arguments.length ) {
-				this._createWidget( options, element );
-			}
-		};
-	
-		// Extend with the existing constructor to carry over any static properties
-		$.extend( constructor, existingConstructor, {
-			version: prototype.version,
-	
-			// Copy the object used to create the prototype in case we need to
-			// redefine the widget later
-			_proto: $.extend( {}, prototype ),
-	
-			// Track widgets that inherit from this widget in case this widget is
-			// redefined after a widget inherits from it
-			_childConstructors: []
-		} );
-	
-		basePrototype = new base();
-	
-		// We need to make the options hash a property directly on the new instance
-		// otherwise we'll modify the options hash on the prototype that we're
-		// inheriting from
-		basePrototype.options = $.widget.extend( {}, basePrototype.options );
-		$.each( prototype, function( prop, value ) {
-			if ( !$.isFunction( value ) ) {
-				proxiedPrototype[ prop ] = value;
-				return;
-			}
-			proxiedPrototype[ prop ] = ( function() {
-				function _super() {
-					return base.prototype[ prop ].apply( this, arguments );
-				}
-	
-				function _superApply( args ) {
-					return base.prototype[ prop ].apply( this, args );
-				}
-	
-				return function() {
-					var __super = this._super;
-					var __superApply = this._superApply;
-					var returnValue;
-	
-					this._super = _super;
-					this._superApply = _superApply;
-	
-					returnValue = value.apply( this, arguments );
-	
-					this._super = __super;
-					this._superApply = __superApply;
-	
-					return returnValue;
-				};
-			} )();
-		} );
-		constructor.prototype = $.widget.extend( basePrototype, {
-	
-			// TODO: remove support for widgetEventPrefix
-			// always use the name + a colon as the prefix, e.g., draggable:start
-			// don't prefix for widgets that aren't DOM-based
-			widgetEventPrefix: existingConstructor ? ( basePrototype.widgetEventPrefix || name ) : name
-		}, proxiedPrototype, {
-			constructor: constructor,
-			namespace: namespace,
-			widgetName: name,
-			widgetFullName: fullName
-		} );
-	
-		// If this widget is being redefined then we need to find all widgets that
-		// are inheriting from it and redefine all of them so that they inherit from
-		// the new version of this widget. We're essentially trying to replace one
-		// level in the prototype chain.
-		if ( existingConstructor ) {
-			$.each( existingConstructor._childConstructors, function( i, child ) {
-				var childPrototype = child.prototype;
-	
-				// Redefine the child widget using the same prototype that was
-				// originally used, but inherit from the new version of the base
-				$.widget( childPrototype.namespace + "." + childPrototype.widgetName, constructor,
-					child._proto );
-			} );
-	
-			// Remove the list of existing child constructors from the old constructor
-			// so the old child constructors can be garbage collected
-			delete existingConstructor._childConstructors;
-		} else {
-			base._childConstructors.push( constructor );
-		}
-	
-		$.widget.bridge( name, constructor );
-	
-		return constructor;
-	};
-	
-	$.widget.extend = function( target ) {
-		var input = widgetSlice.call( arguments, 1 );
-		var inputIndex = 0;
-		var inputLength = input.length;
-		var key;
-		var value;
-	
-		for ( ; inputIndex < inputLength; inputIndex++ ) {
-			for ( key in input[ inputIndex ] ) {
-				value = input[ inputIndex ][ key ];
-				if ( input[ inputIndex ].hasOwnProperty( key ) && value !== undefined ) {
-	
-					// Clone objects
-					if ( $.isPlainObject( value ) ) {
-						target[ key ] = $.isPlainObject( target[ key ] ) ?
-							$.widget.extend( {}, target[ key ], value ) :
-	
-							// Don't extend strings, arrays, etc. with objects
-							$.widget.extend( {}, value );
-	
-					// Copy everything else by reference
-					} else {
-						target[ key ] = value;
-					}
-				}
-			}
-		}
-		return target;
-	};
-	
-	$.widget.bridge = function( name, object ) {
-		var fullName = object.prototype.widgetFullName || name;
-		$.fn[ name ] = function( options ) {
-			var isMethodCall = typeof options === "string";
-			var args = widgetSlice.call( arguments, 1 );
-			var returnValue = this;
-	
-			if ( isMethodCall ) {
-	
-				// If this is an empty collection, we need to have the instance method
-				// return undefined instead of the jQuery instance
-				if ( !this.length && options === "instance" ) {
-					returnValue = undefined;
-				} else {
-					this.each( function() {
-						var methodValue;
-						var instance = $.data( this, fullName );
-	
-						if ( options === "instance" ) {
-							returnValue = instance;
-							return false;
-						}
-	
-						if ( !instance ) {
-							return $.error( "cannot call methods on " + name +
-								" prior to initialization; " +
-								"attempted to call method '" + options + "'" );
-						}
-	
-						if ( !$.isFunction( instance[ options ] ) || options.charAt( 0 ) === "_" ) {
-							return $.error( "no such method '" + options + "' for " + name +
-								" widget instance" );
-						}
-	
-						methodValue = instance[ options ].apply( instance, args );
-	
-						if ( methodValue !== instance && methodValue !== undefined ) {
-							returnValue = methodValue && methodValue.jquery ?
-								returnValue.pushStack( methodValue.get() ) :
-								methodValue;
-							return false;
-						}
-					} );
-				}
-			} else {
-	
-				// Allow multiple hashes to be passed on init
-				if ( args.length ) {
-					options = $.widget.extend.apply( null, [ options ].concat( args ) );
-				}
-	
-				this.each( function() {
-					var instance = $.data( this, fullName );
-					if ( instance ) {
-						instance.option( options || {} );
-						if ( instance._init ) {
-							instance._init();
-						}
-					} else {
-						$.data( this, fullName, new object( options, this ) );
-					}
-				} );
-			}
-	
-			return returnValue;
-		};
-	};
-	
-	$.Widget = function( /* options, element */ ) {};
-	$.Widget._childConstructors = [];
-	
-	$.Widget.prototype = {
-		widgetName: "widget",
-		widgetEventPrefix: "",
-		defaultElement: "<div>",
-	
-		options: {
-			classes: {},
-			disabled: false,
-	
-			// Callbacks
-			create: null
-		},
-	
-		_createWidget: function( options, element ) {
-			element = $( element || this.defaultElement || this )[ 0 ];
-			this.element = $( element );
-			this.uuid = widgetUuid++;
-			this.eventNamespace = "." + this.widgetName + this.uuid;
-	
-			this.bindings = $();
-			this.hoverable = $();
-			this.focusable = $();
-			this.classesElementLookup = {};
-	
-			if ( element !== this ) {
-				$.data( element, this.widgetFullName, this );
-				this._on( true, this.element, {
-					remove: function( event ) {
-						if ( event.target === element ) {
-							this.destroy();
-						}
-					}
-				} );
-				this.document = $( element.style ?
-	
-					// Element within the document
-					element.ownerDocument :
-	
-					// Element is window or document
-					element.document || element );
-				this.window = $( this.document[ 0 ].defaultView || this.document[ 0 ].parentWindow );
-			}
-	
-			this.options = $.widget.extend( {},
-				this.options,
-				this._getCreateOptions(),
-				options );
-	
-			this._create();
-	
-			if ( this.options.disabled ) {
-				this._setOptionDisabled( this.options.disabled );
-			}
-	
-			this._trigger( "create", null, this._getCreateEventData() );
-			this._init();
-		},
-	
-		_getCreateOptions: function() {
-			return {};
-		},
-	
-		_getCreateEventData: $.noop,
-	
-		_create: $.noop,
-	
-		_init: $.noop,
-	
-		destroy: function() {
-			var that = this;
-	
-			this._destroy();
-			$.each( this.classesElementLookup, function( key, value ) {
-				that._removeClass( value, key );
-			} );
-	
-			// We can probably remove the unbind calls in 2.0
-			// all event bindings should go through this._on()
-			this.element
-				.off( this.eventNamespace )
-				.removeData( this.widgetFullName );
-			this.widget()
-				.off( this.eventNamespace )
-				.removeAttr( "aria-disabled" );
-	
-			// Clean up events and states
-			this.bindings.off( this.eventNamespace );
-		},
-	
-		_destroy: $.noop,
-	
-		widget: function() {
-			return this.element;
-		},
-	
-		option: function( key, value ) {
-			var options = key;
-			var parts;
-			var curOption;
-			var i;
-	
-			if ( arguments.length === 0 ) {
-	
-				// Don't return a reference to the internal hash
-				return $.widget.extend( {}, this.options );
-			}
-	
-			if ( typeof key === "string" ) {
-	
-				// Handle nested keys, e.g., "foo.bar" => { foo: { bar: ___ } }
-				options = {};
-				parts = key.split( "." );
-				key = parts.shift();
-				if ( parts.length ) {
-					curOption = options[ key ] = $.widget.extend( {}, this.options[ key ] );
-					for ( i = 0; i < parts.length - 1; i++ ) {
-						curOption[ parts[ i ] ] = curOption[ parts[ i ] ] || {};
-						curOption = curOption[ parts[ i ] ];
-					}
-					key = parts.pop();
-					if ( arguments.length === 1 ) {
-						return curOption[ key ] === undefined ? null : curOption[ key ];
-					}
-					curOption[ key ] = value;
-				} else {
-					if ( arguments.length === 1 ) {
-						return this.options[ key ] === undefined ? null : this.options[ key ];
-					}
-					options[ key ] = value;
-				}
-			}
-	
-			this._setOptions( options );
-	
-			return this;
-		},
-	
-		_setOptions: function( options ) {
-			var key;
-	
-			for ( key in options ) {
-				this._setOption( key, options[ key ] );
-			}
-	
-			return this;
-		},
-	
-		_setOption: function( key, value ) {
-			if ( key === "classes" ) {
-				this._setOptionClasses( value );
-			}
-	
-			this.options[ key ] = value;
-	
-			if ( key === "disabled" ) {
-				this._setOptionDisabled( value );
-			}
-	
-			return this;
-		},
-	
-		_setOptionClasses: function( value ) {
-			var classKey, elements, currentElements;
-	
-			for ( classKey in value ) {
-				currentElements = this.classesElementLookup[ classKey ];
-				if ( value[ classKey ] === this.options.classes[ classKey ] ||
-						!currentElements ||
-						!currentElements.length ) {
-					continue;
-				}
-	
-				// We are doing this to create a new jQuery object because the _removeClass() call
-				// on the next line is going to destroy the reference to the current elements being
-				// tracked. We need to save a copy of this collection so that we can add the new classes
-				// below.
-				elements = $( currentElements.get() );
-				this._removeClass( currentElements, classKey );
-	
-				// We don't use _addClass() here, because that uses this.options.classes
-				// for generating the string of classes. We want to use the value passed in from
-				// _setOption(), this is the new value of the classes option which was passed to
-				// _setOption(). We pass this value directly to _classes().
-				elements.addClass( this._classes( {
-					element: elements,
-					keys: classKey,
-					classes: value,
-					add: true
-				} ) );
-			}
-		},
-	
-		_setOptionDisabled: function( value ) {
-			this._toggleClass( this.widget(), this.widgetFullName + "-disabled", null, !!value );
-	
-			// If the widget is becoming disabled, then nothing is interactive
-			if ( value ) {
-				this._removeClass( this.hoverable, null, "ui-state-hover" );
-				this._removeClass( this.focusable, null, "ui-state-focus" );
-			}
-		},
-	
-		enable: function() {
-			return this._setOptions( { disabled: false } );
-		},
-	
-		disable: function() {
-			return this._setOptions( { disabled: true } );
-		},
-	
-		_classes: function( options ) {
-			var full = [];
-			var that = this;
-	
-			options = $.extend( {
-				element: this.element,
-				classes: this.options.classes || {}
-			}, options );
-	
-			function processClassString( classes, checkOption ) {
-				var current, i;
-				for ( i = 0; i < classes.length; i++ ) {
-					current = that.classesElementLookup[ classes[ i ] ] || $();
-					if ( options.add ) {
-						current = $( $.unique( current.get().concat( options.element.get() ) ) );
-					} else {
-						current = $( current.not( options.element ).get() );
-					}
-					that.classesElementLookup[ classes[ i ] ] = current;
-					full.push( classes[ i ] );
-					if ( checkOption && options.classes[ classes[ i ] ] ) {
-						full.push( options.classes[ classes[ i ] ] );
-					}
-				}
-			}
-	
-			this._on( options.element, {
-				"remove": "_untrackClassesElement"
-			} );
-	
-			if ( options.keys ) {
-				processClassString( options.keys.match( /\S+/g ) || [], true );
-			}
-			if ( options.extra ) {
-				processClassString( options.extra.match( /\S+/g ) || [] );
-			}
-	
-			return full.join( " " );
-		},
-	
-		_untrackClassesElement: function( event ) {
-			var that = this;
-			$.each( that.classesElementLookup, function( key, value ) {
-				if ( $.inArray( event.target, value ) !== -1 ) {
-					that.classesElementLookup[ key ] = $( value.not( event.target ).get() );
-				}
-			} );
-		},
-	
-		_removeClass: function( element, keys, extra ) {
-			return this._toggleClass( element, keys, extra, false );
-		},
-	
-		_addClass: function( element, keys, extra ) {
-			return this._toggleClass( element, keys, extra, true );
-		},
-	
-		_toggleClass: function( element, keys, extra, add ) {
-			add = ( typeof add === "boolean" ) ? add : extra;
-			var shift = ( typeof element === "string" || element === null ),
-				options = {
-					extra: shift ? keys : extra,
-					keys: shift ? element : keys,
-					element: shift ? this.element : element,
-					add: add
-				};
-			options.element.toggleClass( this._classes( options ), add );
-			return this;
-		},
-	
-		_on: function( suppressDisabledCheck, element, handlers ) {
-			var delegateElement;
-			var instance = this;
-	
-			// No suppressDisabledCheck flag, shuffle arguments
-			if ( typeof suppressDisabledCheck !== "boolean" ) {
-				handlers = element;
-				element = suppressDisabledCheck;
-				suppressDisabledCheck = false;
-			}
-	
-			// No element argument, shuffle and use this.element
-			if ( !handlers ) {
-				handlers = element;
-				element = this.element;
-				delegateElement = this.widget();
-			} else {
-				element = delegateElement = $( element );
-				this.bindings = this.bindings.add( element );
-			}
-	
-			$.each( handlers, function( event, handler ) {
-				function handlerProxy() {
-	
-					// Allow widgets to customize the disabled handling
-					// - disabled as an array instead of boolean
-					// - disabled class as method for disabling individual parts
-					if ( !suppressDisabledCheck &&
-							( instance.options.disabled === true ||
-							$( this ).hasClass( "ui-state-disabled" ) ) ) {
-						return;
-					}
-					return ( typeof handler === "string" ? instance[ handler ] : handler )
-						.apply( instance, arguments );
-				}
-	
-				// Copy the guid so direct unbinding works
-				if ( typeof handler !== "string" ) {
-					handlerProxy.guid = handler.guid =
-						handler.guid || handlerProxy.guid || $.guid++;
-				}
-	
-				var match = event.match( /^([\w:-]*)\s*(.*)$/ );
-				var eventName = match[ 1 ] + instance.eventNamespace;
-				var selector = match[ 2 ];
-	
-				if ( selector ) {
-					delegateElement.on( eventName, selector, handlerProxy );
-				} else {
-					element.on( eventName, handlerProxy );
-				}
-			} );
-		},
-	
-		_off: function( element, eventName ) {
-			eventName = ( eventName || "" ).split( " " ).join( this.eventNamespace + " " ) +
-				this.eventNamespace;
-			element.off( eventName ).off( eventName );
-	
-			// Clear the stack to avoid memory leaks (#10056)
-			this.bindings = $( this.bindings.not( element ).get() );
-			this.focusable = $( this.focusable.not( element ).get() );
-			this.hoverable = $( this.hoverable.not( element ).get() );
-		},
-	
-		_delay: function( handler, delay ) {
-			function handlerProxy() {
-				return ( typeof handler === "string" ? instance[ handler ] : handler )
-					.apply( instance, arguments );
-			}
-			var instance = this;
-			return setTimeout( handlerProxy, delay || 0 );
-		},
-	
-		_hoverable: function( element ) {
-			this.hoverable = this.hoverable.add( element );
-			this._on( element, {
-				mouseenter: function( event ) {
-					this._addClass( $( event.currentTarget ), null, "ui-state-hover" );
-				},
-				mouseleave: function( event ) {
-					this._removeClass( $( event.currentTarget ), null, "ui-state-hover" );
-				}
-			} );
-		},
-	
-		_focusable: function( element ) {
-			this.focusable = this.focusable.add( element );
-			this._on( element, {
-				focusin: function( event ) {
-					this._addClass( $( event.currentTarget ), null, "ui-state-focus" );
-				},
-				focusout: function( event ) {
-					this._removeClass( $( event.currentTarget ), null, "ui-state-focus" );
-				}
-			} );
-		},
-	
-		_trigger: function( type, event, data ) {
-			var prop, orig;
-			var callback = this.options[ type ];
-	
-			data = data || {};
-			event = $.Event( event );
-			event.type = ( type === this.widgetEventPrefix ?
-				type :
-				this.widgetEventPrefix + type ).toLowerCase();
-	
-			// The original event may come from any element
-			// so we need to reset the target on the new event
-			event.target = this.element[ 0 ];
-	
-			// Copy original event properties over to the new event
-			orig = event.originalEvent;
-			if ( orig ) {
-				for ( prop in orig ) {
-					if ( !( prop in event ) ) {
-						event[ prop ] = orig[ prop ];
-					}
-				}
-			}
-	
-			this.element.trigger( event, data );
-			return !( $.isFunction( callback ) &&
-				callback.apply( this.element[ 0 ], [ event ].concat( data ) ) === false ||
-				event.isDefaultPrevented() );
-		}
-	};
-	
-	$.each( { show: "fadeIn", hide: "fadeOut" }, function( method, defaultEffect ) {
-		$.Widget.prototype[ "_" + method ] = function( element, options, callback ) {
-			if ( typeof options === "string" ) {
-				options = { effect: options };
-			}
-	
-			var hasOptions;
-			var effectName = !options ?
-				method :
-				options === true || typeof options === "number" ?
-					defaultEffect :
-					options.effect || defaultEffect;
-	
-			options = options || {};
-			if ( typeof options === "number" ) {
-				options = { duration: options };
-			}
-	
-			hasOptions = !$.isEmptyObject( options );
-			options.complete = callback;
-	
-			if ( options.delay ) {
-				element.delay( options.delay );
-			}
-	
-			if ( hasOptions && $.effects && $.effects.effect[ effectName ] ) {
-				element[ method ]( options );
-			} else if ( effectName !== method && element[ effectName ] ) {
-				element[ effectName ]( options.duration, options.easing, callback );
-			} else {
-				element.queue( function( next ) {
-					$( this )[ method ]();
-					if ( callback ) {
-						callback.call( element[ 0 ] );
-					}
-					next();
-				} );
-			}
-		};
-	} );
-	
-	return $.widget;
-	
-	} ) );
-
-
-/***/ }),
-/* 15 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -15948,7 +23188,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -15972,14 +23212,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 16 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -16022,14 +23262,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 17 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -16049,7 +23289,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 18 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -16070,7 +23310,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -16100,14 +23340,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 19 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -16146,2954 +23386,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Slider 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Slider
-	//>>group: Widgets
-	//>>description: Displays a flexible slider with ranges and accessibility via keyboard.
-	//>>docs: http://api.jqueryui.com/slider/
-	//>>demos: http://jqueryui.com/slider/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/slider.css
-	//>>css.theme: ../../themes/base/theme.css
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(11),
-				__webpack_require__(21),
-				__webpack_require__(13),
-				__webpack_require__(14)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	return $.widget( "ui.slider", $.ui.mouse, {
-		version: "1.12.1",
-		widgetEventPrefix: "slide",
-	
-		options: {
-			animate: false,
-			classes: {
-				"ui-slider": "ui-corner-all",
-				"ui-slider-handle": "ui-corner-all",
-	
-				// Note: ui-widget-header isn't the most fittingly semantic framework class for this
-				// element, but worked best visually with a variety of themes
-				"ui-slider-range": "ui-corner-all ui-widget-header"
-			},
-			distance: 0,
-			max: 100,
-			min: 0,
-			orientation: "horizontal",
-			range: false,
-			step: 1,
-			value: 0,
-			values: null,
-	
-			// Callbacks
-			change: null,
-			slide: null,
-			start: null,
-			stop: null
-		},
-	
-		// Number of pages in a slider
-		// (how many times can you page up/down to go through the whole range)
-		numPages: 5,
-	
-		_create: function() {
-			this._keySliding = false;
-			this._mouseSliding = false;
-			this._animateOff = true;
-			this._handleIndex = null;
-			this._detectOrientation();
-			this._mouseInit();
-			this._calculateNewMax();
-	
-			this._addClass( "ui-slider ui-slider-" + this.orientation,
-				"ui-widget ui-widget-content" );
-	
-			this._refresh();
-	
-			this._animateOff = false;
-		},
-	
-		_refresh: function() {
-			this._createRange();
-			this._createHandles();
-			this._setupEvents();
-			this._refreshValue();
-		},
-	
-		_createHandles: function() {
-			var i, handleCount,
-				options = this.options,
-				existingHandles = this.element.find( ".ui-slider-handle" ),
-				handle = "<span tabindex='0'></span>",
-				handles = [];
-	
-			handleCount = ( options.values && options.values.length ) || 1;
-	
-			if ( existingHandles.length > handleCount ) {
-				existingHandles.slice( handleCount ).remove();
-				existingHandles = existingHandles.slice( 0, handleCount );
-			}
-	
-			for ( i = existingHandles.length; i < handleCount; i++ ) {
-				handles.push( handle );
-			}
-	
-			this.handles = existingHandles.add( $( handles.join( "" ) ).appendTo( this.element ) );
-	
-			this._addClass( this.handles, "ui-slider-handle", "ui-state-default" );
-	
-			this.handle = this.handles.eq( 0 );
-	
-			this.handles.each( function( i ) {
-				$( this )
-					.data( "ui-slider-handle-index", i )
-					.attr( "tabIndex", 0 );
-			} );
-		},
-	
-		_createRange: function() {
-			var options = this.options;
-	
-			if ( options.range ) {
-				if ( options.range === true ) {
-					if ( !options.values ) {
-						options.values = [ this._valueMin(), this._valueMin() ];
-					} else if ( options.values.length && options.values.length !== 2 ) {
-						options.values = [ options.values[ 0 ], options.values[ 0 ] ];
-					} else if ( $.isArray( options.values ) ) {
-						options.values = options.values.slice( 0 );
-					}
-				}
-	
-				if ( !this.range || !this.range.length ) {
-					this.range = $( "<div>" )
-						.appendTo( this.element );
-	
-					this._addClass( this.range, "ui-slider-range" );
-				} else {
-					this._removeClass( this.range, "ui-slider-range-min ui-slider-range-max" );
-	
-					// Handle range switching from true to min/max
-					this.range.css( {
-						"left": "",
-						"bottom": ""
-					} );
-				}
-				if ( options.range === "min" || options.range === "max" ) {
-					this._addClass( this.range, "ui-slider-range-" + options.range );
-				}
-			} else {
-				if ( this.range ) {
-					this.range.remove();
-				}
-				this.range = null;
-			}
-		},
-	
-		_setupEvents: function() {
-			this._off( this.handles );
-			this._on( this.handles, this._handleEvents );
-			this._hoverable( this.handles );
-			this._focusable( this.handles );
-		},
-	
-		_destroy: function() {
-			this.handles.remove();
-			if ( this.range ) {
-				this.range.remove();
-			}
-	
-			this._mouseDestroy();
-		},
-	
-		_mouseCapture: function( event ) {
-			var position, normValue, distance, closestHandle, index, allowed, offset, mouseOverHandle,
-				that = this,
-				o = this.options;
-	
-			if ( o.disabled ) {
-				return false;
-			}
-	
-			this.elementSize = {
-				width: this.element.outerWidth(),
-				height: this.element.outerHeight()
-			};
-			this.elementOffset = this.element.offset();
-	
-			position = { x: event.pageX, y: event.pageY };
-			normValue = this._normValueFromMouse( position );
-			distance = this._valueMax() - this._valueMin() + 1;
-			this.handles.each( function( i ) {
-				var thisDistance = Math.abs( normValue - that.values( i ) );
-				if ( ( distance > thisDistance ) ||
-					( distance === thisDistance &&
-						( i === that._lastChangedValue || that.values( i ) === o.min ) ) ) {
-					distance = thisDistance;
-					closestHandle = $( this );
-					index = i;
-				}
-			} );
-	
-			allowed = this._start( event, index );
-			if ( allowed === false ) {
-				return false;
-			}
-			this._mouseSliding = true;
-	
-			this._handleIndex = index;
-	
-			this._addClass( closestHandle, null, "ui-state-active" );
-			closestHandle.trigger( "focus" );
-	
-			offset = closestHandle.offset();
-			mouseOverHandle = !$( event.target ).parents().addBack().is( ".ui-slider-handle" );
-			this._clickOffset = mouseOverHandle ? { left: 0, top: 0 } : {
-				left: event.pageX - offset.left - ( closestHandle.width() / 2 ),
-				top: event.pageY - offset.top -
-					( closestHandle.height() / 2 ) -
-					( parseInt( closestHandle.css( "borderTopWidth" ), 10 ) || 0 ) -
-					( parseInt( closestHandle.css( "borderBottomWidth" ), 10 ) || 0 ) +
-					( parseInt( closestHandle.css( "marginTop" ), 10 ) || 0 )
-			};
-	
-			if ( !this.handles.hasClass( "ui-state-hover" ) ) {
-				this._slide( event, index, normValue );
-			}
-			this._animateOff = true;
-			return true;
-		},
-	
-		_mouseStart: function() {
-			return true;
-		},
-	
-		_mouseDrag: function( event ) {
-			var position = { x: event.pageX, y: event.pageY },
-				normValue = this._normValueFromMouse( position );
-	
-			this._slide( event, this._handleIndex, normValue );
-	
-			return false;
-		},
-	
-		_mouseStop: function( event ) {
-			this._removeClass( this.handles, null, "ui-state-active" );
-			this._mouseSliding = false;
-	
-			this._stop( event, this._handleIndex );
-			this._change( event, this._handleIndex );
-	
-			this._handleIndex = null;
-			this._clickOffset = null;
-			this._animateOff = false;
-	
-			return false;
-		},
-	
-		_detectOrientation: function() {
-			this.orientation = ( this.options.orientation === "vertical" ) ? "vertical" : "horizontal";
-		},
-	
-		_normValueFromMouse: function( position ) {
-			var pixelTotal,
-				pixelMouse,
-				percentMouse,
-				valueTotal,
-				valueMouse;
-	
-			if ( this.orientation === "horizontal" ) {
-				pixelTotal = this.elementSize.width;
-				pixelMouse = position.x - this.elementOffset.left -
-					( this._clickOffset ? this._clickOffset.left : 0 );
-			} else {
-				pixelTotal = this.elementSize.height;
-				pixelMouse = position.y - this.elementOffset.top -
-					( this._clickOffset ? this._clickOffset.top : 0 );
-			}
-	
-			percentMouse = ( pixelMouse / pixelTotal );
-			if ( percentMouse > 1 ) {
-				percentMouse = 1;
-			}
-			if ( percentMouse < 0 ) {
-				percentMouse = 0;
-			}
-			if ( this.orientation === "vertical" ) {
-				percentMouse = 1 - percentMouse;
-			}
-	
-			valueTotal = this._valueMax() - this._valueMin();
-			valueMouse = this._valueMin() + percentMouse * valueTotal;
-	
-			return this._trimAlignValue( valueMouse );
-		},
-	
-		_uiHash: function( index, value, values ) {
-			var uiHash = {
-				handle: this.handles[ index ],
-				handleIndex: index,
-				value: value !== undefined ? value : this.value()
-			};
-	
-			if ( this._hasMultipleValues() ) {
-				uiHash.value = value !== undefined ? value : this.values( index );
-				uiHash.values = values || this.values();
-			}
-	
-			return uiHash;
-		},
-	
-		_hasMultipleValues: function() {
-			return this.options.values && this.options.values.length;
-		},
-	
-		_start: function( event, index ) {
-			return this._trigger( "start", event, this._uiHash( index ) );
-		},
-	
-		_slide: function( event, index, newVal ) {
-			var allowed, otherVal,
-				currentValue = this.value(),
-				newValues = this.values();
-	
-			if ( this._hasMultipleValues() ) {
-				otherVal = this.values( index ? 0 : 1 );
-				currentValue = this.values( index );
-	
-				if ( this.options.values.length === 2 && this.options.range === true ) {
-					newVal =  index === 0 ? Math.min( otherVal, newVal ) : Math.max( otherVal, newVal );
-				}
-	
-				newValues[ index ] = newVal;
-			}
-	
-			if ( newVal === currentValue ) {
-				return;
-			}
-	
-			allowed = this._trigger( "slide", event, this._uiHash( index, newVal, newValues ) );
-	
-			// A slide can be canceled by returning false from the slide callback
-			if ( allowed === false ) {
-				return;
-			}
-	
-			if ( this._hasMultipleValues() ) {
-				this.values( index, newVal );
-			} else {
-				this.value( newVal );
-			}
-		},
-	
-		_stop: function( event, index ) {
-			this._trigger( "stop", event, this._uiHash( index ) );
-		},
-	
-		_change: function( event, index ) {
-			if ( !this._keySliding && !this._mouseSliding ) {
-	
-				//store the last changed value index for reference when handles overlap
-				this._lastChangedValue = index;
-				this._trigger( "change", event, this._uiHash( index ) );
-			}
-		},
-	
-		value: function( newValue ) {
-			if ( arguments.length ) {
-				this.options.value = this._trimAlignValue( newValue );
-				this._refreshValue();
-				this._change( null, 0 );
-				return;
-			}
-	
-			return this._value();
-		},
-	
-		values: function( index, newValue ) {
-			var vals,
-				newValues,
-				i;
-	
-			if ( arguments.length > 1 ) {
-				this.options.values[ index ] = this._trimAlignValue( newValue );
-				this._refreshValue();
-				this._change( null, index );
-				return;
-			}
-	
-			if ( arguments.length ) {
-				if ( $.isArray( arguments[ 0 ] ) ) {
-					vals = this.options.values;
-					newValues = arguments[ 0 ];
-					for ( i = 0; i < vals.length; i += 1 ) {
-						vals[ i ] = this._trimAlignValue( newValues[ i ] );
-						this._change( null, i );
-					}
-					this._refreshValue();
-				} else {
-					if ( this._hasMultipleValues() ) {
-						return this._values( index );
-					} else {
-						return this.value();
-					}
-				}
-			} else {
-				return this._values();
-			}
-		},
-	
-		_setOption: function( key, value ) {
-			var i,
-				valsLength = 0;
-	
-			if ( key === "range" && this.options.range === true ) {
-				if ( value === "min" ) {
-					this.options.value = this._values( 0 );
-					this.options.values = null;
-				} else if ( value === "max" ) {
-					this.options.value = this._values( this.options.values.length - 1 );
-					this.options.values = null;
-				}
-			}
-	
-			if ( $.isArray( this.options.values ) ) {
-				valsLength = this.options.values.length;
-			}
-	
-			this._super( key, value );
-	
-			switch ( key ) {
-				case "orientation":
-					this._detectOrientation();
-					this._removeClass( "ui-slider-horizontal ui-slider-vertical" )
-						._addClass( "ui-slider-" + this.orientation );
-					this._refreshValue();
-					if ( this.options.range ) {
-						this._refreshRange( value );
-					}
-	
-					// Reset positioning from previous orientation
-					this.handles.css( value === "horizontal" ? "bottom" : "left", "" );
-					break;
-				case "value":
-					this._animateOff = true;
-					this._refreshValue();
-					this._change( null, 0 );
-					this._animateOff = false;
-					break;
-				case "values":
-					this._animateOff = true;
-					this._refreshValue();
-	
-					// Start from the last handle to prevent unreachable handles (#9046)
-					for ( i = valsLength - 1; i >= 0; i-- ) {
-						this._change( null, i );
-					}
-					this._animateOff = false;
-					break;
-				case "step":
-				case "min":
-				case "max":
-					this._animateOff = true;
-					this._calculateNewMax();
-					this._refreshValue();
-					this._animateOff = false;
-					break;
-				case "range":
-					this._animateOff = true;
-					this._refresh();
-					this._animateOff = false;
-					break;
-			}
-		},
-	
-		_setOptionDisabled: function( value ) {
-			this._super( value );
-	
-			this._toggleClass( null, "ui-state-disabled", !!value );
-		},
-	
-		//internal value getter
-		// _value() returns value trimmed by min and max, aligned by step
-		_value: function() {
-			var val = this.options.value;
-			val = this._trimAlignValue( val );
-	
-			return val;
-		},
-	
-		//internal values getter
-		// _values() returns array of values trimmed by min and max, aligned by step
-		// _values( index ) returns single value trimmed by min and max, aligned by step
-		_values: function( index ) {
-			var val,
-				vals,
-				i;
-	
-			if ( arguments.length ) {
-				val = this.options.values[ index ];
-				val = this._trimAlignValue( val );
-	
-				return val;
-			} else if ( this._hasMultipleValues() ) {
-	
-				// .slice() creates a copy of the array
-				// this copy gets trimmed by min and max and then returned
-				vals = this.options.values.slice();
-				for ( i = 0; i < vals.length; i += 1 ) {
-					vals[ i ] = this._trimAlignValue( vals[ i ] );
-				}
-	
-				return vals;
-			} else {
-				return [];
-			}
-		},
-	
-		// Returns the step-aligned value that val is closest to, between (inclusive) min and max
-		_trimAlignValue: function( val ) {
-			if ( val <= this._valueMin() ) {
-				return this._valueMin();
-			}
-			if ( val >= this._valueMax() ) {
-				return this._valueMax();
-			}
-			var step = ( this.options.step > 0 ) ? this.options.step : 1,
-				valModStep = ( val - this._valueMin() ) % step,
-				alignValue = val - valModStep;
-	
-			if ( Math.abs( valModStep ) * 2 >= step ) {
-				alignValue += ( valModStep > 0 ) ? step : ( -step );
-			}
-	
-			// Since JavaScript has problems with large floats, round
-			// the final value to 5 digits after the decimal point (see #4124)
-			return parseFloat( alignValue.toFixed( 5 ) );
-		},
-	
-		_calculateNewMax: function() {
-			var max = this.options.max,
-				min = this._valueMin(),
-				step = this.options.step,
-				aboveMin = Math.round( ( max - min ) / step ) * step;
-			max = aboveMin + min;
-			if ( max > this.options.max ) {
-	
-				//If max is not divisible by step, rounding off may increase its value
-				max -= step;
-			}
-			this.max = parseFloat( max.toFixed( this._precision() ) );
-		},
-	
-		_precision: function() {
-			var precision = this._precisionOf( this.options.step );
-			if ( this.options.min !== null ) {
-				precision = Math.max( precision, this._precisionOf( this.options.min ) );
-			}
-			return precision;
-		},
-	
-		_precisionOf: function( num ) {
-			var str = num.toString(),
-				decimal = str.indexOf( "." );
-			return decimal === -1 ? 0 : str.length - decimal - 1;
-		},
-	
-		_valueMin: function() {
-			return this.options.min;
-		},
-	
-		_valueMax: function() {
-			return this.max;
-		},
-	
-		_refreshRange: function( orientation ) {
-			if ( orientation === "vertical" ) {
-				this.range.css( { "width": "", "left": "" } );
-			}
-			if ( orientation === "horizontal" ) {
-				this.range.css( { "height": "", "bottom": "" } );
-			}
-		},
-	
-		_refreshValue: function() {
-			var lastValPercent, valPercent, value, valueMin, valueMax,
-				oRange = this.options.range,
-				o = this.options,
-				that = this,
-				animate = ( !this._animateOff ) ? o.animate : false,
-				_set = {};
-	
-			if ( this._hasMultipleValues() ) {
-				this.handles.each( function( i ) {
-					valPercent = ( that.values( i ) - that._valueMin() ) / ( that._valueMax() -
-						that._valueMin() ) * 100;
-					_set[ that.orientation === "horizontal" ? "left" : "bottom" ] = valPercent + "%";
-					$( this ).stop( 1, 1 )[ animate ? "animate" : "css" ]( _set, o.animate );
-					if ( that.options.range === true ) {
-						if ( that.orientation === "horizontal" ) {
-							if ( i === 0 ) {
-								that.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-									left: valPercent + "%"
-								}, o.animate );
-							}
-							if ( i === 1 ) {
-								that.range[ animate ? "animate" : "css" ]( {
-									width: ( valPercent - lastValPercent ) + "%"
-								}, {
-									queue: false,
-									duration: o.animate
-								} );
-							}
-						} else {
-							if ( i === 0 ) {
-								that.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-									bottom: ( valPercent ) + "%"
-								}, o.animate );
-							}
-							if ( i === 1 ) {
-								that.range[ animate ? "animate" : "css" ]( {
-									height: ( valPercent - lastValPercent ) + "%"
-								}, {
-									queue: false,
-									duration: o.animate
-								} );
-							}
-						}
-					}
-					lastValPercent = valPercent;
-				} );
-			} else {
-				value = this.value();
-				valueMin = this._valueMin();
-				valueMax = this._valueMax();
-				valPercent = ( valueMax !== valueMin ) ?
-						( value - valueMin ) / ( valueMax - valueMin ) * 100 :
-						0;
-				_set[ this.orientation === "horizontal" ? "left" : "bottom" ] = valPercent + "%";
-				this.handle.stop( 1, 1 )[ animate ? "animate" : "css" ]( _set, o.animate );
-	
-				if ( oRange === "min" && this.orientation === "horizontal" ) {
-					this.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-						width: valPercent + "%"
-					}, o.animate );
-				}
-				if ( oRange === "max" && this.orientation === "horizontal" ) {
-					this.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-						width: ( 100 - valPercent ) + "%"
-					}, o.animate );
-				}
-				if ( oRange === "min" && this.orientation === "vertical" ) {
-					this.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-						height: valPercent + "%"
-					}, o.animate );
-				}
-				if ( oRange === "max" && this.orientation === "vertical" ) {
-					this.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( {
-						height: ( 100 - valPercent ) + "%"
-					}, o.animate );
-				}
-			}
-		},
-	
-		_handleEvents: {
-			keydown: function( event ) {
-				var allowed, curVal, newVal, step,
-					index = $( event.target ).data( "ui-slider-handle-index" );
-	
-				switch ( event.keyCode ) {
-					case $.ui.keyCode.HOME:
-					case $.ui.keyCode.END:
-					case $.ui.keyCode.PAGE_UP:
-					case $.ui.keyCode.PAGE_DOWN:
-					case $.ui.keyCode.UP:
-					case $.ui.keyCode.RIGHT:
-					case $.ui.keyCode.DOWN:
-					case $.ui.keyCode.LEFT:
-						event.preventDefault();
-						if ( !this._keySliding ) {
-							this._keySliding = true;
-							this._addClass( $( event.target ), null, "ui-state-active" );
-							allowed = this._start( event, index );
-							if ( allowed === false ) {
-								return;
-							}
-						}
-						break;
-				}
-	
-				step = this.options.step;
-				if ( this._hasMultipleValues() ) {
-					curVal = newVal = this.values( index );
-				} else {
-					curVal = newVal = this.value();
-				}
-	
-				switch ( event.keyCode ) {
-					case $.ui.keyCode.HOME:
-						newVal = this._valueMin();
-						break;
-					case $.ui.keyCode.END:
-						newVal = this._valueMax();
-						break;
-					case $.ui.keyCode.PAGE_UP:
-						newVal = this._trimAlignValue(
-							curVal + ( ( this._valueMax() - this._valueMin() ) / this.numPages )
-						);
-						break;
-					case $.ui.keyCode.PAGE_DOWN:
-						newVal = this._trimAlignValue(
-							curVal - ( ( this._valueMax() - this._valueMin() ) / this.numPages ) );
-						break;
-					case $.ui.keyCode.UP:
-					case $.ui.keyCode.RIGHT:
-						if ( curVal === this._valueMax() ) {
-							return;
-						}
-						newVal = this._trimAlignValue( curVal + step );
-						break;
-					case $.ui.keyCode.DOWN:
-					case $.ui.keyCode.LEFT:
-						if ( curVal === this._valueMin() ) {
-							return;
-						}
-						newVal = this._trimAlignValue( curVal - step );
-						break;
-				}
-	
-				this._slide( event, index, newVal );
-			},
-			keyup: function( event ) {
-				var index = $( event.target ).data( "ui-slider-handle-index" );
-	
-				if ( this._keySliding ) {
-					this._keySliding = false;
-					this._stop( event, index );
-					this._change( event, index );
-					this._removeClass( $( event.target ), null, "ui-state-active" );
-				}
-			}
-		}
-	} );
-	
-	} ) );
-
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Keycode 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Keycode
-	//>>group: Core
-	//>>description: Provide keycodes as keynames
-	//>>docs: http://api.jqueryui.com/jQuery.ui.keyCode/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	return $.ui.keyCode = {
-		BACKSPACE: 8,
-		COMMA: 188,
-		DELETE: 46,
-		DOWN: 40,
-		END: 35,
-		ENTER: 13,
-		ESCAPE: 27,
-		HOME: 36,
-		LEFT: 37,
-		PAGE_DOWN: 34,
-		PAGE_UP: 33,
-		PERIOD: 190,
-		RIGHT: 39,
-		SPACE: 32,
-		TAB: 9,
-		UP: 38
-	};
-	
-	} ) );
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Dialog 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Dialog
-	//>>group: Widgets
-	//>>description: Displays customizable dialog windows.
-	//>>docs: http://api.jqueryui.com/dialog/
-	//>>demos: http://jqueryui.com/dialog/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/dialog.css
-	//>>css.theme: ../../themes/base/theme.css
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(23),
-				__webpack_require__(10),
-				__webpack_require__(11),
-				__webpack_require__(30),
-				__webpack_require__(32),
-				__webpack_require__(21),
-				__webpack_require__(35),
-				__webpack_require__(19),
-				__webpack_require__(17),
-				__webpack_require__(33),
-				__webpack_require__(34),
-				__webpack_require__(13),
-				__webpack_require__(14)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	$.widget( "ui.dialog", {
-		version: "1.12.1",
-		options: {
-			appendTo: "body",
-			autoOpen: true,
-			buttons: [],
-			classes: {
-				"ui-dialog": "ui-corner-all",
-				"ui-dialog-titlebar": "ui-corner-all"
-			},
-			closeOnEscape: true,
-			closeText: "Close",
-			draggable: true,
-			hide: null,
-			height: "auto",
-			maxHeight: null,
-			maxWidth: null,
-			minHeight: 150,
-			minWidth: 150,
-			modal: false,
-			position: {
-				my: "center",
-				at: "center",
-				of: window,
-				collision: "fit",
-	
-				// Ensure the titlebar is always visible
-				using: function( pos ) {
-					var topOffset = $( this ).css( pos ).offset().top;
-					if ( topOffset < 0 ) {
-						$( this ).css( "top", pos.top - topOffset );
-					}
-				}
-			},
-			resizable: true,
-			show: null,
-			title: null,
-			width: 300,
-	
-			// Callbacks
-			beforeClose: null,
-			close: null,
-			drag: null,
-			dragStart: null,
-			dragStop: null,
-			focus: null,
-			open: null,
-			resize: null,
-			resizeStart: null,
-			resizeStop: null
-		},
-	
-		sizeRelatedOptions: {
-			buttons: true,
-			height: true,
-			maxHeight: true,
-			maxWidth: true,
-			minHeight: true,
-			minWidth: true,
-			width: true
-		},
-	
-		resizableRelatedOptions: {
-			maxHeight: true,
-			maxWidth: true,
-			minHeight: true,
-			minWidth: true
-		},
-	
-		_create: function() {
-			this.originalCss = {
-				display: this.element[ 0 ].style.display,
-				width: this.element[ 0 ].style.width,
-				minHeight: this.element[ 0 ].style.minHeight,
-				maxHeight: this.element[ 0 ].style.maxHeight,
-				height: this.element[ 0 ].style.height
-			};
-			this.originalPosition = {
-				parent: this.element.parent(),
-				index: this.element.parent().children().index( this.element )
-			};
-			this.originalTitle = this.element.attr( "title" );
-			if ( this.options.title == null && this.originalTitle != null ) {
-				this.options.title = this.originalTitle;
-			}
-	
-			// Dialogs can't be disabled
-			if ( this.options.disabled ) {
-				this.options.disabled = false;
-			}
-	
-			this._createWrapper();
-	
-			this.element
-				.show()
-				.removeAttr( "title" )
-				.appendTo( this.uiDialog );
-	
-			this._addClass( "ui-dialog-content", "ui-widget-content" );
-	
-			this._createTitlebar();
-			this._createButtonPane();
-	
-			if ( this.options.draggable && $.fn.draggable ) {
-				this._makeDraggable();
-			}
-			if ( this.options.resizable && $.fn.resizable ) {
-				this._makeResizable();
-			}
-	
-			this._isOpen = false;
-	
-			this._trackFocus();
-		},
-	
-		_init: function() {
-			if ( this.options.autoOpen ) {
-				this.open();
-			}
-		},
-	
-		_appendTo: function() {
-			var element = this.options.appendTo;
-			if ( element && ( element.jquery || element.nodeType ) ) {
-				return $( element );
-			}
-			return this.document.find( element || "body" ).eq( 0 );
-		},
-	
-		_destroy: function() {
-			var next,
-				originalPosition = this.originalPosition;
-	
-			this._untrackInstance();
-			this._destroyOverlay();
-	
-			this.element
-				.removeUniqueId()
-				.css( this.originalCss )
-	
-				// Without detaching first, the following becomes really slow
-				.detach();
-	
-			this.uiDialog.remove();
-	
-			if ( this.originalTitle ) {
-				this.element.attr( "title", this.originalTitle );
-			}
-	
-			next = originalPosition.parent.children().eq( originalPosition.index );
-	
-			// Don't try to place the dialog next to itself (#8613)
-			if ( next.length && next[ 0 ] !== this.element[ 0 ] ) {
-				next.before( this.element );
-			} else {
-				originalPosition.parent.append( this.element );
-			}
-		},
-	
-		widget: function() {
-			return this.uiDialog;
-		},
-	
-		disable: $.noop,
-		enable: $.noop,
-	
-		close: function( event ) {
-			var that = this;
-	
-			if ( !this._isOpen || this._trigger( "beforeClose", event ) === false ) {
-				return;
-			}
-	
-			this._isOpen = false;
-			this._focusedElement = null;
-			this._destroyOverlay();
-			this._untrackInstance();
-	
-			if ( !this.opener.filter( ":focusable" ).trigger( "focus" ).length ) {
-	
-				// Hiding a focused element doesn't trigger blur in WebKit
-				// so in case we have nothing to focus on, explicitly blur the active element
-				// https://bugs.webkit.org/show_bug.cgi?id=47182
-				$.ui.safeBlur( $.ui.safeActiveElement( this.document[ 0 ] ) );
-			}
-	
-			this._hide( this.uiDialog, this.options.hide, function() {
-				that._trigger( "close", event );
-			} );
-		},
-	
-		isOpen: function() {
-			return this._isOpen;
-		},
-	
-		moveToTop: function() {
-			this._moveToTop();
-		},
-	
-		_moveToTop: function( event, silent ) {
-			var moved = false,
-				zIndices = this.uiDialog.siblings( ".ui-front:visible" ).map( function() {
-					return +$( this ).css( "z-index" );
-				} ).get(),
-				zIndexMax = Math.max.apply( null, zIndices );
-	
-			if ( zIndexMax >= +this.uiDialog.css( "z-index" ) ) {
-				this.uiDialog.css( "z-index", zIndexMax + 1 );
-				moved = true;
-			}
-	
-			if ( moved && !silent ) {
-				this._trigger( "focus", event );
-			}
-			return moved;
-		},
-	
-		open: function() {
-			var that = this;
-			if ( this._isOpen ) {
-				if ( this._moveToTop() ) {
-					this._focusTabbable();
-				}
-				return;
-			}
-	
-			this._isOpen = true;
-			this.opener = $( $.ui.safeActiveElement( this.document[ 0 ] ) );
-	
-			this._size();
-			this._position();
-			this._createOverlay();
-			this._moveToTop( null, true );
-	
-			// Ensure the overlay is moved to the top with the dialog, but only when
-			// opening. The overlay shouldn't move after the dialog is open so that
-			// modeless dialogs opened after the modal dialog stack properly.
-			if ( this.overlay ) {
-				this.overlay.css( "z-index", this.uiDialog.css( "z-index" ) - 1 );
-			}
-	
-			this._show( this.uiDialog, this.options.show, function() {
-				that._focusTabbable();
-				that._trigger( "focus" );
-			} );
-	
-			// Track the dialog immediately upon openening in case a focus event
-			// somehow occurs outside of the dialog before an element inside the
-			// dialog is focused (#10152)
-			this._makeFocusTarget();
-	
-			this._trigger( "open" );
-		},
-	
-		_focusTabbable: function() {
-	
-			// Set focus to the first match:
-			// 1. An element that was focused previously
-			// 2. First element inside the dialog matching [autofocus]
-			// 3. Tabbable element inside the content element
-			// 4. Tabbable element inside the buttonpane
-			// 5. The close button
-			// 6. The dialog itself
-			var hasFocus = this._focusedElement;
-			if ( !hasFocus ) {
-				hasFocus = this.element.find( "[autofocus]" );
-			}
-			if ( !hasFocus.length ) {
-				hasFocus = this.element.find( ":tabbable" );
-			}
-			if ( !hasFocus.length ) {
-				hasFocus = this.uiDialogButtonPane.find( ":tabbable" );
-			}
-			if ( !hasFocus.length ) {
-				hasFocus = this.uiDialogTitlebarClose.filter( ":tabbable" );
-			}
-			if ( !hasFocus.length ) {
-				hasFocus = this.uiDialog;
-			}
-			hasFocus.eq( 0 ).trigger( "focus" );
-		},
-	
-		_keepFocus: function( event ) {
-			function checkFocus() {
-				var activeElement = $.ui.safeActiveElement( this.document[ 0 ] ),
-					isActive = this.uiDialog[ 0 ] === activeElement ||
-						$.contains( this.uiDialog[ 0 ], activeElement );
-				if ( !isActive ) {
-					this._focusTabbable();
-				}
-			}
-			event.preventDefault();
-			checkFocus.call( this );
-	
-			// support: IE
-			// IE <= 8 doesn't prevent moving focus even with event.preventDefault()
-			// so we check again later
-			this._delay( checkFocus );
-		},
-	
-		_createWrapper: function() {
-			this.uiDialog = $( "<div>" )
-				.hide()
-				.attr( {
-	
-					// Setting tabIndex makes the div focusable
-					tabIndex: -1,
-					role: "dialog"
-				} )
-				.appendTo( this._appendTo() );
-	
-			this._addClass( this.uiDialog, "ui-dialog", "ui-widget ui-widget-content ui-front" );
-			this._on( this.uiDialog, {
-				keydown: function( event ) {
-					if ( this.options.closeOnEscape && !event.isDefaultPrevented() && event.keyCode &&
-							event.keyCode === $.ui.keyCode.ESCAPE ) {
-						event.preventDefault();
-						this.close( event );
-						return;
-					}
-	
-					// Prevent tabbing out of dialogs
-					if ( event.keyCode !== $.ui.keyCode.TAB || event.isDefaultPrevented() ) {
-						return;
-					}
-					var tabbables = this.uiDialog.find( ":tabbable" ),
-						first = tabbables.filter( ":first" ),
-						last = tabbables.filter( ":last" );
-	
-					if ( ( event.target === last[ 0 ] || event.target === this.uiDialog[ 0 ] ) &&
-							!event.shiftKey ) {
-						this._delay( function() {
-							first.trigger( "focus" );
-						} );
-						event.preventDefault();
-					} else if ( ( event.target === first[ 0 ] ||
-							event.target === this.uiDialog[ 0 ] ) && event.shiftKey ) {
-						this._delay( function() {
-							last.trigger( "focus" );
-						} );
-						event.preventDefault();
-					}
-				},
-				mousedown: function( event ) {
-					if ( this._moveToTop( event ) ) {
-						this._focusTabbable();
-					}
-				}
-			} );
-	
-			// We assume that any existing aria-describedby attribute means
-			// that the dialog content is marked up properly
-			// otherwise we brute force the content as the description
-			if ( !this.element.find( "[aria-describedby]" ).length ) {
-				this.uiDialog.attr( {
-					"aria-describedby": this.element.uniqueId().attr( "id" )
-				} );
-			}
-		},
-	
-		_createTitlebar: function() {
-			var uiDialogTitle;
-	
-			this.uiDialogTitlebar = $( "<div>" );
-			this._addClass( this.uiDialogTitlebar,
-				"ui-dialog-titlebar", "ui-widget-header ui-helper-clearfix" );
-			this._on( this.uiDialogTitlebar, {
-				mousedown: function( event ) {
-	
-					// Don't prevent click on close button (#8838)
-					// Focusing a dialog that is partially scrolled out of view
-					// causes the browser to scroll it into view, preventing the click event
-					if ( !$( event.target ).closest( ".ui-dialog-titlebar-close" ) ) {
-	
-						// Dialog isn't getting focus when dragging (#8063)
-						this.uiDialog.trigger( "focus" );
-					}
-				}
-			} );
-	
-			// Support: IE
-			// Use type="button" to prevent enter keypresses in textboxes from closing the
-			// dialog in IE (#9312)
-			this.uiDialogTitlebarClose = $( "<button type='button'></button>" )
-				.button( {
-					label: $( "<a>" ).text( this.options.closeText ).html(),
-					icon: "ui-icon-closethick",
-					showLabel: false
-				} )
-				.appendTo( this.uiDialogTitlebar );
-	
-			this._addClass( this.uiDialogTitlebarClose, "ui-dialog-titlebar-close" );
-			this._on( this.uiDialogTitlebarClose, {
-				click: function( event ) {
-					event.preventDefault();
-					this.close( event );
-				}
-			} );
-	
-			uiDialogTitle = $( "<span>" ).uniqueId().prependTo( this.uiDialogTitlebar );
-			this._addClass( uiDialogTitle, "ui-dialog-title" );
-			this._title( uiDialogTitle );
-	
-			this.uiDialogTitlebar.prependTo( this.uiDialog );
-	
-			this.uiDialog.attr( {
-				"aria-labelledby": uiDialogTitle.attr( "id" )
-			} );
-		},
-	
-		_title: function( title ) {
-			if ( this.options.title ) {
-				title.text( this.options.title );
-			} else {
-				title.html( "&#160;" );
-			}
-		},
-	
-		_createButtonPane: function() {
-			this.uiDialogButtonPane = $( "<div>" );
-			this._addClass( this.uiDialogButtonPane, "ui-dialog-buttonpane",
-				"ui-widget-content ui-helper-clearfix" );
-	
-			this.uiButtonSet = $( "<div>" )
-				.appendTo( this.uiDialogButtonPane );
-			this._addClass( this.uiButtonSet, "ui-dialog-buttonset" );
-	
-			this._createButtons();
-		},
-	
-		_createButtons: function() {
-			var that = this,
-				buttons = this.options.buttons;
-	
-			// If we already have a button pane, remove it
-			this.uiDialogButtonPane.remove();
-			this.uiButtonSet.empty();
-	
-			if ( $.isEmptyObject( buttons ) || ( $.isArray( buttons ) && !buttons.length ) ) {
-				this._removeClass( this.uiDialog, "ui-dialog-buttons" );
-				return;
-			}
-	
-			$.each( buttons, function( name, props ) {
-				var click, buttonOptions;
-				props = $.isFunction( props ) ?
-					{ click: props, text: name } :
-					props;
-	
-				// Default to a non-submitting button
-				props = $.extend( { type: "button" }, props );
-	
-				// Change the context for the click callback to be the main element
-				click = props.click;
-				buttonOptions = {
-					icon: props.icon,
-					iconPosition: props.iconPosition,
-					showLabel: props.showLabel,
-	
-					// Deprecated options
-					icons: props.icons,
-					text: props.text
-				};
-	
-				delete props.click;
-				delete props.icon;
-				delete props.iconPosition;
-				delete props.showLabel;
-	
-				// Deprecated options
-				delete props.icons;
-				if ( typeof props.text === "boolean" ) {
-					delete props.text;
-				}
-	
-				$( "<button></button>", props )
-					.button( buttonOptions )
-					.appendTo( that.uiButtonSet )
-					.on( "click", function() {
-						click.apply( that.element[ 0 ], arguments );
-					} );
-			} );
-			this._addClass( this.uiDialog, "ui-dialog-buttons" );
-			this.uiDialogButtonPane.appendTo( this.uiDialog );
-		},
-	
-		_makeDraggable: function() {
-			var that = this,
-				options = this.options;
-	
-			function filteredUi( ui ) {
-				return {
-					position: ui.position,
-					offset: ui.offset
-				};
-			}
-	
-			this.uiDialog.draggable( {
-				cancel: ".ui-dialog-content, .ui-dialog-titlebar-close",
-				handle: ".ui-dialog-titlebar",
-				containment: "document",
-				start: function( event, ui ) {
-					that._addClass( $( this ), "ui-dialog-dragging" );
-					that._blockFrames();
-					that._trigger( "dragStart", event, filteredUi( ui ) );
-				},
-				drag: function( event, ui ) {
-					that._trigger( "drag", event, filteredUi( ui ) );
-				},
-				stop: function( event, ui ) {
-					var left = ui.offset.left - that.document.scrollLeft(),
-						top = ui.offset.top - that.document.scrollTop();
-	
-					options.position = {
-						my: "left top",
-						at: "left" + ( left >= 0 ? "+" : "" ) + left + " " +
-							"top" + ( top >= 0 ? "+" : "" ) + top,
-						of: that.window
-					};
-					that._removeClass( $( this ), "ui-dialog-dragging" );
-					that._unblockFrames();
-					that._trigger( "dragStop", event, filteredUi( ui ) );
-				}
-			} );
-		},
-	
-		_makeResizable: function() {
-			var that = this,
-				options = this.options,
-				handles = options.resizable,
-	
-				// .ui-resizable has position: relative defined in the stylesheet
-				// but dialogs have to use absolute or fixed positioning
-				position = this.uiDialog.css( "position" ),
-				resizeHandles = typeof handles === "string" ?
-					handles :
-					"n,e,s,w,se,sw,ne,nw";
-	
-			function filteredUi( ui ) {
-				return {
-					originalPosition: ui.originalPosition,
-					originalSize: ui.originalSize,
-					position: ui.position,
-					size: ui.size
-				};
-			}
-	
-			this.uiDialog.resizable( {
-				cancel: ".ui-dialog-content",
-				containment: "document",
-				alsoResize: this.element,
-				maxWidth: options.maxWidth,
-				maxHeight: options.maxHeight,
-				minWidth: options.minWidth,
-				minHeight: this._minHeight(),
-				handles: resizeHandles,
-				start: function( event, ui ) {
-					that._addClass( $( this ), "ui-dialog-resizing" );
-					that._blockFrames();
-					that._trigger( "resizeStart", event, filteredUi( ui ) );
-				},
-				resize: function( event, ui ) {
-					that._trigger( "resize", event, filteredUi( ui ) );
-				},
-				stop: function( event, ui ) {
-					var offset = that.uiDialog.offset(),
-						left = offset.left - that.document.scrollLeft(),
-						top = offset.top - that.document.scrollTop();
-	
-					options.height = that.uiDialog.height();
-					options.width = that.uiDialog.width();
-					options.position = {
-						my: "left top",
-						at: "left" + ( left >= 0 ? "+" : "" ) + left + " " +
-							"top" + ( top >= 0 ? "+" : "" ) + top,
-						of: that.window
-					};
-					that._removeClass( $( this ), "ui-dialog-resizing" );
-					that._unblockFrames();
-					that._trigger( "resizeStop", event, filteredUi( ui ) );
-				}
-			} )
-				.css( "position", position );
-		},
-	
-		_trackFocus: function() {
-			this._on( this.widget(), {
-				focusin: function( event ) {
-					this._makeFocusTarget();
-					this._focusedElement = $( event.target );
-				}
-			} );
-		},
-	
-		_makeFocusTarget: function() {
-			this._untrackInstance();
-			this._trackingInstances().unshift( this );
-		},
-	
-		_untrackInstance: function() {
-			var instances = this._trackingInstances(),
-				exists = $.inArray( this, instances );
-			if ( exists !== -1 ) {
-				instances.splice( exists, 1 );
-			}
-		},
-	
-		_trackingInstances: function() {
-			var instances = this.document.data( "ui-dialog-instances" );
-			if ( !instances ) {
-				instances = [];
-				this.document.data( "ui-dialog-instances", instances );
-			}
-			return instances;
-		},
-	
-		_minHeight: function() {
-			var options = this.options;
-	
-			return options.height === "auto" ?
-				options.minHeight :
-				Math.min( options.minHeight, options.height );
-		},
-	
-		_position: function() {
-	
-			// Need to show the dialog to get the actual offset in the position plugin
-			var isVisible = this.uiDialog.is( ":visible" );
-			if ( !isVisible ) {
-				this.uiDialog.show();
-			}
-			this.uiDialog.position( this.options.position );
-			if ( !isVisible ) {
-				this.uiDialog.hide();
-			}
-		},
-	
-		_setOptions: function( options ) {
-			var that = this,
-				resize = false,
-				resizableOptions = {};
-	
-			$.each( options, function( key, value ) {
-				that._setOption( key, value );
-	
-				if ( key in that.sizeRelatedOptions ) {
-					resize = true;
-				}
-				if ( key in that.resizableRelatedOptions ) {
-					resizableOptions[ key ] = value;
-				}
-			} );
-	
-			if ( resize ) {
-				this._size();
-				this._position();
-			}
-			if ( this.uiDialog.is( ":data(ui-resizable)" ) ) {
-				this.uiDialog.resizable( "option", resizableOptions );
-			}
-		},
-	
-		_setOption: function( key, value ) {
-			var isDraggable, isResizable,
-				uiDialog = this.uiDialog;
-	
-			if ( key === "disabled" ) {
-				return;
-			}
-	
-			this._super( key, value );
-	
-			if ( key === "appendTo" ) {
-				this.uiDialog.appendTo( this._appendTo() );
-			}
-	
-			if ( key === "buttons" ) {
-				this._createButtons();
-			}
-	
-			if ( key === "closeText" ) {
-				this.uiDialogTitlebarClose.button( {
-	
-					// Ensure that we always pass a string
-					label: $( "<a>" ).text( "" + this.options.closeText ).html()
-				} );
-			}
-	
-			if ( key === "draggable" ) {
-				isDraggable = uiDialog.is( ":data(ui-draggable)" );
-				if ( isDraggable && !value ) {
-					uiDialog.draggable( "destroy" );
-				}
-	
-				if ( !isDraggable && value ) {
-					this._makeDraggable();
-				}
-			}
-	
-			if ( key === "position" ) {
-				this._position();
-			}
-	
-			if ( key === "resizable" ) {
-	
-				// currently resizable, becoming non-resizable
-				isResizable = uiDialog.is( ":data(ui-resizable)" );
-				if ( isResizable && !value ) {
-					uiDialog.resizable( "destroy" );
-				}
-	
-				// Currently resizable, changing handles
-				if ( isResizable && typeof value === "string" ) {
-					uiDialog.resizable( "option", "handles", value );
-				}
-	
-				// Currently non-resizable, becoming resizable
-				if ( !isResizable && value !== false ) {
-					this._makeResizable();
-				}
-			}
-	
-			if ( key === "title" ) {
-				this._title( this.uiDialogTitlebar.find( ".ui-dialog-title" ) );
-			}
-		},
-	
-		_size: function() {
-	
-			// If the user has resized the dialog, the .ui-dialog and .ui-dialog-content
-			// divs will both have width and height set, so we need to reset them
-			var nonContentHeight, minContentHeight, maxContentHeight,
-				options = this.options;
-	
-			// Reset content sizing
-			this.element.show().css( {
-				width: "auto",
-				minHeight: 0,
-				maxHeight: "none",
-				height: 0
-			} );
-	
-			if ( options.minWidth > options.width ) {
-				options.width = options.minWidth;
-			}
-	
-			// Reset wrapper sizing
-			// determine the height of all the non-content elements
-			nonContentHeight = this.uiDialog.css( {
-				height: "auto",
-				width: options.width
-			} )
-				.outerHeight();
-			minContentHeight = Math.max( 0, options.minHeight - nonContentHeight );
-			maxContentHeight = typeof options.maxHeight === "number" ?
-				Math.max( 0, options.maxHeight - nonContentHeight ) :
-				"none";
-	
-			if ( options.height === "auto" ) {
-				this.element.css( {
-					minHeight: minContentHeight,
-					maxHeight: maxContentHeight,
-					height: "auto"
-				} );
-			} else {
-				this.element.height( Math.max( 0, options.height - nonContentHeight ) );
-			}
-	
-			if ( this.uiDialog.is( ":data(ui-resizable)" ) ) {
-				this.uiDialog.resizable( "option", "minHeight", this._minHeight() );
-			}
-		},
-	
-		_blockFrames: function() {
-			this.iframeBlocks = this.document.find( "iframe" ).map( function() {
-				var iframe = $( this );
-	
-				return $( "<div>" )
-					.css( {
-						position: "absolute",
-						width: iframe.outerWidth(),
-						height: iframe.outerHeight()
-					} )
-					.appendTo( iframe.parent() )
-					.offset( iframe.offset() )[ 0 ];
-			} );
-		},
-	
-		_unblockFrames: function() {
-			if ( this.iframeBlocks ) {
-				this.iframeBlocks.remove();
-				delete this.iframeBlocks;
-			}
-		},
-	
-		_allowInteraction: function( event ) {
-			if ( $( event.target ).closest( ".ui-dialog" ).length ) {
-				return true;
-			}
-	
-			// TODO: Remove hack when datepicker implements
-			// the .ui-front logic (#8989)
-			return !!$( event.target ).closest( ".ui-datepicker" ).length;
-		},
-	
-		_createOverlay: function() {
-			if ( !this.options.modal ) {
-				return;
-			}
-	
-			// We use a delay in case the overlay is created from an
-			// event that we're going to be cancelling (#2804)
-			var isOpening = true;
-			this._delay( function() {
-				isOpening = false;
-			} );
-	
-			if ( !this.document.data( "ui-dialog-overlays" ) ) {
-	
-				// Prevent use of anchors and inputs
-				// Using _on() for an event handler shared across many instances is
-				// safe because the dialogs stack and must be closed in reverse order
-				this._on( this.document, {
-					focusin: function( event ) {
-						if ( isOpening ) {
-							return;
-						}
-	
-						if ( !this._allowInteraction( event ) ) {
-							event.preventDefault();
-							this._trackingInstances()[ 0 ]._focusTabbable();
-						}
-					}
-				} );
-			}
-	
-			this.overlay = $( "<div>" )
-				.appendTo( this._appendTo() );
-	
-			this._addClass( this.overlay, null, "ui-widget-overlay ui-front" );
-			this._on( this.overlay, {
-				mousedown: "_keepFocus"
-			} );
-			this.document.data( "ui-dialog-overlays",
-				( this.document.data( "ui-dialog-overlays" ) || 0 ) + 1 );
-		},
-	
-		_destroyOverlay: function() {
-			if ( !this.options.modal ) {
-				return;
-			}
-	
-			if ( this.overlay ) {
-				var overlays = this.document.data( "ui-dialog-overlays" ) - 1;
-	
-				if ( !overlays ) {
-					this._off( this.document, "focusin" );
-					this.document.removeData( "ui-dialog-overlays" );
-				} else {
-					this.document.data( "ui-dialog-overlays", overlays );
-				}
-	
-				this.overlay.remove();
-				this.overlay = null;
-			}
-		}
-	} );
-	
-	// DEPRECATED
-	// TODO: switch return back to widget declaration at top of file when this is removed
-	if ( $.uiBackCompat !== false ) {
-	
-		// Backcompat for dialogClass option
-		$.widget( "ui.dialog", $.ui.dialog, {
-			options: {
-				dialogClass: ""
-			},
-			_createWrapper: function() {
-				this._super();
-				this.uiDialog.addClass( this.options.dialogClass );
-			},
-			_setOption: function( key, value ) {
-				if ( key === "dialogClass" ) {
-					this.uiDialog
-						.removeClass( this.options.dialogClass )
-						.addClass( value );
-				}
-				this._superApply( arguments );
-			}
-		} );
-	}
-	
-	return $.ui.dialog;
-	
-	} ) );
-
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Button 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Button
-	//>>group: Widgets
-	//>>description: Enhances a form with themeable buttons.
-	//>>docs: http://api.jqueryui.com/button/
-	//>>demos: http://jqueryui.com/button/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/button.css
-	//>>css.theme: ../../themes/base/theme.css
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-	
-				// These are only for backcompat
-				// TODO: Remove after 1.12
-				__webpack_require__(24),
-				__webpack_require__(25),
-	
-				__webpack_require__(21),
-				__webpack_require__(14)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	$.widget( "ui.button", {
-		version: "1.12.1",
-		defaultElement: "<button>",
-		options: {
-			classes: {
-				"ui-button": "ui-corner-all"
-			},
-			disabled: null,
-			icon: null,
-			iconPosition: "beginning",
-			label: null,
-			showLabel: true
-		},
-	
-		_getCreateOptions: function() {
-			var disabled,
-	
-				// This is to support cases like in jQuery Mobile where the base widget does have
-				// an implementation of _getCreateOptions
-				options = this._super() || {};
-	
-			this.isInput = this.element.is( "input" );
-	
-			disabled = this.element[ 0 ].disabled;
-			if ( disabled != null ) {
-				options.disabled = disabled;
-			}
-	
-			this.originalLabel = this.isInput ? this.element.val() : this.element.html();
-			if ( this.originalLabel ) {
-				options.label = this.originalLabel;
-			}
-	
-			return options;
-		},
-	
-		_create: function() {
-			if ( !this.option.showLabel & !this.options.icon ) {
-				this.options.showLabel = true;
-			}
-	
-			// We have to check the option again here even though we did in _getCreateOptions,
-			// because null may have been passed on init which would override what was set in
-			// _getCreateOptions
-			if ( this.options.disabled == null ) {
-				this.options.disabled = this.element[ 0 ].disabled || false;
-			}
-	
-			this.hasTitle = !!this.element.attr( "title" );
-	
-			// Check to see if the label needs to be set or if its already correct
-			if ( this.options.label && this.options.label !== this.originalLabel ) {
-				if ( this.isInput ) {
-					this.element.val( this.options.label );
-				} else {
-					this.element.html( this.options.label );
-				}
-			}
-			this._addClass( "ui-button", "ui-widget" );
-			this._setOption( "disabled", this.options.disabled );
-			this._enhance();
-	
-			if ( this.element.is( "a" ) ) {
-				this._on( {
-					"keyup": function( event ) {
-						if ( event.keyCode === $.ui.keyCode.SPACE ) {
-							event.preventDefault();
-	
-							// Support: PhantomJS <= 1.9, IE 8 Only
-							// If a native click is available use it so we actually cause navigation
-							// otherwise just trigger a click event
-							if ( this.element[ 0 ].click ) {
-								this.element[ 0 ].click();
-							} else {
-								this.element.trigger( "click" );
-							}
-						}
-					}
-				} );
-			}
-		},
-	
-		_enhance: function() {
-			if ( !this.element.is( "button" ) ) {
-				this.element.attr( "role", "button" );
-			}
-	
-			if ( this.options.icon ) {
-				this._updateIcon( "icon", this.options.icon );
-				this._updateTooltip();
-			}
-		},
-	
-		_updateTooltip: function() {
-			this.title = this.element.attr( "title" );
-	
-			if ( !this.options.showLabel && !this.title ) {
-				this.element.attr( "title", this.options.label );
-			}
-		},
-	
-		_updateIcon: function( option, value ) {
-			var icon = option !== "iconPosition",
-				position = icon ? this.options.iconPosition : value,
-				displayBlock = position === "top" || position === "bottom";
-	
-			// Create icon
-			if ( !this.icon ) {
-				this.icon = $( "<span>" );
-	
-				this._addClass( this.icon, "ui-button-icon", "ui-icon" );
-	
-				if ( !this.options.showLabel ) {
-					this._addClass( "ui-button-icon-only" );
-				}
-			} else if ( icon ) {
-	
-				// If we are updating the icon remove the old icon class
-				this._removeClass( this.icon, null, this.options.icon );
-			}
-	
-			// If we are updating the icon add the new icon class
-			if ( icon ) {
-				this._addClass( this.icon, null, value );
-			}
-	
-			this._attachIcon( position );
-	
-			// If the icon is on top or bottom we need to add the ui-widget-icon-block class and remove
-			// the iconSpace if there is one.
-			if ( displayBlock ) {
-				this._addClass( this.icon, null, "ui-widget-icon-block" );
-				if ( this.iconSpace ) {
-					this.iconSpace.remove();
-				}
-			} else {
-	
-				// Position is beginning or end so remove the ui-widget-icon-block class and add the
-				// space if it does not exist
-				if ( !this.iconSpace ) {
-					this.iconSpace = $( "<span> </span>" );
-					this._addClass( this.iconSpace, "ui-button-icon-space" );
-				}
-				this._removeClass( this.icon, null, "ui-wiget-icon-block" );
-				this._attachIconSpace( position );
-			}
-		},
-	
-		_destroy: function() {
-			this.element.removeAttr( "role" );
-	
-			if ( this.icon ) {
-				this.icon.remove();
-			}
-			if ( this.iconSpace ) {
-				this.iconSpace.remove();
-			}
-			if ( !this.hasTitle ) {
-				this.element.removeAttr( "title" );
-			}
-		},
-	
-		_attachIconSpace: function( iconPosition ) {
-			this.icon[ /^(?:end|bottom)/.test( iconPosition ) ? "before" : "after" ]( this.iconSpace );
-		},
-	
-		_attachIcon: function( iconPosition ) {
-			this.element[ /^(?:end|bottom)/.test( iconPosition ) ? "append" : "prepend" ]( this.icon );
-		},
-	
-		_setOptions: function( options ) {
-			var newShowLabel = options.showLabel === undefined ?
-					this.options.showLabel :
-					options.showLabel,
-				newIcon = options.icon === undefined ? this.options.icon : options.icon;
-	
-			if ( !newShowLabel && !newIcon ) {
-				options.showLabel = true;
-			}
-			this._super( options );
-		},
-	
-		_setOption: function( key, value ) {
-			if ( key === "icon" ) {
-				if ( value ) {
-					this._updateIcon( key, value );
-				} else if ( this.icon ) {
-					this.icon.remove();
-					if ( this.iconSpace ) {
-						this.iconSpace.remove();
-					}
-				}
-			}
-	
-			if ( key === "iconPosition" ) {
-				this._updateIcon( key, value );
-			}
-	
-			// Make sure we can't end up with a button that has neither text nor icon
-			if ( key === "showLabel" ) {
-					this._toggleClass( "ui-button-icon-only", null, !value );
-					this._updateTooltip();
-			}
-	
-			if ( key === "label" ) {
-				if ( this.isInput ) {
-					this.element.val( value );
-				} else {
-	
-					// If there is an icon, append it, else nothing then append the value
-					// this avoids removal of the icon when setting label text
-					this.element.html( value );
-					if ( this.icon ) {
-						this._attachIcon( this.options.iconPosition );
-						this._attachIconSpace( this.options.iconPosition );
-					}
-				}
-			}
-	
-			this._super( key, value );
-	
-			if ( key === "disabled" ) {
-				this._toggleClass( null, "ui-state-disabled", value );
-				this.element[ 0 ].disabled = value;
-				if ( value ) {
-					this.element.blur();
-				}
-			}
-		},
-	
-		refresh: function() {
-	
-			// Make sure to only check disabled if its an element that supports this otherwise
-			// check for the disabled class to determine state
-			var isDisabled = this.element.is( "input, button" ) ?
-				this.element[ 0 ].disabled : this.element.hasClass( "ui-button-disabled" );
-	
-			if ( isDisabled !== this.options.disabled ) {
-				this._setOptions( { disabled: isDisabled } );
-			}
-	
-			this._updateTooltip();
-		}
-	} );
-	
-	// DEPRECATED
-	if ( $.uiBackCompat !== false ) {
-	
-		// Text and Icons options
-		$.widget( "ui.button", $.ui.button, {
-			options: {
-				text: true,
-				icons: {
-					primary: null,
-					secondary: null
-				}
-			},
-	
-			_create: function() {
-				if ( this.options.showLabel && !this.options.text ) {
-					this.options.showLabel = this.options.text;
-				}
-				if ( !this.options.showLabel && this.options.text ) {
-					this.options.text = this.options.showLabel;
-				}
-				if ( !this.options.icon && ( this.options.icons.primary ||
-						this.options.icons.secondary ) ) {
-					if ( this.options.icons.primary ) {
-						this.options.icon = this.options.icons.primary;
-					} else {
-						this.options.icon = this.options.icons.secondary;
-						this.options.iconPosition = "end";
-					}
-				} else if ( this.options.icon ) {
-					this.options.icons.primary = this.options.icon;
-				}
-				this._super();
-			},
-	
-			_setOption: function( key, value ) {
-				if ( key === "text" ) {
-					this._super( "showLabel", value );
-					return;
-				}
-				if ( key === "showLabel" ) {
-					this.options.text = value;
-				}
-				if ( key === "icon" ) {
-					this.options.icons.primary = value;
-				}
-				if ( key === "icons" ) {
-					if ( value.primary ) {
-						this._super( "icon", value.primary );
-						this._super( "iconPosition", "beginning" );
-					} else if ( value.secondary ) {
-						this._super( "icon", value.secondary );
-						this._super( "iconPosition", "end" );
-					}
-				}
-				this._superApply( arguments );
-			}
-		} );
-	
-		$.fn.button = ( function( orig ) {
-			return function() {
-				if ( !this.length || ( this.length && this[ 0 ].tagName !== "INPUT" ) ||
-						( this.length && this[ 0 ].tagName === "INPUT" && (
-							this.attr( "type" ) !== "checkbox" && this.attr( "type" ) !== "radio"
-						) ) ) {
-					return orig.apply( this, arguments );
-				}
-				if ( !$.ui.checkboxradio ) {
-					$.error( "Checkboxradio widget missing" );
-				}
-				if ( arguments.length === 0 ) {
-					return this.checkboxradio( {
-						"icon": false
-					} );
-				}
-				return this.checkboxradio.apply( this, arguments );
-			};
-		} )( $.fn.button );
-	
-		$.fn.buttonset = function() {
-			if ( !$.ui.controlgroup ) {
-				$.error( "Controlgroup widget missing" );
-			}
-			if ( arguments[ 0 ] === "option" && arguments[ 1 ] === "items" && arguments[ 2 ] ) {
-				return this.controlgroup.apply( this,
-					[ arguments[ 0 ], "items.button", arguments[ 2 ] ] );
-			}
-			if ( arguments[ 0 ] === "option" && arguments[ 1 ] === "items" ) {
-				return this.controlgroup.apply( this, [ arguments[ 0 ], "items.button" ] );
-			}
-			if ( typeof arguments[ 0 ] === "object" && arguments[ 0 ].items ) {
-				arguments[ 0 ].items = {
-					button: arguments[ 0 ].items
-				};
-			}
-			return this.controlgroup.apply( this, arguments );
-		};
-	}
-	
-	return $.ui.button;
-	
-	} ) );
-
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Controlgroup 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Controlgroup
-	//>>group: Widgets
-	//>>description: Visually groups form control widgets
-	//>>docs: http://api.jqueryui.com/controlgroup/
-	//>>demos: http://jqueryui.com/controlgroup/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/controlgroup.css
-	//>>css.theme: ../../themes/base/theme.css
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(14)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	var controlgroupCornerRegex = /ui-corner-([a-z]){2,6}/g;
-	
-	return $.widget( "ui.controlgroup", {
-		version: "1.12.1",
-		defaultElement: "<div>",
-		options: {
-			direction: "horizontal",
-			disabled: null,
-			onlyVisible: true,
-			items: {
-				"button": "input[type=button], input[type=submit], input[type=reset], button, a",
-				"controlgroupLabel": ".ui-controlgroup-label",
-				"checkboxradio": "input[type='checkbox'], input[type='radio']",
-				"selectmenu": "select",
-				"spinner": ".ui-spinner-input"
-			}
-		},
-	
-		_create: function() {
-			this._enhance();
-		},
-	
-		// To support the enhanced option in jQuery Mobile, we isolate DOM manipulation
-		_enhance: function() {
-			this.element.attr( "role", "toolbar" );
-			this.refresh();
-		},
-	
-		_destroy: function() {
-			this._callChildMethod( "destroy" );
-			this.childWidgets.removeData( "ui-controlgroup-data" );
-			this.element.removeAttr( "role" );
-			if ( this.options.items.controlgroupLabel ) {
-				this.element
-					.find( this.options.items.controlgroupLabel )
-					.find( ".ui-controlgroup-label-contents" )
-					.contents().unwrap();
-			}
-		},
-	
-		_initWidgets: function() {
-			var that = this,
-				childWidgets = [];
-	
-			// First we iterate over each of the items options
-			$.each( this.options.items, function( widget, selector ) {
-				var labels;
-				var options = {};
-	
-				// Make sure the widget has a selector set
-				if ( !selector ) {
-					return;
-				}
-	
-				if ( widget === "controlgroupLabel" ) {
-					labels = that.element.find( selector );
-					labels.each( function() {
-						var element = $( this );
-	
-						if ( element.children( ".ui-controlgroup-label-contents" ).length ) {
-							return;
-						}
-						element.contents()
-							.wrapAll( "<span class='ui-controlgroup-label-contents'></span>" );
-					} );
-					that._addClass( labels, null, "ui-widget ui-widget-content ui-state-default" );
-					childWidgets = childWidgets.concat( labels.get() );
-					return;
-				}
-	
-				// Make sure the widget actually exists
-				if ( !$.fn[ widget ] ) {
-					return;
-				}
-	
-				// We assume everything is in the middle to start because we can't determine
-				// first / last elements until all enhancments are done.
-				if ( that[ "_" + widget + "Options" ] ) {
-					options = that[ "_" + widget + "Options" ]( "middle" );
-				} else {
-					options = { classes: {} };
-				}
-	
-				// Find instances of this widget inside controlgroup and init them
-				that.element
-					.find( selector )
-					.each( function() {
-						var element = $( this );
-						var instance = element[ widget ]( "instance" );
-	
-						// We need to clone the default options for this type of widget to avoid
-						// polluting the variable options which has a wider scope than a single widget.
-						var instanceOptions = $.widget.extend( {}, options );
-	
-						// If the button is the child of a spinner ignore it
-						// TODO: Find a more generic solution
-						if ( widget === "button" && element.parent( ".ui-spinner" ).length ) {
-							return;
-						}
-	
-						// Create the widget if it doesn't exist
-						if ( !instance ) {
-							instance = element[ widget ]()[ widget ]( "instance" );
-						}
-						if ( instance ) {
-							instanceOptions.classes =
-								that._resolveClassesValues( instanceOptions.classes, instance );
-						}
-						element[ widget ]( instanceOptions );
-	
-						// Store an instance of the controlgroup to be able to reference
-						// from the outermost element for changing options and refresh
-						var widgetElement = element[ widget ]( "widget" );
-						$.data( widgetElement[ 0 ], "ui-controlgroup-data",
-							instance ? instance : element[ widget ]( "instance" ) );
-	
-						childWidgets.push( widgetElement[ 0 ] );
-					} );
-			} );
-	
-			this.childWidgets = $( $.unique( childWidgets ) );
-			this._addClass( this.childWidgets, "ui-controlgroup-item" );
-		},
-	
-		_callChildMethod: function( method ) {
-			this.childWidgets.each( function() {
-				var element = $( this ),
-					data = element.data( "ui-controlgroup-data" );
-				if ( data && data[ method ] ) {
-					data[ method ]();
-				}
-			} );
-		},
-	
-		_updateCornerClass: function( element, position ) {
-			var remove = "ui-corner-top ui-corner-bottom ui-corner-left ui-corner-right ui-corner-all";
-			var add = this._buildSimpleOptions( position, "label" ).classes.label;
-	
-			this._removeClass( element, null, remove );
-			this._addClass( element, null, add );
-		},
-	
-		_buildSimpleOptions: function( position, key ) {
-			var direction = this.options.direction === "vertical";
-			var result = {
-				classes: {}
-			};
-			result.classes[ key ] = {
-				"middle": "",
-				"first": "ui-corner-" + ( direction ? "top" : "left" ),
-				"last": "ui-corner-" + ( direction ? "bottom" : "right" ),
-				"only": "ui-corner-all"
-			}[ position ];
-	
-			return result;
-		},
-	
-		_spinnerOptions: function( position ) {
-			var options = this._buildSimpleOptions( position, "ui-spinner" );
-	
-			options.classes[ "ui-spinner-up" ] = "";
-			options.classes[ "ui-spinner-down" ] = "";
-	
-			return options;
-		},
-	
-		_buttonOptions: function( position ) {
-			return this._buildSimpleOptions( position, "ui-button" );
-		},
-	
-		_checkboxradioOptions: function( position ) {
-			return this._buildSimpleOptions( position, "ui-checkboxradio-label" );
-		},
-	
-		_selectmenuOptions: function( position ) {
-			var direction = this.options.direction === "vertical";
-			return {
-				width: direction ? "auto" : false,
-				classes: {
-					middle: {
-						"ui-selectmenu-button-open": "",
-						"ui-selectmenu-button-closed": ""
-					},
-					first: {
-						"ui-selectmenu-button-open": "ui-corner-" + ( direction ? "top" : "tl" ),
-						"ui-selectmenu-button-closed": "ui-corner-" + ( direction ? "top" : "left" )
-					},
-					last: {
-						"ui-selectmenu-button-open": direction ? "" : "ui-corner-tr",
-						"ui-selectmenu-button-closed": "ui-corner-" + ( direction ? "bottom" : "right" )
-					},
-					only: {
-						"ui-selectmenu-button-open": "ui-corner-top",
-						"ui-selectmenu-button-closed": "ui-corner-all"
-					}
-	
-				}[ position ]
-			};
-		},
-	
-		_resolveClassesValues: function( classes, instance ) {
-			var result = {};
-			$.each( classes, function( key ) {
-				var current = instance.options.classes[ key ] || "";
-				current = $.trim( current.replace( controlgroupCornerRegex, "" ) );
-				result[ key ] = ( current + " " + classes[ key ] ).replace( /\s+/g, " " );
-			} );
-			return result;
-		},
-	
-		_setOption: function( key, value ) {
-			if ( key === "direction" ) {
-				this._removeClass( "ui-controlgroup-" + this.options.direction );
-			}
-	
-			this._super( key, value );
-			if ( key === "disabled" ) {
-				this._callChildMethod( value ? "disable" : "enable" );
-				return;
-			}
-	
-			this.refresh();
-		},
-	
-		refresh: function() {
-			var children,
-				that = this;
-	
-			this._addClass( "ui-controlgroup ui-controlgroup-" + this.options.direction );
-	
-			if ( this.options.direction === "horizontal" ) {
-				this._addClass( null, "ui-helper-clearfix" );
-			}
-			this._initWidgets();
-	
-			children = this.childWidgets;
-	
-			// We filter here because we need to track all childWidgets not just the visible ones
-			if ( this.options.onlyVisible ) {
-				children = children.filter( ":visible" );
-			}
-	
-			if ( children.length ) {
-	
-				// We do this last because we need to make sure all enhancment is done
-				// before determining first and last
-				$.each( [ "first", "last" ], function( index, value ) {
-					var instance = children[ value ]().data( "ui-controlgroup-data" );
-	
-					if ( instance && that[ "_" + instance.widgetName + "Options" ] ) {
-						var options = that[ "_" + instance.widgetName + "Options" ](
-							children.length === 1 ? "only" : value
-						);
-						options.classes = that._resolveClassesValues( options.classes, instance );
-						instance.element[ instance.widgetName ]( options );
-					} else {
-						that._updateCornerClass( children[ value ](), value );
-					}
-				} );
-	
-				// Finally call the refresh method on each of the child widgets.
-				this._callChildMethod( "refresh" );
-			}
-		}
-	} );
-	} ) );
-
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Checkboxradio 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Checkboxradio
-	//>>group: Widgets
-	//>>description: Enhances a form with multiple themeable checkboxes or radio buttons.
-	//>>docs: http://api.jqueryui.com/checkboxradio/
-	//>>demos: http://jqueryui.com/checkboxradio/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/button.css
-	//>>css.structure: ../../themes/base/checkboxradio.css
-	//>>css.theme: ../../themes/base/theme.css
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(26),
-				__webpack_require__(27),
-				__webpack_require__(29),
-				__webpack_require__(14)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	$.widget( "ui.checkboxradio", [ $.ui.formResetMixin, {
-		version: "1.12.1",
-		options: {
-			disabled: null,
-			label: null,
-			icon: true,
-			classes: {
-				"ui-checkboxradio-label": "ui-corner-all",
-				"ui-checkboxradio-icon": "ui-corner-all"
-			}
-		},
-	
-		_getCreateOptions: function() {
-			var disabled, labels;
-			var that = this;
-			var options = this._super() || {};
-	
-			// We read the type here, because it makes more sense to throw a element type error first,
-			// rather then the error for lack of a label. Often if its the wrong type, it
-			// won't have a label (e.g. calling on a div, btn, etc)
-			this._readType();
-	
-			labels = this.element.labels();
-	
-			// If there are multiple labels, use the last one
-			this.label = $( labels[ labels.length - 1 ] );
-			if ( !this.label.length ) {
-				$.error( "No label found for checkboxradio widget" );
-			}
-	
-			this.originalLabel = "";
-	
-			// We need to get the label text but this may also need to make sure it does not contain the
-			// input itself.
-			this.label.contents().not( this.element[ 0 ] ).each( function() {
-	
-				// The label contents could be text, html, or a mix. We concat each element to get a
-				// string representation of the label, without the input as part of it.
-				that.originalLabel += this.nodeType === 3 ? $( this ).text() : this.outerHTML;
-			} );
-	
-			// Set the label option if we found label text
-			if ( this.originalLabel ) {
-				options.label = this.originalLabel;
-			}
-	
-			disabled = this.element[ 0 ].disabled;
-			if ( disabled != null ) {
-				options.disabled = disabled;
-			}
-			return options;
-		},
-	
-		_create: function() {
-			var checked = this.element[ 0 ].checked;
-	
-			this._bindFormResetHandler();
-	
-			if ( this.options.disabled == null ) {
-				this.options.disabled = this.element[ 0 ].disabled;
-			}
-	
-			this._setOption( "disabled", this.options.disabled );
-			this._addClass( "ui-checkboxradio", "ui-helper-hidden-accessible" );
-			this._addClass( this.label, "ui-checkboxradio-label", "ui-button ui-widget" );
-	
-			if ( this.type === "radio" ) {
-				this._addClass( this.label, "ui-checkboxradio-radio-label" );
-			}
-	
-			if ( this.options.label && this.options.label !== this.originalLabel ) {
-				this._updateLabel();
-			} else if ( this.originalLabel ) {
-				this.options.label = this.originalLabel;
-			}
-	
-			this._enhance();
-	
-			if ( checked ) {
-				this._addClass( this.label, "ui-checkboxradio-checked", "ui-state-active" );
-				if ( this.icon ) {
-					this._addClass( this.icon, null, "ui-state-hover" );
-				}
-			}
-	
-			this._on( {
-				change: "_toggleClasses",
-				focus: function() {
-					this._addClass( this.label, null, "ui-state-focus ui-visual-focus" );
-				},
-				blur: function() {
-					this._removeClass( this.label, null, "ui-state-focus ui-visual-focus" );
-				}
-			} );
-		},
-	
-		_readType: function() {
-			var nodeName = this.element[ 0 ].nodeName.toLowerCase();
-			this.type = this.element[ 0 ].type;
-			if ( nodeName !== "input" || !/radio|checkbox/.test( this.type ) ) {
-				$.error( "Can't create checkboxradio on element.nodeName=" + nodeName +
-					" and element.type=" + this.type );
-			}
-		},
-	
-		// Support jQuery Mobile enhanced option
-		_enhance: function() {
-			this._updateIcon( this.element[ 0 ].checked );
-		},
-	
-		widget: function() {
-			return this.label;
-		},
-	
-		_getRadioGroup: function() {
-			var group;
-			var name = this.element[ 0 ].name;
-			var nameSelector = "input[name='" + $.ui.escapeSelector( name ) + "']";
-	
-			if ( !name ) {
-				return $( [] );
-			}
-	
-			if ( this.form.length ) {
-				group = $( this.form[ 0 ].elements ).filter( nameSelector );
-			} else {
-	
-				// Not inside a form, check all inputs that also are not inside a form
-				group = $( nameSelector ).filter( function() {
-					return $( this ).form().length === 0;
-				} );
-			}
-	
-			return group.not( this.element );
-		},
-	
-		_toggleClasses: function() {
-			var checked = this.element[ 0 ].checked;
-			this._toggleClass( this.label, "ui-checkboxradio-checked", "ui-state-active", checked );
-	
-			if ( this.options.icon && this.type === "checkbox" ) {
-				this._toggleClass( this.icon, null, "ui-icon-check ui-state-checked", checked )
-					._toggleClass( this.icon, null, "ui-icon-blank", !checked );
-			}
-	
-			if ( this.type === "radio" ) {
-				this._getRadioGroup()
-					.each( function() {
-						var instance = $( this ).checkboxradio( "instance" );
-	
-						if ( instance ) {
-							instance._removeClass( instance.label,
-								"ui-checkboxradio-checked", "ui-state-active" );
-						}
-					} );
-			}
-		},
-	
-		_destroy: function() {
-			this._unbindFormResetHandler();
-	
-			if ( this.icon ) {
-				this.icon.remove();
-				this.iconSpace.remove();
-			}
-		},
-	
-		_setOption: function( key, value ) {
-	
-			// We don't allow the value to be set to nothing
-			if ( key === "label" && !value ) {
-				return;
-			}
-	
-			this._super( key, value );
-	
-			if ( key === "disabled" ) {
-				this._toggleClass( this.label, null, "ui-state-disabled", value );
-				this.element[ 0 ].disabled = value;
-	
-				// Don't refresh when setting disabled
-				return;
-			}
-			this.refresh();
-		},
-	
-		_updateIcon: function( checked ) {
-			var toAdd = "ui-icon ui-icon-background ";
-	
-			if ( this.options.icon ) {
-				if ( !this.icon ) {
-					this.icon = $( "<span>" );
-					this.iconSpace = $( "<span> </span>" );
-					this._addClass( this.iconSpace, "ui-checkboxradio-icon-space" );
-				}
-	
-				if ( this.type === "checkbox" ) {
-					toAdd += checked ? "ui-icon-check ui-state-checked" : "ui-icon-blank";
-					this._removeClass( this.icon, null, checked ? "ui-icon-blank" : "ui-icon-check" );
-				} else {
-					toAdd += "ui-icon-blank";
-				}
-				this._addClass( this.icon, "ui-checkboxradio-icon", toAdd );
-				if ( !checked ) {
-					this._removeClass( this.icon, null, "ui-icon-check ui-state-checked" );
-				}
-				this.icon.prependTo( this.label ).after( this.iconSpace );
-			} else if ( this.icon !== undefined ) {
-				this.icon.remove();
-				this.iconSpace.remove();
-				delete this.icon;
-			}
-		},
-	
-		_updateLabel: function() {
-	
-			// Remove the contents of the label ( minus the icon, icon space, and input )
-			var contents = this.label.contents().not( this.element[ 0 ] );
-			if ( this.icon ) {
-				contents = contents.not( this.icon[ 0 ] );
-			}
-			if ( this.iconSpace ) {
-				contents = contents.not( this.iconSpace[ 0 ] );
-			}
-			contents.remove();
-	
-			this.label.append( this.options.label );
-		},
-	
-		refresh: function() {
-			var checked = this.element[ 0 ].checked,
-				isDisabled = this.element[ 0 ].disabled;
-	
-			this._updateIcon( checked );
-			this._toggleClass( this.label, "ui-checkboxradio-checked", "ui-state-active", checked );
-			if ( this.options.label !== null ) {
-				this._updateLabel();
-			}
-	
-			if ( isDisabled !== this.options.disabled ) {
-				this._setOptions( { "disabled": isDisabled } );
-			}
-		}
-	
-	} ] );
-	
-	return $.ui.checkboxradio;
-	
-	} ) );
-
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	// Internal use only
-	return $.ui.escapeSelector = ( function() {
-		var selectorEscape = /([!"#$%&'()*+,./:;<=>?@[\]^`{|}~])/g;
-		return function( selector ) {
-			return selector.replace( selectorEscape, "\\$1" );
-		};
-	} )();
-	
-	} ) );
-
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Form Reset Mixin 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: Form Reset Mixin
-	//>>group: Core
-	//>>description: Refresh input widgets when their form is reset
-	//>>docs: http://api.jqueryui.com/form-reset-mixin/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(28),
-				__webpack_require__(13)
-			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	}( function( $ ) {
-	
-	return $.ui.formResetMixin = {
-		_formResetHandler: function() {
-			var form = $( this );
-	
-			// Wait for the form reset to actually happen before refreshing
-			setTimeout( function() {
-				var instances = form.data( "ui-form-reset-instances" );
-				$.each( instances, function() {
-					this.refresh();
-				} );
-			} );
-		},
-	
-		_bindFormResetHandler: function() {
-			this.form = this.element.form();
-			if ( !this.form.length ) {
-				return;
-			}
-	
-			var instances = this.form.data( "ui-form-reset-instances" ) || [];
-			if ( !instances.length ) {
-	
-				// We don't use _on() here because we use a single event handler per form
-				this.form.on( "reset.ui-form-reset", this._formResetHandler );
-			}
-			instances.push( this );
-			this.form.data( "ui-form-reset-instances", instances );
-		},
-	
-		_unbindFormResetHandler: function() {
-			if ( !this.form.length ) {
-				return;
-			}
-	
-			var instances = this.form.data( "ui-form-reset-instances" );
-			instances.splice( $.inArray( this, instances ), 1 );
-			if ( instances.length ) {
-				this.form.data( "ui-form-reset-instances", instances );
-			} else {
-				this.form
-					.removeData( "ui-form-reset-instances" )
-					.off( "reset.ui-form-reset" );
-			}
-		}
-	};
-	
-	} ) );
-
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	// Support: IE8 Only
-	// IE8 does not support the form attribute and when it is supplied. It overwrites the form prop
-	// with a string, so we need to find the proper form.
-	return $.fn.form = function() {
-		return typeof this[ 0 ].form === "string" ? this.closest( "form" ) : $( this[ 0 ].form );
-	};
-	
-	} ) );
-
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Labels 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: labels
-	//>>group: Core
-	//>>description: Find all the labels associated with a given input
-	//>>docs: http://api.jqueryui.com/labels/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13), __webpack_require__(26) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	return $.fn.labels = function() {
-		var ancestor, selector, id, labels, ancestors;
-	
-		// Check control.labels first
-		if ( this[ 0 ].labels && this[ 0 ].labels.length ) {
-			return this.pushStack( this[ 0 ].labels );
-		}
-	
-		// Support: IE <= 11, FF <= 37, Android <= 2.3 only
-		// Above browsers do not support control.labels. Everything below is to support them
-		// as well as document fragments. control.labels does not work on document fragments
-		labels = this.eq( 0 ).parents( "label" );
-	
-		// Look for the label based on the id
-		id = this.attr( "id" );
-		if ( id ) {
-	
-			// We don't search against the document in case the element
-			// is disconnected from the DOM
-			ancestor = this.eq( 0 ).parents().last();
-	
-			// Get a full set of top level ancestors
-			ancestors = ancestor.add( ancestor.length ? ancestor.siblings() : this.siblings() );
-	
-			// Create a selector for the label based on the id
-			selector = "label[for='" + $.ui.escapeSelector( id ) + "']";
-	
-			labels = labels.add( ancestors.find( selector ).addBack( selector ) );
-	
-		}
-	
-		// Return whatever we have found for labels
-		return this.pushStack( labels );
-	};
-	
-	} ) );
-
-
-/***/ }),
-/* 30 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -19120,11 +23413,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 				__webpack_require__(7),
-				__webpack_require__(11),
-				__webpack_require__(31),
-				__webpack_require__(16),
-				__webpack_require__(13),
-				__webpack_require__(14)
+				__webpack_require__(29),
+				__webpack_require__(37),
+				__webpack_require__(32),
+				__webpack_require__(21),
+				__webpack_require__(20)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -20300,7 +24593,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 31 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20322,7 +24615,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -20352,7 +24645,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 32 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20373,7 +24666,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -20442,7 +24735,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 33 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20463,7 +24756,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13), __webpack_require__(32) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21), __webpack_require__(38) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -20483,7 +24776,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 34 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20504,7 +24797,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -20538,7 +24831,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 35 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20562,7 +24855,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(13) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21042,16 +25335,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 36 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(37);
+	var content = __webpack_require__(43);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(66)(content, {});
+	var update = __webpack_require__(72)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -21068,13 +25361,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	}
 
 /***/ }),
-/* 37 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
-	exports.i(__webpack_require__(39), "");
-	exports.i(__webpack_require__(59), "");
+	exports.i(__webpack_require__(45), "");
+	exports.i(__webpack_require__(65), "");
 	
 	// module
 	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n */\n", ""]);
@@ -21083,7 +25376,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 38 */
+/* 44 */
 /***/ (function(module, exports) {
 
 	/*
@@ -21139,17 +25432,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 39 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
-	exports.i(__webpack_require__(40), "");
-	exports.i(__webpack_require__(41), "");
-	exports.i(__webpack_require__(42), "");
-	exports.i(__webpack_require__(43), "");
-	exports.i(__webpack_require__(44), "");
-	exports.i(__webpack_require__(45), "");
 	exports.i(__webpack_require__(46), "");
 	exports.i(__webpack_require__(47), "");
 	exports.i(__webpack_require__(48), "");
@@ -21163,6 +25450,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	exports.i(__webpack_require__(56), "");
 	exports.i(__webpack_require__(57), "");
 	exports.i(__webpack_require__(58), "");
+	exports.i(__webpack_require__(59), "");
+	exports.i(__webpack_require__(60), "");
+	exports.i(__webpack_require__(61), "");
+	exports.i(__webpack_require__(62), "");
+	exports.i(__webpack_require__(63), "");
+	exports.i(__webpack_require__(64), "");
 	
 	// module
 	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n */\n", ""]);
@@ -21171,10 +25464,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 40 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21185,10 +25478,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 41 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21199,10 +25492,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 42 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21213,10 +25506,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 43 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21227,10 +25520,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 44 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21241,10 +25534,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 45 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21255,10 +25548,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 46 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21269,10 +25562,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 47 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21283,10 +25576,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 48 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21297,10 +25590,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 49 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21311,10 +25604,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 50 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21325,10 +25618,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 51 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21339,10 +25632,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 52 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21353,10 +25646,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 53 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21367,10 +25660,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 54 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21381,10 +25674,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 55 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21395,10 +25688,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 56 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21409,10 +25702,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 57 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21423,10 +25716,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 58 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
@@ -21437,57 +25730,57 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 59 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(38)();
+	exports = module.exports = __webpack_require__(44)();
 	// imports
 	
 	
 	// module
-	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n *\n * To view and modify this theme, visit http://jqueryui.com/themeroller/\n */\n\n\n/* Component containers\n----------------------------------*/\n.ui-widget {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em/*{fsDefault}*/;\n}\n.ui-widget .ui-widget {\n\tfont-size: 1em;\n}\n.ui-widget input,\n.ui-widget select,\n.ui-widget textarea,\n.ui-widget button {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em;\n}\n.ui-widget.ui-widget-content {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n}\n.ui-widget-content {\n\tborder: 1px solid #dddddd/*{borderColorContent}*/;\n\tbackground: #ffffff/*{bgColorContent}*/ /*{bgImgUrlContent}*/ /*{bgContentXPos}*/ /*{bgContentYPos}*/ /*{bgContentRepeat}*/;\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-content a {\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-header {\n\tborder: 1px solid #dddddd/*{borderColorHeader}*/;\n\tbackground: #e9e9e9/*{bgColorHeader}*/ /*{bgImgUrlHeader}*/ /*{bgHeaderXPos}*/ /*{bgHeaderYPos}*/ /*{bgHeaderRepeat}*/;\n\tcolor: #333333/*{fcHeader}*/;\n\tfont-weight: bold;\n}\n.ui-widget-header a {\n\tcolor: #333333/*{fcHeader}*/;\n}\n\n/* Interaction states\n----------------------------------*/\n.ui-state-default,\n.ui-widget-content .ui-state-default,\n.ui-widget-header .ui-state-default,\n.ui-button,\n\n/* We use html here because we need a greater specificity to make sure disabled\nworks properly when clicked or hovered */\nhtml .ui-button.ui-state-disabled:hover,\nhtml .ui-button.ui-state-disabled:active {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n\tbackground: #f6f6f6/*{bgColorDefault}*/ /*{bgImgUrlDefault}*/ /*{bgDefaultXPos}*/ /*{bgDefaultYPos}*/ /*{bgDefaultRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #454545/*{fcDefault}*/;\n}\n.ui-state-default a,\n.ui-state-default a:link,\n.ui-state-default a:visited,\na.ui-button,\na:link.ui-button,\na:visited.ui-button,\n.ui-button {\n\tcolor: #454545/*{fcDefault}*/;\n\ttext-decoration: none;\n}\n.ui-state-hover,\n.ui-widget-content .ui-state-hover,\n.ui-widget-header .ui-state-hover,\n.ui-state-focus,\n.ui-widget-content .ui-state-focus,\n.ui-widget-header .ui-state-focus,\n.ui-button:hover,\n.ui-button:focus {\n\tborder: 1px solid #cccccc/*{borderColorHover}*/;\n\tbackground: #ededed/*{bgColorHover}*/ /*{bgImgUrlHover}*/ /*{bgHoverXPos}*/ /*{bgHoverYPos}*/ /*{bgHoverRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #2b2b2b/*{fcHover}*/;\n}\n.ui-state-hover a,\n.ui-state-hover a:hover,\n.ui-state-hover a:link,\n.ui-state-hover a:visited,\n.ui-state-focus a,\n.ui-state-focus a:hover,\n.ui-state-focus a:link,\n.ui-state-focus a:visited,\na.ui-button:hover,\na.ui-button:focus {\n\tcolor: #2b2b2b/*{fcHover}*/;\n\ttext-decoration: none;\n}\n\n.ui-visual-focus {\n\tbox-shadow: 0 0 3px 1px rgb(94, 158, 214);\n}\n.ui-state-active,\n.ui-widget-content .ui-state-active,\n.ui-widget-header .ui-state-active,\na.ui-button:active,\n.ui-button:active,\n.ui-button.ui-state-active:hover {\n\tborder: 1px solid #003eff/*{borderColorActive}*/;\n\tbackground: #007fff/*{bgColorActive}*/ /*{bgImgUrlActive}*/ /*{bgActiveXPos}*/ /*{bgActiveYPos}*/ /*{bgActiveRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #ffffff/*{fcActive}*/;\n}\n.ui-icon-background,\n.ui-state-active .ui-icon-background {\n\tborder: #003eff/*{borderColorActive}*/;\n\tbackground-color: #ffffff/*{fcActive}*/;\n}\n.ui-state-active a,\n.ui-state-active a:link,\n.ui-state-active a:visited {\n\tcolor: #ffffff/*{fcActive}*/;\n\ttext-decoration: none;\n}\n\n/* Interaction Cues\n----------------------------------*/\n.ui-state-highlight,\n.ui-widget-content .ui-state-highlight,\n.ui-widget-header .ui-state-highlight {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/ /*{bgImgUrlHighlight}*/ /*{bgHighlightXPos}*/ /*{bgHighlightYPos}*/ /*{bgHighlightRepeat}*/;\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-checked {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/;\n}\n.ui-state-highlight a,\n.ui-widget-content .ui-state-highlight a,\n.ui-widget-header .ui-state-highlight a {\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-error,\n.ui-widget-content .ui-state-error,\n.ui-widget-header .ui-state-error {\n\tborder: 1px solid #f1a899/*{borderColorError}*/;\n\tbackground: #fddfdf/*{bgColorError}*/ /*{bgImgUrlError}*/ /*{bgErrorXPos}*/ /*{bgErrorYPos}*/ /*{bgErrorRepeat}*/;\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error a,\n.ui-widget-content .ui-state-error a,\n.ui-widget-header .ui-state-error a {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error-text,\n.ui-widget-content .ui-state-error-text,\n.ui-widget-header .ui-state-error-text {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-priority-primary,\n.ui-widget-content .ui-priority-primary,\n.ui-widget-header .ui-priority-primary {\n\tfont-weight: bold;\n}\n.ui-priority-secondary,\n.ui-widget-content .ui-priority-secondary,\n.ui-widget-header .ui-priority-secondary {\n\topacity: .7;\n\tfilter:Alpha(Opacity=70); /* support: IE8 */\n\tfont-weight: normal;\n}\n.ui-state-disabled,\n.ui-widget-content .ui-state-disabled,\n.ui-widget-header .ui-state-disabled {\n\topacity: .35;\n\tfilter:Alpha(Opacity=35); /* support: IE8 */\n\tbackground-image: none;\n}\n.ui-state-disabled .ui-icon {\n\tfilter:Alpha(Opacity=35); /* support: IE8 - See #6059 */\n}\n\n/* Icons\n----------------------------------*/\n\n/* states and images */\n.ui-icon {\n\twidth: 16px;\n\theight: 16px;\n}\n.ui-icon,\n.ui-widget-content .ui-icon {\n\tbackground-image: url(" + __webpack_require__(60) + ");\n}\n.ui-widget-header .ui-icon {\n\tbackground-image: url(" + __webpack_require__(60) + ");\n}\n.ui-state-hover .ui-icon,\n.ui-state-focus .ui-icon,\n.ui-button:hover .ui-icon,\n.ui-button:focus .ui-icon {\n\tbackground-image: url(" + __webpack_require__(61) + ");\n}\n.ui-state-active .ui-icon,\n.ui-button:active .ui-icon {\n\tbackground-image: url(" + __webpack_require__(62) + ");\n}\n.ui-state-highlight .ui-icon,\n.ui-button .ui-state-highlight.ui-icon {\n\tbackground-image: url(" + __webpack_require__(63) + ");\n}\n.ui-state-error .ui-icon,\n.ui-state-error-text .ui-icon {\n\tbackground-image: url(" + __webpack_require__(64) + ");\n}\n.ui-button .ui-icon {\n\tbackground-image: url(" + __webpack_require__(65) + ");\n}\n\n/* positioning */\n.ui-icon-blank { background-position: 16px 16px; }\n.ui-icon-caret-1-n { background-position: 0 0; }\n.ui-icon-caret-1-ne { background-position: -16px 0; }\n.ui-icon-caret-1-e { background-position: -32px 0; }\n.ui-icon-caret-1-se { background-position: -48px 0; }\n.ui-icon-caret-1-s { background-position: -65px 0; }\n.ui-icon-caret-1-sw { background-position: -80px 0; }\n.ui-icon-caret-1-w { background-position: -96px 0; }\n.ui-icon-caret-1-nw { background-position: -112px 0; }\n.ui-icon-caret-2-n-s { background-position: -128px 0; }\n.ui-icon-caret-2-e-w { background-position: -144px 0; }\n.ui-icon-triangle-1-n { background-position: 0 -16px; }\n.ui-icon-triangle-1-ne { background-position: -16px -16px; }\n.ui-icon-triangle-1-e { background-position: -32px -16px; }\n.ui-icon-triangle-1-se { background-position: -48px -16px; }\n.ui-icon-triangle-1-s { background-position: -65px -16px; }\n.ui-icon-triangle-1-sw { background-position: -80px -16px; }\n.ui-icon-triangle-1-w { background-position: -96px -16px; }\n.ui-icon-triangle-1-nw { background-position: -112px -16px; }\n.ui-icon-triangle-2-n-s { background-position: -128px -16px; }\n.ui-icon-triangle-2-e-w { background-position: -144px -16px; }\n.ui-icon-arrow-1-n { background-position: 0 -32px; }\n.ui-icon-arrow-1-ne { background-position: -16px -32px; }\n.ui-icon-arrow-1-e { background-position: -32px -32px; }\n.ui-icon-arrow-1-se { background-position: -48px -32px; }\n.ui-icon-arrow-1-s { background-position: -65px -32px; }\n.ui-icon-arrow-1-sw { background-position: -80px -32px; }\n.ui-icon-arrow-1-w { background-position: -96px -32px; }\n.ui-icon-arrow-1-nw { background-position: -112px -32px; }\n.ui-icon-arrow-2-n-s { background-position: -128px -32px; }\n.ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }\n.ui-icon-arrow-2-e-w { background-position: -160px -32px; }\n.ui-icon-arrow-2-se-nw { background-position: -176px -32px; }\n.ui-icon-arrowstop-1-n { background-position: -192px -32px; }\n.ui-icon-arrowstop-1-e { background-position: -208px -32px; }\n.ui-icon-arrowstop-1-s { background-position: -224px -32px; }\n.ui-icon-arrowstop-1-w { background-position: -240px -32px; }\n.ui-icon-arrowthick-1-n { background-position: 1px -48px; }\n.ui-icon-arrowthick-1-ne { background-position: -16px -48px; }\n.ui-icon-arrowthick-1-e { background-position: -32px -48px; }\n.ui-icon-arrowthick-1-se { background-position: -48px -48px; }\n.ui-icon-arrowthick-1-s { background-position: -64px -48px; }\n.ui-icon-arrowthick-1-sw { background-position: -80px -48px; }\n.ui-icon-arrowthick-1-w { background-position: -96px -48px; }\n.ui-icon-arrowthick-1-nw { background-position: -112px -48px; }\n.ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }\n.ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }\n.ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }\n.ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }\n.ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }\n.ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }\n.ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }\n.ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }\n.ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }\n.ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }\n.ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }\n.ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }\n.ui-icon-arrowreturn-1-w { background-position: -64px -64px; }\n.ui-icon-arrowreturn-1-n { background-position: -80px -64px; }\n.ui-icon-arrowreturn-1-e { background-position: -96px -64px; }\n.ui-icon-arrowreturn-1-s { background-position: -112px -64px; }\n.ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }\n.ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }\n.ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }\n.ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }\n.ui-icon-arrow-4 { background-position: 0 -80px; }\n.ui-icon-arrow-4-diag { background-position: -16px -80px; }\n.ui-icon-extlink { background-position: -32px -80px; }\n.ui-icon-newwin { background-position: -48px -80px; }\n.ui-icon-refresh { background-position: -64px -80px; }\n.ui-icon-shuffle { background-position: -80px -80px; }\n.ui-icon-transfer-e-w { background-position: -96px -80px; }\n.ui-icon-transferthick-e-w { background-position: -112px -80px; }\n.ui-icon-folder-collapsed { background-position: 0 -96px; }\n.ui-icon-folder-open { background-position: -16px -96px; }\n.ui-icon-document { background-position: -32px -96px; }\n.ui-icon-document-b { background-position: -48px -96px; }\n.ui-icon-note { background-position: -64px -96px; }\n.ui-icon-mail-closed { background-position: -80px -96px; }\n.ui-icon-mail-open { background-position: -96px -96px; }\n.ui-icon-suitcase { background-position: -112px -96px; }\n.ui-icon-comment { background-position: -128px -96px; }\n.ui-icon-person { background-position: -144px -96px; }\n.ui-icon-print { background-position: -160px -96px; }\n.ui-icon-trash { background-position: -176px -96px; }\n.ui-icon-locked { background-position: -192px -96px; }\n.ui-icon-unlocked { background-position: -208px -96px; }\n.ui-icon-bookmark { background-position: -224px -96px; }\n.ui-icon-tag { background-position: -240px -96px; }\n.ui-icon-home { background-position: 0 -112px; }\n.ui-icon-flag { background-position: -16px -112px; }\n.ui-icon-calendar { background-position: -32px -112px; }\n.ui-icon-cart { background-position: -48px -112px; }\n.ui-icon-pencil { background-position: -64px -112px; }\n.ui-icon-clock { background-position: -80px -112px; }\n.ui-icon-disk { background-position: -96px -112px; }\n.ui-icon-calculator { background-position: -112px -112px; }\n.ui-icon-zoomin { background-position: -128px -112px; }\n.ui-icon-zoomout { background-position: -144px -112px; }\n.ui-icon-search { background-position: -160px -112px; }\n.ui-icon-wrench { background-position: -176px -112px; }\n.ui-icon-gear { background-position: -192px -112px; }\n.ui-icon-heart { background-position: -208px -112px; }\n.ui-icon-star { background-position: -224px -112px; }\n.ui-icon-link { background-position: -240px -112px; }\n.ui-icon-cancel { background-position: 0 -128px; }\n.ui-icon-plus { background-position: -16px -128px; }\n.ui-icon-plusthick { background-position: -32px -128px; }\n.ui-icon-minus { background-position: -48px -128px; }\n.ui-icon-minusthick { background-position: -64px -128px; }\n.ui-icon-close { background-position: -80px -128px; }\n.ui-icon-closethick { background-position: -96px -128px; }\n.ui-icon-key { background-position: -112px -128px; }\n.ui-icon-lightbulb { background-position: -128px -128px; }\n.ui-icon-scissors { background-position: -144px -128px; }\n.ui-icon-clipboard { background-position: -160px -128px; }\n.ui-icon-copy { background-position: -176px -128px; }\n.ui-icon-contact { background-position: -192px -128px; }\n.ui-icon-image { background-position: -208px -128px; }\n.ui-icon-video { background-position: -224px -128px; }\n.ui-icon-script { background-position: -240px -128px; }\n.ui-icon-alert { background-position: 0 -144px; }\n.ui-icon-info { background-position: -16px -144px; }\n.ui-icon-notice { background-position: -32px -144px; }\n.ui-icon-help { background-position: -48px -144px; }\n.ui-icon-check { background-position: -64px -144px; }\n.ui-icon-bullet { background-position: -80px -144px; }\n.ui-icon-radio-on { background-position: -96px -144px; }\n.ui-icon-radio-off { background-position: -112px -144px; }\n.ui-icon-pin-w { background-position: -128px -144px; }\n.ui-icon-pin-s { background-position: -144px -144px; }\n.ui-icon-play { background-position: 0 -160px; }\n.ui-icon-pause { background-position: -16px -160px; }\n.ui-icon-seek-next { background-position: -32px -160px; }\n.ui-icon-seek-prev { background-position: -48px -160px; }\n.ui-icon-seek-end { background-position: -64px -160px; }\n.ui-icon-seek-start { background-position: -80px -160px; }\n/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */\n.ui-icon-seek-first { background-position: -80px -160px; }\n.ui-icon-stop { background-position: -96px -160px; }\n.ui-icon-eject { background-position: -112px -160px; }\n.ui-icon-volume-off { background-position: -128px -160px; }\n.ui-icon-volume-on { background-position: -144px -160px; }\n.ui-icon-power { background-position: 0 -176px; }\n.ui-icon-signal-diag { background-position: -16px -176px; }\n.ui-icon-signal { background-position: -32px -176px; }\n.ui-icon-battery-0 { background-position: -48px -176px; }\n.ui-icon-battery-1 { background-position: -64px -176px; }\n.ui-icon-battery-2 { background-position: -80px -176px; }\n.ui-icon-battery-3 { background-position: -96px -176px; }\n.ui-icon-circle-plus { background-position: 0 -192px; }\n.ui-icon-circle-minus { background-position: -16px -192px; }\n.ui-icon-circle-close { background-position: -32px -192px; }\n.ui-icon-circle-triangle-e { background-position: -48px -192px; }\n.ui-icon-circle-triangle-s { background-position: -64px -192px; }\n.ui-icon-circle-triangle-w { background-position: -80px -192px; }\n.ui-icon-circle-triangle-n { background-position: -96px -192px; }\n.ui-icon-circle-arrow-e { background-position: -112px -192px; }\n.ui-icon-circle-arrow-s { background-position: -128px -192px; }\n.ui-icon-circle-arrow-w { background-position: -144px -192px; }\n.ui-icon-circle-arrow-n { background-position: -160px -192px; }\n.ui-icon-circle-zoomin { background-position: -176px -192px; }\n.ui-icon-circle-zoomout { background-position: -192px -192px; }\n.ui-icon-circle-check { background-position: -208px -192px; }\n.ui-icon-circlesmall-plus { background-position: 0 -208px; }\n.ui-icon-circlesmall-minus { background-position: -16px -208px; }\n.ui-icon-circlesmall-close { background-position: -32px -208px; }\n.ui-icon-squaresmall-plus { background-position: -48px -208px; }\n.ui-icon-squaresmall-minus { background-position: -64px -208px; }\n.ui-icon-squaresmall-close { background-position: -80px -208px; }\n.ui-icon-grip-dotted-vertical { background-position: 0 -224px; }\n.ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }\n.ui-icon-grip-solid-vertical { background-position: -32px -224px; }\n.ui-icon-grip-solid-horizontal { background-position: -48px -224px; }\n.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }\n.ui-icon-grip-diagonal-se { background-position: -80px -224px; }\n\n\n/* Misc visuals\n----------------------------------*/\n\n/* Corner radius */\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-left,\n.ui-corner-tl {\n\tborder-top-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-right,\n.ui-corner-tr {\n\tborder-top-right-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-left,\n.ui-corner-bl {\n\tborder-bottom-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-right,\n.ui-corner-br {\n\tborder-bottom-right-radius: 3px/*{cornerRadius}*/;\n}\n\n/* Overlays */\n.ui-widget-overlay {\n\tbackground: #aaaaaa/*{bgColorOverlay}*/ /*{bgImgUrlOverlay}*/ /*{bgOverlayXPos}*/ /*{bgOverlayYPos}*/ /*{bgOverlayRepeat}*/;\n\topacity: .3/*{opacityOverlay}*/;\n\tfilter: Alpha(Opacity=30)/*{opacityFilterOverlay}*/; /* support: IE8 */\n}\n.ui-widget-shadow {\n\t-webkit-box-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n\tbox-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n}\n", ""]);
+	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n *\n * To view and modify this theme, visit http://jqueryui.com/themeroller/\n */\n\n\n/* Component containers\n----------------------------------*/\n.ui-widget {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em/*{fsDefault}*/;\n}\n.ui-widget .ui-widget {\n\tfont-size: 1em;\n}\n.ui-widget input,\n.ui-widget select,\n.ui-widget textarea,\n.ui-widget button {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em;\n}\n.ui-widget.ui-widget-content {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n}\n.ui-widget-content {\n\tborder: 1px solid #dddddd/*{borderColorContent}*/;\n\tbackground: #ffffff/*{bgColorContent}*/ /*{bgImgUrlContent}*/ /*{bgContentXPos}*/ /*{bgContentYPos}*/ /*{bgContentRepeat}*/;\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-content a {\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-header {\n\tborder: 1px solid #dddddd/*{borderColorHeader}*/;\n\tbackground: #e9e9e9/*{bgColorHeader}*/ /*{bgImgUrlHeader}*/ /*{bgHeaderXPos}*/ /*{bgHeaderYPos}*/ /*{bgHeaderRepeat}*/;\n\tcolor: #333333/*{fcHeader}*/;\n\tfont-weight: bold;\n}\n.ui-widget-header a {\n\tcolor: #333333/*{fcHeader}*/;\n}\n\n/* Interaction states\n----------------------------------*/\n.ui-state-default,\n.ui-widget-content .ui-state-default,\n.ui-widget-header .ui-state-default,\n.ui-button,\n\n/* We use html here because we need a greater specificity to make sure disabled\nworks properly when clicked or hovered */\nhtml .ui-button.ui-state-disabled:hover,\nhtml .ui-button.ui-state-disabled:active {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n\tbackground: #f6f6f6/*{bgColorDefault}*/ /*{bgImgUrlDefault}*/ /*{bgDefaultXPos}*/ /*{bgDefaultYPos}*/ /*{bgDefaultRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #454545/*{fcDefault}*/;\n}\n.ui-state-default a,\n.ui-state-default a:link,\n.ui-state-default a:visited,\na.ui-button,\na:link.ui-button,\na:visited.ui-button,\n.ui-button {\n\tcolor: #454545/*{fcDefault}*/;\n\ttext-decoration: none;\n}\n.ui-state-hover,\n.ui-widget-content .ui-state-hover,\n.ui-widget-header .ui-state-hover,\n.ui-state-focus,\n.ui-widget-content .ui-state-focus,\n.ui-widget-header .ui-state-focus,\n.ui-button:hover,\n.ui-button:focus {\n\tborder: 1px solid #cccccc/*{borderColorHover}*/;\n\tbackground: #ededed/*{bgColorHover}*/ /*{bgImgUrlHover}*/ /*{bgHoverXPos}*/ /*{bgHoverYPos}*/ /*{bgHoverRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #2b2b2b/*{fcHover}*/;\n}\n.ui-state-hover a,\n.ui-state-hover a:hover,\n.ui-state-hover a:link,\n.ui-state-hover a:visited,\n.ui-state-focus a,\n.ui-state-focus a:hover,\n.ui-state-focus a:link,\n.ui-state-focus a:visited,\na.ui-button:hover,\na.ui-button:focus {\n\tcolor: #2b2b2b/*{fcHover}*/;\n\ttext-decoration: none;\n}\n\n.ui-visual-focus {\n\tbox-shadow: 0 0 3px 1px rgb(94, 158, 214);\n}\n.ui-state-active,\n.ui-widget-content .ui-state-active,\n.ui-widget-header .ui-state-active,\na.ui-button:active,\n.ui-button:active,\n.ui-button.ui-state-active:hover {\n\tborder: 1px solid #003eff/*{borderColorActive}*/;\n\tbackground: #007fff/*{bgColorActive}*/ /*{bgImgUrlActive}*/ /*{bgActiveXPos}*/ /*{bgActiveYPos}*/ /*{bgActiveRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #ffffff/*{fcActive}*/;\n}\n.ui-icon-background,\n.ui-state-active .ui-icon-background {\n\tborder: #003eff/*{borderColorActive}*/;\n\tbackground-color: #ffffff/*{fcActive}*/;\n}\n.ui-state-active a,\n.ui-state-active a:link,\n.ui-state-active a:visited {\n\tcolor: #ffffff/*{fcActive}*/;\n\ttext-decoration: none;\n}\n\n/* Interaction Cues\n----------------------------------*/\n.ui-state-highlight,\n.ui-widget-content .ui-state-highlight,\n.ui-widget-header .ui-state-highlight {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/ /*{bgImgUrlHighlight}*/ /*{bgHighlightXPos}*/ /*{bgHighlightYPos}*/ /*{bgHighlightRepeat}*/;\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-checked {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/;\n}\n.ui-state-highlight a,\n.ui-widget-content .ui-state-highlight a,\n.ui-widget-header .ui-state-highlight a {\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-error,\n.ui-widget-content .ui-state-error,\n.ui-widget-header .ui-state-error {\n\tborder: 1px solid #f1a899/*{borderColorError}*/;\n\tbackground: #fddfdf/*{bgColorError}*/ /*{bgImgUrlError}*/ /*{bgErrorXPos}*/ /*{bgErrorYPos}*/ /*{bgErrorRepeat}*/;\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error a,\n.ui-widget-content .ui-state-error a,\n.ui-widget-header .ui-state-error a {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error-text,\n.ui-widget-content .ui-state-error-text,\n.ui-widget-header .ui-state-error-text {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-priority-primary,\n.ui-widget-content .ui-priority-primary,\n.ui-widget-header .ui-priority-primary {\n\tfont-weight: bold;\n}\n.ui-priority-secondary,\n.ui-widget-content .ui-priority-secondary,\n.ui-widget-header .ui-priority-secondary {\n\topacity: .7;\n\tfilter:Alpha(Opacity=70); /* support: IE8 */\n\tfont-weight: normal;\n}\n.ui-state-disabled,\n.ui-widget-content .ui-state-disabled,\n.ui-widget-header .ui-state-disabled {\n\topacity: .35;\n\tfilter:Alpha(Opacity=35); /* support: IE8 */\n\tbackground-image: none;\n}\n.ui-state-disabled .ui-icon {\n\tfilter:Alpha(Opacity=35); /* support: IE8 - See #6059 */\n}\n\n/* Icons\n----------------------------------*/\n\n/* states and images */\n.ui-icon {\n\twidth: 16px;\n\theight: 16px;\n}\n.ui-icon,\n.ui-widget-content .ui-icon {\n\tbackground-image: url(" + __webpack_require__(66) + ");\n}\n.ui-widget-header .ui-icon {\n\tbackground-image: url(" + __webpack_require__(66) + ");\n}\n.ui-state-hover .ui-icon,\n.ui-state-focus .ui-icon,\n.ui-button:hover .ui-icon,\n.ui-button:focus .ui-icon {\n\tbackground-image: url(" + __webpack_require__(67) + ");\n}\n.ui-state-active .ui-icon,\n.ui-button:active .ui-icon {\n\tbackground-image: url(" + __webpack_require__(68) + ");\n}\n.ui-state-highlight .ui-icon,\n.ui-button .ui-state-highlight.ui-icon {\n\tbackground-image: url(" + __webpack_require__(69) + ");\n}\n.ui-state-error .ui-icon,\n.ui-state-error-text .ui-icon {\n\tbackground-image: url(" + __webpack_require__(70) + ");\n}\n.ui-button .ui-icon {\n\tbackground-image: url(" + __webpack_require__(71) + ");\n}\n\n/* positioning */\n.ui-icon-blank { background-position: 16px 16px; }\n.ui-icon-caret-1-n { background-position: 0 0; }\n.ui-icon-caret-1-ne { background-position: -16px 0; }\n.ui-icon-caret-1-e { background-position: -32px 0; }\n.ui-icon-caret-1-se { background-position: -48px 0; }\n.ui-icon-caret-1-s { background-position: -65px 0; }\n.ui-icon-caret-1-sw { background-position: -80px 0; }\n.ui-icon-caret-1-w { background-position: -96px 0; }\n.ui-icon-caret-1-nw { background-position: -112px 0; }\n.ui-icon-caret-2-n-s { background-position: -128px 0; }\n.ui-icon-caret-2-e-w { background-position: -144px 0; }\n.ui-icon-triangle-1-n { background-position: 0 -16px; }\n.ui-icon-triangle-1-ne { background-position: -16px -16px; }\n.ui-icon-triangle-1-e { background-position: -32px -16px; }\n.ui-icon-triangle-1-se { background-position: -48px -16px; }\n.ui-icon-triangle-1-s { background-position: -65px -16px; }\n.ui-icon-triangle-1-sw { background-position: -80px -16px; }\n.ui-icon-triangle-1-w { background-position: -96px -16px; }\n.ui-icon-triangle-1-nw { background-position: -112px -16px; }\n.ui-icon-triangle-2-n-s { background-position: -128px -16px; }\n.ui-icon-triangle-2-e-w { background-position: -144px -16px; }\n.ui-icon-arrow-1-n { background-position: 0 -32px; }\n.ui-icon-arrow-1-ne { background-position: -16px -32px; }\n.ui-icon-arrow-1-e { background-position: -32px -32px; }\n.ui-icon-arrow-1-se { background-position: -48px -32px; }\n.ui-icon-arrow-1-s { background-position: -65px -32px; }\n.ui-icon-arrow-1-sw { background-position: -80px -32px; }\n.ui-icon-arrow-1-w { background-position: -96px -32px; }\n.ui-icon-arrow-1-nw { background-position: -112px -32px; }\n.ui-icon-arrow-2-n-s { background-position: -128px -32px; }\n.ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }\n.ui-icon-arrow-2-e-w { background-position: -160px -32px; }\n.ui-icon-arrow-2-se-nw { background-position: -176px -32px; }\n.ui-icon-arrowstop-1-n { background-position: -192px -32px; }\n.ui-icon-arrowstop-1-e { background-position: -208px -32px; }\n.ui-icon-arrowstop-1-s { background-position: -224px -32px; }\n.ui-icon-arrowstop-1-w { background-position: -240px -32px; }\n.ui-icon-arrowthick-1-n { background-position: 1px -48px; }\n.ui-icon-arrowthick-1-ne { background-position: -16px -48px; }\n.ui-icon-arrowthick-1-e { background-position: -32px -48px; }\n.ui-icon-arrowthick-1-se { background-position: -48px -48px; }\n.ui-icon-arrowthick-1-s { background-position: -64px -48px; }\n.ui-icon-arrowthick-1-sw { background-position: -80px -48px; }\n.ui-icon-arrowthick-1-w { background-position: -96px -48px; }\n.ui-icon-arrowthick-1-nw { background-position: -112px -48px; }\n.ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }\n.ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }\n.ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }\n.ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }\n.ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }\n.ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }\n.ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }\n.ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }\n.ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }\n.ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }\n.ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }\n.ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }\n.ui-icon-arrowreturn-1-w { background-position: -64px -64px; }\n.ui-icon-arrowreturn-1-n { background-position: -80px -64px; }\n.ui-icon-arrowreturn-1-e { background-position: -96px -64px; }\n.ui-icon-arrowreturn-1-s { background-position: -112px -64px; }\n.ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }\n.ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }\n.ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }\n.ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }\n.ui-icon-arrow-4 { background-position: 0 -80px; }\n.ui-icon-arrow-4-diag { background-position: -16px -80px; }\n.ui-icon-extlink { background-position: -32px -80px; }\n.ui-icon-newwin { background-position: -48px -80px; }\n.ui-icon-refresh { background-position: -64px -80px; }\n.ui-icon-shuffle { background-position: -80px -80px; }\n.ui-icon-transfer-e-w { background-position: -96px -80px; }\n.ui-icon-transferthick-e-w { background-position: -112px -80px; }\n.ui-icon-folder-collapsed { background-position: 0 -96px; }\n.ui-icon-folder-open { background-position: -16px -96px; }\n.ui-icon-document { background-position: -32px -96px; }\n.ui-icon-document-b { background-position: -48px -96px; }\n.ui-icon-note { background-position: -64px -96px; }\n.ui-icon-mail-closed { background-position: -80px -96px; }\n.ui-icon-mail-open { background-position: -96px -96px; }\n.ui-icon-suitcase { background-position: -112px -96px; }\n.ui-icon-comment { background-position: -128px -96px; }\n.ui-icon-person { background-position: -144px -96px; }\n.ui-icon-print { background-position: -160px -96px; }\n.ui-icon-trash { background-position: -176px -96px; }\n.ui-icon-locked { background-position: -192px -96px; }\n.ui-icon-unlocked { background-position: -208px -96px; }\n.ui-icon-bookmark { background-position: -224px -96px; }\n.ui-icon-tag { background-position: -240px -96px; }\n.ui-icon-home { background-position: 0 -112px; }\n.ui-icon-flag { background-position: -16px -112px; }\n.ui-icon-calendar { background-position: -32px -112px; }\n.ui-icon-cart { background-position: -48px -112px; }\n.ui-icon-pencil { background-position: -64px -112px; }\n.ui-icon-clock { background-position: -80px -112px; }\n.ui-icon-disk { background-position: -96px -112px; }\n.ui-icon-calculator { background-position: -112px -112px; }\n.ui-icon-zoomin { background-position: -128px -112px; }\n.ui-icon-zoomout { background-position: -144px -112px; }\n.ui-icon-search { background-position: -160px -112px; }\n.ui-icon-wrench { background-position: -176px -112px; }\n.ui-icon-gear { background-position: -192px -112px; }\n.ui-icon-heart { background-position: -208px -112px; }\n.ui-icon-star { background-position: -224px -112px; }\n.ui-icon-link { background-position: -240px -112px; }\n.ui-icon-cancel { background-position: 0 -128px; }\n.ui-icon-plus { background-position: -16px -128px; }\n.ui-icon-plusthick { background-position: -32px -128px; }\n.ui-icon-minus { background-position: -48px -128px; }\n.ui-icon-minusthick { background-position: -64px -128px; }\n.ui-icon-close { background-position: -80px -128px; }\n.ui-icon-closethick { background-position: -96px -128px; }\n.ui-icon-key { background-position: -112px -128px; }\n.ui-icon-lightbulb { background-position: -128px -128px; }\n.ui-icon-scissors { background-position: -144px -128px; }\n.ui-icon-clipboard { background-position: -160px -128px; }\n.ui-icon-copy { background-position: -176px -128px; }\n.ui-icon-contact { background-position: -192px -128px; }\n.ui-icon-image { background-position: -208px -128px; }\n.ui-icon-video { background-position: -224px -128px; }\n.ui-icon-script { background-position: -240px -128px; }\n.ui-icon-alert { background-position: 0 -144px; }\n.ui-icon-info { background-position: -16px -144px; }\n.ui-icon-notice { background-position: -32px -144px; }\n.ui-icon-help { background-position: -48px -144px; }\n.ui-icon-check { background-position: -64px -144px; }\n.ui-icon-bullet { background-position: -80px -144px; }\n.ui-icon-radio-on { background-position: -96px -144px; }\n.ui-icon-radio-off { background-position: -112px -144px; }\n.ui-icon-pin-w { background-position: -128px -144px; }\n.ui-icon-pin-s { background-position: -144px -144px; }\n.ui-icon-play { background-position: 0 -160px; }\n.ui-icon-pause { background-position: -16px -160px; }\n.ui-icon-seek-next { background-position: -32px -160px; }\n.ui-icon-seek-prev { background-position: -48px -160px; }\n.ui-icon-seek-end { background-position: -64px -160px; }\n.ui-icon-seek-start { background-position: -80px -160px; }\n/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */\n.ui-icon-seek-first { background-position: -80px -160px; }\n.ui-icon-stop { background-position: -96px -160px; }\n.ui-icon-eject { background-position: -112px -160px; }\n.ui-icon-volume-off { background-position: -128px -160px; }\n.ui-icon-volume-on { background-position: -144px -160px; }\n.ui-icon-power { background-position: 0 -176px; }\n.ui-icon-signal-diag { background-position: -16px -176px; }\n.ui-icon-signal { background-position: -32px -176px; }\n.ui-icon-battery-0 { background-position: -48px -176px; }\n.ui-icon-battery-1 { background-position: -64px -176px; }\n.ui-icon-battery-2 { background-position: -80px -176px; }\n.ui-icon-battery-3 { background-position: -96px -176px; }\n.ui-icon-circle-plus { background-position: 0 -192px; }\n.ui-icon-circle-minus { background-position: -16px -192px; }\n.ui-icon-circle-close { background-position: -32px -192px; }\n.ui-icon-circle-triangle-e { background-position: -48px -192px; }\n.ui-icon-circle-triangle-s { background-position: -64px -192px; }\n.ui-icon-circle-triangle-w { background-position: -80px -192px; }\n.ui-icon-circle-triangle-n { background-position: -96px -192px; }\n.ui-icon-circle-arrow-e { background-position: -112px -192px; }\n.ui-icon-circle-arrow-s { background-position: -128px -192px; }\n.ui-icon-circle-arrow-w { background-position: -144px -192px; }\n.ui-icon-circle-arrow-n { background-position: -160px -192px; }\n.ui-icon-circle-zoomin { background-position: -176px -192px; }\n.ui-icon-circle-zoomout { background-position: -192px -192px; }\n.ui-icon-circle-check { background-position: -208px -192px; }\n.ui-icon-circlesmall-plus { background-position: 0 -208px; }\n.ui-icon-circlesmall-minus { background-position: -16px -208px; }\n.ui-icon-circlesmall-close { background-position: -32px -208px; }\n.ui-icon-squaresmall-plus { background-position: -48px -208px; }\n.ui-icon-squaresmall-minus { background-position: -64px -208px; }\n.ui-icon-squaresmall-close { background-position: -80px -208px; }\n.ui-icon-grip-dotted-vertical { background-position: 0 -224px; }\n.ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }\n.ui-icon-grip-solid-vertical { background-position: -32px -224px; }\n.ui-icon-grip-solid-horizontal { background-position: -48px -224px; }\n.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }\n.ui-icon-grip-diagonal-se { background-position: -80px -224px; }\n\n\n/* Misc visuals\n----------------------------------*/\n\n/* Corner radius */\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-left,\n.ui-corner-tl {\n\tborder-top-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-right,\n.ui-corner-tr {\n\tborder-top-right-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-left,\n.ui-corner-bl {\n\tborder-bottom-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-right,\n.ui-corner-br {\n\tborder-bottom-right-radius: 3px/*{cornerRadius}*/;\n}\n\n/* Overlays */\n.ui-widget-overlay {\n\tbackground: #aaaaaa/*{bgColorOverlay}*/ /*{bgImgUrlOverlay}*/ /*{bgOverlayXPos}*/ /*{bgOverlayYPos}*/ /*{bgOverlayRepeat}*/;\n\topacity: .3/*{opacityOverlay}*/;\n\tfilter: Alpha(Opacity=30)/*{opacityFilterOverlay}*/; /* support: IE8 */\n}\n.ui-widget-shadow {\n\t-webkit-box-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n\tbox-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n}\n", ""]);
 	
 	// exports
 
 
 /***/ }),
-/* 60 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "a4c733ec4baef9ad3896d4e34a8a5448.png";
 
 /***/ }),
-/* 61 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "971364734f3b603e5d363a2634898b42.png";
 
 /***/ }),
-/* 62 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "bf27228a7d3957983584fa7698121ea1.png";
 
 /***/ }),
-/* 63 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "208a290102a4ada58a04de354a1354d7.png";
 
 /***/ }),
-/* 64 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "0de3b51742ed3ac61435875bccd8973b.png";
 
 /***/ }),
-/* 65 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "73a1fd052c9d84c0ee0bea3ee85892ed.png";
 
 /***/ }),
-/* 66 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -21739,7 +26032,87 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 67 */
+/* 73 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(74);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(72)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!./light.css", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!./light.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(44)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, "\n/* text color */\n\n/** Turn this off to avoid affecting Jupyter notebook\n* {\n    color: #555555;\n}\n\ninput,\ntextarea,\nbutton,\nselect,\noption {\n    color: #111111;\n}\n\ninput[type=range]:focus:after {\n    color: #555555;\n}\n\na{\n    color: #1956d8;\n}\n\ninput.Number, input.File {\n    color: #79952e;\n}\n\n\n/* background color */\n\n.OverlayPanel,\n#menubar,\n#menubar .menu .options,\n#sidebar,\n#toolbar\n{\n    background-color: #e1e4eb;\n}\n\n\n/* border color */\n\n.OverlayPanel,\n#menubar .menu .options hr,\n#sidebar > .Panel,\n#sidebar > .Content > .Panel {\n    border-color: #cccccc;\n}\n\n\n/* special */\n\n#menubar .menu .options .option:hover,\n.option:hover > .Icon,\n.option:hover > .Text {\n    color: #D8D8D8;\n    background-color: #345a69;\n}\n\n.highlight,\n.highlight > .Icon,\n.highlight > .Text {\n    color: #D8D8D8;\n    background-color: #345a69;\n}\n\n.EllipsisMultilineText:after {\n    background: linear-gradient(to right, rgba(255, 255, 255, 0), #e1e4eb 50%, #e1e4eb);\n}\n", ""]);
+	
+	// exports
+
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(76);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(72)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!./main.css", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!./main.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(44)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, "\n* {\n\tvertical-align: middle;\n}\n\n/* Webkit micro scrollbars */\n\n::-webkit-scrollbar {\n    width:9px;\n    height:9px;\n}\n\n::-webkit-scrollbar-track {\n    -webkit-border-radius:5px;\n    border-radius:5px;\n    background:rgba(140,140,140,0.1);\n}\n\n::-webkit-scrollbar-thumb {\n    -webkit-border-radius:5px;\n    border-radius:5px;\n    background:rgba(140,140,140,0.2);\n}\n\n::-webkit-scrollbar-thumb:hover {\n    background:rgba(140,140,140,0.4);\n}\n\n::-webkit-scrollbar-thumb:window-inactive {\n    background:rgba(140,140,140,0.5);\n}\n\n/* elmement */\n\nbody {\n\tfont-family: Arial, sans-serif;\n\tfont-size: 14px;\n\tmargin: 0;\n\toverflow: hidden;\n}\n\nhr {\n\tborder: 0px;\n\tborder-top: 1px solid #ccc;\n}\n\nbutton {\n    position: relative;\n    margin-left: 0px;\n}\n\nselect {\n    margin-left: 1px;\n}\n\n/* NOTE (FIXME): turning this on will affect notebook */\n\n/**\ntextarea {\n\twhite-space: pre;\n\tword-wrap: normal;\n}\n\n\ttextarea.success {\n\t\tborder-color: #8b8 !important;\n\t}\n\n\ttextarea.fail {\n\t\tborder-color: #f00 !important;\n\t\tbackground-color: rgba(255,0,0,0.05);\n\t}\n\ntextarea, input { outline: none; } /* osx */\n\ninput.Number {\n    font-size: 12px;                            /** TODO: Use of !imporant is not ideal **/\n    background-color: transparent!important;    /* For now this is a quick fix a rendering issue due to inherited background */\n    border: 1px solid transparent;\n    padding: 2px;\n    cursor: col-resize;\n}\n\ninput.File {\n    border: 0px solid !important;\n    padding: 0px !important;\n}\n\ninput[type=range]:focus:after {\n    position: absolute;\n    transform: translate(-100%,-50% );\n    content: attr(value);\n    font-size: 12px;\n}\n\n/* class */\n\n.deleteInfo:after {\n    position: absolute;\n    transform: translate(-50%,-250% );\n    content: \"double-click to delete\";\n    font-size: 10px;\n    display: block;\n}\n\n.Panel {\n\n    -moz-user-select: none;\n    -webkit-user-select: none;\n    -ms-user-select: none;\n\n    /* No support for these yet */\n    -o-user-select: none;\n    user-select: none;\n}\n\n.OverlayPanel {\n    z-index: 10;\n    position: absolute;\n    padding: 10px;\n    overflow: auto;\n    border: 1px solid;\n}\n\n.OverlayPanel:focus {\n    z-index: 20;\n}\n\n.Text {\n    cursor: default;\n}\n\n.FancySelect {\n    padding: 0;\n    cursor: default;\n    overflow: auto;\n    outline: none;\n}\n\n    .FancySelect .option {\n        padding: 4px;\n        white-space: nowrap;\n    }\n\n.CollapsiblePanel .CollapsiblePanelButton {\n    float: left;\n    margin-right: 6px;\n    width: 0px;\n    height: 0px;\n    border: 6px solid transparent;\n}\n\n.CollapsiblePanel.collapsed > .CollapsiblePanelButton {\n    margin-top: 2px;\n    border-left-color: #555;\n}\n\n.CollapsiblePanel:not(.collapsed) > .CollapsiblePanelButton {\n    margin-top: 6px;\n    border-top-color: #555;\n}\n\n.CollapsiblePanel.collapsed .CollapsibleContent {\n    display: none;\n}\n\n.CollapsiblePanel:not(.collapsed) > .CollapsibleContent {\n    clear: both;\n}\n\n/* http://www.brianchu.com/blog/2013/11/02/creating-an-auto-growing-text-input/ */\n\n.AdaptiveTextAreaContainer {\n    position: relative;\n    display: inline-block;\n    margin-top: 2px;\n    margin-bottom: 2px;\n}\n\n.AdaptiveTextArea, .AdaptiveTextAreaSize {\n    min-height: 21px;\n    /* need to manually set font and font size */\n    font-family: Arial, sans-serif;\n    font-size: 13px;\n    box-sizing: border-box;\n    padding: 2px;\n    border: 1px solid #ccc;\n\n    overflow: hidden;\n    width: 100%;\n}\n\n.AdaptiveTextArea {\n    height: 100%;\n    position: absolute;\n    resize: none;\n\n    /*\n    \"pre\" or \"preline\" or \"normal\" fixes Chrome issue where\n    whitespace at end of lines does not trigger a line break.\n    However, it causes the text to exhibit the behavior seen with\n    \"pre\" that is described below.\n    */\n    white-space: normal;\n    word-wrap: break-word;\n    overflow-wrap: break-word;\n}\n\n.AdaptiveTextAreaSize {\n    visibility: hidden;\n\n    /*\n    Pre-wrap: preserve spacing and newlines, but wrap text.\n    Pre: preserve spacing and newlines but don't wrap text.\n\n    \"pre\" does not wrap well on Firefox, even with word-wrap:break-word.\n    \"pre\" on Chrome works with word-wrap, but exhibits different behavior:\n    Instead of entire words being moved to the next line for wrapping,\n    the browser will cut words in the middle for wrapping.\n    \"pre-line\" has Firefox issues\n    */\n    white-space: pre-wrap;\n    /* Required for wrapping lines in Webkit,\n    but not necessary in Firefox if you have white-space wrapping\n    (pre-wrap, normal, pre-line) already set */\n    word-wrap: break-word;\n    overflow-wrap: break-word;\n}\n\n/* FlexiColorPicker */\n\n.picker-wrapper,\n.slide-wrapper {\n    position: relative;\n    float: left;\n}\n\n.picker-indicator,\n.slide-indicator {\n    position: absolute;\n    left: 0;\n    top: 0;\n    pointer-events: none;\n}\n\n.picker,\n.slide {\n    cursor: crosshair;\n    float: left;\n}\n\n.slide-wrapper {\n    margin-left: 10px;\n}\n\n.picker-indicator {\n    width: 5px;\n    height: 5px;\n    border: 2px solid darkblue;\n    -moz-border-radius: 4px;\n    -o-border-radius: 4px;\n    -webkit-border-radius: 4px;\n    border-radius: 4px;\n    opacity: .5;\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)\";\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);\n    filter: alpha(opacity=50);\n    background-color: white;\n}\n\n.slide-indicator {\n    width: 100%;\n    height: 10px;\n    left: -4px;\n    opacity: .6;\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)\";\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);\n    filter: alpha(opacity=60);\n    border: 4px solid lightblue;\n    -moz-border-radius: 4px;\n    -o-border-radius: 4px;\n    -webkit-border-radius: 4px;\n    border-radius: 4px;\n    background-color: white;\n}\n\n/* http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/ */\n\n.EllipsisMultilineText {\n    overflow: hidden;\n    max-height: 2.6em;\n    line-height: 1.3em;\n}\n\n.EllipsisMultilineText:before {\n    content:\"\";\n    float: left;\n    width: 5px;\n    max-height: 2.6em;\n}\n\n.EllipsisMultilineText > *:first-child {\n    float: right;\n    width: 100%;\n    margin-top: 0px;\n    margin-bottom: 0px;\n    margin-left: -5px;\n    word-wrap: break-word;\n}\n\n.EllipsisMultilineText:after {\n    content: \"\\2026\";\n\n    box-sizing: content-box;\n    -webkit-box-sizing: content-box;\n    -moz-box-sizing: content-box;\n\n    float: right; position: relative;\n    top: 1.3em; left: 100%;\n    width: 3em; margin-left: -3em;\n    padding-right: 5px;\n\n    text-align: right;\n}\n\n/* resize */\n\n.ResizeLeft, .ResizeLeft:hover {\n    position: relative;\n    float: left;\n    height: 100%;\n    width: 10px;\n}\n\n.ResizeLeft:hover{\n    cursor: col-resize;\n}\n\n/* virtual list */\n\n.VirtualListRow {\n    position: absolute;\n    overflow: hidden;\n    white-space: nowrap;\n    display: inline-block;\n}\n\n.VirtualListRow > .Text {\n    cursor: inherit;\n}\n\n/* id */\n\n#viewport {\n    position: absolute;\n    top: 32px;\n    left: 0px;\n    right: 300px;\n    bottom: 32px;\n}\n\n#menubar {\n    position: absolute;\n    width: 100%;\n    height: 32px;\n    padding: 0px;\n    margin: 0px;\n    z-index: 100;\n    top: 0px;\n    left: 0px;\n}\n\n    #menubar .menu {\n        float: left;\n        cursor: pointer;\n        position: relative;\n    }\n\n        #menubar .menu .title {\n            margin: 0px;\n            padding: 8px;\n        }\n\n        #menubar .menu .options {\n            display: none;\n            padding: 5px 0px;\n            width: 140px;\n            position: absolute;\n            top: 32px;\n        }\n\n        #menubar .menu:hover .options {\n            display: block;\n            max-height: 600px;\n            overflow: auto;\n        }\n\n            #menubar .menu .options .option {\n                background-color: transparent;\n                padding: 5px 10px;\n                margin: 0px !important;\n            }\n\n#sidebar {\n    position: absolute;\n    right: 0px;\n    top: 32px;\n    bottom: 0px;\n    width: 300px;\n    overflow: hidden;\n}\n\n    #sidebar .Panel {\n        margin-bottom: 10px;\n    }\n\n    #sidebar .Panel.collapsed {\n        margin-bottom: 0px;\n    }\n\n    #sidebar .CollapsibleContent {\n        margin-top: 10px;\n    }\n\n    #sidebar > .Panel {\n        padding: 10px;\n        border-top: 1px solid;\n    }\n\n    #sidebar > .Content > .Panel {\n        padding: 10px;\n        border-top: 1px solid;\n    }\n\n    #sidebar .Content {\n        top: 40px;\n        bottom: 0px;\n        position: absolute;\n        overflow: auto;\n        right: 0px;\n        width: 100%;\n    }\n\n#toolbar {\n    position: absolute;\n    left: 0px;\n    right: 300px;\n    bottom: 0px;\n    height: 32px;\n}\n\n    #toolbar .Panel {\n        padding: 6px;\n    }\n\n    #toolbar button {\n        margin-right: 6px;\n    }\n", ""]);
+	
+	// exports
+
+
+/***/ }),
+/* 77 */
 /***/ (function(module, exports) {
 
 	module.exports = {"name":"nglview-js-widgets","version":"2.2.0","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.0.0"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}

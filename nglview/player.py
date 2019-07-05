@@ -12,6 +12,7 @@ from ipywidgets import (Box, Button, Checkbox, ColorPicker, Dropdown,
                         VBox, interactive, jslink)
 from traitlets import (Any, Bool, CaselessStrEnum, Dict, Float, HasTraits, Int,
                        link, observe)
+import traitlets
 
 from . import default
 from .layout import (_make_autofit, _make_box_layout, _make_delay_tab,
@@ -33,6 +34,19 @@ def _dry_run(v, func, *args, **kwargs):
     setattr(v, '_remote_call', old)
 
     return msg and msg[-1] or None  # FIXME: all messages?
+
+
+def _cature_msg(f):
+    def wrap(*args, **kwargs):
+        self = args[0]
+        v = self._view
+        msg_dict = v._player_dict
+        w = f(*args, **kwargs)
+        # FIXME: add code here
+        # if isinstance(w, Button):
+        #     msg_dict[w.model_id] = _dry_run(v, w.click)
+        return w
+    return wrap
 
 
 class TrajectoryPlayer(HasTraits):
@@ -175,6 +189,7 @@ class TrajectoryPlayer(HasTraits):
     def _make_widget_tab(self):
         return self._display()
 
+    @_cature_msg
     def _make_button_center(self):
         self.btn_center = Button(description=' Center', icon='fa-bullseye')
 
@@ -182,8 +197,6 @@ class TrajectoryPlayer(HasTraits):
         def on_click(_):
             self._view.center()
 
-        if hasattr(self.btn_center, 'click'):
-            _dry_run(self._view, self.btn_center.click)
         return self.btn_center
 
     def _make_widget_preference(self, width='100%'):
@@ -269,15 +282,6 @@ class TrajectoryPlayer(HasTraits):
 
         return button
 
-    def _make_button_url(self, url, description):
-        button = Button(description=description)
-
-        @button.on_click
-        def on_click(button):
-            display(Javascript(js_utils.open_url_template.format(url=url)))
-
-        return button
-
     def _make_text_picked(self):
         ta = Textarea(value=json.dumps(self._view.picked),
                       description='Picked atom')
@@ -299,6 +303,7 @@ class TrajectoryPlayer(HasTraits):
         self._view._handle_repr_dict_changed(change=dict(
             new=self._view._ngl_repr_dict))
 
+    @_cature_msg
     def _make_button_repr_control(self, component_slider, repr_slider,
                                   repr_selection):
         button_refresh = Button(description=' Refresh',
