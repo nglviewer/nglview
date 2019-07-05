@@ -783,7 +783,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         if (style === 'ngl'){
             console.log("Creating NGL GUI");
             this.createNglGUI();
-            this.$pickingText.hide();
         }else{
             if (this.stage_widget){
                 this.stage_widget.dispose()
