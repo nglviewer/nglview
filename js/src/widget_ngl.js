@@ -15,8 +15,8 @@ var StageWidget = require("./gui").StageWidget
 require('jquery-ui/ui/widgets/dialog')
 require('jquery-ui/themes/base/all.css')
 // require('./css/dark.css');  // How to switch theme?
-require('./css/light.css');
-require('./css/main.css')
+// require('./css/light.css');
+// require('./css/main.css')
 
 
 var NGLModel = widgets.DOMWidgetModel.extend({
@@ -503,7 +503,8 @@ var NGLView = widgets.DOMWidgetView.extend({
            pe.style.right = '5%'
            pe.style.opacity = '0.7'
            pe.style.width = '35px'
-           pe.style.background = 'transparent'
+           pe.style.background = 'white'
+           pe.style.opacity = '0.3'
            pe.style.display = 'none'
            pe.onclick = function(){
                that.stage.toggleFullscreen();

@@ -1,0 +1,69 @@
+
+/* text color */
+
+* {
+    color: #B8B8B8;
+}
+
+input,
+textarea,
+button,
+select,
+option {
+    color: #111111;
+}
+
+input[type=range]:focus:after {
+    color: #B8B8B8;
+}
+
+a{
+    color: #719eff;
+}
+
+input.Number, input.File {
+    color: #A1B56C;
+}
+
+
+/* background color */
+
+.OverlayPanel,
+#menubar,
+#menubar .menu .options,
+#sidebar,
+#toolbar
+{
+    background-color: #1C1F26;
+}
+
+
+/* border color */
+
+.OverlayPanel,
+#menubar .menu .options hr,
+#sidebar > .Panel,
+#sidebar > .Content > .Panel {
+    border-color: #444444;
+}
+
+
+/* special */
+
+#menubar .menu .options .option:hover,
+.option:hover > .Icon,
+.option:hover > .Text {
+    color: #181818;
+    background-color: #7CAFC2;
+}
+
+.highlight,
+.highlight > .Icon,
+.highlight > .Text {
+    color: #181818;
+    background-color: #7CAFC2;
+}
+
+.EllipsisMultilineText:after {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), #1C1F26 50%, #1C1F26);
+}
