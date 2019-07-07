@@ -30,7 +30,8 @@ def _get_theme(css_file):
 def _get_css_content(css_file):
     dirname = os.path.dirname(os.path.abspath(__file__))
     css_file = os.path.join(dirname, css_file)
-    return open(css_file).read()
+    css = open(css_file).read()
+    return style.format(css)
 
 
 def oceans16():
