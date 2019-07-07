@@ -153,7 +153,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }
 	        }.bind(this));
 	
-	        // init picking handling
 	        this.handlePicking()
 	        this.handleSignals()
 	        this.finalizeDisplay()
@@ -318,8 +317,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            this.player_pview.then(function(v){
 	                v.el.style.display = type
 	                console.log('max_frame ' + that.model.get("max_frame"))
-	                if (that.model.get("max_frame") <= 1){
-	                    v.el.style.display = 'none' // always hide if there's no trajectory.
+	                // Need to check if max_frame is available (otherwise NaN
+	                // https://github.com/jupyter-widgets/ipywidgets/issues/2485
+	                if (!that.model.get("max_frame") || (that.model.get("max_frame") <= 1)){
+	                    // always hide if there's no trajectory.
+	                    v.el.style.display = 'none'
 	                }
 	            })
 	        }
@@ -340,6 +342,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    execute_code: function(code){
 	        eval(code);
+	    },
+	
+	    setTheme: function(css_content){
+	        var ele = document.createElement("style")
+	        ele.id = 'nglview_style'
+	        ele.innerHTML = css_content
+	        console.log(css_content)
+	        document.head.append(ele)
 	    },
 	
 	    handle_embed: function(){
