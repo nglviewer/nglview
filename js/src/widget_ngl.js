@@ -273,14 +273,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         eval(code);
     },
 
-    setTheme: function(css_content){
-        var ele = document.createElement("style")
-        ele.id = 'nglview_style'
-        ele.innerHTML = css_content
-        console.log(css_content)
-        document.head.append(ele)
-    },
-
     handle_embed: function(){
         var that = this;
         var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
