@@ -10,13 +10,11 @@ require("./ui/ui.js")
 require("./ui/ui.extra.js")
 require("./ui/ui.ngl.js")
 var StageWidget = require("./gui").StageWidget
-// require('jquery-ui/ui/widgets/draggable');
-// require('jquery-ui/ui/widgets/slider');
 require('jquery-ui/ui/widgets/dialog')
 require('jquery-ui/themes/base/all.css')
 // require('./css/dark.css');  // How to switch theme?
-// require('./css/light.css');
-// require('./css/main.css')
+require('./css/light.css');
+require('./css/main.css')
 
 
 var NGLModel = widgets.DOMWidgetModel.extend({
