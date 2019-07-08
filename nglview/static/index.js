@@ -81,8 +81,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	__webpack_require__(14)
 	__webpack_require__(15)
 	var StageWidget = __webpack_require__(16).StageWidget
-	// require('jquery-ui/ui/widgets/draggable');
-	// require('jquery-ui/ui/widgets/slider');
 	__webpack_require__(17)
 	__webpack_require__(42)
 	// require('./css/dark.css');  // How to switch theme?
@@ -153,7 +151,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }
 	        }.bind(this));
 	
-	        // init picking handling
 	        this.handlePicking()
 	        this.handleSignals()
 	        this.finalizeDisplay()
@@ -303,8 +300,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    mouseover_display: function(type){
 	        var that = this;
-	        if (this.fullscreen_btn_pview){
-	            this.fullscreen_btn_pview.then(function(v){
+	        if (this.btn_pview_fullscreen){
+	            this.btn_pview_fullscreen.then(function(v){
 	                v.el.style.display = type
 	                if (that.stage_widget){
 	                    // If NGL's GUI exists, use its fullscreen button.
@@ -317,8 +314,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        if (this.player_pview){
 	            this.player_pview.then(function(v){
 	                v.el.style.display = type
-	                if (that.model.get("max_frame") <= 1){
-	                    v.el.style.display = 'none' // always hide if there's no trajectory.
+	                console.log('max_frame ' + that.model.get("max_frame"))
+	                // Need to check if max_frame is available (otherwise NaN
+	                // https://github.com/jupyter-widgets/ipywidgets/issues/2485
+	                if (!that.model.get("max_frame") || (that.model.get("max_frame") <= 1)){
+	                    // always hide if there's no trajectory.
+	                    v.el.style.display = 'none'
 	                }
 	            })
 	        }
@@ -562,10 +563,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    createFullscreenBtn: function(){
-	        this.fullscreen_btn_pview = this.createView("_ibtn_fullscreen");
+	        this.btn_pview_fullscreen = this.createView("_ibtn_fullscreen");
 	        var that = this;
 	        var stage = that.stage;
-	        this.fullscreen_btn_pview.then(function(view){
+	        this.btn_pview_fullscreen.then(function(view){
 	           var pe = view.el
 	           pe.style.position = 'absolute'
 	           pe.style.zIndex = 100
@@ -573,7 +574,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	           pe.style.right = '5%'
 	           pe.style.opacity = '0.7'
 	           pe.style.width = '35px'
+	           pe.style.background = 'white'
+	           pe.style.opacity = '0.3'
 	           pe.style.display = 'none'
+	           pe.onclick = function(){
+	               that.stage.toggleFullscreen();
+	           }
 	           stage.viewer.container.append(view.el);
 	           stage.signals.fullscreenChanged.add(function (isFullscreen) {
 	             if (isFullscreen) {

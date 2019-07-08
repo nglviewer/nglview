@@ -132,7 +132,7 @@ class NGLWidget(DOMWidget):
     _image_data = Unicode().tag(sync=False)
     # use Integer here, because mdtraj uses a long datatype here on Python-2.7
     frame = Integer().tag(sync=True)
-    max_frame = Integer(0).tag(sync=True)
+    max_frame = Int(0).tag(sync=True)
     background = Unicode('white').tag(sync=True)
     loaded = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
@@ -173,8 +173,6 @@ class NGLWidget(DOMWidget):
                         allow_none=True).tag(sync=True, **widget_serialization)
     _igui = Instance(widgets.Tab,
                      allow_none=True).tag(sync=True, **widget_serialization)
-    _ibtn_image = Instance(widgets.Button,
-            allow_none=True).tag(sync=True, **widget_serialization)
     _ibtn_fullscreen = Instance(widgets.Button,
             allow_none=True).tag(sync=True, **widget_serialization)
 
@@ -247,6 +245,7 @@ class NGLWidget(DOMWidget):
                 self.center()
 
         self.player = TrajectoryPlayer(self)
+        self.player._create_all_tabs()
         self.player._create_all_widgets(thread=True)
         self._already_constructed = True
 
@@ -254,25 +253,12 @@ class NGLWidget(DOMWidget):
         # resizing NGL widget properly.
         self._sync_with_layout()
         self._create_player()
-        self._create_ibtn_image()
         self._create_ibtn_fullscreen()
-
-    def _create_ibtn_image(self):
-        button = widgets.Button(icon='fa-camera')
-        button.layout.width = '34px'
-
-        @button.on_click
-        def on_click(button):
-            self.download_image()
-        self._ibtn_image = button
 
     def _create_ibtn_fullscreen(self):
         button = widgets.Button(icon='compress')
         button.layout.width = '34px'
-
-        @button.on_click
-        def on_click(button):
-            self._remote_call("toggleFullscreen", target='Stage', args=[None])
+        # onclick is implemented in frontend
         self._ibtn_fullscreen = button
 
 
