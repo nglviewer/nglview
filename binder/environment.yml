@@ -8,7 +8,7 @@ dependencies:
 - ipywidgets 
 - notebook
 - ipykernel
-- nglview=2.1
+- nglview=2.5.2
 - pip:
     - pytraj
     - sidecar
