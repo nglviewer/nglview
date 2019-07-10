@@ -245,8 +245,6 @@ class NGLWidget(DOMWidget):
                 self.center()
 
         self.player = TrajectoryPlayer(self)
-        self.player._create_all_tabs()
-        self.player._create_all_widgets(thread=True)
         self._already_constructed = True
 
         # Updating only self.layout.{width, height} don't handle
