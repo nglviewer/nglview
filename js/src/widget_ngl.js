@@ -32,8 +32,6 @@ var NGLModel = widgets.DOMWidgetModel.extend({
 
 var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
-        // maximum number of frames.
-        // this.model.on("change:max_frame", this.maxFrameChanged, this);
         this.model.on("change:_parameters", this.parametersChanged, this);
         this.model.on("change:gui_style", this.GUIStyleChanged, this);
         this.model.set('_ngl_version', NGL.Version);
@@ -41,18 +39,20 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.stage_widget = undefined
         this.handleMessage()
 
-        var stage_params = this.model.get("_ngl_full_stage_parameters");
-        if (!("backgroundColor" in stage_params)){
-            stage_params["backgroundColor"] = "white"
-        }
-        // init NGL stage
-        NGL.useWorker = false;
-        this.stage = new NGL.Stage(undefined);
-        this.stage.setParameters(stage_params);
-        this.$container = $(this.stage.viewer.container);
-        this.$el.append(this.$container);
-        this.handleResizable()
         this.displayed.then(function() {
+            // move all below code inside 'displayed'
+            // to make sure the NGLView and NGLModel are created
+            // init NGL stage
+            var stage_params = this.model.get("_ngl_full_stage_parameters");
+            if (!("backgroundColor" in stage_params)){
+                stage_params["backgroundColor"] = "white"
+            }
+            NGL.useWorker = false;
+            this.stage = new NGL.Stage(undefined);
+            this.stage.setParameters(stage_params);
+            this.$container = $(this.stage.viewer.container);
+            this.$el.append(this.$container);
+            this.handleResizable()
             this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
             // more than two views at the same time (e.g: in a Box)
             this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
@@ -78,11 +78,12 @@ var NGLView = widgets.DOMWidgetView.extend({
                     this.set_camera_orientation(that.model.get("_camera_orientation"));
                 }
             }
+
+            this.handlePicking()
+            this.handleSignals()
+            this.finalizeDisplay()
         }.bind(this));
 
-        this.handlePicking()
-        this.handleSignals()
-        this.finalizeDisplay()
     },
 
     handleMessage(){
@@ -432,17 +433,6 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
         }
     },
-
-    // maxFrameChanged: function() {
-    //     var max_frame = this.model.get("max_frame");
-    //     this.player_pview.then(function(v){
-    //         if (max_frame > 0){
-    //             v.el.style.display = 'block'
-    //         }else{
-    //             v.el.style.display = 'none'
-    //         }
-    //     })
-    // },
 
     createView: function(trait_name){
         // Create a view for the model with given `trait_name`
