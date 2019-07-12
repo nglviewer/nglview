@@ -144,7 +144,6 @@ class NGLWidget(DOMWidget):
     # TODO: remove _parameters?
     _parameters = Dict().tag(sync=False)
     _ngl_full_stage_parameters = Dict().tag(sync=True)
-    _ngl_full_stage_parameters_embed = Dict().tag(sync=True)
     _ngl_original_stage_parameters = Dict().tag(sync=True)
     _coordinates_dict = Dict().tag(sync=False)
     _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
@@ -192,7 +191,6 @@ class NGLWidget(DOMWidget):
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._event = threading.Event()
         self._ngl_displayed_callbacks_before_loaded = []
-        self._ngl_displayed_callbacks_after_loaded = []
         widget_utils._add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
         self.stage = Stage(view=self)
@@ -272,10 +270,6 @@ class NGLWidget(DOMWidget):
 
     def _set_serialization(self, frame_range=None):
         self._ngl_serialize = True
-        self._ngl_msg_archive = [
-            f._ngl_msg for f in self._ngl_displayed_callbacks_after_loaded
-        ]
-
         resource = self._ngl_coordinate_resource
         if frame_range is not None:
             for t_index, traj in enumerate(self._trajlist):
@@ -290,13 +284,7 @@ class NGLWidget(DOMWidget):
             resource['n_frames'] = len(resource[0])
 
         self._ngl_coordinate_resource = resource
-        self._ngl_full_stage_parameters_embed = self._ngl_full_stage_parameters
         self._ngl_color_dict = color._USER_COLOR_DICT.copy()
-
-        # for x in filter(lambda _: _.startswith(('btn_', 'widget_')), dir(self.player)):
-        #     attr = getattr(self.player, x)
-        #     if attr is not None:
-        #         self._ngl_gui_dict[x] = attr.model_id
 
     def _create_player(self):
         player = Play(max=self.max_frame, interval=100)
@@ -312,15 +300,7 @@ class NGLWidget(DOMWidget):
 
     def _unset_serialization(self):
         self._ngl_serialize = False
-        self._ngl_msg_archive = []
         self._ngl_coordinate_resource = {}
-        self._ngl_full_stage_parameters_embed = {}
-
-    def _get_embed_state(self, *args, **kwargs):
-        self._set_serialization()
-        state = super()._get_embed_state(*args, **kwargs)
-        self._unset_serialization()
-        return state
 
     @property
     def parameters(self):
@@ -507,20 +487,19 @@ class NGLWidget(DOMWidget):
         Note: unstable feature
         """
         new_callbacks = []
-        for c in self._ngl_displayed_callbacks_after_loaded:
-            if (c._method_name == 'loadFile'
-                    and 'defaultRepresentation' in c._ngl_msg['kwargs']):
+        for c in self._ngl_msg_archive:
+            if (c['methodName'] == 'loadFile'
+                    and 'defaultRepresentation' in c['kwargs']):
                 # set to False to avoid autoView
                 # so subsequent display of `self` won't reset view orientation.
-                c._ngl_msg['kwargs']['defaultRepresentation'] = False
-            msg = c._ngl_msg
-            msg['last_child'] = True
+                c['kwargs']['defaultRepresentation'] = False
+            c['last_child'] = True
 
-            def callback(widget, msg=msg):
+            def callback(widget, msg=c):
                 widget.send(msg)
 
-            callback._method_name = msg['methodName']
-            callback._ngl_msg = msg
+            callback._method_name = c['methodName']
+            callback._ngl_msg = c
             new_callbacks.append(callback)
 
         msg = {}
@@ -1394,7 +1373,9 @@ class NGLWidget(DOMWidget):
 
         if callback._method_name not in _EXCLUDED_CALLBACK_AFTER_FIRING and \
            (not other_kwargs.get("fire_once", False)):
-            self._ngl_displayed_callbacks_after_loaded.append(callback)
+            archive = self._ngl_msg_archive[:]
+            archive.append(msg)
+            self._ngl_msg_archive = archive  # trigger syncing
 
     def _get_traj_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object

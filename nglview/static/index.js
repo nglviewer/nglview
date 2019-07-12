@@ -103,8 +103,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	var NGLView = widgets.DOMWidgetView.extend({
 	    render: function() {
-	        // maximum number of frames.
-	        // this.model.on("change:max_frame", this.maxFrameChanged, this);
 	        this.model.on("change:_parameters", this.parametersChanged, this);
 	        this.model.on("change:gui_style", this.GUIStyleChanged, this);
 	        this.model.set('_ngl_version', NGL.Version);
@@ -141,8 +139,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            this.$container.resizable(
 	                "option", "maxWidth", this.$el.parent().width()
 	            );
-	            if (this.model.get("_ngl_serialize")){
-	                that.handle_embed();
+	            var is_embeded = this.model.get("_ngl_serialize") || (this.model.comm == undefined)
+		        if (is_embeded){
+	                console.log("In embeding mode")
+		            that.handle_embed();
 	            }else{
 	                this.requestUpdateStageParameters();
 	                if (this.model.views.length == 1){
@@ -228,6 +228,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	      this.stage.signals.componentRemoved.add(function() {
 	          this.model.set("n_components", this.stage.compList.length);
 	          this.touch();
+	      }, this);
+	
+	      this.stage.signals.parametersChanged.add(function(){
+	          console.log('parametersChanged')
+	          this.requestUpdateStageParameters();
 	      }, this);
 	
 	      this.stage.viewerControls.signals.changed.add(function() {
@@ -349,7 +354,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        var that = this;
 	        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
 	        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
-	        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters_embed');
+	        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
 	        var ngl_color_dict = that.model.get("_ngl_color_dict");
 	        var loadfile_list = [];
 	        var label
@@ -372,7 +377,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	
 	        Promise.all(loadfile_list).then(function(compList){
-	            n_frames = ngl_coordinate_resource['n_frames'];
+	            n_frames = ngl_coordinate_resource['n_frames'] || 1;
 	            that._set_representation_from_backend(compList);
 	            that.stage.setParameters(ngl_stage_params);
 	            that.set_camera_orientation(that.model.get("_camera_orientation"));
@@ -506,17 +511,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            }
 	        }
 	    },
-	
-	    // maxFrameChanged: function() {
-	    //     var max_frame = this.model.get("max_frame");
-	    //     this.player_pview.then(function(v){
-	    //         if (max_frame > 0){
-	    //             v.el.style.display = 'block'
-	    //         }else{
-	    //             v.el.style.display = 'none'
-	    //         }
-	    //     })
-	    // },
 	
 	    createView: function(trait_name){
 	        // Create a view for the model with given `trait_name`

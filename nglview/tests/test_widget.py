@@ -1073,12 +1073,12 @@ def test_queuing_messages():
            [
             'loadFile',
             '_downloadImage']
-    assert [f._method_name for f in view._ngl_displayed_callbacks_after_loaded] == \
+    assert [f['methodName'] for f in view._ngl_msg_archive] == \
            ['loadFile']
 
     # display 2nd time
     view.sync_view()
-    assert [f._method_name for f in view._ngl_displayed_callbacks_after_loaded] == \
+    assert [f['methodName'] for f in view._ngl_msg_archive] == \
            ['loadFile']
 
 
