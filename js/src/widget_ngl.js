@@ -37,7 +37,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.model.set('_ngl_version', NGL.Version);
         this._synced_model_ids = this.model.get("_synced_model_ids");
         this.stage_widget = undefined
-        this.handleMessage()
 
         this.displayed.then(function() {
             // move all below code inside 'displayed'
@@ -45,6 +44,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             this.createStage()
             this.handlePicking()
             this.handleSignals()
+            this.handleMessage()
             this.finalizeDisplay()
         }.bind(this));
 

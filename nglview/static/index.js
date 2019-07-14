@@ -108,7 +108,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.model.set('_ngl_version', NGL.Version);
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
 	        this.stage_widget = undefined
-	        this.handleMessage()
 	
 	        this.displayed.then(function() {
 	            // move all below code inside 'displayed'
@@ -116,6 +115,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            this.createStage()
 	            this.handlePicking()
 	            this.handleSignals()
+	            this.handleMessage()
 	            this.finalizeDisplay()
 	        }.bind(this));
 	
