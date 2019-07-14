@@ -159,6 +159,7 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
+    _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
     _hold_image = Bool(False).tag(sync=False)
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
@@ -342,6 +343,19 @@ class NGLWidget(DOMWidget):
 
     def _request_stage_parameters(self):
         self._remote_call('requestUpdateStageParameters', target='Widget')
+
+    @observe("_gui_theme")
+    def _on_theme_changed(self, change):
+        # EXPERIMENTAL
+        from nglview.theme import theme
+        if change.new == 'dark':
+            self._remote_call("updateNGLTheme",
+                    args=[theme._get_css_content('dark.css', include_style_tag=False)],
+                    fire_embed=True)
+        elif change.new == 'light':
+            # default theme is light, so we just need to remove previous theme
+            self._remote_call("updateNGLTheme", 
+                    args=[""], fire_embed=True)
 
     @observe('picked')
     def _on_picked(self, change):

@@ -17,7 +17,9 @@ style = """
 </style>
 
 <script>
-$('#nglview_style').appendTo('head');
+
+var nc = document.getElementById('nglview_style')
+document.head.appendChild(nc)
 </script>
 """
 
@@ -27,24 +29,32 @@ def _get_theme(css_file):
     return HTML(_get_css_content(css_file))
 
 
-def _get_css_content(css_file):
+def _get_css_content(css_file, include_style_tag=True):
     dirname = os.path.dirname(os.path.abspath(__file__))
     css_file = os.path.join(dirname, css_file)
     css = open(css_file).read()
-    return style.format(css)
+    if include_style_tag:
+        return style.format(css)
+    else:
+        return css
 
 
 def oceans16():
     return _get_theme('oceans16.css')
 
 
-def reset(hide_toolbar=False):
+def reset():
     from IPython.display import Javascript, display
     from nglview import js_utils
-    display(Javascript('$("#nglview_style").remove()'))
-    js_utils.clean_empty_output_area()
+    display(Javascript("""
+    var ele = document.getElementById('nglview_style')
+    document.head.removeChild(ele)
+    """))
 
-    if hide_toolbar:
-        js_utils.hide_toolbar()
-    else:
-        js_utils.show_toolbar()
+
+def dark():
+    return _get_theme('dark.css')
+
+
+def light():
+    return _get_theme('light.css')

@@ -216,6 +216,7 @@ def test_API_promise_to_have():
     view.display(gui=False)
     view.display(gui=True, use_box=True)
     view._set_sync_camera([view])
+    view._set_unsync_camera([view])
     view._set_selection('.CA')
     view.color_by('atomindex')
     representations = [dict(type='cartoon', params=dict())]
@@ -255,7 +256,14 @@ def test_API_promise_to_have():
     # test negative frame (it will be set to self.count - 1)
     view.frame = -1
     msg = dict(type='request_frame', data=dict())
-
+    # async_message
+    msg  = {'type': 'async_message', 'data': 'ok'}
+    view._ngl_handle_msg(view, msg, [])
+    # render_image
+    r = view.render_image()
+    Widget.widgets[r.model_id] = r
+    msg = {'type': 'image_data', 'ID': 'a-b-c-d', 'data': b'YmxhIGJsYQ=='}
+    view._ngl_handle_msg(view, msg, [])
     view.loaded = True
     view.show_only([
         0,
@@ -352,6 +360,7 @@ def test_coordinates_dict():
     view._send_binary = False
     view._coordinates_dict = {0: coords}
     # increase coverage for IndexError: make index=1000 (which is larger than n_frames)
+    view.player.interpolate = True
     view._set_coordinates(1000)
 
 
@@ -980,6 +989,17 @@ def test_theme():
     theme.oceans16()
     theme.reset()
     theme._get_theme('oceans16.css')
+
+    v = nv.NGLWidget()
+    change = MagicMock(new='dark')
+    msg = v._dry_run(v._on_theme_changed, change)
+    assert msg['methodName'] == 'updateNGLTheme'
+    assert msg['fire_embed']
+    assert 'color: #B8B8B8' in msg['args'][0]
+
+    change = MagicMock(new='light')
+    msg = v._dry_run(v._on_theme_changed, change)
+    assert msg['args'][0] == ""
 
 
 def test_player_click_tab():

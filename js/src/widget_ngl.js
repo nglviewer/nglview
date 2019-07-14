@@ -254,8 +254,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         if (this.player_pview){
             this.player_pview.then(function(v){
                 v.el.style.display = type
-                console.log('max_frame ' + that.model.get("max_frame"))
-                // Need to check if max_frame is available (otherwise NaN
+                // Need to check if max_frame is available (otherwise NaN)
                 // https://github.com/jupyter-widgets/ipywidgets/issues/2485
                 if (!that.model.get("max_frame") || (that.model.get("max_frame") <= 1)){
                     // always hide if there's no trajectory.
@@ -263,6 +262,18 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             })
         }
+    },
+
+    updateNGLTheme: function(css_content){
+        var ele = document.getElementById("nglview_style")
+        if (ele != undefined){
+            document.head.removeChild(ele)
+        }
+        var style = document.createElement("style")
+        style.id = 'nglview_style'
+        style.type = 'text/css'
+        style.appendChild(document.createTextNode(css_content))
+        document.head.appendChild(style)
     },
 
     serialize_camera_orientation: function(){

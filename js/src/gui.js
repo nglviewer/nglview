@@ -194,13 +194,13 @@ StageWidget = function (el, stage) {
 
   //
 
-  var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar')
+  var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar_ngl')
   el.appendChild(toolbar.dom)
 
-  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar')
+  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar_ngl')
   el.appendChild(menubar.dom)
 
-  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar')
+  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar_ngl')
   el.appendChild(sidebar.dom)
 
   this.widgetList.push(toolbar)
@@ -256,9 +256,6 @@ StageWidget = function (el, stage) {
       var ew = el.getBoundingClientRect().width
       var w = ew - sw + 'px'
 
-      // for debug
-      console.log('handleResizeInNotebook, ew sw and w width', ew, sw, w)
-      console.log('handleResizeInNotebook, el height ', el.getBoundingClientRect().height)
       stage.viewer.container.style.width = w 
       stage.handleResize()
   }
