@@ -113,50 +113,53 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.displayed.then(function() {
 	            // move all below code inside 'displayed'
 	            // to make sure the NGLView and NGLModel are created
-	            // init NGL stage
-	            var stage_params = this.model.get("_ngl_full_stage_parameters");
-	            if (!("backgroundColor" in stage_params)){
-	                stage_params["backgroundColor"] = "white"
-	            }
-	            NGL.useWorker = false;
-	            this.stage = new NGL.Stage(undefined);
-	            this.stage.setParameters(stage_params);
-	            this.$container = $(this.stage.viewer.container);
-	            this.$el.append(this.$container);
-	            this.handleResizable()
-	            this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
-	            // more than two views at the same time (e.g: in a Box)
-	            this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
-	            this.touch();
-	            var that = this;
-	            var width = this.$el.parent().width() + "px";
-	            var height = "300px";
-	            this.setSize(width, height);
-	            this.createFullscreenBtn(); // FIXME: move up?
-	            this.createIPlayer(); // FIXME: move up?
-	            this.GUIStyleChanged(); // must be called after displaying to get correct width and height
-	
-	            this.$container.resizable(
-	                "option", "maxWidth", this.$el.parent().width()
-	            );
-	            var is_embeded = this.model.get("_ngl_serialize") || (this.model.comm == undefined)
-		        if (is_embeded){
-	                console.log("In embeding mode")
-		            that.handle_embed();
-	            }else{
-	                this.requestUpdateStageParameters();
-	                if (this.model.views.length == 1){
-	                    this.serialize_camera_orientation();
-	                }else{
-	                    this.set_camera_orientation(that.model.get("_camera_orientation"));
-	                }
-	            }
-	
+	            this.createStage()
 	            this.handlePicking()
 	            this.handleSignals()
 	            this.finalizeDisplay()
 	        }.bind(this));
 	
+	    },
+	
+	    createStage: function(){
+	        // init NGL stage
+	        var stage_params = this.model.get("_ngl_full_stage_parameters");
+	        if (!("backgroundColor" in stage_params)){
+	            stage_params["backgroundColor"] = "white"
+	        }
+	        NGL.useWorker = false;
+	        this.stage = new NGL.Stage(undefined);
+	        this.stage.setParameters(stage_params);
+	        this.$container = $(this.stage.viewer.container);
+	        this.$el.append(this.$container);
+	        this.handleResizable()
+	        this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
+	        // more than two views at the same time (e.g: in a Box)
+	        this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
+	        this.touch();
+	        var that = this;
+	        var width = this.$el.parent().width() + "px";
+	        var height = "300px";
+	        this.setSize(width, height);
+	        this.createFullscreenBtn(); // FIXME: move up?
+	        this.createIPlayer(); // FIXME: move up?
+	        this.GUIStyleChanged(); // must be called after displaying to get correct width and height
+	
+	        this.$container.resizable(
+	            "option", "maxWidth", this.$el.parent().width()
+	        );
+	        var is_embeded = this.model.get("_ngl_serialize") || (this.model.comm == undefined)
+		    if (is_embeded){
+	            console.log("In embeding mode")
+		        that.handle_embed();
+	        }else{
+	            this.requestUpdateStageParameters();
+	            if (this.model.views.length == 1){
+	                this.serialize_camera_orientation();
+	            }else{
+	                this.set_camera_orientation(that.model.get("_camera_orientation"));
+	            }
+	        }
 	    },
 	
 	    handleMessage(){
