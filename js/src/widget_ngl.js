@@ -194,23 +194,15 @@ var NGLView = widgets.DOMWidgetView.extend({
       }, this);
 
       this.stage.signals.parametersChanged.add(function(){
-          console.log('parametersChanged')
           this.requestUpdateStageParameters();
       }, this);
 
       this.stage.viewerControls.signals.changed.add(function() {
           this.serialize_camera_orientation();
           var m = this.stage.viewerControls.getOrientation();
-          console.log("that._ngl_focused")
-          console.log(that._ngl_focused)
-          console.log(that._synced_model_ids)
-          console.log((that._synced_model_ids.length > 0 && that._ngl_focused == 1))
           if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
-              console.log("try to sync camera")
               that._synced_model_ids.forEach(function(mid){
                   that.model.widget_manager.get_model(mid).then(function(model){
-                      console.log('model')
-                      console.log(model)
                       for (var k in model.views){
                           var pview = model.views[k];
                           pview.then(function(view){
@@ -585,7 +577,6 @@ var NGLView = widgets.DOMWidgetView.extend({
 
 
     createNglGUI: function(){
-      console.log("Creating NGL GUI")
       this.stage_widget = new StageWidget(this.el, this.stage);
       // this.$container.resizable("disable");
     },
@@ -665,7 +656,6 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     setColorByResidue: function(colors, component_index, repr_index){
-        console.log('NGL.ColormakerRegistry', NGL.ColormakerRegistry);
         var repr = this.stage.compList[component_index].reprList[repr_index];
         var schemeId = NGL.ColormakerRegistry.addScheme(function(params){
             this.atomColor = function(atom){
@@ -833,9 +823,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     GUIStyleChanged: function(){
         var style = this.model.get("gui_style");
-        console.log('style ' + style);
         if (style === 'ngl'){
-            console.log("Creating NGL GUI");
             this.createNglGUI();
         }else{
             if (this.stage_widget){
