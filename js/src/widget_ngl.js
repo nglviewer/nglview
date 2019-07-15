@@ -17,6 +17,32 @@ require('./css/light.css');
 require('./css/main.css')
 
 
+// From NGL
+// http://www.broofa.com/Tools/Math.uuid.htm
+const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
+const uuid = new Array(36)
+
+function generateUUID () {
+  let rnd = 0
+  let r
+
+  for (let i = 0; i < 36; i++) {
+    if (i === 8 || i === 13 || i === 18 || i === 23) {
+      uuid[ i ] = '-'
+    } else if (i === 14) {
+      uuid[ i ] = '4'
+    } else {
+      if (rnd <= 0x02) rnd = 0x2000000 + (Math.random() * 0x1000000) | 0
+      r = rnd & 0xf
+      rnd = rnd >> 4
+      uuid[ i ] = chars[ (i === 19) ? (r & 0x3) | 0x8 : r ]
+    }
+  }
+
+  return uuid.join('')
+}
+
+
 var NGLModel = widgets.DOMWidgetModel.extend({
     defaults: function(){
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
@@ -32,12 +58,7 @@ var NGLModel = widgets.DOMWidgetModel.extend({
 
 var NGLView = widgets.DOMWidgetView.extend({
     render: function() {
-        this.model.on("change:_parameters", this.parametersChanged, this);
-        this.model.on("change:gui_style", this.GUIStyleChanged, this);
-        this.model.set('_ngl_version', NGL.Version);
-        this._synced_model_ids = this.model.get("_synced_model_ids");
-        this.stage_widget = undefined
-
+        this.beforeDisplay()
         this.displayed.then(function() {
             // move all below code inside 'displayed'
             // to make sure the NGLView and NGLModel are created
@@ -48,6 +69,16 @@ var NGLView = widgets.DOMWidgetView.extend({
             this.finalizeDisplay()
         }.bind(this));
 
+    },
+
+    beforeDisplay: function(){
+        this.model.on("change:_parameters", this.parametersChanged, this);
+        this.model.on("change:gui_style", this.GUIStyleChanged, this);
+        this.model.set('_ngl_version', NGL.Version);
+        this._ngl_focused = 0
+        this.uuid = generateUUID()
+        this.stage_widget = undefined
+        this._synced_model_ids = this.model.get("_synced_model_ids");
     },
 
     createStage: function(){
@@ -131,7 +162,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     handleSignals: function(){
       var container = this.stage.viewer.container;
-      that = this;
+      var that = this;
       container.addEventListener('mouseover', function(e) {
           that._ngl_focused = 1;
           e; // linter
@@ -168,17 +199,23 @@ var NGLView = widgets.DOMWidgetView.extend({
       }, this);
 
       this.stage.viewerControls.signals.changed.add(function() {
-          var that = this;
           this.serialize_camera_orientation();
           var m = this.stage.viewerControls.getOrientation();
+          console.log("that._ngl_focused")
+          console.log(that._ngl_focused)
+          console.log(that._synced_model_ids)
+          console.log((that._synced_model_ids.length > 0 && that._ngl_focused == 1))
           if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
+              console.log("try to sync camera")
               that._synced_model_ids.forEach(function(mid){
                   that.model.widget_manager.get_model(mid).then(function(model){
+                      console.log('model')
+                      console.log(model)
                       for (var k in model.views){
                           var pview = model.views[k];
                           pview.then(function(view){
                               // not sync with itself
-                              if (view != that){
+                              if (view.uuid != that.uuid){
                                   view.stage.viewerControls.orient(m);
                               }
                           })

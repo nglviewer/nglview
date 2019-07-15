@@ -39,7 +39,7 @@ except ImportError:
     from ipywidgets.widget_image import Image
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '2.6.0'  # must match to js/package.json
+__frontend_version__ = '2.6.1'  # must match to js/package.json
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
     'setUnSyncCamera',
     'setSelector',

@@ -88,6 +88,32 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	__webpack_require__(75)
 	
 	
+	// From NGL
+	// http://www.broofa.com/Tools/Math.uuid.htm
+	const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
+	const uuid = new Array(36)
+	
+	function generateUUID () {
+	  let rnd = 0
+	  let r
+	
+	  for (let i = 0; i < 36; i++) {
+	    if (i === 8 || i === 13 || i === 18 || i === 23) {
+	      uuid[ i ] = '-'
+	    } else if (i === 14) {
+	      uuid[ i ] = '4'
+	    } else {
+	      if (rnd <= 0x02) rnd = 0x2000000 + (Math.random() * 0x1000000) | 0
+	      r = rnd & 0xf
+	      rnd = rnd >> 4
+	      uuid[ i ] = chars[ (i === 19) ? (r & 0x3) | 0x8 : r ]
+	    }
+	  }
+	
+	  return uuid.join('')
+	}
+	
+	
 	var NGLModel = widgets.DOMWidgetModel.extend({
 	    defaults: function(){
 	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
@@ -103,12 +129,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	var NGLView = widgets.DOMWidgetView.extend({
 	    render: function() {
-	        this.model.on("change:_parameters", this.parametersChanged, this);
-	        this.model.on("change:gui_style", this.GUIStyleChanged, this);
-	        this.model.set('_ngl_version', NGL.Version);
-	        this._synced_model_ids = this.model.get("_synced_model_ids");
-	        this.stage_widget = undefined
-	
+	        this.beforeDisplay()
 	        this.displayed.then(function() {
 	            // move all below code inside 'displayed'
 	            // to make sure the NGLView and NGLModel are created
@@ -119,6 +140,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            this.finalizeDisplay()
 	        }.bind(this));
 	
+	    },
+	
+	    beforeDisplay: function(){
+	        this.model.on("change:_parameters", this.parametersChanged, this);
+	        this.model.on("change:gui_style", this.GUIStyleChanged, this);
+	        this.model.set('_ngl_version', NGL.Version);
+	        this._ngl_focused = 0
+	        this.uuid = generateUUID()
+	        this.stage_widget = undefined
+	        this._synced_model_ids = this.model.get("_synced_model_ids");
 	    },
 	
 	    createStage: function(){
@@ -202,7 +233,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    handleSignals: function(){
 	      var container = this.stage.viewer.container;
-	      that = this;
+	      var that = this;
 	      container.addEventListener('mouseover', function(e) {
 	          that._ngl_focused = 1;
 	          e; // linter
@@ -239,17 +270,23 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	      }, this);
 	
 	      this.stage.viewerControls.signals.changed.add(function() {
-	          var that = this;
 	          this.serialize_camera_orientation();
 	          var m = this.stage.viewerControls.getOrientation();
+	          console.log("that._ngl_focused")
+	          console.log(that._ngl_focused)
+	          console.log(that._synced_model_ids)
+	          console.log((that._synced_model_ids.length > 0 && that._ngl_focused == 1))
 	          if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
+	              console.log("try to sync camera")
 	              that._synced_model_ids.forEach(function(mid){
 	                  that.model.widget_manager.get_model(mid).then(function(model){
+	                      console.log('model')
+	                      console.log(model)
 	                      for (var k in model.views){
 	                          var pview = model.views[k];
 	                          pview.then(function(view){
 	                              // not sync with itself
-	                              if (view != that){
+	                              if (view.uuid != that.uuid){
 	                                  view.stage.viewerControls.orient(m);
 	                              }
 	                          })
@@ -26362,7 +26399,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 77 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"2.6.0","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"2.6.1","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ })
 /******/ ])});;
