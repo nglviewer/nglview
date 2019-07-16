@@ -158,6 +158,9 @@ var NGLView = widgets.DOMWidgetView.extend({
       var state_params = this.stage.getParameters();
       this.model.set('_ngl_original_stage_parameters', state_params);
       this.touch();
+      if (this.stage.compList.length < this.model.get("n_components")){
+          this.handle_embed()
+      }
     },
 
     handleSignals: function(){

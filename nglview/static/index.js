@@ -229,6 +229,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	      var state_params = this.stage.getParameters();
 	      this.model.set('_ngl_original_stage_parameters', state_params);
 	      this.touch();
+	      if (this.stage.compList.length < this.model.get("n_components")){
+	          this.handle_embed()
+	      }
 	    },
 	
 	    handleSignals: function(){
@@ -265,23 +268,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	      }, this);
 	
 	      this.stage.signals.parametersChanged.add(function(){
-	          console.log('parametersChanged')
 	          this.requestUpdateStageParameters();
 	      }, this);
 	
 	      this.stage.viewerControls.signals.changed.add(function() {
 	          this.serialize_camera_orientation();
 	          var m = this.stage.viewerControls.getOrientation();
-	          console.log("that._ngl_focused")
-	          console.log(that._ngl_focused)
-	          console.log(that._synced_model_ids)
-	          console.log((that._synced_model_ids.length > 0 && that._ngl_focused == 1))
 	          if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
-	              console.log("try to sync camera")
 	              that._synced_model_ids.forEach(function(mid){
 	                  that.model.widget_manager.get_model(mid).then(function(model){
-	                      console.log('model')
-	                      console.log(model)
 	                      for (var k in model.views){
 	                          var pview = model.views[k];
 	                          pview.then(function(view){
@@ -656,7 +651,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	
 	    createNglGUI: function(){
-	      console.log("Creating NGL GUI")
 	      this.stage_widget = new StageWidget(this.el, this.stage);
 	      // this.$container.resizable("disable");
 	    },
@@ -736,7 +730,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    setColorByResidue: function(colors, component_index, repr_index){
-	        console.log('NGL.ColormakerRegistry', NGL.ColormakerRegistry);
 	        var repr = this.stage.compList[component_index].reprList[repr_index];
 	        var schemeId = NGL.ColormakerRegistry.addScheme(function(params){
 	            this.atomColor = function(atom){
@@ -904,9 +897,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    GUIStyleChanged: function(){
 	        var style = this.model.get("gui_style");
-	        console.log('style ' + style);
 	        if (style === 'ngl'){
-	            console.log("Creating NGL GUI");
 	            this.createNglGUI();
 	        }else{
 	            if (this.stage_widget){
@@ -19024,11 +19015,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				__webpack_require__(36),
 				__webpack_require__(38),
 				__webpack_require__(27),
-				__webpack_require__(39),
-				__webpack_require__(33),
-				__webpack_require__(34),
-				__webpack_require__(40),
 				__webpack_require__(41),
+				__webpack_require__(35),
+				__webpack_require__(33),
+				__webpack_require__(39),
+				__webpack_require__(40),
 				__webpack_require__(21),
 				__webpack_require__(20)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -21970,9 +21961,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 				__webpack_require__(29),
 				__webpack_require__(31),
 				__webpack_require__(32),
+				__webpack_require__(35),
 				__webpack_require__(33),
 				__webpack_require__(34),
-				__webpack_require__(35),
 				__webpack_require__(21),
 				__webpack_require__(20)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -23560,52 +23551,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 			factory( jQuery );
 		}
 	} ( function( $ ) {
-	return $.ui.safeActiveElement = function( document ) {
-		var activeElement;
-	
-		// Support: IE 9 only
-		// IE9 throws an "Unspecified error" accessing document.activeElement from an <iframe>
-		try {
-			activeElement = document.activeElement;
-		} catch ( error ) {
-			activeElement = document.body;
-		}
-	
-		// Support: IE 9 - 11 only
-		// IE may return null instead of an element
-		// Interestingly, this only seems to occur when NOT in an iframe
-		if ( !activeElement ) {
-			activeElement = document.body;
-		}
-	
-		// Support: IE 11 only
-		// IE11 returns a seemingly empty object in some cases when accessing
-		// document.activeElement from an <iframe>
-		if ( !activeElement.nodeName ) {
-			activeElement = document.body;
-		}
-	
-		return activeElement;
-	};
-	
-	} ) );
-
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
 	return $.ui.safeBlur = function( element ) {
 	
 		// Support: IE9 - 10 only
@@ -23619,7 +23564,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -23664,6 +23609,52 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		return position === "fixed" || !scrollParent.length ?
 			$( this[ 0 ].ownerDocument || document ) :
 			scrollParent;
+	};
+	
+	} ) );
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	return $.ui.safeActiveElement = function( document ) {
+		var activeElement;
+	
+		// Support: IE 9 only
+		// IE9 throws an "Unspecified error" accessing document.activeElement from an <iframe>
+		try {
+			activeElement = document.activeElement;
+		} catch ( error ) {
+			activeElement = document.body;
+		}
+	
+		// Support: IE 9 - 11 only
+		// IE may return null instead of an element
+		// Interestingly, this only seems to occur when NOT in an iframe
+		if ( !activeElement ) {
+			activeElement = document.body;
+		}
+	
+		// Support: IE 11 only
+		// IE11 returns a seemingly empty object in some cases when accessing
+		// document.activeElement from an <iframe>
+		if ( !activeElement.nodeName ) {
+			activeElement = document.body;
+		}
+	
+		return activeElement;
 	};
 	
 	} ) );
@@ -25023,6 +25014,102 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Tabbable 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: :tabbable Selector
+	//>>group: Core
+	//>>description: Selects elements which can be tabbed to.
+	//>>docs: http://api.jqueryui.com/tabbable-selector/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21), __webpack_require__(38) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	return $.extend( $.expr[ ":" ], {
+		tabbable: function( element ) {
+			var tabIndex = $.attr( element, "tabindex" ),
+				hasTabindex = tabIndex != null;
+			return ( !hasTabindex || tabIndex >= 0 ) && $.ui.focusable( element, hasTabindex );
+		}
+	} );
+	
+	} ) );
+
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery UI Unique ID 1.12.1
+	 * http://jqueryui.com
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 */
+	
+	//>>label: uniqueId
+	//>>group: Core
+	//>>description: Functions to generate and remove uniqueId's
+	//>>docs: http://api.jqueryui.com/uniqueId/
+	
+	( function( factory ) {
+		if ( true ) {
+	
+			// AMD. Register as an anonymous module.
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+	
+			// Browser globals
+			factory( jQuery );
+		}
+	} ( function( $ ) {
+	
+	return $.fn.extend( {
+		uniqueId: ( function() {
+			var uuid = 0;
+	
+			return function() {
+				return this.each( function() {
+					if ( !this.id ) {
+						this.id = "ui-id-" + ( ++uuid );
+					}
+				} );
+			};
+		} )(),
+	
+		removeUniqueId: function() {
+			return this.each( function() {
+				if ( /^ui-id-\d+$/.test( this.id ) ) {
+					$( this ).removeAttr( "id" );
+				}
+			} );
+		}
+	} );
+	
+	} ) );
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	 * jQuery UI Position 1.12.1
 	 * http://jqueryui.com
 	 *
@@ -25518,102 +25605,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	} )();
 	
 	return $.ui.position;
-	
-	} ) );
-
-
-/***/ }),
-/* 40 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Tabbable 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: :tabbable Selector
-	//>>group: Core
-	//>>description: Selects elements which can be tabbed to.
-	//>>docs: http://api.jqueryui.com/tabbable-selector/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21), __webpack_require__(38) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	return $.extend( $.expr[ ":" ], {
-		tabbable: function( element ) {
-			var tabIndex = $.attr( element, "tabindex" ),
-				hasTabindex = tabIndex != null;
-			return ( !hasTabindex || tabIndex >= 0 ) && $.ui.focusable( element, hasTabindex );
-		}
-	} );
-	
-	} ) );
-
-
-/***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery UI Unique ID 1.12.1
-	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 */
-	
-	//>>label: uniqueId
-	//>>group: Core
-	//>>description: Functions to generate and remove uniqueId's
-	//>>docs: http://api.jqueryui.com/uniqueId/
-	
-	( function( factory ) {
-		if ( true ) {
-	
-			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-		} else {
-	
-			// Browser globals
-			factory( jQuery );
-		}
-	} ( function( $ ) {
-	
-	return $.fn.extend( {
-		uniqueId: ( function() {
-			var uuid = 0;
-	
-			return function() {
-				return this.each( function() {
-					if ( !this.id ) {
-						this.id = "ui-id-" + ( ++uuid );
-					}
-				} );
-			};
-		} )(),
-	
-		removeUniqueId: function() {
-			return this.each( function() {
-				if ( /^ui-id-\d+$/.test( this.id ) ) {
-					$( this ).removeAttr( "id" );
-				}
-			} );
-		}
-	} );
 	
 	} ) );
 

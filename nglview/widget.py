@@ -139,7 +139,6 @@ class NGLWidget(DOMWidget):
     n_components = Int(0).tag(sync=True)
     _scene_position = Dict().tag(sync=True)
     _scene_rotation = Dict().tag(sync=True)
-    _first_time_loaded = Bool(True).tag(sync=False)
     # hack to always display movie
     # TODO: remove _parameters?
     _parameters = Dict().tag(sync=False)
@@ -154,7 +153,6 @@ class NGLWidget(DOMWidget):
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
-    _already_constructed = Bool(False).tag(sync=False)
     _ngl_msg = None
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
@@ -244,7 +242,6 @@ class NGLWidget(DOMWidget):
                 self.center()
 
         self.player = TrajectoryPlayer(self)
-        self._already_constructed = True
 
         # Updating only self.layout.{width, height} don't handle
         # resizing NGL widget properly.
@@ -535,20 +532,10 @@ class NGLWidget(DOMWidget):
 
     def _ipython_display_(self, **kwargs):
         super()._ipython_display_(**kwargs)
-        if self._first_time_loaded:
-            self._first_time_loaded = False
-        else:
-            time.sleep(0.1)
-            self.sync_view()
         if self._init_gui:
             if self._gui is None:
                 self._gui = self.player._display()
             display(self._gui)
-
-        if self._theme in ['dark', 'oceans16']:
-            from nglview import theme
-            display(theme.oceans16())
-            self._remote_call('cleanOutput', target='Widget')
 
     def display(self, gui=False, use_box=False):
         if gui:
@@ -848,7 +835,7 @@ class NGLWidget(DOMWidget):
         >>> view._add_shape([sphere, arrow], name='my_shape')
         """
 
-        self._remote_call('addShape', target='Widget', args=[name, shapes])
+        self._remote_call('addShape', target='Widget', args=[name, shapes], fire_embed=True)
 
     @_update_url
     def add_representation(self, repr_type, selection='all', **kwargs):

@@ -137,4 +137,5 @@ class Shape:
         self.view._remote_call("addBuffer",
                                target="Widget",
                                args=[name],
-                               kwargs=kwargs)
+                               kwargs=kwargs,
+                               fire_embed=True)
