@@ -1118,3 +1118,18 @@ def test_write_html(mock_unset):
 
     # box
     nv.write_html(fp, [HBox([view])], frame_range=(0, 3))
+
+
+def test_trim_messages():
+    view = nv.demo()
+    view.remove_component(view[0])
+    assert view._ngl_msg_archive == []
+    view.add_component(nv.datafiles.ALA3)
+    assert len(view._ngl_msg_archive) == 1
+    assert view._ngl_msg_archive[0]['methodName'] == 'loadFile'
+
+    view = nv.demo()
+    c = view.add_component(nv.datafiles.ALA3)
+    view.remove_component(c)
+    assert len(view._ngl_msg_archive) == 1
+    assert view._ngl_msg_archive[0]['methodName'] == 'loadFile'

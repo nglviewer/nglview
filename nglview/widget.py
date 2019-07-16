@@ -351,7 +351,7 @@ class NGLWidget(DOMWidget):
                     fire_embed=True)
         elif change.new == 'light':
             # default theme is light, so we just need to remove previous theme
-            self._remote_call("updateNGLTheme", 
+            self._remote_call("updateNGLTheme",
                     args=[""], fire_embed=True)
 
     @observe('picked')
@@ -491,44 +491,6 @@ class NGLWidget(DOMWidget):
                     self._wait_until_finished()
 
         self._run_on_another_thread(_call, self._event)
-
-    def sync_view(self):
-        """call this if you want to sync multiple views of a single viewer
-
-        Note: unstable feature
-        """
-        new_callbacks = []
-        for c in self._ngl_msg_archive:
-            if (c['methodName'] == 'loadFile'
-                    and 'defaultRepresentation' in c['kwargs']):
-                # set to False to avoid autoView
-                # so subsequent display of `self` won't reset view orientation.
-                c['kwargs']['defaultRepresentation'] = False
-            c['last_child'] = True
-
-            def callback(widget, msg=c):
-                widget.send(msg)
-
-            callback._method_name = c['methodName']
-            callback._ngl_msg = c
-            new_callbacks.append(callback)
-
-        msg = {}
-        msg['target'] = 'Widget'
-        msg['type'] = 'call_method'
-        msg['methodName'] = 'set_representation_from_backend'
-        msg['args'] = []
-        msg['kwargs'] = {}
-        msg['last_child'] = True
-
-        def callback(widget, msg=msg):
-            widget.send(msg)
-
-        callback._method_name = msg['methodName']
-        callback._ngl_msg = msg
-
-        new_callbacks.append(callback)
-        self._fire_callbacks(new_callbacks)
 
     def _ipython_display_(self, **kwargs):
         super()._ipython_display_(**kwargs)
@@ -1346,6 +1308,31 @@ class NGLWidget(DOMWidget):
             msg.update(other_kwargs)
         return msg
 
+    def _trim_message(self, messages):
+        messages = messages[:]
+        load_comps = [
+            index for index, msg in enumerate(messages)
+            if msg['methodName'] == 'loadFile'
+        ]
+        remove_comps = [(index, msg['args'][0])
+                        for index, msg in enumerate(messages)
+                        if msg['methodName'] == 'removeComponent']
+        remove_comps.reverse()
+        while remove_comps:
+            index, cindex = remove_comps.pop()
+            messages.pop(index)
+            messages.pop(load_comps[cindex])
+            load_comps.remove(load_comps[cindex])
+            load_comps = [
+                index for index, msg in enumerate(messages)
+                if msg['methodName'] == 'loadFile'
+            ]
+            remove_comps = [(index, msg['args'][0])
+                            for index, msg in enumerate(messages)
+                            if msg['methodName'] == 'removeComponent']
+            remove_comps.reverse()
+        return messages
+
     def _remote_call(self,
                      method_name,
                      target='Widget',
@@ -1376,7 +1363,7 @@ class NGLWidget(DOMWidget):
            (not other_kwargs.get("fire_once", False)):
             archive = self._ngl_msg_archive[:]
             archive.append(msg)
-            self._ngl_msg_archive = archive  # trigger syncing
+            self._ngl_msg_archive = self._trim_message(archive)
 
     def _get_traj_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object
