@@ -201,7 +201,6 @@ def test_API_promise_to_have():
     view._handle_n_components_changed(change=dict(new=1, old=0))
     view.on_loaded(change=dict(new=True))
     view.on_loaded(change=dict(new=False))
-    view.sync_view()
 
     view._first_time_loaded = False
     view._ipython_display_()
@@ -1097,7 +1096,7 @@ def test_queuing_messages():
            ['loadFile']
 
     # display 2nd time
-    view.sync_view()
+    view
     assert [f['methodName'] for f in view._ngl_msg_archive] == \
            ['loadFile']
 
