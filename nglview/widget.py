@@ -137,6 +137,8 @@ class NGLWidget(DOMWidget):
     loaded = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
     n_components = Int(0).tag(sync=True)
+    _view_width = Unicode().tag(sync=True) # px
+    _view_height = Unicode().tag(sync=True) # px
     _scene_position = Dict().tag(sync=True)
     _scene_rotation = Dict().tag(sync=True)
     # hack to always display movie
@@ -242,6 +244,8 @@ class NGLWidget(DOMWidget):
                 self.center()
 
         self.player = TrajectoryPlayer(self)
+        self._view_width = kwargs.get('width', '')
+        self._view_height = kwargs.get('height', '')
 
         # Updating only self.layout.{width, height} don't handle
         # resizing NGL widget properly.

@@ -98,8 +98,8 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
         this.touch();
         var that = this;
-        var width = this.$el.parent().width() + "px";
-        var height = "300px";
+        var width = this.model.get("_view_width") || this.$el.parent().width() + "px";
+        var height = this.model.get("_view_height") || "300px";
         this.setSize(width, height);
         this.createFullscreenBtn(); // FIXME: move up?
         this.createIPlayer(); // FIXME: move up?
