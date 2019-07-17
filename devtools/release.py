@@ -15,3 +15,4 @@ if front_end_version != latest_tag:
     print(f"Version mismatch between front_end_version {front_end_version} and latest_tag {latest_tag}")
     sys.exit(1)
 subprocess.check_call('python setup.py sdist', shell=True)
+print("Make sure to publish npm package")
