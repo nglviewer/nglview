@@ -193,9 +193,10 @@ def test_js_utils():
     js_utils.show_toolbar()
     js_utils.execute('print("hello")')
 
+
 def test_compare_images():
     image_original = './nglview/tests/data/images/original.jpg'
     image_high_quality = './nglview/tests/data/images/original_high_quality.jpg'
     image_modify = './nglview/tests/data/images/original_high_modify.jpg'
-    assert (compare_two_images(image_original, image_high_quality)==True)
-    assert (compare_two_images(image_original, image_modify)==False)
+    assert (compare_two_images(image_original, image_high_quality) == True)
+    assert (compare_two_images(image_original, image_modify) == False)

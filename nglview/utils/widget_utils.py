@@ -4,6 +4,7 @@ from ..parameters import REPRESENTATION_NAME_PAIRS
 
 import cv2
 
+
 def wait(widget, attribute='value', timeout=5):
     """ EXPERIMENTAL. Require `ipython_blocking` package.
 
@@ -92,6 +93,7 @@ def _add_repr_method_shortcut(self, other):
             fn = '_'.join((root_fn, rep[0]))
             setattr(self, fn, MethodType(func, other))
 
+
 def compare_two_images(image_path_1,
                        image_path_2,
                        standard_width=200,
@@ -118,17 +120,18 @@ def compare_two_images(image_path_1,
 
     # load image and resize
     img_1 = resize_and_load_image(image_path=image_path_1,
-                                 new_width=standard_width,
-                                 new_height=standard_height,
-                                 convert_to_gray=convert_to_gray)
+                                  new_width=standard_width,
+                                  new_height=standard_height,
+                                  convert_to_gray=convert_to_gray)
     img_2 = resize_and_load_image(image_path=image_path_2,
-                                 new_width=standard_width,
-                                 new_height=standard_height,
-                                 convert_to_gray=convert_to_gray)
+                                  new_width=standard_width,
+                                  new_height=standard_height,
+                                  convert_to_gray=convert_to_gray)
     b_multichanel = not convert_to_gray
     s = ssim(img_1, img_2, multichannel=b_multichanel)
 
     return s > threshold
+
 
 def resize_and_load_image(image_path,
                           new_width=200,
@@ -145,10 +148,10 @@ def resize_and_load_image(image_path,
     """
     img = cv2.imread(image_path)
     # resize
-    img_resize = cv2.resize(img, (new_width, new_height),interpolation=cv2.INTER_AREA)
+    img_resize = cv2.resize(img, (new_width, new_height),
+                            interpolation=cv2.INTER_AREA)
     # convert images to gray scale
     if convert_to_gray:
         img_resize = cv2.cvtColor(img_resize, cv2.COLOR_BGR2GRAY)
 
     return img_resize
-
