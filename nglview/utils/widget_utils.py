@@ -2,6 +2,7 @@ import time
 
 from ..parameters import REPRESENTATION_NAME_PAIRS
 
+import cv2
 
 def wait(widget, attribute='value', timeout=5):
     """ EXPERIMENTAL. Require `ipython_blocking` package.
@@ -90,3 +91,64 @@ def _add_repr_method_shortcut(self, other):
             func = make_func(rep)
             fn = '_'.join((root_fn, rep[0]))
             setattr(self, fn, MethodType(func, other))
+
+def compare_two_images(image_path_1,
+                       image_path_2,
+                       standard_width=200,
+                       standard_height=200,
+                       convert_to_gray=False,
+                       threshold=0.97):
+    """
+    Comparing two images. Two images will be convert to new size
+    (standard_width, standard_height) and then compute structural similarity
+    to compare them.
+    Input:
+        image_path_1: string, path for the first image
+        image_path_2: string, path for the second image
+        standard_width: float (number of pixels) for a standard width
+        standard_height: float (number of pixels) for a standard height
+        convert_to_gray: boolean; if user want to convert a gray scale after
+            resize the images.
+        threshold: float, threshold for the structural similarity index
+            between two images. The default value is 0.97
+    Output:
+        Boolean value
+    """
+    from skimage.measure import compare_ssim as ssim
+
+    # load image and resize
+    img_1 = resize_and_load_image(image_path=image_path_1,
+                                 new_width=standard_width,
+                                 new_height=standard_height,
+                                 convert_to_gray=convert_to_gray)
+    img_2 = resize_and_load_image(image_path=image_path_2,
+                                 new_width=standard_width,
+                                 new_height=standard_height,
+                                 convert_to_gray=convert_to_gray)
+    b_multichanel = not convert_to_gray
+    s = ssim(img_1, img_2, multichannel=b_multichanel)
+
+    return s > threshold
+
+def resize_and_load_image(image_path,
+                          new_width=200,
+                          new_height=200,
+                          convert_to_gray=True):
+    """
+    Load image and resize it to new_width and new_height
+    Input:
+        image_path: string, path for the image
+        new_width, new_height: float (number of pixels); the new width and height
+        convert_to_gray: boolean: and option to convert it to gray
+    Output:
+        pixel values as a nd np.array
+    """
+    img = cv2.imread(image_path)
+    # resize
+    img_resize = cv2.resize(img, (new_width, new_height),interpolation=cv2.INTER_AREA)
+    # convert images to gray scale
+    if convert_to_gray:
+        img_resize = cv2.cvtColor(img_resize, cv2.COLOR_BGR2GRAY)
+
+    return img_resize
+
