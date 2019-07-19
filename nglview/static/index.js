@@ -14007,7 +14007,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            view.then((view) => {
 	                var box = that.el.getBoundingClientRect()
 	                var view_len = that.children_views.views.length
-	                var w
+	                var w, h
 	                if (view_len === 3){
 	                    // the player (3rd view) has width of 300px
 	                    // FIXME: smarter?
@@ -14016,8 +14016,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                else {
 	                    w = box.width / 2
 	                }
+	                if (view_len === 4){
+	                    h = box.height / 2
+	                }
+	                else{
+	                    h = box.height
+	                }
+	                
 	                w = w + 'px'
-	                var h = box.height + 'px'
+	                h = h + 'px'
 	                view.setSize(w, h)
 	            })
 	        })
