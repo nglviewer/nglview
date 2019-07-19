@@ -1,11 +1,11 @@
-from ipywidgets import Box, GridBox
+from ipywidgets import Box, GridBox, GridspecLayout, AppLayout
 from traitlets import Bool, CaselessStrEnum, Unicode, observe
 
 from .layout import make_form_item_layout
 from .utils import js_utils
 from .widget import NGLWidget
 
-__frontend_version__ = '2.6.1'  # must match to js/package.json
+__frontend_version__ = '2.6.2'  # must match to js/package.json
 
 class BoxNGL(Box):
     _gui_style = CaselessStrEnum(['row', 'column'],
@@ -68,3 +68,10 @@ class GridBoxNGL(GridBox):
         self._js("""
             this.stage.toggleFullscreen(this.el)
         """)
+
+
+class GridspecLayoutNGL(GridspecLayout, GridBoxNGL):
+    pass
+
+class AppLayoutNGL(AppLayout, GridBoxNGL):
+    pass
