@@ -1,4 +1,4 @@
-from ipywidgets import Box
+from ipywidgets import Box, GridBox
 from traitlets import Bool, CaselessStrEnum, Unicode, observe
 
 from .layout import make_form_item_layout
@@ -38,3 +38,16 @@ class BoxNGL(Box):
             js_utils._set_notebook_width('60%', left_padding=None)
             self._update_size()
             self._is_beautified = True
+
+
+class GridBoxNGL(GridBox):
+    _view_name = Unicode("GridBoxNGLView").tag(sync=True)
+    _view_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_name = Unicode("GridBoxNGLModel").tag(sync=True)
+    _model_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+
+    def _js(self, code):
+        msg = {"execute": code}
+        self.send(msg)
