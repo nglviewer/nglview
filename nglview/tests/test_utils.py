@@ -2,7 +2,7 @@ import gzip
 import os
 
 import pytest
-
+import unittest
 import nglview
 from nglview.utils import js_utils, py_utils
 from nglview.utils.py_utils import (FileManager, _camelize, _camelize_dict,
@@ -12,6 +12,18 @@ from nglview.utils.widget_utils import compare_two_images
 # local
 from utils import get_fn
 from utils import repr_dict as repr_dict_example
+
+try:
+    import cv2
+    has_cv2 = True
+except ImportError:
+    has_cv2 = False
+
+try:
+    from skimage.measure import compare_ssim
+    has_compare_ssim = True
+except ImportError:
+    has_compare_ssim = False
 
 
 def assert_equal(x, y):
@@ -193,10 +205,13 @@ def test_js_utils():
     js_utils.show_toolbar()
     js_utils.execute('print("hello")')
 
-
+@unittest.skipUnless(has_cv2, 'skip if not having cv2')
+@unittest.skipUnless(has_compare_ssim, 'skip if not having compare_ssim')
 def test_compare_images():
-    image_original = './nglview/tests/data/images/original.jpg'
-    image_high_quality = './nglview/tests/data/images/original_high_quality.jpg'
-    image_modify = './nglview/tests/data/images/original_high_modify.jpg'
-    assert (compare_two_images(image_original, image_high_quality) == True)
-    assert (compare_two_images(image_original, image_modify) == False)
+    root = os.path.dirname(__file__)
+
+    image_original = os.path.join(root, 'data/images/original.jpg')
+    image_high_quality = os.path.join(root, 'data/images/original_high_quality.jpg')
+    image_modify = os.path.join(root, 'data/images/original_high_modify.jpg')
+    assert compare_two_images(image_original, image_high_quality)
+    assert not compare_two_images(image_original, image_modify)
