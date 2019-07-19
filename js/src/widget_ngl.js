@@ -89,10 +89,9 @@ var NGLView = widgets.DOMWidgetView.extend({
             stage_params["backgroundColor"] = "white"
         }
         NGL.useWorker = false;
-        this.stage = new NGL.Stage(undefined);
+        this.stage = new NGL.Stage(this.el);
         this.stage.setParameters(stage_params);
         this.$container = $(this.stage.viewer.container);
-        this.$el.append(this.$container);
         this.handleResizable()
         this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
         // more than two views at the same time (e.g: in a Box)

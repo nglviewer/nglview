@@ -160,10 +160,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            stage_params["backgroundColor"] = "white"
 	        }
 	        NGL.useWorker = false;
-	        this.stage = new NGL.Stage(undefined);
+	        this.stage = new NGL.Stage(this.el);
 	        this.stage.setParameters(stage_params);
 	        this.$container = $(this.stage.viewer.container);
-	        this.$el.append(this.$container);
 	        this.handleResizable()
 	        this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
 	        // more than two views at the same time (e.g: in a Box)
@@ -13960,42 +13959,25 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.model.on("msg:custom", function(msg){
 	            that.on_msg(msg)
 	        })
-	        this.handleResize()
 	        this.handleSignals()
-	        this.displayed.then(() =>{
-	            var size = this.getSize()
-	            // FIXME: got "0px" for height after displaying
-	            console.log("size")
-	            console.log(size)
-	            this.model.set("width", size[0])
-	            this.touch()
-	            this.model.set("height", '300px')
-	            this.touch()
+	        this.displayed.then(() => {
+	            console.log('handleResize after displaying')
+	            that.handleResize()
 	        })
 	    },
 	
 	    handleSignals: function(){
 	        var that = this
 	        this.stage.signals.fullscreenChanged.add(function (isFullscreen) {
-	            that.handleResize()
 	            if (!isFullscreen){
-	                console.log("not isFullscreen")
-	                that.setSize(
-	                    that.model.get("width"),
-	                    that.model.get("height"))
+	                that.el.style.height = '300px'
 	            }
+	            that.handleResize()
 	        })
-	    },
-	
-	    getSize: function(){
-	        var box = this.el.getBoundingClientRect()
-	        return [box.width + 'px', box.height + 'px']
 	    },
 	
 	    setSize: function(w, h){
 	        // px
-	        console.log('setSize')
-	        console.log(w, h)
 	        this.el.style.width = w
 	        this.el.style.height = h
 	        this.handleResize()
@@ -14005,27 +13987,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        var that = this
 	        this.children_views.views.forEach((view)  => {
 	            view.then((view) => {
-	                var box = that.el.getBoundingClientRect()
-	                var view_len = that.children_views.views.length
-	                var w, h
-	                if (view_len === 3){
-	                    // the player (3rd view) has width of 300px
-	                    // FIXME: smarter?
-	                    w = (box.width - 350) / 2
+	                if ('stage' in view){
+	                    view.stage.handleResize()
 	                }
-	                else {
-	                    w = box.width / 2
-	                }
-	                if (view_len === 4){
-	                    h = box.height / 2
-	                }
-	                else{
-	                    h = box.height
-	                }
-	                
-	                w = w + 'px'
-	                h = h + 'px'
-	                view.setSize(w, h)
 	            })
 	        })
 	    },

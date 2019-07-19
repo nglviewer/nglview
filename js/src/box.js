@@ -22,42 +22,25 @@ var GridBoxNGLView = widgets.GridBoxView.extend({
         this.model.on("msg:custom", function(msg){
             that.on_msg(msg)
         })
-        this.handleResize()
         this.handleSignals()
-        this.displayed.then(() =>{
-            var size = this.getSize()
-            // FIXME: got "0px" for height after displaying
-            console.log("size")
-            console.log(size)
-            this.model.set("width", size[0])
-            this.touch()
-            this.model.set("height", '300px')
-            this.touch()
+        this.displayed.then(() => {
+            console.log('handleResize after displaying')
+            that.handleResize()
         })
     },
 
     handleSignals: function(){
         var that = this
         this.stage.signals.fullscreenChanged.add(function (isFullscreen) {
-            that.handleResize()
             if (!isFullscreen){
-                console.log("not isFullscreen")
-                that.setSize(
-                    that.model.get("width"),
-                    that.model.get("height"))
+                that.el.style.height = '300px'
             }
+            that.handleResize()
         })
-    },
-
-    getSize: function(){
-        var box = this.el.getBoundingClientRect()
-        return [box.width + 'px', box.height + 'px']
     },
 
     setSize: function(w, h){
         // px
-        console.log('setSize')
-        console.log(w, h)
         this.el.style.width = w
         this.el.style.height = h
         this.handleResize()
@@ -67,27 +50,9 @@ var GridBoxNGLView = widgets.GridBoxView.extend({
         var that = this
         this.children_views.views.forEach((view)  => {
             view.then((view) => {
-                var box = that.el.getBoundingClientRect()
-                var view_len = that.children_views.views.length
-                var w, h
-                if (view_len === 3){
-                    // the player (3rd view) has width of 300px
-                    // FIXME: smarter?
-                    w = (box.width - 350) / 2
+                if ('stage' in view){
+                    view.stage.handleResize()
                 }
-                else {
-                    w = box.width / 2
-                }
-                if (view_len === 4){
-                    h = box.height / 2
-                }
-                else{
-                    h = box.height
-                }
-                
-                w = w + 'px'
-                h = h + 'px'
-                view.setSize(w, h)
             })
         })
     },
