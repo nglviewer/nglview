@@ -3,6 +3,7 @@ from uuid import uuid4
 from ipywidgets import Button, GridBox, HBox, Layout  # ipywidgets >= 7.3
 
 from nglview import NGLWidget
+from nglview.widget_box import GridBoxNGL as _GridBoxNGL
 from nglview.utils import js_utils
 
 _code_set_size = """
@@ -42,7 +43,7 @@ document.onkeydown = function(event){
 """
 
 
-class GridBoxNGL(GridBox):
+class GridBoxNGL(_GridBoxNGL):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._ngl_class_id = None

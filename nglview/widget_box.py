@@ -5,6 +5,7 @@ from .layout import make_form_item_layout
 from .utils import js_utils
 from .widget import NGLWidget
 
+__frontend_version__ = '2.6.1'  # must match to js/package.json
 
 class BoxNGL(Box):
     _gui_style = CaselessStrEnum(['row', 'column'],
@@ -49,5 +50,19 @@ class GridBoxNGL(GridBox):
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
 
     def _js(self, code):
-        msg = {"execute": code}
+        msg = {"execute_code": code}
         self.send(msg)
+
+    def set_size(self, w, h):
+        self._js("""
+            this.el.style.width = '%s'
+            this.el.style.height = '%s'
+        """ % (w, h))
+        self._js("""
+            this.handleResize()
+        """)
+
+    def fullscreen(self):
+        self._js("""
+            this.stage.toggleFullscreen(this.el)
+        """)
