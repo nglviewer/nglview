@@ -160,7 +160,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            stage_params["backgroundColor"] = "white"
 	        }
 	        NGL.useWorker = false;
-	        this.stage = new NGL.Stage(this.el);
+	        var view_parent = this.options.parent
+	        if (view_parent){
+	            this.stage = new NGL.Stage(this.el);
+	        }else{
+	            this.stage = new NGL.Stage(undefined)
+	            this.$container = $(this.stage.viewer.container);
+	            this.$el.append(this.$container)
+	        }
 	        this.stage.setParameters(stage_params);
 	        this.$container = $(this.stage.viewer.container);
 	        this.handleResizable()
@@ -16788,7 +16795,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	// Stage
 	
 	StageWidget = function (el, stage) {
-	  // `el` is notebook's cell element
 	  var viewport = new UI.Panel()
 	  viewport.setPosition("absolute")
 	  viewport.dom = stage.viewer.container

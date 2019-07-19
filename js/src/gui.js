@@ -140,7 +140,6 @@ NGL.Preferences.prototype = {
 // Stage
 
 StageWidget = function (el, stage) {
-  // `el` is notebook's cell element
   var viewport = new UI.Panel()
   viewport.setPosition("absolute")
   viewport.dom = stage.viewer.container

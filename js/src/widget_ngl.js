@@ -89,7 +89,14 @@ var NGLView = widgets.DOMWidgetView.extend({
             stage_params["backgroundColor"] = "white"
         }
         NGL.useWorker = false;
-        this.stage = new NGL.Stage(this.el);
+        var view_parent = this.options.parent
+        if (view_parent){
+            this.stage = new NGL.Stage(this.el);
+        }else{
+            this.stage = new NGL.Stage(undefined)
+            this.$container = $(this.stage.viewer.container);
+            this.$el.append(this.$container)
+        }
         this.stage.setParameters(stage_params);
         this.$container = $(this.stage.viewer.container);
         this.handleResizable()
