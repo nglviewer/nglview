@@ -49,6 +49,8 @@ class GridBoxNGL(GridBox):
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
 
+    width = Unicode().tag(sync=True)
+
     def _js(self, code):
         msg = {"execute_code": code}
         self.send(msg)

@@ -24,16 +24,43 @@ var GridBoxNGLView = widgets.GridBoxView.extend({
         })
         this.handleResize()
         this.handleSignals()
+        this.displayed.then(() =>{
+            var size = this.getSize()
+            // FIXME: got "0px" for height after displaying
+            console.log("size")
+            console.log(size)
+            this.model.set("width", size[0])
+            this.touch()
+            this.model.set("height", '300px')
+            this.touch()
+        })
     },
 
     handleSignals: function(){
         var that = this
         this.stage.signals.fullscreenChanged.add(function (isFullscreen) {
-            this.handleResize()
+            that.handleResize()
             if (!isFullscreen){
-                this.el.style.height = '300px' // FIXME: record previous height?
+                console.log("not isFullscreen")
+                that.setSize(
+                    that.model.get("width"),
+                    that.model.get("height"))
             }
         })
+    },
+
+    getSize: function(){
+        var box = this.el.getBoundingClientRect()
+        return [box.width + 'px', box.height + 'px']
+    },
+
+    setSize: function(w, h){
+        // px
+        console.log('setSize')
+        console.log(w, h)
+        this.el.style.width = w
+        this.el.style.height = h
+        this.handleResize()
     },
 
     handleResize: function(){
