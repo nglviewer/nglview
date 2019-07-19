@@ -14006,7 +14006,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.children_views.views.forEach((view)  => {
 	            view.then((view) => {
 	                var box = that.el.getBoundingClientRect()
-	                var w = box.width / 2
+	                var view_len = that.children_views.views.length
+	                var w
+	                if (view_len === 3){
+	                    // the player (3rd view) has width of 300px
+	                    // FIXME: smarter?
+	                    w = (box.width - 350) / 2
+	                }
+	                else {
+	                    w = box.width / 2
+	                }
 	                w = w + 'px'
 	                var h = box.height + 'px'
 	                view.setSize(w, h)

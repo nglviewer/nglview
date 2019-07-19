@@ -1487,6 +1487,8 @@ class NGLWidget(DOMWidget):
             yield self[i]
 
     def _clone(self):
+        if not self.loaded:
+            raise RuntimeError("Must display the view first")
         view = self.__class__()
         view._ngl_msg_archive = self._ngl_msg_archive[:]
         view._camera_orientation = self._camera_orientation[:]
