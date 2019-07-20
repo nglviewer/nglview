@@ -7,7 +7,7 @@ import nglview
 from nglview.utils import js_utils, py_utils
 from nglview.utils.py_utils import (FileManager, _camelize, _camelize_dict,
                                     seq_to_string)
-from nglview.utils.widget_utils import compare_two_images
+from nglview.utils.widget_utils import compare_images
 # local
 # local
 from utils import get_fn
@@ -205,13 +205,15 @@ def test_js_utils():
     js_utils.show_toolbar()
     js_utils.execute('print("hello")')
 
+
 @unittest.skipUnless(has_cv2, 'skip if not having cv2')
 @unittest.skipUnless(has_compare_ssim, 'skip if not having compare_ssim')
 def test_compare_images():
     root = os.path.dirname(__file__)
 
     image_original = os.path.join(root, 'data/images/original.jpg')
-    image_high_quality = os.path.join(root, 'data/images/original_high_quality.jpg')
+    image_high_quality = os.path.join(
+        root, 'data/images/original_high_quality.jpg')
     image_modify = os.path.join(root, 'data/images/original_high_modify.jpg')
-    assert compare_two_images(image_original, image_high_quality)
-    assert not compare_two_images(image_original, image_modify)
+    assert compare_images(image_original, image_high_quality)
+    assert not compare_images(image_original, image_modify)

@@ -92,22 +92,13 @@ def _add_repr_method_shortcut(self, other):
             setattr(self, fn, MethodType(func, other))
 
 
-def compare_two_images(image_path_1:str,
-                       image_path_2:str,
-                       threshold=0.97) -> bool:
+def compare_images(image_path_1: str,
+                   image_path_2: str,
+                   threshold=0.97) -> bool:
     """
-    Comparing two images. Two images will be convert to new size
-    (standard_width, standard_height) and then compute structural similarity
+    Comparing images. Two images will be converted to new size
+    (450, 500) and then compute structural similarity
     to compare them.
-    Input:
-    ----------------
-    image_path_1: string, path for the first image
-    image_path_2: string, path for the second image
-    threshold: float, threshold for the structural similarity index
-        between two images. The default value is 0.97
-    Output:
-    -----------------
-    out: Boolean value
     """
     from skimage.measure import compare_ssim
     import cv2
@@ -122,7 +113,6 @@ def compare_two_images(image_path_1:str,
         img_resize = cv2.resize(img, (450, 500),
                                 interpolation=cv2.INTER_AREA)
         # convert images to gray scale
-
         img_resize = cv2.cvtColor(img_resize, cv2.COLOR_BGR2GRAY)
         images.append(img_resize)
 
