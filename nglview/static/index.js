@@ -13980,6 +13980,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                that.el.style.height = '300px'
 	            }
 	            that.handleResize()
+	            this.send({"type": "call_method", "data": "handle_resize"})
 	        })
 	    },
 	

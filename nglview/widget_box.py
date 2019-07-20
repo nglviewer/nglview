@@ -51,6 +51,10 @@ class GridBoxNGL(GridBox):
 
     width = Unicode().tag(sync=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.on_msg(self._nglview_on_msg)
+
     def _js(self, code):
         msg = {"execute_code": code}
         self.send(msg)
@@ -68,6 +72,15 @@ class GridBoxNGL(GridBox):
         self._js("""
             this.stage.toggleFullscreen(this.el)
         """)
+
+    def handle_resize(self):
+        self._js("this.handleResize()")
+
+    def _nglview_on_msg(self, msg, _):
+        if msg['type'] == 'call_method' and msg['data'] == 'handle_resize':
+            for kid in self.children:
+                if hasattr(kid, 'handle_resize'):
+                    kid.handle_resize()
 
 
 class GridspecLayoutNGL(GridspecLayout, GridBoxNGL):
