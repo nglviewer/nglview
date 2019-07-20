@@ -658,8 +658,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	
 	    createNglGUI: function(){
-	      this.stage_widget = new StageWidget(this.el, this.stage);
-	      // this.$container.resizable("disable");
+	      this.stage_widget = new StageWidget(this)
 	    },
 	
 	
@@ -13980,7 +13979,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                that.el.style.height = '300px'
 	            }
 	            that.handleResize()
-	            this.send({"type": "call_method", "data": "handle_resize"})
+	            that.send({"type": "call_method", "data": "handle_resize"})
 	        })
 	    },
 	
@@ -16795,7 +16794,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	// Stage
 	
-	StageWidget = function (el, stage) {
+	StageWidget = function (view) {
+	  // view: NGLView of NGLModel
+	  if (view.options.parent){
+	      el = view.el.parentElement
+	  }else{
+	      el = view.el
+	  }
+	  stage = view.stage
 	  var viewport = new UI.Panel()
 	  viewport.setPosition("absolute")
 	  viewport.dom = stage.viewer.container

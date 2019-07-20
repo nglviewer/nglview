@@ -587,8 +587,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
 
     createNglGUI: function(){
-      this.stage_widget = new StageWidget(this.el, this.stage);
-      // this.$container.resizable("disable");
+      this.stage_widget = new StageWidget(this)
     },
 
 

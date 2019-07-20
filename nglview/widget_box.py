@@ -53,7 +53,7 @@ class GridBoxNGL(GridBox):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.on_msg(self._nglview_on_msg)
+        self.on_msg(self._nglview_handle_msg)
 
     def _js(self, code):
         msg = {"execute_code": code}
@@ -76,7 +76,7 @@ class GridBoxNGL(GridBox):
     def handle_resize(self):
         self._js("this.handleResize()")
 
-    def _nglview_on_msg(self, msg, _):
+    def _nglview_handle_msg(self, w, msg, _):
         if msg['type'] == 'call_method' and msg['data'] == 'handle_resize':
             for kid in self.children:
                 if hasattr(kid, 'handle_resize'):
