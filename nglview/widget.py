@@ -369,6 +369,9 @@ class NGLWidget(DOMWidget):
         color = change['new']
         self.stage.set_parameters(background_color=color)
 
+    def handle_resize(self):
+        self._remote_call("handleResize", target='Stage')
+
     @observe('n_components')
     def _handle_n_components_changed(self, change):
         if self.player.widget_repr is not None:

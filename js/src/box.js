@@ -24,9 +24,12 @@ var GridBoxNGLView = widgets.GridBoxView.extend({
         })
         this.handleSignals()
         this.displayed.then(() => {
-            console.log('handleResize after displaying')
-            that.handleResize()
+            that.triggerHandleResize()
         })
+    },
+
+    triggerHandleResize: function(){
+        this.send({"type": "call_method", "data": "handle_resize"})
     },
 
     handleSignals: function(){
@@ -35,8 +38,7 @@ var GridBoxNGLView = widgets.GridBoxView.extend({
             if (!isFullscreen){
                 that.el.style.height = '300px'
             }
-            that.handleResize()
-            that.send({"type": "call_method", "data": "handle_resize"})
+            that.triggerHandleResize()
         })
     },
 
@@ -45,17 +47,6 @@ var GridBoxNGLView = widgets.GridBoxView.extend({
         this.el.style.width = w
         this.el.style.height = h
         this.handleResize()
-    },
-
-    handleResize: function(){
-        var that = this
-        this.children_views.views.forEach((view)  => {
-            view.then((view) => {
-                if ('stage' in view){
-                    view.stage.handleResize()
-                }
-            })
-        })
     },
 
     execute_code: function(code){

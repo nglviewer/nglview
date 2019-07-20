@@ -42,6 +42,8 @@ class BoxNGL(Box):
 
 
 class GridBoxNGL(GridBox):
+    """EXPERIMENTAL
+    """
     _view_name = Unicode("GridBoxNGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
@@ -74,17 +76,22 @@ class GridBoxNGL(GridBox):
         """)
 
     def handle_resize(self):
-        self._js("this.handleResize()")
+        for kid in self.children:
+            if hasattr(kid, 'handle_resize'):
+                kid.handle_resize()
+        # self._js("this.handleResize()")
 
     def _nglview_handle_msg(self, w, msg, _):
         if msg['type'] == 'call_method' and msg['data'] == 'handle_resize':
-            for kid in self.children:
-                if hasattr(kid, 'handle_resize'):
-                    kid.handle_resize()
+            self.handle_resize()
 
 
 class GridspecLayoutNGL(GridspecLayout, GridBoxNGL):
+    """EXPERIMENTAL
+    """
     pass
 
 class AppLayoutNGL(AppLayout, GridBoxNGL):
+    """EXPERIMENTAL
+    """
     pass
