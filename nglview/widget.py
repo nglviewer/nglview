@@ -119,6 +119,15 @@ def write_html(fp, views, frame_range=None):
     _unset_serialization(views)
 
 
+class SideBar(DOMWidget):
+    _view_name = Unicode("SideBarView").tag(sync=True)
+    _view_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_name = Unicode("SideBarModel").tag(sync=True)
+    _model_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+
+
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
@@ -370,7 +379,8 @@ class NGLWidget(DOMWidget):
         self.stage.set_parameters(background_color=color)
 
     def handle_resize(self):
-        self._remote_call("handleResize", target='Stage')
+        # self._remote_call("handleResize", target='Stage')
+        self._remote_call("handleResize")
 
     @observe('n_components')
     def _handle_n_components_changed(self, change):

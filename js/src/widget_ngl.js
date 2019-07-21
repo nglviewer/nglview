@@ -43,6 +43,26 @@ function generateUUID () {
   return uuid.join('')
 }
 
+var SideBarModel = widgets.DOMWidgetModel.extend({
+    defaults: function(){
+        return _.extend(widgets.GridBoxModel.prototype.defaults(), {
+            _model_name: 'SideBarModel',
+            _model_module: 'nglview-js-widgets',
+            _model_module_version: require("../package.json").version,
+            _view_name: "SideBarModel",
+            _view_module: "nglview-js-widgets",
+            _view_module_version: require("../package.json").version,
+        });
+    }
+})
+
+var SideBarView = widgets.DOMWidgetView.extend({
+    render: function() {
+        this.sidebar = new NGL.SidebarWidget(undefined).setId('sidebar_ngl')
+        this.el.appendChild(this.sidebar)
+    },
+})
+
 
 var NGLModel = widgets.DOMWidgetModel.extend({
     defaults: function(){
@@ -90,13 +110,9 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
         NGL.useWorker = false;
         var view_parent = this.options.parent
-        if (view_parent){
-            this.stage = new NGL.Stage(this.el);
-        }else{
-            this.stage = new NGL.Stage(undefined)
-            this.$container = $(this.stage.viewer.container);
-            this.$el.append(this.$container)
-        }
+        this.stage = new NGL.Stage(undefined)
+        this.$container = $(this.stage.viewer.container);
+        this.$el.append(this.$container)
         this.stage.setParameters(stage_params);
         this.$container = $(this.stage.viewer.container);
         this.handleResizable()
@@ -822,6 +838,12 @@ var NGLView = widgets.DOMWidgetView.extend({
                 this.setSize(ui.size.width + "px", ui.size.height + "px");
             }.bind(this)
         })
+    },
+
+    handleResize: function(){
+        var width = this.$el.width() + "px"
+        var height = this.$el.height() + "px"
+        this.setSize(width, height)
     },
 
     setSize: function(width, height) {
