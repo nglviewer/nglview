@@ -49,7 +49,7 @@ var SideBarModel = widgets.DOMWidgetModel.extend({
             _model_name: 'SideBarModel',
             _model_module: 'nglview-js-widgets',
             _model_module_version: require("../package.json").version,
-            _view_name: "SideBarModel",
+            _view_name: "SideBarView",
             _view_module: "nglview-js-widgets",
             _view_module_version: require("../package.json").version,
         });
@@ -58,9 +58,34 @@ var SideBarModel = widgets.DOMWidgetModel.extend({
 
 var SideBarView = widgets.DOMWidgetView.extend({
     render: function() {
-        this.sidebar = new NGL.SidebarWidget(undefined).setId('sidebar_ngl')
-        this.el.appendChild(this.sidebar)
+        var that = this
+        this.model.on("msg:custom", function(msg){
+            that.on_msg(msg)
+        })
+        var view_model = this.model.get('_view').replace("IPY_MODEL_", "")
+        this.model.widget_manager.get_model(view_model).then((model) =>{
+            console.log(model)
+            var key = Object.keys(model.views)[0]
+            console.log(key)
+            model.views[key].then((view) =>{
+                this.sidebar = new NGL.SidebarWidget(view.stage)
+                this.el.appendChild(this.sidebar.dom)
+                // $(s.dom).css("position", "absolute")
+                //         .css("top", "5%")
+                //         .css("left", "3%") 
+                })
+            })
     },
+
+    execute_code: function(code){
+        eval(code);
+    },
+
+    on_msg: function(msg){
+        if ('execute_code' in msg){
+            this.execute_code(msg.execute_code)
+        }
+    }
 })
 
 
@@ -1099,4 +1124,6 @@ module.exports = {
     'NGL': NGL,
     'GridBoxNGLView': box.GridBoxNGLView,
     'GridBoxNGLModel': box.GridBoxNGLModel,
+    'SideBarModel': SideBarModel,
+    'SideBarView': SideBarView
 };
