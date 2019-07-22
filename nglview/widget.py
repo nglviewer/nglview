@@ -30,6 +30,7 @@ from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
                              encode_base64, get_repr_names_from_dict,
                              seq_to_string)
 from .viewer_control import ViewerControl
+from ._frontend import __frontend_version__
 
 widget_serialization = _widget.widget_serialization
 try:
@@ -39,7 +40,6 @@ except ImportError:
     from ipywidgets.widget_image import Image
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '2.6.1'  # must match to js/package.json
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
     'setUnSyncCamera',
     'setSelector',
@@ -117,6 +117,7 @@ def write_html(fp, views, frame_range=None):
             f.write(html_code)
 
     _unset_serialization(views)
+
 
 
 class NGLWidget(DOMWidget):
@@ -368,6 +369,10 @@ class NGLWidget(DOMWidget):
     def _update_background_color(self, change):
         color = change['new']
         self.stage.set_parameters(background_color=color)
+
+    def handle_resize(self):
+        # self._remote_call("handleResize", target='Stage')
+        self._remote_call("handleResize")
 
     @observe('n_components')
     def _handle_n_components_changed(self, change):

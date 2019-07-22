@@ -3,6 +3,7 @@ var widgets = require("@jupyter-widgets/base")
 var NGL = require('ngl')
 var $ = require('jquery')
 var _ = require('underscore')
+var box = require("./box.js")
 require("./lib/signals.min.js")
 require("./lib/tether.min.js")
 require("./lib/colorpicker.min.js")
@@ -40,6 +41,18 @@ function generateUUID () {
   }
 
   return uuid.join('')
+}
+
+
+function createView(that, trait_name){
+    // Create a view for the model with given `trait_name`
+    // e.g: in backend, 'view.<trait_name>`
+    console.log("Creating view for model " + trait_name);
+    var manager = that.model.widget_manager
+    var model_id = that.model.get(trait_name).replace("IPY_MODEL_", "");
+    return manager.get_model(model_id).then(function(model){
+        return manager.create_view(model)
+    })
 }
 
 
@@ -88,10 +101,12 @@ var NGLView = widgets.DOMWidgetView.extend({
             stage_params["backgroundColor"] = "white"
         }
         NGL.useWorker = false;
-        this.stage = new NGL.Stage(undefined);
+        var view_parent = this.options.parent
+        this.stage = new NGL.Stage(undefined)
+        this.$container = $(this.stage.viewer.container);
+        this.$el.append(this.$container)
         this.stage.setParameters(stage_params);
         this.$container = $(this.stage.viewer.container);
-        this.$el.append(this.$container);
         this.handleResizable()
         this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
         // more than two views at the same time (e.g: in a Box)
@@ -580,8 +595,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
 
     createNglGUI: function(){
-      this.stage_widget = new StageWidget(this.el, this.stage);
-      // this.$container.resizable("disable");
+      this.stage_widget = new StageWidget(this)
     },
 
 
@@ -816,6 +830,12 @@ var NGLView = widgets.DOMWidgetView.extend({
                 this.setSize(ui.size.width + "px", ui.size.height + "px");
             }.bind(this)
         })
+    },
+
+    handleResize: function(){
+        var width = this.$el.width() + "px"
+        var height = this.$el.height() + "px"
+        this.setSize(width, height)
     },
 
     setSize: function(width, height) {
@@ -1069,4 +1089,6 @@ module.exports = {
     'NGLView': NGLView,
     'NGLModel': NGLModel,
     'NGL': NGL,
+    'GridBoxNGLView': box.GridBoxNGLView,
+    'GridBoxNGLModel': box.GridBoxNGLModel,
 };

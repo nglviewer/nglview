@@ -1,7 +1,7 @@
 import warnings
 
 # for doc
-from . import adaptor, datafiles, show, widget, widget_box
+from . import adaptor, datafiles, show, widget
 from ._version import get_versions
 from .adaptor import *
 from .base_adaptor import *
