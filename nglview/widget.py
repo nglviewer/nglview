@@ -152,6 +152,7 @@ class NGLWidget(DOMWidget):
                                   default_value='orthographic').tag(sync=True)
     _camera_orientation = List().tag(sync=True)
     _synced_model_ids = List().tag(sync=True)
+    _synced_repr_model_ids = List().tag(sync=True)
     _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
@@ -537,6 +538,21 @@ class NGLWidget(DOMWidget):
         >>> view._set_size('50%', '50%')
         '''
         self._remote_call('setSize', target='Widget', args=[w, h])
+
+    def _set_sync_repr(self, other_views):
+        model_ids = {v._model_id for v in other_views}
+        self._synced_repr_model_ids = sorted(
+            set(self._synced_repr_model_ids) | model_ids)
+        self._remote_call("setSyncRepr",
+                          target="Widget",
+                          args=[self._synced_repr_model_ids])
+
+    def _set_unsync_repr(self, other_views):
+        model_ids = {v._model_id for v in other_views}
+        self._synced_repr_model_ids = list(set(self._synced_repr_model_ids) - model_ids)
+        self._remote_call("setSyncRepr",
+                          target="Widget",
+                          args=[self._synced_repr_model_ids])
 
     def _set_sync_camera(self, other_views):
         model_ids = {v._model_id for v in other_views}

@@ -162,6 +162,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.uuid = generateUUID()
 	        this.stage_widget = undefined
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
+	        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids")
 	    },
 	
 	    createStage: function(){
@@ -520,12 +521,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    request_repr_dict: function() {
 	        var n_components = this.stage.compList.length;
-	        var msg = {};
+	        var repr_dict = {};
 	
 	        for (var i = 0; i < n_components; i++) {
 	            var comp = this.stage.compList[i];
-	            msg[i] = {};
-	            var msgi = msg[i];
+	            repr_dict[i] = {};
+	            var msgi = repr_dict[i];
 	            for (var j = 0; j < comp.reprList.length; j++) {
 	                var repr = comp.reprList[j];
 	                msgi[j] = {};
@@ -537,12 +538,32 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            // make sure we are using "request_repr_dict" name
 	            // in backend too.
 	            'type': 'request_repr_dict',
-	            'data': msg
+	            'data': repr_dict,
 	        });
+	        var that = this
+	        if (that._synced_repr_model_ids.length > 0){
+	            that._synced_repr_model_ids.forEach(function(mid){
+	                that.model.widget_manager.get_model(mid).then(function(model){
+	                    for (var k in model.views){
+	                        var pview = model.views[k];
+	                        pview.then(function(view){
+	                            // not sync with itself
+	                            if (view.uuid != that.uuid){
+	                                view._set_representation_from_repr_dict(repr_dict)
+	                            }
+	                        })
+	                    }
+	                })
+	            })
+	        }
+	    },
+	
+	    setSyncRepr: function(model_ids){
+	        this._synced_repr_model_ids = model_ids
 	    },
 	
 	    setSyncCamera: function(model_ids){
-	        this._synced_model_ids = model_ids;
+	        this._synced_model_ids = model_ids
 	    },
 	
 	    viewXZPlane: function() {
@@ -552,16 +573,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    set_representation_from_backend: function(){
-	        this._set_representation_from_backend(this.stage.compList);
+	        var repr_dict = this.model.get('ngl_repr_dict')
+	        this._set_representation_from_repr_dict(repr_dict)
 	    },
 	
-	    _set_representation_from_backend: function(compList){
+	    _set_representation_from_repr_dict: function(repr_dict){
+	        var compList = this.stage.compList
 	        if (compList.length > 0){
-	            var ngl_repr_dict = this.model.get('_ngl_repr_dict');
-	            for (var index in ngl_repr_dict){
+	            for (var index in repr_dict){
 	                var comp = compList[index];
 	                comp.removeAllRepresentations();
-	                var reprlist = ngl_repr_dict[index];
+	                var reprlist = repr_dict[index];
 	                for (var j in reprlist){
 	                    var repr = reprlist[j];
 	                    if (repr){
