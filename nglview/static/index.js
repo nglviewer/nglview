@@ -114,48 +114,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	  return uuid.join('')
 	}
 	
-	var SideBarModel = widgets.DOMWidgetModel.extend({
-	    defaults: function(){
-	        return _.extend(widgets.GridBoxModel.prototype.defaults(), {
-	            _model_name: 'SideBarModel',
-	            _model_module: 'nglview-js-widgets',
-	            _model_module_version: __webpack_require__(11).version,
-	            _view_name: "SideBarView",
-	            _view_module: "nglview-js-widgets",
-	            _view_module_version: __webpack_require__(11).version,
-	        });
-	    }
-	})
 	
-	var SideBarView = widgets.DOMWidgetView.extend({
-	    render: function() {
-	        var that = this
-	        this.model.on("msg:custom", function(msg){
-	            that.on_msg(msg)
-	        })
-	        var view_model = this.model.get('_view').replace("IPY_MODEL_", "")
-	        this.model.widget_manager.get_model(view_model).then((model) =>{
-	            var key = Object.keys(model.views)[0]
-	            model.views[key].then((view) =>{
-	                this.sidebar = new NGL.SidebarWidget(view.stage)
-	                this.el.appendChild(this.sidebar.dom)
-	                // $(s.dom).css("position", "absolute")
-	                //         .css("top", "5%")
-	                //         .css("left", "3%") 
-	                })
-	            })
-	    },
-	
-	    execute_code: function(code){
-	        eval(code);
-	    },
-	
-	    on_msg: function(msg){
-	        if ('execute_code' in msg){
-	            this.execute_code(msg.execute_code)
-	        }
-	    }
-	})
+	function createView(that, trait_name){
+	    // Create a view for the model with given `trait_name`
+	    // e.g: in backend, 'view.<trait_name>`
+	    console.log("Creating view for model " + trait_name);
+	    var manager = that.model.widget_manager
+	    var model_id = that.model.get(trait_name).replace("IPY_MODEL_", "");
+	    return manager.get_model(model_id).then(function(model){
+	        return manager.create_view(model)
+	    })
+	}
 	
 	
 	var NGLModel = widgets.DOMWidgetModel.extend({
@@ -1193,8 +1162,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    'NGL': NGL,
 	    'GridBoxNGLView': box.GridBoxNGLView,
 	    'GridBoxNGLModel': box.GridBoxNGLModel,
-	    'SideBarModel': SideBarModel,
-	    'SideBarView': SideBarView
 	};
 
 

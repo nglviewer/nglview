@@ -1502,18 +1502,3 @@ class NGLWidget(DOMWidget):
         view._ngl_repr_dict = self._ngl_repr_dict.copy()
         view._remote_call("handle_embed", fire_once=True)
         return view
-
-
-class SideBar(DOMWidget):
-    _view_name = Unicode("SideBarView").tag(sync=True)
-    _view_module = Unicode("nglview-js-widgets").tag(sync=True)
-    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
-    _model_name = Unicode("SideBarModel").tag(sync=True)
-    _model_module = Unicode("nglview-js-widgets").tag(sync=True)
-    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
-    _view = Instance(NGLWidget, allow_none=True).tag(sync=True, **widget_serialization)
-
-    def _js(self, code):
-        msg = {"execute_code": code}
-        self.send(msg)
-
