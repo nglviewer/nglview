@@ -4,8 +4,9 @@ from traitlets import Bool, CaselessStrEnum, Unicode, observe
 from .layout import make_form_item_layout
 from .utils import js_utils
 from .widget import NGLWidget
+from ._frontend import __frontend_version__
 
-__frontend_version__ = '2.6.2'  # must match to js/package.json
+
 
 class BoxNGL(Box):
     _gui_style = CaselessStrEnum(['row', 'column'],
