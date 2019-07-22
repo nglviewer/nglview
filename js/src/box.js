@@ -1,7 +1,7 @@
-var widgets = require("@jupyter-widgets/base")
+var controls = require("@jupyter-widgets/controls")
 var NGL = require("ngl")
 
-var GridBoxNGLModel = widgets.GridBoxModel.extend({
+var GridBoxNGLModel = controls.GridBoxModel.extend({
     defaults: function(){
         return _.extend(widgets.GridBoxModel.prototype.defaults(), {
             _model_name: 'GridBoxNGLModel',
@@ -14,7 +14,7 @@ var GridBoxNGLModel = widgets.GridBoxModel.extend({
     }
 })
 
-var GridBoxNGLView = widgets.GridBoxView.extend({
+var GridBoxNGLView = controls.GridBoxView.extend({
     render: function() {
         this.stage = new NGL.Stage()
         widgets.GridBoxView.prototype.render.call(this)
