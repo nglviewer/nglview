@@ -1490,3 +1490,36 @@ class NGLWidget(DOMWidget):
         """
         for i, _ in enumerate(self._ngl_component_ids):
             yield self[i]
+
+
+class Fullscreen(DOMWidget):
+    """EXPERIMENTAL
+    """
+    _view_name = Unicode("FullscreenView").tag(sync=True)
+    _view_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_name = Unicode("FullscreenModel").tag(sync=True)
+    _model_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+
+    _is_fullscreen = Bool().tag(sync=True)
+
+    def __init__(self, target, views):
+        super().__init__()
+        self._target = target
+        self._views = views
+
+    def fullscreen(self):
+        self._js("this.fullscreen('%s')" % self._target.model_id)
+
+    def _js(self, code):
+        msg = {"execute_code": code}
+        self.send(msg)
+
+    @observe('_is_fullscreen')
+    def _fullscreen_changed(self, change):
+        self.handle_resize()
+
+    def handle_resize(self):
+        for v in self._views:
+            v.handle_resize()

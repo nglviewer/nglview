@@ -1155,10 +1155,65 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	});
 	
+	var FullscreenModel = widgets.DOMWidgetModel.extend({
+	    defaults: function(){
+	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+	            _model_name: 'FullscreenModel',
+	            _model_module: 'nglview-js-widgets',
+	            _model_module_version: __webpack_require__(77).version,
+	            _view_name: "FullscreenView",
+	            _view_module: "nglview-js-widgets",
+	            _view_module_version: __webpack_require__(77).version,
+	        });
+	    }
+	})
+	
+	var FullscreenView = widgets.DOMWidgetView.extend({
+	    render: function() {
+	        this.stage = new NGL.Stage()
+	        var that = this
+	        this.model.on("msg:custom", function(msg){
+	            that.on_msg(msg)
+	        })
+	        this.handleSignals()
+	    },
+	
+	    fullscreen: function(model_id){
+	        var that = this
+	        this.model.widget_manager.get_model(model_id).then((model) =>{
+	            var key = Object.keys(model.views)[0]
+	            model.views[key].then((view) => {
+	                that.stage.toggleFullscreen(view.el)
+	            })
+	        })
+	    },
+	
+	    handleSignals: function(){
+	        var that = this
+	        this.stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	            that.model.set("_is_fullscreen", isFullscreen)
+	            that.touch()
+	        })
+	    },
+	
+	    execute_code: function(code){
+	        eval(code);
+	    },
+	
+	    on_msg: function(msg){
+	        if ('execute_code' in msg){
+	            this.execute_code(msg.execute_code)
+	        }
+	    }
+	
+	});
+	
 	module.exports = {
 	    'NGLView': NGLView,
 	    'NGLModel': NGLModel,
 	    'NGL': NGL,
+	    'FullscreenModel': FullscreenModel,
+	    'FullscreenView': FullscreenView
 	};
 
 
