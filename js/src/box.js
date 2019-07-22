@@ -3,7 +3,7 @@ var NGL = require("ngl")
 
 var GridBoxNGLModel = controls.GridBoxModel.extend({
     defaults: function(){
-        return _.extend(widgets.GridBoxModel.prototype.defaults(), {
+        return _.extend(controls.GridBoxModel.prototype.defaults(), {
             _model_name: 'GridBoxNGLModel',
             _model_module: 'nglview-js-widgets',
             _model_module_version: require("../package.json").version,
@@ -17,7 +17,7 @@ var GridBoxNGLModel = controls.GridBoxModel.extend({
 var GridBoxNGLView = controls.GridBoxView.extend({
     render: function() {
         this.stage = new NGL.Stage()
-        widgets.GridBoxView.prototype.render.call(this)
+        controls.GridBoxView.prototype.render.call(this)
         var that = this
         this.model.on("msg:custom", function(msg){
             that.on_msg(msg)

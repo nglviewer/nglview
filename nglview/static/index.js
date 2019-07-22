@@ -13960,7 +13960,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	var GridBoxNGLModel = controls.GridBoxModel.extend({
 	    defaults: function(){
-	        return _.extend(widgets.GridBoxModel.prototype.defaults(), {
+	        return _.extend(controls.GridBoxModel.prototype.defaults(), {
 	            _model_name: 'GridBoxNGLModel',
 	            _model_module: 'nglview-js-widgets',
 	            _model_module_version: __webpack_require__(12).version,
@@ -13974,7 +13974,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	var GridBoxNGLView = controls.GridBoxView.extend({
 	    render: function() {
 	        this.stage = new NGL.Stage()
-	        widgets.GridBoxView.prototype.render.call(this)
+	        controls.GridBoxView.prototype.render.call(this)
 	        var that = this
 	        this.model.on("msg:custom", function(msg){
 	            that.on_msg(msg)
