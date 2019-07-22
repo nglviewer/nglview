@@ -1490,15 +1490,3 @@ class NGLWidget(DOMWidget):
         """
         for i, _ in enumerate(self._ngl_component_ids):
             yield self[i]
-
-    def _clone(self):
-        if not self.loaded:
-            raise RuntimeError("Must display the view first")
-        view = self.__class__()
-        view._ngl_msg_archive = self._ngl_msg_archive[:]
-        view._camera_orientation = self._camera_orientation[:]
-        view._ngl_full_stage_parameters = self._ngl_full_stage_parameters.copy()
-        view.loaded = self.loaded
-        view._ngl_repr_dict = self._ngl_repr_dict.copy()
-        view._remote_call("handle_embed", fire_once=True)
-        return view
