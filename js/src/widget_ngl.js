@@ -368,7 +368,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
         Promise.all(loadfile_list).then(function(compList){
             n_frames = ngl_coordinate_resource['n_frames'] || 1;
-            that._set_representation_from_backend(compList);
+            that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
             that.stage.setParameters(ngl_stage_params);
             that.set_camera_orientation(that.model.get("_camera_orientation"));
             that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
@@ -502,7 +502,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     set_representation_from_backend: function(){
-        var repr_dict = this.model.get('ngl_repr_dict')
+        var repr_dict = this.model.get('_ngl_repr_dict')
         this._set_representation_from_repr_dict(repr_dict)
     },
 
@@ -854,8 +854,14 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     handleResize: function(){
-        var width = this.$el.width() + "px"
+        var width = this.$el.width()
+        console.log('el width ' + width)
         var height = this.$el.height() + "px"
+        if (this.stage_widget){
+            width = width - $(this.stage_widget.sidebar.dom).width()
+        }
+        width = width + "px"
+        console.log('new width (px)' + width)
         this.setSize(width, height)
     },
 
