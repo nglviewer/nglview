@@ -114,6 +114,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	}
 	
 	
+	function createView(that, trait_name){
+	    // Create a view for the model with given `trait_name`
+	    // e.g: in backend, 'view.<trait_name>`
+	    console.log("Creating view for model " + trait_name);
+	    var manager = that.model.widget_manager
+	    var model_id = that.model.get(trait_name).replace("IPY_MODEL_", "");
+	    return manager.get_model(model_id).then(function(model){
+	        return manager.create_view(model)
+	    })
+	}
+	
+	
 	var NGLModel = widgets.DOMWidgetModel.extend({
 	    defaults: function(){
 	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
@@ -159,10 +171,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            stage_params["backgroundColor"] = "white"
 	        }
 	        NGL.useWorker = false;
-	        this.stage = new NGL.Stage(undefined);
+	        var view_parent = this.options.parent
+	        this.stage = new NGL.Stage(undefined)
+	        this.$container = $(this.stage.viewer.container);
+	        this.$el.append(this.$container)
 	        this.stage.setParameters(stage_params);
 	        this.$container = $(this.stage.viewer.container);
-	        this.$el.append(this.$container);
 	        this.handleResizable()
 	        this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
 	        // more than two views at the same time (e.g: in a Box)
@@ -651,8 +665,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	
 	    createNglGUI: function(){
-	      this.stage_widget = new StageWidget(this.el, this.stage);
-	      // this.$container.resizable("disable");
+	      this.stage_widget = new StageWidget(this)
 	    },
 	
 	
@@ -887,6 +900,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                this.setSize(ui.size.width + "px", ui.size.height + "px");
 	            }.bind(this)
 	        })
+	    },
+	
+	    handleResize: function(){
+	        var width = this.$el.width() + "px"
+	        var height = this.$el.height() + "px"
+	        this.setSize(width, height)
 	    },
 	
 	    setSize: function(width, height) {
@@ -16698,8 +16717,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	// Stage
 	
-	StageWidget = function (el, stage) {
-	  // `el` is notebook's cell element
+	StageWidget = function (view) {
+	  // view: NGLView of NGLModel
+	  if (view.options.parent){
+	      el = view.el.parentElement
+	  }else{
+	      el = view.el
+	  }
+	  stage = view.stage
 	  var viewport = new UI.Panel()
 	  viewport.setPosition("absolute")
 	  viewport.dom = stage.viewer.container
@@ -26390,7 +26415,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 77 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"2.6.1","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"2.6.2","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ })
 /******/ ])});;
