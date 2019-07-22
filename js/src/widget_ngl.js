@@ -3,7 +3,7 @@ var widgets = require("@jupyter-widgets/base")
 var NGL = require('ngl')
 var $ = require('jquery')
 var _ = require('underscore')
-// var box = require("./box.js")
+var box = require("./box.js")
 require("./lib/signals.min.js")
 require("./lib/tether.min.js")
 require("./lib/colorpicker.min.js")
@@ -1089,6 +1089,6 @@ module.exports = {
     'NGLView': NGLView,
     'NGLModel': NGLModel,
     'NGL': NGL,
-    // 'GridBoxNGLView': box.GridBoxNGLView,
-    // 'GridBoxNGLModel': box.GridBoxNGLModel,
+    'GridBoxNGLView': box.GridBoxNGLView,
+    'GridBoxNGLModel': box.GridBoxNGLModel,
 };
