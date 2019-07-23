@@ -8,7 +8,7 @@ pytest
 pytest-cov
 coveralls
 
-pandas=0.24
+pandas==0.24
 ase
 parmed
 pytraj
