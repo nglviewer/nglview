@@ -1108,8 +1108,8 @@ def test_trim_messages():
 
 def test_fullscreen():
     v = nv.demo()
-    fs = nv.widget.Fullscreen(v)
+    fs = nv.widget.Fullscreen(v, [v])
     fs.fullscreen()
     with patch.object(v, 'handle_resize'):
-        fs.handle_resize()
+        fs._fullscreen_changed({})
         assert v.handle_resize.called
