@@ -621,9 +621,13 @@ class NGLWidget(DOMWidget):
 
     @representations.setter
     def representations(self, reps):
-        self._representations = reps[:]
-        for index in range(len(self._ngl_component_ids)):
-            self.set_representations(reps)
+        if isinstance(reps, dict):
+            self._remote_call("_set_representation_from_repr_dict",
+                    args=[reps])
+        else:
+            self._representations = reps[:]
+            for index in range(len(self._ngl_component_ids)):
+                self.set_representations(reps)
 
     def update_representation(self, component=0, repr_index=0, **parameters):
         """

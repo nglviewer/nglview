@@ -394,6 +394,11 @@ def test_representations():
     representations_2.append({'type': 'cartoon', 'params': {'sele': 'all'}})
     _assert_dict_list_equal(view.representations, representations_2)
 
+    # accept dict too (to specify seperate reprs for different component
+    def func():
+        view.representations = {'0': MagicMock()}
+    assert view._dry_run(func)['methodName'] == '_set_representation_from_repr_dict'
+
     # Representations
     # make fake params
     try:
