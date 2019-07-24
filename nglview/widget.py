@@ -30,6 +30,7 @@ from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
                              encode_base64, get_repr_names_from_dict,
                              seq_to_string)
 from .viewer_control import ViewerControl
+from ._frontend import __frontend_version__
 
 widget_serialization = _widget.widget_serialization
 try:
@@ -39,7 +40,6 @@ except ImportError:
     from ipywidgets.widget_image import Image
 
 __all__ = ['NGLWidget', 'ComponentViewer']
-__frontend_version__ = '2.6.1'  # must match to js/package.json
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
     'setUnSyncCamera',
     'setSelector',
@@ -119,6 +119,7 @@ def write_html(fp, views, frame_range=None):
     _unset_serialization(views)
 
 
+
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
@@ -151,6 +152,7 @@ class NGLWidget(DOMWidget):
                                   default_value='orthographic').tag(sync=True)
     _camera_orientation = List().tag(sync=True)
     _synced_model_ids = List().tag(sync=True)
+    _synced_repr_model_ids = List().tag(sync=True)
     _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
@@ -369,6 +371,10 @@ class NGLWidget(DOMWidget):
         color = change['new']
         self.stage.set_parameters(background_color=color)
 
+    def handle_resize(self):
+        # self._remote_call("handleResize", target='Stage')
+        self._remote_call("handleResize")
+
     @observe('n_components')
     def _handle_n_components_changed(self, change):
         if self.player.widget_repr is not None:
@@ -532,6 +538,21 @@ class NGLWidget(DOMWidget):
         >>> view._set_size('50%', '50%')
         '''
         self._remote_call('setSize', target='Widget', args=[w, h])
+
+    def _set_sync_repr(self, other_views):
+        model_ids = {v._model_id for v in other_views}
+        self._synced_repr_model_ids = sorted(
+            set(self._synced_repr_model_ids) | model_ids)
+        self._remote_call("setSyncRepr",
+                          target="Widget",
+                          args=[self._synced_repr_model_ids])
+
+    def _set_unsync_repr(self, other_views):
+        model_ids = {v._model_id for v in other_views}
+        self._synced_repr_model_ids = list(set(self._synced_repr_model_ids) - model_ids)
+        self._remote_call("setSyncRepr",
+                          target="Widget",
+                          args=[self._synced_repr_model_ids])
 
     def _set_sync_camera(self, other_views):
         model_ids = {v._model_id for v in other_views}
@@ -1485,3 +1506,36 @@ class NGLWidget(DOMWidget):
         """
         for i, _ in enumerate(self._ngl_component_ids):
             yield self[i]
+
+
+class Fullscreen(DOMWidget):
+    """EXPERIMENTAL
+    """
+    _view_name = Unicode("FullscreenView").tag(sync=True)
+    _view_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_name = Unicode("FullscreenModel").tag(sync=True)
+    _model_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+
+    _is_fullscreen = Bool().tag(sync=True)
+
+    def __init__(self, target, views):
+        super().__init__()
+        self._target = target
+        self._views = views
+
+    def fullscreen(self):
+        self._js("this.fullscreen('%s')" % self._target.model_id)
+
+    def _js(self, code):
+        msg = {"execute_code": code}
+        self.send(msg)
+
+    @observe('_is_fullscreen')
+    def _fullscreen_changed(self, change):
+        self.handle_resize()
+
+    def handle_resize(self):
+        for v in self._views:
+            v.handle_resize()

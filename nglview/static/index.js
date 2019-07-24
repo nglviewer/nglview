@@ -114,6 +114,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	}
 	
 	
+	function createView(that, trait_name){
+	    // Create a view for the model with given `trait_name`
+	    // e.g: in backend, 'view.<trait_name>`
+	    console.log("Creating view for model " + trait_name);
+	    var manager = that.model.widget_manager
+	    var model_id = that.model.get(trait_name).replace("IPY_MODEL_", "");
+	    return manager.get_model(model_id).then(function(model){
+	        return manager.create_view(model)
+	    })
+	}
+	
+	
 	var NGLModel = widgets.DOMWidgetModel.extend({
 	    defaults: function(){
 	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
@@ -150,6 +162,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.uuid = generateUUID()
 	        this.stage_widget = undefined
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
+	        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids")
 	    },
 	
 	    createStage: function(){
@@ -159,10 +172,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            stage_params["backgroundColor"] = "white"
 	        }
 	        NGL.useWorker = false;
-	        this.stage = new NGL.Stage(undefined);
+	        var view_parent = this.options.parent
+	        this.stage = new NGL.Stage(undefined)
+	        this.$container = $(this.stage.viewer.container);
+	        this.$el.append(this.$container)
 	        this.stage.setParameters(stage_params);
 	        this.$container = $(this.stage.viewer.container);
-	        this.$el.append(this.$container);
 	        this.handleResizable()
 	        this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
 	        // more than two views at the same time (e.g: in a Box)
@@ -424,7 +439,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	        Promise.all(loadfile_list).then(function(compList){
 	            n_frames = ngl_coordinate_resource['n_frames'] || 1;
-	            that._set_representation_from_backend(compList);
+	            that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
 	            that.stage.setParameters(ngl_stage_params);
 	            that.set_camera_orientation(that.model.get("_camera_orientation"));
 	            that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
@@ -506,12 +521,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    request_repr_dict: function() {
 	        var n_components = this.stage.compList.length;
-	        var msg = {};
+	        var repr_dict = {};
 	
 	        for (var i = 0; i < n_components; i++) {
 	            var comp = this.stage.compList[i];
-	            msg[i] = {};
-	            var msgi = msg[i];
+	            repr_dict[i] = {};
+	            var msgi = repr_dict[i];
 	            for (var j = 0; j < comp.reprList.length; j++) {
 	                var repr = comp.reprList[j];
 	                msgi[j] = {};
@@ -523,12 +538,32 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            // make sure we are using "request_repr_dict" name
 	            // in backend too.
 	            'type': 'request_repr_dict',
-	            'data': msg
+	            'data': repr_dict,
 	        });
+	        var that = this
+	        if (that._synced_repr_model_ids.length > 0){
+	            that._synced_repr_model_ids.forEach(function(mid){
+	                that.model.widget_manager.get_model(mid).then(function(model){
+	                    for (var k in model.views){
+	                        var pview = model.views[k];
+	                        pview.then(function(view){
+	                            // not sync with itself
+	                            if (view.uuid != that.uuid){
+	                                view._set_representation_from_repr_dict(repr_dict)
+	                            }
+	                        })
+	                    }
+	                })
+	            })
+	        }
+	    },
+	
+	    setSyncRepr: function(model_ids){
+	        this._synced_repr_model_ids = model_ids
 	    },
 	
 	    setSyncCamera: function(model_ids){
-	        this._synced_model_ids = model_ids;
+	        this._synced_model_ids = model_ids
 	    },
 	
 	    viewXZPlane: function() {
@@ -538,16 +573,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    set_representation_from_backend: function(){
-	        this._set_representation_from_backend(this.stage.compList);
+	        var repr_dict = this.model.get('_ngl_repr_dict')
+	        this._set_representation_from_repr_dict(repr_dict)
 	    },
 	
-	    _set_representation_from_backend: function(compList){
+	    _set_representation_from_repr_dict: function(repr_dict){
+	        var compList = this.stage.compList
 	        if (compList.length > 0){
-	            var ngl_repr_dict = this.model.get('_ngl_repr_dict');
-	            for (var index in ngl_repr_dict){
+	            for (var index in repr_dict){
 	                var comp = compList[index];
 	                comp.removeAllRepresentations();
-	                var reprlist = ngl_repr_dict[index];
+	                var reprlist = repr_dict[index];
 	                for (var j in reprlist){
 	                    var repr = reprlist[j];
 	                    if (repr){
@@ -651,8 +687,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	
 	    createNglGUI: function(){
-	      this.stage_widget = new StageWidget(this.el, this.stage);
-	      // this.$container.resizable("disable");
+	      this.stage_widget = new StageWidget(this)
 	    },
 	
 	
@@ -887,6 +922,19 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                this.setSize(ui.size.width + "px", ui.size.height + "px");
 	            }.bind(this)
 	        })
+	    },
+	
+	    handleResize: function(){
+	        var width = this.$el.width()
+	        console.log('el width ' + width)
+	        var height = this.$el.height() + "px"
+	        if (this.stage_widget){
+	            width = width - $(this.stage_widget.sidebar.dom).width()
+	            console.log('new width ' + width)
+	        }
+	        width = width + "px"
+	        console.log('new width (px)' + width)
+	        this.setSize(width, height)
 	    },
 	
 	    setSize: function(width, height) {
@@ -1136,10 +1184,65 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	});
 	
+	var FullscreenModel = widgets.DOMWidgetModel.extend({
+	    defaults: function(){
+	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+	            _model_name: 'FullscreenModel',
+	            _model_module: 'nglview-js-widgets',
+	            _model_module_version: __webpack_require__(77).version,
+	            _view_name: "FullscreenView",
+	            _view_module: "nglview-js-widgets",
+	            _view_module_version: __webpack_require__(77).version,
+	        });
+	    }
+	})
+	
+	var FullscreenView = widgets.DOMWidgetView.extend({
+	    render: function() {
+	        this.stage = new NGL.Stage()
+	        var that = this
+	        this.model.on("msg:custom", function(msg){
+	            that.on_msg(msg)
+	        })
+	        this.handleSignals()
+	    },
+	
+	    fullscreen: function(model_id){
+	        var that = this
+	        this.model.widget_manager.get_model(model_id).then((model) =>{
+	            var key = Object.keys(model.views)[0]
+	            model.views[key].then((view) => {
+	                that.stage.toggleFullscreen(view.el)
+	            })
+	        })
+	    },
+	
+	    handleSignals: function(){
+	        var that = this
+	        this.stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	            that.model.set("_is_fullscreen", isFullscreen)
+	            that.touch()
+	        })
+	    },
+	
+	    execute_code: function(code){
+	        eval(code);
+	    },
+	
+	    on_msg: function(msg){
+	        if ('execute_code' in msg){
+	            this.execute_code(msg.execute_code)
+	        }
+	    }
+	
+	});
+	
 	module.exports = {
 	    'NGLView': NGLView,
 	    'NGLModel': NGLModel,
 	    'NGL': NGL,
+	    'FullscreenModel': FullscreenModel,
+	    'FullscreenView': FullscreenView
 	};
 
 
@@ -16698,8 +16801,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	// Stage
 	
-	StageWidget = function (el, stage) {
-	  // `el` is notebook's cell element
+	StageWidget = function (view) {
+	  // view: NGLView of NGLModel
+	  if (view.options.parent){
+	      el = view.el.parentElement
+	  }else{
+	      el = view.el
+	  }
+	  stage = view.stage
 	  var viewport = new UI.Panel()
 	  viewport.setPosition("absolute")
 	  viewport.dom = stage.viewer.container
@@ -26390,7 +26499,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 77 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"2.6.1","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"2.6.2","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ })
 /******/ ])});;

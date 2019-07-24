@@ -949,16 +949,6 @@ def test_player_picked():
     assert view.player.widget_picked.value == '{"x": 3}'
 
 
-def test_layout_BoxNGL():
-    view = nv.demo()
-    box = nv.widget_box.BoxNGL([view])
-    box._ipython_display_()
-    box.layout = Layout()
-    box._gui_style = 'row'
-    box._gui_style = 'column'
-    box._gui_style = 'row'
-
-
 def test_widget_utils():
     box = HBox()
     i0 = IntText()
@@ -1023,24 +1013,6 @@ def test_interpolate():
 
 def dummy_test_to_increase_coverage():
     nv.__version__
-
-
-def test_widget_box():
-    # empty
-    box = nv.widget_box.BoxNGL()
-    try:
-        box.layout = Layout()
-    except traitlets.TraitError:
-        pass
-    box._update_size()
-    view = nv.demo()
-    box = nv.widget_box.BoxNGL([view])
-    box._update_size()
-
-    box._is_beautified = True
-    box._beautify()
-    box._is_beautified = False
-    box._beautify()
 
 
 def test_viewer_control():
@@ -1132,3 +1104,12 @@ def test_trim_messages():
     view.remove_component(c)
     assert len(view._ngl_msg_archive) == 1
     assert view._ngl_msg_archive[0]['methodName'] == 'loadFile'
+
+
+def test_fullscreen():
+    v = nv.demo()
+    fs = nv.widget.Fullscreen(v, [v])
+    fs.fullscreen()
+    with patch.object(v, 'handle_resize'):
+        fs._fullscreen_changed({})
+        assert v.handle_resize.called
