@@ -1104,3 +1104,12 @@ def test_trim_messages():
     view.remove_component(c)
     assert len(view._ngl_msg_archive) == 1
     assert view._ngl_msg_archive[0]['methodName'] == 'loadFile'
+
+
+def test_fullscreen():
+    v = nv.demo()
+    fs = nv.widget.Fullscreen(v)
+    fs.fullscreen()
+    with patch.object(v, 'handle_resize'):
+        fs.handle_resize()
+        assert v.handle_resize.called
