@@ -1538,6 +1538,8 @@ class Fullscreen(DOMWidget):
 
     @observe('_is_fullscreen')
     def _fullscreen_changed(self, change):
+        if not change.new:
+            self._target.layout.height = '300px'
         self.handle_resize()
 
     def handle_resize(self):

@@ -292,7 +292,7 @@ StageWidget = function (view) {
     const box = stage.viewer.container.parentElement.getBoundingClientRect()
     console.log("in StageWidget")
     stage.setSize(box.width+"px", isFullscreen?box.height+'px':'300px')
-    stage.handleResize()
+    view.handleResize()
   })
 
   window.addEventListener(
