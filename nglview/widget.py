@@ -13,7 +13,7 @@ from ipywidgets import (Box, DOMWidget, HBox, IntSlider, Output, Play, Widget,
                         jslink)
 from ipywidgets import widget as _widget
 from traitlets import (Bool, CaselessStrEnum, Dict, Instance, Int, Integer,
-                       List, Unicode, observe)
+                       List, Unicode, observe, Tuple)
 import traitlets
 
 from . import color, interpolate
@@ -153,7 +153,7 @@ class NGLWidget(DOMWidget):
     _camera_orientation = List().tag(sync=True)
     _synced_model_ids = List().tag(sync=True)
     _synced_repr_model_ids = List().tag(sync=True)
-    _ngl_view_id = List().tag(sync=True)
+    _ngl_view_id = List(Unicode).tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
@@ -1017,6 +1017,8 @@ class NGLWidget(DOMWidget):
             elif frame < 0:
                 frame = self.max_frame
             self.frame = frame
+        elif msg_type == 'updateIDs':
+            self._ngl_view_id = msg['data']
         elif msg_type == 'repr_parameters':
             data_dict = self._ngl_msg.get('data')
             name = data_dict.pop('name') + '\n'

@@ -108,9 +108,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.stage.setParameters(stage_params);
         this.$container = $(this.stage.viewer.container);
         this.handleResizable()
-        this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
-        // more than two views at the same time (e.g: in a Box)
-        this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
+        this.ngl_view_id = this.uuid
         this.touch();
         var that = this;
         var width = this.model.get("_view_width") || this.$el.parent().width() + "px";
@@ -176,6 +174,14 @@ var NGLView = widgets.DOMWidgetView.extend({
       if (this.stage.compList.length < this.model.get("n_components")){
           this.handle_embed()
       }
+
+      var ngl_view_ids = this.model.get("_ngl_view_id")
+      ngl_view_ids.push(this.ngl_view_id)
+      this.send({"type": "updateIDs", "data": ngl_view_ids})
+
+      // FIXME: Why below doesn't update _ngl_view_id in backend?
+      // this.model.set("_ngl_view_id", ngl_view_ids)
+      // this.touch()
     },
 
     handleSignals: function(){
@@ -972,7 +978,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     },
 
     get_last_child_id: function(){
-        var keys = Object.keys(this.model.views);
+        var keys = this.model.get('_ngl_view_id')
         return keys[keys.length-1]
     },
 
