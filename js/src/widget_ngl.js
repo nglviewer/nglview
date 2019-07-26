@@ -200,8 +200,12 @@ var NGLView = widgets.DOMWidgetView.extend({
           comp.signals.representationRemoved.add(function() {
               that.request_repr_dict();
           });
-          comp.signals.representationAdded.add(function() {
+          comp.signals.representationAdded.add(function(repr) {
               that.request_repr_dict();
+              repr.signals.parametersChanged.add(function(){
+                  console.log("repr.parametersChanged")
+                  that.request_repr_dict();
+              })
           });
       }, this);
 
@@ -493,8 +497,8 @@ var NGLView = widgets.DOMWidgetView.extend({
     syncReprForAllViews: function(){
         var repr_dict_backend = this.model.get("_ngl_repr_dict")
         var repr_dict_frontend = this.getReprDictFrontEnd()
-        if (repr_dict_frontend != repr_dict_backend){
-            console.log(this, this.ngl_view_ids)
+        if (JSON.stringify(repr_dict_frontend) !== JSON.stringify(repr_dict_backend)){
+            console.log(this, this.ngl_view_id)
             this._set_representation_from_repr_dict(repr_dict_backend)
         }
     },
@@ -669,7 +673,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         var repr = component.reprList[repr_index];
         if (repr) {
             repr.setParameters(params);
-            that.request_repr_dict();
         }
     },
 

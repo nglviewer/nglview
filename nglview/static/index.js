@@ -271,8 +271,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	          comp.signals.representationRemoved.add(function() {
 	              that.request_repr_dict();
 	          });
-	          comp.signals.representationAdded.add(function() {
+	          comp.signals.representationAdded.add(function(repr) {
 	              that.request_repr_dict();
+	              repr.signals.parametersChanged.add(function(){
+	                  console.log("repr.parametersChanged")
+	                  that.request_repr_dict();
+	              })
 	          });
 	      }, this);
 	
@@ -564,7 +568,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    syncReprForAllViews: function(){
 	        var repr_dict_backend = this.model.get("_ngl_repr_dict")
 	        var repr_dict_frontend = this.getReprDictFrontEnd()
-	        if (repr_dict_frontend != repr_dict_backend){
+	        if (JSON.stringify(repr_dict_frontend) !== JSON.stringify(repr_dict_backend)){
+	            console.log(this, this.ngl_view_id)
 	            this._set_representation_from_repr_dict(repr_dict_backend)
 	        }
 	    },
@@ -739,7 +744,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        var repr = component.reprList[repr_index];
 	        if (repr) {
 	            repr.setParameters(params);
-	            that.request_repr_dict();
 	        }
 	    },
 	
@@ -16878,7 +16882,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar_ngl')
 	  el.appendChild(menubar.dom)
 	
-	  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar_ngl')
+	  var sidebar = new NGL.SidebarWidget(stage).container.setId('sidebar_ngl')
 	  el.appendChild(sidebar.dom)
 	
 	  this.widgetList.push(toolbar)
@@ -17811,10 +17815,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	// Sidebar
 	
-	NGL.SidebarWidget = function (stage) {
-	  var signals = stage.signals
-	  var container = new UI.Panel()
+	NGL.SidebarWidget = function (stage, view=undefined) {
+	  this.view = view
+	  this.container = new UI.Panel()
+	  this.stage = stage
+	  if (stage){
+	      this.setStage(stage)
+	  }
+	}
 	
+	
+	function setStage(container, stage){
+	  var signals = stage.signals
 	  var widgetContainer = new UI.Panel()
 	    .setClass('Content')
 	
@@ -17981,9 +17993,17 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    actions,
 	    widgetContainer
 	  )
-	
-	  return container
 	}
+	
+	
+	NGL.SidebarWidget.prototype = {
+	    constructor: NGL.SidebarWidget,
+	    setStage: function(stage){
+	        this.stage = stage
+	        this.container.remove()
+	        setStage(this.container, this.stage)
+	    }
+	},
 	
 	// Component
 	
@@ -26536,10 +26556,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	var SidebarView = widgets.DOMWidgetView.extend({
 	    render: function() {
-	        this.sidebar_pview = this.createView()
-	        this.sidebar_pview.then((sidebar) =>{
-	            this.el.appendChild(sidebar.dom)
-	        })
+	        this.sidebar = new NGL.SidebarWidget()
+	        this.sidebar.container
+	        this.el.appendChild(this.sidebar.container.dom)
 	    },
 	
 	    createView: function(){

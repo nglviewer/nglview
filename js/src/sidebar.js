@@ -19,10 +19,9 @@ var SidebarModel = widgets.DOMWidgetModel.extend({
 
 var SidebarView = widgets.DOMWidgetView.extend({
     render: function() {
-        this.sidebar_pview = this.createView()
-        this.sidebar_pview.then((sidebar) =>{
-            this.el.appendChild(sidebar.dom)
-        })
+        this.sidebar = new NGL.SidebarWidget()
+        this.sidebar.container
+        this.el.appendChild(this.sidebar.container.dom)
     },
 
     createView: function(){
