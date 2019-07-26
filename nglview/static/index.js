@@ -48,7 +48,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	var loadedModules = [
 	    __webpack_require__(1),
-	    //require("./ngl.js"),
+	    __webpack_require__(78),
 	]
 	
 	for (var i in loadedModules) {
@@ -208,14 +208,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    handleMessage(){
 	        this.model.on("msg:custom", function(msg){
-	            if ('ngl_view_id' in msg){
-	                var key = msg.ngl_view_id;
-	                console.log(key);
-	                this.model.views[key].then(function(v){
-	                    v.on_msg(msg);
-	                })
-	            }
-	            else{this.on_msg(msg);}
+	           this.on_msg(msg);
 	        }, this);
 	
 	        if (this.model.comm) {
@@ -26505,6 +26498,55 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /***/ (function(module, exports) {
 
 	module.exports = {"name":"nglview-js-widgets","version":"2.6.2","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+
+/***/ }),
+/* 78 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var Jupyter
+	var widgets = __webpack_require__(2)
+	var NGL = __webpack_require__(3)
+	__webpack_require__(16) // NGL.SidebarWidget
+	
+	
+	var SidebarModel = widgets.DOMWidgetModel.extend({
+	    defaults: function(){
+	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+	            _model_name: 'SidebarModel',
+	            _model_module: 'nglview-js-widgets',
+	            _model_module_version: __webpack_require__(77).version,
+	            _view_name: "SidebarView",
+	            _view_module: "nglview-js-widgets",
+	            _view_module_version: __webpack_require__(77).version,
+	        });
+	    }
+	})
+	
+	var SidebarView = widgets.DOMWidgetView.extend({
+	    render: function() {
+	        this.sidebar_pview = this.createView()
+	        this.sidebar_pview.then((sidebar) =>{
+	            this.el.appendChild(sidebar.dom)
+	        })
+	    },
+	
+	    createView: function(){
+	        var target_model_id = this.model.get("_target_model_id")
+	        return this.model.widget_manager.get_model(target_model_id).then((model) =>{
+	            var key = Object.keys(model.views)[0]
+	            return model.views[key].then((view) => {
+	                return new NGL.SidebarWidget(view.stage)
+	            })
+	        })
+	    },
+	})
+	
+	
+	module.exports = {
+	    'SidebarModel': SidebarModel,
+	    'SidebarView': SidebarView,
+	};
+
 
 /***/ })
 /******/ ])});;

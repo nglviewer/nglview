@@ -137,14 +137,7 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     handleMessage(){
         this.model.on("msg:custom", function(msg){
-            if ('ngl_view_id' in msg){
-                var key = msg.ngl_view_id;
-                console.log(key);
-                this.model.views[key].then(function(v){
-                    v.on_msg(msg);
-                })
-            }
-            else{this.on_msg(msg);}
+           this.on_msg(msg);
         }, this);
 
         if (this.model.comm) {
