@@ -494,6 +494,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         var repr_dict_backend = this.model.get("_ngl_repr_dict")
         var repr_dict_frontend = this.getReprDictFrontEnd()
         if (repr_dict_frontend != repr_dict_backend){
+            console.log(this, this.ngl_view_ids)
             this._set_representation_from_repr_dict(repr_dict_backend)
         }
     },
