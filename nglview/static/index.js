@@ -519,20 +519,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    request_repr_dict: function() {
-	        var n_components = this.stage.compList.length;
-	        var repr_dict = {};
-	
-	        for (var i = 0; i < n_components; i++) {
-	            var comp = this.stage.compList[i];
-	            repr_dict[i] = {};
-	            var msgi = repr_dict[i];
-	            for (var j = 0; j < comp.reprList.length; j++) {
-	                var repr = comp.reprList[j];
-	                msgi[j] = {};
-	                msgi[j]['type'] = repr.name;
-	                msgi[j]['params'] = repr.repr.getParameters();
-	            }
-	        }
+	        var repr_dict = this.getReprDictFrontEnd()
 	        this.send({
 	            // make sure we are using "request_repr_dict" name
 	            // in backend too.
@@ -554,6 +541,31 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                    }
 	                })
 	            })
+	        }
+	    },
+	
+	    getReprDictFrontEnd: function(){
+	        var repr_dict = {};
+	        var n_components = this.stage.compList.length;
+	        for (var i = 0; i < n_components; i++) {
+	            var comp = this.stage.compList[i];
+	            repr_dict[i] = {};
+	            var msgi = repr_dict[i];
+	            for (var j = 0; j < comp.reprList.length; j++) {
+	                var repr = comp.reprList[j];
+	                msgi[j] = {};
+	                msgi[j]['type'] = repr.name;
+	                msgi[j]['params'] = repr.repr.getParameters();
+	            }
+	        }
+	        return repr_dict
+	    },
+	
+	    syncReprForAllViews: function(){
+	        var repr_dict_backend = this.model.get("_ngl_repr_dict")
+	        var repr_dict_frontend = this.getReprDictFrontEnd()
+	        if (repr_dict_frontend != repr_dict_backend){
+	            this._set_representation_from_repr_dict(repr_dict_backend)
 	        }
 	    },
 	
