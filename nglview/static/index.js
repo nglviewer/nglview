@@ -274,7 +274,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	          comp.signals.representationAdded.add(function(repr) {
 	              that.request_repr_dict();
 	              repr.signals.parametersChanged.add(function(){
-	                  console.log("repr.parametersChanged")
 	                  that.request_repr_dict();
 	              })
 	          });
@@ -571,6 +570,19 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        if (JSON.stringify(repr_dict_frontend) !== JSON.stringify(repr_dict_backend)){
 	            console.log(this, this.ngl_view_id)
 	            this._set_representation_from_repr_dict(repr_dict_backend)
+	        }
+	    },
+	
+	    syncReprWithMe: function(){
+	        // Mostly for sidebar
+	        var that = this
+	        var repr_dict_frontend = this.getReprDictFrontEnd()
+	        for (var k in this.model.views){
+	            this.model.views[k].then((view) => {
+	                if (view !== that){
+	                    view._set_representation_from_repr_dict(repr_dict_frontend)
+	                }
+	            })
 	        }
 	    },
 	
@@ -15150,7 +15162,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	// Html
 	
 	var UI = __webpack_require__(13).UI;
-	__webpack_require__(11)
+	var Tether = __webpack_require__(11)
 	
 	UI.Html = function (html) {
 	  UI.Element.call(this)
