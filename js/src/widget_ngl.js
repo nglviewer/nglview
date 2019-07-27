@@ -870,13 +870,11 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     handleResize: function(){
         var width = this.$el.width()
-        console.log('el width ' + width)
         var height = this.$el.height() + "px"
         if (this.stage_widget){
             width = width - $(this.stage_widget.sidebar.dom).width()
         }
         width = width + "px"
-        console.log('new width (px)' + width)
         this.setSize(width, height)
     },
 
