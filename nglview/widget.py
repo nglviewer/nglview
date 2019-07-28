@@ -1019,6 +1019,9 @@ class NGLWidget(DOMWidget):
             self.frame = frame
         elif msg_type == 'updateIDs':
             self._ngl_view_id = msg['data']
+        elif msg_type == 'removeComponent':
+            cindex = int(msg['data'])
+            self._ngl_component_ids.pop(cindex)
         elif msg_type == 'repr_parameters':
             data_dict = self._ngl_msg.get('data')
             name = data_dict.pop('name') + '\n'

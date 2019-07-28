@@ -161,6 +161,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this._ngl_focused = 0
 	        this.uuid = generateUUID()
 	        this.stage_widget = undefined
+	        this.comp_uuids = []
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
 	        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids")
 	    },
@@ -263,7 +264,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	          that.mouseover_display('none')
 	      }, false);
 	
-	      this.stage.signals.componentAdded.add(function() {
+	      this.stage.signals.componentAdded.add(function(component) {
+	          this.comp_uuids.push(component.uuid)
 	          var len = this.stage.compList.length;
 	          this.model.set("n_components", len);
 	          this.touch();
@@ -280,9 +282,37 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	          });
 	      }, this);
 	
-	      this.stage.signals.componentRemoved.add(function() {
-	          this.model.set("n_components", this.stage.compList.length);
-	          this.touch();
+	      this.stage.signals.componentRemoved.add(function(component) {
+	          var that = this
+	          var cindex = this.comp_uuids.indexOf(component.uuid)
+	          this.comp_uuids.splice(cindex, 1)
+	          var n_components = this.stage.compList.length
+	          this.model.set("n_components", n_components)
+	          this.touch()
+	          console.log('componentRemoved', component, component.uuid)
+	
+	          var pviews = []
+	          for (var k in this.model.views){
+	              pviews.push(this.model.views[k])
+	          }
+	
+	          Promise.all(pviews).then((views) => {
+	              console.log(views)
+	              var update_backend = false
+	              for (var k in views){
+	                  var view = views[k]
+	                  if ((view.uuid != that.uuid) && (view.stage.compList.length > n_components)){
+	                      // remove component from NGL's GUI
+	                      // pass
+	                      view.stage.removeComponent(view.stage.compList[cindex])
+	                      update_backend = true
+	                  }
+	              }
+	              if (update_backend){
+	                  console.log("should update backend")
+	                  that.send({"type": "removeComponent", "data": cindex})
+	              }
+	          })
 	      }, this);
 	
 	      this.stage.signals.parametersChanged.add(function(){
