@@ -1017,6 +1017,9 @@ class NGLWidget(DOMWidget):
             elif frame < 0:
                 frame = self.max_frame
             self.frame = frame
+        elif msg_type == 'removeComponent':
+            cindex = int(msg['data'])
+            self._ngl_component_ids.pop(cindex)
         elif msg_type == 'repr_parameters':
             data_dict = self._ngl_msg.get('data')
             name = data_dict.pop('name') + '\n'
