@@ -16869,7 +16869,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar_ngl')
 	  el.appendChild(menubar.dom)
 	
-	  var sidebar = new NGL.SidebarWidget(stage).container.setId('sidebar_ngl')
+	  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar_ngl')
 	  el.appendChild(sidebar.dom)
 	
 	  this.widgetList.push(toolbar)
@@ -17802,18 +17802,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	// Sidebar
 	
-	NGL.SidebarWidget = function (stage, view=undefined) {
-	  this.view = view
-	  this.container = new UI.Panel()
-	  this.stage = stage
-	  if (stage){
-	      this.setStage(stage)
-	  }
-	}
-	
-	
-	function setStage(container, stage){
+	NGL.SidebarWidget = function (stage) {
 	  var signals = stage.signals
+	  var container = new UI.Panel()
+	
 	  var widgetContainer = new UI.Panel()
 	    .setClass('Content')
 	
@@ -17980,17 +17972,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    actions,
 	    widgetContainer
 	  )
+	
+	  return container
 	}
-	
-	
-	NGL.SidebarWidget.prototype = {
-	    constructor: NGL.SidebarWidget,
-	    setStage: function(stage){
-	        this.stage = stage
-	        this.container.remove()
-	        setStage(this.container, this.stage)
-	    }
-	},
 	
 	// Component
 	
@@ -26543,20 +26527,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	var SidebarView = widgets.DOMWidgetView.extend({
 	    render: function() {
-	        this.sidebar = new NGL.SidebarWidget()
-	        this.sidebar.container
-	        this.el.appendChild(this.sidebar.container.dom)
+	        this.sidebar = undefined
 	    },
 	
-	    createView: function(){
-	        var target_model_id = this.model.get("_target_model_id")
-	        return this.model.widget_manager.get_model(target_model_id).then((model) =>{
-	            var key = Object.keys(model.views)[0]
-	            return model.views[key].then((view) => {
-	                return new NGL.SidebarWidget(view.stage)
-	            })
-	        })
-	    },
+	    setStage: function(stage){
+	        // stage: NGL.Stage
+	        if (this.sidebar){
+	            this.sidebar.dispose()
+	            this.sidebar = undefined
+	        }
+	        this.sidebar = NGL.SidebarWidget(stage)
+	        this.el.appendChild(this.sidebar.dom)
+	    }
 	})
 	
 	

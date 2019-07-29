@@ -206,7 +206,7 @@ StageWidget = function (view) {
   var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar_ngl')
   el.appendChild(menubar.dom)
 
-  var sidebar = new NGL.SidebarWidget(stage).container.setId('sidebar_ngl')
+  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar_ngl')
   el.appendChild(sidebar.dom)
 
   this.widgetList.push(toolbar)
@@ -1139,18 +1139,10 @@ NGL.ExportImageWidget = function (stage) {
 
 // Sidebar
 
-NGL.SidebarWidget = function (stage, view=undefined) {
-  this.view = view
-  this.container = new UI.Panel()
-  this.stage = stage
-  if (stage){
-      this.setStage(stage)
-  }
-}
-
-
-function setStage(container, stage){
+NGL.SidebarWidget = function (stage) {
   var signals = stage.signals
+  var container = new UI.Panel()
+
   var widgetContainer = new UI.Panel()
     .setClass('Content')
 
@@ -1317,17 +1309,9 @@ function setStage(container, stage){
     actions,
     widgetContainer
   )
+
+  return container
 }
-
-
-NGL.SidebarWidget.prototype = {
-    constructor: NGL.SidebarWidget,
-    setStage: function(stage){
-        this.stage = stage
-        this.container.remove()
-        setStage(this.container, this.stage)
-    }
-},
 
 // Component
 

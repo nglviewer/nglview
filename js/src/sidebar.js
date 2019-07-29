@@ -19,20 +19,18 @@ var SidebarModel = widgets.DOMWidgetModel.extend({
 
 var SidebarView = widgets.DOMWidgetView.extend({
     render: function() {
-        this.sidebar = new NGL.SidebarWidget()
-        this.sidebar.container
-        this.el.appendChild(this.sidebar.container.dom)
+        this.sidebar = undefined
     },
 
-    createView: function(){
-        var target_model_id = this.model.get("_target_model_id")
-        return this.model.widget_manager.get_model(target_model_id).then((model) =>{
-            var key = Object.keys(model.views)[0]
-            return model.views[key].then((view) => {
-                return new NGL.SidebarWidget(view.stage)
-            })
-        })
-    },
+    setStage: function(stage){
+        // stage: NGL.Stage
+        if (this.sidebar){
+            this.sidebar.dispose()
+            this.sidebar = undefined
+        }
+        this.sidebar = NGL.SidebarWidget(stage)
+        this.el.appendChild(this.sidebar.dom)
+    }
 })
 
 
