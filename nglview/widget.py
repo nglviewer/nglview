@@ -1560,6 +1560,3 @@ class Sidebar(DOMWidget):
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
     _target_model_id = Unicode().tag(sync=True)
-    def __init__(self, model_id, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._target_model_id = model_id
