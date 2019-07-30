@@ -22,13 +22,14 @@ var SidebarView = widgets.DOMWidgetView.extend({
         this.sidebar = undefined
     },
 
-    setStage: function(stage){
+    setStage: function(stage, view=undefined){
         // stage: NGL.Stage
+        // view: NGLView
         if (this.sidebar){
             this.sidebar.dispose()
             this.sidebar = undefined
         }
-        this.sidebar = NGL.SidebarWidget(stage)
+        this.sidebar = NGL.SidebarWidget(stage, view)
         this.el.appendChild(this.sidebar.dom)
     }
 })

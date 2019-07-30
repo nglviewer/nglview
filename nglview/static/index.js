@@ -603,6 +603,21 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	    },
 	
+	    syncReprWithMe: function(){
+	        // Make sure views of the same model has the same representations
+	        // Only needed if we use Sidebar that connects to specific view.
+	        var that = this
+	        var repr_dict = this.getReprDictFrontEnd()
+	        for (var k in this.model.views){
+	            this.model.views[k].then((v) =>{
+	                if (v.uuid != that.uuid){
+	                    v._set_representation_from_repr_dict(repr_dict)
+	                }
+	            })
+	        }
+	        this.request_repr_dict()
+	    },
+	
 	    setSyncRepr: function(model_ids){
 	        this._synced_repr_model_ids = model_ids
 	    },
@@ -1112,6 +1127,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    on_msg: function(msg) {
 	        // TODO: re-organize
+	        if (('ngl_view_id' in msg) && (msg.ngl_view_id !== this.ngl_view_id)){
+	            return
+	        }
 	        if (msg.type == 'call_method') {
 	            var index, component, func, stage;
 	            var new_args = msg.args.slice();
@@ -16869,7 +16887,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar_ngl')
 	  el.appendChild(menubar.dom)
 	
-	  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar_ngl')
+	  var sidebar = new NGL.SidebarWidget(stage, view).setId('sidebar_ngl')
 	  el.appendChild(sidebar.dom)
 	
 	  this.widgetList.push(toolbar)
@@ -17802,9 +17820,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	// Sidebar
 	
-	NGL.SidebarWidget = function (stage) {
+	NGL.SidebarWidget = function (stage, view=undefined) {
 	  var signals = stage.signals
 	  var container = new UI.Panel()
+	  container.view = view
 	
 	  var widgetContainer = new UI.Panel()
 	    .setClass('Content')
@@ -17897,6 +17916,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	      stage.removeAllComponents()
 	    })
 	
+	  var syncRepr = new UI.Icon('superpowers')
+	    .setTitle('sync repr')
+	    .setCursor('pointer')
+	    .setMarginLeft('10px')
+	    .onClick(function(){
+	        if (view){
+	            view.syncReprWithMe()
+	        }
+	    })
+	
 	  var settingsMenu = new UI.PopupMenu('cogs', 'Settings', 'window')
 	    .setIconTitle('settings')
 	    .setMarginLeft('10px')
@@ -17965,6 +17994,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	      collapseAll,
 	      centerAll,
 	      disposeAll,
+	      syncRepr,
 	      settingsMenu
 	    )
 	
@@ -26530,13 +26560,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.sidebar = undefined
 	    },
 	
-	    setStage: function(stage){
+	    setStage: function(stage, view=undefined){
 	        // stage: NGL.Stage
+	        // view: NGLView
 	        if (this.sidebar){
 	            this.sidebar.dispose()
 	            this.sidebar = undefined
 	        }
-	        this.sidebar = NGL.SidebarWidget(stage)
+	        this.sidebar = NGL.SidebarWidget(stage, view)
 	        this.el.appendChild(this.sidebar.dom)
 	    }
 	})

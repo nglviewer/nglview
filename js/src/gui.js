@@ -206,7 +206,7 @@ StageWidget = function (view) {
   var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar_ngl')
   el.appendChild(menubar.dom)
 
-  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar_ngl')
+  var sidebar = new NGL.SidebarWidget(stage, view).setId('sidebar_ngl')
   el.appendChild(sidebar.dom)
 
   this.widgetList.push(toolbar)
@@ -1139,9 +1139,10 @@ NGL.ExportImageWidget = function (stage) {
 
 // Sidebar
 
-NGL.SidebarWidget = function (stage) {
+NGL.SidebarWidget = function (stage, view=undefined) {
   var signals = stage.signals
   var container = new UI.Panel()
+  container.view = view
 
   var widgetContainer = new UI.Panel()
     .setClass('Content')
@@ -1234,6 +1235,16 @@ NGL.SidebarWidget = function (stage) {
       stage.removeAllComponents()
     })
 
+  var syncRepr = new UI.Icon('superpowers')
+    .setTitle('sync repr')
+    .setCursor('pointer')
+    .setMarginLeft('10px')
+    .onClick(function(){
+        if (view){
+            view.syncReprWithMe()
+        }
+    })
+
   var settingsMenu = new UI.PopupMenu('cogs', 'Settings', 'window')
     .setIconTitle('settings')
     .setMarginLeft('10px')
@@ -1302,6 +1313,7 @@ NGL.SidebarWidget = function (stage) {
       collapseAll,
       centerAll,
       disposeAll,
+      syncRepr,
       settingsMenu
     )
 

@@ -532,6 +532,21 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
+    syncReprWithMe: function(){
+        // Make sure views of the same model has the same representations
+        // Only needed if we use Sidebar that connects to specific view.
+        var that = this
+        var repr_dict = this.getReprDictFrontEnd()
+        for (var k in this.model.views){
+            this.model.views[k].then((v) =>{
+                if (v.uuid != that.uuid){
+                    v._set_representation_from_repr_dict(repr_dict)
+                }
+            })
+        }
+        this.request_repr_dict()
+    },
+
     setSyncRepr: function(model_ids){
         this._synced_repr_model_ids = model_ids
     },
@@ -1041,6 +1056,9 @@ var NGLView = widgets.DOMWidgetView.extend({
 
     on_msg: function(msg) {
         // TODO: re-organize
+        if (('ngl_view_id' in msg) && (msg.ngl_view_id !== this.ngl_view_id)){
+            return
+        }
         if (msg.type == 'call_method') {
             var index, component, func, stage;
             var new_args = msg.args.slice();
