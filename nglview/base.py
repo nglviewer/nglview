@@ -1,10 +1,10 @@
 from ipywidgets import DOMWidget
-from traitlets import Bool
+from traitlets import Bool, List
 
 
 class BaseWidget(DOMWidget):
     _msg_q = []
-    _msg_ar = []
+    _msg_ar = List().tag(sync=True)
     _ready = Bool(False).tag(sync=True)
 
     def _js(self, code):
@@ -19,4 +19,6 @@ class BaseWidget(DOMWidget):
             self._msg_q.append(msg)
         else:
             self.send(msg)
-        self._msg_ar.append(msg)
+        msg_ar = self._msg_ar[:]
+        msg_ar.append(msg)
+        self._msg_ar = msg_ar # trigger sync

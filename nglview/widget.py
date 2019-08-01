@@ -86,6 +86,10 @@ def write_html(fp, views, frame_range=None):
     """
     views = isinstance(views, DOMWidget) and [views] or views
     embed = ipywidgets.embed
+    for k, v in views[0].widgets.items():
+        if v.__class__.__name__ == 'ColormakerRegistry':
+            views.append(v)
+            break
 
     def _set_serialization(views):
         for view in views:
