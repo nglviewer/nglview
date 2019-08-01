@@ -13,7 +13,6 @@ var BaseView = widgets.DOMWidgetView.extend({
     },
 
     executeCode: function(code){
-        console.log('executeCode')
         eval(code);
     },
 
@@ -24,8 +23,6 @@ var BaseView = widgets.DOMWidgetView.extend({
     },
 
     on_msg: function(msg){
-        console.log(msg)
-        console.log(this)
         if (msg.type == 'callMethod'){
             this[msg.methodName].apply(this, msg.args, msg.kwargs)
         }

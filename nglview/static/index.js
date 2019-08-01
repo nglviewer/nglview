@@ -26504,6 +26504,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	var _ = __webpack_require__(8)
 	var NGL = __webpack_require__(3)
 	var BaseView = __webpack_require__(79).BaseView
 	var widgets = __webpack_require__(2)
@@ -26525,19 +26526,37 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	var ColormakerRegistryView = BaseView.extend({
 	    addSelectionScheme: function(label, args){
-	        console.log('label', + label)
-	        console.log(args)
 	        var id = NGL.ColormakerRegistry.addSelectionScheme(args, label)
-	        var scheme = NGL.ColormakerRegistry.userSchemes[id]
+	        this._updateId(id, label)
+	    },
+	
+	    addSelectionSchemeOriginal: function(label, args){
+	        var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
+	        var scheme = NGL.ColormakerRegistry.userSchemes[id];
+	        NGL.ColormakerRegistry.removeScheme(id);
 	        // hard code the scheme ID
-	        NGL.ColormakerRegistry.removeScheme(id)
-	        NGL.ColormakerRegistry.add(label, scheme)
-	        return label
+	        NGL.ColormakerRegistry.add(label, scheme);
+	    },
+	
+	    addScheme: function(label, func_str){
+	        var func = Function("return " + func_str)()
+	        console.log(func)
+	        var id = NGL.ColormakerRegistry.addScheme(function(params){
+	            this.atomColor = func
+	        })
+	        this._updateId(id, label)
+	    },
+	
+	    _updateId: function(oldId, newId){
+	        var scheme = NGL.ColormakerRegistry.userSchemes[oldId]
+	        console.log(oldId, scheme)
+	        NGL.ColormakerRegistry.add(newId, scheme)
+	        NGL.ColormakerRegistry.removeScheme(oldId)
 	    },
 	
 	    removeScheme: function(schemeId){
 	        NGL.ColormakerRegistry.removeScheme(schemeId)
-	    }
+	    },
 	})
 	
 	
@@ -26566,7 +26585,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    executeCode: function(code){
-	        console.log('executeCode')
 	        eval(code);
 	    },
 	
@@ -26577,8 +26595,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    },
 	
 	    on_msg: function(msg){
-	        console.log(msg)
-	        console.log(this)
 	        if (msg.type == 'callMethod'){
 	            this[msg.methodName].apply(this, msg.args, msg.kwargs)
 	        }
