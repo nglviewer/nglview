@@ -2,7 +2,7 @@ module.exports = {};
 
 var loadedModules = [
     require("./widget_ngl.js"),
-    //require("./ngl.js"),
+    require("./color.js"),
 ]
 
 for (var i in loadedModules) {

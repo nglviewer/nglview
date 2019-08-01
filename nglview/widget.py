@@ -31,6 +31,7 @@ from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
                              seq_to_string)
 from .viewer_control import ViewerControl
 from ._frontend import __frontend_version__
+from .base import BaseWidget
 
 widget_serialization = _widget.widget_serialization
 try:
@@ -1512,7 +1513,7 @@ class NGLWidget(DOMWidget):
             yield self[i]
 
 
-class Fullscreen(DOMWidget):
+class Fullscreen(BaseWidget):
     """EXPERIMENTAL
     """
     _view_name = Unicode("FullscreenView").tag(sync=True)
@@ -1531,10 +1532,6 @@ class Fullscreen(DOMWidget):
 
     def fullscreen(self):
         self._js("this.fullscreen('%s')" % self._target.model_id)
-
-    def _js(self, code):
-        msg = {"execute_code": code}
-        self.send(msg)
 
     @observe('_is_fullscreen')
     def _fullscreen_changed(self, change):
