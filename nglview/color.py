@@ -57,3 +57,6 @@ class ColormakerRegistry(BaseWidget):
 
     def add_scheme(self, func_str):
         self._call("addSchemeByFunc", func_str)
+
+    def remove_scheme(self, scheme_id):
+        self._call("removeScheme", scheme_id)

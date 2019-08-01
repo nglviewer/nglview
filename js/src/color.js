@@ -29,6 +29,11 @@ var ColormakerRegistryView = BaseView.extend({
         return label
     },
 
+    addScheme: function(func_str){
+        var func = eval(func_str)
+        var schemeId = NGL.ColormakerRegistry.addScheme(func)
+    }
+
     removeScheme: function(schemeId){
         NGL.ColormakerRegistry.removeScheme(schemeId)
     }
