@@ -31,3 +31,4 @@ def test_color_scheme():
     }]
     cm._ready = True
     assert cm._msg_q == []
+    cm._ipython_display_()
