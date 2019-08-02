@@ -2,6 +2,16 @@ from ipywidgets import DOMWidget
 from traitlets import Bool, List
 
 
+def _singleton(cls):
+    # https://www.python.org/dev/peps/pep-0318/#examples
+    instances = {}
+    def getinstance():
+        if cls not in instances:
+            instances[cls] = cls()
+        return instances[cls]
+    return getinstance
+
+
 class BaseWidget(DOMWidget):
     _msg_q = []
     _msg_ar = List().tag(sync=True)

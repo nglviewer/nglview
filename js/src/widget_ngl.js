@@ -15,10 +15,6 @@ require("./ui/ui.ngl.js")
 var StageWidget = require("./gui").StageWidget
 require('jquery-ui/ui/widgets/dialog')
 require('jquery-ui/themes/base/all.css')
-// require('./css/dark.css');  // How to switch theme?
-require('./css/light.css');
-require('./css/main.css')
-
 
 // From NGL
 // http://www.broofa.com/Tools/Math.uuid.htm

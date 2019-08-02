@@ -85,10 +85,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	var StageWidget = __webpack_require__(19).StageWidget
 	__webpack_require__(20)
 	__webpack_require__(45)
-	// require('./css/dark.css');  // How to switch theme?
-	__webpack_require__(76);
-	__webpack_require__(78)
-	
 	
 	// From NGL
 	// http://www.broofa.com/Tools/Math.uuid.htm
@@ -16976,14 +16972,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    sp[ key ] = value
 	    stage.setParameters(sp)
 	    // FIXME: remove?
-	    // if (key === 'theme') {
-	    //   setTheme(value)
-	    // }
+	    if (key === 'theme') {
+	      setTheme(value)
+	    }
 	  }, this)
 	
 	  //
 	
 	  var cssLinkElement = document.createElement('link')
+	  this.cssLinkElement = cssLinkElement
 	  cssLinkElement.rel = 'stylesheet'
 	  cssLinkElement.id = 'theme'
 	
@@ -17001,7 +16998,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	  }
 	
 	  // FIXME: remove?
-	  // setTheme(preferences.getKey('theme'))
+	  setTheme(preferences.getKey('theme'))
 	  el.appendChild(cssLinkElement)
 	
 	  //
@@ -26557,86 +26554,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if(oldSrc)
 			URL.revokeObjectURL(oldSrc);
 	}
-
-
-/***/ }),
-/* 76 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(77);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(75)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!./light.css", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!./light.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 77 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(47)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "\n/* text color */\n\n/** Turn this off to avoid affecting Jupyter notebook\n* {\n    color: #555555;\n}\n\ninput,\ntextarea,\nbutton,\nselect,\noption {\n    color: #111111;\n}\n\ninput[type=range]:focus:after {\n    color: #555555;\n}\n\na{\n    color: #1956d8;\n}\n\ninput.Number, input.File {\n    color: #79952e;\n}\n\n\n/* background color */\n\n.OverlayPanel,\n#menubar_ngl,\n#menubar_ngl .menu .options,\n#sidebar_ngl,\n#toolbar_ngl\n{\n    background-color: #e1e4eb;\n}\n\n\n/* border color */\n\n.OverlayPanel,\n#menubar_ngl .menu .options hr,\n#sidebar_ngl > .Panel,\n#sidebar_ngl > .Content > .Panel {\n    border-color: #cccccc;\n}\n\n\n/* special */\n\n#menubar_ngl .menu .options .option:hover,\n.option:hover > .Icon,\n.option:hover > .Text {\n    color: #D8D8D8;\n    background-color: #345a69;\n}\n\n.highlight,\n.highlight > .Icon,\n.highlight > .Text {\n    color: #D8D8D8;\n    background-color: #345a69;\n}\n\n.EllipsisMultilineText:after {\n    background: linear-gradient(to right, rgba(255, 255, 255, 0), #e1e4eb 50%, #e1e4eb);\n}\n", ""]);
-	
-	// exports
-
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(79);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(75)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!./main.css", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!./main.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 79 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(47)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "\n* {\n\tvertical-align: middle;\n}\n\n/* Webkit micro scrollbars */\n\n::-webkit-scrollbar {\n    width:9px;\n    height:9px;\n}\n\n::-webkit-scrollbar-track {\n    -webkit-border-radius:5px;\n    border-radius:5px;\n    background:rgba(140,140,140,0.1);\n}\n\n::-webkit-scrollbar-thumb {\n    -webkit-border-radius:5px;\n    border-radius:5px;\n    background:rgba(140,140,140,0.2);\n}\n\n::-webkit-scrollbar-thumb:hover {\n    background:rgba(140,140,140,0.4);\n}\n\n::-webkit-scrollbar-thumb:window-inactive {\n    background:rgba(140,140,140,0.5);\n}\n\n/* elmement */\n\nbody {\n\tfont-family: Arial, sans-serif;\n\tfont-size: 14px;\n\tmargin: 0;\n\toverflow: hidden;\n}\n\nhr {\n\tborder: 0px;\n\tborder-top: 1px solid #ccc;\n}\n\nbutton {\n    position: relative;\n    margin-left: 0px;\n}\n\nselect {\n    margin-left: 1px;\n}\n\n/* NOTE (FIXME): turning this on will affect notebook */\n\n/**\ntextarea {\n\twhite-space: pre;\n\tword-wrap: normal;\n}\n\n\ttextarea.success {\n\t\tborder-color: #8b8 !important;\n\t}\n\n\ttextarea.fail {\n\t\tborder-color: #f00 !important;\n\t\tbackground-color: rgba(255,0,0,0.05);\n\t}\n\ntextarea, input { outline: none; } /* osx */\n\ninput.Number {\n    font-size: 12px;                            /** TODO: Use of !imporant is not ideal **/\n    background-color: transparent!important;    /* For now this is a quick fix a rendering issue due to inherited background */\n    border: 1px solid transparent;\n    padding: 2px;\n    cursor: col-resize;\n}\n\ninput.File {\n    border: 0px solid !important;\n    padding: 0px !important;\n}\n\ninput[type=range]:focus:after {\n    position: absolute;\n    transform: translate(-100%,-50% );\n    content: attr(value);\n    font-size: 12px;\n}\n\n/* class */\n\n.deleteInfo:after {\n    position: absolute;\n    transform: translate(-50%,-250% );\n    content: \"double-click to delete\";\n    font-size: 10px;\n    display: block;\n}\n\n.Panel {\n\n    -moz-user-select: none;\n    -webkit-user-select: none;\n    -ms-user-select: none;\n\n    /* No support for these yet */\n    -o-user-select: none;\n    user-select: none;\n}\n\n.OverlayPanel {\n    z-index: 10;\n    position: absolute;\n    padding: 10px;\n    overflow: auto;\n    border: 1px solid;\n}\n\n.OverlayPanel:focus {\n    z-index: 20;\n}\n\n.Text {\n    cursor: default;\n}\n\n.FancySelect {\n    padding: 0;\n    cursor: default;\n    overflow: auto;\n    outline: none;\n}\n\n    .FancySelect .option {\n        padding: 4px;\n        white-space: nowrap;\n    }\n\n.CollapsiblePanel .CollapsiblePanelButton {\n    float: left;\n    margin-right: 6px;\n    width: 0px;\n    height: 0px;\n    border: 6px solid transparent;\n}\n\n.CollapsiblePanel.collapsed > .CollapsiblePanelButton {\n    margin-top: 2px;\n    border-left-color: #555;\n}\n\n.CollapsiblePanel:not(.collapsed) > .CollapsiblePanelButton {\n    margin-top: 6px;\n    border-top-color: #555;\n}\n\n.CollapsiblePanel.collapsed .CollapsibleContent {\n    display: none;\n}\n\n.CollapsiblePanel:not(.collapsed) > .CollapsibleContent {\n    clear: both;\n}\n\n/* http://www.brianchu.com/blog/2013/11/02/creating-an-auto-growing-text-input/ */\n\n.AdaptiveTextAreaContainer {\n    position: relative;\n    display: inline-block;\n    margin-top: 2px;\n    margin-bottom: 2px;\n}\n\n.AdaptiveTextArea, .AdaptiveTextAreaSize {\n    min-height: 21px;\n    /* need to manually set font and font size */\n    font-family: Arial, sans-serif;\n    font-size: 13px;\n    box-sizing: border-box;\n    padding: 2px;\n    border: 1px solid #ccc;\n\n    overflow: hidden;\n    width: 100%;\n}\n\n.AdaptiveTextArea {\n    height: 100%;\n    position: absolute;\n    resize: none;\n\n    /*\n    \"pre\" or \"preline\" or \"normal\" fixes Chrome issue where\n    whitespace at end of lines does not trigger a line break.\n    However, it causes the text to exhibit the behavior seen with\n    \"pre\" that is described below.\n    */\n    white-space: normal;\n    word-wrap: break-word;\n    overflow-wrap: break-word;\n}\n\n.AdaptiveTextAreaSize {\n    visibility: hidden;\n\n    /*\n    Pre-wrap: preserve spacing and newlines, but wrap text.\n    Pre: preserve spacing and newlines but don't wrap text.\n\n    \"pre\" does not wrap well on Firefox, even with word-wrap:break-word.\n    \"pre\" on Chrome works with word-wrap, but exhibits different behavior:\n    Instead of entire words being moved to the next line for wrapping,\n    the browser will cut words in the middle for wrapping.\n    \"pre-line\" has Firefox issues\n    */\n    white-space: pre-wrap;\n    /* Required for wrapping lines in Webkit,\n    but not necessary in Firefox if you have white-space wrapping\n    (pre-wrap, normal, pre-line) already set */\n    word-wrap: break-word;\n    overflow-wrap: break-word;\n}\n\n/* FlexiColorPicker */\n\n.picker-wrapper,\n.slide-wrapper {\n    position: relative;\n    float: left;\n}\n\n.picker-indicator,\n.slide-indicator {\n    position: absolute;\n    left: 0;\n    top: 0;\n    pointer-events: none;\n}\n\n.picker,\n.slide {\n    cursor: crosshair;\n    float: left;\n}\n\n.slide-wrapper {\n    margin-left: 10px;\n}\n\n.picker-indicator {\n    width: 5px;\n    height: 5px;\n    border: 2px solid darkblue;\n    -moz-border-radius: 4px;\n    -o-border-radius: 4px;\n    -webkit-border-radius: 4px;\n    border-radius: 4px;\n    opacity: .5;\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)\";\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);\n    filter: alpha(opacity=50);\n    background-color: white;\n}\n\n.slide-indicator {\n    width: 100%;\n    height: 10px;\n    left: -4px;\n    opacity: .6;\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)\";\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);\n    filter: alpha(opacity=60);\n    border: 4px solid lightblue;\n    -moz-border-radius: 4px;\n    -o-border-radius: 4px;\n    -webkit-border-radius: 4px;\n    border-radius: 4px;\n    background-color: white;\n}\n\n/* http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/ */\n\n.EllipsisMultilineText {\n    overflow: hidden;\n    max-height: 2.6em;\n    line-height: 1.3em;\n}\n\n.EllipsisMultilineText:before {\n    content:\"\";\n    float: left;\n    width: 5px;\n    max-height: 2.6em;\n}\n\n.EllipsisMultilineText > *:first-child {\n    float: right;\n    width: 100%;\n    margin-top: 0px;\n    margin-bottom: 0px;\n    margin-left: -5px;\n    word-wrap: break-word;\n}\n\n.EllipsisMultilineText:after {\n    content: \"\\2026\";\n\n    box-sizing: content-box;\n    -webkit-box-sizing: content-box;\n    -moz-box-sizing: content-box;\n\n    float: right; position: relative;\n    top: 1.3em; left: 100%;\n    width: 3em; margin-left: -3em;\n    padding-right: 5px;\n\n    text-align: right;\n}\n\n/* resize */\n\n.ResizeLeft, .ResizeLeft:hover {\n    position: relative;\n    float: left;\n    height: 100%;\n    width: 10px;\n}\n\n.ResizeLeft:hover{\n    cursor: col-resize;\n}\n\n/* virtual list */\n\n.VirtualListRow {\n    position: absolute;\n    overflow: hidden;\n    white-space: nowrap;\n    display: inline-block;\n}\n\n.VirtualListRow > .Text {\n    cursor: inherit;\n}\n\n/* id */\n\n#viewport {\n    position: absolute;\n    top: 32px;\n    left: 0px;\n    right: 300px;\n    bottom: 32px;\n}\n\n#menubar_ngl {\n    position: absolute;\n    width: 100%;\n    height: 32px;\n    padding: 0px;\n    margin: 0px;\n    z-index: 100;\n    top: 0px;\n    left: 0px;\n}\n\n    #menubar_ngl .menu {\n        float: left;\n        cursor: pointer;\n        position: relative;\n    }\n\n        #menubar_ngl .menu .title {\n            margin: 0px;\n            padding: 8px;\n        }\n\n        #menubar_ngl .menu .options {\n            display: none;\n            padding: 5px 0px;\n            width: 140px;\n            position: absolute;\n            top: 32px;\n        }\n\n        #menubar_ngl .menu:hover .options {\n            display: block;\n            max-height: 600px;\n            overflow: auto;\n        }\n\n            #menubar_ngl .menu .options .option {\n                background-color: transparent;\n                padding: 5px 10px;\n                margin: 0px !important;\n            }\n\n#sidebar_ngl {\n    position: absolute;\n    right: 0px;\n    top: 32px;\n    bottom: 0px;\n    width: 300px;\n    overflow: hidden;\n}\n\n    #sidebar_ngl .Panel {\n        margin-bottom: 10px;\n    }\n\n    #sidebar_ngl .Panel.collapsed {\n        margin-bottom: 0px;\n    }\n\n    #sidebar_ngl .CollapsibleContent {\n        margin-top: 10px;\n    }\n\n    #sidebar_ngl > .Panel {\n        padding: 10px;\n        border-top: 1px solid;\n    }\n\n    #sidebar_ngl > .Content > .Panel {\n        padding: 10px;\n        border-top: 1px solid;\n    }\n\n    #sidebar_ngl .Content {\n        top: 40px;\n        bottom: 0px;\n        position: absolute;\n        overflow: auto;\n        right: 0px;\n        width: 100%;\n    }\n\n#toolbar_ngl {\n    position: absolute;\n    left: 0px;\n    right: 300px;\n    bottom: 0px;\n    height: 32px;\n}\n\n    #toolbar_ngl .Panel {\n        padding: 6px;\n    }\n\n    #toolbar_ngl button {\n        margin-right: 6px;\n    }\n", ""]);
-	
-	// exports
 
 
 /***/ })

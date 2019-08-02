@@ -170,14 +170,15 @@ StageWidget = function (view) {
     sp[ key ] = value
     stage.setParameters(sp)
     // FIXME: remove?
-    // if (key === 'theme') {
-    //   setTheme(value)
-    // }
+    if (key === 'theme') {
+      setTheme(value)
+    }
   }, this)
 
   //
 
   var cssLinkElement = document.createElement('link')
+  this.cssLinkElement = cssLinkElement
   cssLinkElement.rel = 'stylesheet'
   cssLinkElement.id = 'theme'
 
@@ -195,7 +196,7 @@ StageWidget = function (view) {
   }
 
   // FIXME: remove?
-  // setTheme(preferences.getKey('theme'))
+  setTheme(preferences.getKey('theme'))
   el.appendChild(cssLinkElement)
 
   //

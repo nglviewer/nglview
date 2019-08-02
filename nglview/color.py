@@ -1,6 +1,6 @@
 from ipywidgets import DOMWidget
 from traitlets import Unicode, Bool, observe
-from .base import BaseWidget
+from .base import BaseWidget, _singleton
 from ._frontend import __frontend_version__
 from IPython.display import display
 import time
@@ -28,16 +28,6 @@ class _ColorScheme:
     @property
     def data(self):
         return {'data': self._color_scheme, 'label': self._label}
-
-
-def _singleton(cls):
-    # https://www.python.org/dev/peps/pep-0318/#examples
-    instances = {}
-    def getinstance():
-        if cls not in instances:
-            instances[cls] = cls()
-        return instances[cls]
-    return getinstance
 
 
 @_singleton
