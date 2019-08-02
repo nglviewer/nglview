@@ -2,6 +2,7 @@ var Jupyter
 var widgets = require("@jupyter-widgets/base")
 var NGL = require('ngl')
 var ColormakerRegistryModel = require('./color').ColormakerRegistryModel
+var ColormakerRegistryView = require('./color').ColormakerRegistryView
 var BaseView = require('./base').BaseView
 var $ = require('jquery')
 var _ = require('underscore')
@@ -1195,10 +1196,13 @@ var FullscreenView = BaseView.extend({
 
 });
 
+// export all models and views here to make embeding a bit easier
 module.exports = {
     'NGLView': NGLView,
     'NGLModel': NGLModel,
     'NGL': NGL,
     'FullscreenModel': FullscreenModel,
-    'FullscreenView': FullscreenView
+    'FullscreenView': FullscreenView,
+    'ColormakerRegistryModel': ColormakerRegistryModel,
+    'ColormakerRegistryView': ColormakerRegistryView
 };
