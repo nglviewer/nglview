@@ -118,8 +118,5 @@ class _ColormakerRegistry(BaseWidget):
         else:
             raise ValueError(f"{obj} must be either list of list or string")
 
-    def _remove_scheme(self, scheme_id):
-        self._call("removeScheme", scheme_id)
-
 
 ColormakerRegistry = _ColormakerRegistry()

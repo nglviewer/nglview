@@ -87,7 +87,7 @@ def write_html(fp, views, frame_range=None):
     views = isinstance(views, DOMWidget) and [views] or views
     embed = ipywidgets.embed
     for k, v in views[0].widgets.items():
-        if v.__class__.__name__ == 'ColormakerRegistry':
+        if v.__class__.__name__ == '_ColormakerRegistry':
             views.append(v)
             break
 
@@ -583,12 +583,6 @@ class NGLWidget(DOMWidget):
                           args=[selection],
                           kwargs=dict(component_index=component,
                                       repr_index=repr_index))
-
-    def _show_notebook_command_box(self):
-        self._remote_call('showNotebookCommandBox', target='Widget')
-
-    def _hide_notebook_command_box(self):
-        self._remote_call('hideNotebookCommandBox', target='Widget')
 
     def color_by(self, color_scheme, component=0):
         '''update color for all representations of given component
@@ -1268,9 +1262,6 @@ class NGLWidget(DOMWidget):
 
         self._update_component_auto_completion()
 
-    def _add_colorscheme(self, arr, name):
-        self._remote_call('addColorScheme', args=[arr, name])
-
     def _dry_run(self, func, *args, **kwargs):
         return _dry_run(self, func, *args, **kwargs)
 
@@ -1484,6 +1475,9 @@ class NGLWidget(DOMWidget):
         for index, _ in enumerate(self._ngl_component_ids):
             name = 'component_' + str(index)
             delattr(self, name)
+
+    def _js(self, code, **kwargs):
+        self._execute_js_code(code, **kwargs)
 
     def _execute_js_code(self, code, **kwargs):
         self._remote_call('execute_code',
