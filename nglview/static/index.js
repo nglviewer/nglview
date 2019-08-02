@@ -48,7 +48,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	var loadedModules = [
 	    __webpack_require__(1),
-	    __webpack_require__(7),
 	]
 	
 	for (var i in loadedModules) {
@@ -1267,6 +1266,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	});
 	
+	// export all models and views here to make embeding a bit easier
 	module.exports = {
 	    'NGLView': NGLView,
 	    'NGLModel': NGLModel,
@@ -3570,7 +3570,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 11 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"2.6.6","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"2.6.7","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ }),
 /* 12 */
