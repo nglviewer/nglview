@@ -2,6 +2,7 @@ var Jupyter
 var widgets = require("@jupyter-widgets/base")
 var NGL = require('ngl')
 var ColormakerRegistryModel = require('./color').ColormakerRegistryModel
+var BaseView = require('./base').BaseView
 var $ = require('jquery')
 var _ = require('underscore')
 require("./lib/signals.min.js")
@@ -337,7 +338,7 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    execute_code: function(code){
+    executeCode: function(code){
         eval(code);
     },
 
@@ -1154,7 +1155,7 @@ var FullscreenModel = widgets.DOMWidgetModel.extend({
     }
 })
 
-var FullscreenView = widgets.DOMWidgetView.extend({
+var FullscreenView = BaseView.extend({
     render: function() {
         this.stage = new NGL.Stage()
         var that = this
@@ -1182,13 +1183,13 @@ var FullscreenView = widgets.DOMWidgetView.extend({
         })
     },
 
-    execute_code: function(code){
+    executeCode: function(code){
         eval(code);
     },
 
     on_msg: function(msg){
-        if ('execute_code' in msg){
-            this.execute_code(msg.execute_code)
+        if ('executeCode' in msg){
+            this.executeCode(msg.executeCode)
         }
     }
 

@@ -73,6 +73,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	var widgets = __webpack_require__(2)
 	var NGL = __webpack_require__(3)
 	var ColormakerRegistryModel = __webpack_require__(7).ColormakerRegistryModel
+	var BaseView = __webpack_require__(10).BaseView
 	var $ = __webpack_require__(12)
 	var _ = __webpack_require__(8)
 	__webpack_require__(13)
@@ -408,7 +409,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	    },
 	
-	    execute_code: function(code){
+	    executeCode: function(code){
 	        eval(code);
 	    },
 	
@@ -1225,7 +1226,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    }
 	})
 	
-	var FullscreenView = widgets.DOMWidgetView.extend({
+	var FullscreenView = BaseView.extend({
 	    render: function() {
 	        this.stage = new NGL.Stage()
 	        var that = this
@@ -1253,13 +1254,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        })
 	    },
 	
-	    execute_code: function(code){
+	    executeCode: function(code){
 	        eval(code);
 	    },
 	
 	    on_msg: function(msg){
-	        if ('execute_code' in msg){
-	            this.execute_code(msg.execute_code)
+	        if ('executeCode' in msg){
+	            this.executeCode(msg.executeCode)
 	        }
 	    }
 	

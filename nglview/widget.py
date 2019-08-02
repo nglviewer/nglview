@@ -1480,7 +1480,7 @@ class NGLWidget(DOMWidget):
         self._execute_js_code(code, **kwargs)
 
     def _execute_js_code(self, code, **kwargs):
-        self._remote_call('execute_code',
+        self._remote_call('executeCode',
                           target='Widget',
                           args=[code],
                           **kwargs)
@@ -1511,7 +1511,7 @@ class NGLWidget(DOMWidget):
             yield self[i]
 
 
-class Fullscreen(BaseWidget):
+class Fullscreen(DOMWidget):
     """EXPERIMENTAL
     """
     _view_name = Unicode("FullscreenView").tag(sync=True)
@@ -1530,6 +1530,10 @@ class Fullscreen(BaseWidget):
 
     def fullscreen(self):
         self._js("this.fullscreen('%s')" % self._target.model_id)
+
+    def _js(self, code):
+        msg = {"executeCode": code}
+        self.send(msg)
 
     @observe('_is_fullscreen')
     def _fullscreen_changed(self, change):
