@@ -1,6 +1,8 @@
 var Jupyter
 var widgets = require("@jupyter-widgets/base")
 var NGL = require('ngl')
+var ColormakerRegistryModel = require('./color').ColormakerRegistryModel
+var BaseView = require('./base').BaseView
 var $ = require('jquery')
 var _ = require('underscore')
 require("./lib/signals.min.js")
@@ -336,8 +338,11 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    execute_code: function(code){
+    executeCode: function(code){
         eval(code);
+    },
+
+    handleCustomColor: function(){
     },
 
     handle_embed: function(){
@@ -350,8 +355,33 @@ var NGLView = widgets.DOMWidgetView.extend({
         var label
 
         // reconstruct colors
-        for (label in ngl_color_dict){
-            that.addColorScheme(ngl_color_dict[label], label);
+        if (this.model.comm === undefined){
+            var model_dict = this.model.widget_manager._models
+            var models = []
+            for (let k in model_dict){
+                models.push(model_dict[k])
+            }
+            Promise.all(models).then(models => {
+                for (var i in models){
+                    var model = models[i]
+                    if (model instanceof ColormakerRegistryModel){
+                        var k = Object.keys(model.views)[0] // singleton
+                        model.views[k].then(view =>{
+                            view.model.get("_msg_ar").forEach(msg =>{
+                                view.on_msg(msg)
+                            })
+                        })
+                    }
+                }
+            })
+
+            // Outside the notebook
+            // Old API (_ColorScheme)
+            for (label in ngl_color_dict){
+                if (!NGL.ColormakerRegistry.hasScheme(label)){
+                    that.addColorScheme(ngl_color_dict[label], label);
+                }
+            }
         }
 
         _.each(ngl_msg_archive, function(msg){
@@ -1125,7 +1155,7 @@ var FullscreenModel = widgets.DOMWidgetModel.extend({
     }
 })
 
-var FullscreenView = widgets.DOMWidgetView.extend({
+var FullscreenView = BaseView.extend({
     render: function() {
         this.stage = new NGL.Stage()
         var that = this
@@ -1153,13 +1183,13 @@ var FullscreenView = widgets.DOMWidgetView.extend({
         })
     },
 
-    execute_code: function(code){
+    executeCode: function(code){
         eval(code);
     },
 
     on_msg: function(msg){
-        if ('execute_code' in msg){
-            this.execute_code(msg.execute_code)
+        if ('executeCode' in msg){
+            this.executeCode(msg.executeCode)
         }
     }
 

@@ -279,7 +279,7 @@ def test_API_promise_to_have():
 @unittest.skipUnless(has_pytraj, 'skip if not having pytraj')
 @unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
 def test_add_trajectory():
-    view = nv.NGLWidget()
+    view = nv.NGLWidget(default=False)
 
     def update_coords(view=view):
         view.frame = 1000
@@ -1080,6 +1080,8 @@ def test_queuing_messages():
 
 @patch('nglview.NGLWidget._unset_serialization')
 def test_write_html(mock_unset):
+    from nglview.color import ColormakerRegistry as cm
+    import ipywidgets.embed as embed
     traj0 = pt.datafiles.load_trpcage()
     traj1 = pt.datafiles.load_tz2()
     view = nv.NGLWidget()
@@ -1087,7 +1089,9 @@ def test_write_html(mock_unset):
     view.add_trajectory(traj1)
     view
     fp = StringIO()
-    nv.write_html(fp, [view], frame_range=(0, 3))
+    with patch.object(embed, 'embed_snippet') as mock_embed:
+        nv.write_html(fp, [view], frame_range=(0, 3))
+        mock_embed.assert_called_with([view, cm])
     mock_unset.assert_called_with()
     assert len(view._ngl_coordinate_resource[0]) == 3
     assert len(view._ngl_coordinate_resource[1]) == 3
@@ -1116,5 +1120,8 @@ def test_fullscreen():
     fs = nv.widget.Fullscreen(v, [v])
     fs.fullscreen()
     with patch.object(v, 'handle_resize'):
-        fs._fullscreen_changed({})
+        fs._fullscreen_changed(MagicMock(new=True, old=False))
         assert v.handle_resize.called
+    # just run the code
+    fs._fullscreen_changed(MagicMock(new=True, old=False))
+    fs._fullscreen_changed(MagicMock(new=False, old=True))
