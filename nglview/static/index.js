@@ -16972,15 +16972,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    sp[ key ] = value
 	    stage.setParameters(sp)
 	    // FIXME: remove?
-	    if (key === 'theme') {
-	      setTheme(value)
-	    }
+	    // if (key === 'theme') {
+	    //   setTheme(value)
+	    // }
 	  }, this)
 	
 	  //
 	
 	  var cssLinkElement = document.createElement('link')
-	  this.cssLinkElement = cssLinkElement
 	  cssLinkElement.rel = 'stylesheet'
 	  cssLinkElement.id = 'theme'
 	
@@ -16998,7 +16997,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	  }
 	
 	  // FIXME: remove?
-	  setTheme(preferences.getKey('theme'))
+	  // setTheme(preferences.getKey('theme'))
 	  el.appendChild(cssLinkElement)
 	
 	  //
