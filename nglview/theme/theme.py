@@ -1,8 +1,8 @@
 import os
-
 from IPython.display import display
 from ipywidgets import HTML
 from pathlib import Path
+
 from ..base import _singleton
 
 
@@ -24,21 +24,24 @@ class Theme:
 
 
     def oceans16(self):
-        self._html.value = _get_css_content('oceans16.css')
+        self._html.value = (self._html.value + '\n' +
+                            '<style>\n' +
+                            _get_css_content('oceans16.css') +
+                            '</style>')
     
     
-    def reset(self):
+    def remove(self):
         self._html.value = ''
     
     
     def dark(self):
         self._html.value = ('<style>\n' + 
-                      _get_css_content('main.css') +
                       _get_css_content('dark.css') +
+                      _get_css_content('main.css') +
                       '</style>')
     
     def light(self):
         self._html.value = ('<style>\n' + 
-                      _get_css_content('main.css') +
                       _get_css_content('light.css') +
+                      _get_css_content('main.css') +
                       '</style>')

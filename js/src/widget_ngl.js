@@ -310,18 +310,6 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    updateNGLTheme: function(css_content){
-        var ele = document.getElementById("nglview_style")
-        if (ele != undefined){
-            document.head.removeChild(ele)
-        }
-        var style = document.createElement("style")
-        style.id = 'nglview_style'
-        style.type = 'text/css'
-        style.appendChild(document.createTextNode(css_content))
-        document.head.appendChild(style)
-    },
-
     serialize_camera_orientation: function(){
          var m = this.stage.viewerControls.getOrientation();
          this.model.set('_camera_orientation', m.elements);
