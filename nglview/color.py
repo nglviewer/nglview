@@ -51,7 +51,11 @@ class _ColormakerRegistry(BaseWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        display(self)
+        try:
+            get_ipython() # only display in notebook
+            display(self)
+        except NameError:
+            pass
 
     @observe("_ready")
     def _on_ready(self, change):
