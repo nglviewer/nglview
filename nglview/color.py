@@ -36,12 +36,13 @@ def _singleton(cls):
     def getinstance():
         if cls not in instances:
             instances[cls] = cls()
+        print(instances)
         return instances[cls]
     return getinstance
 
 
 @_singleton
-class ColormakerRegistry(BaseWidget):
+class _ColormakerRegistry(BaseWidget):
     _view_name = Unicode("ColormakerRegistryView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
@@ -62,7 +63,7 @@ class ColormakerRegistry(BaseWidget):
 
     def _ipython_display_(self, **kwargs):
         if self._ready:
-            return
+            return str(self)
         super()._ipython_display_(**kwargs)
 
     def add_selection_scheme(self, scheme_id, arg):
@@ -104,8 +105,21 @@ class ColormakerRegistry(BaseWidget):
         """ % (func_str, scheme_id)
         self._js(code)
 
+    def add_scheme(self, scheme_id, obj):
+        """
+        Parameters
+        ----------
+        obj: List of List or str (of JS function)
+        """
+        if isinstance(obj, list):
+            self.add_selection_scheme(scheme_id, obj)
+        elif isinstance(obj, str):
+            self.add_scheme_func(scheme_id, obj)
+        else:
+            raise ValueError(f"{obj} must be either list of list or string")
+
     def _remove_scheme(self, scheme_id):
         self._call("removeScheme", scheme_id)
 
 
-ColormakerRegistry = ColormakerRegistry()
+ColormakerRegistry = _ColormakerRegistry()

@@ -1116,5 +1116,5 @@ def test_fullscreen():
     fs = nv.widget.Fullscreen(v, [v])
     fs.fullscreen()
     with patch.object(v, 'handle_resize'):
-        fs._fullscreen_changed({})
+        fs._fullscreen_changed(MagicMock(new='a', old='b'))
         assert v.handle_resize.called
