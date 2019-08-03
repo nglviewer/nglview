@@ -376,7 +376,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                v.el.style.display = type
 	                // Need to check if max_frame is available (otherwise NaN)
 	                // https://github.com/jupyter-widgets/ipywidgets/issues/2485
-	                if (!that.model.get("max_frame") || (that.model.get("max_frame") <= 1)){
+	                console.log('max_frame', that.model.get('max_frame'))
+	                if (!that.model.get("max_frame") || (that.model.get("max_frame") == 0)){
 	                    // always hide if there's no trajectory.
 	                    v.el.style.display = 'none'
 	                }
@@ -418,14 +419,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    handle_embed: function(){
 	        var that = this;
-	        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
 	        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
 	        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
 	        var ngl_color_dict = that.model.get("_ngl_color_dict");
 	        var loadfile_list = [];
 	        var label
 	
-	        // reconstruct colors
+	        // Only need to reconstruct colors in embeding mode (outside notebook)
 	        if (this.model.comm === undefined){
 	            var model_dict = this.model.widget_manager._models
 	            var models = []
@@ -436,6 +436,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                for (var i in models){
 	                    var model = models[i]
 	                    if (model instanceof ColormakerRegistryModel){
+	                        console.log(model.views)
 	                        var k = Object.keys(model.views)[0] // singleton
 	                        model.views[k].then(view =>{
 	                            view.model.get("_msg_ar").forEach(msg =>{
@@ -446,7 +447,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                }
 	            })
 	
-	            // Outside the notebook
 	            // Old API (_ColorScheme)
 	            for (label in ngl_color_dict){
 	                if (!NGL.ColormakerRegistry.hasScheme(label)){
@@ -468,36 +468,26 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	
 	        Promise.all(loadfile_list).then(function(compList){
-	            n_frames = ngl_coordinate_resource['n_frames'] || 1;
 	            that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
 	            that.stage.setParameters(ngl_stage_params);
 	            that.set_camera_orientation(that.model.get("_camera_orientation"));
-	            that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
 	            that.touch();
-	            delete ngl_coordinate_resource['n_frames'];
 	
-	            // sync frame again since we don't do that in notebook (to avoid lagging);
-	            that.getPlayerModel().then(function(model){
-	                var pmodel = model.get("children")[0];
-	                that.listenTo(pmodel,
-	                    "change:value", function(){that.updateCoordinatesFromDict(ngl_coordinate_resource,
-	                        pmodel.get("value"))})
-	            })
-	
-	
-	            var pd = that.model.get("_player_dict");
-	            var manager = that.model.widget_manager;
-	            if (pd){
-	                var rd = pd['widget_quick_repr'];
-	                for (let model_id in rd){
-	                    manager.get_model(model_id).then(function(model){
-	                        that.listenTo(model, "change:value", function(){
-	                            var msg = rd[model_id][model.get("value")];
-	                            that.on_msg(msg);
-	                        })
-	                    })
-	                }
+	            // Outside notebook
+	            if (that.model.comm === undefined){
+	                var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
+	                n_frames = ngl_coordinate_resource['n_frames']
+	                that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
+	                that.touch()
+	                that.getPlayerModel().then(function(model){
+	                    var pmodel = model.get("children")[0];
+	                    that.listenTo(pmodel,
+	                        "change:value", function(){
+	                            that.updateCoordinatesFromDict(ngl_coordinate_resource,
+	                            pmodel.get("value"))})
+	                })
 	            }
+	
 	
 	            // fire any msg with "fire_embed"
 	            that.model.get("_ngl_msg_archive").forEach(function(msg){
@@ -511,7 +501,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	    updateCoordinatesFromDict: function(cdict, frame_index){
 	        // update coordinates for given "index"
 	        // cdict = Dict[int, List[base64]]
-	        var keys = Object.keys(cdict);
+	        var keys = Object.keys(cdict).filter(k => (k !== 'n_frames'));
 	
 	        for (var i = 0; i < keys.length; i++) {
 	            var traj_index = keys[i];
@@ -956,13 +946,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 	    handleResize: function(){
 	        var width = this.$el.width()
-	        console.log('el width ' + width)
 	        var height = this.$el.height() + "px"
 	        if (this.stage_widget){
 	            width = width - $(this.stage_widget.sidebar.dom).width()
 	        }
 	        width = width + "px"
-	        console.log('new width (px)' + width)
 	        this.setSize(width, height)
 	    },
 	
@@ -3570,7 +3558,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /* 11 */
 /***/ (function(module, exports) {
 
-	module.exports = {"name":"nglview-js-widgets","version":"2.6.8","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	module.exports = {"name":"nglview-js-widgets","version":"2.6.9","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ }),
 /* 12 */
