@@ -131,7 +131,7 @@ class NGLView extends widgets.DOMWidgetView{
         var is_embeded = this.model.get("_ngl_serialize") || (this.model.comm == undefined)
 	    if (is_embeded){
             console.log("In embeding mode")
-	        that.handle_embed();
+	        that.handleEmbed();
         }else{
             this.requestUpdateStageParameters();
             if (this.model.views.length == 1){
@@ -179,7 +179,7 @@ class NGLView extends widgets.DOMWidgetView{
       this.model.set('_ngl_original_stage_parameters', state_params);
       this.touch();
       if (this.stage.compList.length < this.model.get("n_components")){
-          this.handle_embed()
+          this.handleEmbed()
       }
     }
 
@@ -189,13 +189,13 @@ class NGLView extends widgets.DOMWidgetView{
       container.addEventListener('mouseover', function(e) {
           that._ngl_focused = 1;
           e; // linter
-          that.mouseover_display('block')
+          that.mouseOverDisplay('block')
       }, false);
 
       container.addEventListener('mouseout', function(e) {
           that._ngl_focused = 0;
           e; // linter
-          that.mouseover_display('none')
+          that.mouseOverDisplay('none')
       }, false);
 
       this.stage.signals.componentAdded.add(function() {
@@ -290,7 +290,7 @@ class NGLView extends widgets.DOMWidgetView{
       }, this);
     }
 
-    mouseover_display(type){
+    mouseOverDisplay(type){
         var that = this;
         if (this.btn_pview_fullscreen){
             this.btn_pview_fullscreen.then(function(v){
@@ -308,7 +308,6 @@ class NGLView extends widgets.DOMWidgetView{
                 v.el.style.display = type
                 // Need to check if max_frame is available (otherwise NaN)
                 // https://github.com/jupyter-widgets/ipywidgets/issues/2485
-                console.log('max_frame', that.model.get('max_frame'))
                 if (!that.model.get("max_frame") || (that.model.get("max_frame") == 0)){
                     // always hide if there's no trajectory.
                     v.el.style.display = 'none'
@@ -346,7 +345,7 @@ class NGLView extends widgets.DOMWidgetView{
         eval(code);
     }
 
-    handle_embed(){
+    handleEmbed(){
         var that = this;
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
         var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
@@ -385,7 +384,7 @@ class NGLView extends widgets.DOMWidgetView{
             // Outside notebook
             if (that.model.comm === undefined){
                 var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
-                var n_frames = ngl_coordinate_resource['n_frames']
+                var n_frames = ngl_coordinate_resource['n_frames'] || 1
                 that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
                 that.touch()
                 that.getPlayerModel().then(function(model){
