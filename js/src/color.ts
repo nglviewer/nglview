@@ -1,11 +1,12 @@
-var _ = require('underscore')
-var NGL = require("ngl")
-var BaseView = require("./base").BaseView
-var widgets = require("@jupyter-widgets/base")
+import * as _ from 'underscore'
+import * as NGL from "ngl"
+import { BaseView } from "./base"
+import * as widgets from "@jupyter-widgets/base"
 
 
-var ColormakerRegistryModel = widgets.DOMWidgetModel.extend({
-    defaults: function(){
+export
+class ColormakerRegistryModel extends widgets.DOMWidgetModel {
+    defaults(){
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
             _model_name: 'ColormakerRegistryModel',
             _model_module: 'nglview-js-widgets',
@@ -13,48 +14,39 @@ var ColormakerRegistryModel = widgets.DOMWidgetModel.extend({
             _view_name: "ColormakerRegistryView",
             _view_module: "nglview-js-widgets",
             _view_module_version: require("../package.json").version,
-        });
+        })
     }
-})
+}
 
 
-var ColormakerRegistryView = BaseView.extend({
-    addSelectionScheme: function(label, args){
+export
+class ColormakerRegistryView extends BaseView {
+    addSelectionScheme(label, args){
         var id = NGL.ColormakerRegistry.addSelectionScheme(args, label)
         this._updateId(id, label)
-    },
+    }
 
-    addSelectionSchemeOriginal: function(label, args){
+    addSelectionSchemeOriginal(label, args){
         var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
         var scheme = NGL.ColormakerRegistry.userSchemes[id];
         NGL.ColormakerRegistry.removeScheme(id);
         // hard code the scheme ID
         NGL.ColormakerRegistry.add(label, scheme);
-    },
+    }
 
-    addScheme: function(label, func_str){
+    addScheme(label, func_str){
         var func = Function("return " + func_str)()
         console.log(func)
         var id = NGL.ColormakerRegistry.addScheme(function(params){
             this.atomColor = func
         })
         this._updateId(id, label)
-    },
+    }
 
-    _updateId: function(oldId, newId){
+    _updateId(oldId, newId){
         var scheme = NGL.ColormakerRegistry.userSchemes[oldId]
         console.log(oldId, scheme)
         NGL.ColormakerRegistry.add(newId, scheme)
         NGL.ColormakerRegistry.removeScheme(oldId)
-    },
-
-    removeScheme: function(schemeId){
-        NGL.ColormakerRegistry.removeScheme(schemeId)
-    },
-})
-
-
-module.exports = {
-    ColormakerRegistryView: ColormakerRegistryView,
-    ColormakerRegistryModel: ColormakerRegistryModel
+    }
 }
