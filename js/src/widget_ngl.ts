@@ -58,8 +58,9 @@ function createView(that, trait_name){
 }
 
 
-var NGLModel = widgets.DOMWidgetModel.extend({
-    defaults: function(){
+export
+class NGLModel extends widgets.DOMWidgetModel{
+    defaults(){
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
             _model_name: 'NGLModel',
             _model_module: 'nglview-js-widgets',
@@ -69,10 +70,11 @@ var NGLModel = widgets.DOMWidgetModel.extend({
             _view_module_version: require("../package.json").version,
         });
     }
-})
+}
 
-var NGLView = widgets.DOMWidgetView.extend({
-    render: function() {
+export
+class NGLView extends widgets.DOMWidgetView{
+    render(){
         this.beforeDisplay()
         this.displayed.then(function() {
             // move all below code inside 'displayed'
@@ -84,9 +86,9 @@ var NGLView = widgets.DOMWidgetView.extend({
             this.finalizeDisplay()
         }.bind(this));
 
-    },
+    }
 
-    beforeDisplay: function(){
+    beforeDisplay(){
         this.model.on("change:_parameters", this.parametersChanged, this);
         this.model.on("change:gui_style", this.GUIStyleChanged, this);
         this.model.set('_ngl_version', NGL.Version);
@@ -95,9 +97,9 @@ var NGLView = widgets.DOMWidgetView.extend({
         this.stage_widget = undefined
         this._synced_model_ids = this.model.get("_synced_model_ids");
         this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids")
-    },
+    }
 
-    createStage: function(){
+    createStage(){
         // init NGL stage
         var stage_params = this.model.get("_ngl_full_stage_parameters");
         if (!("backgroundColor" in stage_params)){
@@ -138,7 +140,7 @@ var NGLView = widgets.DOMWidgetView.extend({
                 this.set_camera_orientation(that.model.get("_camera_orientation"));
             }
         }
-    },
+    }
 
     handleMessage(){
         this.model.on("msg:custom", function(msg){
@@ -163,10 +165,10 @@ var NGLView = widgets.DOMWidgetView.extend({
                 this.model._handle_comm_msg.call(this.model, msg);
             }.bind(this));
         }
-    },
+    }
 
 
-    finalizeDisplay: function(){
+    finalizeDisplay(){
       // for callbacks from Python
       // must be after initializing NGL.Stage
       this.send({
@@ -179,9 +181,9 @@ var NGLView = widgets.DOMWidgetView.extend({
       if (this.stage.compList.length < this.model.get("n_components")){
           this.handle_embed()
       }
-    },
+    }
 
-    handleSignals: function(){
+    handleSignals(){
       var container = this.stage.viewer.container;
       var that = this;
       container.addEventListener('mouseover', function(e) {
@@ -238,9 +240,9 @@ var NGLView = widgets.DOMWidgetView.extend({
           }
       }.bind(this));
 
-    },
+    }
 
-    handlePicking: function(){
+    handlePicking(){
       this.$pickingInfo = $("<div></div>")
           .css("position", "absolute")
           .css("top", "5%")
@@ -256,7 +258,7 @@ var NGLView = widgets.DOMWidgetView.extend({
               this.model.set('picked', {}); //refresh signal
               this.touch();
 
-              var pd2 = {};
+              var pd2 = {} as any;
               var pickingText = "";
               if (pd.atom) {
                   pd2.atom1 = pd.atom.toObject();
@@ -286,9 +288,9 @@ var NGLView = widgets.DOMWidgetView.extend({
               this.$pickingInfo.text(pickingText);
           }
       }, this);
-    },
+    }
 
-    mouseover_display: function(type){
+    mouseover_display(type){
         var that = this;
         if (this.btn_pview_fullscreen){
             this.btn_pview_fullscreen.then(function(v){
@@ -313,9 +315,9 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             })
         }
-    },
+    }
 
-    updateNGLTheme: function(css_content){
+    updateNGLTheme(css_content){
         var ele = document.getElementById("nglview_style")
         if (ele != undefined){
             document.head.removeChild(ele)
@@ -325,29 +327,26 @@ var NGLView = widgets.DOMWidgetView.extend({
         style.type = 'text/css'
         style.appendChild(document.createTextNode(css_content))
         document.head.appendChild(style)
-    },
+    }
 
-    serialize_camera_orientation: function(){
+    serialize_camera_orientation(){
          var m = this.stage.viewerControls.getOrientation();
          this.model.set('_camera_orientation', m.elements);
          this.touch();
-    },
+    }
 
-    set_camera_orientation: function(orientation){
+    set_camera_orientation(orientation){
         if (orientation.length > 0){
             this.stage.viewerControls.orient(orientation);
             this.serialize_camera_orientation();
         }
-    },
+    }
 
-    executeCode: function(code){
+    executeCode(code){
         eval(code);
-    },
+    }
 
-    handleCustomColor: function(){
-    },
-
-    handle_embed: function(){
+    handle_embed(){
         var that = this;
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
         var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
@@ -385,7 +384,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             }
         }
 
-        _.each(ngl_msg_archive, function(msg){
+        _.each(ngl_msg_archive, function(msg: any){
             if (msg.methodName == 'loadFile'){
                 if (msg.kwargs && msg.kwargs.defaultRepresentation) {
                     // no need to add default representation as all representations
@@ -406,7 +405,7 @@ var NGLView = widgets.DOMWidgetView.extend({
             // Outside notebook
             if (that.model.comm === undefined){
                 var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
-                n_frames = ngl_coordinate_resource['n_frames']
+                var n_frames = ngl_coordinate_resource['n_frames']
                 that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
                 that.touch()
                 that.getPlayerModel().then(function(model){
@@ -426,9 +425,9 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             })
         }); // Promise.all
-    },
+    }
 
-    updateCoordinatesFromDict: function(cdict, frame_index){
+    updateCoordinatesFromDict(cdict, frame_index){
         // update coordinates for given "index"
         // cdict = Dict[int, List[base64]]
         var keys = Object.keys(cdict).filter(k => (k !== 'n_frames'));
@@ -440,22 +439,22 @@ var NGLView = widgets.DOMWidgetView.extend({
                 this.updateCoordinates(coordinates, traj_index);
             }
         }
-    },
+    }
 
-    requestFrame: function() {
+    requestFrame() {
         this.send({
             'type': 'request_frame',
             'data': 'frame'
         });
-    },
+    }
 
-    requestUpdateStageParameters: function() {
+    requestUpdateStageParameters(){
         var updated_params = this.stage.getParameters();
         this.model.set('_ngl_full_stage_parameters', updated_params);
         this.touch();
-    },
+    }
 
-    requestReprParameters: function(component_index, repr_index) {
+    requestReprParameters(component_index, repr_index) {
         var comp = this.stage.compList[component_index];
         var repr = comp.reprList[repr_index];
         var msg = repr.repr.getParameters();
@@ -467,9 +466,9 @@ var NGLView = widgets.DOMWidgetView.extend({
                 'data': msg
             });
         }
-    },
+    }
 
-    request_repr_dict: function() {
+    request_repr_dict(){
         var n_components = this.stage.compList.length;
         var repr_dict = {};
 
@@ -506,28 +505,28 @@ var NGLView = widgets.DOMWidgetView.extend({
                 })
             })
         }
-    },
+    }
 
-    setSyncRepr: function(model_ids){
+    setSyncRepr(model_ids){
         this._synced_repr_model_ids = model_ids
-    },
+    }
 
-    setSyncCamera: function(model_ids){
+    setSyncCamera(model_ids){
         this._synced_model_ids = model_ids
-    },
+    }
 
-    viewXZPlane: function() {
+    viewXZPlane(){
         var m = new NGL.Matrix4().makeRotationX( Math.PI / 2 );
         var q = new NGL.Quaternion().setFromRotationMatrix( m );
         this.stage.viewerControls.rotate( q );
-    },
+    }
 
-    set_representation_from_backend: function(){
+    set_representation_from_backend(){
         var repr_dict = this.model.get('_ngl_repr_dict')
         this._set_representation_from_repr_dict(repr_dict)
-    },
+    }
 
-    _set_representation_from_repr_dict: function(repr_dict){
+    _set_representation_from_repr_dict(repr_dict){
         var compList = this.stage.compList
         if (compList.length > 0){
             for (var index in repr_dict){
@@ -542,9 +541,9 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             }
         }
-    },
+    }
 
-    createView: function(trait_name){
+    createView(trait_name){
         // Create a view for the model with given `trait_name`
         // e.g: in backend, 'view.<trait_name>`
         console.log("Creating view for model " + trait_name);
@@ -553,15 +552,15 @@ var NGLView = widgets.DOMWidgetView.extend({
         return this.model.widget_manager.get_model(model_id).then(function(model){
             return manager.create_view(model)
         })
-    },
+    }
 
-    getPlayerModel: function(){
+    getPlayerModel(){
         // return a Promise
         var model_id = this.model.get("_iplayer").replace("IPY_MODEL_", "");
         return this.model.widget_manager.get_model(model_id)
-    },
+    }
 
-    createIPlayer: function(){
+    createIPlayer(){
         this.player_pview = this.createView("_iplayer");
         var that = this;
         this.player_pview.then(function(view){
@@ -574,9 +573,9 @@ var NGLView = widgets.DOMWidgetView.extend({
                 that.stage.viewer.container.append(view.el);
                 pe.style.display = 'none'
             })
-    },
+    }
 
-    createImageBtn: function(){
+    createImageBtn(){
         this.image_btn_pview = this.createView("_ibtn_image");
         var that = this;
         this.image_btn_pview.then(function(view){
@@ -589,9 +588,9 @@ var NGLView = widgets.DOMWidgetView.extend({
            pe.style.width = '35px'
            that.stage.viewer.container.append(view.el);
         })
-    },
+    }
 
-    createFullscreenBtn: function(){
+    createFullscreenBtn(){
         this.btn_pview_fullscreen = this.createView("_ibtn_fullscreen");
         var that = this;
         var stage = that.stage;
@@ -618,10 +617,10 @@ var NGLView = widgets.DOMWidgetView.extend({
              }
            })
         })
-    },
+    }
 
 
-    createGUI: function(){
+    createGUI(){
         this.pgui_view = this.createView("_igui");
         var that = this;
         this.pgui_view.then(function(view){
@@ -633,15 +632,16 @@ var NGLView = widgets.DOMWidgetView.extend({
                 pe.style.width = '300px'
                 that.stage.viewer.container.append(view.el);
             })
-    },
+    }
 
 
-    createNglGUI: function(){
-      this.stage_widget = new StageWidget(this)
-    },
+    createNglGUI(){
+      this.stage_widget = StageWidget(this)
+      // FIXME: make StageWidget class?
+    }
 
 
-    setVisibilityForRepr: function(component_index, repr_index, value) {
+    setVisibilityForRepr(component_index, repr_index, value) {
         // value = True/False
         var component = this.stage.compList[component_index];
         var repr = component.reprList[repr_index];
@@ -649,18 +649,18 @@ var NGLView = widgets.DOMWidgetView.extend({
         if (repr) {
             repr.setVisibility(value);
         }
-    },
+    }
 
-    removeRepresentation: function(component_index, repr_index) {
+    removeRepresentation(component_index, repr_index) {
         var component = this.stage.compList[component_index];
         var repr = component.reprList[repr_index]
 
         if (repr) {
             component.removeRepresentation(repr);
         }
-    },
+    }
 
-    removeRepresentationsByName: function(repr_name, component_index) {
+    removeRepresentationsByName(repr_name, component_index) {
         var component = this.stage.compList[component_index];
 
         if (component) {
@@ -670,9 +670,9 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             })
         }
-    },
+    }
 
-    updateRepresentationForComponent: function(repr_index, component_index, params) {
+    updateRepresentationForComponent(repr_index, component_index, params) {
         var component = this.stage.compList[component_index];
         var that = this;
         var repr = component.reprList[repr_index];
@@ -680,9 +680,9 @@ var NGLView = widgets.DOMWidgetView.extend({
             repr.setParameters(params);
             that.request_repr_dict();
         }
-    },
+    }
 
-    updateRepresentationsByName: function(repr_name, component_index, params) {
+    updateRepresentationsByName(repr_name, component_index, params) {
         var component = this.stage.compList[component_index];
         var that = this;
 
@@ -694,9 +694,9 @@ var NGLView = widgets.DOMWidgetView.extend({
                 }
             })
         }
-    },
+    }
 
-    setRepresentation: function(name, params, component_index, repr_index) {
+    setRepresentation(name, params, component_index, repr_index) {
         var component = this.stage.compList[component_index];
         var repr = component.reprList[repr_index];
         var that = this;
@@ -712,9 +712,9 @@ var NGLView = widgets.DOMWidgetView.extend({
                 that.request_repr_dict();
             }
         }
-    },
+    }
 
-    setColorByResidue: function(colors, component_index, repr_index){
+    setColorByResidue(colors, component_index, repr_index){
         var repr = this.stage.compList[component_index].reprList[repr_index];
         var schemeId = NGL.ColormakerRegistry.addScheme(function(params){
             this.atomColor = function(atom){
@@ -724,9 +724,9 @@ var NGLView = widgets.DOMWidgetView.extend({
             params; // to pass eslint; ack;
         });
         repr.setColor(schemeId);
-    },
+    }
 
-    addShape: function(name, shapes) {
+    addShape(name, shapes) {
         // shapes: List[Tuple[str, ...]]
         // e.g: [('sphere', ...), ('cone', ...)]
         var shape = new NGL.Shape(name);
@@ -755,9 +755,9 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
         var shapeComp = this.stage.addComponentFromObject(shape);
         shapeComp.addRepresentation("buffer");
-    },
+    }
 
-    addBuffer: function(name, kwargs){
+    addBuffer(name, kwargs){
         var class_dict = {
             "arrow": NGL.ArrowBuffer,
             "box": NGL.BoXbuffer,
@@ -781,9 +781,9 @@ var NGLView = widgets.DOMWidgetView.extend({
         shape.addBuffer(buffer);
         var shapeComp = this.stage.addComponentFromObject(shape);
         shapeComp.addRepresentation("buffer");
-    },
+    }
 
-    replaceStructure: function(structure){
+    replaceStructure(structure){
          var blob = new Blob([structure.data], {type: "text/plain"});
          var params = structure.params || {};
          params.ext = structure.ext;
@@ -804,16 +804,16 @@ var NGLView = widgets.DOMWidgetView.extend({
              that.stage.removeComponent(comp);
              that._handle_loading_file_finished();
          });
-    },
+    }
 
-    superpose: function(cindex0, cindex1, align, sele0, sele1) {
+    superpose(cindex0, cindex1, align, sele0, sele1) {
         // superpose two components with given params
         var component0 = this.stage.compList[cindex0];
         var component1 = this.stage.compList[cindex1];
         component1.superpose(component0, align, sele0, sele1);
-    },
+    }
 
-    decode_base64: function(base64) {
+    decode_base64(base64) {
         // lightly adapted from Niklas
 
         /*
@@ -852,9 +852,9 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
 
         return arraybuffer;
-    },
+    }
 
-    updateCoordinates: function(coordinates, model) {
+    updateCoordinates(coordinates, model) {
         // coordinates must be ArrayBuffer (use this.decode_base64)
         var component = this.stage.compList[model];
         if (coordinates && component) {
@@ -864,17 +864,17 @@ var NGLView = widgets.DOMWidgetView.extend({
                 "position": true
             });
         }
-    },
+    }
 
-    handleResizable: function() {
+    handleResizable() {
         this.$container.resizable({
             resize: function(event, ui) {
                 this.setSize(ui.size.width + "px", ui.size.height + "px");
             }.bind(this)
         })
-    },
+    }
 
-    handleResize: function(){
+    handleResize(){
         var width = this.$el.width()
         var height = this.$el.height() + "px"
         if (this.stage_widget){
@@ -882,15 +882,15 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
         width = width + "px"
         this.setSize(width, height)
-    },
+    }
 
-    setSize: function(width, height) {
+    setSize(width, height) {
         this.stage.viewer.container.style.width = width;
         this.stage.viewer.container.style.height = height;
         this.stage.handleResize();
-    },
+    }
 
-    GUIStyleChanged: function(){
+    GUIStyleChanged(){
         var style = this.model.get("gui_style");
         if (style === 'ngl'){
             this.createNglGUI();
@@ -904,14 +904,14 @@ var NGLView = widgets.DOMWidgetView.extend({
                 this.setSize(width, height);
             }
         }
-    },
+    }
 
-    parametersChanged: function() {
+    parametersChanged() {
         var _parameters = this.model.get("_parameters");
         this.setParameters(_parameters);
-    },
+    }
 
-    setParameters: function(parameters) {
+    setParameters(parameters) {
         this.stage.setParameters(parameters);
 
         // do not set _ngl_full_stage_parameters here
@@ -922,17 +922,17 @@ var NGLView = widgets.DOMWidgetView.extend({
             'type': 'stage_parameters',
             'data': updated_params
         })
-    },
+    }
 
-    _downloadImage: function(filename, params) {
+    _downloadImage(filename, params) {
         if (this.ngl_view_id == this.get_last_child_id()){
             this.stage.makeImage(params).then(function(blob) {
                 NGL.download(blob, filename);
             })
         }
-    },
+    }
 
-    _exportImage: function(wid, params) {
+    _exportImage(wid, params) {
         if (this.ngl_view_id == this.get_last_child_id()){
             this.stage.makeImage(params).then(function(blob) {
                 var reader = new FileReader();
@@ -951,14 +951,14 @@ var NGLView = widgets.DOMWidgetView.extend({
                 reader.readAsDataURL(blob);
             }.bind(this));
         }
-    },
+    }
 
 
-    _handle_loading_file_finished: function() {
+    _handle_loading_file_finished() {
         this.send({'type': 'async_message', 'data': 'ok'});
-    },
+    }
 
-    _get_loadFile_promise: function(msg){
+    _get_loadFile_promise(msg){
          // args = [{'type': ..., 'data': ...}]
          var args0 = msg.args[0];
          if (args0.type == 'blob') {
@@ -988,14 +988,14 @@ var NGLView = widgets.DOMWidgetView.extend({
              }
              return this.stage.loadFile(path, msg.kwargs)
          }
-    },
+    }
 
-    get_last_child_id: function(){
+    get_last_child_id(){
         var keys = Object.keys(this.model.views);
         return keys[keys.length-1]
-    },
+    }
 
-    _handle_stage_loadFile: function(msg){
+    _handle_stage_loadFile(msg){
         // args = [{'type': ..., 'data': ...}]
         if (this.ngl_view_id != this.get_last_child_id() && msg.last_child){
             return
@@ -1005,18 +1005,18 @@ var NGLView = widgets.DOMWidgetView.extend({
             that._handle_loading_file_finished();
             o;
         });
-    },
+    }
 
-	addColorScheme: function(args, label){
+	addColorScheme(args, label){
         var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
         var scheme = NGL.ColormakerRegistry.userSchemes[id];
         NGL.ColormakerRegistry.removeScheme(id);
         // hard code the scheme ID
         NGL.ColormakerRegistry.add(label, scheme);
         return label
-	},
+	}
 
-    on_msg: function(msg) {
+    on_msg(msg) {
         // TODO: re-organize
         if (msg.type == 'call_method') {
             var index, component, func, stage;
@@ -1128,11 +1128,12 @@ var NGLView = widgets.DOMWidgetView.extend({
                 console.log("ngl_view_id", this.ngl_view_id);
             }
         }
-    },
-});
+    }
+}
 
-var FullscreenModel = widgets.DOMWidgetModel.extend({
-    defaults: function(){
+export
+class FullscreenModel extends widgets.DOMWidgetModel{
+    defaults(){
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
             _model_name: 'FullscreenModel',
             _model_module: 'nglview-js-widgets',
@@ -1142,19 +1143,20 @@ var FullscreenModel = widgets.DOMWidgetModel.extend({
             _view_module_version: require("../package.json").version,
         });
     }
-})
+}
 
-var FullscreenView = BaseView.extend({
-    render: function() {
+export
+class FullscreenView extends BaseView{
+    render() {
         this.stage = new NGL.Stage()
         var that = this
         this.model.on("msg:custom", function(msg){
             that.on_msg(msg)
         })
         this.handleSignals()
-    },
+    }
 
-    fullscreen: function(model_id){
+    fullscreen(model_id){
         var that = this
         this.model.widget_manager.get_model(model_id).then((model) =>{
             var key = Object.keys(model.views)[0]
@@ -1162,27 +1164,27 @@ var FullscreenView = BaseView.extend({
                 that.stage.toggleFullscreen(view.el)
             })
         })
-    },
+    }
 
-    handleSignals: function(){
+    handleSignals(){
         var that = this
         this.stage.signals.fullscreenChanged.add(function (isFullscreen) {
             that.model.set("_is_fullscreen", isFullscreen)
             that.touch()
         })
-    },
+    }
 
-    executeCode: function(code){
+    executeCode(code){
         eval(code);
-    },
+    }
 
-    on_msg: function(msg){
+    on_msg(msg){
         if ('executeCode' in msg){
             this.executeCode(msg.executeCode)
         }
     }
 
-});
+}
 
 // export all models and views here to make embeding a bit easier
 module.exports = {
