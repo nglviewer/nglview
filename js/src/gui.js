@@ -139,209 +139,205 @@ NGL.Preferences.prototype = {
 
 // Stage
 
-StageWidget = function (view) {
-  // view: NGLView of NGLModel
-  if (view.options.parent){
-      el = view.el.parentElement
-  }else{
-      el = view.el
-  }
-  stage = view.stage
-  var viewport = new UI.Panel()
-  viewport.setPosition("absolute")
-  viewport.dom = stage.viewer.container
-  this.el = el
-  this.widgetList = []
-
-  // Turn off in Jupyter notebook so user can run the next cell.
-  // ensure initial focus on viewer canvas for key-stroke listening
-  // stage.viewer.renderer.domElement.focus()
-
-  var preferences = new NGL.Preferences('ngl-stage-widget', stage.getParameters())
-
-  var pp = {}
-  for (var name in preferences.storage) {
-    pp[ name ] = preferences.getKey(name)
-  }
-  stage.setParameters(pp)
-
-  preferences.signals.keyChanged.add(function (key, value) {
-    var sp = {}
-    sp[ key ] = value
-    stage.setParameters(sp)
-    // FIXME: remove?
-    // if (key === 'theme') {
-    //   setTheme(value)
-    // }
-  }, this)
-
-  //
-
-  var cssLinkElement = document.createElement('link')
-  cssLinkElement.rel = 'stylesheet'
-  cssLinkElement.id = 'theme'
-
-  function setTheme (value) {
-    var cssPath, bgColor
-    if (value === 'light') {
-      cssPath = NGL.cssDirectory + 'light.css'
-      bgColor = 'white'
-    } else {
-      cssPath = NGL.cssDirectory + 'dark.css'
-      bgColor = 'black'
-    }
-    cssLinkElement.href = cssPath
-    stage.setParameters({ backgroundColor: bgColor })
-  }
-
-  // FIXME: remove?
-  // setTheme(preferences.getKey('theme'))
-  el.appendChild(cssLinkElement)
-
-  //
-
-  var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar_ngl')
-  el.appendChild(toolbar.dom)
-
-  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar_ngl')
-  el.appendChild(menubar.dom)
-
-  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar_ngl')
-  el.appendChild(sidebar.dom)
-
-  this.widgetList.push(toolbar)
-  this.widgetList.push(menubar)
-  this.widgetList.push(sidebar)
-
-  //
-
-  // el.body.style.touchAction = 'none'
-  el.style.touchAction = 'none'
-
-  //
-
-  stage.handleResize()
-  // FIXME hack for ie11
-  setTimeout(function () { stage.handleResize() }, 500)
-
-  //
-
-  var doResizeLeft = false
-  var movedResizeLeft = false
-  var minResizeLeft = false
-  var handleResizeInNotebook
-
-  var handleResizeLeft = function (clientX) {
-    if (clientX >= 50 && clientX <= window.innerWidth - 10) {
-      sidebar.setWidth(window.innerWidth - clientX + 'px')
-      viewport.setWidth(clientX + 'px')
-      toolbar.setWidth(clientX + 'px')
-      stage.handleResize()
-    }
-    var sidebarWidth = sidebar.dom.getBoundingClientRect().width
-    if (clientX === undefined) {
-      var mainWidth = window.innerWidth - sidebarWidth
-      viewport.setWidth(mainWidth + 'px')
-      toolbar.setWidth(mainWidth + 'px')
-      stage.handleResize()
-    }
-    if (sidebarWidth <= 10) {
-      minResizeLeft = true
-    } else {
-      minResizeLeft = false
-    }
-    handleResizeInNotebook();
-  }
-  handleResizeLeft = NGL.throttle(
-    handleResizeLeft, 50, { leading: true, trailing: true }
-  )
-
-  var handleResizeInNotebook = function(){
-      // FIXME
-      var sw = sidebar.dom.getBoundingClientRect().width
-      var ew = el.getBoundingClientRect().width
-      var w = ew - sw + 'px'
-
-      stage.viewer.container.style.width = w 
-      stage.handleResize()
-  }
-
-  var resizeLeft = new UI.Panel()
-    .setClass('ResizeLeft')
-    .onMouseDown(function () {
-      doResizeLeft = true
-      movedResizeLeft = false
-    })
-    .onClick(function () {
-      if (minResizeLeft) {
-        handleResizeLeft(window.innerWidth - 300)
-      } else if (!doResizeLeft && !movedResizeLeft) {
-        handleResizeLeft(window.innerWidth - 10)
+class StageWidget{
+  constructor(view){
+      // view: NGLView of NGLModel
+      if (view.options.parent){
+          el = view.el.parentElement
+      }else{
+          el = view.el
       }
-    })
+      stage = view.stage
+      var viewport = new UI.Panel()
+      viewport.setPosition("absolute")
+      viewport.dom = stage.viewer.container
+      this.el = el
+      this.widgetList = []
 
-  sidebar.add(resizeLeft)
-  this.viewport = viewport
-  this.toolbar = toolbar
-  this.menubar = menubar
-  this.sidebar = sidebar
+      // Turn off in Jupyter notebook so user can run the next cell.
+      // ensure initial focus on viewer canvas for key-stroke listening
+      // stage.viewer.renderer.domElement.focus()
 
-  handleResizeInNotebook()
+      var preferences = new NGL.Preferences('ngl-stage-widget', stage.getParameters())
 
-  stage.signals.fullscreenChanged.add(function (isFullscreen) {
-    const box = stage.viewer.container.parentElement.getBoundingClientRect()
-    console.log("in StageWidget")
-    stage.setSize(box.width+"px", isFullscreen?box.height+'px':'300px')
-    view.handleResize()
-  })
-
-  window.addEventListener(
-    'mousemove', function (event) {
-      if (doResizeLeft) {
-        document.body.style.cursor = 'col-resize'
-        movedResizeLeft = true
-        handleResizeLeft(event.clientX)
+      var pp = {}
+      for (var name in preferences.storage) {
+        pp[ name ] = preferences.getKey(name)
       }
-    }, false
-  )
+      stage.setParameters(pp)
 
-  window.addEventListener(
-    'mouseup', function (event) {
-      doResizeLeft = false
-      document.body.style.cursor = ''
-    }, false
-  )
+      preferences.signals.keyChanged.add(function (key, value) {
+        var sp = {}
+        sp[ key ] = value
+        stage.setParameters(sp)
+        // FIXME: remove?
+        // if (key === 'theme') {
+        //   setTheme(value)
+        // }
+      }, this)
 
-  window.addEventListener(
-    'resize', function (event) {
-      handleResizeLeft()
-    }, false
-  )
+      //
 
-  //
+      var cssLinkElement = document.createElement('link')
+      cssLinkElement.rel = 'stylesheet'
+      cssLinkElement.id = 'theme'
 
-  document.addEventListener('dragover', function (e) {
-    e.stopPropagation()
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'none'
-  }, false)
+      function setTheme (value) {
+        var cssPath, bgColor
+        if (value === 'light') {
+          cssPath = NGL.cssDirectory + 'light.css'
+          bgColor = 'white'
+        } else {
+          cssPath = NGL.cssDirectory + 'dark.css'
+          bgColor = 'black'
+        }
+        cssLinkElement.href = cssPath
+        stage.setParameters({ backgroundColor: bgColor })
+      }
 
-  document.addEventListener('drop', function (e) {
-    e.stopPropagation()
-    e.preventDefault()
-  }, false)
+      // FIXME: remove?
+      // setTheme(preferences.getKey('theme'))
+      el.appendChild(cssLinkElement)
 
-  return this
-}
+      //
 
-StageWidget.prototype = {
-   constructor: StageWidget,
+      var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar_ngl')
+      el.appendChild(toolbar.dom)
 
-   dispose: function(){
+      var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar_ngl')
+      el.appendChild(menubar.dom)
+
+      var sidebar = new NGL.SidebarWidget(stage).setId('sidebar_ngl')
+      el.appendChild(sidebar.dom)
+
+      this.widgetList.push(toolbar)
+      this.widgetList.push(menubar)
+      this.widgetList.push(sidebar)
+
+      //
+
+      // el.body.style.touchAction = 'none'
+      el.style.touchAction = 'none'
+
+      //
+
+      stage.handleResize()
+      // FIXME hack for ie11
+      setTimeout(function () { stage.handleResize() }, 500)
+
+      //
+
+      var doResizeLeft = false
+      var movedResizeLeft = false
+      var minResizeLeft = false
+      var handleResizeInNotebook
+
+      var handleResizeLeft = function (clientX) {
+        if (clientX >= 50 && clientX <= window.innerWidth - 10) {
+          sidebar.setWidth(window.innerWidth - clientX + 'px')
+          viewport.setWidth(clientX + 'px')
+          toolbar.setWidth(clientX + 'px')
+          stage.handleResize()
+        }
+        var sidebarWidth = sidebar.dom.getBoundingClientRect().width
+        if (clientX === undefined) {
+          var mainWidth = window.innerWidth - sidebarWidth
+          viewport.setWidth(mainWidth + 'px')
+          toolbar.setWidth(mainWidth + 'px')
+          stage.handleResize()
+        }
+        if (sidebarWidth <= 10) {
+          minResizeLeft = true
+        } else {
+          minResizeLeft = false
+        }
+        handleResizeInNotebook();
+      }
+      handleResizeLeft = NGL.throttle(
+        handleResizeLeft, 50, { leading: true, trailing: true }
+      )
+
+      var handleResizeInNotebook = function(){
+          // FIXME
+          var sw = sidebar.dom.getBoundingClientRect().width
+          var ew = el.getBoundingClientRect().width
+          var w = ew - sw + 'px'
+
+          stage.viewer.container.style.width = w 
+          stage.handleResize()
+      }
+
+      var resizeLeft = new UI.Panel()
+        .setClass('ResizeLeft')
+        .onMouseDown(function () {
+          doResizeLeft = true
+          movedResizeLeft = false
+        })
+        .onClick(function () {
+          if (minResizeLeft) {
+            handleResizeLeft(window.innerWidth - 300)
+          } else if (!doResizeLeft && !movedResizeLeft) {
+            handleResizeLeft(window.innerWidth - 10)
+          }
+        })
+
+      sidebar.add(resizeLeft)
+      this.viewport = viewport
+      this.toolbar = toolbar
+      this.menubar = menubar
+      this.sidebar = sidebar
+
+      handleResizeInNotebook()
+
+      stage.signals.fullscreenChanged.add(function (isFullscreen) {
+        const box = stage.viewer.container.parentElement.getBoundingClientRect()
+        console.log("in StageWidget")
+        stage.setSize(box.width+"px", isFullscreen?box.height+'px':'300px')
+        view.handleResize()
+      })
+
+      window.addEventListener(
+        'mousemove', function (event) {
+          if (doResizeLeft) {
+            document.body.style.cursor = 'col-resize'
+            movedResizeLeft = true
+            handleResizeLeft(event.clientX)
+          }
+        }, false
+      )
+
+      window.addEventListener(
+        'mouseup', function (event) {
+          doResizeLeft = false
+          document.body.style.cursor = ''
+        }, false
+      )
+
+      window.addEventListener(
+        'resize', function (event) {
+          handleResizeLeft()
+        }, false
+      )
+
+      //
+
+      document.addEventListener('dragover', function (e) {
+        e.stopPropagation()
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'none'
+      }, false)
+
+      document.addEventListener('drop', function (e) {
+        e.stopPropagation()
+        e.preventDefault()
+      }, false)
+  }
+
+  dispose(){
        for (var i in this.widgetList){
            this.widgetList[i].dispose()
        }
-   },
+  }
 }
 
 // Viewport

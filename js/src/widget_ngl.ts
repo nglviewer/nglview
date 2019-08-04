@@ -636,7 +636,7 @@ class NGLView extends widgets.DOMWidgetView{
 
 
     createNglGUI(){
-      this.stage_widget = StageWidget(this)
+      this.stage_widget = new StageWidget(this)
       // FIXME: make StageWidget class?
     }
 
@@ -938,7 +938,7 @@ class NGLView extends widgets.DOMWidgetView{
                 var reader = new FileReader();
                 var arr_str;
                 reader.onload = function() {
-                    arr_str = reader.result.replace("data:image/png;base64,", "");
+                    arr_str = (reader.result as string).replace("data:image/png;base64,", "");
                     // this.model.set("_image_data", arr_str);
                     // this.touch();
                     this.send({
@@ -976,16 +976,20 @@ class NGLView extends widgets.DOMWidgetView{
              return this.stage.loadFile(blob, msg.kwargs)
          } else {
              var file = new File([""], args0.data);
+             // FIXME: if not "any", typescipt complains there is no
+             // "exists" method.
              var path = "";
-             if (args0.type == 'path' && ! file.exists){
+             // FIXME: uncomment ("exists" does not exist)
+             // if (args0.type == 'path' && ! file.exists){
                  // hacky fix for jupyterlab
                  // https://github.com/arose/nglview/issues/783
                  // https://github.com/jupyterlab/jupyterlab/issues/6218
                  // e.g: http://localhost:8888/files/ala3.pdb
-                 path = 'files/' + args0.data;
-             } else {
-                 path = args0.data;
-             }
+                 //    path = 'files/' + args0.data;
+                 // } else {
+                 // path = args0.data;
+                 //}
+             path = args0.data;
              return this.stage.loadFile(path, msg.kwargs)
          }
     }
