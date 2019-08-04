@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "2.6.7",
+  "version": "2.6.9",
   "description": "nglview-js-widgets",
   "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
   "license": "MIT",
@@ -27,10 +27,17 @@
   ],
   "scripts": {
     "lint": "eslint src test",
-    "prepublish": "webpack",
+    "prepublish": "tsc && webpack",
+    "ts": "tsc",
     "test": "mocha"
   },
   "devDependencies": {
+    "@types/node": "^12.0.2",
+    "@types/chai": "^4.1.4",
+    "@types/expect.js": "^0.3.29",
+    "@types/mocha": "^2.2.48",
+    "@types/requirejs": "^2.1.31",
+    "typescript": "~3.0.0",
     "babel-eslint": "^7.0.0",
     "babel-register": "^6.11.6",
     "css-loader": "^0.23.1",

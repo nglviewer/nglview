@@ -1,0 +1,457 @@
+
+* {
+	vertical-align: middle;
+}
+
+/* Webkit micro scrollbars */
+
+::-webkit-scrollbar {
+    width:9px;
+    height:9px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    background:rgba(140,140,140,0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    background:rgba(140,140,140,0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background:rgba(140,140,140,0.4);
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+    background:rgba(140,140,140,0.5);
+}
+
+/* elmement */
+
+body {
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+	margin: 0;
+	/* overflow: hidden; */ /*will cause unscroll in notebook embeding*/
+}
+
+hr {
+	border: 0px;
+	border-top: 1px solid #ccc;
+}
+
+button {
+    position: relative;
+    margin-left: 0px;
+}
+
+select {
+    margin-left: 1px;
+}
+
+/* NOTE (FIXME): turning this on will affect notebook */
+
+/**
+textarea {
+	white-space: pre;
+	word-wrap: normal;
+}
+
+	textarea.success {
+		border-color: #8b8 !important;
+	}
+
+	textarea.fail {
+		border-color: #f00 !important;
+		background-color: rgba(255,0,0,0.05);
+	}
+
+textarea, input { outline: none; } /* osx */
+
+input.Number {
+    font-size: 12px;                            /** TODO: Use of !imporant is not ideal **/
+    background-color: transparent!important;    /* For now this is a quick fix a rendering issue due to inherited background */
+    border: 1px solid transparent;
+    padding: 2px;
+    cursor: col-resize;
+}
+
+input.File {
+    border: 0px solid !important;
+    padding: 0px !important;
+}
+
+input[type=range]:focus:after {
+    position: absolute;
+    transform: translate(-100%,-50% );
+    content: attr(value);
+    font-size: 12px;
+}
+
+/* class */
+
+.deleteInfo:after {
+    position: absolute;
+    transform: translate(-50%,-250% );
+    content: "double-click to delete";
+    font-size: 10px;
+    display: block;
+}
+
+.Panel {
+
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+
+    /* No support for these yet */
+    -o-user-select: none;
+    user-select: none;
+}
+
+.OverlayPanel {
+    z-index: 10;
+    position: absolute;
+    padding: 10px;
+    overflow: auto;
+    border: 1px solid;
+}
+
+.OverlayPanel:focus {
+    z-index: 20;
+}
+
+.Text {
+    cursor: default;
+}
+
+.FancySelect {
+    padding: 0;
+    cursor: default;
+    overflow: auto;
+    outline: none;
+}
+
+    .FancySelect .option {
+        padding: 4px;
+        white-space: nowrap;
+    }
+
+.CollapsiblePanel .CollapsiblePanelButton {
+    float: left;
+    margin-right: 6px;
+    width: 0px;
+    height: 0px;
+    border: 6px solid transparent;
+}
+
+.CollapsiblePanel.collapsed > .CollapsiblePanelButton {
+    margin-top: 2px;
+    border-left-color: #555;
+}
+
+.CollapsiblePanel:not(.collapsed) > .CollapsiblePanelButton {
+    margin-top: 6px;
+    border-top-color: #555;
+}
+
+.CollapsiblePanel.collapsed .CollapsibleContent {
+    display: none;
+}
+
+.CollapsiblePanel:not(.collapsed) > .CollapsibleContent {
+    clear: both;
+}
+
+/* http://www.brianchu.com/blog/2013/11/02/creating-an-auto-growing-text-input/ */
+
+.AdaptiveTextAreaContainer {
+    position: relative;
+    display: inline-block;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.AdaptiveTextArea, .AdaptiveTextAreaSize {
+    min-height: 21px;
+    /* need to manually set font and font size */
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    box-sizing: border-box;
+    padding: 2px;
+    border: 1px solid #ccc;
+
+    overflow: hidden;
+    width: 100%;
+}
+
+.AdaptiveTextArea {
+    height: 100%;
+    position: absolute;
+    resize: none;
+
+    /*
+    "pre" or "preline" or "normal" fixes Chrome issue where
+    whitespace at end of lines does not trigger a line break.
+    However, it causes the text to exhibit the behavior seen with
+    "pre" that is described below.
+    */
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.AdaptiveTextAreaSize {
+    visibility: hidden;
+
+    /*
+    Pre-wrap: preserve spacing and newlines, but wrap text.
+    Pre: preserve spacing and newlines but don't wrap text.
+
+    "pre" does not wrap well on Firefox, even with word-wrap:break-word.
+    "pre" on Chrome works with word-wrap, but exhibits different behavior:
+    Instead of entire words being moved to the next line for wrapping,
+    the browser will cut words in the middle for wrapping.
+    "pre-line" has Firefox issues
+    */
+    white-space: pre-wrap;
+    /* Required for wrapping lines in Webkit,
+    but not necessary in Firefox if you have white-space wrapping
+    (pre-wrap, normal, pre-line) already set */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* FlexiColorPicker */
+
+.picker-wrapper,
+.slide-wrapper {
+    position: relative;
+    float: left;
+}
+
+.picker-indicator,
+.slide-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+
+.picker,
+.slide {
+    cursor: crosshair;
+    float: left;
+}
+
+.slide-wrapper {
+    margin-left: 10px;
+}
+
+.picker-indicator {
+    width: 5px;
+    height: 5px;
+    border: 2px solid darkblue;
+    -moz-border-radius: 4px;
+    -o-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    opacity: .5;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    filter: alpha(opacity=50);
+    background-color: white;
+}
+
+.slide-indicator {
+    width: 100%;
+    height: 10px;
+    left: -4px;
+    opacity: .6;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+    filter: alpha(opacity=60);
+    border: 4px solid lightblue;
+    -moz-border-radius: 4px;
+    -o-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    background-color: white;
+}
+
+/* http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/ */
+
+.EllipsisMultilineText {
+    overflow: hidden;
+    max-height: 2.6em;
+    line-height: 1.3em;
+}
+
+.EllipsisMultilineText:before {
+    content:"";
+    float: left;
+    width: 5px;
+    max-height: 2.6em;
+}
+
+.EllipsisMultilineText > *:first-child {
+    float: right;
+    width: 100%;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: -5px;
+    word-wrap: break-word;
+}
+
+.EllipsisMultilineText:after {
+    content: "\02026";
+
+    box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+
+    float: right; position: relative;
+    top: 1.3em; left: 100%;
+    width: 3em; margin-left: -3em;
+    padding-right: 5px;
+
+    text-align: right;
+}
+
+/* resize */
+
+.ResizeLeft, .ResizeLeft:hover {
+    position: relative;
+    float: left;
+    height: 100%;
+    width: 10px;
+}
+
+.ResizeLeft:hover{
+    cursor: col-resize;
+}
+
+/* virtual list */
+
+.VirtualListRow {
+    position: absolute;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.VirtualListRow > .Text {
+    cursor: inherit;
+}
+
+/* id */
+
+#viewport {
+    position: absolute;
+    top: 32px;
+    left: 0px;
+    right: 300px;
+    bottom: 32px;
+}
+
+#menubar_ngl {
+    position: absolute;
+    width: 100%;
+    height: 32px;
+    padding: 0px;
+    margin: 0px;
+    z-index: 100;
+    top: 0px;
+    left: 0px;
+}
+
+    #menubar_ngl .menu {
+        float: left;
+        cursor: pointer;
+        position: relative;
+    }
+
+        #menubar_ngl .menu .title {
+            margin: 0px;
+            padding: 8px;
+        }
+
+        #menubar_ngl .menu .options {
+            display: none;
+            padding: 5px 0px;
+            width: 140px;
+            position: absolute;
+            top: 32px;
+        }
+
+        #menubar_ngl .menu:hover .options {
+            display: block;
+            max-height: 600px;
+            overflow: auto;
+        }
+
+            #menubar_ngl .menu .options .option {
+                background-color: transparent;
+                padding: 5px 10px;
+                margin: 0px !important;
+            }
+
+#sidebar_ngl {
+    position: absolute;
+    right: 0px;
+    top: 32px;
+    bottom: 0px;
+    width: 300px;
+    overflow: hidden;
+}
+
+    #sidebar_ngl .Panel {
+        margin-bottom: 10px;
+    }
+
+    #sidebar_ngl .Panel.collapsed {
+        margin-bottom: 0px;
+    }
+
+    #sidebar_ngl .CollapsibleContent {
+        margin-top: 10px;
+    }
+
+    #sidebar_ngl > .Panel {
+        padding: 10px;
+        border-top: 1px solid;
+    }
+
+    #sidebar_ngl > .Content > .Panel {
+        padding: 10px;
+        border-top: 1px solid;
+    }
+
+    #sidebar_ngl .Content {
+        top: 40px;
+        bottom: 0px;
+        position: absolute;
+        overflow: auto;
+        right: 0px;
+        width: 100%;
+    }
+
+#toolbar_ngl {
+    position: absolute;
+    left: 0px;
+    right: 300px;
+    bottom: 0px;
+    height: 32px;
+}
+
+    #toolbar_ngl .Panel {
+        padding: 6px;
+    }
+
+    #toolbar_ngl button {
+        margin-right: 6px;
+    }

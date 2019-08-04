@@ -56,7 +56,7 @@ class _ColormakerRegistry(BaseWidget):
 
     def _ipython_display_(self, **kwargs):
         if self._ready:
-            return str(self)
+            return
         super()._ipython_display_(**kwargs)
 
     def add_selection_scheme(self, scheme_id, arg):
