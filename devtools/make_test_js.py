@@ -26,14 +26,14 @@ if args.travis:
     notebook_names = notebook_names_for_travis
     notebooks = [api_root_dir + notebook_name for notebook_name in notebook_names]
 elif args.api:
-    notebooks = glob(api_root_dir + '/*.ipynb')
+    notebooks = glob(api_root_dir + '/test*.ipynb')
 elif args.single:
     notebooks = [args.nb]
 else:
     notebooks = ['nglview/tests/notebooks/dummy.ipynb',]
     
-    notebooks += (glob('nglview/tests/notebooks/*ipynb') +
-                glob('nglview/tests/notebooks/api/*ipynb'))
+    notebooks += (glob('nglview/tests/notebooks/test*ipynb') +
+                glob('nglview/tests/notebooks/api/test*ipynb'))
 
 # shuffle(notebooks)
 def get_cell_length(nb):
