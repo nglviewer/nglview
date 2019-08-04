@@ -480,7 +480,7 @@ class NGLView extends widgets.DOMWidgetView{
         }
     }
 
-    request_repr_dict: function() {
+    request_repr_dict(){
         var repr_dict = this.getReprDictFrontEnd()
         this.send({
             // make sure we are using "request_repr_dict" name
@@ -545,7 +545,7 @@ class NGLView extends widgets.DOMWidgetView{
             })
         }
         this.request_repr_dict()
-    },
+    }
 
     setSyncRepr(model_ids){
         this._synced_repr_model_ids = model_ids
