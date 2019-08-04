@@ -4,20 +4,20 @@ var NGL = require('ngl')
 var ColormakerRegistryModel = require('./color').ColormakerRegistryModel
 var ColormakerRegistryView = require('./color').ColormakerRegistryView
 var BaseView = require('./base').BaseView
-var $ = require('jquery')
-var _ = require('underscore')
-require("./lib/signals.min.js")
-require("./lib/tether.min.js")
-require("./lib/colorpicker.min.js")
-require("./ui/ui.js")
-require("./ui/ui.extra.js")
-require("./ui/ui.ngl.js")
-var StageWidget = require("./gui").StageWidget
-require('jquery-ui/ui/widgets/dialog')
-require('jquery-ui/themes/base/all.css')
+import * as $ from 'jquery'
+import * as _ from 'underscore'
+import "./lib/signals.min.js"
+import "./lib/tether.min.js"
+import "./lib/colorpicker.min.js"
+import "./ui/ui.js"
+import "./ui/ui.extra.js"
+import "./ui/ui.ngl.js"
+import { StageWidget } from "./gui"
+import 'jquery-ui/ui/widgets/dialog'
+import 'jquery-ui/themes/base/all.css'
 // require('./css/dark.css');  // How to switch theme?
-require('../src/css/light.css');
-require('../src/css/main.css')
+import '../src/css/light.css'
+import '../src/css/main.css'
 
 
 // From NGL
