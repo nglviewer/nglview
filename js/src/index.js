@@ -2,7 +2,6 @@ module.exports = {};
 
 var loadedModules = [
     require("./widget_ngl.js"),
-    require("./sidebar.js"),
 ]
 
 for (var i in loadedModules) {

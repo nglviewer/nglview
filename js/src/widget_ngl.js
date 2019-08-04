@@ -1,6 +1,9 @@
 var Jupyter
 var widgets = require("@jupyter-widgets/base")
 var NGL = require('ngl')
+var ColormakerRegistryModel = require('./color').ColormakerRegistryModel
+var ColormakerRegistryView = require('./color').ColormakerRegistryView
+var BaseView = require('./base').BaseView
 var $ = require('jquery')
 var _ = require('underscore')
 require("./lib/signals.min.js")
@@ -335,7 +338,8 @@ var NGLView = widgets.DOMWidgetView.extend({
                 v.el.style.display = type
                 // Need to check if max_frame is available (otherwise NaN)
                 // https://github.com/jupyter-widgets/ipywidgets/issues/2485
-                if (!that.model.get("max_frame") || (that.model.get("max_frame") <= 1)){
+                console.log('max_frame', that.model.get('max_frame'))
+                if (!that.model.get("max_frame") || (that.model.get("max_frame") == 0)){
                     // always hide if there's no trajectory.
                     v.el.style.display = 'none'
                 }
@@ -368,22 +372,49 @@ var NGLView = widgets.DOMWidgetView.extend({
         }
     },
 
-    execute_code: function(code){
+    executeCode: function(code){
         eval(code);
+    },
+
+    handleCustomColor: function(){
     },
 
     handle_embed: function(){
         var that = this;
-        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
         var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
         var ngl_color_dict = that.model.get("_ngl_color_dict");
         var loadfile_list = [];
         var label
 
-        // reconstruct colors
-        for (label in ngl_color_dict){
-            that.addColorScheme(ngl_color_dict[label], label);
+        // Only need to reconstruct colors in embeding mode (outside notebook)
+        if (this.model.comm === undefined){
+            var model_dict = this.model.widget_manager._models
+            var models = []
+            for (let k in model_dict){
+                models.push(model_dict[k])
+            }
+            Promise.all(models).then(models => {
+                for (var i in models){
+                    var model = models[i]
+                    if (model instanceof ColormakerRegistryModel){
+                        console.log(model.views)
+                        var k = Object.keys(model.views)[0] // singleton
+                        model.views[k].then(view =>{
+                            view.model.get("_msg_ar").forEach(msg =>{
+                                view.on_msg(msg)
+                            })
+                        })
+                    }
+                }
+            })
+
+            // Old API (_ColorScheme)
+            for (label in ngl_color_dict){
+                if (!NGL.ColormakerRegistry.hasScheme(label)){
+                    that.addColorScheme(ngl_color_dict[label], label);
+                }
+            }
         }
 
         _.each(ngl_msg_archive, function(msg){
@@ -399,36 +430,26 @@ var NGLView = widgets.DOMWidgetView.extend({
 
 
         Promise.all(loadfile_list).then(function(compList){
-            n_frames = ngl_coordinate_resource['n_frames'] || 1;
             that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
             that.stage.setParameters(ngl_stage_params);
             that.set_camera_orientation(that.model.get("_camera_orientation"));
-            that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
             that.touch();
-            delete ngl_coordinate_resource['n_frames'];
 
-            // sync frame again since we don't do that in notebook (to avoid lagging);
-            that.getPlayerModel().then(function(model){
-                var pmodel = model.get("children")[0];
-                that.listenTo(pmodel,
-                    "change:value", function(){that.updateCoordinatesFromDict(ngl_coordinate_resource,
-                        pmodel.get("value"))})
-            })
-
-
-            var pd = that.model.get("_player_dict");
-            var manager = that.model.widget_manager;
-            if (pd){
-                var rd = pd['widget_quick_repr'];
-                for (let model_id in rd){
-                    manager.get_model(model_id).then(function(model){
-                        that.listenTo(model, "change:value", function(){
-                            var msg = rd[model_id][model.get("value")];
-                            that.on_msg(msg);
-                        })
-                    })
-                }
+            // Outside notebook
+            if (that.model.comm === undefined){
+                var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
+                n_frames = ngl_coordinate_resource['n_frames']
+                that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
+                that.touch()
+                that.getPlayerModel().then(function(model){
+                    var pmodel = model.get("children")[0];
+                    that.listenTo(pmodel,
+                        "change:value", function(){
+                            that.updateCoordinatesFromDict(ngl_coordinate_resource,
+                            pmodel.get("value"))})
+                })
             }
+
 
             // fire any msg with "fire_embed"
             that.model.get("_ngl_msg_archive").forEach(function(msg){
@@ -442,7 +463,7 @@ var NGLView = widgets.DOMWidgetView.extend({
     updateCoordinatesFromDict: function(cdict, frame_index){
         // update coordinates for given "index"
         // cdict = Dict[int, List[base64]]
-        var keys = Object.keys(cdict);
+        var keys = Object.keys(cdict).filter(k => (k !== 'n_frames'));
 
         for (var i = 0; i < keys.length; i++) {
             var traj_index = keys[i];
@@ -1185,7 +1206,7 @@ var FullscreenModel = widgets.DOMWidgetModel.extend({
     }
 })
 
-var FullscreenView = widgets.DOMWidgetView.extend({
+var FullscreenView = BaseView.extend({
     render: function() {
         this.stage = new NGL.Stage()
         var that = this
@@ -1213,22 +1234,25 @@ var FullscreenView = widgets.DOMWidgetView.extend({
         })
     },
 
-    execute_code: function(code){
+    executeCode: function(code){
         eval(code);
     },
 
     on_msg: function(msg){
-        if ('execute_code' in msg){
-            this.execute_code(msg.execute_code)
+        if ('executeCode' in msg){
+            this.executeCode(msg.executeCode)
         }
     }
 
 });
 
+// export all models and views here to make embeding a bit easier
 module.exports = {
     'NGLView': NGLView,
     'NGLModel': NGLModel,
     'NGL': NGL,
     'FullscreenModel': FullscreenModel,
-    'FullscreenView': FullscreenView
+    'FullscreenView': FullscreenView,
+    'ColormakerRegistryModel': ColormakerRegistryModel,
+    'ColormakerRegistryView': ColormakerRegistryView
 };
