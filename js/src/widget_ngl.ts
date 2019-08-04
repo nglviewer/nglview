@@ -356,26 +356,6 @@ class NGLView extends widgets.DOMWidgetView{
 
         // Only need to reconstruct colors in embeding mode (outside notebook)
         if (this.model.comm === undefined){
-            var model_dict = this.model.widget_manager._models
-            var models = []
-            for (let k in model_dict){
-                models.push(model_dict[k])
-            }
-            Promise.all(models).then(models => {
-                for (var i in models){
-                    var model = models[i]
-                    if (model instanceof ColormakerRegistryModel){
-                        console.log(model.views)
-                        var k = Object.keys(model.views)[0] // singleton
-                        model.views[k].then(view =>{
-                            view.model.get("_msg_ar").forEach(msg =>{
-                                view.on_msg(msg)
-                            })
-                        })
-                    }
-                }
-            })
-
             // Old API (_ColorScheme)
             for (label in ngl_color_dict){
                 if (!NGL.ColormakerRegistry.hasScheme(label)){

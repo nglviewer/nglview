@@ -21,6 +21,21 @@ class ColormakerRegistryModel extends widgets.DOMWidgetModel {
 
 export
 class ColormakerRegistryView extends BaseView {
+
+    render(){
+        super.render()
+        if (this.model.comm == undefined){
+            console.log("Embed mode for ColormakerRegistryView")
+            this.handleEmbed()
+      }
+    }
+
+    handleEmbed(){
+        this.model.get("_msg_ar").forEach(msg =>{
+            this.on_msg(msg)
+        })
+    }
+
     addSelectionScheme(label, args){
         var id = NGL.ColormakerRegistry.addSelectionScheme(args, label)
         this._updateId(id, label)
@@ -36,7 +51,6 @@ class ColormakerRegistryView extends BaseView {
 
     addScheme(label, func_str){
         var func = Function("return " + func_str)()
-        console.log(func)
         var id = NGL.ColormakerRegistry.addScheme(function(params){
             this.atomColor = func
         })
@@ -45,7 +59,6 @@ class ColormakerRegistryView extends BaseView {
 
     _updateId(oldId, newId){
         var scheme = NGL.ColormakerRegistry.userSchemes[oldId]
-        console.log(oldId, scheme)
         NGL.ColormakerRegistry.add(newId, scheme)
         NGL.ColormakerRegistry.removeScheme(oldId)
     }
