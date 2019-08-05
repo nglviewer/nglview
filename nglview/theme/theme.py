@@ -28,7 +28,14 @@ class ThemeManager(BaseWidget):
 
     def __init__(self):
         super().__init__()
+        self.on_msg(self._handle_theme_changed)
         display(self)
+
+    def _handle_theme_changed(self, _, msg, __):
+        if msg['type'] == 'call_method' and msg['data'] == 'handle_resize':
+            for v in self.widgets.values():
+                if hasattr(v, 'handle_resize'):
+                    v.handle_resize()
 
     def _ipython_display_(self, **kwargs):
         if self._ready:

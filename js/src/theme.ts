@@ -44,5 +44,6 @@ class ThemeManagerView extends BaseView {
         ele.id = 'nglview_style'
         ele.appendChild(document.createTextNode(cssContent))
         document.head.appendChild(ele)
+        this.send({'type': 'call_method', 'data': 'handle_resize'})
     }
 }
