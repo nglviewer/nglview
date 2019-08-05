@@ -1,60 +1,47 @@
-"""highly experimental. Use with your own risk
-
-    >>> from nglview import theme
-    >>> theme.oceans16() # oceans16 https://github.com/dunovank/jupyter-themes
-
-Retart your notebook to reset to default Jupyter theme
-
-If you want to set global theme for your notebook, it's better to install jupyter-themes
-https://github.com/dunovank/jupyter-themes
-
-"""
 import os
+from IPython.display import display
+from ipywidgets import HTML
+from pathlib import Path
 
-style = """
-<style id='nglview_style'>
-{}
-</style>
-
-<script>
-
-var nc = document.getElementById('nglview_style')
-document.head.appendChild(nc)
-</script>
-"""
+from ..base import _singleton
 
 
-def _get_theme(css_file):
-    from IPython.display import HTML
-    return HTML(_get_css_content(css_file))
+def _get_css_content(css_file):
+    p = Path(__file__).resolve().parent / css_file
+    return p.read_text()
+    
+    
+class Theme:
+    def __init__(self, theme=None):
+        self._html = HTML()
+        display(self._html)
+        if theme == 'light':
+            self.light()
+        elif theme == 'dark':
+            self.dark()
+        else:
+            raise ValueError("Unsupported theme")
 
 
-def _get_css_content(css_file, include_style_tag=True):
-    dirname = os.path.dirname(os.path.abspath(__file__))
-    css_file = os.path.join(dirname, css_file)
-    css = open(css_file).read()
-    if include_style_tag:
-        return style.format(css)
-    else:
-        return css
-
-
-def oceans16():
-    return _get_theme('oceans16.css')
-
-
-def reset():
-    from IPython.display import Javascript, display
-    from nglview import js_utils
-    display(Javascript("""
-    var ele = document.getElementById('nglview_style')
-    document.head.removeChild(ele)
-    """))
-
-
-def dark():
-    return _get_theme('dark.css')
-
-
-def light():
-    return _get_theme('light.css')
+    def oceans16(self):
+        self._html.value = (self._html.value + '\n' +
+                            '<style>\n' +
+                            _get_css_content('oceans16.css') +
+                            '</style>')
+    
+    
+    def remove(self):
+        self._html.value = ''
+    
+    
+    def dark(self):
+        self._html.value = ('<style>\n' + 
+                      _get_css_content('dark.css') +
+                      _get_css_content('main.css') +
+                      '</style>')
+    
+    def light(self):
+        self._html.value = ('<style>\n' + 
+                      _get_css_content('light.css') +
+                      _get_css_content('main.css') +
+                      '</style>')

@@ -16,10 +16,9 @@ import { StageWidget } from "./gui"
 import 'jquery-ui/ui/widgets/dialog'
 import 'jquery-ui/themes/base/all.css'
 // require('./css/dark.css');  // How to switch theme?
-import '../src/css/light.css'
-import '../src/css/main.css'
+// import '../src/css/light.css'
+// import '../src/css/main.css'
 import { FullscreenModel, FullscreenView } from "./fullscreen"
-
 
 // From NGL
 // http://www.broofa.com/Tools/Math.uuid.htm
@@ -676,8 +675,8 @@ class NGLView extends widgets.DOMWidgetView{
 
 
     createNglGUI(){
+      console.log(this)
       this.stage_widget = new StageWidget(this)
-      // FIXME: make StageWidget class?
     }
 
 
