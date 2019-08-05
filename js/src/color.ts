@@ -23,14 +23,12 @@ export
 class ColormakerRegistryView extends BaseView {
 
     render(){
+        console.log("Embed mode for ColormakerRegistryView")
         super.render()
-        if (this.model.comm == undefined){
-            console.log("Embed mode for ColormakerRegistryView")
-            this.handleEmbed()
-      }
     }
 
     handleEmbed(){
+        // should be called by NGLView later
         this.model.get("_msg_ar").forEach(msg =>{
             this.on_msg(msg)
         })

@@ -22,14 +22,13 @@ export
 class ThemeManagerView extends BaseView {
 
     render(){
+        console.log("Embed mode for ThemeManagerView")
         super.render()
-        if (this.model.comm == undefined){
-            console.log("Embed mode for ThemeManagerView")
-            this.handleEmbed()
-      }
     }
 
     handleEmbed(){
+        // should be called later by NGLView
+        // to make sure theme is setup fisrt.
         this.on_msg(this.model.get("_msg_ar").pop())
     }
 

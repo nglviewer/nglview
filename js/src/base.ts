@@ -6,6 +6,10 @@ export
 class BaseView extends widgets.DOMWidgetView {
 
     render(){
+        if (this.model.comm == undefined){
+            // embed mode: let NGLView call the handleEmbed directly
+            return
+        }
         this.handleMessage();
         this.displayed.then(() =>{
             this.model.set("_ready", true)
