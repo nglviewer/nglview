@@ -7,7 +7,6 @@ var BaseView = require('./base').BaseView
 import * as $ from 'jquery'
 import * as _ from 'underscore'
 import "./lib/signals.min.js"
-import "./lib/tether.min.js"
 import "./lib/colorpicker.min.js"
 import "./ui/ui.js"
 import "./ui/ui.extra.js"
