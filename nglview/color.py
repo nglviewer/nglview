@@ -1,5 +1,5 @@
 from ipywidgets import DOMWidget
-from traitlets import Unicode, Bool, observe
+from traitlets import Unicode, Bool, observe, List
 from .base import BaseWidget, _singleton
 from ._frontend import __frontend_version__
 from IPython.display import display
@@ -38,6 +38,7 @@ class _ColormakerRegistry(BaseWidget):
     _model_name = Unicode("ColormakerRegistryModel").tag(sync=True)
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _msg_q = List().tag(sync=True) # overwrite BaseWidget's trait to avoid caling base method in frontend
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

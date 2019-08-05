@@ -1,7 +1,7 @@
 import os
 from IPython.display import display
 from ipywidgets import HTML, DOMWidget
-from traitlets import Unicode
+from traitlets import Unicode, List
 from pathlib import Path
 
 from ..base import _singleton, BaseWidget
@@ -24,9 +24,17 @@ class ThemeManager(BaseWidget):
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
 
+    _msg_q = List().tag(sync=True) # overwrite BaseWidget's trait to avoid caling base method in frontend
+
     def __init__(self):
         super().__init__()
         display(self)
+
+    def _ipython_display_(self, **kwargs):
+        if self._ready:
+            return
+        else:
+            super()._ipython_display_(**kwargs)
 
     def remove(self):
         self._js("""
