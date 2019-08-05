@@ -20,11 +20,11 @@ class SidebarModel extends widgets.DOMWidgetModel{
 
 export
 class SidebarView extends widgets.DOMWidgetView{
-    render: function() {
+    render(){
         this.sidebar = undefined
     }
 
-    setStage: function(stage, view=undefined){
+    setStage(stage, view=undefined){
         // stage: NGL.Stage
         // view: NGLView
         if (this.sidebar){

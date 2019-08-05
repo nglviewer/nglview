@@ -1181,7 +1181,7 @@ module.exports = {
     'FullscreenModel': FullscreenModel,
     'FullscreenView': FullscreenView,
     'ColormakerRegistryModel': ColormakerRegistryModel,
-    'ColormakerRegistryView': ColormakerRegistryView
+    'ColormakerRegistryView': ColormakerRegistryView,
     'SidebarView': SidebarView,
     'SidebarModel': SidebarModel,
 };
