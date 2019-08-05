@@ -980,20 +980,7 @@ def test_adaptor_raise():
 
 def test_theme():
     from nglview import theme
-    theme.oceans16()
-    theme.reset()
-    theme._get_theme('oceans16.css')
-
-    v = nv.NGLWidget()
-    change = MagicMock(new='dark')
-    msg = v._dry_run(v._on_theme_changed, change)
-    assert msg['methodName'] == 'updateNGLTheme'
-    assert msg['fire_embed']
-    assert 'color: #B8B8B8' in msg['args'][0]
-
-    change = MagicMock(new='light')
-    msg = v._dry_run(v._on_theme_changed, change)
-    assert msg['args'][0] == ""
+    # FIXME: fill me
 
 
 def test_player_click_tab():
