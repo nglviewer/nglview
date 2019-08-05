@@ -25,6 +25,7 @@ class ThemeManager(BaseWidget):
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
 
     _msg_q = List().tag(sync=True) # overwrite BaseWidget's trait to avoid caling base method in frontend
+    _theme = None
 
     def __init__(self):
         super().__init__()
@@ -48,13 +49,16 @@ class ThemeManager(BaseWidget):
             var ele = document.getElementById('nglview_style')
             document.head.removeChild(ele)
         """)
+        self._theme = None
 
     def dark(self):
         self._call(
             "setTheme",
             [_get_css_content('dark.css') + _get_css_content('main.css')])
+        self._theme = 'dark'
 
     def light(self):
         self._call(
             "setTheme",
             [_get_css_content('light.css') + _get_css_content('main.css')])
+        self._theme = 'light'

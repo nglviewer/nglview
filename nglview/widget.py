@@ -95,7 +95,7 @@ def write_html(fp, views, frame_range=None):
             theme = v
 
     for v in [color, theme]:
-        v and views.append(v)
+        v and views.insert(0, v)
 
     def _set_serialization(views):
         for view in views:
@@ -366,8 +366,8 @@ class NGLWidget(DOMWidget):
             if self._widget_theme is None:
                 from .theme import ThemeManager
                 self._widget_theme = ThemeManager()
-                self._widget_theme.light()
-                time.sleep(0.2)
+                if self._widget_theme._theme is None:
+                    self._widget_theme.light()
         return val
 
     @observe("_gui_theme")
