@@ -86,17 +86,16 @@ def write_html(fp, views, frame_range=None):
     """
     views = isinstance(views, DOMWidget) and [views] or views
     embed = ipywidgets.embed
+    color = None
+    theme = None
     for k, v in views[0].widgets.items():
         if v.__class__.__name__ == '_ColormakerRegistry':
-            views.append(v)
-            break
-    html_widget = None
-    for v in views:
-        if isinstance(v, NGLWidget) and v._widget_theme is not None:
-            html_widget = v._widget_theme._html
-            break
-    if html_widget:
-        views.append(html_widget)
+            color = v
+        if v.__class__.__name__ == 'ThemeManager':
+            theme = v
+
+    for v in [color, theme]:
+        v and views.append(v)
 
     def _set_serialization(views):
         for view in views:
@@ -365,8 +364,9 @@ class NGLWidget(DOMWidget):
         val = proposal['value']
         if val == 'ngl':
             if self._widget_theme is None:
-                from .theme import Theme
-                self._widget_theme = Theme('light')
+                from .theme import ThemeManager
+                self._widget_theme = ThemeManager()
+                self._widget_theme.light()
         return val
 
     @observe("_gui_theme")

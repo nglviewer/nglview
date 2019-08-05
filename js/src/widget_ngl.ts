@@ -9,12 +9,13 @@ import "./lib/colorpicker.min.js"
 import "./ui/ui.js"
 import "./ui/ui.extra.js"
 import "./ui/ui.ngl.js"
-import 'jquery-ui/ui/widgets/dialog'
-import 'jquery-ui/themes/base/all.css'
+import 'jquery-ui/ui/widgets/dialog' // FIXME: remove?
+import 'jquery-ui/themes/base/all.css' // FIXME: remove?
 
 import { StageWidget } from "./gui"
 import { FullscreenModel, FullscreenView } from "./fullscreen"
 import { ColormakerRegistryModel, ColormakerRegistryView } from "./color"
+import { ThemeManagerModel, ThemeManagerView} from "./theme"
 
 // From NGL
 // http://www.broofa.com/Tools/Math.uuid.htm
@@ -125,7 +126,7 @@ class NGLView extends widgets.DOMWidgetView{
         );
         var is_embeded = this.model.get("_ngl_serialize") || (this.model.comm == undefined)
 	    if (is_embeded){
-            console.log("In embeding mode")
+            console.log("Embed mode for NGLView")
 	        that.handleEmbed();
         }else{
             this.requestUpdateStageParameters();
@@ -431,6 +432,8 @@ class NGLView extends widgets.DOMWidgetView{
                     that.on_msg(msg);
                 }
             })
+
+            that.handleResize() // FIXME: really need this?
         }); // Promise.all
     }
 
@@ -1181,4 +1184,6 @@ module.exports = {
     'FullscreenView': FullscreenView,
     'ColormakerRegistryModel': ColormakerRegistryModel,
     'ColormakerRegistryView': ColormakerRegistryView,
-};
+    'ThemeManagerModel': ThemeManagerModel,
+    'ThemeManagerView': ThemeManagerView,
+}
