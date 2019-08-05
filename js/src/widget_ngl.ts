@@ -616,8 +616,8 @@ class NGLView extends widgets.DOMWidgetView{
 
 
     createNglGUI(){
+      console.log(this)
       this.stage_widget = new StageWidget(this)
-      // FIXME: make StageWidget class?
     }
 
 
