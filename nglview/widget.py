@@ -92,7 +92,7 @@ def write_html(fp, views, frame_range=None):
             break
     html_widget = None
     for v in views:
-        if isinstance(v, NGLWidget):
+        if isinstance(v, NGLWidget) and v._widget_theme is not None:
             html_widget = v._widget_theme._html
             break
     if html_widget:
