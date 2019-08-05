@@ -6,7 +6,7 @@ export
 class BaseView extends widgets.DOMWidgetView {
 
     render(){
-        if (this.model.comm == undefined){
+    if (this.isEmbeded()){
             // embed mode: let NGLView call the handleEmbed directly
             return
         }
@@ -29,7 +29,12 @@ class BaseView extends widgets.DOMWidgetView {
 
     on_msg(msg){
         if (msg.type == 'callMethod'){
+            console.log("from BaseView", msg)
             this[msg.methodName].apply(this, msg.args, msg.kwargs)
         }
+    }
+
+    isEmbeded(){
+        return (this.model.comm == undefined)
     }
 }

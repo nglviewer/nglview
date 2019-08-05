@@ -95,6 +95,11 @@ class NGLView extends widgets.DOMWidgetView{
         this.comp_uuids = []
         this._synced_model_ids = this.model.get("_synced_model_ids");
         this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids")
+
+        if (this.model.comm == undefined){
+            // embed mode
+            this._handleEmbedBeforeStage()
+        }
     }
 
     createStage(){
@@ -374,44 +379,25 @@ class NGLView extends widgets.DOMWidgetView{
         eval(code);
     }
 
+    _handleEmbedBeforeStage(){
+        // Only need to reconstruct colors in embeding mode (outside notebook)
+        // FIXME: remove this function
+        var that = this
+        var ngl_color_dict = that.model.get("_ngl_color_dict");
+        var label
+            // Old API (_ColorScheme)
+        for (label in ngl_color_dict){
+            if (!NGL.ColormakerRegistry.hasScheme(label)){
+                that.addColorScheme(ngl_color_dict[label], label);
+            }
+        }
+    }
+
     handleEmbed(){
         var that = this;
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
         var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
-        var ngl_color_dict = that.model.get("_ngl_color_dict");
         var loadfile_list = [];
-        var label
-
-        // Only need to reconstruct colors in embeding mode (outside notebook)
-        if (this.model.comm === undefined){
-            var model_dict = this.model.widget_manager._models
-            var models = []
-            for (let k in model_dict){
-                models.push(model_dict[k])
-            }
-            Promise.all(models).then(models => {
-                for (var i in models){
-                    var model = models[i]
-                    if ((model instanceof ColormakerRegistryModel) || (
-                         model instanceof ThemeManagerModel)
-                        ){
-                        console.log(model.views)
-                        var k = Object.keys(model.views)[0] // singleton
-                        model.views[k].then(view =>{
-                            view.handleEmbed()
-                            })
-                        })
-                    }
-                }
-            })
-
-            // Old API (_ColorScheme)
-            for (label in ngl_color_dict){
-                if (!NGL.ColormakerRegistry.hasScheme(label)){
-                    that.addColorScheme(ngl_color_dict[label], label);
-                }
-            }
-        }
 
         _.each(ngl_msg_archive, function(msg: any){
             if (msg.methodName == 'loadFile'){
@@ -546,7 +532,6 @@ class NGLView extends widgets.DOMWidgetView{
         var repr_dict_backend = this.model.get("_ngl_repr_dict")
         var repr_dict_frontend = this.getReprDictFrontEnd()
         if (JSON.stringify(repr_dict_frontend) !== JSON.stringify(repr_dict_backend)){
-            console.log(this, this.ngl_view_id)
             this._set_representation_from_repr_dict(repr_dict_backend)
         }
     }
@@ -695,7 +680,6 @@ class NGLView extends widgets.DOMWidgetView{
 
 
     createNglGUI(){
-      console.log(this)
       this.stage_widget = new StageWidget(this)
     }
 

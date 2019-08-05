@@ -23,8 +23,11 @@ export
 class ColormakerRegistryView extends BaseView {
 
     render(){
-        console.log("Embed mode for ColormakerRegistryView")
         super.render()
+        if (this.isEmbeded()){
+            console.log("Embed mode for ColormakerRegistryView")
+            this.handleEmbed()
+        }
     }
 
     handleEmbed(){

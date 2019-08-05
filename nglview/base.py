@@ -1,5 +1,5 @@
 from ipywidgets import DOMWidget
-from traitlets import Bool, List
+from traitlets import Bool, List, observe
 
 
 def _singleton(cls):
@@ -32,3 +32,11 @@ class BaseWidget(DOMWidget):
         msg_ar = self._msg_ar[:]
         msg_ar.append(msg)
         self._msg_ar = msg_ar # trigger sync
+
+    @observe("_ready")
+    def _on_ready(self, change):
+        if change.new:
+            while self._msg_q:
+                msg = self._msg_q.pop(0)
+                self.send(msg)
+

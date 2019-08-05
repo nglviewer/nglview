@@ -367,6 +367,7 @@ class NGLWidget(DOMWidget):
                 from .theme import ThemeManager
                 self._widget_theme = ThemeManager()
                 self._widget_theme.light()
+                time.sleep(0.2)
         return val
 
     @observe("_gui_theme")

@@ -22,8 +22,11 @@ export
 class ThemeManagerView extends BaseView {
 
     render(){
-        console.log("Embed mode for ThemeManagerView")
         super.render()
+        if (this.isEmbeded()){
+            console.log("Embed mode for ThemeManagerView")
+            this.handleEmbed()
+        }
     }
 
     handleEmbed(){

@@ -48,13 +48,6 @@ class _ColormakerRegistry(BaseWidget):
         except NameError:
             pass
 
-    @observe("_ready")
-    def _on_ready(self, change):
-        if change.new:
-            while self._msg_q:
-                msg = self._msg_q.pop(0)
-                self.send(msg)
-
     def _ipython_display_(self, **kwargs):
         if self._ready:
             return
