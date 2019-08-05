@@ -834,7 +834,6 @@ UI.PopupMenu = function (iconClass, heading, constraintTo) {
     yOffset += prevY - e.clientY
     prevX = e.clientX
     prevY = e.clientY
-    })
   }
 
   var headingPanel = new UI.Panel()
