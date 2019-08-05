@@ -15,7 +15,6 @@ import 'jquery-ui/themes/base/all.css'
 import { StageWidget } from "./gui"
 import { FullscreenModel, FullscreenView } from "./fullscreen"
 import { ColormakerRegistryModel, ColormakerRegistryView } from "./color"
-import { SidebarModel, SidebarView } from "./sidebar"
 
 // From NGL
 // http://www.broofa.com/Tools/Math.uuid.htm
@@ -1182,6 +1181,4 @@ module.exports = {
     'FullscreenView': FullscreenView,
     'ColormakerRegistryModel': ColormakerRegistryModel,
     'ColormakerRegistryView': ColormakerRegistryView,
-    'SidebarView': SidebarView,
-    'SidebarModel': SidebarModel,
 };
