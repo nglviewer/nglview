@@ -5,7 +5,6 @@
 // Html
 
 var UI = require("./ui.js").UI;
-require("../lib/tether.min.js")
 
 UI.Html = function (html) {
   UI.Element.call(this)
@@ -807,8 +806,6 @@ UI.VirtualTable = function (items, itemHeight, height, columns, params) {
 
 UI.VirtualTable.prototype = Object.create(UI.Panel.prototype)
 
-// Popup Menu (requires Tether)
-
 UI.PopupMenu = function (iconClass, heading, constraintTo) {
   constraintTo = constraintTo || 'scrollParent'
 
@@ -837,18 +834,7 @@ UI.PopupMenu = function (iconClass, heading, constraintTo) {
     yOffset += prevY - e.clientY
     prevX = e.clientX
     prevY = e.clientY
-    tether.setOptions({
-      element: panel.dom,
-      target: icon.dom,
-      attachment: 'top right',
-      targetAttachment: 'top left',
-      offset: yOffset + 'px ' + xOffset + 'px',
-      constraints: [{
-        to: constraintTo,
-        pin: ['top', 'bottom']
-      }]
     })
-    tether.position()
   }
 
   var headingPanel = new UI.Panel()
@@ -880,14 +866,11 @@ UI.PopupMenu = function (iconClass, heading, constraintTo) {
 
   panel.add(headingPanel)
 
-  var tether
-
   icon.setTitle('menu')
   icon.setCursor('pointer')
   icon.onClick(function (e) {
     if (panel.getDisplay() === 'block') {
       this.setMenuDisplay('none')
-      tether.destroy()
       return
     }
 
@@ -897,20 +880,6 @@ UI.PopupMenu = function (iconClass, heading, constraintTo) {
     xOffset = 5
     yOffset = 0
 
-    tether = new Tether({
-      element: panel.dom,
-      target: icon.dom,
-      attachment: 'top right',
-      targetAttachment: 'top left',
-      offset: '0px 5px',
-      constraints: [{
-        to: constraintTo,
-        attachment: 'element',
-        pin: ['top', 'bottom']
-      }]
-    })
-
-    tether.position()
   }.bind(this))
 
   this.add(icon)

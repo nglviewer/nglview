@@ -142,13 +142,17 @@ NGL.Preferences.prototype = {
 class StageWidget{
   constructor(view){
       // view: NGLView of NGLModel
+      var el
+      var stage = view.stage
+      var viewport = new UI.Panel()
+
       if (view.options.parent){
+          console.log('has view.options.parent')
           el = view.el.parentElement
       }else{
+          console.log('does not have')
           el = view.el
       }
-      stage = view.stage
-      var viewport = new UI.Panel()
       viewport.setPosition("absolute")
       viewport.dom = stage.viewer.container
       this.el = el
