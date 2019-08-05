@@ -1,8 +1,6 @@
 var Jupyter
 var widgets = require("@jupyter-widgets/base")
 var NGL = require('ngl')
-var ColormakerRegistryModel = require('./color').ColormakerRegistryModel
-var ColormakerRegistryView = require('./color').ColormakerRegistryView
 var BaseView = require('./base').BaseView
 import * as $ from 'jquery'
 import * as _ from 'underscore'
@@ -11,13 +9,13 @@ import "./lib/colorpicker.min.js"
 import "./ui/ui.js"
 import "./ui/ui.extra.js"
 import "./ui/ui.ngl.js"
-import { StageWidget } from "./gui"
 import 'jquery-ui/ui/widgets/dialog'
 import 'jquery-ui/themes/base/all.css'
-// require('./css/dark.css');  // How to switch theme?
-// import '../src/css/light.css'
-// import '../src/css/main.css'
+
+import { StageWidget } from "./gui"
 import { FullscreenModel, FullscreenView } from "./fullscreen"
+import { ColormakerRegistryModel, ColormakerRegistryView } from "./color"
+import { SidebarModel, SidebarView } from "./sidebar"
 
 // From NGL
 // http://www.broofa.com/Tools/Math.uuid.htm
@@ -1184,4 +1182,6 @@ module.exports = {
     'FullscreenView': FullscreenView,
     'ColormakerRegistryModel': ColormakerRegistryModel,
     'ColormakerRegistryView': ColormakerRegistryView
+    'SidebarView': SidebarView,
+    'SidebarModel': SidebarModel,
 };

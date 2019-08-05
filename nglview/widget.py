@@ -90,6 +90,13 @@ def write_html(fp, views, frame_range=None):
         if v.__class__.__name__ == '_ColormakerRegistry':
             views.append(v)
             break
+    html_widget = None
+    for v in views:
+        if isinstance(v, NGLWidget):
+            html_widget = v._widget_theme._html
+            break
+    if html_widget:
+        views.append(html_widget)
 
     def _set_serialization(views):
         for view in views:
