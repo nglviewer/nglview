@@ -74,6 +74,7 @@ class ThemeManager(BaseWidget):
             }
         """)
         self._theme = None
+        self._theme_css = ''
 
     def dark(self):
         self._theme_css = _get_css_content('dark.css') + _get_css_content('main.css')

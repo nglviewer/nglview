@@ -84,7 +84,6 @@ def write_html(fp, views, frame_range=None):
     color = None
     theme = None
     for k, v in views[0].widgets.items():
-        print(v)
         if v.__class__.__name__ == '_ColormakerRegistry':
             color = v
         if v.__class__.__name__ == 'ThemeManager':
