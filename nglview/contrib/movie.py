@@ -8,6 +8,7 @@ except ImportError:
 import os
 import threading
 import time
+from ipywidgets import Button, Output, IntProgress
 
 
 class MovieMaker:
@@ -129,12 +130,15 @@ class MovieMaker:
 
     def make(self, in_memory=False):
         # TODO : make base class so we can reuse this with sandbox/base.py
+        progress = IntProgress(description='Rendering...', max=len(self._time_range)-1)
         self._event = threading.Event()
 
         def _make(event):
             image_files = []
+            iw = None
             if not self.skip_render:
                 for i in self._time_range:
+                    progress.value = i
                     if not event.is_set():
                         self.view.frame = i
                         self.sleep()
@@ -146,12 +150,14 @@ class MovieMaker:
                                 self.prefix + '.' + str(i) + '.png',
                                 **self.render_params)
                         else:
-                            self.view.render_image(**self.render_params)
+                            iw = self.view.render_image(**self.render_params)
                         self.sleep()
                         if self.in_memory:
                             rgb = self._base64_to_ndarray(
                                 self.view._image_data)
                             self._image_array.append(rgb)
+                            if iw:
+                                iw.close() # free memory
                 if not self.in_memory:
                     template = "{}/{}.{}.png"
                     image_files = [
@@ -163,20 +169,27 @@ class MovieMaker:
                 else:
                     image_files = self._image_array
             if not self._event.is_set():
+                progress.description = "Writing ..."
                 clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
-                if self.output.endswith('.gif'):
-                    clip.write_gif(self.output,
-                                   fps=self.fps,
-                                   **self.moviepy_params)
-                else:
-                    clip.write_videofile(self.output,
-                                         fps=self.fps,
-                                         **self.moviepy_params)
+                with Output():
+                    if self.output.endswith('.gif'):
+                        clip.write_gif(self.output,
+                                       fps=self.fps,
+                                       verbose=False,
+                                       **self.moviepy_params)
+                    else:
+                        clip.write_videofile(self.output,
+                                             fps=self.fps,
+                                             **self.moviepy_params)
                 self._image_array = []
+                progress.description = 'Done'
+                time.sleep(1)
+                progress.close()
 
         self.thread = threading.Thread(target=_make, args=(self._event, ))
         self.thread.daemon = True
         self.thread.start()
+        return progress
 
     def interupt(self):
         """ Stop making process """

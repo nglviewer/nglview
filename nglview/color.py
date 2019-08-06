@@ -1,6 +1,6 @@
 from ipywidgets import DOMWidget
-from traitlets import Unicode, Bool, observe
-from .base import BaseWidget
+from traitlets import Unicode, Bool, observe, List
+from .base import BaseWidget, _singleton
 from ._frontend import __frontend_version__
 from IPython.display import display
 import time
@@ -30,16 +30,6 @@ class _ColorScheme:
         return {'data': self._color_scheme, 'label': self._label}
 
 
-def _singleton(cls):
-    # https://www.python.org/dev/peps/pep-0318/#examples
-    instances = {}
-    def getinstance():
-        if cls not in instances:
-            instances[cls] = cls()
-        return instances[cls]
-    return getinstance
-
-
 @_singleton
 class _ColormakerRegistry(BaseWidget):
     _view_name = Unicode("ColormakerRegistryView").tag(sync=True)
@@ -48,6 +38,7 @@ class _ColormakerRegistry(BaseWidget):
     _model_name = Unicode("ColormakerRegistryModel").tag(sync=True)
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _msg_q = List().tag(sync=True) # overwrite BaseWidget's trait to avoid caling base method in frontend
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -57,16 +48,9 @@ class _ColormakerRegistry(BaseWidget):
         except NameError:
             pass
 
-    @observe("_ready")
-    def _on_ready(self, change):
-        if change.new:
-            while self._msg_q:
-                msg = self._msg_q.pop(0)
-                self.send(msg)
-
     def _ipython_display_(self, **kwargs):
         if self._ready:
-            return str(self)
+            return
         super()._ipython_display_(**kwargs)
 
     def add_selection_scheme(self, scheme_id, arg):

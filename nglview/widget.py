@@ -9,11 +9,11 @@ import ipywidgets as widgets
 import ipywidgets.embed
 import numpy as np
 from IPython.display import display
-from ipywidgets import (Box, DOMWidget, HBox, IntSlider, Output, Play, Widget,
+from ipywidgets import (Image, Box, DOMWidget, HBox, IntSlider, Output, Play, Widget,
                         jslink)
 from ipywidgets import widget as _widget
 from traitlets import (Bool, CaselessStrEnum, Dict, Instance, Int, Integer,
-                       List, Unicode, observe)
+                       List, Unicode, observe, validate)
 import traitlets
 
 from . import color, interpolate
@@ -34,11 +34,6 @@ from ._frontend import __frontend_version__
 from .base import BaseWidget
 
 widget_serialization = _widget.widget_serialization
-try:
-    # ipywidgets >= 7.4
-    from ipywidgets import Image
-except ImportError:
-    from ipywidgets.widget_image import Image
 
 __all__ = ['NGLWidget', 'ComponentViewer']
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
@@ -86,10 +81,16 @@ def write_html(fp, views, frame_range=None):
     """
     views = isinstance(views, DOMWidget) and [views] or views
     embed = ipywidgets.embed
+    color = None
+    theme = None
     for k, v in views[0].widgets.items():
         if v.__class__.__name__ == '_ColormakerRegistry':
-            views.append(v)
-            break
+            color = v
+        if v.__class__.__name__ == 'ThemeManager':
+            theme = v
+
+    for v in [color, theme]:
+        v and views.insert(0, v)
 
     def _set_serialization(views):
         for view in views:
@@ -158,7 +159,7 @@ class NGLWidget(DOMWidget):
     _camera_orientation = List().tag(sync=True)
     _synced_model_ids = List().tag(sync=True)
     _synced_repr_model_ids = List().tag(sync=True)
-    _ngl_view_id = List().tag(sync=True)
+    _ngl_view_id = List(Unicode).tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
@@ -167,6 +168,7 @@ class NGLWidget(DOMWidget):
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
     _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
+    _widget_theme = None
     _hold_image = Bool(False).tag(sync=False)
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
@@ -352,18 +354,25 @@ class NGLWidget(DOMWidget):
     def _request_stage_parameters(self):
         self._remote_call('requestUpdateStageParameters', target='Widget')
 
+    @validate('gui_style')
+    def _validate_gui_style(self, proposal):
+        val = proposal['value']
+        if val == 'ngl':
+            if self._widget_theme is None:
+                from .theme import ThemeManager
+                self._widget_theme = ThemeManager()
+                if self._widget_theme._theme is None:
+                    self._widget_theme.light()
+        return val
+
     @observe("_gui_theme")
     def _on_theme_changed(self, change):
         # EXPERIMENTAL
         from nglview.theme import theme
         if change.new == 'dark':
-            self._remote_call("updateNGLTheme",
-                    args=[theme._get_css_content('dark.css', include_style_tag=False)],
-                    fire_embed=True)
+            self._widget_theme.dark()
         elif change.new == 'light':
-            # default theme is light, so we just need to remove previous theme
-            self._remote_call("updateNGLTheme",
-                    args=[""], fire_embed=True)
+            self._widget_theme.light()
 
     @observe('picked')
     def _on_picked(self, change):
@@ -1016,6 +1025,11 @@ class NGLWidget(DOMWidget):
             elif frame < 0:
                 frame = self.max_frame
             self.frame = frame
+        elif msg_type == 'updateIDs':
+            self._ngl_view_id = msg['data']
+        elif msg_type == 'removeComponent':
+            cindex = int(msg['data'])
+            self._ngl_component_ids.pop(cindex)
         elif msg_type == 'repr_parameters':
             data_dict = self._ngl_msg.get('data')
             name = data_dict.pop('name') + '\n'

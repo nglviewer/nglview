@@ -12,14 +12,13 @@ import numpy as np
 import pytest
 import traitlets
 from ipykernel.comm import Comm
-from IPython import display
+from IPython.display import display
 from ipywidgets import BoundedFloatText, Button, HBox, IntText, Layout, Widget
 from mock import MagicMock, patch
 from numpy.testing import assert_almost_equal as aa_eq
 from traitlets import TraitError, link
 
 import nglview as nv
-from make_dummy_comm import *  # to initialize
 from nglview import NGLWidget, interpolate, js_utils, widget_utils
 from nglview.representation import RepresentationControl
 from nglview.utils.py_utils import click, decode_base64, encode_base64, submit
@@ -162,7 +161,7 @@ def test_API_promise_to_have():
 
     # display
     js_utils.clean_error_output()
-    display.display(view.player.widget_repr)
+    display(view.player.widget_repr)
     view.player._display()
     view._display_image()
 
@@ -261,7 +260,7 @@ def test_API_promise_to_have():
     # render_image
     r = view.render_image()
     Widget.widgets[r.model_id] = r
-    msg = {'type': 'image_data', 'ID': 'a-b-c-d', 'data': b'YmxhIGJsYQ=='}
+    msg = {'type': 'image_data', 'ID': r.model_id, 'data': b'YmxhIGJsYQ=='}
     view._ngl_handle_msg(view, msg, [])
     view.loaded = True
     view.show_only([
@@ -980,20 +979,7 @@ def test_adaptor_raise():
 
 def test_theme():
     from nglview import theme
-    theme.oceans16()
-    theme.reset()
-    theme._get_theme('oceans16.css')
-
-    v = nv.NGLWidget()
-    change = MagicMock(new='dark')
-    msg = v._dry_run(v._on_theme_changed, change)
-    assert msg['methodName'] == 'updateNGLTheme'
-    assert msg['fire_embed']
-    assert 'color: #B8B8B8' in msg['args'][0]
-
-    change = MagicMock(new='light')
-    msg = v._dry_run(v._on_theme_changed, change)
-    assert msg['args'][0] == ""
+    # FIXME: fill me
 
 
 def test_player_click_tab():
@@ -1081,17 +1067,23 @@ def test_queuing_messages():
 @patch('nglview.NGLWidget._unset_serialization')
 def test_write_html(mock_unset):
     from nglview.color import ColormakerRegistry as cm
+    from nglview.theme import ThemeManager
     import ipywidgets.embed as embed
+
+    tm = ThemeManager()
     traj0 = pt.datafiles.load_trpcage()
     traj1 = pt.datafiles.load_tz2()
     view = nv.NGLWidget()
     view.add_trajectory(traj0)
     view.add_trajectory(traj1)
-    view
+    view.gui_style = 'ngl'
+    view._gui_theme = 'dark'
+    display(view)
     fp = StringIO()
+
     with patch.object(embed, 'embed_snippet') as mock_embed:
         nv.write_html(fp, [view], frame_range=(0, 3))
-        mock_embed.assert_called_with([view, cm])
+        mock_embed.assert_called_with([tm, cm, view])
     mock_unset.assert_called_with()
     assert len(view._ngl_coordinate_resource[0]) == 3
     assert len(view._ngl_coordinate_resource[1]) == 3
