@@ -96,7 +96,7 @@ class NGLView extends widgets.DOMWidgetView{
         this._synced_model_ids = this.model.get("_synced_model_ids");
         this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids")
 
-        if (this.model.comm == undefined){
+        if (this.isEmbeded()){
             // embed mode
             this._handleEmbedBeforeStage()
         }
@@ -129,8 +129,7 @@ class NGLView extends widgets.DOMWidgetView{
         this.$container.resizable(
             "option", "maxWidth", this.$el.parent().width()
         );
-        var is_embeded = this.model.get("_ngl_serialize") || (this.model.comm == undefined)
-	    if (is_embeded){
+        if (this.isEmbeded()){
             console.log("Embed mode for NGLView")
 	        that.handleEmbed();
         }else{
@@ -141,6 +140,10 @@ class NGLView extends widgets.DOMWidgetView{
                 this.set_camera_orientation(that.model.get("_camera_orientation"));
             }
         }
+    }
+
+    isEmbeded(){
+        return (this.model.get("_ngl_serialize") || (this.model.comm == undefined))
     }
 
     handleMessage(){
@@ -172,7 +175,8 @@ class NGLView extends widgets.DOMWidgetView{
       var state_params = this.stage.getParameters();
       this.model.set('_ngl_original_stage_parameters', state_params);
       this.touch();
-      if (this.stage.compList.length < this.model.get("n_components")){
+	  if (!this.isEmbeded() && this.stage.compList.length < this.model.get("n_components")) {
+          // only call this in notebook to avoid calling handleEmbed twice in embeded mode.
           this.handleEmbed()
       }
       var ngl_view_ids = this.model.get("_ngl_view_id")
@@ -406,7 +410,7 @@ class NGLView extends widgets.DOMWidgetView{
                     // are serialized separately, also it unwantedly sets the orientation
                     msg.kwargs.defaultRepresentation = false
                  }
-                loadfile_list.push(that._get_loadFile_promise(msg));
+                loadfile_list.push(that._getLoadFilePromise(msg));
             }
         });
 
@@ -844,7 +848,7 @@ class NGLView extends widgets.DOMWidgetView{
                  component.addRepresentation(repr_name, repr_params);
              });
              that.stage.removeComponent(comp);
-             that._handle_loading_file_finished();
+             that._handleLoadFileFinished();
          });
     }
 
@@ -996,11 +1000,11 @@ class NGLView extends widgets.DOMWidgetView{
     }
 
 
-    _handle_loading_file_finished() {
+    _handleLoadFileFinished() {
         this.send({'type': 'async_message', 'data': 'ok'});
     }
 
-    _get_loadFile_promise(msg){
+    _getLoadFilePromise(msg){
          // args = [{'type': ..., 'data': ...}]
          var args0 = msg.args[0];
          if (args0.type == 'blob') {
@@ -1041,14 +1045,14 @@ class NGLView extends widgets.DOMWidgetView{
         return keys[keys.length-1]
     }
 
-    _handle_stage_loadFile(msg){
+    _handleStageLoadFile(msg){
         // args = [{'type': ..., 'data': ...}]
         if (this.ngl_view_id != this.get_last_child_id() && msg.last_child){
             return
         }
         var that = this;
-        this._get_loadFile_promise(msg).then(function(o){
-            that._handle_loading_file_finished();
+        this._getLoadFilePromise(msg).then(function(o){
+            that._handleLoadFileFinished();
             o;
         });
     }
@@ -1101,7 +1105,7 @@ class NGLView extends widgets.DOMWidgetView{
                             // are serialized separately, also it unwantedly sets the orientation
                             msg.kwargs.defaultRepresentation = false
                         }
-                        this._handle_stage_loadFile(msg);
+                        this._handleStageLoadFile(msg);
                     } else {
                             stage_func.apply(stage, new_args);
                     }
