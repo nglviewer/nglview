@@ -23,19 +23,22 @@ class ThemeManagerView extends BaseView {
 
     render(){
         super.render()
-        if (this.isEmbeded()){
-            console.log("Embed mode for ThemeManagerView")
-            this.handleEmbed()
-        }
+        this.displayed.then(() => this.handleThemeChanged())
+    }
+
+    handleThemeChanged(){
+        console.log("ThemeManagerView: handleThemeChanged")
+        this.setTheme(this.model.get("_theme_css"))
     }
 
     handleEmbed(){
-        // should be called later by NGLView
-        // to make sure theme is setup fisrt.
-        this.on_msg(this.model.get("_msg_ar").pop())
+        this.handleThemeChanged()
     }
 
     setTheme(cssContent: string){
+        if (cssContent == undefined){
+            return
+        }
         var ele = document.getElementById('nglview_style')
         if (ele){
             document.head.removeChild(ele)

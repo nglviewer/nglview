@@ -1,7 +1,7 @@
 import os
 from IPython.display import display
 from ipywidgets import HTML, DOMWidget
-from traitlets import Unicode, List
+from traitlets import Unicode, List, observe
 from pathlib import Path
 
 from ..base import _singleton, BaseWidget
@@ -23,20 +23,42 @@ class ThemeManager(BaseWidget):
     _model_name = Unicode("ThemeManagerModel").tag(sync=True)
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _theme_css = Unicode(allow_none=True).tag(sync=True)
+    # NOTE: Use `_theme_css` trait to sync backend and frontend to trigger them changed.
+    # Use "sync" to make sure theme is created before displaying the NGLWidget.
 
-    _msg_q = List().tag(sync=True) # overwrite BaseWidget's trait to avoid caling base method in frontend
-    _theme = None
+    # overwrite BaseWidget's trait to avoid caling base method in frontend
+    _msg_q = List().tag(sync=True)
 
     def __init__(self):
         super().__init__()
-        self.on_msg(self._handle_theme_changed)
+        self._theme = None
         display(self)
 
-    def _handle_theme_changed(self, _, msg, __):
-        if msg['type'] == 'call_method' and msg['data'] == 'handle_resize':
-            for v in self.widgets.values():
-                if hasattr(v, 'handle_resize'):
-                    v.handle_resize()
+    @observe("_theme_css")
+    def _on_theme_changed(self, _):
+        """
+        Without this method, we can't change the theme without below code
+
+        # cell 1
+        >>> import nglview as nv
+        >>> 
+        >>> view = nv.demo()
+        >>> view.gui_style = 'ngl'
+        >>> view._widget_theme.light()
+        >>> # view._widget_theme.dark()
+        >>> view
+
+        # cell 2
+        >>> import nglview as nv
+        >>> 
+        >>> view = nv.demo()
+        >>> view.gui_style = 'ngl'
+        >>> # view._widget_theme.light()
+        >>> view._widget_theme.dark()
+        >>> view
+        """
+        self._call('handleThemeChanged')
 
     def _ipython_display_(self, **kwargs):
         if self._ready:
@@ -47,18 +69,16 @@ class ThemeManager(BaseWidget):
     def remove(self):
         self._js("""
             var ele = document.getElementById('nglview_style')
-            document.head.removeChild(ele)
+            if (ele){
+                document.head.removeChild(ele)
+            }
         """)
         self._theme = None
 
     def dark(self):
-        self._call(
-            "setTheme",
-            [_get_css_content('dark.css') + _get_css_content('main.css')])
+        self._theme_css = _get_css_content('dark.css') + _get_css_content('main.css')
         self._theme = 'dark'
 
     def light(self):
-        self._call(
-            "setTheme",
-            [_get_css_content('light.css') + _get_css_content('main.css')])
+        self._theme_css = _get_css_content('light.css') + _get_css_content('main.css')
         self._theme = 'light'

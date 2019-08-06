@@ -147,10 +147,8 @@ class StageWidget{
       var viewport = new UI.Panel()
 
       if (view.options.parent){
-          console.log('has view.options.parent')
           el = view.el.parentElement
       }else{
-          console.log('does not have')
           el = view.el
       }
       viewport.setPosition("absolute")
@@ -294,7 +292,6 @@ class StageWidget{
 
       stage.signals.fullscreenChanged.add(function (isFullscreen) {
         const box = stage.viewer.container.parentElement.getBoundingClientRect()
-        console.log("in StageWidget")
         stage.setSize(box.width+"px", isFullscreen?box.height+'px':'300px')
         view.handleResize()
       })
