@@ -1,5 +1,4 @@
 import nglview as nv
-from make_dummy_comm import *  # to initialize
 
 
 def test_component_viewer():

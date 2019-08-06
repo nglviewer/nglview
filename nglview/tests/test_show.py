@@ -5,7 +5,6 @@ import numpy as np
 from mock import MagicMock
 
 import nglview
-from make_dummy_comm import *
 
 # TODO : add more show_xxx
 # (check test_widgets.py)

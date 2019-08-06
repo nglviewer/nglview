@@ -45,12 +45,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = {};
-	
 	var loadedModules = [
 	    __webpack_require__(1),
-	    //require("./ngl.js"),
-	]
-	
+	];
 	for (var i in loadedModules) {
 	    if (loadedModules.hasOwnProperty(i)) {
 	        var loadedModule = loadedModules[i];
@@ -61,127 +58,122 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        }
 	    }
 	}
-	
-	module.exports['version'] = __webpack_require__(77).version;
-
+	module.exports['version'] = __webpack_require__(74).version;
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsTUFBTSxDQUFDLE9BQU8sR0FBRyxFQUFFLENBQUM7QUFFcEIsSUFBSSxhQUFhLEdBQUc7SUFDaEIsT0FBTyxDQUFDLGlCQUFpQixDQUFDO0NBQzdCLENBQUE7QUFFRCxLQUFLLElBQUksQ0FBQyxJQUFJLGFBQWEsRUFBRTtJQUN6QixJQUFJLGFBQWEsQ0FBQyxjQUFjLENBQUMsQ0FBQyxDQUFDLEVBQUU7UUFDakMsSUFBSSxZQUFZLEdBQUcsYUFBYSxDQUFDLENBQUMsQ0FBQyxDQUFDO1FBQ3BDLEtBQUssSUFBSSxXQUFXLElBQUksWUFBWSxFQUFFO1lBQ2xDLElBQUksWUFBWSxDQUFDLGNBQWMsQ0FBQyxXQUFXLENBQUMsRUFBRTtnQkFDMUMsTUFBTSxDQUFDLE9BQU8sQ0FBQyxXQUFXLENBQUMsR0FBRyxZQUFZLENBQUMsV0FBVyxDQUFDLENBQUM7YUFDM0Q7U0FDSjtLQUNKO0NBQ0o7QUFFRCxNQUFNLENBQUMsT0FBTyxDQUFDLFNBQVMsQ0FBQyxHQUFHLE9BQU8sQ0FBQyxpQkFBaUIsQ0FBQyxDQUFDLE9BQU8sQ0FBQyJ9
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var Jupyter
-	var widgets = __webpack_require__(2)
-	var NGL = __webpack_require__(3)
-	var $ = __webpack_require__(7)
-	var _ = __webpack_require__(8)
-	__webpack_require__(10)
-	__webpack_require__(11)
-	__webpack_require__(12)
-	__webpack_require__(13)
-	__webpack_require__(14)
-	__webpack_require__(15)
-	var StageWidget = __webpack_require__(16).StageWidget
-	__webpack_require__(17)
-	__webpack_require__(42)
-	// require('./css/dark.css');  // How to switch theme?
-	__webpack_require__(73);
-	__webpack_require__(75)
-	
-	
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	var Jupyter;
+	var widgets = __webpack_require__(2);
+	var NGL = __webpack_require__(3);
+	var BaseView = __webpack_require__(7).BaseView;
+	const $ = __webpack_require__(8);
+	const _ = __webpack_require__(9);
+	__webpack_require__(11);
+	__webpack_require__(12);
+	__webpack_require__(13);
+	__webpack_require__(14);
+	__webpack_require__(15);
+	__webpack_require__(16); // FIXME: remove?
+	__webpack_require__(41); // FIXME: remove?
+	const gui_1 = __webpack_require__(72);
+	const fullscreen_1 = __webpack_require__(73);
+	const color_1 = __webpack_require__(75);
+	const theme_1 = __webpack_require__(76);
 	// From NGL
 	// http://www.broofa.com/Tools/Math.uuid.htm
-	const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
-	const uuid = new Array(36)
-	
-	function generateUUID () {
-	  let rnd = 0
-	  let r
-	
-	  for (let i = 0; i < 36; i++) {
-	    if (i === 8 || i === 13 || i === 18 || i === 23) {
-	      uuid[ i ] = '-'
-	    } else if (i === 14) {
-	      uuid[ i ] = '4'
-	    } else {
-	      if (rnd <= 0x02) rnd = 0x2000000 + (Math.random() * 0x1000000) | 0
-	      r = rnd & 0xf
-	      rnd = rnd >> 4
-	      uuid[ i ] = chars[ (i === 19) ? (r & 0x3) | 0x8 : r ]
+	const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+	const uuid = new Array(36);
+	function generateUUID() {
+	    let rnd = 0;
+	    let r;
+	    for (let i = 0; i < 36; i++) {
+	        if (i === 8 || i === 13 || i === 18 || i === 23) {
+	            uuid[i] = '-';
+	        }
+	        else if (i === 14) {
+	            uuid[i] = '4';
+	        }
+	        else {
+	            if (rnd <= 0x02)
+	                rnd = 0x2000000 + (Math.random() * 0x1000000) | 0;
+	            r = rnd & 0xf;
+	            rnd = rnd >> 4;
+	            uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
+	        }
 	    }
-	  }
-	
-	  return uuid.join('')
+	    return uuid.join('');
 	}
-	
-	
-	function createView(that, trait_name){
+	function createView(that, trait_name) {
 	    // Create a view for the model with given `trait_name`
 	    // e.g: in backend, 'view.<trait_name>`
 	    console.log("Creating view for model " + trait_name);
-	    var manager = that.model.widget_manager
+	    var manager = that.model.widget_manager;
 	    var model_id = that.model.get(trait_name).replace("IPY_MODEL_", "");
-	    return manager.get_model(model_id).then(function(model){
-	        return manager.create_view(model)
-	    })
+	    return manager.get_model(model_id).then(function (model) {
+	        return manager.create_view(model);
+	    });
 	}
-	
-	
-	var NGLModel = widgets.DOMWidgetModel.extend({
-	    defaults: function(){
+	class NGLModel extends widgets.DOMWidgetModel {
+	    defaults() {
 	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
 	            _model_name: 'NGLModel',
 	            _model_module: 'nglview-js-widgets',
-	            _model_module_version: __webpack_require__(77).version,
+	            _model_module_version: __webpack_require__(74).version,
 	            _view_name: "NGLView",
 	            _view_module: "nglview-js-widgets",
-	            _view_module_version: __webpack_require__(77).version,
+	            _view_module_version: __webpack_require__(74).version,
 	        });
 	    }
-	})
-	
-	var NGLView = widgets.DOMWidgetView.extend({
-	    render: function() {
-	        this.beforeDisplay()
-	        this.displayed.then(function() {
+	}
+	exports.NGLModel = NGLModel;
+	class NGLView extends widgets.DOMWidgetView {
+	    render() {
+	        this.beforeDisplay();
+	        this.displayed.then(function () {
 	            // move all below code inside 'displayed'
 	            // to make sure the NGLView and NGLModel are created
-	            this.createStage()
-	            this.handlePicking()
-	            this.handleSignals()
-	            this.handleMessage()
-	            this.finalizeDisplay()
+	            this.createStage();
+	            this.handlePicking();
+	            this.handleSignals();
+	            this.handleMessage();
+	            this.finalizeDisplay();
 	        }.bind(this));
-	
-	    },
-	
-	    beforeDisplay: function(){
+	    }
+	    beforeDisplay() {
 	        this.model.on("change:_parameters", this.parametersChanged, this);
 	        this.model.on("change:gui_style", this.GUIStyleChanged, this);
 	        this.model.set('_ngl_version', NGL.Version);
-	        this._ngl_focused = 0
-	        this.uuid = generateUUID()
-	        this.stage_widget = undefined
+	        this._ngl_focused = 0;
+	        this.uuid = generateUUID();
+	        this.stage_widget = undefined;
+	        this.comp_uuids = [];
 	        this._synced_model_ids = this.model.get("_synced_model_ids");
-	        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids")
-	    },
-	
-	    createStage: function(){
+	        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids");
+	        if (this.isEmbeded()) {
+	            // embed mode
+	            this._handleEmbedBeforeStage();
+	        }
+	    }
+	    createStage() {
 	        // init NGL stage
 	        var stage_params = this.model.get("_ngl_full_stage_parameters");
-	        if (!("backgroundColor" in stage_params)){
-	            stage_params["backgroundColor"] = "white"
+	        if (!("backgroundColor" in stage_params)) {
+	            stage_params["backgroundColor"] = "white";
 	        }
 	        NGL.useWorker = false;
-	        var view_parent = this.options.parent
-	        this.stage = new NGL.Stage(undefined)
+	        var view_parent = this.options.parent;
+	        this.stage = new NGL.Stage(undefined);
 	        this.$container = $(this.stage.viewer.container);
-	        this.$el.append(this.$container)
+	        this.$el.append(this.$container);
 	        this.stage.setParameters(stage_params);
 	        this.$container = $(this.stage.viewer.container);
-	        this.handleResizable()
-	        this.ngl_view_id = this.get_last_child_id(); // will be wrong if displaying
-	        // more than two views at the same time (e.g: in a Box)
-	        this.model.set("_ngl_view_id", Object.keys(this.model.views).sort());
+	        this.handleResizable();
+	        this.ngl_view_id = this.uuid;
 	        this.touch();
 	        var that = this;
 	        var width = this.model.get("_view_width") || this.$el.parent().width() + "px";
@@ -190,39 +182,31 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.createFullscreenBtn(); // FIXME: move up?
 	        this.createIPlayer(); // FIXME: move up?
 	        this.GUIStyleChanged(); // must be called after displaying to get correct width and height
-	
-	        this.$container.resizable(
-	            "option", "maxWidth", this.$el.parent().width()
-	        );
-	        var is_embeded = this.model.get("_ngl_serialize") || (this.model.comm == undefined)
-		    if (is_embeded){
-	            console.log("In embeding mode")
-		        that.handle_embed();
-	        }else{
+	        this.$container.resizable("option", "maxWidth", this.$el.parent().width());
+	        if (this.isEmbeded()) {
+	            console.log("Embed mode for NGLView");
+	            that.handleEmbed();
+	        }
+	        else {
 	            this.requestUpdateStageParameters();
-	            if (this.model.views.length == 1){
+	            if (this.model.views.length == 1) {
 	                this.serialize_camera_orientation();
-	            }else{
+	            }
+	            else {
 	                this.set_camera_orientation(that.model.get("_camera_orientation"));
 	            }
 	        }
-	    },
-	
-	    handleMessage(){
-	        this.model.on("msg:custom", function(msg){
-	            if ('ngl_view_id' in msg){
-	                var key = msg.ngl_view_id;
-	                console.log(key);
-	                this.model.views[key].then(function(v){
-	                    v.on_msg(msg);
-	                })
-	            }
-	            else{this.on_msg(msg);}
+	    }
+	    isEmbeded() {
+	        return (this.model.get("_ngl_serialize") || (this.model.comm == undefined));
+	    }
+	    handleMessage() {
+	        this.model.on("msg:custom", function (msg) {
+	            this.on_msg(msg);
 	        }, this);
-	
 	        if (this.model.comm) {
 	            // for embeding in website
-	            this.model.comm.on_msg(function(msg) {
+	            this.model.comm.on_msg(function (msg) {
 	                var buffers = msg.buffers;
 	                var content = msg.content.data.content;
 	                if (buffers.length && content) {
@@ -231,258 +215,263 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                this.model._handle_comm_msg.call(this.model, msg);
 	            }.bind(this));
 	        }
-	    },
-	
-	
-	    finalizeDisplay: function(){
-	      // for callbacks from Python
-	      // must be after initializing NGL.Stage
-	      this.send({
-	          'type': 'request_loaded',
-	          'data': true
-	      })
-	      var state_params = this.stage.getParameters();
-	      this.model.set('_ngl_original_stage_parameters', state_params);
-	      this.touch();
-	      if (this.stage.compList.length < this.model.get("n_components")){
-	          this.handle_embed()
-	      }
-	    },
-	
-	    handleSignals: function(){
-	      var container = this.stage.viewer.container;
-	      var that = this;
-	      container.addEventListener('mouseover', function(e) {
-	          that._ngl_focused = 1;
-	          e; // linter
-	          that.mouseover_display('block')
-	      }, false);
-	
-	      container.addEventListener('mouseout', function(e) {
-	          that._ngl_focused = 0;
-	          e; // linter
-	          that.mouseover_display('none')
-	      }, false);
-	
-	      this.stage.signals.componentAdded.add(function() {
-	          var len = this.stage.compList.length;
-	          this.model.set("n_components", len);
-	          this.touch();
-	          var comp = this.stage.compList[len - 1];
-	          comp.signals.representationRemoved.add(function() {
-	              that.request_repr_dict();
-	          });
-	          comp.signals.representationAdded.add(function() {
-	              that.request_repr_dict();
-	          });
-	      }, this);
-	
-	      this.stage.signals.componentRemoved.add(function() {
-	          this.model.set("n_components", this.stage.compList.length);
-	          this.touch();
-	      }, this);
-	
-	      this.stage.signals.parametersChanged.add(function(){
-	          this.requestUpdateStageParameters();
-	      }, this);
-	
-	      this.stage.viewerControls.signals.changed.add(function() {
-	          this.serialize_camera_orientation();
-	          var m = this.stage.viewerControls.getOrientation();
-	          if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
-	              that._synced_model_ids.forEach(function(mid){
-	                  that.model.widget_manager.get_model(mid).then(function(model){
-	                      for (var k in model.views){
-	                          var pview = model.views[k];
-	                          pview.then(function(view){
-	                              // not sync with itself
-	                              if (view.uuid != that.uuid){
-	                                  view.stage.viewerControls.orient(m);
-	                              }
-	                          })
-	                      }
-	                  })
-	              })
-	          }
-	      }.bind(this));
-	
-	    },
-	
-	    handlePicking: function(){
-	      this.$pickingInfo = $("<div></div>")
-	          .css("position", "absolute")
-	          .css("top", "5%")
-	          .css("left", "3%")
-	          .css("background-color", "white")
-	          .css("padding", "2px 5px 2px 5px")
-	          .css("opacity", "0.7")
-	          .appendTo(this.$container);
-	
-	      var that = this;
-	      this.stage.signals.clicked.add(function (pd) {
-	          if (pd) {
-	              this.model.set('picked', {}); //refresh signal
-	              this.touch();
-	
-	              var pd2 = {};
-	              var pickingText = "";
-	              if (pd.atom) {
-	                  pd2.atom1 = pd.atom.toObject();
-	                  pd2.atom1.name = pd.atom.qualifiedName();
-	                  pickingText = "Atom: " + pd2.atom1.name;
-	              } else if (pd.bond) {
-	                  pd2.bond = pd.bond.toObject();
-	                  pd2.atom1 = pd.bond.atom1.toObject();
-	                  pd2.atom1.name = pd.bond.atom1.qualifiedName();
-	                  pd2.atom2 = pd.bond.atom2.toObject();
-	                  pd2.atom2.name = pd.bond.atom2.qualifiedName();
-	                  pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
-	              }
-	              if (pd.instance) pd2.instance = pd.instance;
-	
-	              var n_components = this.stage.compList.length;
-	              for (var i = 0; i < n_components; i++) {
-	                  var comp = this.stage.compList[i];
-	                  if (comp.uuid == pd.component.uuid) {
-	                      pd2.component = i;
-	                  }
-	              }
-	
-	              this.model.set('picked', pd2);
-	              this.touch();
-	
-	              this.$pickingInfo.text(pickingText);
-	          }
-	      }, this);
-	    },
-	
-	    mouseover_display: function(type){
-	        var that = this;
-	        if (this.btn_pview_fullscreen){
-	            this.btn_pview_fullscreen.then(function(v){
-	                v.el.style.display = type
-	                if (that.stage_widget){
-	                    // If NGL's GUI exists, use its fullscreen button.
-	                    v.el.style.display = 'none'
-	                }
-	            })
+	    }
+	    finalizeDisplay() {
+	        // for callbacks from Python
+	        // must be after initializing NGL.Stage
+	        this.send({
+	            'type': 'request_loaded',
+	            'data': true
+	        });
+	        var state_params = this.stage.getParameters();
+	        this.model.set('_ngl_original_stage_parameters', state_params);
+	        this.touch();
+	        if (!this.isEmbeded() && this.stage.compList.length < this.model.get("n_components")) {
+	            // only call this in notebook to avoid calling handleEmbed twice in embeded mode.
+	            this.handleEmbed();
 	        }
-	
+	        var ngl_view_ids = this.model.get("_ngl_view_id");
+	        ngl_view_ids.push(this.ngl_view_id);
+	        this.send({ "type": "updateIDs", "data": ngl_view_ids });
+	        // FIXME: Why below doesn't update _ngl_view_id in backend?
+	        // this.model.set("_ngl_view_id", ngl_view_ids)
+	        // this.touch()
+	    }
+	    handleSignals() {
+	        var container = this.stage.viewer.container;
 	        var that = this;
-	        if (this.player_pview){
-	            this.player_pview.then(function(v){
-	                v.el.style.display = type
+	        container.addEventListener('mouseover', function (e) {
+	            that._ngl_focused = 1;
+	            e; // linter
+	            that.mouseOverDisplay('block');
+	        }, false);
+	        container.addEventListener('mouseout', function (e) {
+	            that._ngl_focused = 0;
+	            e; // linter
+	            that.mouseOverDisplay('none');
+	        }, false);
+	        this.stage.signals.componentAdded.add(function (component) {
+	            this.comp_uuids.push(component.uuid);
+	            var len = this.stage.compList.length;
+	            this.model.set("n_components", len);
+	            this.touch();
+	            var comp = this.stage.compList[len - 1];
+	            comp.signals.representationRemoved.add(function () {
+	                that.request_repr_dict();
+	            });
+	            comp.signals.representationAdded.add(function (repr) {
+	                that.request_repr_dict();
+	                repr.signals.parametersChanged.add(function () {
+	                    console.log("repr.parametersChanged");
+	                    that.request_repr_dict();
+	                });
+	            });
+	        }, this);
+	        this.stage.signals.componentRemoved.add(function (component) {
+	            var that = this;
+	            var cindex = this.comp_uuids.indexOf(component.uuid);
+	            this.comp_uuids.splice(cindex, 1);
+	            var n_components = this.stage.compList.length;
+	            this.model.set("n_components", n_components);
+	            this.touch();
+	            console.log('componentRemoved', component, component.uuid);
+	            var pviews = [];
+	            for (var k in this.model.views) {
+	                pviews.push(this.model.views[k]);
+	            }
+	            Promise.all(pviews).then((views) => {
+	                console.log(views);
+	                var update_backend = false;
+	                for (var k in views) {
+	                    var view = views[k];
+	                    if ((view.uuid != that.uuid) && (view.stage.compList.length > n_components)) {
+	                        // remove component from NGL's GUI
+	                        // pass
+	                        view.stage.removeComponent(view.stage.compList[cindex]);
+	                        update_backend = true;
+	                    }
+	                }
+	                if (update_backend) {
+	                    console.log("should update backend");
+	                    that.send({ "type": "removeComponent", "data": cindex });
+	                }
+	            });
+	        }, this);
+	        this.stage.signals.parametersChanged.add(function () {
+	            this.requestUpdateStageParameters();
+	        }, this);
+	        this.stage.viewerControls.signals.changed.add(function () {
+	            this.serialize_camera_orientation();
+	            var m = this.stage.viewerControls.getOrientation();
+	            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1) {
+	                that._synced_model_ids.forEach(function (mid) {
+	                    that.model.widget_manager.get_model(mid).then(function (model) {
+	                        for (var k in model.views) {
+	                            var pview = model.views[k];
+	                            pview.then(function (view) {
+	                                // not sync with itself
+	                                if (view.uuid != that.uuid) {
+	                                    view.stage.viewerControls.orient(m);
+	                                }
+	                            });
+	                        }
+	                    });
+	                });
+	            }
+	        }.bind(this));
+	    }
+	    handlePicking() {
+	        this.$pickingInfo = $("<div></div>")
+	            .css("position", "absolute")
+	            .css("top", "5%")
+	            .css("left", "3%")
+	            .css("background-color", "white")
+	            .css("padding", "2px 5px 2px 5px")
+	            .css("opacity", "0.7")
+	            .appendTo(this.$container);
+	        var that = this;
+	        this.stage.signals.clicked.add(function (pd) {
+	            if (pd) {
+	                this.model.set('picked', {}); //refresh signal
+	                this.touch();
+	                var pd2 = {};
+	                var pickingText = "";
+	                if (pd.atom) {
+	                    pd2.atom1 = pd.atom.toObject();
+	                    pd2.atom1.name = pd.atom.qualifiedName();
+	                    pickingText = "Atom: " + pd2.atom1.name;
+	                }
+	                else if (pd.bond) {
+	                    pd2.bond = pd.bond.toObject();
+	                    pd2.atom1 = pd.bond.atom1.toObject();
+	                    pd2.atom1.name = pd.bond.atom1.qualifiedName();
+	                    pd2.atom2 = pd.bond.atom2.toObject();
+	                    pd2.atom2.name = pd.bond.atom2.qualifiedName();
+	                    pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
+	                }
+	                if (pd.instance)
+	                    pd2.instance = pd.instance;
+	                var n_components = this.stage.compList.length;
+	                for (var i = 0; i < n_components; i++) {
+	                    var comp = this.stage.compList[i];
+	                    if (comp.uuid == pd.component.uuid) {
+	                        pd2.component = i;
+	                    }
+	                }
+	                this.model.set('picked', pd2);
+	                this.touch();
+	                this.$pickingInfo.text(pickingText);
+	            }
+	        }, this);
+	    }
+	    mouseOverDisplay(type) {
+	        var that = this;
+	        if (this.btn_pview_fullscreen) {
+	            this.btn_pview_fullscreen.then(function (v) {
+	                v.el.style.display = type;
+	                if (that.stage_widget) {
+	                    // If NGL's GUI exists, use its fullscreen button.
+	                    v.el.style.display = 'none';
+	                }
+	            });
+	        }
+	        var that = this;
+	        if (this.player_pview) {
+	            this.player_pview.then(function (v) {
+	                v.el.style.display = type;
 	                // Need to check if max_frame is available (otherwise NaN)
 	                // https://github.com/jupyter-widgets/ipywidgets/issues/2485
-	                if (!that.model.get("max_frame") || (that.model.get("max_frame") <= 1)){
+	                if (!that.model.get("max_frame") || (that.model.get("max_frame") == 0)) {
 	                    // always hide if there's no trajectory.
-	                    v.el.style.display = 'none'
+	                    v.el.style.display = 'none';
 	                }
-	            })
+	            });
 	        }
-	    },
-	
-	    updateNGLTheme: function(css_content){
-	        var ele = document.getElementById("nglview_style")
-	        if (ele != undefined){
-	            document.head.removeChild(ele)
+	    }
+	    updateNGLTheme(css_content) {
+	        var ele = document.getElementById("nglview_style");
+	        if (ele != undefined) {
+	            document.head.removeChild(ele);
 	        }
-	        var style = document.createElement("style")
-	        style.id = 'nglview_style'
-	        style.type = 'text/css'
-	        style.appendChild(document.createTextNode(css_content))
-	        document.head.appendChild(style)
-	    },
-	
-	    serialize_camera_orientation: function(){
-	         var m = this.stage.viewerControls.getOrientation();
-	         this.model.set('_camera_orientation', m.elements);
-	         this.touch();
-	    },
-	
-	    set_camera_orientation: function(orientation){
-	        if (orientation.length > 0){
+	        var style = document.createElement("style");
+	        style.id = 'nglview_style';
+	        style.type = 'text/css';
+	        style.appendChild(document.createTextNode(css_content));
+	        document.head.appendChild(style);
+	    }
+	    serialize_camera_orientation() {
+	        var m = this.stage.viewerControls.getOrientation();
+	        this.model.set('_camera_orientation', m.elements);
+	        this.touch();
+	    }
+	    set_camera_orientation(orientation) {
+	        if (orientation.length > 0) {
 	            this.stage.viewerControls.orient(orientation);
 	            this.serialize_camera_orientation();
 	        }
-	    },
-	
-	    execute_code: function(code){
+	    }
+	    executeCode(code) {
 	        eval(code);
-	    },
-	
-	    handle_embed: function(){
+	    }
+	    _handleEmbedBeforeStage() {
+	        // Only need to reconstruct colors in embeding mode (outside notebook)
+	        // FIXME: remove this function
 	        var that = this;
-	        var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
+	        var ngl_color_dict = that.model.get("_ngl_color_dict");
+	        var label;
+	        // Old API (_ColorScheme)
+	        for (label in ngl_color_dict) {
+	            if (!NGL.ColormakerRegistry.hasScheme(label)) {
+	                that.addColorScheme(ngl_color_dict[label], label);
+	            }
+	        }
+	    }
+	    handleEmbed() {
+	        var that = this;
 	        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
 	        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
-	        var ngl_color_dict = that.model.get("_ngl_color_dict");
 	        var loadfile_list = [];
-	        var label
-	
-	        // reconstruct colors
-	        for (label in ngl_color_dict){
-	            that.addColorScheme(ngl_color_dict[label], label);
-	        }
-	
-	        _.each(ngl_msg_archive, function(msg){
-	            if (msg.methodName == 'loadFile'){
+	        _.each(ngl_msg_archive, function (msg) {
+	            if (msg.methodName == 'loadFile') {
 	                if (msg.kwargs && msg.kwargs.defaultRepresentation) {
 	                    // no need to add default representation as all representations
 	                    // are serialized separately, also it unwantedly sets the orientation
-	                    msg.kwargs.defaultRepresentation = false
-	                 }
-	                loadfile_list.push(that._get_loadFile_promise(msg));
+	                    msg.kwargs.defaultRepresentation = false;
+	                }
+	                loadfile_list.push(that._getLoadFilePromise(msg));
 	            }
 	        });
-	
-	
-	        Promise.all(loadfile_list).then(function(compList){
-	            n_frames = ngl_coordinate_resource['n_frames'] || 1;
-	            that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
+	        Promise.all(loadfile_list).then(function (compList) {
+	            that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"));
 	            that.stage.setParameters(ngl_stage_params);
 	            that.set_camera_orientation(that.model.get("_camera_orientation"));
-	            that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
 	            that.touch();
-	            delete ngl_coordinate_resource['n_frames'];
-	
-	            // sync frame again since we don't do that in notebook (to avoid lagging);
-	            that.getPlayerModel().then(function(model){
-	                var pmodel = model.get("children")[0];
-	                that.listenTo(pmodel,
-	                    "change:value", function(){that.updateCoordinatesFromDict(ngl_coordinate_resource,
-	                        pmodel.get("value"))})
-	            })
-	
-	
-	            var pd = that.model.get("_player_dict");
-	            var manager = that.model.widget_manager;
-	            if (pd){
-	                var rd = pd['widget_quick_repr'];
-	                for (let model_id in rd){
-	                    manager.get_model(model_id).then(function(model){
-	                        that.listenTo(model, "change:value", function(){
-	                            var msg = rd[model_id][model.get("value")];
-	                            that.on_msg(msg);
-	                        })
-	                    })
-	                }
+	            // Outside notebook
+	            if (that.model.comm === undefined) {
+	                var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
+	                var n_frames = ngl_coordinate_resource['n_frames'] || 1;
+	                that.model.set("max_frame", n_frames - 1); // trigger updating slider and player's max
+	                that.touch();
+	                that.getPlayerModel().then(function (model) {
+	                    var pmodel = model.get("children")[0];
+	                    that.listenTo(pmodel, "change:value", function () {
+	                        that.updateCoordinatesFromDict(ngl_coordinate_resource, pmodel.get("value"));
+	                    });
+	                });
 	            }
-	
 	            // fire any msg with "fire_embed"
-	            that.model.get("_ngl_msg_archive").forEach(function(msg){
-	                if (msg.fire_embed){
+	            that.model.get("_ngl_msg_archive").forEach(function (msg) {
+	                if (msg.fire_embed) {
 	                    that.on_msg(msg);
 	                }
-	            })
+	            });
+	            that.handleResize(); // FIXME: really need this?
 	        }); // Promise.all
-	    },
-	
-	    updateCoordinatesFromDict: function(cdict, frame_index){
+	    }
+	    updateCoordinatesFromDict(cdict, frame_index) {
 	        // update coordinates for given "index"
 	        // cdict = Dict[int, List[base64]]
-	        var keys = Object.keys(cdict);
-	
+	        var keys = Object.keys(cdict).filter(k => (k !== 'n_frames'));
 	        for (var i = 0; i < keys.length; i++) {
 	            var traj_index = keys[i];
 	            var coordinates = this.decode_base64(cdict[traj_index][frame_index]);
@@ -490,26 +479,22 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                this.updateCoordinates(coordinates, traj_index);
 	            }
 	        }
-	    },
-	
-	    requestFrame: function() {
+	    }
+	    requestFrame() {
 	        this.send({
 	            'type': 'request_frame',
 	            'data': 'frame'
 	        });
-	    },
-	
-	    requestUpdateStageParameters: function() {
+	    }
+	    requestUpdateStageParameters() {
 	        var updated_params = this.stage.getParameters();
 	        this.model.set('_ngl_full_stage_parameters', updated_params);
 	        this.touch();
-	    },
-	
-	    requestReprParameters: function(component_index, repr_index) {
+	    }
+	    requestReprParameters(component_index, repr_index) {
 	        var comp = this.stage.compList[component_index];
 	        var repr = comp.reprList[repr_index];
 	        var msg = repr.repr.getParameters();
-	
 	        if (msg) {
 	            msg['name'] = repr.name;
 	            this.send({
@@ -517,12 +502,35 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                'data': msg
 	            });
 	        }
-	    },
-	
-	    request_repr_dict: function() {
-	        var n_components = this.stage.compList.length;
+	    }
+	    request_repr_dict() {
+	        var repr_dict = this.getReprDictFrontEnd();
+	        this.send({
+	            // make sure we are using "request_repr_dict" name
+	            // in backend too.
+	            'type': 'request_repr_dict',
+	            'data': repr_dict,
+	        });
+	        var that = this;
+	        if (that._synced_repr_model_ids.length > 0) {
+	            that._synced_repr_model_ids.forEach(function (mid) {
+	                that.model.widget_manager.get_model(mid).then(function (model) {
+	                    for (var k in model.views) {
+	                        var pview = model.views[k];
+	                        pview.then(function (view) {
+	                            // not sync with itself
+	                            if (view.uuid != that.uuid) {
+	                                view._set_representation_from_repr_dict(repr_dict);
+	                            }
+	                        });
+	                    }
+	                });
+	            });
+	        }
+	    }
+	    getReprDictFrontEnd() {
 	        var repr_dict = {};
-	
+	        var n_components = this.stage.compList.length;
 	        for (var i = 0; i < n_components; i++) {
 	            var comp = this.stage.compList[i];
 	            repr_dict[i] = {};
@@ -534,227 +542,200 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                msgi[j]['params'] = repr.repr.getParameters();
 	            }
 	        }
-	        this.send({
-	            // make sure we are using "request_repr_dict" name
-	            // in backend too.
-	            'type': 'request_repr_dict',
-	            'data': repr_dict,
-	        });
-	        var that = this
-	        if (that._synced_repr_model_ids.length > 0){
-	            that._synced_repr_model_ids.forEach(function(mid){
-	                that.model.widget_manager.get_model(mid).then(function(model){
-	                    for (var k in model.views){
-	                        var pview = model.views[k];
-	                        pview.then(function(view){
-	                            // not sync with itself
-	                            if (view.uuid != that.uuid){
-	                                view._set_representation_from_repr_dict(repr_dict)
-	                            }
-	                        })
-	                    }
-	                })
-	            })
+	        return repr_dict;
+	    }
+	    syncReprForAllViews() {
+	        var repr_dict_backend = this.model.get("_ngl_repr_dict");
+	        var repr_dict_frontend = this.getReprDictFrontEnd();
+	        if (JSON.stringify(repr_dict_frontend) !== JSON.stringify(repr_dict_backend)) {
+	            this._set_representation_from_repr_dict(repr_dict_backend);
 	        }
-	    },
-	
-	    setSyncRepr: function(model_ids){
-	        this._synced_repr_model_ids = model_ids
-	    },
-	
-	    setSyncCamera: function(model_ids){
-	        this._synced_model_ids = model_ids
-	    },
-	
-	    viewXZPlane: function() {
-	        var m = new NGL.Matrix4().makeRotationX( Math.PI / 2 );
-	        var q = new NGL.Quaternion().setFromRotationMatrix( m );
-	        this.stage.viewerControls.rotate( q );
-	    },
-	
-	    set_representation_from_backend: function(){
-	        var repr_dict = this.model.get('_ngl_repr_dict')
-	        this._set_representation_from_repr_dict(repr_dict)
-	    },
-	
-	    _set_representation_from_repr_dict: function(repr_dict){
-	        var compList = this.stage.compList
-	        if (compList.length > 0){
-	            for (var index in repr_dict){
+	    }
+	    syncReprWithMe() {
+	        // Make sure views of the same model has the same representations
+	        // Only needed if we use Sidebar that connects to specific view.
+	        var that = this;
+	        var repr_dict = this.getReprDictFrontEnd();
+	        for (var k in this.model.views) {
+	            this.model.views[k].then((v) => {
+	                if (v.uuid != that.uuid) {
+	                    v._set_representation_from_repr_dict(repr_dict);
+	                }
+	            });
+	        }
+	        this.request_repr_dict();
+	    }
+	    setSyncRepr(model_ids) {
+	        this._synced_repr_model_ids = model_ids;
+	    }
+	    setSyncCamera(model_ids) {
+	        this._synced_model_ids = model_ids;
+	    }
+	    viewXZPlane() {
+	        var m = new NGL.Matrix4().makeRotationX(Math.PI / 2);
+	        var q = new NGL.Quaternion().setFromRotationMatrix(m);
+	        this.stage.viewerControls.rotate(q);
+	    }
+	    set_representation_from_backend() {
+	        var repr_dict = this.model.get('_ngl_repr_dict');
+	        this._set_representation_from_repr_dict(repr_dict);
+	    }
+	    _set_representation_from_repr_dict(repr_dict) {
+	        var compList = this.stage.compList;
+	        if (compList.length > 0) {
+	            for (var index in repr_dict) {
 	                var comp = compList[index];
 	                comp.removeAllRepresentations();
 	                var reprlist = repr_dict[index];
-	                for (var j in reprlist){
+	                for (var j in reprlist) {
 	                    var repr = reprlist[j];
-	                    if (repr){
+	                    if (repr) {
 	                        comp.addRepresentation(repr.type, repr.params);
 	                    }
 	                }
 	            }
 	        }
-	    },
-	
-	    createView: function(trait_name){
+	    }
+	    createView(trait_name) {
 	        // Create a view for the model with given `trait_name`
 	        // e.g: in backend, 'view.<trait_name>`
 	        console.log("Creating view for model " + trait_name);
 	        var manager = this.model.widget_manager;
 	        var model_id = this.model.get(trait_name).replace("IPY_MODEL_", "");
-	        return this.model.widget_manager.get_model(model_id).then(function(model){
-	            return manager.create_view(model)
-	        })
-	    },
-	
-	    getPlayerModel: function(){
+	        return this.model.widget_manager.get_model(model_id).then(function (model) {
+	            return manager.create_view(model);
+	        });
+	    }
+	    getPlayerModel() {
 	        // return a Promise
 	        var model_id = this.model.get("_iplayer").replace("IPY_MODEL_", "");
-	        return this.model.widget_manager.get_model(model_id)
-	    },
-	
-	    createIPlayer: function(){
+	        return this.model.widget_manager.get_model(model_id);
+	    }
+	    createIPlayer() {
 	        this.player_pview = this.createView("_iplayer");
 	        var that = this;
-	        this.player_pview.then(function(view){
-	                var pe = view.el
-	                pe.style.position = 'absolute'
-	                pe.style.zIndex = 100
-	                pe.style.bottom = '5%'
-	                pe.style.left = '10%'
-	                pe.style.opacity = '0.7'
-	                that.stage.viewer.container.append(view.el);
-	                pe.style.display = 'none'
-	            })
-	    },
-	
-	    createImageBtn: function(){
+	        this.player_pview.then(function (view) {
+	            var pe = view.el;
+	            pe.style.position = 'absolute';
+	            pe.style.zIndex = 100;
+	            pe.style.bottom = '5%';
+	            pe.style.left = '10%';
+	            pe.style.opacity = '0.7';
+	            that.stage.viewer.container.append(view.el);
+	            pe.style.display = 'none';
+	        });
+	    }
+	    createImageBtn() {
 	        this.image_btn_pview = this.createView("_ibtn_image");
 	        var that = this;
-	        this.image_btn_pview.then(function(view){
-	           var pe = view.el
-	           pe.style.position = 'absolute'
-	           pe.style.zIndex = 100
-	           pe.style.top = '5%'
-	           pe.style.right = '10%'
-	           pe.style.opacity = '0.7'
-	           pe.style.width = '35px'
-	           that.stage.viewer.container.append(view.el);
-	        })
-	    },
-	
-	    createFullscreenBtn: function(){
+	        this.image_btn_pview.then(function (view) {
+	            var pe = view.el;
+	            pe.style.position = 'absolute';
+	            pe.style.zIndex = 100;
+	            pe.style.top = '5%';
+	            pe.style.right = '10%';
+	            pe.style.opacity = '0.7';
+	            pe.style.width = '35px';
+	            that.stage.viewer.container.append(view.el);
+	        });
+	    }
+	    createFullscreenBtn() {
 	        this.btn_pview_fullscreen = this.createView("_ibtn_fullscreen");
 	        var that = this;
 	        var stage = that.stage;
-	        this.btn_pview_fullscreen.then(function(view){
-	           var pe = view.el
-	           pe.style.position = 'absolute'
-	           pe.style.zIndex = 100
-	           pe.style.top = '5%'
-	           pe.style.right = '5%'
-	           pe.style.opacity = '0.7'
-	           pe.style.width = '35px'
-	           pe.style.background = 'white'
-	           pe.style.opacity = '0.3'
-	           pe.style.display = 'none'
-	           pe.onclick = function(){
-	               that.stage.toggleFullscreen();
-	           }
-	           stage.viewer.container.append(view.el);
-	           stage.signals.fullscreenChanged.add(function (isFullscreen) {
-	             if (isFullscreen) {
-	               view.model.set("icon", "compress")
-	             } else {
-	               view.model.set("icon", "expand")
-	             }
-	           })
-	        })
-	    },
-	
-	
-	    createGUI: function(){
+	        this.btn_pview_fullscreen.then(function (view) {
+	            var pe = view.el;
+	            pe.style.position = 'absolute';
+	            pe.style.zIndex = 100;
+	            pe.style.top = '5%';
+	            pe.style.right = '5%';
+	            pe.style.opacity = '0.7';
+	            pe.style.width = '35px';
+	            pe.style.background = 'white';
+	            pe.style.opacity = '0.3';
+	            pe.style.display = 'none';
+	            pe.onclick = function () {
+	                that.stage.toggleFullscreen();
+	            };
+	            stage.viewer.container.append(view.el);
+	            stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	                if (isFullscreen) {
+	                    view.model.set("icon", "compress");
+	                }
+	                else {
+	                    view.model.set("icon", "expand");
+	                }
+	            });
+	        });
+	    }
+	    createGUI() {
 	        this.pgui_view = this.createView("_igui");
 	        var that = this;
-	        this.pgui_view.then(function(view){
-	                var pe = view.el
-	                pe.style.position = 'absolute'
-	                pe.style.zIndex = 100
-	                pe.style.top = '5%'
-	                pe.style.right = '10%'
-	                pe.style.width = '300px'
-	                that.stage.viewer.container.append(view.el);
-	            })
-	    },
-	
-	
-	    createNglGUI: function(){
-	      this.stage_widget = new StageWidget(this)
-	    },
-	
-	
-	    setVisibilityForRepr: function(component_index, repr_index, value) {
+	        this.pgui_view.then(function (view) {
+	            var pe = view.el;
+	            pe.style.position = 'absolute';
+	            pe.style.zIndex = 100;
+	            pe.style.top = '5%';
+	            pe.style.right = '10%';
+	            pe.style.width = '300px';
+	            that.stage.viewer.container.append(view.el);
+	        });
+	    }
+	    createNglGUI() {
+	        this.stage_widget = new gui_1.StageWidget(this);
+	    }
+	    setVisibilityForRepr(component_index, repr_index, value) {
 	        // value = True/False
 	        var component = this.stage.compList[component_index];
 	        var repr = component.reprList[repr_index];
-	
 	        if (repr) {
 	            repr.setVisibility(value);
 	        }
-	    },
-	
-	    removeRepresentation: function(component_index, repr_index) {
+	    }
+	    removeRepresentation(component_index, repr_index) {
 	        var component = this.stage.compList[component_index];
-	        var repr = component.reprList[repr_index]
-	
+	        var repr = component.reprList[repr_index];
 	        if (repr) {
 	            component.removeRepresentation(repr);
 	        }
-	    },
-	
-	    removeRepresentationsByName: function(repr_name, component_index) {
+	    }
+	    removeRepresentationsByName(repr_name, component_index) {
 	        var component = this.stage.compList[component_index];
-	
 	        if (component) {
-	            component.reprList.forEach(function(repr) {
+	            component.reprList.forEach(function (repr) {
 	                if (repr.name == repr_name) {
 	                    component.removeRepresentation(repr);
 	                }
-	            })
+	            });
 	        }
-	    },
-	
-	    updateRepresentationForComponent: function(repr_index, component_index, params) {
+	    }
+	    updateRepresentationForComponent(repr_index, component_index, params) {
 	        var component = this.stage.compList[component_index];
 	        var that = this;
 	        var repr = component.reprList[repr_index];
 	        if (repr) {
 	            repr.setParameters(params);
-	            that.request_repr_dict();
 	        }
-	    },
-	
-	    updateRepresentationsByName: function(repr_name, component_index, params) {
+	    }
+	    updateRepresentationsByName(repr_name, component_index, params) {
 	        var component = this.stage.compList[component_index];
 	        var that = this;
-	
 	        if (component) {
-	            component.reprList.forEach(function(repr) {
+	            component.reprList.forEach(function (repr) {
 	                if (repr.name == repr_name) {
 	                    repr.setParameters(params);
 	                    that.request_repr_dict();
 	                }
-	            })
+	            });
 	        }
-	    },
-	
-	    setRepresentation: function(name, params, component_index, repr_index) {
+	    }
+	    setRepresentation(name, params, component_index, repr_index) {
 	        var component = this.stage.compList[component_index];
 	        var repr = component.reprList[repr_index];
 	        var that = this;
-	
 	        if (repr) {
 	            params['useWorker'] = false;
-	            var new_repr = NGL.makeRepresentation(name, component.structure,
-	                this.stage.viewer, params);
+	            var new_repr = NGL.makeRepresentation(name, component.structure, this.stage.viewer, params);
 	            if (new_repr) {
 	                repr.setRepresentation(new_repr);
 	                repr.name = name;
@@ -762,21 +743,19 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                that.request_repr_dict();
 	            }
 	        }
-	    },
-	
-	    setColorByResidue: function(colors, component_index, repr_index){
+	    }
+	    setColorByResidue(colors, component_index, repr_index) {
 	        var repr = this.stage.compList[component_index].reprList[repr_index];
-	        var schemeId = NGL.ColormakerRegistry.addScheme(function(params){
-	            this.atomColor = function(atom){
-	                 var color = colors[atom.residueIndex];
-	                 return color
+	        var schemeId = NGL.ColormakerRegistry.addScheme(function (params) {
+	            this.atomColor = function (atom) {
+	                var color = colors[atom.residueIndex];
+	                return color;
 	            };
 	            params; // to pass eslint; ack;
 	        });
 	        repr.setColor(schemeId);
-	    },
-	
-	    addShape: function(name, shapes) {
+	    }
+	    addShape(name, shapes) {
 	        // shapes: List[Tuple[str, ...]]
 	        // e.g: [('sphere', ...), ('cone', ...)]
 	        var shape = new NGL.Shape(name);
@@ -794,20 +773,18 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            'torus': shape.addTorus
 	        };
 	        for (var i = 0; i < shapes.length; i++) {
-	            var shapes_i = shapes[i]
+	            var shapes_i = shapes[i];
 	            var shape_type = shapes_i[0];
 	            var params = shapes_i.slice(1, shapes_i.length);
 	            // e.g params = ('sphere', [ 0, 0, 9 ], [ 1, 0, 0 ], 1.5)
-	
 	            var func = shape_dict[shape_type];
 	            func.apply(shape, params);
 	            // shape.func(params);
 	        }
 	        var shapeComp = this.stage.addComponentFromObject(shape);
 	        shapeComp.addRepresentation("buffer");
-	    },
-	
-	    addBuffer: function(name, kwargs){
+	    }
+	    addBuffer(name, kwargs) {
 	        var class_dict = {
 	            "arrow": NGL.ArrowBuffer,
 	            "box": NGL.BoXbuffer,
@@ -820,9 +797,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	            "tetrahedron": NGL.TetrahedronBuffer,
 	            "torus": NGL.TorusBuffer
 	        };
-	
 	        var params = {};
-	        for (var key in kwargs){
+	        for (var key in kwargs) {
 	            params[key] = new Float32Array(kwargs[key]);
 	        }
 	        var shape = new NGL.Shape("shape");
@@ -831,41 +807,37 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        shape.addBuffer(buffer);
 	        var shapeComp = this.stage.addComponentFromObject(shape);
 	        shapeComp.addRepresentation("buffer");
-	    },
-	
-	    replaceStructure: function(structure){
-	         var blob = new Blob([structure.data], {type: "text/plain"});
-	         var params = structure.params || {};
-	         params.ext = structure.ext;
-	         params.defaultRepresentation = false;
-	         var comp = this.stage.compList[0];
-	         var representations = comp.reprList.slice();
-	         var old_orientation = this.stage.viewerControls.getOrientation();
-	         var that = this;
-	         this.stage.loadFile(blob, params).then(function(component) {
-	             that.stage.viewerControls.orient(old_orientation);
-	             representations.forEach(function(repr) {
-	                 var repr_name = repr.name;
-	                 var repr_params = repr.repr.getParameters();
-	                 // Note: not using repr.repr.type, repr.repr.params
-	                 // since seems to me that repr.repr.params won't return correct "sele"
-	                 component.addRepresentation(repr_name, repr_params);
-	             });
-	             that.stage.removeComponent(comp);
-	             that._handle_loading_file_finished();
-	         });
-	    },
-	
-	    superpose: function(cindex0, cindex1, align, sele0, sele1) {
+	    }
+	    replaceStructure(structure) {
+	        var blob = new Blob([structure.data], { type: "text/plain" });
+	        var params = structure.params || {};
+	        params.ext = structure.ext;
+	        params.defaultRepresentation = false;
+	        var comp = this.stage.compList[0];
+	        var representations = comp.reprList.slice();
+	        var old_orientation = this.stage.viewerControls.getOrientation();
+	        var that = this;
+	        this.stage.loadFile(blob, params).then(function (component) {
+	            that.stage.viewerControls.orient(old_orientation);
+	            representations.forEach(function (repr) {
+	                var repr_name = repr.name;
+	                var repr_params = repr.repr.getParameters();
+	                // Note: not using repr.repr.type, repr.repr.params
+	                // since seems to me that repr.repr.params won't return correct "sele"
+	                component.addRepresentation(repr_name, repr_params);
+	            });
+	            that.stage.removeComponent(comp);
+	            that._handleLoadFileFinished();
+	        });
+	    }
+	    superpose(cindex0, cindex1, align, sele0, sele1) {
 	        // superpose two components with given params
 	        var component0 = this.stage.compList[cindex0];
 	        var component1 = this.stage.compList[cindex1];
 	        component1.superpose(component0, align, sele0, sele1);
-	    },
-	
-	    decode_base64: function(base64) {
+	    }
+	    decode_base64(base64) {
 	        // lightly adapted from Niklas
-	
 	        /*
 	         * base64-arraybuffer
 	         * https://github.com/niklasvh/base64-arraybuffer
@@ -873,38 +845,27 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	         * Copyright (c) 2012 Niklas von Hertzen
 	         * Licensed under the MIT license.
 	         */
-	        var chars =
-	            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-	        var bufferLength = base64.length * 0.75,
-	            len = base64.length,
-	            i, p = 0,
-	            encoded1, encoded2, encoded3, encoded4;
-	
+	        var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	        var bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
 	        if (base64[base64.length - 1] === "=") {
 	            bufferLength--;
 	            if (base64[base64.length - 2] === "=") {
 	                bufferLength--;
 	            }
 	        }
-	
-	        var arraybuffer = new ArrayBuffer(bufferLength),
-	            bytes = new Uint8Array(arraybuffer);
-	
+	        var arraybuffer = new ArrayBuffer(bufferLength), bytes = new Uint8Array(arraybuffer);
 	        for (i = 0; i < len; i += 4) {
 	            encoded1 = chars.indexOf(base64[i]);
 	            encoded2 = chars.indexOf(base64[i + 1]);
 	            encoded3 = chars.indexOf(base64[i + 2]);
 	            encoded4 = chars.indexOf(base64[i + 3]);
-	
 	            bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
 	            bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
 	            bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
 	        }
-	
 	        return arraybuffer;
-	    },
-	
-	    updateCoordinates: function(coordinates, model) {
+	    }
+	    updateCoordinates(coordinates, model) {
 	        // coordinates must be ArrayBuffer (use this.decode_base64)
 	        var component = this.stage.compList[model];
 	        if (coordinates && component) {
@@ -914,59 +875,50 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                "position": true
 	            });
 	        }
-	    },
-	
-	    handleResizable: function() {
+	    }
+	    handleResizable() {
 	        this.$container.resizable({
-	            resize: function(event, ui) {
+	            resize: function (event, ui) {
 	                this.setSize(ui.size.width + "px", ui.size.height + "px");
 	            }.bind(this)
-	        })
-	    },
-	
-	    handleResize: function(){
-	        var width = this.$el.width()
-	        console.log('el width ' + width)
-	        var height = this.$el.height() + "px"
-	        if (this.stage_widget){
-	            width = width - $(this.stage_widget.sidebar.dom).width()
-	            console.log('new width ' + width)
+	        });
+	    }
+	    handleResize() {
+	        var width = this.$el.width();
+	        var height = this.$el.height() + "px";
+	        if (this.stage_widget) {
+	            width = width - $(this.stage_widget.sidebar.dom).width();
 	        }
-	        width = width + "px"
-	        console.log('new width (px)' + width)
-	        this.setSize(width, height)
-	    },
-	
-	    setSize: function(width, height) {
+	        width = width + "px";
+	        this.setSize(width, height);
+	    }
+	    setSize(width, height) {
 	        this.stage.viewer.container.style.width = width;
 	        this.stage.viewer.container.style.height = height;
 	        this.stage.handleResize();
-	    },
-	
-	    GUIStyleChanged: function(){
+	    }
+	    GUIStyleChanged() {
 	        var style = this.model.get("gui_style");
-	        if (style === 'ngl'){
+	        if (style === 'ngl') {
 	            this.createNglGUI();
-	        }else{
-	            if (this.stage_widget){
-	                this.stage_widget.dispose()
-	                this.stage_widget = undefined
-	                this.$container.resizable("enable")
+	        }
+	        else {
+	            if (this.stage_widget) {
+	                this.stage_widget.dispose();
+	                this.stage_widget = undefined;
+	                this.$container.resizable("enable");
 	                var width = this.$el.parent().width() + "px";
 	                var height = this.$el.parent().height() + "px";
 	                this.setSize(width, height);
 	            }
 	        }
-	    },
-	
-	    parametersChanged: function() {
+	    }
+	    parametersChanged() {
 	        var _parameters = this.model.get("_parameters");
 	        this.setParameters(_parameters);
-	    },
-	
-	    setParameters: function(parameters) {
+	    }
+	    setParameters(parameters) {
 	        this.stage.setParameters(parameters);
-	
 	        // do not set _ngl_full_stage_parameters here
 	        // or parameters will be never updated (not sure why)
 	        // use observe in python side
@@ -974,23 +926,21 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	        this.send({
 	            'type': 'stage_parameters',
 	            'data': updated_params
-	        })
-	    },
-	
-	    _downloadImage: function(filename, params) {
-	        if (this.ngl_view_id == this.get_last_child_id()){
-	            this.stage.makeImage(params).then(function(blob) {
+	        });
+	    }
+	    _downloadImage(filename, params) {
+	        if (this.ngl_view_id == this.get_last_child_id()) {
+	            this.stage.makeImage(params).then(function (blob) {
 	                NGL.download(blob, filename);
-	            })
+	            });
 	        }
-	    },
-	
-	    _exportImage: function(wid, params) {
-	        if (this.ngl_view_id == this.get_last_child_id()){
-	            this.stage.makeImage(params).then(function(blob) {
+	    }
+	    _exportImage(wid, params) {
+	        if (this.ngl_view_id == this.get_last_child_id()) {
+	            this.stage.makeImage(params).then(function (blob) {
 	                var reader = new FileReader();
 	                var arr_str;
-	                reader.onload = function() {
+	                reader.onload = function () {
 	                    arr_str = reader.result.replace("data:image/png;base64,", "");
 	                    // this.model.set("_image_data", arr_str);
 	                    // this.touch();
@@ -999,115 +949,118 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                        "type": "image_data",
 	                        "ID": wid,
 	                    });
-	                    this.send({'type': 'async_message', 'data': 'ok'});
+	                    this.send({ 'type': 'async_message', 'data': 'ok' });
 	                }.bind(this);
 	                reader.readAsDataURL(blob);
 	            }.bind(this));
 	        }
-	    },
-	
-	
-	    _handle_loading_file_finished: function() {
-	        this.send({'type': 'async_message', 'data': 'ok'});
-	    },
-	
-	    _get_loadFile_promise: function(msg){
-	         // args = [{'type': ..., 'data': ...}]
-	         var args0 = msg.args[0];
-	         if (args0.type == 'blob') {
-	             var blob;
-	             if (args0.binary) {
-	                 var decoded_data = this.decode_base64(args0.data);
-	                 blob = new Blob([decoded_data], {
-	                     type: "application/octet-binary"
-	                 });
-	             } else {
-	                 blob = new Blob([args0.data], {
-	                     type: "text/plain"
-	                 });
-	             }
-	             return this.stage.loadFile(blob, msg.kwargs)
-	         } else {
-	             var file = new File([""], args0.data);
-	             var path = "";
-	             if (args0.type == 'path' && ! file.exists){
-	                 // hacky fix for jupyterlab
-	                 // https://github.com/arose/nglview/issues/783
-	                 // https://github.com/jupyterlab/jupyterlab/issues/6218
-	                 // e.g: http://localhost:8888/files/ala3.pdb
-	                 path = 'files/' + args0.data;
-	             } else {
-	                 path = args0.data;
-	             }
-	             return this.stage.loadFile(path, msg.kwargs)
-	         }
-	    },
-	
-	    get_last_child_id: function(){
-	        var keys = Object.keys(this.model.views);
-	        return keys[keys.length-1]
-	    },
-	
-	    _handle_stage_loadFile: function(msg){
+	    }
+	    _handleLoadFileFinished() {
+	        this.send({ 'type': 'async_message', 'data': 'ok' });
+	    }
+	    _getLoadFilePromise(msg) {
 	        // args = [{'type': ..., 'data': ...}]
-	        if (this.ngl_view_id != this.get_last_child_id() && msg.last_child){
-	            return
+	        var args0 = msg.args[0];
+	        if (args0.type == 'blob') {
+	            var blob;
+	            if (args0.binary) {
+	                var decoded_data = this.decode_base64(args0.data);
+	                blob = new Blob([decoded_data], {
+	                    type: "application/octet-binary"
+	                });
+	            }
+	            else {
+	                blob = new Blob([args0.data], {
+	                    type: "text/plain"
+	                });
+	            }
+	            return this.stage.loadFile(blob, msg.kwargs);
+	        }
+	        else {
+	            var file = new File([""], args0.data);
+	            // FIXME: if not "any", typescipt complains there is no
+	            // "exists" method.
+	            var path = "";
+	            // FIXME: uncomment ("exists" does not exist)
+	            // if (args0.type == 'path' && ! file.exists){
+	            // hacky fix for jupyterlab
+	            // https://github.com/arose/nglview/issues/783
+	            // https://github.com/jupyterlab/jupyterlab/issues/6218
+	            // e.g: http://localhost:8888/files/ala3.pdb
+	            //    path = 'files/' + args0.data;
+	            // } else {
+	            // path = args0.data;
+	            //}
+	            path = args0.data;
+	            return this.stage.loadFile(path, msg.kwargs);
+	        }
+	    }
+	    get_last_child_id() {
+	        var keys = this.model.get('_ngl_view_id');
+	        return keys[keys.length - 1];
+	    }
+	    _handleStageLoadFile(msg) {
+	        // args = [{'type': ..., 'data': ...}]
+	        if (this.ngl_view_id != this.get_last_child_id() && msg.last_child) {
+	            return;
 	        }
 	        var that = this;
-	        this._get_loadFile_promise(msg).then(function(o){
-	            that._handle_loading_file_finished();
+	        this._getLoadFilePromise(msg).then(function (o) {
+	            that._handleLoadFileFinished();
 	            o;
 	        });
-	    },
-	
-		addColorScheme: function(args, label){
+	    }
+	    addColorScheme(args, label) {
 	        var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
 	        var scheme = NGL.ColormakerRegistry.userSchemes[id];
 	        NGL.ColormakerRegistry.removeScheme(id);
 	        // hard code the scheme ID
 	        NGL.ColormakerRegistry.add(label, scheme);
-	        return label
-		},
-	
-	    on_msg: function(msg) {
+	        return label;
+	    }
+	    on_msg(msg) {
 	        // TODO: re-organize
+	        if (('ngl_view_id' in msg) && (msg.ngl_view_id !== this.ngl_view_id)) {
+	            return;
+	        }
 	        if (msg.type == 'call_method') {
 	            var index, component, func, stage;
 	            var new_args = msg.args.slice();
 	            new_args.push(msg.kwargs);
-	
 	            // handle color
 	            if (msg.methodName == 'addRepresentation' &&
-	                msg.reconstruc_color_scheme){
+	                msg.reconstruc_color_scheme) {
 	                msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
 	            }
-	            if ("colorVolume" in msg.kwargs){
+	            if ("colorVolume" in msg.kwargs) {
 	                // backend only send component index
 	                // so we need to convert to 'volume' data
 	                index = msg.kwargs["colorVolume"];
 	                msg.kwargs["colorVolume"] = this.stage.compList[index].volume;
 	            }
-	
 	            switch (msg.target) {
 	                case 'Stage':
 	                    var stage_func = this.stage[msg.methodName];
 	                    stage = this.stage;
 	                    if (msg.methodName == 'screenshot') {
 	                        NGL.screenshot(this.stage.viewer, msg.kwargs);
-	                    } else if (msg.methodName == 'removeComponent') {
+	                    }
+	                    else if (msg.methodName == 'removeComponent') {
 	                        index = msg.args[0];
 	                        component = this.stage.compList[index];
 	                        this.stage.removeComponent(component);
-	                    } else if (msg.methodName == 'loadFile') {
+	                    }
+	                    else if (msg.methodName == 'loadFile') {
 	                        if (this.model.views.length > 1 && msg.kwargs &&
 	                            msg.kwargs.defaultRepresentation) {
 	                            // no need to add default representation as all representations
 	                            // are serialized separately, also it unwantedly sets the orientation
-	                            msg.kwargs.defaultRepresentation = false
+	                            msg.kwargs.defaultRepresentation = false;
 	                        }
-	                        this._handle_stage_loadFile(msg);
-	                    } else {
-	                            stage_func.apply(stage, new_args);
+	                        this._handleStageLoadFile(msg);
+	                    }
+	                    else {
+	                        stage_func.apply(stage, new_args);
 	                    }
 	                    break;
 	                case 'Viewer':
@@ -1130,7 +1083,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                    func = this[msg.methodName];
 	                    if (func) {
 	                        func.apply(this, new_args);
-	                    } else {
+	                    }
+	                    else {
 	                        // send error message to Python?
 	                        console.log('can not create func for ' + msg.methodName);
 	                    }
@@ -1149,10 +1103,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                    console.log('there is no method for ' + msg.target);
 	                    break;
 	            }
-	        } else if (msg.type == 'base64_single') {
+	        }
+	        else if (msg.type == 'base64_single') {
 	            var coordinatesDict = msg.data;
 	            var keys = Object.keys(coordinatesDict);
-	
 	            for (var i = 0; i < keys.length; i++) {
 	                var traj_index = keys[i];
 	                var coordinates = this.decode_base64(coordinatesDict[traj_index]);
@@ -1160,10 +1114,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                    this.updateCoordinates(coordinates, traj_index);
 	                }
 	            }
-	        } else if (msg.type == 'binary_single') {
+	        }
+	        else if (msg.type == 'binary_single') {
 	            var coordinateMeta = msg.data;
 	            keys = Object.keys(coordinateMeta);
-	
 	            for (i = 0; i < keys.length; i++) {
 	                traj_index = keys[i];
 	                coordinates = new Float32Array(msg.buffers[i].buffer);
@@ -1171,80 +1125,35 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	                    this.updateCoordinates(coordinates, traj_index);
 	                }
 	            }
-	        } else if (msg.type == 'get') {
+	        }
+	        else if (msg.type == 'get') {
 	            if (msg.data == 'camera') {
 	                this.send(JSON.stringify(this.stage.viewer.camera));
-	            } else if (msg.data == 'parameters') {
+	            }
+	            else if (msg.data == 'parameters') {
 	                this.send(JSON.stringify(this.stage.parameters));
-	            } else {
+	            }
+	            else {
 	                console.log("Number of components", this.stage.compList.length);
 	                console.log("ngl_view_id", this.ngl_view_id);
 	            }
 	        }
-	    },
-	});
-	
-	var FullscreenModel = widgets.DOMWidgetModel.extend({
-	    defaults: function(){
-	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
-	            _model_name: 'FullscreenModel',
-	            _model_module: 'nglview-js-widgets',
-	            _model_module_version: __webpack_require__(77).version,
-	            _view_name: "FullscreenView",
-	            _view_module: "nglview-js-widgets",
-	            _view_module_version: __webpack_require__(77).version,
-	        });
 	    }
-	})
-	
-	var FullscreenView = widgets.DOMWidgetView.extend({
-	    render: function() {
-	        this.stage = new NGL.Stage()
-	        var that = this
-	        this.model.on("msg:custom", function(msg){
-	            that.on_msg(msg)
-	        })
-	        this.handleSignals()
-	    },
-	
-	    fullscreen: function(model_id){
-	        var that = this
-	        this.model.widget_manager.get_model(model_id).then((model) =>{
-	            var key = Object.keys(model.views)[0]
-	            model.views[key].then((view) => {
-	                that.stage.toggleFullscreen(view.el)
-	            })
-	        })
-	    },
-	
-	    handleSignals: function(){
-	        var that = this
-	        this.stage.signals.fullscreenChanged.add(function (isFullscreen) {
-	            that.model.set("_is_fullscreen", isFullscreen)
-	            that.touch()
-	        })
-	    },
-	
-	    execute_code: function(code){
-	        eval(code);
-	    },
-	
-	    on_msg: function(msg){
-	        if ('execute_code' in msg){
-	            this.execute_code(msg.execute_code)
-	        }
-	    }
-	
-	});
-	
+	}
+	exports.NGLView = NGLView;
+	// export all models and views here to make embeding a bit easier
 	module.exports = {
 	    'NGLView': NGLView,
 	    'NGLModel': NGLModel,
 	    'NGL': NGL,
-	    'FullscreenModel': FullscreenModel,
-	    'FullscreenView': FullscreenView
+	    'FullscreenModel': fullscreen_1.FullscreenModel,
+	    'FullscreenView': fullscreen_1.FullscreenView,
+	    'ColormakerRegistryModel': color_1.ColormakerRegistryModel,
+	    'ColormakerRegistryView': color_1.ColormakerRegistryView,
+	    'ThemeManagerModel': theme_1.ThemeManagerModel,
+	    'ThemeManagerView': theme_1.ThemeManagerView,
 	};
-
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoid2lkZ2V0X25nbC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uL3NyYy93aWRnZXRfbmdsLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsSUFBSSxPQUFPLENBQUE7QUFDWCxJQUFJLE9BQU8sR0FBRyxPQUFPLENBQUMsdUJBQXVCLENBQUMsQ0FBQTtBQUM5QyxJQUFJLEdBQUcsR0FBRyxPQUFPLENBQUMsS0FBSyxDQUFDLENBQUE7QUFDeEIsSUFBSSxRQUFRLEdBQUcsT0FBTyxDQUFDLFFBQVEsQ0FBQyxDQUFDLFFBQVEsQ0FBQTtBQUN6Qyw0QkFBMkI7QUFDM0IsZ0NBQStCO0FBQy9CLGdDQUE2QjtBQUM3QixvQ0FBaUM7QUFDakMsc0JBQW1CO0FBQ25CLDRCQUF5QjtBQUN6QiwwQkFBdUI7QUFDdkIsdUNBQW9DLENBQUMsaUJBQWlCO0FBQ3RELHlDQUFzQyxDQUFDLGlCQUFpQjtBQUV4RCwrQkFBbUM7QUFDbkMsNkNBQThEO0FBQzlELG1DQUF5RTtBQUN6RSxtQ0FBNEQ7QUFFNUQsV0FBVztBQUNYLDRDQUE0QztBQUM1QyxNQUFNLEtBQUssR0FBRyxnRUFBZ0UsQ0FBQyxLQUFLLENBQUMsRUFBRSxDQUFDLENBQUE7QUFDeEYsTUFBTSxJQUFJLEdBQUcsSUFBSSxLQUFLLENBQUMsRUFBRSxDQUFDLENBQUE7QUFFMUIsU0FBUyxZQUFZO0lBQ25CLElBQUksR0FBRyxHQUFHLENBQUMsQ0FBQTtJQUNYLElBQUksQ0FBQyxDQUFBO0lBRUwsS0FBSyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxHQUFHLEVBQUUsRUFBRSxDQUFDLEVBQUUsRUFBRTtRQUMzQixJQUFJLENBQUMsS0FBSyxDQUFDLElBQUksQ0FBQyxLQUFLLEVBQUUsSUFBSSxDQUFDLEtBQUssRUFBRSxJQUFJLENBQUMsS0FBSyxFQUFFLEVBQUU7WUFDL0MsSUFBSSxDQUFFLENBQUMsQ0FBRSxHQUFHLEdBQUcsQ0FBQTtTQUNoQjthQUFNLElBQUksQ0FBQyxLQUFL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
 
 /***/ }),
 /* 2 */
@@ -1715,6 +1624,47 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const widgets = __webpack_require__(2);
+	var NGL = __webpack_require__(3); // not sure why I can not import it
+	class BaseView extends widgets.DOMWidgetView {
+	    render() {
+	        if (this.isEmbeded()) {
+	            // embed mode: let NGLView call the handleEmbed directly
+	            return;
+	        }
+	        this.handleMessage();
+	        this.displayed.then(() => {
+	            this.model.set("_ready", true);
+	            this.touch();
+	        });
+	    }
+	    executeCode(code) {
+	        eval(code);
+	    }
+	    handleMessage() {
+	        this.model.on("msg:custom", function (msg) {
+	            this.on_msg(msg);
+	        }.bind(this));
+	    }
+	    on_msg(msg) {
+	        if (msg.type == 'callMethod') {
+	            console.log("from BaseView", msg);
+	            this[msg.methodName].apply(this, msg.args, msg.kwargs);
+	        }
+	    }
+	    isEmbeded() {
+	        return (this.model.comm == undefined);
+	    }
+	}
+	exports.BaseView = BaseView;
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYmFzZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uL3NyYy9iYXNlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsaURBQWdEO0FBQ2hELElBQUksR0FBRyxHQUFHLE9BQU8sQ0FBQyxLQUFLLENBQUMsQ0FBQSxDQUFDLG1DQUFtQztBQUc1RCxNQUNNLFFBQVMsU0FBUSxPQUFPLENBQUMsYUFBYTtJQUV4QyxNQUFNO1FBQ04sSUFBSSxJQUFJLENBQUMsU0FBUyxFQUFFLEVBQUM7WUFDYix3REFBd0Q7WUFDeEQsT0FBTTtTQUNUO1FBQ0QsSUFBSSxDQUFDLGFBQWEsRUFBRSxDQUFDO1FBQ3JCLElBQUksQ0FBQyxTQUFTLENBQUMsSUFBSSxDQUFDLEdBQUcsRUFBRTtZQUNyQixJQUFJLENBQUMsS0FBSyxDQUFDLEdBQUcsQ0FBQyxRQUFRLEVBQUUsSUFBSSxDQUFDLENBQUE7WUFDOUIsSUFBSSxDQUFDLEtBQUssRUFBRSxDQUFBO1FBQ2hCLENBQUMsQ0FBQyxDQUFBO0lBQ04sQ0FBQztJQUVELFdBQVcsQ0FBQyxJQUFJO1FBQ1osSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDO0lBQ2YsQ0FBQztJQUVELGFBQWE7UUFDVCxJQUFJLENBQUMsS0FBSyxDQUFDLEVBQUUsQ0FBQyxZQUFZLEVBQUUsVUFBUyxHQUFHO1lBQ3BDLElBQUksQ0FBQyxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUE7UUFDcEIsQ0FBQyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQyxDQUFBO0lBQ2pCLENBQUM7SUFFRCxNQUFNLENBQUMsR0FBRztRQUNOLElBQUksR0FBRyxDQUFDLElBQUksSUFBSSxZQUFZLEVBQUM7WUFDekIsT0FBTyxDQUFDLEdBQUcsQ0FBQyxlQUFlLEVBQUUsR0FBRyxDQUFDLENBQUE7WUFDakMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxVQUFVLENBQUMsQ0FBQyxLQUFLLENBQUMsSUFBSSxFQUFFLEdBQUcsQ0FBQyxJQUFJLEVBQUUsR0FBRyxDQUFDLE1BQU0sQ0FBQyxDQUFBO1NBQ3pEO0lBQ0wsQ0FBQztJQUVELFNBQVM7UUFDTCxPQUFPLENBQUMsSUFBSSxDQUFDLEtBQUssQ0FBQyxJQUFJLElBQUksU0FBUyxDQUFDLENBQUE7SUFDekMsQ0FBQztDQUNKO0FBbkNELDRCQW1DQyJ9
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -12318,7 +12268,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, module) {//     Underscore.js 1.9.1
@@ -14014,10 +13964,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	  }
 	}());
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(9)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(10)(module)))
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 	module.exports = function(module) {
@@ -14033,7 +13983,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -14043,40 +13993,157 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	 Author: Miller Medeiros
 	 Version: 1.0.0 - Build: 268 (2012/11/29 05:48 PM)
 	*/
-	(function(i){function h(a,b,c,d,e){this._listener=b;this._isOnce=c;this.context=d;this._signal=a;this._priority=e||0}function g(a,b){if(typeof a!=="function")throw Error("listener is a required param of {fn}() and should be a Function.".replace("{fn}",b));}function e(){this._bindings=[];this._prevParams=null;var a=this;this.dispatch=function(){e.prototype.dispatch.apply(a,arguments)}}h.prototype={active:!0,params:null,execute:function(a){var b;this.active&&this._listener&&(a=this.params?this.params.concat(a):
-	a,b=this._listener.apply(this.context,a),this._isOnce&&this.detach());return b},detach:function(){return this.isBound()?this._signal.remove(this._listener,this.context):null},isBound:function(){return!!this._signal&&!!this._listener},isOnce:function(){return this._isOnce},getListener:function(){return this._listener},getSignal:function(){return this._signal},_destroy:function(){delete this._signal;delete this._listener;delete this.context},toString:function(){return"[SignalBinding isOnce:"+this._isOnce+
-	", isBound:"+this.isBound()+", active:"+this.active+"]"}};e.prototype={VERSION:"1.0.0",memorize:!1,_shouldPropagate:!0,active:!0,_registerListener:function(a,b,c,d){var e=this._indexOfListener(a,c);if(e!==-1){if(a=this._bindings[e],a.isOnce()!==b)throw Error("You cannot add"+(b?"":"Once")+"() then add"+(!b?"":"Once")+"() the same listener without removing the relationship first.");}else a=new h(this,a,b,c,d),this._addBinding(a);this.memorize&&this._prevParams&&a.execute(this._prevParams);return a},
-	_addBinding:function(a){var b=this._bindings.length;do--b;while(this._bindings[b]&&a._priority<=this._bindings[b]._priority);this._bindings.splice(b+1,0,a)},_indexOfListener:function(a,b){for(var c=this._bindings.length,d;c--;)if(d=this._bindings[c],d._listener===a&&d.context===b)return c;return-1},has:function(a,b){return this._indexOfListener(a,b)!==-1},add:function(a,b,c){g(a,"add");return this._registerListener(a,!1,b,c)},addOnce:function(a,b,c){g(a,"addOnce");return this._registerListener(a,
-	!0,b,c)},remove:function(a,b){g(a,"remove");var c=this._indexOfListener(a,b);c!==-1&&(this._bindings[c]._destroy(),this._bindings.splice(c,1));return a},removeAll:function(){for(var a=this._bindings.length;a--;)this._bindings[a]._destroy();this._bindings.length=0},getNumListeners:function(){return this._bindings.length},halt:function(){this._shouldPropagate=!1},dispatch:function(a){if(this.active){var b=Array.prototype.slice.call(arguments),c=this._bindings.length,d;if(this.memorize)this._prevParams=
-	b;if(c){d=this._bindings.slice();this._shouldPropagate=!0;do c--;while(d[c]&&this._shouldPropagate&&d[c].execute(b)!==!1)}}},forget:function(){this._prevParams=null},dispose:function(){this.removeAll();delete this._bindings;delete this._prevParams},toString:function(){return"[Signal active:"+this.active+" numListeners:"+this.getNumListeners()+"]"}};var f=e;f.Signal=e; true?!(__WEBPACK_AMD_DEFINE_RESULT__ = function(){return f}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):typeof module!=="undefined"&&module.exports?module.exports=f:i.signals=
-	f})(this);
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;if( typeof importScripts !== 'function' ){
-	!function(t,e){ true?!(__WEBPACK_AMD_DEFINE_FACTORY__ = (e), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):"object"==typeof exports?module.exports=e(require,exports,module):t.Tether=e()}(this,function(t,e,o){"use strict";function i(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function n(t){var e=getComputedStyle(t),o=e.position;if("fixed"===o)return t;for(var i=t;i=i.parentNode;){var n=void 0;try{n=getComputedStyle(i)}catch(r){}if("undefined"==typeof n||null===n)return i;var s=n.overflow,a=n.overflowX,f=n.overflowY;if(/(auto|scroll)/.test(s+f+a)&&("absolute"!==o||["relative","absolute","fixed"].indexOf(n.position)>=0))return i}return document.body}function r(t){var e=void 0;t===document?(e=document,t=document.documentElement):e=t.ownerDocument;var o=e.documentElement,i={},n=t.getBoundingClientRect();for(var r in n)i[r]=n[r];var s=x(e);return i.top-=s.top,i.left-=s.left,"undefined"==typeof i.width&&(i.width=document.body.scrollWidth-i.left-i.right),"undefined"==typeof i.height&&(i.height=document.body.scrollHeight-i.top-i.bottom),i.top=i.top-o.clientTop,i.left=i.left-o.clientLeft,i.right=e.body.clientWidth-i.width-i.left,i.bottom=e.body.clientHeight-i.height-i.top,i}function s(t){return t.offsetParent||document.documentElement}function a(){var t=document.createElement("div");t.style.width="100%",t.style.height="200px";var e=document.createElement("div");f(e.style,{position:"absolute",top:0,left:0,pointerEvents:"none",visibility:"hidden",width:"200px",height:"150px",overflow:"hidden"}),e.appendChild(t),document.body.appendChild(e);var o=t.offsetWidth;e.style.overflow="scroll";var i=t.offsetWidth;o===i&&(i=e.clientWidth),document.body.removeChild(e);var n=o-i;return{width:n,height:n}}function f(){var t=arguments.length<=0||void 0===arguments[0]?{}:arguments[0],e=[];return Array.prototype.push.apply(e,arguments),e.slice(1).forEach(function(e){if(e)for(var o in e)({}).hasOwnProperty.call(e,o)&&(t[o]=e[o])}),t}function h(t,e){if("undefined"!=typeof t.classList)e.split(" ").forEach(function(e){e.trim()&&t.classList.remove(e)});else{var o=new RegExp("(^| )"+e.split(" ").join("|")+"( |$)","gi"),i=u(t).replace(o," ");p(t,i)}}function l(t,e){if("undefined"!=typeof t.classList)e.split(" ").forEach(function(e){e.trim()&&t.classList.add(e)});else{h(t,e);var o=u(t)+(" "+e);p(t,o)}}function d(t,e){if("undefined"!=typeof t.classList)return t.classList.contains(e);var o=u(t);return new RegExp("(^| )"+e+"( |$)","gi").test(o)}function u(t){return t.className instanceof SVGAnimatedString?t.className.baseVal:t.className}function p(t,e){t.setAttribute("class",e)}function c(t,e,o){o.forEach(function(o){-1===e.indexOf(o)&&d(t,o)&&h(t,o)}),e.forEach(function(e){d(t,e)||l(t,e)})}function i(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function g(t,e){var o=arguments.length<=2||void 0===arguments[2]?1:arguments[2];return t+o>=e&&e>=t-o}function m(){return"undefined"!=typeof performance&&"undefined"!=typeof performance.now?performance.now():+new Date}function v(){for(var t={top:0,left:0},e=arguments.length,o=Array(e),i=0;e>i;i++)o[i]=arguments[i];return o.forEach(function(e){var o=e.top,i=e.left;"string"==typeof o&&(o=parseFloat(o,10)),"string"==typeof i&&(i=parseFloat(i,10)),t.top+=o,t.left+=i}),t}function y(t,e){return"string"==typeof t.left&&-1!==t.left.indexOf("%")&&(t.left=parseFloat(t.left,10)/100*e.width),"string"==typeof t.top&&-1!==t.top.indexOf("%")&&(t.top=parseFloat(t.top,10)/100*e.height),t}function b(t,e){return"scrollParent"===e?e=t.scrollParent:"window"===e&&(e=[pageXOffset,pageYOffset,innerWidth+pageXOffset,innerHeight+pageYOffset]),e===document&&(e=e.documentElement),"undefined"!=typeof e.nodeType&&!function(){var t=r(e),o=t,i=getComputedStyle(e);e=[o.left,o.top,t.width+o.left,t.height+o.top],U.forEach(function(t,o){t=t[0].toUpperCase()+t.substr(1),"Top"===t||"Left"===t?e[o]+=parseFloat(i["border"+t+"Width"]):e[o]-=parseFloat(i["border"+t+"Width"])})}(),e}var w=function(){function t(t,e){for(var o=0;o<e.length;o++){var i=e[o];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(t,i.key,i)}}return function(e,o,i){return o&&t(e.prototype,o),i&&t(e,i),e}}(),C=void 0;"undefined"==typeof C&&(C={modules:[]});var O=function(){var t=0;return function(){return++t}}(),E={},x=function(t){var e=t._tetherZeroElement;"undefined"==typeof e&&(e=t.createElement("div"),e.setAttribute("data-tether-id",O()),f(e.style,{top:0,left:0,position:"absolute"}),t.body.appendChild(e),t._tetherZeroElement=e);var o=e.getAttribute("data-tether-id");if("undefined"==typeof E[o]){E[o]={};var i=e.getBoundingClientRect();for(var n in i)E[o][n]=i[n];T(function(){delete E[o]})}return E[o]},A=[],T=function(t){A.push(t)},S=function(){for(var t=void 0;t=A.pop();)t()},W=function(){function t(){i(this,t)}return w(t,[{key:"on",value:function(t,e,o){var i=arguments.length<=3||void 0===arguments[3]?!1:arguments[3];"undefined"==typeof this.bindings&&(this.bindings={}),"undefined"==typeof this.bindings[t]&&(this.bindings[t]=[]),this.bindings[t].push({handler:e,ctx:o,once:i})}},{key:"once",value:function(t,e,o){this.on(t,e,o,!0)}},{key:"off",value:function(t,e){if("undefined"==typeof this.bindings||"undefined"==typeof this.bindings[t])if("undefined"==typeof e)delete this.bindings[t];else for(var o=0;o<this.bindings[t].length;)this.bindings[t][o].handler===e?this.bindings[t].splice(o,1):++o}},{key:"trigger",value:function(t){if("undefined"!=typeof this.bindings&&this.bindings[t])for(var e=0;e<this.bindings[t].length;){var o=this.bindings[t][e],i=o.handler,n=o.ctx,r=o.once,s=n;"undefined"==typeof s&&(s=this);for(var a=arguments.length,f=Array(a>1?a-1:0),h=1;a>h;h++)f[h-1]=arguments[h];i.apply(s,f),r?this.bindings[t].splice(e,1):++e}}}]),t}();C.Utils={getScrollParent:n,getBounds:r,getOffsetParent:s,extend:f,addClass:l,removeClass:h,hasClass:d,updateClasses:c,defer:T,flush:S,uniqueId:O,Evented:W,getScrollBarSize:a};var M=function(){function t(t,e){var o=[],i=!0,n=!1,r=void 0;try{for(var s,a=t[Symbol.iterator]();!(i=(s=a.next()).done)&&(o.push(s.value),!e||o.length!==e);i=!0);}catch(f){n=!0,r=f}finally{try{!i&&a["return"]&&a["return"]()}finally{if(n)throw r}}return o}return function(e,o){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return t(e,o);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),w=function(){function t(t,e){for(var o=0;o<e.length;o++){var i=e[o];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(t,i.key,i)}}return function(e,o,i){return o&&t(e.prototype,o),i&&t(e,i),e}}();if("undefined"==typeof C)throw new Error("You must include the utils.js file before tether.js");var P=C.Utils,n=P.getScrollParent,r=P.getBounds,s=P.getOffsetParent,f=P.extend,l=P.addClass,h=P.removeClass,c=P.updateClasses,T=P.defer,S=P.flush,a=P.getScrollBarSize,k=function(){for(var t=document.createElement("div"),e=["transform","webkitTransform","OTransform","MozTransform","msTransform"],o=0;o<e.length;++o){var i=e[o];if(void 0!==t.style[i])return i}}(),B=[],_=function(){B.forEach(function(t){t.position(!1)}),S()};!function(){var t=null,e=null,o=null,i=function n(){return"undefined"!=typeof e&&e>16?(e=Math.min(e-16,250),void(o=setTimeout(n,250))):void("undefined"!=typeof t&&m()-t<10||("undefined"!=typeof o&&(clearTimeout(o),o=null),t=m(),_(),e=m()-t))};["resize","scroll","touchmove"].forEach(function(t){window.addEventListener(t,i)})}();var z={center:"center",left:"right",right:"left"},F={middle:"middle",top:"bottom",bottom:"top"},L={top:0,left:0,middle:"50%",center:"50%",bottom:"100%",right:"100%"},Y=function(t,e){var o=t.left,i=t.top;return"auto"===o&&(o=z[e.left]),"auto"===i&&(i=F[e.top]),{left:o,top:i}},H=function(t){var e=t.left,o=t.top;return"undefined"!=typeof L[t.left]&&(e=L[t.left]),"undefined"!=typeof L[t.top]&&(o=L[t.top]),{left:e,top:o}},X=function(t){var e=t.split(" "),o=M(e,2),i=o[0],n=o[1];return{top:i,left:n}},j=X,N=function(){function t(e){var o=this;i(this,t),this.position=this.position.bind(this),B.push(this),this.history=[],this.setOptions(e,!1),C.modules.forEach(function(t){"undefined"!=typeof t.initialize&&t.initialize.call(o)}),this.position()}return w(t,[{key:"getClass",value:function(){var t=arguments.length<=0||void 0===arguments[0]?"":arguments[0],e=this.options.classes;return"undefined"!=typeof e&&e[t]?this.options.classes[t]:this.options.classPrefix?this.options.classPrefix+"-"+t:t}},{key:"setOptions",value:function(t){var e=this,o=arguments.length<=1||void 0===arguments[1]?!0:arguments[1],i={offset:"0 0",targetOffset:"0 0",targetAttachment:"auto auto",classPrefix:"tether"};this.options=f(i,t);var r=this.options,s=r.element,a=r.target,h=r.targetModifier;if(this.element=s,this.target=a,this.targetModifier=h,"viewport"===this.target?(this.target=document.body,this.targetModifier="visible"):"scroll-handle"===this.target&&(this.target=document.body,this.targetModifier="scroll-handle"),["element","target"].forEach(function(t){if("undefined"==typeof e[t])throw new Error("Tether Error: Both element and target must be defined");"undefined"!=typeof e[t].jquery?e[t]=e[t][0]:"string"==typeof e[t]&&(e[t]=document.querySelector(e[t]))}),l(this.element,this.getClass("element")),this.options.addTargetClasses!==!1&&l(this.target,this.getClass("target")),!this.options.attachment)throw new Error("Tether Error: You must provide an attachment");this.targetAttachment=j(this.options.targetAttachment),this.attachment=j(this.options.attachment),this.offset=X(this.options.offset),this.targetOffset=X(this.options.targetOffset),"undefined"!=typeof this.scrollParent&&this.disable(),this.scrollParent="scroll-handle"===this.targetModifier?this.target:n(this.target),this.options.enabled!==!1&&this.enable(o)}},{key:"getTargetBounds",value:function(){if("undefined"==typeof this.targetModifier)return r(this.target);if("visible"===this.targetModifier){if(this.target===document.body)return{top:pageYOffset,left:pageXOffset,height:innerHeight,width:innerWidth};var t=r(this.target),e={height:t.height,width:t.width,top:t.top,left:t.left};return e.height=Math.min(e.height,t.height-(pageYOffset-t.top)),e.height=Math.min(e.height,t.height-(t.top+t.height-(pageYOffset+innerHeight))),e.height=Math.min(innerHeight,e.height),e.height-=2,e.width=Math.min(e.width,t.width-(pageXOffset-t.left)),e.width=Math.min(e.width,t.width-(t.left+t.width-(pageXOffset+innerWidth))),e.width=Math.min(innerWidth,e.width),e.width-=2,e.top<pageYOffset&&(e.top=pageYOffset),e.left<pageXOffset&&(e.left=pageXOffset),e}if("scroll-handle"===this.targetModifier){var t=void 0,o=this.target;o===document.body?(o=document.documentElement,t={left:pageXOffset,top:pageYOffset,height:innerHeight,width:innerWidth}):t=r(o);var i=getComputedStyle(o),n=o.scrollWidth>o.clientWidth||[i.overflow,i.overflowX].indexOf("scroll")>=0||this.target!==document.body,s=0;n&&(s=15);var a=t.height-parseFloat(i.borderTopWidth)-parseFloat(i.borderBottomWidth)-s,e={width:15,height:.975*a*(a/o.scrollHeight),left:t.left+t.width-parseFloat(i.borderLeftWidth)-15},f=0;408>a&&this.target===document.body&&(f=-11e-5*Math.pow(a,2)-.00727*a+22.58),this.target!==document.body&&(e.height=Math.max(e.height,24));var h=this.target.scrollTop/(o.scrollHeight-a);return e.top=h*(a-e.height-f)+t.top+parseFloat(i.borderTopWidth),this.target===document.body&&(e.height=Math.max(e.height,24)),e}}},{key:"clearCache",value:function(){this._cache={}}},{key:"cache",value:function(t,e){return"undefined"==typeof this._cache&&(this._cache={}),"undefined"==typeof this._cache[t]&&(this._cache[t]=e.call(this)),this._cache[t]}},{key:"enable",value:function(){var t=arguments.length<=0||void 0===arguments[0]?!0:arguments[0];this.options.addTargetClasses!==!1&&l(this.target,this.getClass("enabled")),l(this.element,this.getClass("enabled")),this.enabled=!0,this.scrollParent!==document&&this.scrollParent.addEventListener("scroll",this.position),t&&this.position()}},{key:"disable",value:function(){h(this.target,this.getClass("enabled")),h(this.element,this.getClass("enabled")),this.enabled=!1,"undefined"!=typeof this.scrollParent&&this.scrollParent.removeEventListener("scroll",this.position)}},{key:"destroy",value:function(){var t=this;this.disable(),B.forEach(function(e,o){return e===t?void B.splice(o,1):void 0})}},{key:"updateAttachClasses",value:function(t,e){var o=this;t=t||this.attachment,e=e||this.targetAttachment;var i=["left","top","bottom","right","middle","center"];"undefined"!=typeof this._addAttachClasses&&this._addAttachClasses.length&&this._addAttachClasses.splice(0,this._addAttachClasses.length),"undefined"==typeof this._addAttachClasses&&(this._addAttachClasses=[]);var n=this._addAttachClasses;t.top&&n.push(this.getClass("element-attached")+"-"+t.top),t.left&&n.push(this.getClass("element-attached")+"-"+t.left),e.top&&n.push(this.getClass("target-attached")+"-"+e.top),e.left&&n.push(this.getClass("target-attached")+"-"+e.left);var r=[];i.forEach(function(t){r.push(o.getClass("element-attached")+"-"+t),r.push(o.getClass("target-attached")+"-"+t)}),T(function(){"undefined"!=typeof o._addAttachClasses&&(c(o.element,o._addAttachClasses,r),o.options.addTargetClasses!==!1&&c(o.target,o._addAttachClasses,r),delete o._addAttachClasses)})}},{key:"position",value:function(){var t=this,e=arguments.length<=0||void 0===arguments[0]?!0:arguments[0];if(this.enabled){this.clearCache();var o=Y(this.targetAttachment,this.attachment);this.updateAttachClasses(this.attachment,o);var i=this.cache("element-bounds",function(){return r(t.element)}),n=i.width,f=i.height;if(0===n&&0===f&&"undefined"!=typeof this.lastSize){var h=this.lastSize;n=h.width,f=h.height}else this.lastSize={width:n,height:f};var l=this.cache("target-bounds",function(){return t.getTargetBounds()}),d=l,u=y(H(this.attachment),{width:n,height:f}),p=y(H(o),d),c=y(this.offset,{width:n,height:f}),g=y(this.targetOffset,d);u=v(u,c),p=v(p,g);for(var m=l.left+p.left-u.left,b=l.top+p.top-u.top,w=0;w<C.modules.length;++w){var O=C.modules[w],E=O.position.call(this,{left:m,top:b,targetAttachment:o,targetPos:l,elementPos:i,offset:u,targetOffset:p,manualOffset:c,manualTargetOffset:g,scrollbarSize:A,attachment:this.attachment});if(E===!1)return!1;"undefined"!=typeof E&&"object"==typeof E&&(b=E.top,m=E.left)}var x={page:{top:b,left:m},viewport:{top:b-pageYOffset,bottom:pageYOffset-b-f+innerHeight,left:m-pageXOffset,right:pageXOffset-m-n+innerWidth}},A=void 0;return document.body.scrollWidth>window.innerWidth&&(A=this.cache("scrollbar-size",a),x.viewport.bottom-=A.height),document.body.scrollHeight>window.innerHeight&&(A=this.cache("scrollbar-size",a),x.viewport.right-=A.width),(-1===["","static"].indexOf(document.body.style.position)||-1===["","static"].indexOf(document.body.parentElement.style.position))&&(x.page.bottom=document.body.scrollHeight-b-f,x.page.right=document.body.scrollWidth-m-n),"undefined"!=typeof this.options.optimizations&&this.options.optimizations.moveElement!==!1&&"undefined"==typeof this.targetModifier&&!function(){var e=t.cache("target-offsetparent",function(){return s(t.target)}),o=t.cache("target-offsetparent-bounds",function(){return r(e)}),i=getComputedStyle(e),n=o,a={};if(["Top","Left","Bottom","Right"].forEach(function(t){a[t.toLowerCase()]=parseFloat(i["border"+t+"Width"])}),o.right=document.body.scrollWidth-o.left-n.width+a.right,o.bottom=document.body.scrollHeight-o.top-n.height+a.bottom,x.page.top>=o.top+a.top&&x.page.bottom>=o.bottom&&x.page.left>=o.left+a.left&&x.page.right>=o.right){var f=e.scrollTop,h=e.scrollLeft;x.offset={top:x.page.top-o.top+f-a.top,left:x.page.left-o.left+h-a.left}}}(),this.move(x),this.history.unshift(x),this.history.length>3&&this.history.pop(),e&&S(),!0}}},{key:"move",value:function(t){var e=this;if("undefined"!=typeof this.element.parentNode){var o={};for(var i in t){o[i]={};for(var n in t[i]){for(var r=!1,a=0;a<this.history.length;++a){var h=this.history[a];if("undefined"!=typeof h[i]&&!g(h[i][n],t[i][n])){r=!0;break}}r||(o[i][n]=!0)}}var l={top:"",left:"",right:"",bottom:""},d=function(t,o){var i="undefined"!=typeof e.options.optimizations,n=i?e.options.optimizations.gpu:null;if(n!==!1){var r=void 0,s=void 0;t.top?(l.top=0,r=o.top):(l.bottom=0,r=-o.bottom),t.left?(l.left=0,s=o.left):(l.right=0,s=-o.right),l[k]="translateX("+Math.round(s)+"px) translateY("+Math.round(r)+"px)","msTransform"!==k&&(l[k]+=" translateZ(0)")}else t.top?l.top=o.top+"px":l.bottom=o.bottom+"px",t.left?l.left=o.left+"px":l.right=o.right+"px"},u=!1;if((o.page.top||o.page.bottom)&&(o.page.left||o.page.right)?(l.position="absolute",d(o.page,t.page)):(o.viewport.top||o.viewport.bottom)&&(o.viewport.left||o.viewport.right)?(l.position="fixed",d(o.viewport,t.viewport)):"undefined"!=typeof o.offset&&o.offset.top&&o.offset.left?!function(){l.position="absolute";var i=e.cache("target-offsetparent",function(){return s(e.target)});s(e.element)!==i&&T(function(){e.element.parentNode.removeChild(e.element),i.appendChild(e.element)}),d(o.offset,t.offset),u=!0}():(l.position="absolute",d({top:!0,left:!0},t.page)),!u){for(var p=!0,c=this.element.parentNode;c&&"BODY"!==c.tagName;){if("static"!==getComputedStyle(c).position){p=!1;break}c=c.parentNode}p||(this.element.parentNode.removeChild(this.element),document.body.appendChild(this.element))}var m={},v=!1;for(var n in l){var y=l[n],b=this.element.style[n];""!==b&&""!==y&&["top","left","bottom","right"].indexOf(n)>=0&&(b=parseFloat(b),y=parseFloat(y)),b!==y&&(v=!0,m[n]=y)}v&&T(function(){f(e.element.style,m)})}}}]),t}();N.modules=[],C.position=_;var R=f(N,C),M=function(){function t(t,e){var o=[],i=!0,n=!1,r=void 0;try{for(var s,a=t[Symbol.iterator]();!(i=(s=a.next()).done)&&(o.push(s.value),!e||o.length!==e);i=!0);}catch(f){n=!0,r=f}finally{try{!i&&a["return"]&&a["return"]()}finally{if(n)throw r}}return o}return function(e,o){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return t(e,o);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),P=C.Utils,r=P.getBounds,f=P.extend,c=P.updateClasses,T=P.defer,U=["left","top","right","bottom"];C.modules.push({position:function(t){var e=this,o=t.top,i=t.left,n=t.targetAttachment;if(!this.options.constraints)return!0;var s=this.cache("element-bounds",function(){return r(e.element)}),a=s.height,h=s.width;if(0===h&&0===a&&"undefined"!=typeof this.lastSize){var l=this.lastSize;h=l.width,a=l.height}var d=this.cache("target-bounds",function(){return e.getTargetBounds()}),u=d.height,p=d.width,g=[this.getClass("pinned"),this.getClass("out-of-bounds")];this.options.constraints.forEach(function(t){var e=t.outOfBoundsClass,o=t.pinnedClass;e&&g.push(e),o&&g.push(o)}),g.forEach(function(t){["left","top","right","bottom"].forEach(function(e){g.push(t+"-"+e)})});var m=[],v=f({},n),y=f({},this.attachment);return this.options.constraints.forEach(function(t){var r=t.to,s=t.attachment,f=t.pin;"undefined"==typeof s&&(s="");var l=void 0,d=void 0;if(s.indexOf(" ")>=0){var c=s.split(" "),g=M(c,2);d=g[0],l=g[1]}else l=d=s;var w=b(e,r);("target"===d||"both"===d)&&(o<w[1]&&"top"===v.top&&(o+=u,v.top="bottom"),o+a>w[3]&&"bottom"===v.top&&(o-=u,v.top="top")),"together"===d&&(o<w[1]&&"top"===v.top&&("bottom"===y.top?(o+=u,v.top="bottom",o+=a,y.top="top"):"top"===y.top&&(o+=u,v.top="bottom",o-=a,y.top="bottom")),o+a>w[3]&&"bottom"===v.top&&("top"===y.top?(o-=u,v.top="top",o-=a,y.top="bottom"):"bottom"===y.top&&(o-=u,v.top="top",o+=a,y.top="top")),"middle"===v.top&&(o+a>w[3]&&"top"===y.top?(o-=a,y.top="bottom"):o<w[1]&&"bottom"===y.top&&(o+=a,y.top="top"))),("target"===l||"both"===l)&&(i<w[0]&&"left"===v.left&&(i+=p,v.left="right"),i+h>w[2]&&"right"===v.left&&(i-=p,v.left="left")),"together"===l&&(i<w[0]&&"left"===v.left?"right"===y.left?(i+=p,v.left="right",i+=h,y.left="left"):"left"===y.left&&(i+=p,v.left="right",i-=h,y.left="right"):i+h>w[2]&&"right"===v.left?"left"===y.left?(i-=p,v.left="left",i-=h,y.left="right"):"right"===y.left&&(i-=p,v.left="left",i+=h,y.left="left"):"center"===v.left&&(i+h>w[2]&&"left"===y.left?(i-=h,y.left="right"):i<w[0]&&"right"===y.left&&(i+=h,y.left="left"))),("element"===d||"both"===d)&&(o<w[1]&&"bottom"===y.top&&(o+=a,y.top="top"),o+a>w[3]&&"top"===y.top&&(o-=a,y.top="bottom")),("element"===l||"both"===l)&&(i<w[0]&&"right"===y.left&&(i+=h,y.left="left"),i+h>w[2]&&"left"===y.left&&(i-=h,y.left="right")),"string"==typeof f?f=f.split(",").map(function(t){return t.trim()}):f===!0&&(f=["top","left","right","bottom"]),f=f||[];var C=[],O=[];o<w[1]&&(f.indexOf("top")>=0?(o=w[1],C.push("top")):O.push("top")),o+a>w[3]&&(f.indexOf("bottom")>=0?(o=w[3]-a,C.push("bottom")):O.push("bottom")),i<w[0]&&(f.indexOf("left")>=0?(i=w[0],C.push("left")):O.push("left")),i+h>w[2]&&(f.indexOf("right")>=0?(i=w[2]-h,C.push("right")):O.push("right")),C.length&&!function(){var t=void 0;t="undefined"!=typeof e.options.pinnedClass?e.options.pinnedClass:e.getClass("pinned"),m.push(t),C.forEach(function(e){m.push(t+"-"+e)})}(),O.length&&!function(){var t=void 0;t="undefined"!=typeof e.options.outOfBoundsClass?e.options.outOfBoundsClass:e.getClass("out-of-bounds"),m.push(t),O.forEach(function(e){m.push(t+"-"+e)})}(),(C.indexOf("left")>=0||C.indexOf("right")>=0)&&(y.left=v.left=!1),(C.indexOf("top")>=0||C.indexOf("bottom")>=0)&&(y.top=v.top=!1),(v.top!==n.top||v.left!==n.left||y.top!==e.attachment.top||y.left!==e.attachment.left)&&e.updateAttachClasses(y,v)}),T(function(){e.options.addTargetClasses!==!1&&c(e.target,m,g),c(e.element,m,g)}),{top:o,left:i}}});var P=C.Utils,r=P.getBounds,c=P.updateClasses,T=P.defer;C.modules.push({position:function(t){var e=this,o=t.top,i=t.left,n=this.cache("element-bounds",function(){return r(e.element)}),s=n.height,a=n.width,f=this.getTargetBounds(),h=o+s,l=i+a,d=[];o<=f.bottom&&h>=f.top&&["left","right"].forEach(function(t){var e=f[t];(e===i||e===l)&&d.push(t)}),i<=f.right&&l>=f.left&&["top","bottom"].forEach(function(t){var e=f[t];(e===o||e===h)&&d.push(t)});var u=[],p=[],g=["left","top","right","bottom"];return u.push(this.getClass("abutted")),g.forEach(function(t){u.push(e.getClass("abutted")+"-"+t)}),d.length&&p.push(this.getClass("abutted")),d.forEach(function(t){p.push(e.getClass("abutted")+"-"+t)}),T(function(){e.options.addTargetClasses!==!1&&c(e.target,p,u),c(e.element,p,u)}),!0}});var M=function(){function t(t,e){var o=[],i=!0,n=!1,r=void 0;try{for(var s,a=t[Symbol.iterator]();!(i=(s=a.next()).done)&&(o.push(s.value),!e||o.length!==e);i=!0);}catch(f){n=!0,r=f}finally{try{!i&&a["return"]&&a["return"]()}finally{if(n)throw r}}return o}return function(e,o){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return t(e,o);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}();return C.modules.push({position:function(t){var e=t.top,o=t.left;if(this.options.shift){var i=this.options.shift;"function"==typeof this.options.shift&&(i=this.options.shift.call(this,{top:e,left:o}));var n=void 0,r=void 0;if("string"==typeof i){i=i.split(" "),i[1]=i[1]||i[0];var s=M(i,2);n=s[0],r=s[1],n=parseFloat(n,10),r=parseFloat(r,10)}else n=i.top,r=i.left;return e+=n,o+=r,{top:e,left:o}}}}),R});
-	}
+	(function (i) {
+	    function h(a, b, c, d, e) { this._listener = b; this._isOnce = c; this.context = d; this._signal = a; this._priority = e || 0; }
+	    function g(a, b) { if (typeof a !== "function")
+	        throw Error("listener is a required param of {fn}() and should be a Function.".replace("{fn}", b)); }
+	    function e() { this._bindings = []; this._prevParams = null; var a = this; this.dispatch = function () { e.prototype.dispatch.apply(a, arguments); }; }
+	    h.prototype = { active: !0, params: null, execute: function (a) {
+	            var b;
+	            this.active && this._listener && (a = this.params ? this.params.concat(a) :
+	                a, b = this._listener.apply(this.context, a), this._isOnce && this.detach());
+	            return b;
+	        }, detach: function () { return this.isBound() ? this._signal.remove(this._listener, this.context) : null; }, isBound: function () { return !!this._signal && !!this._listener; }, isOnce: function () { return this._isOnce; }, getListener: function () { return this._listener; }, getSignal: function () { return this._signal; }, _destroy: function () { delete this._signal; delete this._listener; delete this.context; }, toString: function () {
+	            return "[SignalBinding isOnce:" + this._isOnce +
+	                ", isBound:" + this.isBound() + ", active:" + this.active + "]";
+	        } };
+	    e.prototype = { VERSION: "1.0.0", memorize: !1, _shouldPropagate: !0, active: !0, _registerListener: function (a, b, c, d) { var e = this._indexOfListener(a, c); if (e !== -1) {
+	            if (a = this._bindings[e], a.isOnce() !== b)
+	                throw Error("You cannot add" + (b ? "" : "Once") + "() then add" + (!b ? "" : "Once") + "() the same listener without removing the relationship first.");
+	        }
+	        else
+	            a = new h(this, a, b, c, d), this._addBinding(a); this.memorize && this._prevParams && a.execute(this._prevParams); return a; },
+	        _addBinding: function (a) { var b = this._bindings.length; do
+	            --b;
+	        while (this._bindings[b] && a._priority <= this._bindings[b]._priority); this._bindings.splice(b + 1, 0, a); }, _indexOfListener: function (a, b) { for (var c = this._bindings.length, d; c--;)
+	            if (d = this._bindings[c], d._listener === a && d.context === b)
+	                return c; return -1; }, has: function (a, b) { return this._indexOfListener(a, b) !== -1; }, add: function (a, b, c) { g(a, "add"); return this._registerListener(a, !1, b, c); }, addOnce: function (a, b, c) {
+	            g(a, "addOnce");
+	            return this._registerListener(a, !0, b, c);
+	        }, remove: function (a, b) { g(a, "remove"); var c = this._indexOfListener(a, b); c !== -1 && (this._bindings[c]._destroy(), this._bindings.splice(c, 1)); return a; }, removeAll: function () { for (var a = this._bindings.length; a--;)
+	            this._bindings[a]._destroy(); this._bindings.length = 0; }, getNumListeners: function () { return this._bindings.length; }, halt: function () { this._shouldPropagate = !1; }, dispatch: function (a) {
+	            if (this.active) {
+	                var b = Array.prototype.slice.call(arguments), c = this._bindings.length, d;
+	                if (this.memorize)
+	                    this._prevParams =
+	                        b;
+	                if (c) {
+	                    d = this._bindings.slice();
+	                    this._shouldPropagate = !0;
+	                    do
+	                        c--;
+	                    while (d[c] && this._shouldPropagate && d[c].execute(b) !== !1);
+	                }
+	            }
+	        }, forget: function () { this._prevParams = null; }, dispose: function () { this.removeAll(); delete this._bindings; delete this._prevParams; }, toString: function () { return "[Signal active:" + this.active + " numListeners:" + this.getNumListeners() + "]"; } };
+	    var f = e;
+	    f.Signal = e;
+	     true ? !(__WEBPACK_AMD_DEFINE_RESULT__ = function () { return f; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : typeof module !== "undefined" && module.exports ? module.exports = f : i.signals =
+	        f;
+	})(this);
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2lnbmFscy5taW4uanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvbGliL3NpZ25hbHMubWluLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7RUFNRTtBQUNGLENBQUMsVUFBUyxDQUFDO0lBQUUsU0FBUyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsSUFBRSxJQUFJLENBQUMsU0FBUyxHQUFDLENBQUMsQ0FBQyxDQUFBLElBQUksQ0FBQyxPQUFPLEdBQUMsQ0FBQyxDQUFDLENBQUEsSUFBSSxDQUFDLE9BQU8sR0FBQyxDQUFDLENBQUMsQ0FBQSxJQUFJLENBQUMsT0FBTyxHQUFDLENBQUMsQ0FBQyxDQUFBLElBQUksQ0FBQyxTQUFTLEdBQUMsQ0FBQyxJQUFFLENBQUMsQ0FBQSxDQUFBLENBQUM7SUFBQSxTQUFTLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxJQUFFLElBQUcsT0FBTyxDQUFDLEtBQUcsVUFBVTtRQUFDLE1BQU0sS0FBSyxDQUFDLGtFQUFrRSxDQUFDLE9BQU8sQ0FBQyxNQUFNLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFBLENBQUM7SUFBQSxTQUFTLENBQUMsS0FBRyxJQUFJLENBQUMsU0FBUyxHQUFDLEVBQUUsQ0FBQyxDQUFBLElBQUksQ0FBQyxXQUFXLEdBQUMsSUFBSSxDQUFDLENBQUEsSUFBSSxDQUFDLEdBQUMsSUFBSSxDQUFDLENBQUEsSUFBSSxDQUFDLFFBQVEsR0FBQyxjQUFXLENBQUMsQ0FBQyxTQUFTLENBQUMsUUFBUSxDQUFDLEtBQUssQ0FBQyxDQUFDLEVBQUMsU0FBUyxDQUFDLENBQUEsQ0FBQSxDQUFDLENBQUEsQ0FBQSxDQUFDO0lBQUEsQ0FBQyxDQUFDLFNBQVMsR0FBQyxFQUFDLE1BQU0sRUFBQyxDQUFDLENBQUMsRUFBQyxNQUFNLEVBQUMsSUFBSSxFQUFDLE9BQU8sRUFBQyxVQUFTLENBQUM7WUFBRSxJQUFJ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Q0FBQSxDQUFBLENBQUM7UUFDdGYsV0FBVyxFQUFDLFVBQVMsQ0FBQyxJQUFFLElBQUksQ0FBQyxHQUFDLElBQUksQ0FBQyxTQUFTLENBQUMsTUFBTSxDQUFDLENBQUE7WUFBRSxFQUFFLENBQUMsQ0FBQztlQUFNLElBQUksQ0FBQyxTQUFTLENBQUMsQ0FBQyxDQUFDLElBQUUsQ0FBQyxDQUFDLFNBQVMsSUFBRSxJQUFJLENBQUMsU0FBUyxDQUFDLENBQUMsQ0FBQyxDQUFDLFNBQVMsRUFBRSxDQUFBLElBQUksQ0FBQyxTQUFTLENBQUMsTUFBTSxDQUFDLENBQUMsR0FBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFBLENBQUEsQ0FBQyxFQUFDLGdCQUFnQixFQUFDLFVBQVMsQ0FBQyxFQUFDLENBQUMsSUFBRSxLQUFJLElBQUksQ0FBQyxHQUFDLElBQUksQ0FBQyxTQUFTLENBQUMsTUFBTSxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUU7WUFBRSxJQUFHLENBQUMsR0FBQyxJQUFJLENBQUMsU0FBUyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxTQUFTLEtBQUcsQ0FBQyxJQUFFLENBQUMsQ0FBQyxPQUFPLEtBQUcsQ0FBQztnQkFBQyxPQUFPLENBQUMsQ0FBQyxDQUFBLE9BQU0sQ0FBQyxDQUFDLENBQUEsQ0FBQSxDQUFDLEVBQUMsR0FBRyxFQUFDLFVBQVMsQ0FBQyxFQUFDLENBQUMsSUFBRSxPQUFPLElBQUksQ0FBQyxnQkFBZ0IsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLEtBQUcsQ0FBQyxDQUFDLENBQUEsQ0FBQSxDQUFDLEVBQUMsR0FBRyxFQUFDLFVBQVMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLElBQUUsQ0FBQyxDQUFDLENBQUMsRUFBQyxLQUFLLENBQUMsQ0FBQyxDQUFBLE9BQU8sSUFBSSxDQUFDLGlCQUFpQixDQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUEsQ0FBQSxDQUFDLEVBQUMsT0FBTyxFQUFDLFVB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
 
 /***/ }),
 /* 12 */
 /***/ (function(module, exports) {
 
-	if( typeof importScripts !== 'function' ){
-	(function(w,l,r){function s(a,c){var d=c.getBoundingClientRect();return{x:Math.max(Math.min(a.clientX-d.left,c.clientWidth),0),y:Math.max(Math.min(a.clientY-d.top,c.clientHeight),0)}}function f(a,c,d){a=l.createElementNS("http://www.w3.org/2000/svg",a);for(var b in c)a.setAttribute(b,c[b]);Array.isArray(d)||(d=[d]);c=0;for(b=d[0]&&d.length||0;c<b;c++)a.appendChild(d[c]);return a}function k(a){var c,d,b,e,h=a.h%360/60;e=a.v*a.s;b=e*(1-Math.abs(h%2-1));c=d=a=a.v-e;h=~~h;c+=[e,b,0,0,b,e][h];d+=[b,e,
-	e,b,0,0][h];a+=[0,0,b,e,e,b][h];b=Math.floor(255*c);d=Math.floor(255*d);a=Math.floor(255*a);return{r:b,g:d,b:a,hex:"#"+(16777216|a|d<<8|b<<16).toString(16).slice(1)}}function m(a){var c=a.r,d=a.g,b=a.b;if(1<a.r||1<a.g||1<a.b)c/=255,d/=255,b/=255;var e;a=Math.max(c,d,b);e=a-Math.min(c,d,b);c=(0==e?0:a==c?(d-b)/e+(d<b?6:0):a==d?(b-c)/e+2:(c-d)/e+4)%6*60;return{h:c,s:0==e?0:e/a,v:a}}function x(a,c,d){return function(b){b=s(b,c);a.h=b.y/c.offsetHeight*360;var e=k({h:a.h,s:1,v:1}),h=k({h:a.h,s:a.s,v:a.v});
-	d.style.backgroundColor=e.hex;a.callback&&a.callback(h.hex,{h:a.h,s:a.s,v:a.v},{r:h.r,g:h.g,b:h.b},r,b)}}function y(a,c){return function(d){d=s(d,c);var b=c.offsetHeight;a.s=d.x/c.offsetWidth;a.v=(b-d.y)/b;b=k(a);a.callback&&a.callback(b.hex,{h:a.h,s:a.s,v:a.v},{r:b.r,g:b.g,b:b.b},d)}}function g(a,c,d){if(!(this instanceof g))return new g(a,c,d);this.h=0;this.v=this.s=1;d?(this.callback=d,this.pickerElement=c,this.slideElement=a):(a.innerHTML='<div class="picker-wrapper"><div class="picker"></div><div class="picker-indicator"></div></div><div class="slide-wrapper"><div class="slide"></div><div class="slide-indicator"></div></div>',
-	this.slideElement=a.getElementsByClassName("slide")[0],this.pickerElement=a.getElementsByClassName("picker")[0],this.slideIndicator=a.getElementsByClassName("slide-indicator")[0],this.pickerIndicator=a.getElementsByClassName("picker-indicator")[0],g.positionIndicators(this.slideIndicator,this.pickerIndicator,{x:0,y:0},{x:0,y:0}),this.callback=function(a,b,d,e,f){g.positionIndicators(this.slideIndicator,this.pickerIndicator,f,e);c(a,b,d)});this.slide_listener=x(this,this.slideElement,this.pickerElement);
-	this.picker_listener=y(this,this.pickerElement);d||this.fixIndicators(this.slideIndicator,this.pickerIndicator);a=t.cloneNode(!0);d=u.cloneNode(!0);var b=a.getElementsByTagName("defs")[0].firstChild,e=a.getElementsByTagName("rect")[0];b.id="gradient-hsv-"+n;e.setAttribute("fill","url(#"+b.id+")");b=d.getElementsByTagName("defs")[0];b=[b.firstChild,b.lastChild];e=d.getElementsByTagName("rect");b[0].id="gradient-black-"+n;b[1].id="gradient-white-"+n;e[0].setAttribute("fill","url(#"+b[1].id+")");e[1].setAttribute("fill",
-	"url(#"+b[0].id+")");this.slideElement.appendChild(a);this.pickerElement.appendChild(d);n++;p(this.slideElement,this.slide_listener);p(this.pickerElement,this.picker_listener)}function p(a,c){function d(a){e&&c(a)}function b(a){d(a);e=!1;l.removeEventListener("mouseup",b,!1);l.removeEventListener("mousemove",d,!1)}var e=!1;a.addEventListener("mousedown",function(a){e=!0;a.preventDefault();l.addEventListener("mouseup",b,!0);l.addEventListener("mousemove",d,!1)},!1)}function q(a,c,d,b){a.h=c.h%360;
-	a.s=c.s;a.v=c.v;c=k(a);var e={y:a.h*a.slideElement.offsetHeight/360,x:0},f=a.pickerElement.offsetHeight,f={x:a.s*a.pickerElement.offsetWidth,y:f-a.v*f};a.pickerElement.style.backgroundColor=k({h:a.h,s:1,v:1}).hex;a.callback&&a.callback(b||c.hex,{h:a.h,s:a.s,v:a.v},d||{r:c.r,g:c.g,b:c.b},f,e);return a}var u,t,v={xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"100%",height:"100%"};t=f("svg",v,[f("defs",{},f("linearGradient",{id:"gradient-hsv",x1:"0%",y1:"100%",x2:"0%",y2:"0%"},[f("stop",{offset:"0%",
-	"stop-color":"#FF0000","stop-opacity":"1"}),f("stop",{offset:"13%","stop-color":"#FF00FF","stop-opacity":"1"}),f("stop",{offset:"25%","stop-color":"#8000FF","stop-opacity":"1"}),f("stop",{offset:"38%","stop-color":"#0040FF","stop-opacity":"1"}),f("stop",{offset:"50%","stop-color":"#00FFFF","stop-opacity":"1"}),f("stop",{offset:"63%","stop-color":"#00FF40","stop-opacity":"1"}),f("stop",{offset:"75%","stop-color":"#0BED00","stop-opacity":"1"}),f("stop",{offset:"88%","stop-color":"#FFFF00","stop-opacity":"1"}),
-	f("stop",{offset:"100%","stop-color":"#FF0000","stop-opacity":"1"})])),f("rect",{x:"0",y:"0",width:"100%",height:"100%",fill:"url(#gradient-hsv)"})]);u=f("svg",v,[f("defs",{},[f("linearGradient",{id:"gradient-black",x1:"0%",y1:"100%",x2:"0%",y2:"0%"},[f("stop",{offset:"0%","stop-color":"#000000","stop-opacity":"1"}),f("stop",{offset:"100%","stop-color":"#CC9A81","stop-opacity":"0"})]),f("linearGradient",{id:"gradient-white",x1:"0%",y1:"100%",x2:"100%",y2:"100%"},[f("stop",{offset:"0%","stop-color":"#FFFFFF",
-	"stop-opacity":"1"}),f("stop",{offset:"100%","stop-color":"#CC9A81","stop-opacity":"0"})])]),f("rect",{x:"0",y:"0",width:"100%",height:"100%",fill:"url(#gradient-white)"}),f("rect",{x:"0",y:"0",width:"100%",height:"100%",fill:"url(#gradient-black)"})]);var n=0;g.hsv2rgb=function(a){a=k(a);delete a.hex;return a};g.hsv2hex=function(a){return k(a).hex};g.rgb2hsv=m;g.rgb2hex=function(a){return k(m(a)).hex};g.hex2hsv=function(a){return m(g.hex2rgb(a))};g.hex2rgb=function(a){return{r:parseInt(a.substr(1,
-	2),16),g:parseInt(a.substr(3,2),16),b:parseInt(a.substr(5,2),16)}};g.prototype.setHsv=function(a){return q(this,a)};g.prototype.setRgb=function(a){return q(this,m(a),a)};g.prototype.setHex=function(a){return q(this,g.hex2hsv(a),r,a)};g.positionIndicators=function(a,c,d,b){d&&(a.style.top=d.y-a.offsetHeight/2+"px");b&&(c.style.top=b.y-c.offsetHeight/2+"px",c.style.left=b.x-c.offsetWidth/2+"px")};g.prototype.fixIndicators=function(a,c){p(a,this.slide_listener);p(c,this.picker_listener)};w.ColorPicker=
-	g})(window,window.document);
+	if (typeof importScripts !== 'function') {
+	    (function (w, l, r) {
+	        function s(a, c) { var d = c.getBoundingClientRect(); return { x: Math.max(Math.min(a.clientX - d.left, c.clientWidth), 0), y: Math.max(Math.min(a.clientY - d.top, c.clientHeight), 0) }; }
+	        function f(a, c, d) { a = l.createElementNS("http://www.w3.org/2000/svg", a); for (var b in c)
+	            a.setAttribute(b, c[b]); Array.isArray(d) || (d = [d]); c = 0; for (b = d[0] && d.length || 0; c < b; c++)
+	            a.appendChild(d[c]); return a; }
+	        function k(a) {
+	            var c, d, b, e, h = a.h % 360 / 60;
+	            e = a.v * a.s;
+	            b = e * (1 - Math.abs(h % 2 - 1));
+	            c = d = a = a.v - e;
+	            h = ~~h;
+	            c += [e, b, 0, 0, b, e][h];
+	            d += [b, e,
+	                e, b, 0, 0][h];
+	            a += [0, 0, b, e, e, b][h];
+	            b = Math.floor(255 * c);
+	            d = Math.floor(255 * d);
+	            a = Math.floor(255 * a);
+	            return { r: b, g: d, b: a, hex: "#" + (16777216 | a | d << 8 | b << 16).toString(16).slice(1) };
+	        }
+	        function m(a) { var c = a.r, d = a.g, b = a.b; if (1 < a.r || 1 < a.g || 1 < a.b)
+	            c /= 255, d /= 255, b /= 255; var e; a = Math.max(c, d, b); e = a - Math.min(c, d, b); c = (0 == e ? 0 : a == c ? (d - b) / e + (d < b ? 6 : 0) : a == d ? (b - c) / e + 2 : (c - d) / e + 4) % 6 * 60; return { h: c, s: 0 == e ? 0 : e / a, v: a }; }
+	        function x(a, c, d) {
+	            return function (b) {
+	                b = s(b, c);
+	                a.h = b.y / c.offsetHeight * 360;
+	                var e = k({ h: a.h, s: 1, v: 1 }), h = k({ h: a.h, s: a.s, v: a.v });
+	                d.style.backgroundColor = e.hex;
+	                a.callback && a.callback(h.hex, { h: a.h, s: a.s, v: a.v }, { r: h.r, g: h.g, b: h.b }, r, b);
+	            };
+	        }
+	        function y(a, c) { return function (d) { d = s(d, c); var b = c.offsetHeight; a.s = d.x / c.offsetWidth; a.v = (b - d.y) / b; b = k(a); a.callback && a.callback(b.hex, { h: a.h, s: a.s, v: a.v }, { r: b.r, g: b.g, b: b.b }, d); }; }
+	        function g(a, c, d) {
+	            if (!(this instanceof g))
+	                return new g(a, c, d);
+	            this.h = 0;
+	            this.v = this.s = 1;
+	            d ? (this.callback = d, this.pickerElement = c, this.slideElement = a) : (a.innerHTML = '<div class="picker-wrapper"><div class="picker"></div><div class="picker-indicator"></div></div><div class="slide-wrapper"><div class="slide"></div><div class="slide-indicator"></div></div>',
+	                this.slideElement = a.getElementsByClassName("slide")[0], this.pickerElement = a.getElementsByClassName("picker")[0], this.slideIndicator = a.getElementsByClassName("slide-indicator")[0], this.pickerIndicator = a.getElementsByClassName("picker-indicator")[0], g.positionIndicators(this.slideIndicator, this.pickerIndicator, { x: 0, y: 0 }, { x: 0, y: 0 }), this.callback = function (a, b, d, e, f) { g.positionIndicators(this.slideIndicator, this.pickerIndicator, f, e); c(a, b, d); });
+	            this.slide_listener = x(this, this.slideElement, this.pickerElement);
+	            this.picker_listener = y(this, this.pickerElement);
+	            d || this.fixIndicators(this.slideIndicator, this.pickerIndicator);
+	            a = t.cloneNode(!0);
+	            d = u.cloneNode(!0);
+	            var b = a.getElementsByTagName("defs")[0].firstChild, e = a.getElementsByTagName("rect")[0];
+	            b.id = "gradient-hsv-" + n;
+	            e.setAttribute("fill", "url(#" + b.id + ")");
+	            b = d.getElementsByTagName("defs")[0];
+	            b = [b.firstChild, b.lastChild];
+	            e = d.getElementsByTagName("rect");
+	            b[0].id = "gradient-black-" + n;
+	            b[1].id = "gradient-white-" + n;
+	            e[0].setAttribute("fill", "url(#" + b[1].id + ")");
+	            e[1].setAttribute("fill", "url(#" + b[0].id + ")");
+	            this.slideElement.appendChild(a);
+	            this.pickerElement.appendChild(d);
+	            n++;
+	            p(this.slideElement, this.slide_listener);
+	            p(this.pickerElement, this.picker_listener);
+	        }
+	        function p(a, c) { function d(a) { e && c(a); } function b(a) { d(a); e = !1; l.removeEventListener("mouseup", b, !1); l.removeEventListener("mousemove", d, !1); } var e = !1; a.addEventListener("mousedown", function (a) { e = !0; a.preventDefault(); l.addEventListener("mouseup", b, !0); l.addEventListener("mousemove", d, !1); }, !1); }
+	        function q(a, c, d, b) {
+	            a.h = c.h % 360;
+	            a.s = c.s;
+	            a.v = c.v;
+	            c = k(a);
+	            var e = { y: a.h * a.slideElement.offsetHeight / 360, x: 0 }, f = a.pickerElement.offsetHeight, f = { x: a.s * a.pickerElement.offsetWidth, y: f - a.v * f };
+	            a.pickerElement.style.backgroundColor = k({ h: a.h, s: 1, v: 1 }).hex;
+	            a.callback && a.callback(b || c.hex, { h: a.h, s: a.s, v: a.v }, d || { r: c.r, g: c.g, b: c.b }, f, e);
+	            return a;
+	        }
+	        var u, t, v = { xmlns: "http://www.w3.org/2000/svg", version: "1.1", width: "100%", height: "100%" };
+	        t = f("svg", v, [f("defs", {}, f("linearGradient", { id: "gradient-hsv", x1: "0%", y1: "100%", x2: "0%", y2: "0%" }, [f("stop", { offset: "0%",
+	                    "stop-color": "#FF0000", "stop-opacity": "1" }), f("stop", { offset: "13%", "stop-color": "#FF00FF", "stop-opacity": "1" }), f("stop", { offset: "25%", "stop-color": "#8000FF", "stop-opacity": "1" }), f("stop", { offset: "38%", "stop-color": "#0040FF", "stop-opacity": "1" }), f("stop", { offset: "50%", "stop-color": "#00FFFF", "stop-opacity": "1" }), f("stop", { offset: "63%", "stop-color": "#00FF40", "stop-opacity": "1" }), f("stop", { offset: "75%", "stop-color": "#0BED00", "stop-opacity": "1" }), f("stop", { offset: "88%", "stop-color": "#FFFF00", "stop-opacity": "1" }),
+	                f("stop", { offset: "100%", "stop-color": "#FF0000", "stop-opacity": "1" })])), f("rect", { x: "0", y: "0", width: "100%", height: "100%", fill: "url(#gradient-hsv)" })]);
+	        u = f("svg", v, [f("defs", {}, [f("linearGradient", { id: "gradient-black", x1: "0%", y1: "100%", x2: "0%", y2: "0%" }, [f("stop", { offset: "0%", "stop-color": "#000000", "stop-opacity": "1" }), f("stop", { offset: "100%", "stop-color": "#CC9A81", "stop-opacity": "0" })]), f("linearGradient", { id: "gradient-white", x1: "0%", y1: "100%", x2: "100%", y2: "100%" }, [f("stop", { offset: "0%", "stop-color": "#FFFFFF",
+	                        "stop-opacity": "1" }), f("stop", { offset: "100%", "stop-color": "#CC9A81", "stop-opacity": "0" })])]), f("rect", { x: "0", y: "0", width: "100%", height: "100%", fill: "url(#gradient-white)" }), f("rect", { x: "0", y: "0", width: "100%", height: "100%", fill: "url(#gradient-black)" })]);
+	        var n = 0;
+	        g.hsv2rgb = function (a) { a = k(a); delete a.hex; return a; };
+	        g.hsv2hex = function (a) { return k(a).hex; };
+	        g.rgb2hsv = m;
+	        g.rgb2hex = function (a) { return k(m(a)).hex; };
+	        g.hex2hsv = function (a) { return m(g.hex2rgb(a)); };
+	        g.hex2rgb = function (a) {
+	            return { r: parseInt(a.substr(1, 2), 16), g: parseInt(a.substr(3, 2), 16), b: parseInt(a.substr(5, 2), 16) };
+	        };
+	        g.prototype.setHsv = function (a) { return q(this, a); };
+	        g.prototype.setRgb = function (a) { return q(this, m(a), a); };
+	        g.prototype.setHex = function (a) { return q(this, g.hex2hsv(a), r, a); };
+	        g.positionIndicators = function (a, c, d, b) { d && (a.style.top = d.y - a.offsetHeight / 2 + "px"); b && (c.style.top = b.y - c.offsetHeight / 2 + "px", c.style.left = b.x - c.offsetWidth / 2 + "px"); };
+	        g.prototype.fixIndicators = function (a, c) { p(a, this.slide_listener); p(c, this.picker_listener); };
+	        w.ColorPicker =
+	            g;
+	    })(window, window.document);
 	}
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29sb3JwaWNrZXIubWluLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL2xpYi9jb2xvcnBpY2tlci5taW4uanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsSUFBSSxPQUFPLGFBQWEsS0FBSyxVQUFVLEVBQUU7SUFDekMsQ0FBQyxVQUFTLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQztRQUFFLFNBQVMsQ0FBQyxDQUFDLENBQUMsRUFBQyxDQUFDLElBQUUsSUFBSSxDQUFDLEdBQUMsQ0FBQyxDQUFDLHFCQUFxQixFQUFFLENBQUMsQ0FBQSxPQUFNLEVBQUMsQ0FBQyxFQUFDLElBQUksQ0FBQyxHQUFHLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxDQUFDLENBQUMsT0FBTyxHQUFDLENBQUMsQ0FBQyxJQUFJLEVBQUMsQ0FBQyxDQUFDLFdBQVcsQ0FBQyxFQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxJQUFJLENBQUMsR0FBRyxDQUFDLElBQUksQ0FBQyxHQUFHLENBQUMsQ0FBQyxDQUFDLE9BQU8sR0FBQyxDQUFDLENBQUMsR0FBRyxFQUFDLENBQUMsQ0FBQyxZQUFZLENBQUMsRUFBQyxDQUFDLENBQUMsRUFBQyxDQUFBLENBQUEsQ0FBQztRQUFBLFNBQVMsQ0FBQyxDQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxJQUFFLENBQUMsR0FBQyxDQUFDLENBQUMsZUFBZSxDQUFDLDRCQUE0QixFQUFDLENBQUMsQ0FBQyxDQUFDLENBQUEsS0FBSSxJQUFJLENBQUMsSUFBSSxDQUFDO1lBQUMsQ0FBQyxDQUFDLFlBQVksQ0FBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQSxLQUFLLENBQUMsT0FBTyxDQUFDLENBQUMsQ0FBQyxJQUFFLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFBLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQSxLQUFJLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLElBQUUsQ0FBQyxDQUFDLE1BQU0sSUFBRSxDQUFDLEVBQUMsQ0FBQyxHQUFDLENBQUMsRUFBQyxDQUFDLEVBQUU7WUFBQyxDQUFDLENBQUMsV0FBVyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUEsT0FBTyxDQUFDLENBQUEsQ0FBQSxDQUFDO1FBQUEsU0FBUyxDQUFDLENBQUMsQ0FBQztZQUFFLElBQUksQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQyxHQUFDLEdBQUcsR0FBQyxFQUFFLENBQUM7WUFBQSxDQUFDLEdBQUMsQ0FBQyxDQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQUEsQ0FBQyxHQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsR0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLENBQUMsR0FBQyxDQUFDLEdBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQztZQUFBLENBQUMsR0FBQyxDQUFDLEdBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLEdBQUMsQ0FBQyxDQUFDO1lBQUEsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLENBQUM7WUFBQSxDQUFDLElBQUUsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQUEsQ0FBQyxJQUFFLENBQUMsQ0FBQyxFQUFDLENBQUM7Z0JBQ3BmLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQUEsQ0FBQyxJQUFFLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQztZQUFBLENBQUMsR0FBQyxJQUFJLENBQUMsS0FBSyxDQUFDLEdBQUcsR0FBQyxDQUFDLENBQUMsQ0FBQztZQUFBLENBQUMsR0FBQyxJQUFJLENBQUMsS0FBSyxDQUFDLEdBQUcsR0FBQyxDQUFDLENBQUMsQ0FBQztZQUFBLENBQUMsR0FBQyxJQUFJLENBQUMsS0FBSyxDQUFDLEdBQUcsR0FBQyxDQUFDLENBQUMsQ0FBQztZQUFBLE9BQU0sRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxHQUFHLEVBQUMsR0FBRyxHQUFDLENBQUMsUUFBUSxHQUFDLENBQUMsR0FBQyxDQUFDLElBQUUsQ0FBQyxHQUFDLENBQUMsSUFBRSxFQUFFLENBQUMsQ0FBQyxRQUFRLENBQUMsRUFBRSxDQUFDLENBQUMsS0FBSyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUE7UUFBQSxDQUFDO1FBQUEsU0FBUyxDQUFDLENBQUMsQ0FBQyxJQUFFLElBQUksQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQSxJQUFHLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQyxJQUFFLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQyxJQUFFLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQztZQUFDLENBQUMsSUFBRSxHQUFHLEVBQUMsQ0FBQyxJQUFFLEdBQUcsRUFBQyxDQUFDLElBQUUsR0FBRyxDQUFDLENBQUEsSUFBSSxDQUFDLENBQUMsQ0FBQSxDQUFDLEdBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLENBQUEsQ0FBQyxHQUFDLENBQUMsR0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQSxDQUFDLEdBQUMsQ0FBQyxDQUFDLElBQUUsQ0FBQyxDQUFBLENBQUMsQ0FBQSxDQUFDLENBQUEsQ0FBQyxDQUFBLENBQUMsSUFBRSxDQUFDLENBQUEsQ0FBQyxDQUFBLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxHQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsR0FBQyxDQUFDLENBQUEsQ0FBQyxDQUFBLENBQUMsQ0FBQSxDQUFDLENBQUEsQ0FBQyxDQUFDLENBQUEsQ0FBQyxDQUFBLENBQUMsSUFBRSxDQUFDLENBQUEsQ0FBQyxDQUFBLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxHQUFDLENBQUMsR0FBQyxDQUFDLENBQUEsQ0FBQyxDQUFBLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxHQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsR0FBQyxDQUFDLEdBQUMsRUFBRSxDQUFDLENBQUEsT0FBTSxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsSUFBRSxDQUFDLENBQUEsQ0FBQyxDQUFBLENBQUMsQ0FBQSxDQUFDLENBQUEsQ0FBQyxHQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUEsQ0FBQSxDQUFDO1FBQUEsU0FBUyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDO1lBQUUsT0FBTyxVQUFTLENBQUM7Z0JBQUUsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUM7Z0JBQUEsQ0FBQyxDQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxZQUFZLEdBQUMsR0FBRyxDQUFDO2dCQUFBLElBQUksQ0FBQyxHQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQztnQkFDMWYsQ0FBQyxDQUFDLEtBQUssQ0FBQyxlQUFlLEdBQUMsQ0FBQyxDQUFDLEdBQUcsQ0FBQztnQkFBQSxDQUFDLENBQUMsUUFBUSxJQUFFLENBQUMsQ0FBQyxRQUFRLENBQUMsQ0FBQyxDQUFDLEdBQUcsRUFBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLEVBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQTtZQUFBLENBQUMsQ0FBQTtRQUFBLENBQUM7UUFBQSxTQUFTLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxJQUFFLE9BQU8sVUFBUyxDQUFDLElBQUUsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQSxJQUFJLENBQUMsR0FBQyxDQUFDLENBQUMsWUFBWSxDQUFDLENBQUEsQ0FBQyxDQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxXQUFXLENBQUMsQ0FBQSxDQUFDLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQSxDQUFDLEdBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUEsQ0FBQyxDQUFDLFFBQVEsSUFBRSxDQUFDLENBQUMsUUFBUSxDQUFDLENBQUMsQ0FBQyxHQUFHLEVBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxFQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQSxDQUFBLENBQUMsQ0FBQSxDQUFBLENBQUM7UUFBQSxTQUFTLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUM7WUFBRSxJQUFHLENBQUMsQ0FBQyxJQUFJLFlBQVksQ0FBQyxDQUFDO2dCQUFDLE9BQU8sSUFBSSxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQztZQUFBLElBQUksQ0FBQyxDQUFDLEdBQUMsQ0FBQyxDQUFDO1lBQUEsSUFBSSxDQUFDLENBQUMsR0FBQyxJQUFJLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQztZQUFBLENBQUMsQ0FBQSxDQUFDLENBQUEsQ0FBQyxJQUFJLENBQUMsUUFBUSxHQUFDLENBQUMsRUFBQyxJQUFJLENBQUMsYUFBYSxHQUFDLENBQUMsRUFBQyxJQUFJLENBQUMsWUFBWSxHQUFDLENBQUMsQ0FBQyxDQUFBLENBQUMsQ0FBQSxDQUFDLENBQUMsQ0FBQyxTQUFTLEdBQUMsK0xBQStMO2dCQUM5bkIsSUFBSSxDQUFDLFlBQVksR0FBQyxDQUFDLENBQUMsc0JBQXNCLENBQUMsT0FBTyxDQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsSUFBSSxDQUFDLGFBQWEsR0FBQyxDQUFDLENBQUMsc0JBQXNCLENBQUMsUUFBUSxDQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsSUFBSSxDQUFDLGNBQWMsR0FBQyxDQUFDLENBQUMsc0JBQXNCLENBQUMsaUJBQWlCLENBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxJQUFJLENBQUMsZUFBZSxHQUFDLENBQUMsQ0FBQyxzQkFBc0IsQ0FBQyxrQkFBa0IsQ0FBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxrQkFBa0IsQ0FBQyxJQUFJLENBQUMsY0FBYyxFQUFDLElBQUksQ0FBQyxlQUFlLEVBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsRUFBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsSUFBSSxDQUFDLFFBQVEsR0FBQyxVQUFTLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLElBQUUsQ0FBQyxDQUFDLGtCQUFrQixDQUFDLElBQUksQ0FBQyxjQUFjLEVBQUMsSUFBSSxDQUFDLGVBQWUsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQSxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQSxDQUFBLENBQUMsQ0FBQyxDQUFDO1lBQUEsSUFBSSxDQUFDLGNBQWMsR0FBQyxDQUFDLENBQUMsSUFBSSxFQUFDLElBQUksQ0FBQyxZQUFZLEVBQUMsSUFBSSxDQUFDLGFBQWEsQ0FBQyxDQUFDO1lBQzVmLElBQUksQ0FBQyxlQUFlLEdBQUMsQ0FBQyxDQUFDLElBQUksRUFBQyxJQUFJLENBQUMsYUFBYSxDQUFDLENBQUM7WUFBQSxDQUFDLElBQUUsSUFBSSxDQUFDLGFBQWEsQ0FBQyxJQUFJLENBQUMsY0FBYyxFQUFDLElBQUksQ0FBQyxlQUFlLENBQUMsQ0FBQztZQUFBLENBQUMsR0FBQyxDQUFDLENBQUMsU0FBUyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUM7WUFBQSxDQUFDLEdBQUMsQ0FBQyxDQUFDLFNBQVMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQUEsSUFBSSxDQUFDLEdBQUMsQ0FBQyxDQUFDLG9CQUFvQixDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLFVBQVUsRUFBQyxDQUFDLEdBQUMsQ0FBQyxDQUFDLG9CQUFvQixDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQUEsQ0FBQyxDQUFDLEVBQUUsR0FBQyxlQUFlLEdBQUMsQ0FBQyxDQUFDO1lBQUEsQ0FBQyxDQUFDLFlBQVksQ0FBQyxNQUFNLEVBQUMsT0FBTyxHQUFDLENBQUMsQ0FBQyxFQUFFLEdBQUMsR0FBRyxDQUFDLENBQUM7WUFBQSxDQUFDLEdBQUMsQ0FBQyxDQUFDLG9CQUFvQixDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQUEsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLFVBQVUsRUFBQyxDQUFDLENBQUMsU0FBUyxDQUFDLENBQUM7WUFBQSxDQUFDLEdBQUMsQ0FBQyxDQUFDLG9CQUFvQixDQUFDLE1BQU0sQ0FBQyxDQUFDO1lBQUEsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUUsR0FBQyxpQkFBaUIsR0FBQyxDQUFDLENBQUM7WUFBQSxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsRUFBRSxHQUFDLGlCQUFpQixHQUFDLENBQUMsQ0FBQztZQUFBLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxZQUFZLENBQUMsTUFBTSxFQUFDLE9BQU8sR0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsRUFBRSxHQUFDLEdBQUcsQ0FBQyxDQUFDO1lBQUEsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLFlBQVksQ0FBQyxNQUFNLEVBQzFnQixPQUFPLEdBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUUsR0FBQyxHQUFHLENBQUMsQ0FBQztZQUFBLElBQUksQ0FBQyxZQUFZLENBQUMsV0FBVyxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQUEsSUFBSSxDQUFDLGFBQWEsQ0FBQyxXQUFXLENBQUMsQ0FBQyxDQUFDLENBQUM7WUFBQSxDQUFDLEVBQUUsQ0FBQztZQUFBLENBQUMsQ0FBQyxJQUFJLENBQUMsWUFBWSxFQUFDLElBQUksQ0FBQyxjQUFjLENBQUMsQ0FBQztZQUFBLENBQUMsQ0FBQyxJQUFJLENBQUMsYUFBYSxFQUFDLElBQUksQ0FBQyxlQUFlLENBQUMsQ0FBQTtRQUFBLENBQUM7UUFBQSxTQUFTLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxJQUFFLFNBQVMsQ0FBQyxDQUFDLENBQUMsSUFBRSxDQUFDLElBQUUsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFBLENBQUEsQ0FBQyxDQUFBLFNBQVMsQ0FBQyxDQUFDLENBQUMsSUFBRSxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQSxDQUFDLEdBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQSxDQUFDLENBQUMsbUJBQW1CLENBQUMsU0FBUyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUEsQ0FBQyxDQUFDLG1CQUFtQixDQUFDLFdBQVcsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQSxDQUFBLENBQUMsQ0FBQSxJQUFJLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFBLENBQUMsQ0FBQyxnQkFBZ0IsQ0FBQyxXQUFXLEVBQUMsVUFBUyxDQUFDLElBQUUsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLENBQUEsQ0FBQyxDQUFDLGNBQWMsRUFBRSxDQUFDLENBQUEsQ0FBQyxDQUFDLGdCQUFnQixDQUFDLFNBQVMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFBLENBQUMsQ0FBQyxnQkFBZ0IsQ0FBQyxXQUFXLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLENBQUEsQ0FBQSxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQSxDQUFBLENBQUM7UUFBQSxTQUFTLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDO1lBQUUsQ0FBQyxDQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsQ0FBQyxHQUFDLEdBQUcsQ0FBQztZQUNyZixDQUFDLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLENBQUM7WUFBQSxDQUFDLENBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLENBQUM7WUFBQSxDQUFDLEdBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQUEsSUFBSSxDQUFDLEdBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsWUFBWSxDQUFDLFlBQVksR0FBQyxHQUFHLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxFQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsYUFBYSxDQUFDLFlBQVksRUFBQyxDQUFDLEdBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsYUFBYSxDQUFDLFdBQVcsRUFBQyxDQUFDLEVBQUMsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLEdBQUMsQ0FBQyxFQUFDLENBQUM7WUFBQSxDQUFDLENBQUMsYUFBYSxDQUFDLEtBQUssQ0FBQyxlQUFlLEdBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxHQUFHLENBQUM7WUFBQSxDQUFDLENBQUMsUUFBUSxJQUFFLENBQUMsQ0FBQyxRQUFRLENBQUMsQ0FBQyxJQUFFLENBQUMsQ0FBQyxHQUFHLEVBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxFQUFDLENBQUMsSUFBRSxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDO1lBQUEsT0FBTyxDQUFDLENBQUE7UUFBQSxDQUFDO1FBQUEsSUFBSSxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsR0FBQyxFQUFDLEtBQUssRUFBQyw0QkFBNEIsRUFBQyxPQUFPLEVBQUMsS0FBSyxFQUFDLEtBQUssRUFBQyxNQUFNLEVBQUMsTUFBTSxFQUFDLE1BQU0sRUFBQyxDQUFDO1FBQUEsQ0FBQyxHQUFDLENBQUMsQ0FBQyxLQUFLLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLE1BQU0sRUFBQyxFQUFFLEVBQUMsQ0FBQyxDQUFDLGdCQUFnQixFQUFDLEVBQUMsRUFBRSxFQUFDLGNBQWMsRUFBQyxFQUFFLEVBQUMsSUFBSSxFQUFDLEVBQUUsRUFBQyxNQUFNLEVBQUMsRUFBRSxFQUFDLElBQUksRUFBQyxFQUFFLEVBQUMsSUFBSSxFQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUMsTUFBTSxFQUFDLEVBQUMsTUFBTSxFQUFDLElBQUk7b0JBQzlmLFlBQVksRUFBQyxTQUFTLEVBQUMsY0FBYyxFQUFDLEdBQUcsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLE1BQU0sRUFBQyxFQUFDLE1BQU0sRUFBQyxLQUFLLEVBQUMsWUFBWSxFQUFDLFNBQVMsRUFBQyxjQUFjLEVBQUMsR0FBRyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsTUFBTSxFQUFDLEVBQUMsTUFBTSxFQUFDLEtBQUssRUFBQyxZQUFZLEVBQUMsU0FBUyxFQUFDLGNBQWMsRUFBQyxHQUFHLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxNQUFNLEVBQUMsRUFBQyxNQUFNLEVBQUMsS0FBSyxFQUFDLFlBQVksRUFBQyxTQUFTLEVBQUMsY0FBYyxFQUFDLEdBQUcsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLE1BQU0sRUFBQyxFQUFDLE1BQU0sRUFBQyxLQUFLLEVBQUMsWUFBWSxFQUFDLFNBQVMsRUFBQyxjQUFjLEVBQUMsR0FBRyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsTUFBTSxFQUFDLEVBQUMsTUFBTSxFQUFDLEtBQUssRUFBQyxZQUFZLEVBQUMsU0FBUyxFQUFDLGNBQWMsRUFBQyxHQUFHLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxNQUFNLEVBQUMsRUFBQyxNQUFNLEVBQUMsS0FBSyxFQUFDLFlBQVksRUFBQyxTQUFTLEVBQUMsY0FBYyxFQUFDLEdBQUcsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLE1BQU0sRUFBQyxFQUFDLE1BQU0sRUFBQyxLQUFLLEVBQUMsWUFBWSxFQUFDLFNBQVMsRUFBQyxjQUFjLEVBQUMsR0FBRyxFQUFDLENBQUM7Z0JBQ2hnQixDQUFDLENBQUMsTUFBTSxFQUFDLEVBQUMsTUFBTSxFQUFDLE1BQU0sRUFBQyxZQUFZLEVBQUMsU0FBUyxFQUFDLGNBQWMsRUFBQyxHQUFHLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxNQUFNLEVBQUMsRUFBQyxDQUFDLEVBQUMsR0FBRyxFQUFDLENBQUMsRUFBQyxHQUFHLEVBQUMsS0FBSyxFQUFDLE1BQU0sRUFBQyxNQUFNLEVBQUMsTUFBTSxFQUFDLElBQUksRUFBQyxvQkFBb0IsRUFBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO1FBQUEsQ0FBQyxHQUFDLENBQUMsQ0FBQyxLQUFLLEVBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLE1BQU0sRUFBQyxFQUFFLEVBQUMsQ0FBQyxDQUFDLENBQUMsZ0JBQWdCLEVBQUMsRUFBQyxFQUFFLEVBQUMsZ0JBQWdCLEVBQUMsRUFBRSxFQUFDLElBQUksRUFBQyxFQUFFLEVBQUMsTUFBTSxFQUFDLEVBQUUsRUFBQyxJQUFJLEVBQUMsRUFBRSxFQUFDLElBQUksRUFBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLE1BQU0sRUFBQyxFQUFDLE1BQU0sRUFBQyxJQUFJLEVBQUMsWUFBWSxFQUFDLFNBQVMsRUFBQyxjQUFjLEVBQUMsR0FBRyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsTUFBTSxFQUFDLEVBQUMsTUFBTSxFQUFDLE1BQU0sRUFBQyxZQUFZLEVBQUMsU0FBUyxFQUFDLGNBQWMsRUFBQyxHQUFHLEVBQUMsQ0FBQyxDQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsZ0JBQWdCLEVBQUMsRUFBQyxFQUFFLEVBQUMsZ0JBQWdCLEVBQUMsRUFBRSxFQUFDLElBQUksRUFBQyxFQUFFLEVBQUMsTUFBTSxFQUFDLEVBQUUsRUFBQyxNQUFNLEVBQUMsRUFBRSxFQUFDLE1BQU0sRUFBQyxFQUFDLENBQUMsQ0FBQyxDQUFDLE1BQU0sRUFBQyxFQUFDLE1BQU0sRUFBQyxJQUFJLEVBQUMsWUFBWSxFQUFDLFNBQVM7d0JBQ2hnQixjQUFjLEVBQUMsR0FBRyxFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsTUFBTSxFQUFDLEVBQUMsTUFBTSxFQUFDLE1BQU0sRUFBQyxZQUFZLEVBQUMsU0FBUyxFQUFDLGNBQWMsRUFBQyxHQUFHLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLE1BQU0sRUFBQyxFQUFDLENBQUMsRUFBQyxHQUFHLEVBQUMsQ0FBQyxFQUFDLEdBQUcsRUFBQyxLQUFLLEVBQUMsTUFBTSxFQUFDLE1BQU0sRUFBQyxNQUFNLEVBQUMsSUFBSSxFQUFDLHNCQUFzQixFQUFDLENBQUMsRUFBQyxDQUFDLENBQUMsTUFBTSxFQUFDLEVBQUMsQ0FBQyxFQUFDLEdBQUcsRUFBQyxDQUFDLEVBQUMsR0FBRyxFQUFDLEtBQUssRUFBQyxNQUFNLEVBQUMsTUFBTSxFQUFDLE1BQU0sRUFBQyxJQUFJLEVBQUMsc0JBQXNCLEVBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQztRQUFBLElBQUksQ0FBQyxHQUFDLENBQUMsQ0FBQztRQUFBLENBQUMsQ0FBQyxPQUFPLEdBQUMsVUFBUyxDQUFDLElBQUUsQ0FBQyxHQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFBLE9BQU8sQ0FBQyxDQUFDLEdBQUcsQ0FBQyxDQUFBLE9BQU8sQ0FBQyxDQUFBLENBQUEsQ0FBQyxDQUFDO1FBQUEsQ0FBQyxDQUFDLE9BQU8sR0FBQyxVQUFTLENBQUMsSUFBRSxPQUFPLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxHQUFHLENBQUEsQ0FBQSxDQUFDLENBQUM7UUFBQSxDQUFDLENBQUMsT0FBTyxHQUFDLENBQUMsQ0FBQztRQUFBLENBQUMsQ0FBQyxPQUFPLEdBQUMsVUFBUyxDQUFDLElBQUUsT0FBTyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsR0FBRyxDQUFBLENBQUEsQ0FBQyxDQUFDO1FBQUEsQ0FBQyxDQUFDLE9BQU8sR0FBQyxVQUFTLENBQUMsSUFBRSxPQUFPLENBQUMsQ0FBQyxDQUFDLENBQUMsT0FBTyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUEsQ0FBQSxDQUFDLENBQUM7UUFBQSxDQUFDLENBQUMsT0FBTyxHQUFDLFVBQVMsQ0FBQztZQUFFLE9BQU0sRUFBQyxDQUFDLEVBQUMsUUFBUSxDQUFDLENBQUMsQ0FBQyxNQUFNLENBQUMsQ0FBQyxFQUN0ZixDQUFDLENBQUMsRUFBQyxFQUFFLENBQUMsRUFBQyxDQUFDLEVBQUMsUUFBUSxDQUFDLENBQUMsQ0FBQyxNQUFNLENBQUMsQ0FBQyxFQUFDLENBQUMsQ0FBQyxFQUFDLEVBQUUsQ0FBQyxFQUFDLENBQUMsRUFBQyxRQUFRLENBQUMsQ0FBQyxDQUFDLE1BQU0sQ0FBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLEVBQUMsRUFBRSxDQUFDLEVBQUMsQ0FBQTtRQUFBLENBQUMsQ0FBQztRQUFBLENBQUMsQ0FBQyxTQUFTLENBQUMsTUFBTSxHQUFDLFVBQVMsQ0FBQyxJQUFFLE9BQU8sQ0FBQyxDQUFDLElBQUksRUFBQyxDQUFDLENBQUMsQ0FBQSxDQUFBLENBQUMsQ0FBQztRQUFBLENBQUMsQ0FBQyxTQUFTLENBQUMsTUFBTSxHQUFDLFVBQVMsQ0FBQyxJQUFFLE9BQU8sQ0FBQyxDQUFDLElBQUksRUFBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUEsQ0FBQSxDQUFDLENBQUM7UUFBQSxDQUFDLENBQUMsU0FBUyxDQUFDLE1BQU0sR0FBQyxVQUFTLENBQUMsSUFBRSxPQUFPLENBQUMsQ0FBQyxJQUFJLEVBQUMsQ0FBQyxDQUFDLE9BQU8sQ0FBQyxDQUFDLENBQUMsRUFBQyxDQUFDLEVBQUMsQ0FBQyxDQUFDLENBQUEsQ0FBQSxDQUFDLENBQUM7UUFBQSxDQUFDLENBQUMsa0JBQWtCLEdBQUMsVUFBUyxDQUFDLEVBQUMsQ0FBQyxFQUFDLENBQUMsRUFBQyxDQUFDLElBQUUsQ0FBQyxJQUFFLENBQUMsQ0FBQyxDQUFDLEtBQUssQ0FBQyxHQUFHLEdBQUMsQ0FBQyxDQUFDLENBQUMsR0FBQyxDQUFDLENBQUMsWUFBWSxHQUFDLENBQUMsR0FBQyxJQUFJLENBQUMsQ0FBQyxDQUFBLENBQUMsSUFBRSxDQUFDLENBQUMsQ0FBQyxLQUFLLENBQUMsR0FBRyxHQUFDLENBQUMsQ0FBQyxDQUFDLEdBQUMsQ0FBQyxDQUFDLFlBQVksR0FBQyxDQUFDLEdBQUMsSUFBSSxFQUFDLENBQUMsQ0FBQyxLQUFLLENBQUMsSUFBSSxHQUFDLENBQUMsQ0FBQyxDQUFDLEdBQUMsQ0FBQyxDQUFDLFdBQVcsR0FBQyxDQUFDLEdBQUMsSUFBSSxDQUFDLENBQUEsQ0FBQSxDQUFDLENBQUM7UUFBQSxDQUFDLENBQUMsU0FBUyxDQUFDLGFBQWEsR0FBQyxVQUFTLENBQUMsRUFBQyxDQUFDLElBQUUsQ0FBQyxDQUFDLENBQUMsRUFBQyxJQUFJLENBQUMsY0FBYyxDQUFDLENBQUMsQ0FBQSxDQUFDLENBQUMsQ0FBQyxFQUFDLElBQUksQ0FBQyxlQUFlLENBQUMsQ0FBQSxDQUFBLENBQUMsQ0FBQztRQUFBLENBQUMsQ0FBQyxXQUFXO1lBQ3ZmLENBQUMsQ0FBQTtJQUFBLENBQUMsQ0FBQyxDQUFDLE1BQU0sRUFBQyxNQUFNLENBQUMsUUFBUSxDQUFDLENBQUM7Q0FDM0IifQ==
 
 /***/ }),
 /* 13 */
@@ -14086,7 +14153,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	 * @author mrdoob / http://mrdoob.com/
 	 * The MIT License, Copyright &copy; 2010-2016 three.js authors
 	 */
-	
 	// TODO changes by Alexander S. Rose
 	// - more events and properties
 	// - ctrlKey modifier for Number and Integer
@@ -14094,1036 +14160,746 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	// - UI.Element.prototype.dispose()
 	// - UI.Element.prototype.setTitle()
 	// - UI.Element.prototype.getStyle()
-	
-	var UI = {}
-	
-	UI.Element = function () {}
-	
+	var UI = {};
+	UI.Element = function () { };
 	UI.Element.prototype = {
-	
-	  setId: function (id) {
-	    this.dom.id = id
-	
-	    return this
-	  },
-	
-	  setTitle: function (title) {
-	    this.dom.title = title
-	
-	    return this
-	  },
-	
-	  setClass: function (name) {
-	    this.dom.className = name
-	
-	    return this
-	  },
-	
-	  setStyle: function (style, array) {
-	    for (var i = 0; i < array.length; i++) {
-	      this.dom.style[ style ] = array[ i ]
-	    }
-	  },
-	
-	  getStyle: function (style) {
-	    return this.dom.style[ style ]
-	  },
-	
-	  getBox: function () {
-	    return this.dom.getBoundingClientRect()
-	  },
-	
-	  setDisabled: function (value) {
-	    this.dom.disabled = value
-	
-	    return this
-	  },
-	
-	  setTextContent: function (value) {
-	    this.dom.textContent = value
-	
-	    return this
-	  },
-	
-	  dispose: function () {
-	    this.dom.parentNode.removeChild(this.dom)
-	  }
-	
-	}
-	
-	// properties
-	
-	var properties = [
-	  'position', 'left', 'top', 'right', 'bottom', 'width', 'height', 'border',
-	  'borderLeft', 'borderTop', 'borderRight', 'borderBottom', 'borderColor',
-	  'display', 'overflow', 'overflowX', 'overflowY', 'margin', 'marginLeft',
-	  'marginTop', 'marginRight',
-	  'marginBottom', 'padding', 'paddingLeft', 'paddingTop', 'paddingRight',
-	  'paddingBottom', 'color', 'backgroundColor', 'opacity', 'fontSize',
-	  'fontWeight', 'fontStyle', 'fontFamily', 'textTransform', 'cursor',
-	  'verticalAlign', 'clear', 'float', 'zIndex', 'minHeight', 'maxHeight',
-	  'minWidth', 'maxWidth', 'wordBreak', 'wordWrap', 'spellcheck',
-	  'lineHeight', 'whiteSpace', 'textOverflow', 'textAlign', 'pointerEvents'
-	]
-	
-	properties.forEach(function (property) {
-	  var methodSuffix = property.substr(0, 1).toUpperCase() +
-	                        property.substr(1, property.length)
-	
-	  UI.Element.prototype[ 'set' + methodSuffix ] = function () {
-	    this.setStyle(property, arguments)
-	    return this
-	  }
-	
-	  UI.Element.prototype[ 'get' + methodSuffix ] = function () {
-	    return this.getStyle(property)
-	  }
-	})
-	
-	// events
-	
-	var events = [
-	  'KeyUp', 'KeyDown', 'KeyPress',
-	  'MouseOver', 'MouseOut', 'MouseDown', 'MouseUp', 'MouseMove',
-	  'Click', 'Change', 'Input', 'Scroll'
-	]
-	
-	events.forEach(function (event) {
-	  var method = 'on' + event
-	
-	  UI.Element.prototype[ method ] = function (callback) {
-	    this.dom.addEventListener(event.toLowerCase(), callback.bind(this), false)
-	
-	    return this
-	  }
-	})
-	
-	// Panel
-	
-	UI.Panel = function () {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('div')
-	  dom.className = 'Panel'
-	
-	  this.dom = dom
-	  this.children = []
-	
-	  return this
-	}
-	
-	UI.Panel.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Panel.prototype.add = function () {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.dom.appendChild(arguments[ i ].dom)
-	    this.children.push(arguments[ i ])
-	  }
-	
-	  return this
-	}
-	
-	UI.Panel.prototype.remove = function () {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.dom.removeChild(arguments[ i ].dom)
-	
-	    var idx = this.children.indexOf(arguments[ i ])
-	    if (idx !== -1) this.children.splice(idx, 1)
-	  }
-	
-	  return this
-	}
-	
-	UI.Panel.prototype.clear = function () {
-	  while (this.dom.children.length) {
-	    this.dom.removeChild(this.dom.lastChild)
-	  }
-	
-	  this.children.length = 0
-	
-	  return this
-	}
-	
-	// Collapsible Panel
-	
-	UI.CollapsiblePanel = function () {
-	  UI.Panel.call(this)
-	
-	  this.dom.className = 'Panel CollapsiblePanel'
-	
-	  this.button = document.createElement('div')
-	  this.button.className = 'CollapsiblePanelButton'
-	  this.dom.appendChild(this.button)
-	
-	  var scope = this
-	  this.button.addEventListener('click', function (event) {
-	    scope.toggle()
-	  }, false)
-	
-	  this.content = document.createElement('div')
-	  this.content.className = 'CollapsibleContent'
-	  this.dom.appendChild(this.content)
-	
-	  this.isCollapsed = false
-	
-	  return this
-	}
-	
-	UI.CollapsiblePanel.prototype = Object.create(UI.Panel.prototype)
-	
-	UI.CollapsiblePanel.prototype.addStatic = function () {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.dom.insertBefore(arguments[ i ].dom, this.content)
-	  }
-	
-	  return this
-	}
-	
-	UI.CollapsiblePanel.prototype.removeStatic = UI.Panel.prototype.remove
-	
-	UI.CollapsiblePanel.prototype.clearStatic = function () {
-	  this.dom.childNodes.forEach(function (child) {
-	    if (child !== this.content) {
-	      this.dom.removeChild(child)
-	    }
-	  })
-	}
-	
-	UI.CollapsiblePanel.prototype.add = function () {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.content.appendChild(arguments[ i ].dom)
-	  }
-	
-	  return this
-	}
-	
-	UI.CollapsiblePanel.prototype.remove = function () {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.content.removeChild(arguments[ i ].dom)
-	  }
-	
-	  return this
-	}
-	
-	UI.CollapsiblePanel.prototype.clear = function () {
-	  while (this.content.children.length) {
-	    this.content.removeChild(this.content.lastChild)
-	  }
-	}
-	
-	UI.CollapsiblePanel.prototype.toggle = function () {
-	  this.setCollapsed(!this.isCollapsed)
-	}
-	
-	UI.CollapsiblePanel.prototype.collapse = function () {
-	  this.setCollapsed(true)
-	}
-	
-	UI.CollapsiblePanel.prototype.expand = function () {
-	  this.setCollapsed(false)
-	}
-	
-	UI.CollapsiblePanel.prototype.setCollapsed = function (setCollapsed) {
-	  if (setCollapsed) {
-	    this.dom.classList.add('collapsed')
-	  } else {
-	    this.dom.classList.remove('collapsed')
-	  }
-	
-	  this.isCollapsed = setCollapsed
-	}
-	
-	// Text
-	
-	UI.Text = function (text) {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('span')
-	  dom.className = 'Text'
-	  dom.style.display = 'inline-block'
-	  dom.style.verticalAlign = 'middle'
-	
-	  this.dom = dom
-	  this.setValue(text)
-	
-	  return this
-	}
-	
-	UI.Text.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Text.prototype.setValue = function (value) {
-	  if (value !== undefined) {
-	    this.dom.textContent = value
-	  }
-	
-	  return this
-	}
-	
-	UI.Text.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
-	// Input
-	
-	UI.Input = function (value) {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Input'
-	  dom.style.padding = '2px'
-	  dom.style.border = '1px solid #ccc'
-	
-	  dom.addEventListener('keydown', function (event) {
-	    event.stopPropagation()
-	  }, false)
-	
-	  this.dom = dom
-	  this.setValue(value || '')
-	
-	  return this
-	}
-	
-	UI.Input.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Input.prototype.getValue = function () {
-	  return this.dom.value
-	}
-	
-	UI.Input.prototype.setValue = function (value) {
-	  this.dom.value = value
-	
-	  return this
-	}
-	
-	UI.Input.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
-	
-	// TextArea
-	
-	UI.TextArea = function () {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('textarea')
-	  dom.className = 'TextArea'
-	  dom.style.padding = '2px'
-	  dom.style.border = '1px solid #ccc'
-	
-	  dom.addEventListener('keydown', function (event) {
-	    event.stopPropagation()
-	  }, false)
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.TextArea.prototype = Object.create(UI.Element.prototype)
-	
-	UI.TextArea.prototype.getValue = function () {
-	  return this.dom.value
-	}
-	
-	UI.TextArea.prototype.setValue = function (value) {
-	  this.dom.value = value
-	
-	  return this
-	}
-	
-	// Select
-	
-	UI.Select = function () {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('select')
-	  dom.className = 'Select'
-	  dom.style.width = '64px'
-	  dom.style.height = '16px'
-	  dom.style.border = '0px'
-	  dom.style.padding = '0px'
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.Select.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Select.prototype.setMultiple = function (boolean) {
-	  this.dom.multiple = boolean
-	
-	  return this
-	}
-	
-	UI.Select.prototype.setOptions = function (options) {
-	  var selected = this.dom.value
-	
-	  while (this.dom.children.length > 0) {
-	    this.dom.removeChild(this.dom.firstChild)
-	  }
-	
-	  for (var key in options) {
-	    var option = document.createElement('option')
-	    option.value = key
-	    option.innerHTML = options[ key ]
-	    this.dom.appendChild(option)
-	  }
-	
-	  this.dom.value = selected
-	
-	  return this
-	}
-	
-	UI.Select.prototype.getValue = function () {
-	  return this.dom.value
-	}
-	
-	UI.Select.prototype.setValue = function (value) {
-	  this.dom.value = value
-	
-	  return this
-	}
-	
-	UI.Select.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
-	
-	// FancySelect
-	
-	UI.FancySelect = function () {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('div')
-	  dom.className = 'FancySelect'
-	  dom.tabIndex = 0 // keyup event is ignored without setting tabIndex
-	
-	  // Broadcast for object selection after arrow navigation
-	  var changeEvent = document.createEvent('HTMLEvents')
-	  changeEvent.initEvent('change', true, true)
-	
-	  // Prevent native scroll behavior
-	  dom.addEventListener('keydown', function (event) {
-	    switch (event.keyCode) {
-	      case 38: // up
-	      case 40: // down
-	        event.preventDefault()
-	        event.stopPropagation()
-	        break
-	    }
-	  }, false)
-	
-	  // Keybindings to support arrow navigation
-	  dom.addEventListener('keyup', function (event) {
-	    switch (event.keyCode) {
-	      case 38: // up
-	      case 40: // down
-	        scope.selectedIndex += (event.keyCode == 38) ? -1 : 1
-	
-	        if (scope.selectedIndex >= 0 && scope.selectedIndex < scope.options.length) {
-	          // Highlight selected dom elem and scroll parent if needed
-	          scope.setValue(scope.options[ scope.selectedIndex ].value)
-	
-	          scope.dom.dispatchEvent(changeEvent)
+	    setId: function (id) {
+	        this.dom.id = id;
+	        return this;
+	    },
+	    setTitle: function (title) {
+	        this.dom.title = title;
+	        return this;
+	    },
+	    setClass: function (name) {
+	        this.dom.className = name;
+	        return this;
+	    },
+	    setStyle: function (style, array) {
+	        for (var i = 0; i < array.length; i++) {
+	            this.dom.style[style] = array[i];
 	        }
-	
-	        break
+	    },
+	    getStyle: function (style) {
+	        return this.dom.style[style];
+	    },
+	    getBox: function () {
+	        return this.dom.getBoundingClientRect();
+	    },
+	    setDisabled: function (value) {
+	        this.dom.disabled = value;
+	        return this;
+	    },
+	    setTextContent: function (value) {
+	        this.dom.textContent = value;
+	        return this;
+	    },
+	    dispose: function () {
+	        this.dom.parentNode.removeChild(this.dom);
 	    }
-	  }, false)
-	
-	  this.dom = dom
-	
-	  this.options = []
-	  this.selectedIndex = -1
-	  this.selectedValue = null
-	
-	  return this
-	}
-	
-	UI.FancySelect.prototype = Object.create(UI.Element.prototype)
-	
+	};
+	// properties
+	var properties = [
+	    'position', 'left', 'top', 'right', 'bottom', 'width', 'height', 'border',
+	    'borderLeft', 'borderTop', 'borderRight', 'borderBottom', 'borderColor',
+	    'display', 'overflow', 'overflowX', 'overflowY', 'margin', 'marginLeft',
+	    'marginTop', 'marginRight',
+	    'marginBottom', 'padding', 'paddingLeft', 'paddingTop', 'paddingRight',
+	    'paddingBottom', 'color', 'backgroundColor', 'opacity', 'fontSize',
+	    'fontWeight', 'fontStyle', 'fontFamily', 'textTransform', 'cursor',
+	    'verticalAlign', 'clear', 'float', 'zIndex', 'minHeight', 'maxHeight',
+	    'minWidth', 'maxWidth', 'wordBreak', 'wordWrap', 'spellcheck',
+	    'lineHeight', 'whiteSpace', 'textOverflow', 'textAlign', 'pointerEvents'
+	];
+	properties.forEach(function (property) {
+	    var methodSuffix = property.substr(0, 1).toUpperCase() +
+	        property.substr(1, property.length);
+	    UI.Element.prototype['set' + methodSuffix] = function () {
+	        this.setStyle(property, arguments);
+	        return this;
+	    };
+	    UI.Element.prototype['get' + methodSuffix] = function () {
+	        return this.getStyle(property);
+	    };
+	});
+	// events
+	var events = [
+	    'KeyUp', 'KeyDown', 'KeyPress',
+	    'MouseOver', 'MouseOut', 'MouseDown', 'MouseUp', 'MouseMove',
+	    'Click', 'Change', 'Input', 'Scroll'
+	];
+	events.forEach(function (event) {
+	    var method = 'on' + event;
+	    UI.Element.prototype[method] = function (callback) {
+	        this.dom.addEventListener(event.toLowerCase(), callback.bind(this), false);
+	        return this;
+	    };
+	});
+	// Panel
+	UI.Panel = function () {
+	    UI.Element.call(this);
+	    var dom = document.createElement('div');
+	    dom.className = 'Panel';
+	    this.dom = dom;
+	    this.children = [];
+	    return this;
+	};
+	UI.Panel.prototype = Object.create(UI.Element.prototype);
+	UI.Panel.prototype.add = function () {
+	    for (var i = 0; i < arguments.length; i++) {
+	        this.dom.appendChild(arguments[i].dom);
+	        this.children.push(arguments[i]);
+	    }
+	    return this;
+	};
+	UI.Panel.prototype.remove = function () {
+	    for (var i = 0; i < arguments.length; i++) {
+	        this.dom.removeChild(arguments[i].dom);
+	        var idx = this.children.indexOf(arguments[i]);
+	        if (idx !== -1)
+	            this.children.splice(idx, 1);
+	    }
+	    return this;
+	};
+	UI.Panel.prototype.clear = function () {
+	    while (this.dom.children.length) {
+	        this.dom.removeChild(this.dom.lastChild);
+	    }
+	    this.children.length = 0;
+	    return this;
+	};
+	// Collapsible Panel
+	UI.CollapsiblePanel = function () {
+	    UI.Panel.call(this);
+	    this.dom.className = 'Panel CollapsiblePanel';
+	    this.button = document.createElement('div');
+	    this.button.className = 'CollapsiblePanelButton';
+	    this.dom.appendChild(this.button);
+	    var scope = this;
+	    this.button.addEventListener('click', function (event) {
+	        scope.toggle();
+	    }, false);
+	    this.content = document.createElement('div');
+	    this.content.className = 'CollapsibleContent';
+	    this.dom.appendChild(this.content);
+	    this.isCollapsed = false;
+	    return this;
+	};
+	UI.CollapsiblePanel.prototype = Object.create(UI.Panel.prototype);
+	UI.CollapsiblePanel.prototype.addStatic = function () {
+	    for (var i = 0; i < arguments.length; i++) {
+	        this.dom.insertBefore(arguments[i].dom, this.content);
+	    }
+	    return this;
+	};
+	UI.CollapsiblePanel.prototype.removeStatic = UI.Panel.prototype.remove;
+	UI.CollapsiblePanel.prototype.clearStatic = function () {
+	    this.dom.childNodes.forEach(function (child) {
+	        if (child !== this.content) {
+	            this.dom.removeChild(child);
+	        }
+	    });
+	};
+	UI.CollapsiblePanel.prototype.add = function () {
+	    for (var i = 0; i < arguments.length; i++) {
+	        this.content.appendChild(arguments[i].dom);
+	    }
+	    return this;
+	};
+	UI.CollapsiblePanel.prototype.remove = function () {
+	    for (var i = 0; i < arguments.length; i++) {
+	        this.content.removeChild(arguments[i].dom);
+	    }
+	    return this;
+	};
+	UI.CollapsiblePanel.prototype.clear = function () {
+	    while (this.content.children.length) {
+	        this.content.removeChild(this.content.lastChild);
+	    }
+	};
+	UI.CollapsiblePanel.prototype.toggle = function () {
+	    this.setCollapsed(!this.isCollapsed);
+	};
+	UI.CollapsiblePanel.prototype.collapse = function () {
+	    this.setCollapsed(true);
+	};
+	UI.CollapsiblePanel.prototype.expand = function () {
+	    this.setCollapsed(false);
+	};
+	UI.CollapsiblePanel.prototype.setCollapsed = function (setCollapsed) {
+	    if (setCollapsed) {
+	        this.dom.classList.add('collapsed');
+	    }
+	    else {
+	        this.dom.classList.remove('collapsed');
+	    }
+	    this.isCollapsed = setCollapsed;
+	};
+	// Text
+	UI.Text = function (text) {
+	    UI.Element.call(this);
+	    var dom = document.createElement('span');
+	    dom.className = 'Text';
+	    dom.style.display = 'inline-block';
+	    dom.style.verticalAlign = 'middle';
+	    this.dom = dom;
+	    this.setValue(text);
+	    return this;
+	};
+	UI.Text.prototype = Object.create(UI.Element.prototype);
+	UI.Text.prototype.setValue = function (value) {
+	    if (value !== undefined) {
+	        this.dom.textContent = value;
+	    }
+	    return this;
+	};
+	UI.Text.prototype.setName = function (value) {
+	    this.dom.name = value;
+	    return this;
+	};
+	// Input
+	UI.Input = function (value) {
+	    UI.Element.call(this);
+	    var scope = this;
+	    var dom = document.createElement('input');
+	    dom.className = 'Input';
+	    dom.style.padding = '2px';
+	    dom.style.border = '1px solid #ccc';
+	    dom.addEventListener('keydown', function (event) {
+	        event.stopPropagation();
+	    }, false);
+	    this.dom = dom;
+	    this.setValue(value || '');
+	    return this;
+	};
+	UI.Input.prototype = Object.create(UI.Element.prototype);
+	UI.Input.prototype.getValue = function () {
+	    return this.dom.value;
+	};
+	UI.Input.prototype.setValue = function (value) {
+	    this.dom.value = value;
+	    return this;
+	};
+	UI.Input.prototype.setName = function (value) {
+	    this.dom.name = value;
+	    return this;
+	};
+	// TextArea
+	UI.TextArea = function () {
+	    UI.Element.call(this);
+	    var scope = this;
+	    var dom = document.createElement('textarea');
+	    dom.className = 'TextArea';
+	    dom.style.padding = '2px';
+	    dom.style.border = '1px solid #ccc';
+	    dom.addEventListener('keydown', function (event) {
+	        event.stopPropagation();
+	    }, false);
+	    this.dom = dom;
+	    return this;
+	};
+	UI.TextArea.prototype = Object.create(UI.Element.prototype);
+	UI.TextArea.prototype.getValue = function () {
+	    return this.dom.value;
+	};
+	UI.TextArea.prototype.setValue = function (value) {
+	    this.dom.value = value;
+	    return this;
+	};
+	// Select
+	UI.Select = function () {
+	    UI.Element.call(this);
+	    var scope = this;
+	    var dom = document.createElement('select');
+	    dom.className = 'Select';
+	    dom.style.width = '64px';
+	    dom.style.height = '16px';
+	    dom.style.border = '0px';
+	    dom.style.padding = '0px';
+	    this.dom = dom;
+	    return this;
+	};
+	UI.Select.prototype = Object.create(UI.Element.prototype);
+	UI.Select.prototype.setMultiple = function (boolean) {
+	    this.dom.multiple = boolean;
+	    return this;
+	};
+	UI.Select.prototype.setOptions = function (options) {
+	    var selected = this.dom.value;
+	    while (this.dom.children.length > 0) {
+	        this.dom.removeChild(this.dom.firstChild);
+	    }
+	    for (var key in options) {
+	        var option = document.createElement('option');
+	        option.value = key;
+	        option.innerHTML = options[key];
+	        this.dom.appendChild(option);
+	    }
+	    this.dom.value = selected;
+	    return this;
+	};
+	UI.Select.prototype.getValue = function () {
+	    return this.dom.value;
+	};
+	UI.Select.prototype.setValue = function (value) {
+	    this.dom.value = value;
+	    return this;
+	};
+	UI.Select.prototype.setName = function (value) {
+	    this.dom.name = value;
+	    return this;
+	};
+	// FancySelect
+	UI.FancySelect = function () {
+	    UI.Element.call(this);
+	    var scope = this;
+	    var dom = document.createElement('div');
+	    dom.className = 'FancySelect';
+	    dom.tabIndex = 0; // keyup event is ignored without setting tabIndex
+	    // Broadcast for object selection after arrow navigation
+	    var changeEvent = document.createEvent('HTMLEvents');
+	    changeEvent.initEvent('change', true, true);
+	    // Prevent native scroll behavior
+	    dom.addEventListener('keydown', function (event) {
+	        switch (event.keyCode) {
+	            case 38: // up
+	            case 40: // down
+	                event.preventDefault();
+	                event.stopPropagation();
+	                break;
+	        }
+	    }, false);
+	    // Keybindings to support arrow navigation
+	    dom.addEventListener('keyup', function (event) {
+	        switch (event.keyCode) {
+	            case 38: // up
+	            case 40: // down
+	                scope.selectedIndex += (event.keyCode == 38) ? -1 : 1;
+	                if (scope.selectedIndex >= 0 && scope.selectedIndex < scope.options.length) {
+	                    // Highlight selected dom elem and scroll parent if needed
+	                    scope.setValue(scope.options[scope.selectedIndex].value);
+	                    scope.dom.dispatchEvent(changeEvent);
+	                }
+	                break;
+	        }
+	    }, false);
+	    this.dom = dom;
+	    this.options = [];
+	    this.selectedIndex = -1;
+	    this.selectedValue = null;
+	    return this;
+	};
+	UI.FancySelect.prototype = Object.create(UI.Element.prototype);
 	UI.FancySelect.prototype.setOptions = function (options) {
-	  var scope = this
-	
-	  var changeEvent = document.createEvent('HTMLEvents')
-	  changeEvent.initEvent('change', true, true)
-	
-	  while (scope.dom.children.length > 0) {
-	    scope.dom.removeChild(scope.dom.firstChild)
-	  }
-	
-	  scope.options = []
-	
-	  for (var i = 0; i < options.length; i++) {
-	    var option = options[ i ]
-	
-	    var div = document.createElement('div')
-	    div.className = 'option'
-	    div.innerHTML = option.html
-	    div.value = option.value
-	    scope.dom.appendChild(div)
-	
-	    scope.options.push(div)
-	
-	    div.addEventListener('click', function (event) {
-	      scope.setValue(this.value)
-	      scope.dom.dispatchEvent(changeEvent)
-	    }, false)
-	  }
-	
-	  return scope
-	}
-	
+	    var scope = this;
+	    var changeEvent = document.createEvent('HTMLEvents');
+	    changeEvent.initEvent('change', true, true);
+	    while (scope.dom.children.length > 0) {
+	        scope.dom.removeChild(scope.dom.firstChild);
+	    }
+	    scope.options = [];
+	    for (var i = 0; i < options.length; i++) {
+	        var option = options[i];
+	        var div = document.createElement('div');
+	        div.className = 'option';
+	        div.innerHTML = option.html;
+	        div.value = option.value;
+	        scope.dom.appendChild(div);
+	        scope.options.push(div);
+	        div.addEventListener('click', function (event) {
+	            scope.setValue(this.value);
+	            scope.dom.dispatchEvent(changeEvent);
+	        }, false);
+	    }
+	    return scope;
+	};
 	UI.FancySelect.prototype.getValue = function () {
-	  return this.selectedValue
-	}
-	
+	    return this.selectedValue;
+	};
 	UI.FancySelect.prototype.setValue = function (value) {
-	  for (var i = 0; i < this.options.length; i++) {
-	    var element = this.options[ i ]
-	
-	    if (element.value === value) {
-	      element.classList.add('active')
-	
-	      // scroll into view
-	
-	      var y = element.offsetTop - this.dom.offsetTop
-	      var bottomY = y + element.offsetHeight
-	      var minScroll = bottomY - this.dom.offsetHeight
-	
-	      if (this.dom.scrollTop > y) {
-	        this.dom.scrollTop = y
-	      } else if (this.dom.scrollTop < minScroll) {
-	        this.dom.scrollTop = minScroll
-	      }
-	
-	      this.selectedIndex = i
-	    } else {
-	      element.classList.remove('active')
+	    for (var i = 0; i < this.options.length; i++) {
+	        var element = this.options[i];
+	        if (element.value === value) {
+	            element.classList.add('active');
+	            // scroll into view
+	            var y = element.offsetTop - this.dom.offsetTop;
+	            var bottomY = y + element.offsetHeight;
+	            var minScroll = bottomY - this.dom.offsetHeight;
+	            if (this.dom.scrollTop > y) {
+	                this.dom.scrollTop = y;
+	            }
+	            else if (this.dom.scrollTop < minScroll) {
+	                this.dom.scrollTop = minScroll;
+	            }
+	            this.selectedIndex = i;
+	        }
+	        else {
+	            element.classList.remove('active');
+	        }
 	    }
-	  }
-	
-	  this.selectedValue = value
-	
-	  return this
-	}
-	
+	    this.selectedValue = value;
+	    return this;
+	};
 	// Checkbox
-	
 	UI.Checkbox = function (boolean) {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Checkbox'
-	  dom.type = 'checkbox'
-	
-	  this.dom = dom
-	  this.setValue(boolean)
-	
-	  return this
-	}
-	
-	UI.Checkbox.prototype = Object.create(UI.Element.prototype)
-	
+	    UI.Element.call(this);
+	    var scope = this;
+	    var dom = document.createElement('input');
+	    dom.className = 'Checkbox';
+	    dom.type = 'checkbox';
+	    this.dom = dom;
+	    this.setValue(boolean);
+	    return this;
+	};
+	UI.Checkbox.prototype = Object.create(UI.Element.prototype);
 	UI.Checkbox.prototype.getValue = function () {
-	  return this.dom.checked
-	}
-	
+	    return this.dom.checked;
+	};
 	UI.Checkbox.prototype.setValue = function (value) {
-	  if (value !== undefined) {
-	    this.dom.checked = value
-	  }
-	
-	  return this
-	}
-	
+	    if (value !== undefined) {
+	        this.dom.checked = value;
+	    }
+	    return this;
+	};
 	UI.Checkbox.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
+	    this.dom.name = value;
+	    return this;
+	};
 	// Color
-	
 	UI.Color = function () {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Color'
-	  dom.style.width = '64px'
-	  dom.style.height = '16px'
-	  dom.style.border = '0px'
-	  dom.style.padding = '0px'
-	  dom.style.backgroundColor = 'transparent'
-	
-	  try {
-	    dom.type = 'color'
-	    dom.value = '#ffffff'
-	  } catch (exception) {}
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.Color.prototype = Object.create(UI.Element.prototype)
-	
+	    UI.Element.call(this);
+	    var scope = this;
+	    var dom = document.createElement('input');
+	    dom.className = 'Color';
+	    dom.style.width = '64px';
+	    dom.style.height = '16px';
+	    dom.style.border = '0px';
+	    dom.style.padding = '0px';
+	    dom.style.backgroundColor = 'transparent';
+	    try {
+	        dom.type = 'color';
+	        dom.value = '#ffffff';
+	    }
+	    catch (exception) { }
+	    this.dom = dom;
+	    return this;
+	};
+	UI.Color.prototype = Object.create(UI.Element.prototype);
 	UI.Color.prototype.getValue = function () {
-	  return this.dom.value
-	}
-	
+	    return this.dom.value;
+	};
 	UI.Color.prototype.getHexValue = function () {
-	  return parseInt(this.dom.value.substr(1), 16)
-	}
-	
+	    return parseInt(this.dom.value.substr(1), 16);
+	};
 	UI.Color.prototype.setValue = function (value) {
-	  this.dom.value = value
-	
-	  return this
-	}
-	
+	    this.dom.value = value;
+	    return this;
+	};
 	UI.Color.prototype.setHexValue = function (hex) {
-	  this.dom.value = '#' + ('000000' + hex.toString(16)).slice(-6)
-	
-	  return this
-	}
-	
+	    this.dom.value = '#' + ('000000' + hex.toString(16)).slice(-6);
+	    return this;
+	};
 	// Number
-	
 	UI.Number = function (number) {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Number'
-	  dom.value = '0.00'
-	
-	  dom.addEventListener('keydown', function (event) {
-	    event.stopPropagation()
-	
-	    if (event.keyCode === 13) dom.blur()
-	  }, false)
-	
-	  this.min = -Infinity
-	  this.max = Infinity
-	
-	  this.precision = 2
-	  this.step = 1
-	
-	  this.dom = dom
-	  this.setValue(number)
-	
-	  var changeEvent = document.createEvent('HTMLEvents')
-	  changeEvent.initEvent('change', true, true)
-	
-	  var distance = 0
-	  var onMouseDownValue = 0
-	
-	  var pointer = [ 0, 0 ]
-	  var prevPointer = [ 0, 0 ]
-	
-	  var onMouseDown = function (event) {
-	    event.preventDefault()
-	
-	    distance = 0
-	
-	    onMouseDownValue = parseFloat(dom.value)
-	
-	    prevPointer = [ event.clientX, event.clientY ]
-	
-	    document.addEventListener('mousemove', onMouseMove, false)
-	    document.addEventListener('mouseup', onMouseUp, false)
-	  }
-	
-	  var onMouseMove = function (event) {
-	    var currentValue = dom.value
-	
-	    pointer = [ event.clientX, event.clientY ]
-	
-	    distance += (pointer[ 0 ] - prevPointer[ 0 ]) - (pointer[ 1 ] - prevPointer[ 1 ])
-	
-	    var modifier = 50
-	    if (event.shiftKey) modifier = 5
-	    if (event.ctrlKey) modifier = 500
-	
-	    var number = onMouseDownValue + (distance / modifier) * scope.step
-	
-	    dom.value = Math.min(scope.max, Math.max(scope.min, number)).toFixed(scope.precision)
-	
-	    if (currentValue !== dom.value) dom.dispatchEvent(changeEvent)
-	
-	    prevPointer = [ event.clientX, event.clientY ]
-	  }
-	
-	  var onMouseUp = function (event) {
-	    document.removeEventListener('mousemove', onMouseMove, false)
-	    document.removeEventListener('mouseup', onMouseUp, false)
-	
-	    if (Math.abs(distance) < 2) {
-	      dom.focus()
-	      dom.select()
-	    }
-	  }
-	
-	  var onChange = function (event) {
-	    var number = parseFloat(dom.value)
-	
-	    dom.value = isNaN(number) === false ? number : 0
-	  }
-	
-	  var onFocus = function (event) {
-	    dom.style.backgroundColor = ''
-	    dom.style.borderColor = '#ccc'
-	    dom.style.cursor = ''
-	  }
-	
-	  var onBlur = function (event) {
-	    dom.style.backgroundColor = 'transparent'
-	    dom.style.borderColor = 'transparent'
-	    dom.style.cursor = 'col-resize'
-	  }
-	
-	  dom.addEventListener('mousedown', onMouseDown, false)
-	  dom.addEventListener('change', onChange, false)
-	  dom.addEventListener('focus', onFocus, false)
-	  dom.addEventListener('blur', onBlur, false)
-	
-	  return this
-	}
-	
-	UI.Number.prototype = Object.create(UI.Element.prototype)
-	
+	    UI.Element.call(this);
+	    var scope = this;
+	    var dom = document.createElement('input');
+	    dom.className = 'Number';
+	    dom.value = '0.00';
+	    dom.addEventListener('keydown', function (event) {
+	        event.stopPropagation();
+	        if (event.keyCode === 13)
+	            dom.blur();
+	    }, false);
+	    this.min = -Infinity;
+	    this.max = Infinity;
+	    this.precision = 2;
+	    this.step = 1;
+	    this.dom = dom;
+	    this.setValue(number);
+	    var changeEvent = document.createEvent('HTMLEvents');
+	    changeEvent.initEvent('change', true, true);
+	    var distance = 0;
+	    var onMouseDownValue = 0;
+	    var pointer = [0, 0];
+	    var prevPointer = [0, 0];
+	    var onMouseDown = function (event) {
+	        event.preventDefault();
+	        distance = 0;
+	        onMouseDownValue = parseFloat(dom.value);
+	        prevPointer = [event.clientX, event.clientY];
+	        document.addEventListener('mousemove', onMouseMove, false);
+	        document.addEventListener('mouseup', onMouseUp, false);
+	    };
+	    var onMouseMove = function (event) {
+	        var currentValue = dom.value;
+	        pointer = [event.clientX, event.clientY];
+	        distance += (pointer[0] - prevPointer[0]) - (pointer[1] - prevPointer[1]);
+	        var modifier = 50;
+	        if (event.shiftKey)
+	            modifier = 5;
+	        if (event.ctrlKey)
+	            modifier = 500;
+	        var number = onMouseDownValue + (distance / modifier) * scope.step;
+	        dom.value = Math.min(scope.max, Math.max(scope.min, number)).toFixed(scope.precision);
+	        if (currentValue !== dom.value)
+	            dom.dispatchEvent(changeEvent);
+	        prevPointer = [event.clientX, event.clientY];
+	    };
+	    var onMouseUp = function (event) {
+	        document.removeEventListener('mousemove', onMouseMove, false);
+	        document.removeEventListener('mouseup', onMouseUp, false);
+	        if (Math.abs(distance) < 2) {
+	            dom.focus();
+	            dom.select();
+	        }
+	    };
+	    var onChange = function (event) {
+	        var number = parseFloat(dom.value);
+	        dom.value = isNaN(number) === false ? number : 0;
+	    };
+	    var onFocus = function (event) {
+	        dom.style.backgroundColor = '';
+	        dom.style.borderColor = '#ccc';
+	        dom.style.cursor = '';
+	    };
+	    var onBlur = function (event) {
+	        dom.style.backgroundColor = 'transparent';
+	        dom.style.borderColor = 'transparent';
+	        dom.style.cursor = 'col-resize';
+	    };
+	    dom.addEventListener('mousedown', onMouseDown, false);
+	    dom.addEventListener('change', onChange, false);
+	    dom.addEventListener('focus', onFocus, false);
+	    dom.addEventListener('blur', onBlur, false);
+	    return this;
+	};
+	UI.Number.prototype = Object.create(UI.Element.prototype);
 	UI.Number.prototype.getValue = function () {
-	  return parseFloat(this.dom.value)
-	}
-	
+	    return parseFloat(this.dom.value);
+	};
 	UI.Number.prototype.setValue = function (value) {
-	  if (isNaN(value)) {
-	    this.dom.value = NaN
-	  } else if (value !== undefined) {
-	    this.dom.value = value.toFixed(this.precision)
-	  }
-	
-	  return this
-	}
-	
+	    if (isNaN(value)) {
+	        this.dom.value = NaN;
+	    }
+	    else if (value !== undefined) {
+	        this.dom.value = value.toFixed(this.precision);
+	    }
+	    return this;
+	};
 	UI.Number.prototype.setRange = function (min, max) {
-	  this.min = min
-	  this.max = max
-	
-	  return this
-	}
-	
+	    this.min = min;
+	    this.max = max;
+	    return this;
+	};
 	UI.Number.prototype.setPrecision = function (precision) {
-	  this.precision = precision
-	  this.setValue(parseFloat(this.dom.value))
-	
-	  return this
-	}
-	
+	    this.precision = precision;
+	    this.setValue(parseFloat(this.dom.value));
+	    return this;
+	};
 	UI.Number.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
+	    this.dom.name = value;
+	    return this;
+	};
 	// Integer
-	
 	UI.Integer = function (number) {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Number'
-	  dom.value = '0.00'
-	
-	  dom.addEventListener('keydown', function (event) {
-	    event.stopPropagation()
-	  }, false)
-	
-	  this.min = -Infinity
-	  this.max = Infinity
-	
-	  this.step = 1
-	
-	  this.dom = dom
-	  this.setValue(number)
-	
-	  var changeEvent = document.createEvent('HTMLEvents')
-	  changeEvent.initEvent('change', true, true)
-	
-	  var distance = 0
-	  var onMouseDownValue = 0
-	
-	  var pointer = [ 0, 0 ]
-	  var prevPointer = [ 0, 0 ]
-	
-	  var onMouseDown = function (event) {
-	    event.preventDefault()
-	
-	    distance = 0
-	
-	    onMouseDownValue = parseFloat(dom.value)
-	
-	    prevPointer = [ event.clientX, event.clientY ]
-	
-	    document.addEventListener('mousemove', onMouseMove, false)
-	    document.addEventListener('mouseup', onMouseUp, false)
-	  }
-	
-	  var onMouseMove = function (event) {
-	    var currentValue = dom.value
-	
-	    pointer = [ event.clientX, event.clientY ]
-	
-	    distance += (pointer[ 0 ] - prevPointer[ 0 ]) - (pointer[ 1 ] - prevPointer[ 1 ])
-	
-	    var modifier = 50
-	    if (event.shiftKey) modifier = 5
-	    if (event.ctrlKey) modifier = 500
-	
-	    var number = onMouseDownValue + (distance / modifier) * scope.step
-	
-	    dom.value = Math.min(scope.max, Math.max(scope.min, number)) | 0
-	
-	    if (currentValue !== dom.value) dom.dispatchEvent(changeEvent)
-	
-	    prevPointer = [ event.clientX, event.clientY ]
-	  }
-	
-	  var onMouseUp = function (event) {
-	    document.removeEventListener('mousemove', onMouseMove, false)
-	    document.removeEventListener('mouseup', onMouseUp, false)
-	
-	    if (Math.abs(distance) < 2) {
-	      dom.focus()
-	      dom.select()
-	    }
-	  }
-	
-	  var onChange = function (event) {
-	    var number = parseInt(dom.value)
-	
-	    if (isNaN(number) === false) {
-	      dom.value = number
-	    }
-	  }
-	
-	  var onFocus = function (event) {
-	    dom.style.backgroundColor = ''
-	    dom.style.borderColor = '#ccc'
-	    dom.style.cursor = ''
-	  }
-	
-	  var onBlur = function (event) {
-	    dom.style.backgroundColor = 'transparent'
-	    dom.style.borderColor = 'transparent'
-	    dom.style.cursor = 'col-resize'
-	  }
-	
-	  dom.addEventListener('mousedown', onMouseDown, false)
-	  dom.addEventListener('change', onChange, false)
-	  dom.addEventListener('focus', onFocus, false)
-	  dom.addEventListener('blur', onBlur, false)
-	
-	  return this
-	}
-	
-	UI.Integer.prototype = Object.create(UI.Element.prototype)
-	
+	    UI.Element.call(this);
+	    var scope = this;
+	    var dom = document.createElement('input');
+	    dom.className = 'Number';
+	    dom.value = '0.00';
+	    dom.addEventListener('keydown', function (event) {
+	        event.stopPropagation();
+	    }, false);
+	    this.min = -Infinity;
+	    this.max = Infinity;
+	    this.step = 1;
+	    this.dom = dom;
+	    this.setValue(number);
+	    var changeEvent = document.createEvent('HTMLEvents');
+	    changeEvent.initEvent('change', true, true);
+	    var distance = 0;
+	    var onMouseDownValue = 0;
+	    var pointer = [0, 0];
+	    var prevPointer = [0, 0];
+	    var onMouseDown = function (event) {
+	        event.preventDefault();
+	        distance = 0;
+	        onMouseDownValue = parseFloat(dom.value);
+	        prevPointer = [event.clientX, event.clientY];
+	        document.addEventListener('mousemove', onMouseMove, false);
+	        document.addEventListener('mouseup', onMouseUp, false);
+	    };
+	    var onMouseMove = function (event) {
+	        var currentValue = dom.value;
+	        pointer = [event.clientX, event.clientY];
+	        distance += (pointer[0] - prevPointer[0]) - (pointer[1] - prevPointer[1]);
+	        var modifier = 50;
+	        if (event.shiftKey)
+	            modifier = 5;
+	        if (event.ctrlKey)
+	            modifier = 500;
+	        var number = onMouseDownValue + (distance / modifier) * scope.step;
+	        dom.value = Math.min(scope.max, Math.max(scope.min, number)) | 0;
+	        if (currentValue !== dom.value)
+	            dom.dispatchEvent(changeEvent);
+	        prevPointer = [event.clientX, event.clientY];
+	    };
+	    var onMouseUp = function (event) {
+	        document.removeEventListener('mousemove', onMouseMove, false);
+	        document.removeEventListener('mouseup', onMouseUp, false);
+	        if (Math.abs(distance) < 2) {
+	            dom.focus();
+	            dom.select();
+	        }
+	    };
+	    var onChange = function (event) {
+	        var number = parseInt(dom.value);
+	        if (isNaN(number) === false) {
+	            dom.value = number;
+	        }
+	    };
+	    var onFocus = function (event) {
+	        dom.style.backgroundColor = '';
+	        dom.style.borderColor = '#ccc';
+	        dom.style.cursor = '';
+	    };
+	    var onBlur = function (event) {
+	        dom.style.backgroundColor = 'transparent';
+	        dom.style.borderColor = 'transparent';
+	        dom.style.cursor = 'col-resize';
+	    };
+	    dom.addEventListener('mousedown', onMouseDown, false);
+	    dom.addEventListener('change', onChange, false);
+	    dom.addEventListener('focus', onFocus, false);
+	    dom.addEventListener('blur', onBlur, false);
+	    return this;
+	};
+	UI.Integer.prototype = Object.create(UI.Element.prototype);
 	UI.Integer.prototype.getValue = function () {
-	  return parseInt(this.dom.value)
-	}
-	
+	    return parseInt(this.dom.value);
+	};
 	UI.Integer.prototype.setValue = function (value) {
-	  if (value !== undefined) {
-	    this.dom.value = value | 0
-	  }
-	
-	  return this
-	}
-	
-	UI.Integer.prototype.setRange = function (min, max) {
-	  this.min = min
-	  this.max = max
-	
-	  return this
-	}
-	
-	UI.Integer.prototype.setName = function (value) {
-	  this.dom.name = value
-	
-	  return this
-	}
-	
-	UI.Integer.prototype.setStep = function (step) {
-	  this.step = step
-	
-	  return this
-	}
-	// Break
-	
-	UI.Break = function () {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('br')
-	  dom.className = 'Break'
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.Break.prototype = Object.create(UI.Element.prototype)
-	
-	// HorizontalRule
-	
-	UI.HorizontalRule = function () {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('hr')
-	  dom.className = 'HorizontalRule'
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.HorizontalRule.prototype = Object.create(UI.Element.prototype)
-	
-	// Button
-	
-	UI.Button = function (value) {
-	  UI.Element.call(this)
-	
-	  var scope = this
-	
-	  var dom = document.createElement('button')
-	  dom.className = 'Button'
-	
-	  this.dom = dom
-	  this.dom.textContent = value
-	
-	  return this
-	}
-	
-	UI.Button.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Button.prototype.setLabel = function (value) {
-	  this.dom.textContent = value
-	
-	  return this
-	}
-	
-	// Helper
-	
-	UI.MenubarHelper = {
-	
-	  createMenuContainer: function (name, optionsPanel) {
-	    var container = new UI.Panel()
-	    var title = new UI.Panel()
-	    title.setClass('title')
-	
-	    title.setTextContent(name)
-	    title.setMargin('0px')
-	    title.setPadding('8px')
-	
-	    container.setClass('menu')
-	    container.add(title)
-	    container.add(optionsPanel)
-	
-	    return container
-	  },
-	
-	  createOption: function (name, callbackHandler, icon) {
-	    var option = new UI.Panel()
-	    option.setClass('option')
-	
-	    if (icon) {
-	      option.add(new UI.Icon(icon).setWidth('20px'))
-	      option.add(new UI.Text(name))
-	    } else {
-	      option.setTextContent(name)
+	    if (value !== undefined) {
+	        this.dom.value = value | 0;
 	    }
-	
-	    option.onClick(callbackHandler)
-	
-	    return option
-	  },
-	
-	  createOptionsPanel: function (menuConfig) {
-	    var options = new UI.Panel()
-	    options.setClass('options')
-	
-	    menuConfig.forEach(function (option) {
-	      options.add(option)
-	    })
-	
-	    return options
-	  },
-	
-	  createInput: function (name, callbackHandler) {
-	    var panel = new UI.Panel()
-	      .setClass('option')
-	
-	    var text = new UI.Text()
-	      .setWidth('70px')
-	      .setValue(name)
-	
-	    var input = new UI.Input()
-	      .setWidth('40px')
-	      .onKeyDown(callbackHandler)
-	
-	    panel.add(text)
-	    panel.add(input)
-	
-	    return panel
-	  },
-	
-	  createCheckbox: function (name, value, callbackHandler) {
-	    var panel = new UI.Panel()
-	      .setClass('option')
-	
-	    var text = new UI.Text()
-	      .setWidth('70px')
-	      .setValue(name)
-	
-	    var checkbox = new UI.Checkbox()
-	      .setValue(value)
-	      .onClick(callbackHandler)
-	
-	    panel.add(checkbox)
-	    panel.add(text)
-	
-	    return panel
-	  },
-	
-	  createDivider: function () {
-	    return new UI.HorizontalRule()
-	  }
-	
-	}
-	
+	    return this;
+	};
+	UI.Integer.prototype.setRange = function (min, max) {
+	    this.min = min;
+	    this.max = max;
+	    return this;
+	};
+	UI.Integer.prototype.setName = function (value) {
+	    this.dom.name = value;
+	    return this;
+	};
+	UI.Integer.prototype.setStep = function (step) {
+	    this.step = step;
+	    return this;
+	};
+	// Break
+	UI.Break = function () {
+	    UI.Element.call(this);
+	    var dom = document.createElement('br');
+	    dom.className = 'Break';
+	    this.dom = dom;
+	    return this;
+	};
+	UI.Break.prototype = Object.create(UI.Element.prototype);
+	// HorizontalRule
+	UI.HorizontalRule = function () {
+	    UI.Element.call(this);
+	    var dom = document.createElement('hr');
+	    dom.className = 'HorizontalRule';
+	    this.dom = dom;
+	    return this;
+	};
+	UI.HorizontalRule.prototype = Object.create(UI.Element.prototype);
+	// Button
+	UI.Button = function (value) {
+	    UI.Element.call(this);
+	    var scope = this;
+	    var dom = document.createElement('button');
+	    dom.className = 'Button';
+	    this.dom = dom;
+	    this.dom.textContent = value;
+	    return this;
+	};
+	UI.Button.prototype = Object.create(UI.Element.prototype);
+	UI.Button.prototype.setLabel = function (value) {
+	    this.dom.textContent = value;
+	    return this;
+	};
+	// Helper
+	UI.MenubarHelper = {
+	    createMenuContainer: function (name, optionsPanel) {
+	        var container = new UI.Panel();
+	        var title = new UI.Panel();
+	        title.setClass('title');
+	        title.setTextContent(name);
+	        title.setMargin('0px');
+	        title.setPadding('8px');
+	        container.setClass('menu');
+	        container.add(title);
+	        container.add(optionsPanel);
+	        return container;
+	    },
+	    createOption: function (name, callbackHandler, icon) {
+	        var option = new UI.Panel();
+	        option.setClass('option');
+	        if (icon) {
+	            option.add(new UI.Icon(icon).setWidth('20px'));
+	            option.add(new UI.Text(name));
+	        }
+	        else {
+	            option.setTextContent(name);
+	        }
+	        option.onClick(callbackHandler);
+	        return option;
+	    },
+	    createOptionsPanel: function (menuConfig) {
+	        var options = new UI.Panel();
+	        options.setClass('options');
+	        menuConfig.forEach(function (option) {
+	            options.add(option);
+	        });
+	        return options;
+	    },
+	    createInput: function (name, callbackHandler) {
+	        var panel = new UI.Panel()
+	            .setClass('option');
+	        var text = new UI.Text()
+	            .setWidth('70px')
+	            .setValue(name);
+	        var input = new UI.Input()
+	            .setWidth('40px')
+	            .onKeyDown(callbackHandler);
+	        panel.add(text);
+	        panel.add(input);
+	        return panel;
+	    },
+	    createCheckbox: function (name, value, callbackHandler) {
+	        var panel = new UI.Panel()
+	            .setClass('option');
+	        var text = new UI.Text()
+	            .setWidth('70px')
+	            .setValue(name);
+	        var checkbox = new UI.Checkbox()
+	            .setValue(value)
+	            .onClick(callbackHandler);
+	        panel.add(checkbox);
+	        panel.add(text);
+	        return panel;
+	    },
+	    createDivider: function () {
+	        return new UI.HorizontalRule();
+	    }
+	};
 	module.exports = {
 	    "UI": UI
-	}
-
+	};
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidWkuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvdWkvdWkuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7OztHQUdHO0FBRUgsb0NBQW9DO0FBQ3BDLCtCQUErQjtBQUMvQiw0Q0FBNEM7QUFDNUMsa0NBQWtDO0FBQ2xDLG1DQUFtQztBQUNuQyxvQ0FBb0M7QUFDcEMsb0NBQW9DO0FBRXBDLElBQUksRUFBRSxHQUFHLEVBQUUsQ0FBQTtBQUVYLEVBQUUsQ0FBQyxPQUFPLEdBQUcsY0FBYSxDQUFDLENBQUE7QUFFM0IsRUFBRSxDQUFDLE9BQU8sQ0FBQyxTQUFTLEdBQUc7SUFFckIsS0FBSyxFQUFFLFVBQVUsRUFBRTtRQUNqQixJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsR0FBRyxFQUFFLENBQUE7UUFFaEIsT0FBTyxJQUFJLENBQUE7SUFDYixDQUFDO0lBRUQsUUFBUSxFQUFFLFVBQVUsS0FBSztRQUN2QixJQUFJLENBQUMsR0FBRyxDQUFDLEtBQUssR0FBRyxLQUFLLENBQUE7UUFFdEIsT0FBTyxJQUFJLENBQUE7SUFDYixDQUFDO0lBRUQsUUFBUSxFQUFFLFVBQVUsSUFBSTtRQUN0QixJQUFJLENBQUMsR0FBRyxDQUFDLFNBQVMsR0FBRyxJQUFJLENBQUE7UUFFekIsT0FBTyxJQUFJLENBQUE7SUFDYixDQUFDO0lBRUQsUUFBUSxFQUFFLFVBQVUsS0FBSyxFQUFFLEtBQUs7UUFDOUIsS0FBSyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxHQUFHLEtBQUssQ0FBQyxNQUFNLEVBQUUsQ0FBQyxFQUFFLEVBQUU7WUFDckMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUUsS0FBSyxDQUFFLEdBQUcsS0FBSyxDQUFFLENBQUMsQ0FBRSxDQUFBO1NBQ3JDO0lBQ0gsQ0FBQztJQUVELFFBQVEsRUFBRSxVQUFVLEtBQUs7UUFDdkIsT0FBTyxJQUFJLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBRSxLQUFLLENBQUUsQ0FBQTtJQUNoQyxDQUFDO0lBRUQsTUFBTSxFQUFFO1FBQ04sT0FBTyxJQUFJLENBQUMsR0FBRyxDQUFDLHFCQUFxQixFQUFFLENBQUE7SUFDekMsQ0FBQztJQUVELFdBQVcsRUFBRSxVQUFVLEtBQUs7UUFDMUIsSUFBSSxDQUFDLEdBQUcsQ0FBQyxRQUFRLEdBQUcsS0FBSyxDQUFBO1FBRXpCLE9BQU8sSUFBSSxDQUFBO0lBQ2IsQ0FBQztJQUVELGNBQWMsRUFBRSxVQUFVLEtBQUs7UUFDN0IsSUFBSSxDQUFDLEdBQUcsQ0FBQyxXQUFXLEdBQUcsS0FBSyxDQUFBO1FBRTVCLE9BQU8sSUFBSSxDQUFBO0lBQ2IsQ0FBQztJQUVELE9BQU8sRUFBRTtRQUNQLElBQUksQ0FBQyxHQUFHLENBQUMsVUFBVSxDQUFDLFdBQVcsQ0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLENBQUE7SUFDM0MsQ0FBQztDQUVGLENBQUE7QUFFRCxhQUFhO0FBRWIsSUFBSSxVQUFVLEdBQUc7SUFDZixVQUFVLEVBQUUsTUFBTSxFQUFFLEtBQUssRUFBRSxPQUFPLEVBQUUsUUFBUSxFQUFFLE9BQU8sRUFBRSxRQUFRLEVBQUUsUUFBUTtJQUN6RSxZQUFZLEVBQUUsV0FBVyxFQUFFLGFBQWEsRUFBRSxjQUFjLEVBQUUsYUFBYTtJQUN2RSxTQUFTLEVBQUUsVUFBVSxFQUFFLFdBQVcsRUFBRSxXQUFXLEVBQUUsUUFBUSxFQUFFLFlBQVk7SUFDdkUsV0FBVyxFQUFFLGFBQWE7SUFDMUIsY0FBYyxFQUFFLFNBQVMsRUFBRSxhQUFhLEVBQUUsWUFBWSxFQUFFLGNBQWM7SUFDdEUsZUFBZSxFQUFFLE9BQU8sRUFBRSxpQkFBaUIsRUFBRSxTQUFTLEVBQUUsVUFBVTtJQUNsRSxZQUFZLEVBQUUsV0FBVyxFQUFFLFlBQVksRUFBRSxlQUFlLEVBQUUsUUFBUTtJQUNsRSxlQUFlLEVBQUUsT0FBTyxFQUFFLE9BQU8sRUFBRSxRQUFRLEVBQUUsV0FBVyxFQUFFLFdBQVc7SUFDckUsVUFBVSxFQUFFLFVBQVUsRUFBRSxXQUFXLEVBQUUsVUFBVSxFQUFFLFlBQVk7SUFDN0QsWUFBWSxFQUFFLFlBQVksRUFBRSxjQUFjLEVBQUUsV0FBVyxFQUFFLGVBQWU7Q0FDekUsQ0FBQTtBQUVELFVBQVUsQ0FBQyxPQUFPLENBQUMsVUFBVSxRQUFRO0lBQ25DLElBQUksWUFBWSxHQUFHLFFBQVEsQ0FBQyxNQUFNLENBQUMsQ0FBQyxFQUFFLENBQUMsQ0FBQyxDQUFDLFdBQVcsRUFBRTtRQUNoQyxRQUFRLENBQUMsTUFBTSxDQUFDLENBQUMsRUFBRSxRQUFRLENBQUMsTUFBTSxDQUFDLENBQUE7SUFFekQsRUFBRSxDQUFDLE9BQU8sQ0FBQyxTQUFTLENBQUUsS0FBSyxHQUFHLFlBQVksQ0FBRSxHQUFHO1FBQzdDLElBQUksQ0FBQyxRQUFRLENBQUMsUUFBUSxFQUFFLFNBQVMsQ0FBQyxDQUFBO1FBQ2xDLE9BQU8sSUFBSSxDQUFBO0lBQ2IsQ0FBQyxDQUFBO0lBRUQsRUFBRSxDQUFDLE9BQU8sQ0FBQyxTQUFTLENBQUUsS0FBSyxHQUFHLFlBQVksQ0FBRSxHQUFHO1FBQzdDLE9BQU8sSUFBSSxDQUFDLFFBQVEsQ0FBQyxRQUFRLENBQUMsQ0FBQTtJQUNoQyxDQUFDLENBQUE7QUFDSCxDQUFDLENBQUMsQ0FBQTtBQUVGLFNBQVM7QUFFVCxJQUFJLE1BQU0sR0FBRztJQUNYLE9BQU8sRUFBRSxTQUFTLEVBQUUsVUFBVTtJQUM5QixXQUFXLEVBQUUsVUFBVSxFQUFFLFdBQVcsRUFBRSxTQUFTLEVBQUUsV0FBVztJQUM1RCxPQUFPLEVBQUUsUUFBUSxFQUFFLE9BQU8sRUFBRSxRQUFRO0NBQ3JDLENBQUE7QUFFRCxNQUFNLENBQUMsT0FBTyxDQUFDLFVBQVUsS0FBSztJQUM1QixJQUFJLE1BQU0sR0FBRyxJQUFJLEdBQUcsS0FBSyxDQUFBO0lBRXpCLEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFFLE1BQU0sQ0FBRSxHQUFHLFVBQVUsUUFBUTtRQUNqRCxJQUFJLENBQUMsR0FBRyxDQUFDLGdCQUFnQixDQUFDLEtBQUssQ0FBQyxXQUFXLEVBQUUsRUFBRSxRQUFRLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxFQUFFLEtBQUssQ0FBQyxDQUFBO1FBRTFFLE9BQU8sSUFBSSxDQUFBO0lBQ2IsQ0FBQyxDQUFBO0FBQ0gsQ0FBQyxDQUFDLENBQUE7QUFFRixRQUFRO0FBRVIsRUFBRSxDQUFDLEtBQUssR0FBRztJQUNULEVBQUUsQ0FBQyxPQUFPLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFBO0lBRXJCLElBQUksR0FBRyxHQUFHLFFBQVEsQ0FBQyxhQUFhLENBQUMsS0FBSyxDQUFDLENBQUE7SUFDdkMsR0FBRyxDQUFDLFNBQVMsR0FBRyxPQUFPLENBQUE7SUFFdkIsSUFBSSxDQUFDLEdBQUcsR0FBRyxHQUFHLENBQUE7SUFDZCxJQUFJLENBQUMsUUFBUSxHQUFHLEVBQUUsQ0FBQTtJQUVsQixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxLQUFLLENBQUMsU0FBUyxHQUFHLE1BQU0sQ0FBQyxNQUFNLENBQUMsRUFBRSxDQUFDLE9BQU8sQ0FBQyxTQUFTLENBQUMsQ0FBQTtBQUV4RCxFQUFFLENBQUMsS0FBSyxDQUFDLFNBQVMsQ0FBQyxHQUFHLEdBQUc7SUFDdkIsS0FBSyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxHQUFHLFNBQVMsQ0FBQyxNQUFNLEVBQUUsQ0FBQyxFQUFFLEVBQUU7UUFDekMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxXQUFXLENBQUMsU0FBUyxDQUFFLENBQUMsQ0FBRSxDQUFDLEdBQUcsQ0FBQyxDQUFBO1FBQ3hDLElBQUksQ0FBQyxRQUFRLENBQUMsSUFBSSxDQUFDLFNBQVMsQ0FBRSxDQUFDLENBQUUsQ0FBQyxDQUFBO0tBQ25DO0lBRUQsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsS0FBSyxDQUFDLFNBQVMsQ0FBQyxNQUFNLEdBQUc7SUFDMUIsS0FBSyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxHQUFHLFNBQVMsQ0FBQyxNQUFNLEVBQUUsQ0FBQyxFQUFFLEVBQUU7UUFDekMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxXQUFXLENBQUMsU0FBUyxDQUFFLENBQUMsQ0FBRSxDQUFDLEdBQUcsQ0FBQyxDQUFBO1FBRXhDLElBQUksR0FBRyxHQUFHLElBQUksQ0FBQyxRQUFRLENBQUMsT0FBTyxDQUFDLFNBQVMsQ0FBRSxDQUFDLENBQUUsQ0FBQyxDQUFBO1FBQy9DLElBQUksR0FBRyxLQUFLLENBQUMsQ0FBQztZQUFFLElBQUksQ0FBQyxRQUFRLENBQUMsTUFBTSxDQUFDLEdBQUcsRUFBRSxDQUFDLENBQUMsQ0FBQTtLQUM3QztJQUVELE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLEtBQUssQ0FBQyxTQUFTLENBQUMsS0FBSyxHQUFHO0lBQ3pCLE9BQU8sSUFBSSxDQUFDLEdBQUcsQ0FBQyxRQUFRLENBQUMsTUFBTSxFQUFFO1FBQy9CLElBQUksQ0FBQyxHQUFHLENBQUMsV0FBVyxDQUFDLElBQUksQ0FBQyxHQUFHLENBQUMsU0FBUyxDQUFDLENBQUE7S0FDekM7SUFFRCxJQUFJLENBQUMsUUFBUSxDQUFDLE1BQU0sR0FBRyxDQUFDLENBQUE7SUFFeEIsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxvQkFBb0I7QUFFcEIsRUFBRSxDQUFDLGdCQUFnQixHQUFHO0lBQ3BCLEVBQUUsQ0FBQyxLQUFLLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFBO0lBRW5CLElBQUksQ0FBQyxHQUFHLENBQUMsU0FBUyxHQUFHLHdCQUF3QixDQUFBO0lBRTdDLElBQUksQ0FBQyxNQUFNLEdBQUcsUUFBUSxDQUFDLGFBQWEsQ0FBQyxLQUFLLENBQUMsQ0FBQTtJQUMzQyxJQUFJLENBQUMsTUFBTSxDQUFDLFNBQVMsR0FBRyx3QkFBd0IsQ0FBQTtJQUNoRCxJQUFJLENBQUMsR0FBRyxDQUFDLFdBQVcsQ0FBQyxJQUFJLENBQUMsTUFBTSxDQUFDLENBQUE7SUFFakMsSUFBSSxLQUFLLEdBQUcsSUFBSSxDQUFBO0lBQ2hCLElBQUksQ0FBQyxNQUFNLENBQUMsZ0JBQWdCLENBQUMsT0FBTyxFQUFFLFVBQVUsS0FBSztRQUNuRCxLQUFLLENBQUMsTUFBTSxFQUFFLENBQUE7SUFDaEIsQ0FBQyxFQUFFLEtBQUssQ0FBQyxDQUFBO0lBRVQsSUFBSSxDQUFDLE9BQU8sR0FBRyxRQUFRLENBQUMsYUFBYSxDQUFDLEtBQUssQ0FBQyxDQUFBO0lBQzVDLElBQUksQ0FBQyxPQUFPLENBQUMsU0FBUyxHQUFHLG9CQUFvQixDQUFBO0lBQzdDLElBQUksQ0FBQyxHQUFHLENBQUMsV0FBVyxDQUFDLElBQUksQ0FBQyxPQUFPLENBQUMsQ0FBQTtJQUVsQyxJQUFJLENBQUMsV0FBVyxHQUFHLEtBQUssQ0FBQTtJQUV4QixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxnQkFBZ0IsQ0FBQyxTQUFTLEdBQUcsTUFBTSxDQUFDLE1BQU0sQ0FBQyxFQUFFLENBQUMsS0FBSyxDQUFDLFNBQVMsQ0FBQyxDQUFBO0FBRWpFLEVBQUUsQ0FBQyxnQkFBZ0IsQ0FBQyxTQUFTLENBQUMsU0FBUyxHQUFHO0lBQ3hDLEtBQUssSUFBSSxDQUFDLEdBQUcsQ0FBQyxFQUFFLENBQUMsR0FBRyxTQUFTLENBQUMsTUFBTSxFQUFFLENBQUMsRUFBRSxFQUFFO1FBQ3pDLElBQUksQ0FBQyxHQUFHLENBQUMsWUFBWSxDQUFDLFNBQVMsQ0FBRSxDQUFDLENBQUUsQ0FBQyxHQUFHLEVBQUUsSUFBSSxDQUFDLE9BQU8sQ0FBQyxDQUFBO0tBQ3hEO0lBRUQsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsZ0JBQWdCLENBQUMsU0FBUyxDQUFDLFlBQVksR0FBRyxFQUFFLENBQUMsS0FBSyxDQUFDLFNBQVMsQ0FBQyxNQUFNLENBQUE7QUFFdEUsRUFBRSxDQUFDLGdCQUFnQixDQUFDLFNBQVMsQ0FBQyxXQUFXLEdBQUc7SUFDMUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxVQUFVLENBQUMsT0FBTyxDQUFDLFVBQVUsS0FBSztRQUN6QyxJQUFJLEtBQUssS0FBSyxJQUFJLENBQUMsT0FBTyxFQUFFO1lBQzFCLElBQUksQ0FBQyxHQUFHLENBQUMsV0FBVyxDQUFDLEtBQUssQ0FBQyxDQUFBO1NBQzVCO0lBQ0gsQ0FBQyxDQUFDLENBQUE7QUFDSixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsZ0JBQWdCLENBQUMsU0FBUyxDQUFDLEdBQUcsR0FBRztJQUNsQyxLQUFLLElBQUksQ0FBQyxHQUFHLENBQUMsRUFBRSxDQUFDLEdBQUcsU0FBUyxDQUFDLE1BQU0sRUFBRSxDQUFDLEVBQUUsRUFBRTtRQUN6QyxJQUFJLENBQUMsT0FBTyxDQUFDLFdBQVcsQ0FBQyxTQUFTLENBQUUsQ0FBQyxDQUFFLENBQUMsR0FBRyxDQUFDLENBQUE7S0FDN0M7SUFFRCxPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxnQkFBZ0IsQ0FBQyxTQUFTLENBQUMsTUFBTSxHQUFHO0lBQ3JDLEtBQUssSUFBSSxDQUFDLEdBQUcsQ0FBQyxFQUFFLENBQUMsR0FBRyxTQUFTLENBQUMsTUFBTSxFQUFFLENBQUMsRUFBRSxFQUFFO1FBQ3pDLElBQUksQ0FBQyxPQUFPLENBQUMsV0FBVyxDQUFDLFNBQVMsQ0FBRSxDQUFDLENBQUUsQ0FBQyxHQUFHLENBQUMsQ0FBQTtLQUM3QztJQUVELE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLGdCQUFnQixDQUFDLFNBQVMsQ0FBQyxLQUFLLEdBQUc7SUFDcEMsT0FBTyxJQUFJLENBQUMsT0FBTyxDQUFDLFFBQVEsQ0FBQyxNQUFNLEVBQUU7UUFDbkMsSUFBSSxDQUFDLE9BQU8sQ0FBQyxXQUFXLENBQUMsSUFBSSxDQUFDLE9BQU8sQ0FBQyxTQUFTLENBQUMsQ0FBQTtLQUNqRDtBQUNILENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxnQkFBZ0IsQ0FBQyxTQUFTLENBQUMsTUFBTSxHQUFHO0lBQ3JDLElBQUksQ0FBQyxZQUFZLENBQUMsQ0FBQyxJQUFJLENBQUMsV0FBVyxDQUFDLENBQUE7QUFDdEMsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLGdCQUFnQixDQUFDLFNBQVMsQ0FBQyxRQUFRLEdBQUc7SUFDdkMsSUFBSSxDQUFDLFlBQVksQ0FBQyxJQUFJLENBQUMsQ0FBQTtBQUN6QixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsZ0JBQWdCLENBQUMsU0FBUyxDQUFDLE1BQU0sR0FBRztJQUNyQyxJQUFJLENBQUMsWUFBWSxDQUFDLEtBQUssQ0FBQyxDQUFBO0FBQzFCLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxnQkFBZ0IsQ0FBQyxTQUFTLENBQUMsWUFBWSxHQUFHLFVBQVUsWUFBWTtJQUNqRSxJQUFJLFlBQVksRUFBRTtRQUNoQixJQUFJLENBQUMsR0FBRyxDQUFDLFNBQVMsQ0FBQyxHQUFHLENBQUMsV0FBVyxDQUFDLENBQUE7S0FDcEM7U0FBTTtRQUNMLElBQUksQ0FBQyxHQUFHLENBQUMsU0FBUyxDQUFDLE1BQU0sQ0FBQyxXQUFXLENBQUMsQ0FBQTtLQUN2QztJQUVELElBQUksQ0FBQyxXQUFXLEdBQUcsWUFBWSxDQUFBO0FBQ2pDLENBQUMsQ0FBQTtBQUVELE9BQU87QUFFUCxFQUFFLENBQUMsSUFBSSxHQUFHLFVBQVUsSUFBSTtJQUN0QixFQUFFLENBQUMsT0FBTyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQTtJQUVyQixJQUFJLEdBQUcsR0FBRyxRQUFRLENBQUMsYUFBYSxDQUFDLE1BQU0sQ0FBQyxDQUFBO0lBQ3hDLEdBQUcsQ0FBQyxTQUFTLEdBQUcsTUFBTSxDQUFBO0lBQ3RCLEdBQUcsQ0FBQyxLQUFLLENBQUMsT0FBTyxHQUFHLGNBQWMsQ0FBQTtJQUNsQyxHQUFHLENBQUMsS0FBSyxDQUFDLGFBQWEsR0FBRyxRQUFRLENBQUE7SUFFbEMsSUFBSSxDQUFDLEdBQUcsR0FBRyxHQUFHLENBQUE7SUFDZCxJQUFJLENBQUMsUUFBUSxDQUFDLElBQUksQ0FBQyxDQUFBO0lBRW5CLE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLElBQUksQ0FBQyxTQUFTLEdBQUcsTUFBTSxDQUFDLE1BQU0sQ0FBQyxFQUFFLENBQUMsT0FBTyxDQUFDLFNBQVMsQ0FBQyxDQUFBO0FBRXZELEVBQUUsQ0FBQyxJQUFJLENBQUMsU0FBUyxDQUFDLFFBQVEsR0FBRyxVQUFVLEtBQUs7SUFDMUMsSUFBSSxLQUFLLEtBQUssU0FBUyxFQUFFO1FBQ3ZCLElBQUksQ0FBQyxHQUFHLENBQUMsV0FBVyxHQUFHLEtBQUssQ0FBQTtLQUM3QjtJQUVELE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLElBQUksQ0FBQyxTQUFTLENBQUMsT0FBTyxHQUFHLFVBQVUsS0FBSztJQUN6QyxJQUFJLENBQUMsR0FBRyxDQUFDLElBQUksR0FBRyxLQUFLLENBQUE7SUFFckIsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFDRCxRQUFRO0FBRVIsRUFBRSxDQUFDLEtBQUssR0FBRyxVQUFVLEtBQUs7SUFDeEIsRUFBRSxDQUFDLE9BQU8sQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUE7SUFFckIsSUFBSSxLQUFLLEdBQUcsSUFBSSxDQUFBO0lBRWhCLElBQUksR0FBRyxHQUFHLFFBQVEsQ0FBQyxhQUFhLENBQUMsT0FBTyxDQUFDLENBQUE7SUFDekMsR0FBRyxDQUFDLFNBQVMsR0FBRyxPQUFPLENBQUE7SUFDdkIsR0FBRyxDQUFDLEtBQUssQ0FBQyxPQUFPLEdBQUcsS0FBSyxDQUFBO0lBQ3pCLEdBQUcsQ0FBQyxLQUFLLENBQUMsTUFBTSxHQUFHLGdCQUFnQixDQUFBO0lBRW5DLEdBQUcsQ0FBQyxnQkFBZ0IsQ0FBQyxTQUFTLEVBQUUsVUFBVSxLQUFLO1FBQzdDLEtBQUssQ0FBQyxlQUFlLEVBQUUsQ0FBQTtJQUN6QixDQUFDLEVBQUUsS0FBSyxDQUFDLENBQUE7SUFFVCxJQUFJLENBQUMsR0FBRyxHQUFHLEdBQUcsQ0FBQTtJQUNkLElBQUksQ0FBQyxRQUFRLENBQUMsS0FBSyxJQUFJLEVBQUUsQ0FBQyxDQUFBO0lBRTFCLE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLEtBQUssQ0FBQyxTQUFTLEdBQUcsTUFBTSxDQUFDLE1BQU0sQ0FBQyxFQUFFLENBQUMsT0FBTyxDQUFDLFNBQVMsQ0FBQyxDQUFBO0FBRXhELEVBQUUsQ0FBQyxLQUFLLENBQUMsU0FBUyxDQUFDLFFBQVEsR0FBRztJQUM1QixPQUFPLElBQUksQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFBO0FBQ3ZCLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxLQUFLLENBQUMsU0FBUyxDQUFDLFFBQVEsR0FBRyxVQUFVLEtBQUs7SUFDM0MsSUFBSSxDQUFDLEdBQUcsQ0FBQyxLQUFLLEdBQUcsS0FBSyxDQUFBO0lBRXRCLE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLEtBQUssQ0FBQyxTQUFTLENBQUMsT0FBTyxHQUFHLFVBQVUsS0FBSztJQUMxQyxJQUFJLENBQUMsR0FBRyxDQUFDLElBQUksR0FBRyxLQUFLLENBQUE7SUFFckIsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxXQUFXO0FBRVgsRUFBRSxDQUFDLFFBQVEsR0FBRztJQUNaLEVBQUUsQ0FBQyxPQUFPLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFBO0lBRXJCLElBQUksS0FBSyxHQUFHLElBQUksQ0FBQTtJQUVoQixJQUFJLEdBQUcsR0FBRyxRQUFRLENBQUMsYUFBYSxDQUFDLFVBQVUsQ0FBQyxDQUFBO0lBQzVDLEdBQUcsQ0FBQyxTQUFTLEdBQUcsVUFBVSxDQUFBO0lBQzFCLEdBQUcsQ0FBQyxLQUFLLENBQUMsT0FBTyxHQUFHLEtBQUssQ0FBQTtJQUN6QixHQUFHLENBQUMsS0FBSyxDQUFDLE1BQU0sR0FBRyxnQkFBZ0IsQ0FBQTtJQUVuQyxHQUFHLENBQUMsZ0JBQWdCLENBQUMsU0FBUyxFQUFFLFVBQVUsS0FBSztRQUM3QyxLQUFLLENBQUMsZUFBZSxFQUFFLENBQUE7SUFDekIsQ0FBQyxFQUFFLEtBQUssQ0FBQyxDQUFBO0lBRVQsSUFBSSxDQUFDLEdBQUcsR0FBRyxHQUFHLENBQUE7SUFFZCxPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxRQUFRLENBQUMsU0FBUyxHQUFHLE1BQU0sQ0FBQyxNQUFNLENBQUMsRUFBRSxDQUFDLE9BQU8sQ0FBQyxTQUFTLENBQUMsQ0FBQTtBQUUzRCxFQUFFLENBQUMsUUFBUSxDQUFDLFNBQVMsQ0FBQyxRQUFRLEdBQUc7SUFDL0IsT0FBTyxJQUFJLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBQTtBQUN2QixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsUUFBUSxDQUFDLFNBQVMsQ0FBQyxRQUFRLEdBQUcsVUFBVSxLQUFLO0lBQzlDLElBQUksQ0FBQyxHQUFHLENBQUMsS0FBSyxHQUFHLEtBQUssQ0FBQTtJQUV0QixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELFNBQVM7QUFFVCxFQUFFLENBQUMsTUFBTSxHQUFHO0lBQ1YsRUFBRSxDQUFDLE9BQU8sQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUE7SUFFckIsSUFBSSxLQUFLLEdBQUcsSUFBSSxDQUFBO0lBRWhCLElBQUksR0FBRyxHQUFHLFFBQVEsQ0FBQyxhQUFhLENBQUMsUUFBUSxDQUFDLENBQUE7SUFDMUMsR0FBRyxDQUFDLFNBQVMsR0FBRyxRQUFRLENBQUE7SUFDeEIsR0FBRyxDQUFDLEtBQUssQ0FBQyxLQUFLLEdBQUcsTUFBTSxDQUFBO0lBQ3hCLEdBQUcsQ0FBQyxLQUFLLENBQUMsTUFBTSxHQUFHLE1BQU0sQ0FBQTtJQUN6QixHQUFHLENBQUMsS0FBSyxDQUFDLE1BQU0sR0FBRyxLQUFLLENBQUE7SUFDeEIsR0FBRyxDQUFDLEtBQUssQ0FBQyxPQUFPLEdBQUcsS0FBSyxDQUFBO0lBRXpCLElBQUksQ0FBQyxHQUFHLEdBQUcsR0FBRyxDQUFBO0lBRWQsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsTUFBTSxDQUFDLFNBQVMsR0FBRyxNQUFNLENBQUMsTUFBTSxDQUFDLEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLENBQUE7QUFFekQsRUFBRSxDQUFDLE1BQU0sQ0FBQyxTQUFTLENBQUMsV0FBVyxHQUFHLFVBQVUsT0FBTztJQUNqRCxJQUFJLENBQUMsR0FBRyxDQUFDLFFBQVEsR0FBRyxPQUFPLENBQUE7SUFFM0IsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsTUFBTSxDQUFDLFNBQVMsQ0FBQyxVQUFVLEdBQUcsVUFBVSxPQUFPO0lBQ2hELElBQUksUUFBUSxHQUFHLElBQUksQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFBO0lBRTdCLE9BQU8sSUFBSSxDQUFDLEdBQUcsQ0FBQyxRQUFRLENBQUMsTUFBTSxHQUFHLENBQUMsRUFBRTtRQUNuQyxJQUFJLENBQUMsR0FBRyxDQUFDLFdBQVcsQ0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLFVBQVUsQ0FBQyxDQUFBO0tBQzFDO0lBRUQsS0FBSyxJQUFJLEdBQUcsSUFBSSxPQUFPLEVBQUU7UUFDdkIsSUFBSSxNQUFNLEdBQUcsUUFBUSxDQUFDLGFBQWEsQ0FBQyxRQUFRLENBQUMsQ0FBQTtRQUM3QyxNQUFNLENBQUMsS0FBSyxHQUFHLEdBQUcsQ0FBQTtRQUNsQixNQUFNLENBQUMsU0FBUyxHQUFHLE9BQU8sQ0FBRSxHQUFHLENBQUUsQ0FBQTtRQUNqQyxJQUFJLENBQUMsR0FBRyxDQUFDLFdBQVcsQ0FBQyxNQUFNLENBQUMsQ0FBQTtLQUM3QjtJQUVELElBQUksQ0FBQyxHQUFHLENBQUMsS0FBSyxHQUFHLFFBQVEsQ0FBQTtJQUV6QixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxNQUFNLENBQUMsU0FBUyxDQUFDLFFBQVEsR0FBRztJQUM3QixPQUFPLElBQUksQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFBO0FBQ3ZCLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxNQUFNLENBQUMsU0FBUyxDQUFDLFFBQVEsR0FBRyxVQUFVLEtBQUs7SUFDNUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxLQUFLLEdBQUcsS0FBSyxDQUFBO0lBRXRCLE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLE1BQU0sQ0FBQyxTQUFTLENBQUMsT0FBTyxHQUFHLFVBQVUsS0FBSztJQUMzQyxJQUFJLENBQUMsR0FBRyxDQUFDLElBQUksR0FBRyxLQUFLLENBQUE7SUFFckIsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxjQUFjO0FBRWQsRUFBRSxDQUFDLFdBQVcsR0FBRztJQUNmLEVBQUUsQ0FBQyxPQUFPLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFBO0lBRXJCLElBQUksS0FBSyxHQUFHLElBQUksQ0FBQTtJQUVoQixJQUFJLEdBQUcsR0FBRyxRQUFRLENBQUMsYUFBYSxDQUFDLEtBQUssQ0FBQyxDQUFBO0lBQ3ZDLEdBQUcsQ0FBQyxTQUFTLEdBQUcsYUFBYSxDQUFBO0lBQzdCLEdBQUcsQ0FBQyxRQUFRLEdBQUcsQ0FBQyxDQUFBLENBQUMsa0RBQWtEO0lBRW5FLHdEQUF3RDtJQUN4RCxJQUFJLFdBQVcsR0FBRyxRQUFRLENBQUMsV0FBVyxDQUFDLFlBQVksQ0FBQyxDQUFBO0lBQ3BELFdBQVcsQ0FBQyxTQUFTLENBQUMsUUFBUSxFQUFFLElBQUksRUFBRSxJQUFJLENBQUMsQ0FBQTtJQUUzQyxpQ0FBaUM7SUFDakMsR0FBRyxDQUFDLGdCQUFnQixDQUFDLFNBQVMsRUFBRSxVQUFVLEtBQUs7UUFDN0MsUUFBUSxLQUFLLENBQUMsT0FBTyxFQUFFO1lBQ3JCLEtBQUssRUFBRSxDQUFDLENBQUMsS0FBSztZQUNkLEtBQUssRUFBRSxFQUFFLE9BQU87Z0JBQ2QsS0FBSyxDQUFDLGNBQWMsRUFBRSxDQUFBO2dCQUN0QixLQUFLLENBQUMsZUFBZSxFQUFFLENBQUE7Z0JBQ3ZCLE1BQUs7U0FDUjtJQUNILENBQUMsRUFBRSxLQUFLLENBQUMsQ0FBQTtJQUVULDBDQUEwQztJQUMxQyxHQUFHLENBQUMsZ0JBQWdCLENBQUMsT0FBTyxFQUFFLFVBQVUsS0FBSztRQUMzQyxRQUFRLEtBQUssQ0FBQyxPQUFPLEVBQUU7WUFDckIsS0FBSyxFQUFFLENBQUMsQ0FBQyxLQUFLO1lBQ2QsS0FBSyxFQUFFLEVBQUUsT0FBTztnQkFDZCxLQUFLLENBQUMsYUFBYSxJQUFJLENBQUMsS0FBSyxDQUFDLE9BQU8sSUFBSSxFQUFFLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQTtnQkFFckQsSUFBSSxLQUFLLENBQUMsYUFBYSxJQUFJLENBQUMsSUFBSSxLQUFLLENBQUMsYUFBYSxHQUFHLEtBQUssQ0FBQyxPQUFPLENBQUMsTUFBTSxFQUFFO29CQUMxRSwwREFBMEQ7b0JBQzFELEtBQUssQ0FBQyxRQUFRLENBQUMsS0FBSyxDQUFDLE9BQU8sQ0FBRSxLQUFLLENBQUMsYUFBYSxDQUFFLENBQUMsS0FBSyxDQUFDLENBQUE7b0JBRTFELEtBQUssQ0FBQyxHQUFHLENBQUMsYUFBYSxDQUFDLFdBQVcsQ0FBQyxDQUFBO2lCQUNyQztnQkFFRCxNQUFLO1NBQ1I7SUFDSCxDQUFDLEVBQUUsS0FBSyxDQUFDLENBQUE7SUFFVCxJQUFJLENBQUMsR0FBRyxHQUFHLEdBQUcsQ0FBQTtJQUVkLElBQUksQ0FBQyxPQUFPLEdBQUcsRUFBRSxDQUFBO0lBQ2pCLElBQUksQ0FBQyxhQUFhLEdBQUcsQ0FBQyxDQUFDLENBQUE7SUFDdkIsSUFBSSxDQUFDLGFBQWEsR0FBRyxJQUFJLENBQUE7SUFFekIsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsV0FBVyxDQUFDLFNBQVMsR0FBRyxNQUFNLENBQUMsTUFBTSxDQUFDLEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLENBQUE7QUFFOUQsRUFBRSxDQUFDLFdBQVcsQ0FBQyxTQUFTLENBQUMsVUFBVSxHQUFHLFVBQVUsT0FBTztJQUNyRCxJQUFJLEtBQUssR0FBRyxJQUFJLENBQUE7SUFFaEIsSUFBSSxXQUFXLEdBQUcsUUFBUSxDQUFDLFdBQVcsQ0FBQyxZQUFZLENBQUMsQ0FBQTtJQUNwRCxXQUFXLENBQUMsU0FBUyxDQUFDLFFBQVEsRUFBRSxJQUFJLEVBQUUsSUFBSSxDQUFDLENBQUE7SUFFM0MsT0FBTyxLQUFLLENBQUMsR0FBRyxDQUFDLFFBQVEsQ0FBQyxNQUFNLEdBQUcsQ0FBQyxFQUFFO1FBQ3BDLEtBQUssQ0FBQyxHQUFHLENBQUMsV0FBVyxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsVUFBVSxDQUFDLENBQUE7S0FDNUM7SUFFRCxLQUFLLENBQUMsT0FBTyxHQUFHLEVBQUUsQ0FBQTtJQUVsQixLQUFLLElBQUksQ0FBQyxHQUFHLENBQUMsRUFBRSxDQUFDLEdBQUcsT0FBTyxDQUFDLE1BQU0sRUFBRSxDQUFDLEVBQUUsRUFBRTtRQUN2QyxJQUFJLE1BQU0sR0FBRyxPQUFPLENBQUUsQ0FBQyxDQUFFLENBQUE7UUFFekIsSUFBSSxHQUFHLEdBQUcsUUFBUSxDQUFDLGFBQWEsQ0FBQyxLQUFLLENBQUMsQ0FBQTtRQUN2QyxHQUFHLENBQUMsU0FBUyxHQUFHLFFBQVEsQ0FBQTtRQUN4QixHQUFHLENBQUMsU0FBUyxHQUFHLE1BQU0sQ0FBQyxJQUFJLENBQUE7UUFDM0IsR0FBRyxDQUFDLEtBQUssR0FBRyxNQUFNLENBQUMsS0FBSyxDQUFBO1FBQ3hCLEtBQUssQ0FBQyxHQUFHLENBQUMsV0FBVyxDQUFDLEdBQUcsQ0FBQyxDQUFBO1FBRTFCLEtBQUssQ0FBQyxPQUFPLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxDQUFBO1FBRXZCLEdBQUcsQ0FBQyxnQkFBZ0IsQ0FBQyxPQUFPLEVBQUUsVUFBVSxLQUFLO1lBQzNDLEtBQUssQ0FBQyxRQUFRLENBQUMsSUFBSSxDQUFDLEtBQUssQ0FBQyxDQUFBO1lBQzFCLEtBQUssQ0FBQyxHQUFHLENBQUMsYUFBYSxDQUFDLFdBQVcsQ0FBQyxDQUFBO1FBQ3RDLENBQUMsRUFBRSxLQUFLLENBQUMsQ0FBQTtLQUNWO0lBRUQsT0FBTyxLQUFLLENBQUE7QUFDZCxDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsV0FBVyxDQUFDLFNBQVMsQ0FBQyxRQUFRLEdBQUc7SUFDbEMsT0FBTyxJQUFJLENBQUMsYUFBYSxDQUFBO0FBQzNCLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxXQUFXLENBQUMsU0FBUyxDQUFDLFFBQVEsR0FBRyxVQUFVLEtBQUs7SUFDakQsS0FBSyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxHQUFHLElBQUksQ0FBQyxPQUFPLENBQUMsTUFBTSxFQUFFLENBQUMsRUFBRSxFQUFFO1FBQzVDLElBQUksT0FBTyxHQUFHLElBQUksQ0FBQyxPQUFPLENBQUUsQ0FBQyxDQUFFLENBQUE7UUFFL0IsSUFBSSxPQUFPLENBQUMsS0FBSyxLQUFLLEtBQUssRUFBRTtZQUMzQixPQUFPLENBQUMsU0FBUyxDQUFDLEdBQUcsQ0FBQyxRQUFRLENBQUMsQ0FBQTtZQUUvQixtQkFBbUI7WUFFbkIsSUFBSSxDQUFDLEdBQUcsT0FBTyxDQUFDLFNBQVMsR0FBRyxJQUFJLENBQUMsR0FBRyxDQUFDLFNBQVMsQ0FBQTtZQUM5QyxJQUFJLE9BQU8sR0FBRyxDQUFDLEdBQUcsT0FBTyxDQUFDLFlBQVksQ0FBQTtZQUN0QyxJQUFJLFNBQVMsR0FBRyxPQUFPLEdBQUcsSUFBSSxDQUFDLEdBQUcsQ0FBQyxZQUFZLENBQUE7WUFFL0MsSUFBSSxJQUFJLENBQUMsR0FBRyxDQUFDLFNBQVMsR0FBRyxDQUFDLEVBQUU7Z0JBQzFCLElBQUksQ0FBQyxHQUFHLENBQUMsU0FBUyxHQUFHLENBQUMsQ0FBQTthQUN2QjtpQkFBTSxJQUFJLElBQUksQ0FBQyxHQUFHLENBQUMsU0FBUyxHQUFHLFNBQVMsRUFBRTtnQkFDekMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxTQUFTLEdBQUcsU0FBUyxDQUFBO2FBQy9CO1lBRUQsSUFBSSxDQUFDLGFBQWEsR0FBRyxDQUFDLENBQUE7U0FDdkI7YUFBTTtZQUNMLE9BQU8sQ0FBQyxTQUFTLENBQUMsTUFBTSxDQUFDLFFBQVEsQ0FBQyxDQUFBO1NBQ25DO0tBQ0Y7SUFFRCxJQUFJLENBQUMsYUFBYSxHQUFHLEtBQUssQ0FBQTtJQUUxQixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELFdBQVc7QUFFWCxFQUFFLENBQUMsUUFBUSxHQUFHLFVBQVUsT0FBTztJQUM3QixFQUFFLENBQUMsT0FBTyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQTtJQUVyQixJQUFJLEtBQUssR0FBRyxJQUFJLENBQUE7SUFFaEIsSUFBSSxHQUFHLEdBQUcsUUFBUSxDQUFDLGFBQWEsQ0FBQyxPQUFPLENBQUMsQ0FBQTtJQUN6QyxHQUFHLENBQUMsU0FBUyxHQUFHLFVBQVUsQ0FBQTtJQUMxQixHQUFHLENBQUMsSUFBSSxHQUFHLFVBQVUsQ0FBQTtJQUVyQixJQUFJLENBQUMsR0FBRyxHQUFHLEdBQUcsQ0FBQTtJQUNkLElBQUksQ0FBQyxRQUFRLENBQUMsT0FBTyxDQUFDLENBQUE7SUFFdEIsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsUUFBUSxDQUFDLFNBQVMsR0FBRyxNQUFNLENBQUMsTUFBTSxDQUFDLEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLENBQUE7QUFFM0QsRUFBRSxDQUFDLFFBQVEsQ0FBQyxTQUFTLENBQUMsUUFBUSxHQUFHO0lBQy9CLE9BQU8sSUFBSSxDQUFDLEdBQUcsQ0FBQyxPQUFPLENBQUE7QUFDekIsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLFFBQVEsQ0FBQyxTQUFTLENBQUMsUUFBUSxHQUFHLFVBQVUsS0FBSztJQUM5QyxJQUFJLEtBQUssS0FBSyxTQUFTLEVBQUU7UUFDdkIsSUFBSSxDQUFDLEdBQUcsQ0FBQyxPQUFPLEdBQUcsS0FBSyxDQUFBO0tBQ3pCO0lBRUQsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsUUFBUSxDQUFDLFNBQVMsQ0FBQyxPQUFPLEdBQUcsVUFBVSxLQUFLO0lBQzdDLElBQUksQ0FBQyxHQUFHLENBQUMsSUFBSSxHQUFHLEtBQUssQ0FBQTtJQUVyQixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUNELFFBQVE7QUFFUixFQUFFLENBQUMsS0FBSyxHQUFHO0lBQ1QsRUFBRSxDQUFDLE9BQU8sQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUE7SUFFckIsSUFBSSxLQUFLLEdBQUcsSUFBSSxDQUFBO0lBRWhCLElBQUksR0FBRyxHQUFHLFFBQVEsQ0FBQyxhQUFhLENBQUMsT0FBTyxDQUFDLENBQUE7SUFDekMsR0FBRyxDQUFDLFNBQVMsR0FBRyxPQUFPLENBQUE7SUFDdkIsR0FBRyxDQUFDLEtBQUssQ0FBQyxLQUFLLEdBQUcsTUFBTSxDQUFBO0lBQ3hCLEdBQUcsQ0FBQyxLQUFLLENBQUMsTUFBTSxHQUFHLE1BQU0sQ0FBQTtJQUN6QixHQUFHLENBQUMsS0FBSyxDQUFDLE1BQU0sR0FBRyxLQUFLLENBQUE7SUFDeEIsR0FBRyxDQUFDLEtBQUssQ0FBQyxPQUFPLEdBQUcsS0FBSyxDQUFBO0lBQ3pCLEdBQUcsQ0FBQyxLQUFLLENBQUMsZUFBZSxHQUFHLGFBQWEsQ0FBQTtJQUV6QyxJQUFJO1FBQ0YsR0FBRyxDQUFDLElBQUksR0FBRyxPQUFPLENBQUE7UUFDbEIsR0FBRyxDQUFDLEtBQUssR0FBRyxTQUFTLENBQUE7S0FDdEI7SUFBQyxPQUFPLFNBQVMsRUFBRSxHQUFFO0lBRXRCLElBQUksQ0FBQyxHQUFHLEdBQUcsR0FBRyxDQUFBO0lBRWQsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsS0FBSyxDQUFDLFNBQVMsR0FBRyxNQUFNLENBQUMsTUFBTSxDQUFDLEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLENBQUE7QUFFeEQsRUFBRSxDQUFDLEtBQUssQ0FBQyxTQUFTLENBQUMsUUFBUSxHQUFHO0lBQzVCLE9BQU8sSUFBSSxDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUE7QUFDdkIsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLEtBQUssQ0FBQyxTQUFTLENBQUMsV0FBVyxHQUFHO0lBQy9CLE9BQU8sUUFBUSxDQUFDLElBQUksQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUMsRUFBRSxFQUFFLENBQUMsQ0FBQTtBQUMvQyxDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsS0FBSyxDQUFDLFNBQVMsQ0FBQyxRQUFRLEdBQUcsVUFBVSxLQUFLO0lBQzNDLElBQUksQ0FBQyxHQUFHLENBQUMsS0FBSyxHQUFHLEtBQUssQ0FBQTtJQUV0QixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxLQUFLLENBQUMsU0FBUyxDQUFDLFdBQVcsR0FBRyxVQUFVLEdBQUc7SUFDNUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxLQUFLLEdBQUcsR0FBRyxHQUFHLENBQUMsUUFBUSxHQUFHLEdBQUcsQ0FBQyxRQUFRLENBQUMsRUFBRSxDQUFDLENBQUMsQ0FBQyxLQUFLLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQTtJQUU5RCxPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELFNBQVM7QUFFVCxFQUFFLENBQUMsTUFBTSxHQUFHLFVBQVUsTUFBTTtJQUMxQixFQUFFLENBQUMsT0FBTyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQTtJQUVyQixJQUFJLEtBQUssR0FBRyxJQUFJLENBQUE7SUFFaEIsSUFBSSxHQUFHLEdBQUcsUUFBUSxDQUFDLGFBQWEsQ0FBQyxPQUFPLENBQUMsQ0FBQTtJQUN6QyxHQUFHLENBQUMsU0FBUyxHQUFHLFFBQVEsQ0FBQTtJQUN4QixHQUFHLENBQUMsS0FBSyxHQUFHLE1BQU0sQ0FBQTtJQUVsQixHQUFHLENBQUMsZ0JBQWdCLENBQUMsU0FBUyxFQUFFLFVBQVUsS0FBSztRQUM3QyxLQUFLLENBQUMsZUFBZSxFQUFFLENBQUE7UUFFdkIsSUFBSSxLQUFLLENBQUMsT0FBTyxLQUFLLEVBQUU7WUFBRSxHQUFHLENBQUMsSUFBSSxFQUFFLENBQUE7SUFDdEMsQ0FBQyxFQUFFLEtBQUssQ0FBQyxDQUFBO0lBRVQsSUFBSSxDQUFDLEdBQUcsR0FBRyxDQUFDLFFBQVEsQ0FBQTtJQUNwQixJQUFJLENBQUMsR0FBRyxHQUFHLFFBQVEsQ0FBQTtJQUVuQixJQUFJLENBQUMsU0FBUyxHQUFHLENBQUMsQ0FBQTtJQUNsQixJQUFJLENBQUMsSUFBSSxHQUFHLENBQUMsQ0FBQTtJQUViLElBQUksQ0FBQyxHQUFHLEdBQUcsR0FBRyxDQUFBO0lBQ2QsSUFBSSxDQUFDLFFBQVEsQ0FBQyxNQUFNLENBQUMsQ0FBQTtJQUVyQixJQUFJLFdBQVcsR0FBRyxRQUFRLENBQUMsV0FBVyxDQUFDLFlBQVksQ0FBQyxDQUFBO0lBQ3BELFdBQVcsQ0FBQyxTQUFTLENBQUMsUUFBUSxFQUFFLElBQUksRUFBRSxJQUFJLENBQUMsQ0FBQTtJQUUzQyxJQUFJLFFBQVEsR0FBRyxDQUFDLENBQUE7SUFDaEIsSUFBSSxnQkFBZ0IsR0FBRyxDQUFDLENBQUE7SUFFeEIsSUFBSSxPQUFPLEdBQUcsQ0FBRSxDQUFDLEVBQUUsQ0FBQyxDQUFFLENBQUE7SUFDdEIsSUFBSSxXQUFXLEdBQUcsQ0FBRSxDQUFDLEVBQUUsQ0FBQyxDQUFFLENBQUE7SUFFMUIsSUFBSSxXQUFXLEdBQUcsVUFBVSxLQUFLO1FBQy9CLEtBQUssQ0FBQyxjQUFjLEVBQUUsQ0FBQTtRQUV0QixRQUFRLEdBQUcsQ0FBQyxDQUFBO1FBRVosZ0JBQWdCLEdBQUcsVUFBVSxDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUMsQ0FBQTtRQUV4QyxXQUFXLEdBQUcsQ0FBRSxLQUFLLENBQUMsT0FBTyxFQUFFLEtBQUssQ0FBQyxPQUFPLENBQUUsQ0FBQTtRQUU5QyxRQUFRLENBQUMsZ0JBQWdCLENBQUMsV0FBVyxFQUFFLFdBQVcsRUFBRSxLQUFLLENBQUMsQ0FBQTtRQUMxRCxRQUFRLENBQUMsZ0JBQWdCLENBQUMsU0FBUyxFQUFFLFNBQVMsRUFBRSxLQUFLLENBQUMsQ0FBQTtJQUN4RCxDQUFDLENBQUE7SUFFRCxJQUFJLFdBQVcsR0FBRyxVQUFVLEtBQUs7UUFDL0IsSUFBSSxZQUFZLEdBQUcsR0FBRyxDQUFDLEtBQUssQ0FBQTtRQUU1QixPQUFPLEdBQUcsQ0FBRSxLQUFLLENBQUMsT0FBTyxFQUFFLEtBQUssQ0FBQyxPQUFPLENBQUUsQ0FBQTtRQUUxQyxRQUFRLElBQUksQ0FBQyxPQUFPLENBQUUsQ0FBQyxDQUFFLEdBQUcsV0FBVyxDQUFFLENBQUMsQ0FBRSxDQUFDLEdBQUcsQ0FBQyxPQUFPLENBQUUsQ0FBQyxDQUFFLEdBQUcsV0FBVyxDQUFFLENBQUMsQ0FBRSxDQUFDLENBQUE7UUFFakYsSUFBSSxRQUFRLEdBQUcsRUFBRSxDQUFBO1FBQ2pCLElBQUksS0FBSyxDQUFDLFFBQVE7WUFBRSxRQUFRLEdBQUcsQ0FBQyxDQUFBO1FBQ2hDLElBQUksS0FBSyxDQUFDLE9BQU87WUFBRSxRQUFRLEdBQUcsR0FBRyxDQUFBO1FBRWpDLElBQUksTUFBTSxHQUFHLGdCQUFnQixHQUFHLENBQUMsUUFBUSxHQUFHLFFBQVEsQ0FBQyxHQUFHLEtBQUssQ0FBQyxJQUFJLENBQUE7UUFFbEUsR0FBRyxDQUFDLEtBQUssR0FBRyxJQUFJLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBQyxHQUFHLEVBQUUsSUFBSSxDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUMsR0FBRyxFQUFFLE1BQU0sQ0FBQyxDQUFDLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxTQUFTLENBQUMsQ0FBQTtRQUVyRixJQUFJLFlBQVksS0FBSyxHQUFHLENBQUMsS0FBSztZQUFFLEdBQUcsQ0FBQyxhQUFhLENBQUMsV0FBVyxDQUFDLENBQUE7UUFFOUQsV0FBVyxHQUFHLENBQUUsS0FBSyxDQUFDLE9BQU8sRUFBRSxLQUFLLENBQUMsT0FBTyxDQUFFLENBQUE7SUFDaEQsQ0FBQyxDQUFBO0lBRUQsSUFBSSxTQUFTLEdBQUcsVUFBVSxLQUFLO1FBQzdCLFFBQVEsQ0FBQyxtQkFBbUIsQ0FBQyxXQUFXLEVBQUUsV0FBVyxFQUFFLEtBQUssQ0FBQyxDQUFBO1FBQzdELFFBQVEsQ0FBQyxtQkFBbUIsQ0FBQyxTQUFTLEVBQUUsU0FBUyxFQUFFLEtBQUssQ0FBQyxDQUFBO1FBRXpELElBQUksSUFBSSxDQUFDLEdBQUcsQ0FBQyxRQUFRLENBQUMsR0FBRyxDQUFDLEVBQUU7WUFDMUIsR0FBRyxDQUFDLEtBQUssRUFBRSxDQUFBO1lBQ1gsR0FBRyxDQUFDLE1BQU0sRUFBRSxDQUFBO1NBQ2I7SUFDSCxDQUFDLENBQUE7SUFFRCxJQUFJLFFBQVEsR0FBRyxVQUFVLEtBQUs7UUFDNUIsSUFBSSxNQUFNLEdBQUcsVUFBVSxDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUMsQ0FBQTtRQUVsQyxHQUFHLENBQUMsS0FBSyxHQUFHLEtBQUssQ0FBQyxNQUFNLENBQUMsS0FBSyxLQUFLLENBQUMsQ0FBQyxDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFBO0lBQ2xELENBQUMsQ0FBQTtJQUVELElBQUksT0FBTyxHQUFHLFVBQVUsS0FBSztRQUMzQixHQUFHLENBQUMsS0FBSyxDQUFDLGVBQWUsR0FBRyxFQUFFLENBQUE7UUFDOUIsR0FBRyxDQUFDLEtBQUssQ0FBQyxXQUFXLEdBQUcsTUFBTSxDQUFBO1FBQzlCLEdBQUcsQ0FBQyxLQUFLLENBQUMsTUFBTSxHQUFHLEVBQUUsQ0FBQTtJQUN2QixDQUFDLENBQUE7SUFFRCxJQUFJLE1BQU0sR0FBRyxVQUFVLEtBQUs7UUFDMUIsR0FBRyxDQUFDLEtBQUssQ0FBQyxlQUFlLEdBQUcsYUFBYSxDQUFBO1FBQ3pDLEdBQUcsQ0FBQyxLQUFLLENBQUMsV0FBVyxHQUFHLGFBQWEsQ0FBQTtRQUNyQyxHQUFHLENBQUMsS0FBSyxDQUFDLE1BQU0sR0FBRyxZQUFZLENBQUE7SUFDakMsQ0FBQyxDQUFBO0lBRUQsR0FBRyxDQUFDLGdCQUFnQixDQUFDLFdBQVcsRUFBRSxXQUFXLEVBQUUsS0FBSyxDQUFDLENBQUE7SUFDckQsR0FBRyxDQUFDLGdCQUFnQixDQUFDLFFBQVEsRUFBRSxRQUFRLEVBQUUsS0FBSyxDQUFDLENBQUE7SUFDL0MsR0FBRyxDQUFDLGdCQUFnQixDQUFDLE9BQU8sRUFBRSxPQUFPLEVBQUUsS0FBSyxDQUFDLENBQUE7SUFDN0MsR0FBRyxDQUFDLGdCQUFnQixDQUFDLE1BQU0sRUFBRSxNQUFNLEVBQUUsS0FBSyxDQUFDLENBQUE7SUFFM0MsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsTUFBTSxDQUFDLFNBQVMsR0FBRyxNQUFNLENBQUMsTUFBTSxDQUFDLEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLENBQUE7QUFFekQsRUFBRSxDQUFDLE1BQU0sQ0FBQyxTQUFTLENBQUMsUUFBUSxHQUFHO0lBQzdCLE9BQU8sVUFBVSxDQUFDLElBQUksQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFDLENBQUE7QUFDbkMsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLE1BQU0sQ0FBQyxTQUFTLENBQUMsUUFBUSxHQUFHLFVBQVUsS0FBSztJQUM1QyxJQUFJLEtBQUssQ0FBQyxLQUFLLENBQUMsRUFBRTtRQUNoQixJQUFJLENBQUMsR0FBRyxDQUFDLEtBQUssR0FBRyxHQUFHLENBQUE7S0FDckI7U0FBTSxJQUFJLEtBQUssS0FBSyxTQUFTLEVBQUU7UUFDOUIsSUFBSSxDQUFDLEdBQUcsQ0FBQyxLQUFLLEdBQUcsS0FBSyxDQUFDLE9BQU8sQ0FBQyxJQUFJLENBQUMsU0FBUyxDQUFDLENBQUE7S0FDL0M7SUFFRCxPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxNQUFNLENBQUMsU0FBUyxDQUFDLFFBQVEsR0FBRyxVQUFVLEdBQUcsRUFBRSxHQUFHO0lBQy9DLElBQUksQ0FBQyxHQUFHLEdBQUcsR0FBRyxDQUFBO0lBQ2QsSUFBSSxDQUFDLEdBQUcsR0FBRyxHQUFHLENBQUE7SUFFZCxPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxNQUFNLENBQUMsU0FBUyxDQUFDLFlBQVksR0FBRyxVQUFVLFNBQVM7SUFDcEQsSUFBSSxDQUFDLFNBQVMsR0FBRyxTQUFTLENBQUE7SUFDMUIsSUFBSSxDQUFDLFFBQVEsQ0FBQyxVQUFVLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUMsQ0FBQyxDQUFBO0lBRXpDLE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLE1BQU0sQ0FBQyxTQUFTLENBQUMsT0FBTyxHQUFHLFVBQVUsS0FBSztJQUMzQyxJQUFJLENBQUMsR0FBRyxDQUFDLElBQUksR0FBRyxLQUFLLENBQUE7SUFFckIsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFDRCxVQUFVO0FBRVYsRUFBRSxDQUFDLE9BQU8sR0FBRyxVQUFVLE1BQU07SUFDM0IsRUFBRSxDQUFDLE9BQU8sQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUE7SUFFckIsSUFBSSxLQUFLLEdBQUcsSUFBSSxDQUFBO0lBRWhCLElBQUksR0FBRyxHQUFHLFFBQVEsQ0FBQyxhQUFhLENBQUMsT0FBTyxDQUFDLENBQUE7SUFDekMsR0FBRyxDQUFDLFNBQVMsR0FBRyxRQUFRLENBQUE7SUFDeEIsR0FBRyxDQUFDLEtBQUssR0FBRyxNQUFNLENBQUE7SUFFbEIsR0FBRyxDQUFDLGdCQUFnQixDQUFDLFNBQVMsRUFBRSxVQUFVLEtBQUs7UUFDN0MsS0FBSyxDQUFDLGVBQWUsRUFBRSxDQUFBO0lBQ3pCLENBQUMsRUFBRSxLQUFLLENBQUMsQ0FBQTtJQUVULElBQUksQ0FBQyxHQUFHLEdBQUcsQ0FBQyxRQUFRLENBQUE7SUFDcEIsSUFBSSxDQUFDLEdBQUcsR0FBRyxRQUFRLENBQUE7SUFFbkIsSUFBSSxDQUFDLElBQUksR0FBRyxDQUFDLENBQUE7SUFFYixJQUFJLENBQUMsR0FBRyxHQUFHLEdBQUcsQ0FBQTtJQUNkLElBQUksQ0FBQyxRQUFRLENBQUMsTUFBTSxDQUFDLENBQUE7SUFFckIsSUFBSSxXQUFXLEdBQUcsUUFBUSxDQUFDLFdBQVcsQ0FBQyxZQUFZLENBQUMsQ0FBQTtJQUNwRCxXQUFXLENBQUMsU0FBUyxDQUFDLFFBQVEsRUFBRSxJQUFJLEVBQUUsSUFBSSxDQUFDLENBQUE7SUFFM0MsSUFBSSxRQUFRLEdBQUcsQ0FBQyxDQUFBO0lBQ2hCLElBQUksZ0JBQWdCLEdBQUcsQ0FBQyxDQUFBO0lBRXhCLElBQUksT0FBTyxHQUFHLENBQUUsQ0FBQyxFQUFFLENBQUMsQ0FBRSxDQUFBO0lBQ3RCLElBQUksV0FBVyxHQUFHLENBQUUsQ0FBQyxFQUFFLENBQUMsQ0FBRSxDQUFBO0lBRTFCLElBQUksV0FBVyxHQUFHLFVBQVUsS0FBSztRQUMvQixLQUFLLENBQUMsY0FBYyxFQUFFLENBQUE7UUFFdEIsUUFBUSxHQUFHLENBQUMsQ0FBQTtRQUVaLGdCQUFnQixHQUFHLFVBQVUsQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFDLENBQUE7UUFFeEMsV0FBVyxHQUFHLENBQUUsS0FBSyxDQUFDLE9BQU8sRUFBRSxLQUFLLENBQUMsT0FBTyxDQUFFLENBQUE7UUFFOUMsUUFBUSxDQUFDLGdCQUFnQixDQUFDLFdBQVcsRUFBRSxXQUFXLEVBQUUsS0FBSyxDQUFDLENBQUE7UUFDMUQsUUFBUSxDQUFDLGdCQUFnQixDQUFDLFNBQVMsRUFBRSxTQUFTLEVBQUUsS0FBSyxDQUFDLENBQUE7SUFDeEQsQ0FBQyxDQUFBO0lBRUQsSUFBSSxXQUFXLEdBQUcsVUFBVSxLQUFLO1FBQy9CLElBQUksWUFBWSxHQUFHLEdBQUcsQ0FBQyxLQUFLLENBQUE7UUFFNUIsT0FBTyxHQUFHLENBQUUsS0FBSyxDQUFDLE9BQU8sRUFBRSxLQUFLLENBQUMsT0FBTyxDQUFFLENBQUE7UUFFMUMsUUFBUSxJQUFJLENBQUMsT0FBTyxDQUFFLENBQUMsQ0FBRSxHQUFHLFdBQVcsQ0FBRSxDQUFDLENBQUUsQ0FBQyxHQUFHLENBQUMsT0FBTyxDQUFFLENBQUMsQ0FBRSxHQUFHLFdBQVcsQ0FBRSxDQUFDLENBQUUsQ0FBQyxDQUFBO1FBRWpGLElBQUksUUFBUSxHQUFHLEVBQUUsQ0FBQTtRQUNqQixJQUFJLEtBQUssQ0FBQyxRQUFRO1lBQUUsUUFBUSxHQUFHLENBQUMsQ0FBQTtRQUNoQyxJQUFJLEtBQUssQ0FBQyxPQUFPO1lBQUUsUUFBUSxHQUFHLEdBQUcsQ0FBQTtRQUVqQyxJQUFJLE1BQU0sR0FBRyxnQkFBZ0IsR0FBRyxDQUFDLFFBQVEsR0FBRyxRQUFRLENBQUMsR0FBRyxLQUFLLENBQUMsSUFBSSxDQUFBO1FBRWxFLEdBQUcsQ0FBQyxLQUFLLEdBQUcsSUFBSSxDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUMsR0FBRyxFQUFFLElBQUksQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFDLEdBQUcsRUFBRSxNQUFNLENBQUMsQ0FBQyxHQUFHLENBQUMsQ0FBQTtRQUVoRSxJQUFJLFlBQVksS0FBSyxHQUFHLENBQUMsS0FBSztZQUFFLEdBQUcsQ0FBQyxhQUFhLENBQUMsV0FBVyxDQUFDLENBQUE7UUFFOUQsV0FBVyxHQUFHLENBQUUsS0FBSyxDQUFDLE9BQU8sRUFBRSxLQUFLLENBQUMsT0FBTyxDQUFFLENBQUE7SUFDaEQsQ0FBQyxDQUFBO0lBRUQsSUFBSSxTQUFTLEdBQUcsVUFBVSxLQUFLO1FBQzdCLFFBQVEsQ0FBQyxtQkFBbUIsQ0FBQyxXQUFXLEVBQUUsV0FBVyxFQUFFLEtBQUssQ0FBQyxDQUFBO1FBQzdELFFBQVEsQ0FBQyxtQkFBbUIsQ0FBQyxTQUFTLEVBQUUsU0FBUyxFQUFFLEtBQUssQ0FBQyxDQUFBO1FBRXpELElBQUksSUFBSSxDQUFDLEdBQUcsQ0FBQyxRQUFRLENBQUMsR0FBRyxDQUFDLEVBQUU7WUFDMUIsR0FBRyxDQUFDLEtBQUssRUFBRSxDQUFBO1lBQ1gsR0FBRyxDQUFDLE1BQU0sRUFBRSxDQUFBO1NBQ2I7SUFDSCxDQUFDLENBQUE7SUFFRCxJQUFJLFFBQVEsR0FBRyxVQUFVLEtBQUs7UUFDNUIsSUFBSSxNQUFNLEdBQUcsUUFBUSxDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUMsQ0FBQTtRQUVoQyxJQUFJLEtBQUssQ0FBQyxNQUFNLENBQUMsS0FBSyxLQUFLLEVBQUU7WUFDM0IsR0FBRyxDQUFDLEtBQUssR0FBRyxNQUFNLENBQUE7U0FDbkI7SUFDSCxDQUFDLENBQUE7SUFFRCxJQUFJLE9BQU8sR0FBRyxVQUFVLEtBQUs7UUFDM0IsR0FBRyxDQUFDLEtBQUssQ0FBQyxlQUFlLEdBQUcsRUFBRSxDQUFBO1FBQzlCLEdBQUcsQ0FBQyxLQUFLLENBQUMsV0FBVyxHQUFHLE1BQU0sQ0FBQTtRQUM5QixHQUFHLENBQUMsS0FBSyxDQUFDLE1BQU0sR0FBRyxFQUFFLENBQUE7SUFDdkIsQ0FBQyxDQUFBO0lBRUQsSUFBSSxNQUFNLEdBQUcsVUFBVSxLQUFLO1FBQzFCLEdBQUcsQ0FBQyxLQUFLLENBQUMsZUFBZSxHQUFHLGFBQWEsQ0FBQTtRQUN6QyxHQUFHLENBQUMsS0FBSyxDQUFDLFdBQVcsR0FBRyxhQUFhLENBQUE7UUFDckMsR0FBRyxDQUFDLEtBQUssQ0FBQyxNQUFNLEdBQUcsWUFBWSxDQUFBO0lBQ2pDLENBQUMsQ0FBQTtJQUVELEdBQUcsQ0FBQyxnQkFBZ0IsQ0FBQyxXQUFXLEVBQUUsV0FBVyxFQUFFLEtBQUssQ0FBQyxDQUFBO0lBQ3JELEdBQUcsQ0FBQyxnQkFBZ0IsQ0FBQyxRQUFRLEVBQUUsUUFBUSxFQUFFLEtBQUssQ0FBQyxDQUFBO0lBQy9DLEdBQUcsQ0FBQyxnQkFBZ0IsQ0FBQyxPQUFPLEVBQUUsT0FBTyxFQUFFLEtBQUssQ0FBQyxDQUFBO0lBQzdDLEdBQUcsQ0FBQyxnQkFBZ0IsQ0FBQyxNQUFNLEVBQUUsTUFBTSxFQUFFLEtBQUssQ0FBQyxDQUFBO0lBRTNDLE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLE9BQU8sQ0FBQyxTQUFTLEdBQUcsTUFBTSxDQUFDLE1BQU0sQ0FBQyxFQUFFLENBQUMsT0FBTyxDQUFDLFNBQVMsQ0FBQyxDQUFBO0FBRTFELEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLFFBQVEsR0FBRztJQUM5QixPQUFPLFFBQVEsQ0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBQyxDQUFBO0FBQ2pDLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLFFBQVEsR0FBRyxVQUFVLEtBQUs7SUFDN0MsSUFBSSxLQUFLLEtBQUssU0FBUyxFQUFFO1FBQ3ZCLElBQUksQ0FBQyxHQUFHLENBQUMsS0FBSyxHQUFHLEtBQUssR0FBRyxDQUFDLENBQUE7S0FDM0I7SUFFRCxPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLFFBQVEsR0FBRyxVQUFVLEdBQUcsRUFBRSxHQUFHO0lBQ2hELElBQUksQ0FBQyxHQUFHLEdBQUcsR0FBRyxDQUFBO0lBQ2QsSUFBSSxDQUFDLEdBQUcsR0FBRyxHQUFHLENBQUE7SUFFZCxPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLE9BQU8sR0FBRyxVQUFVLEtBQUs7SUFDNUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxJQUFJLEdBQUcsS0FBSyxDQUFBO0lBRXJCLE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLE9BQU8sQ0FBQyxTQUFTLENBQUMsT0FBTyxHQUFHLFVBQVUsSUFBSTtJQUMzQyxJQUFJLENBQUMsSUFBSSxHQUFHLElBQUksQ0FBQTtJQUVoQixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUNELFFBQVE7QUFFUixFQUFFLENBQUMsS0FBSyxHQUFHO0lBQ1QsRUFBRSxDQUFDLE9BQU8sQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUE7SUFFckIsSUFBSSxHQUFHLEdBQUcsUUFBUSxDQUFDLGFBQWEsQ0FBQyxJQUFJLENBQUMsQ0FBQTtJQUN0QyxHQUFHLENBQUMsU0FBUyxHQUFHLE9BQU8sQ0FBQTtJQUV2QixJQUFJLENBQUMsR0FBRyxHQUFHLEdBQUcsQ0FBQTtJQUVkLE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLEtBQUssQ0FBQyxTQUFTLEdBQUcsTUFBTSxDQUFDLE1BQU0sQ0FBQyxFQUFFLENBQUMsT0FBTyxDQUFDLFNBQVMsQ0FBQyxDQUFBO0FBRXhELGlCQUFpQjtBQUVqQixFQUFFLENBQUMsY0FBYyxHQUFHO0lBQ2xCLEVBQUUsQ0FBQyxPQUFPLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFBO0lBRXJCLElBQUksR0FBRyxHQUFHLFFBQVEsQ0FBQyxhQUFhLENBQUMsSUFBSSxDQUFDLENBQUE7SUFDdEMsR0FBRyxDQUFDLFNBQVMsR0FBRyxnQkFBZ0IsQ0FBQTtJQUVoQyxJQUFJLENBQUMsR0FBRyxHQUFHLEdBQUcsQ0FBQTtJQUVkLE9BQU8sSUFBSSxDQUFBO0FBQ2IsQ0FBQyxDQUFBO0FBRUQsRUFBRSxDQUFDLGNBQWMsQ0FBQyxTQUFTLEdBQUcsTUFBTSxDQUFDLE1BQU0sQ0FBQyxFQUFFLENBQUMsT0FBTyxDQUFDLFNBQVMsQ0FBQyxDQUFBO0FBRWpFLFNBQVM7QUFFVCxFQUFFLENBQUMsTUFBTSxHQUFHLFVBQVUsS0FBSztJQUN6QixFQUFFLENBQUMsT0FBTyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQTtJQUVyQixJQUFJLEtBQUssR0FBRyxJQUFJLENBQUE7SUFFaEIsSUFBSSxHQUFHLEdBQUcsUUFBUSxDQUFDLGFBQWEsQ0FBQyxRQUFRLENBQUMsQ0FBQTtJQUMxQyxHQUFHLENBQUMsU0FBUyxHQUFHLFFBQVEsQ0FBQTtJQUV4QixJQUFJLENBQUMsR0FBRyxHQUFHLEdBQUcsQ0FBQTtJQUNkLElBQUksQ0FBQyxHQUFHLENBQUMsV0FBVyxHQUFHLEtBQUssQ0FBQTtJQUU1QixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxNQUFNLENBQUMsU0FBUyxHQUFHLE1BQU0sQ0FBQyxNQUFNLENBQUMsRUFBRSxDQUFDLE9BQU8sQ0FBQyxTQUFTLENBQUMsQ0FBQTtBQUV6RCxFQUFFLENBQUMsTUFBTSxDQUFDLFNBQVMsQ0FBQyxRQUFRLEdBQUcsVUFBVSxLQUFLO0lBQzVDLElBQUksQ0FBQyxHQUFHLENBQUMsV0FBVyxHQUFHLEtBQUssQ0FBQTtJQUU1QixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELFNBQVM7QUFFVCxFQUFFLENBQUMsYUFBYSxHQUFHO0lBRWpCLG1CQUFtQixFQUFFLFVBQVUsSUFBSSxFQUFFLFlBQVk7UUFDL0MsSUFBSSxTQUFTLEdBQUcsSUFBSSxFQUFFLENBQUMsS0FBSyxFQUFFLENBQUE7UUFDOUIsSUFBSSxLQUFLLEdBQUcsSUFBSSxFQUFFLENBQUMsS0FBSyxFQUFFLENBQUE7UUFDMUIsS0FBSyxDQUFDLFFBQVEsQ0FBQyxPQUFPLENBQUMsQ0FBQTtRQUV2QixLQUFLLENBQUMsY0FBYyxDQUFDLElBQUksQ0FBQyxDQUFBO1FBQzFCLEtBQUssQ0FBQyxTQUFTLENBQUMsS0FBSyxDQUFDLENBQUE7UUFDdEIsS0FBSyxDQUFDLFVBQVUsQ0FBQyxLQUFLLENBQUMsQ0FBQTtRQUV2QixTQUFTLENBQUMsUUFBUSxDQUFDLE1BQU0sQ0FBQyxDQUFBO1FBQzFCLFNBQVMsQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFDLENBQUE7UUFDcEIsU0FBUyxDQUFDLEdBQUcsQ0FBQyxZQUFZLENBQUMsQ0FBQTtRQUUzQixPQUFPLFNBQVMsQ0FBQTtJQUNsQixDQUFDO0lBRUQsWUFBWSxFQUFFLFVBQVUsSUFBSSxFQUFFLGVBQWUsRUFBRSxJQUFJO1FBQ2pELElBQUksTUFBTSxHQUFHLElBQUksRUFBRSxDQUFDLEtBQUssRUFBRSxDQUFBO1FBQzNCLE1BQU0sQ0FBQyxRQUFRLENBQUMsUUFBUSxDQUFDLENBQUE7UUFFekIsSUFBSSxJQUFJLEVBQUU7WUFDUixNQUFNLENBQUMsR0FBRyxDQUFDLElBQUksRUFBRSxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQyxRQUFRLENBQUMsTUFBTSxDQUFDLENBQUMsQ0FBQTtZQUM5QyxNQUFNLENBQUMsR0FBRyxDQUFDLElBQUksRUFBRSxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQyxDQUFBO1NBQzlCO2FBQU07WUFDTCxNQUFNLENBQUMsY0FBYyxDQUFDLElBQUksQ0FBQyxDQUFBO1NBQzVCO1FBRUQsTUFBTSxDQUFDLE9BQU8sQ0FBQyxlQUFlLENBQUMsQ0FBQTtRQUUvQixPQUFPLE1BQU0sQ0FBQTtJQUNmLENBQUM7SUFFRCxrQkFBa0IsRUFBRSxVQUFVLFVBQVU7UUFDdEMsSUFBSSxPQUFPLEdBQUcsSUFBSSxFQUFFLENBQUMsS0FBSyxFQUFFLENBQUE7UUFDNUIsT0FBTyxDQUFDLFFBQVEsQ0FBQyxTQUFTLENBQUMsQ0FBQTtRQUUzQixVQUFVLENBQUMsT0FBTyxDQUFDLFVBQVUsTUFBTTtZQUNqQyxPQUFPLENBQUMsR0FBRyxDQUFDLE1BQU0sQ0FBQyxDQUFBO1FBQ3JCLENBQUMsQ0FBQyxDQUFBO1FBRUYsT0FBTyxPQUFPLENBQUE7SUFDaEIsQ0FBQztJQUVELFdBQVcsRUFBRSxVQUFVLElBQUksRUFBRSxlQUFlO1FBQzFDLElBQUksS0FBSyxHQUFHLElBQUksRUFBRSxDQUFDLEtBQUssRUFBRTthQUN2QixRQUFRLENBQUMsUUFBUSxDQUFDLENBQUE7UUFFckIsSUFBSSxJQUFJLEdBQUcsSUFBSSxFQUFFLENBQUMsSUFBSSxFQUFFO2FBQ3JCLFFBQVEsQ0FBQyxNQUFNLENBQUM7YUFDaEIsUUFBUSxDQUFDLElBQUksQ0FBQyxDQUFBO1FBRWpCLElBQUksS0FBSyxHQUFHLElBQUksRUFBRSxDQUFDLEtBQUssRUFBRTthQUN2QixRQUFRLENBQUMsTUFBTSxDQUFDO2FBQ2hCLFNBQVMsQ0FBQyxlQUFlLENBQUMsQ0FBQTtRQUU3QixLQUFLLENBQUMsR0FBRyxDQUFDLElBQUksQ0FBQyxDQUFBO1FBQ2YsS0FBSyxDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUMsQ0FBQTtRQUVoQixPQUFPLEtBQUssQ0FBQTtJQUNkLENBQUM7SUFFRCxjQUFjLEVBQUUsVUFBVSxJQUFJLEVBQUUsS0FBSyxFQUFFLGVBQWU7UUFDcEQsSUFBSSxLQUFLLEdBQUcsSUFBSSxFQUFFLENBQUMsS0FBSyxFQUFFO2FBQ3ZCLFFBQVEsQ0FBQyxRQUFRLENBQUMsQ0FBQTtRQUVyQixJQUFJLElBQUksR0FBRyxJQUFJLEVBQUUsQ0FBQyxJQUFJLEVBQUU7YUFDckIsUUFBUSxDQUFDLE1BQU0sQ0FBQzthQUNoQixRQUFRLENBQUMsSUFBSSxDQUFDLENBQUE7UUFFakIsSUFBSSxRQUFRLEdBQUcsSUFBSSxFQUFFLENBQUMsUUFBUSxFQUFFO2FBQzdCLFFBQVEsQ0FBQyxLQUFLLENBQUM7YUFDZixPQUFPLENBQUMsZUFBZSxDQUFDLENBQUE7UUFFM0IsS0FBSyxDQUFDLEdBQUcsQ0FBQyxRQUFRLENBQUMsQ0FBQTtRQUNuQixLQUFLLENBQUMsR0FBRyxDQUFDLElBQUksQ0FBQyxDQUFBO1FBRWYsT0FBTyxLQUFLLENBQUE7SUFDZCxDQUFDO0lBRUQsYUFBYSxFQUFFO1FBQ2IsT0FBTyxJQUFJLEVBQUUsQ0FBQyxjQUFjLEVBQUUsQ0FBQTtJQUNoQyxDQUFDO0NBRUYsQ0FBQTtBQUVELE1BQU0sQ0FBQyxPQUFPLEdBQUc7SUFDYixJQUFJLEVBQUUsRUFBRTtDQUNYLENBQUEifQ==
 
 /***/ }),
 /* 14 */
@@ -15132,1147 +14908,819 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	/**
 	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
 	 */
-	
 	// Html
-	
 	var UI = __webpack_require__(13).UI;
-	__webpack_require__(11)
-	
 	UI.Html = function (html) {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('span')
-	  dom.className = 'Html'
-	  dom.style.cursor = 'default'
-	  dom.style.display = 'inline-block'
-	  dom.style.verticalAlign = 'middle'
-	
-	  this.dom = dom
-	  this.setValue(html)
-	
-	  return this
-	}
-	
-	UI.Html.prototype = Object.create(UI.Element.prototype)
-	
+	    UI.Element.call(this);
+	    var dom = document.createElement('span');
+	    dom.className = 'Html';
+	    dom.style.cursor = 'default';
+	    dom.style.display = 'inline-block';
+	    dom.style.verticalAlign = 'middle';
+	    this.dom = dom;
+	    this.setValue(html);
+	    return this;
+	};
+	UI.Html.prototype = Object.create(UI.Element.prototype);
 	UI.Html.prototype.setValue = function (value) {
-	  if (value !== undefined) {
-	    this.dom.innerHTML = value
-	  }
-	
-	  return this
-	}
-	
+	    if (value !== undefined) {
+	        this.dom.innerHTML = value;
+	    }
+	    return this;
+	};
 	// Form
-	
 	UI.Form = function () {
-	  UI.Panel.call(this)
-	
-	  var dom = document.createElement('form')
-	  dom.className = 'Form'
-	  dom.method = 'post'
-	  dom.action = ''
-	  dom.target = '_blank'
-	  dom.enctype = 'multipart/form-data'
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.Form.prototype = Object.create(UI.Panel.prototype)
-	
+	    UI.Panel.call(this);
+	    var dom = document.createElement('form');
+	    dom.className = 'Form';
+	    dom.method = 'post';
+	    dom.action = '';
+	    dom.target = '_blank';
+	    dom.enctype = 'multipart/form-data';
+	    this.dom = dom;
+	    return this;
+	};
+	UI.Form.prototype = Object.create(UI.Panel.prototype);
 	UI.Form.prototype.setMethod = function (value) {
-	  this.dom.method = value
-	
-	  return this
-	}
-	
+	    this.dom.method = value;
+	    return this;
+	};
 	UI.Form.prototype.setAction = function (value) {
-	  this.dom.action = value
-	
-	  return this
-	}
-	
+	    this.dom.action = value;
+	    return this;
+	};
 	UI.Form.prototype.setTarget = function (value) {
-	  this.dom.target = value
-	
-	  return this
-	}
-	
+	    this.dom.target = value;
+	    return this;
+	};
 	UI.Form.prototype.setEnctype = function (value) {
-	  this.dom.enctype = value
-	
-	  return this
-	}
-	
+	    this.dom.enctype = value;
+	    return this;
+	};
 	// File
-	
 	UI.File = function () {
-	  UI.Input.call(this)
-	
-	  this.dom.className = 'File'
-	  this.dom.type = 'file'
-	  this.dom.multiple = false
-	
-	  return this
-	}
-	
-	UI.File.prototype = Object.create(UI.Input.prototype)
-	
+	    UI.Input.call(this);
+	    this.dom.className = 'File';
+	    this.dom.type = 'file';
+	    this.dom.multiple = false;
+	    return this;
+	};
+	UI.File.prototype = Object.create(UI.Input.prototype);
 	UI.File.prototype.setMultiple = function (value) {
-	  this.dom.multiple = value
-	
-	  return this
-	}
-	
+	    this.dom.multiple = value;
+	    return this;
+	};
 	UI.File.prototype.getFiles = function (value) {
-	  return this.dom.files
-	}
-	
+	    return this.dom.files;
+	};
 	// Hidden
-	
 	UI.Hidden = function () {
-	  UI.Input.call(this)
-	
-	  this.dom.type = 'hidden'
-	
-	  return this
-	}
-	
-	UI.Hidden.prototype = Object.create(UI.Input.prototype)
-	
+	    UI.Input.call(this);
+	    this.dom.type = 'hidden';
+	    return this;
+	};
+	UI.Hidden.prototype = Object.create(UI.Input.prototype);
 	// Toggle Button
-	
 	UI.ToggleButton = function (labelA, labelB, callbackA, callbackB) {
-	  UI.Button.call(this, labelB)
-	
-	  var flag = true
-	
-	  this.onClick(function () {
-	    if (flag) {
-	      flag = false
-	      this.setLabel(labelA)
-	      callbackB()
-	    } else {
-	      flag = true
-	      this.setLabel(labelB)
-	      callbackA()
-	    }
-	  }.bind(this))
-	
-	  return this
-	}
-	
-	UI.ToggleButton.prototype = Object.create(UI.Button.prototype)
-	
-	// Ellipsis Text
-	
-	UI.EllipsisText = function (text) {
-	  UI.Text.call(this, text)
-	
-	  this.setWhiteSpace('nowrap')
-	  this.setOverflow('hidden')
-	  this.setTextOverflow('ellipsis')
-	
-	  return this
-	}
-	
-	UI.EllipsisText.prototype = Object.create(UI.Text.prototype)
-	
-	UI.EllipsisText.prototype.setValue = function (value) {
-	  if (value !== undefined) {
-	    this.dom.textContent = value
-	    this.setTitle(value)
-	  }
-	
-	  return this
-	}
-	
-	// Ellipsis Multiline Text
-	
-	UI.EllipsisMultilineText = function (text) {
-	  // http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/
-	
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('span')
-	  dom.className = 'EllipsisMultilineText'
-	  dom.style.cursor = 'default'
-	  dom.style.display = 'inline-block'
-	  dom.style.verticalAlign = 'middle'
-	
-	  var content = document.createElement('p')
-	  dom.appendChild(content)
-	
-	  this.dom = dom
-	  this.content = content
-	
-	  this.setValue(text)
-	
-	  return this
-	}
-	
-	UI.EllipsisMultilineText.prototype = Object.create(UI.Element.prototype)
-	
-	UI.EllipsisMultilineText.prototype.setValue = function (value) {
-	  if (value !== undefined) {
-	    this.content.textContent = value
-	    this.setTitle(value)
-	  }
-	
-	  return this
-	}
-	
-	// Overlay Panel
-	
-	UI.OverlayPanel = function () {
-	  UI.Panel.call(this)
-	
-	  this.dom.className = 'Panel OverlayPanel'
-	  this.dom.tabIndex = '-1'
-	  this.dom.style.outline = 'none'
-	
-	  return this
-	}
-	
-	UI.OverlayPanel.prototype = Object.create(UI.Panel.prototype)
-	
-	UI.OverlayPanel.prototype.attach = function (node) {
-	  node = node || document.body
-	
-	  node.appendChild(this.dom)
-	
-	  return this
-	}
-	
-	// Icon (requires font awesome)
-	
-	UI.Icon = function (value) {
-	  UI.Panel.call(this)
-	
-	  var dom = document.createElement('span')
-	  dom.className = 'Icon fa'
-	
-	  this.dom = dom
-	
-	  if (value) this.addClass.apply(this, arguments)
-	
-	  return this
-	}
-	
-	UI.Icon.prototype = Object.create(UI.Panel.prototype)
-	
-	UI.Icon.prototype.hasClass = function (value) {
-	  return this.dom.classList.contains('fa-' + value)
-	}
-	
-	UI.Icon.prototype.addClass = function (value) {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.dom.classList.add('fa-' + arguments[ i ])
-	  }
-	
-	  return this
-	}
-	
-	UI.Icon.prototype.setClass = function (value) {
-	  this.dom.className = 'Icon fa'
-	
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.dom.classList.add('fa-' + arguments[ i ])
-	  }
-	
-	  return this
-	}
-	
-	UI.Icon.prototype.removeClass = function (value) {
-	  for (var i = 0; i < arguments.length; i++) {
-	    this.dom.classList.remove('fa-' + arguments[ i ])
-	  }
-	
-	  return this
-	}
-	
-	UI.Icon.prototype.switchClass = function (newValue, oldValue) {
-	  this.removeClass(oldValue, newValue)
-	  this.addClass(newValue)
-	
-	  return this
-	}
-	
-	// Toggle Icon
-	
-	UI.ToggleIcon = function (value, classTrue, classFalse) {
-	  UI.Icon.call(this, value ? classTrue : classFalse)
-	
-	  this.value = value
-	  this.classTrue = classTrue
-	  this.classFalse = classFalse
-	
-	  return this
-	}
-	
-	UI.ToggleIcon.prototype = Object.create(UI.Icon.prototype)
-	
-	UI.ToggleIcon.prototype.setValue = function (value) {
-	  this.value = value
-	
-	  if (value) {
-	    this.switchClass(this.classTrue, this.classFalse)
-	  } else {
-	    this.switchClass(this.classFalse, this.classTrue)
-	  }
-	
-	  return this
-	}
-	
-	UI.ToggleIcon.prototype.getValue = function () {
-	  return this.value
-	}
-	
-	// Dispose Icon
-	
-	UI.DisposeIcon = function () {
-	  UI.Icon.call(this, 'trash-o')
-	
-	  var flag = false
-	  var scope = this
-	
-	  this.setTitle('delete')
-	  this.setCursor('pointer')
-	
-	  this.onClick(function () {
-	    if (flag === true) {
-	      if (typeof scope.disposeFunction === 'function') {
-	        scope.disposeFunction()
-	      }
-	    } else {
-	      scope.setColor('rgb(178, 34, 34)')
-	      scope.dom.classList.add('deleteInfo')
-	      flag = true
-	
-	      setTimeout(function () {
-	        scope.setColor('#888')
-	        scope.dom.classList.remove('deleteInfo')
-	        flag = false
-	      }, 1500)
-	    }
-	  })
-	
-	  return this
-	}
-	
-	UI.DisposeIcon.prototype = Object.create(UI.Icon.prototype)
-	
-	UI.DisposeIcon.prototype.setDisposeFunction = function (fn) {
-	  this.disposeFunction = fn
-	
-	  return this
-	}
-	
-	// Progress
-	
-	UI.Progress = function (max, value) {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('progress')
-	  dom.className = 'Progress'
-	
-	  dom.max = max || 1.0
-	  if (value !== undefined) dom.value = value
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.Progress.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Progress.prototype.getValue = function () {
-	  return this.dom.value
-	}
-	
-	UI.Progress.prototype.setValue = function (value) {
-	  this.dom.value = value
-	
-	  return this
-	}
-	
-	UI.Progress.prototype.setMax = function (value) {
-	  this.dom.max = value
-	
-	  return this
-	}
-	
-	UI.Progress.prototype.setIndeterminate = function () {
-	  this.dom.removeAttribute('value')
-	
-	  return this
-	}
-	
-	// Range
-	
-	UI.Range = function (min, max, value, step) {
-	  UI.Element.call(this)
-	
-	  var dom = document.createElement('input')
-	  dom.className = 'Range'
-	  dom.type = 'range'
-	
-	  dom.min = min.toPrecision(3)
-	  dom.max = max.toPrecision(3)
-	  dom.value = value.toPrecision(3)
-	  dom.step = step.toPrecision(3)
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.Range.prototype = Object.create(UI.Element.prototype)
-	
-	UI.Range.prototype.getValue = function () {
-	  return parseFloat(this.dom.value)
-	}
-	
-	UI.Range.prototype.setRange = function (min, max) {
-	  this.dom.min = min
-	  this.dom.max = max
-	
-	  return this
-	}
-	
-	UI.Range.prototype.setValue = function (value) {
-	  this.dom.value = value
-	
-	  return this
-	}
-	
-	UI.Range.prototype.setStep = function (value) {
-	  this.dom.step = value
-	
-	  return this
-	}
-	
-	// AdaptiveTextArea
-	
-	UI.AdaptiveTextArea = function () {
-	  // http://www.brianchu.com/blog/2013/11/02/creating-an-auto-growing-text-input/
-	
-	  UI.Element.call(this)
-	
-	  var container = document.createElement('div')
-	  container.className = 'AdaptiveTextAreaContainer'
-	
-	  var textarea = document.createElement('textarea')
-	  textarea.className = 'AdaptiveTextArea'
-	
-	  var size = document.createElement('div')
-	  size.className = 'AdaptiveTextAreaSize'
-	
-	  container.appendChild(textarea)
-	  container.appendChild(size)
-	
-	  textarea.addEventListener('input', function (event) {
-	    size.innerHTML = textarea.value + '\n'
-	  }, false)
-	
-	  this.textarea = textarea
-	  this.size = size
-	  this.dom = container
-	
-	  return this
-	}
-	
-	UI.AdaptiveTextArea.prototype = Object.create(UI.Element.prototype)
-	
-	UI.AdaptiveTextArea.prototype.getValue = function () {
-	  return this.textarea.value
-	}
-	
-	UI.AdaptiveTextArea.prototype.setValue = function (value) {
-	  this.textarea.value = value
-	  this.size.innerHTML = value + '\n'
-	
-	  return this
-	}
-	
-	UI.AdaptiveTextArea.prototype.setSpellcheck = function (value) {
-	  this.textarea.spellcheck = value
-	
-	  return this
-	}
-	
-	UI.AdaptiveTextArea.prototype.setBackgroundColor = function (value) {
-	  this.textarea.style.backgroundColor = value
-	
-	  return this
-	}
-	
-	// Virtual List
-	
-	UI.VirtualList = function (items, itemHeight, height, generatorFn) {
-	  // based on Virtual DOM List
-	  // https://github.com/sergi/virtual-list
-	  // The MIT License (MIT)
-	  // Copyright (C) 2013 Sergi Mansilla
-	
-	  UI.Element.call(this)
-	
-	  items = items || []
-	  itemHeight = itemHeight || 20
-	  height = height || 300
-	  generatorFn = generatorFn || function () {}
-	
-	  var dom = document.createElement('div')
-	  dom.className = 'VirtualList'
-	  dom.style.height = height + 'px'
-	
-	  var totalRows = items.length
-	  var screenItemsCount = Math.ceil(height / itemHeight)
-	  var cachedItemsCount = screenItemsCount * 3
-	  var lastRepaintY
-	  var maxBuffer = screenItemsCount * itemHeight
-	  var lastScrolled = 0
-	  var renderChunkCallback = function () {}
-	
-	  var list = document.createElement('div')
-	  list.style.width = '100%'
-	  list.style.height = height + 'px'
-	  list.style[ 'overflow-y' ] = 'auto'
-	  list.style.position = 'relative'
-	  list.style.padding = 0
-	
-	  var scroller = document.createElement('div')
-	  scroller.style.opacity = 0
-	  scroller.style.position = 'absolute'
-	  scroller.style.top = 0
-	  scroller.style.left = 0
-	  scroller.style.width = '1px'
-	  scroller.style.height = (itemHeight * totalRows) + 'px'
-	
-	  function createRow (i) {
-	    var item = generatorFn(i)
-	    item.classList.add('VirtualListRow')
-	    item.style.height = itemHeight + 'px'
-	    item.style.top = (i * itemHeight) + 'px'
-	    return item
-	  }
-	
-	  function renderChunk (from) {
-	    var finalItem = Math.min(totalRows, from + cachedItemsCount)
-	    renderChunkCallback(from, finalItem)
-	    // Append all the new rows in a document fragment
-	    // that we will later append to the parent node
-	    var fragment = document.createDocumentFragment()
-	    for (var i = from; i < finalItem; i++) {
-	      fragment.appendChild(createRow(i))
-	    }
-	    // Hide and mark obsolete nodes for deletion.
-	    for (var j = 1, l = list.childNodes.length; j < l; j++) {
-	      list.childNodes[ j ].style.display = 'none'
-	      list.childNodes[ j ].setAttribute('data-rm', '1')
-	    }
-	    list.appendChild(fragment)
-	  };
-	
-	  // As soon as scrolling has stopped, this interval asynchronously
-	  // removes all the nodes that are not used anymore
-	  var rmNodeInterval = setInterval(function () {
-	    // check if list is still attached to dom
-	    var element = dom
-	    while (element !== document && element.parentNode) {
-	      element = element.parentNode
-	    }
-	    // if list not attached to dom, clear interval
-	    if (element !== document) {
-	      clearInterval(rmNodeInterval)
-	    }
-	    // remove tagged nodes
-	    if (Date.now() - lastScrolled > 100) {
-	      var badNodes = list.querySelectorAll('[data-rm="1"]')
-	      for (var i = 0, l = badNodes.length; i < l; i++) {
-	        list.removeChild(badNodes[ i ])
-	      }
-	    }
-	  }, 500)
-	
-	  function onScroll (e) {
-	    var scrollTop = e.target.scrollTop // Triggers reflow
-	    if (!lastRepaintY || Math.abs(scrollTop - lastRepaintY) > maxBuffer) {
-	      var first = Math.floor(scrollTop / itemHeight)
-	      renderChunk(Math.max(0, first - screenItemsCount))
-	      lastRepaintY = scrollTop
-	    }
-	    lastScrolled = Date.now()
-	    e.preventDefault && e.preventDefault()
-	  }
-	
-	  // API
-	
-	  this.setItems = function (value) {
-	    items = value
-	    totalRows = items.length
-	    scroller.style.height = (itemHeight * totalRows) + 'px'
-	    renderChunk(0)
-	    return this
-	  }
-	
-	  this.setItemHeight = function (value) {
-	    itemHeight = value
-	    screenItemsCount = Math.ceil(height / itemHeight)
-	    cachedItemsCount = screenItemsCount * 3
-	    maxBuffer = screenItemsCount * itemHeight
-	    scroller.style.height = (itemHeight * totalRows) + 'px'
-	    renderChunk(0)
-	    return this
-	  }
-	
-	  this.setHeight = function (value) {
-	    UI.Element.prototype.setHeight.call(this, value + 'px')
-	    height = value
-	    screenItemsCount = Math.ceil(height / itemHeight)
-	    cachedItemsCount = screenItemsCount * 3
-	    maxBuffer = screenItemsCount * itemHeight
-	    list.style.height = height + 'px'
-	    scroller.style.height = height + 'px'
-	    renderChunk(0)
-	    return this
-	  }
-	
-	  this.setGeneratorFn = function (value) {
-	    generatorFn = value
-	    renderChunk(0)
-	    return this
-	  }
-	
-	  this.setRenderChunkCallback = function (value) {
-	    renderChunkCallback = value
-	  }
-	
-	  this.redraw = function () {
-	    var first = Math.floor(list.scrollTop / itemHeight)
-	    renderChunk(Math.max(0, first - screenItemsCount))
-	    lastRepaintY = list.scrollTop
-	    return this
-	  }
-	
-	  //
-	
-	  list.appendChild(scroller)
-	  dom.appendChild(list)
-	  list.addEventListener('scroll', onScroll)
-	  renderChunk(0)
-	
-	  this.dom = dom
-	
-	  return this
-	}
-	
-	UI.VirtualList.prototype = Object.create(UI.Element.prototype)
-	
-	// Virtual Table
-	
-	UI.VirtualTable = function (items, itemHeight, height, columns, params) {
-	  var p = params || {}
-	
-	  UI.Panel.call(this)
-	
-	  // this.setOverflow( "scroll" );
-	
-	  var defaultWidth = p.defaultWidth !== undefined ? p.defaultWidth : 30
-	  var defaultMargin = p.defaultMargin !== undefined ? p.defaultMargin : 5
-	  var defaultAlign = p.defaultAlign !== undefined ? p.defaultAlign : 'left'
-	  var onRowSelect = p.onRowSelect
-	
-	  // header
-	
-	  var header = new UI.Panel()
-	    .setWhiteSpace('nowrap')
-	    .setDisplay('inline-block')
-	    .setOverflow('')
-	    .setWidth('100%')
-	
-	  var fullWidth = 0
-	
-	  var selected = []
-	
-	  var numericalSort = function (a, b) {
-	    return a - b
-	  }
-	
-	  var lexicalSort = function (a, b) {
-	    return a.localeCompare(b)
-	  }
-	
-	  var sortColumn = function (idx, flag) {
-	    var sort
-	    if (typeof items[ 0 ][ idx ] === 'string') {
-	      sort = lexicalSort
-	    } else {
-	      sort = numericalSort
-	    }
-	    items.sort(function (a, b) {
-	      if (flag) {
-	        return sort(b[ idx ], a[ idx ])
-	      } else {
-	        return sort(a[ idx ], b[ idx ])
-	      }
-	    })
-	    virtualList.redraw()
-	    return this
-	  }
-	
-	  var selectRow = function (event, idx) {
-	    selected.length = 0
-	    if (onRowSelect) onRowSelect(event, idx)
-	    if (idx !== undefined) {
-	      selected.push(items[ idx ][ 0 ])
-	    }
-	    virtualList.redraw()
-	    return this
-	  }
-	
-	  columns.forEach(function (col) {
-	    var width = col.width || defaultWidth
-	    var margin = col.margin || defaultMargin
-	
-	    var text = new UI.EllipsisText()
-	      .setValue(col.name)
-	      .setWidth(width + 'px')
-	      .setTextAlign(col.align || defaultAlign)
-	      .setMarginLeft(margin + 'px')
-	      .setMarginRight(margin + 'px')
-	      .setCursor('pointer')
-	      .onClick(function (e) {
-	        var flag = col.__sortFlag === 'ASC'
-	        sortColumn(col.index, flag)
+	    UI.Button.call(this, labelB);
+	    var flag = true;
+	    this.onClick(function () {
 	        if (flag) {
-	          col.__sortFlag = 'DESC'
-	        } else {
-	          col.__sortFlag = 'ASC'
+	            flag = false;
+	            this.setLabel(labelA);
+	            callbackB();
 	        }
-	      })
-	
-	    header.add(text)
-	
-	    fullWidth += width + 2 * margin
-	  })
-	
-	  // list
-	
-	  var generatorFn = function (index) {
-	    var panel = new UI.Panel()
-	
+	        else {
+	            flag = true;
+	            this.setLabel(labelB);
+	            callbackA();
+	        }
+	    }.bind(this));
+	    return this;
+	};
+	UI.ToggleButton.prototype = Object.create(UI.Button.prototype);
+	// Ellipsis Text
+	UI.EllipsisText = function (text) {
+	    UI.Text.call(this, text);
+	    this.setWhiteSpace('nowrap');
+	    this.setOverflow('hidden');
+	    this.setTextOverflow('ellipsis');
+	    return this;
+	};
+	UI.EllipsisText.prototype = Object.create(UI.Text.prototype);
+	UI.EllipsisText.prototype.setValue = function (value) {
+	    if (value !== undefined) {
+	        this.dom.textContent = value;
+	        this.setTitle(value);
+	    }
+	    return this;
+	};
+	// Ellipsis Multiline Text
+	UI.EllipsisMultilineText = function (text) {
+	    // http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/
+	    UI.Element.call(this);
+	    var dom = document.createElement('span');
+	    dom.className = 'EllipsisMultilineText';
+	    dom.style.cursor = 'default';
+	    dom.style.display = 'inline-block';
+	    dom.style.verticalAlign = 'middle';
+	    var content = document.createElement('p');
+	    dom.appendChild(content);
+	    this.dom = dom;
+	    this.content = content;
+	    this.setValue(text);
+	    return this;
+	};
+	UI.EllipsisMultilineText.prototype = Object.create(UI.Element.prototype);
+	UI.EllipsisMultilineText.prototype.setValue = function (value) {
+	    if (value !== undefined) {
+	        this.content.textContent = value;
+	        this.setTitle(value);
+	    }
+	    return this;
+	};
+	// Overlay Panel
+	UI.OverlayPanel = function () {
+	    UI.Panel.call(this);
+	    this.dom.className = 'Panel OverlayPanel';
+	    this.dom.tabIndex = '-1';
+	    this.dom.style.outline = 'none';
+	    return this;
+	};
+	UI.OverlayPanel.prototype = Object.create(UI.Panel.prototype);
+	UI.OverlayPanel.prototype.attach = function (node) {
+	    node = node || document.body;
+	    node.appendChild(this.dom);
+	    return this;
+	};
+	// Icon (requires font awesome)
+	UI.Icon = function (value) {
+	    UI.Panel.call(this);
+	    var dom = document.createElement('span');
+	    dom.className = 'Icon fa';
+	    this.dom = dom;
+	    if (value)
+	        this.addClass.apply(this, arguments);
+	    return this;
+	};
+	UI.Icon.prototype = Object.create(UI.Panel.prototype);
+	UI.Icon.prototype.hasClass = function (value) {
+	    return this.dom.classList.contains('fa-' + value);
+	};
+	UI.Icon.prototype.addClass = function (value) {
+	    for (var i = 0; i < arguments.length; i++) {
+	        this.dom.classList.add('fa-' + arguments[i]);
+	    }
+	    return this;
+	};
+	UI.Icon.prototype.setClass = function (value) {
+	    this.dom.className = 'Icon fa';
+	    for (var i = 0; i < arguments.length; i++) {
+	        this.dom.classList.add('fa-' + arguments[i]);
+	    }
+	    return this;
+	};
+	UI.Icon.prototype.removeClass = function (value) {
+	    for (var i = 0; i < arguments.length; i++) {
+	        this.dom.classList.remove('fa-' + arguments[i]);
+	    }
+	    return this;
+	};
+	UI.Icon.prototype.switchClass = function (newValue, oldValue) {
+	    this.removeClass(oldValue, newValue);
+	    this.addClass(newValue);
+	    return this;
+	};
+	// Toggle Icon
+	UI.ToggleIcon = function (value, classTrue, classFalse) {
+	    UI.Icon.call(this, value ? classTrue : classFalse);
+	    this.value = value;
+	    this.classTrue = classTrue;
+	    this.classFalse = classFalse;
+	    return this;
+	};
+	UI.ToggleIcon.prototype = Object.create(UI.Icon.prototype);
+	UI.ToggleIcon.prototype.setValue = function (value) {
+	    this.value = value;
+	    if (value) {
+	        this.switchClass(this.classTrue, this.classFalse);
+	    }
+	    else {
+	        this.switchClass(this.classFalse, this.classTrue);
+	    }
+	    return this;
+	};
+	UI.ToggleIcon.prototype.getValue = function () {
+	    return this.value;
+	};
+	// Dispose Icon
+	UI.DisposeIcon = function () {
+	    UI.Icon.call(this, 'trash-o');
+	    var flag = false;
+	    var scope = this;
+	    this.setTitle('delete');
+	    this.setCursor('pointer');
+	    this.onClick(function () {
+	        if (flag === true) {
+	            if (typeof scope.disposeFunction === 'function') {
+	                scope.disposeFunction();
+	            }
+	        }
+	        else {
+	            scope.setColor('rgb(178, 34, 34)');
+	            scope.dom.classList.add('deleteInfo');
+	            flag = true;
+	            setTimeout(function () {
+	                scope.setColor('#888');
+	                scope.dom.classList.remove('deleteInfo');
+	                flag = false;
+	            }, 1500);
+	        }
+	    });
+	    return this;
+	};
+	UI.DisposeIcon.prototype = Object.create(UI.Icon.prototype);
+	UI.DisposeIcon.prototype.setDisposeFunction = function (fn) {
+	    this.disposeFunction = fn;
+	    return this;
+	};
+	// Progress
+	UI.Progress = function (max, value) {
+	    UI.Element.call(this);
+	    var dom = document.createElement('progress');
+	    dom.className = 'Progress';
+	    dom.max = max || 1.0;
+	    if (value !== undefined)
+	        dom.value = value;
+	    this.dom = dom;
+	    return this;
+	};
+	UI.Progress.prototype = Object.create(UI.Element.prototype);
+	UI.Progress.prototype.getValue = function () {
+	    return this.dom.value;
+	};
+	UI.Progress.prototype.setValue = function (value) {
+	    this.dom.value = value;
+	    return this;
+	};
+	UI.Progress.prototype.setMax = function (value) {
+	    this.dom.max = value;
+	    return this;
+	};
+	UI.Progress.prototype.setIndeterminate = function () {
+	    this.dom.removeAttribute('value');
+	    return this;
+	};
+	// Range
+	UI.Range = function (min, max, value, step) {
+	    UI.Element.call(this);
+	    var dom = document.createElement('input');
+	    dom.className = 'Range';
+	    dom.type = 'range';
+	    dom.min = min.toPrecision(3);
+	    dom.max = max.toPrecision(3);
+	    dom.value = value.toPrecision(3);
+	    dom.step = step.toPrecision(3);
+	    this.dom = dom;
+	    return this;
+	};
+	UI.Range.prototype = Object.create(UI.Element.prototype);
+	UI.Range.prototype.getValue = function () {
+	    return parseFloat(this.dom.value);
+	};
+	UI.Range.prototype.setRange = function (min, max) {
+	    this.dom.min = min;
+	    this.dom.max = max;
+	    return this;
+	};
+	UI.Range.prototype.setValue = function (value) {
+	    this.dom.value = value;
+	    return this;
+	};
+	UI.Range.prototype.setStep = function (value) {
+	    this.dom.step = value;
+	    return this;
+	};
+	// AdaptiveTextArea
+	UI.AdaptiveTextArea = function () {
+	    // http://www.brianchu.com/blog/2013/11/02/creating-an-auto-growing-text-input/
+	    UI.Element.call(this);
+	    var container = document.createElement('div');
+	    container.className = 'AdaptiveTextAreaContainer';
+	    var textarea = document.createElement('textarea');
+	    textarea.className = 'AdaptiveTextArea';
+	    var size = document.createElement('div');
+	    size.className = 'AdaptiveTextAreaSize';
+	    container.appendChild(textarea);
+	    container.appendChild(size);
+	    textarea.addEventListener('input', function (event) {
+	        size.innerHTML = textarea.value + '\n';
+	    }, false);
+	    this.textarea = textarea;
+	    this.size = size;
+	    this.dom = container;
+	    return this;
+	};
+	UI.AdaptiveTextArea.prototype = Object.create(UI.Element.prototype);
+	UI.AdaptiveTextArea.prototype.getValue = function () {
+	    return this.textarea.value;
+	};
+	UI.AdaptiveTextArea.prototype.setValue = function (value) {
+	    this.textarea.value = value;
+	    this.size.innerHTML = value + '\n';
+	    return this;
+	};
+	UI.AdaptiveTextArea.prototype.setSpellcheck = function (value) {
+	    this.textarea.spellcheck = value;
+	    return this;
+	};
+	UI.AdaptiveTextArea.prototype.setBackgroundColor = function (value) {
+	    this.textarea.style.backgroundColor = value;
+	    return this;
+	};
+	// Virtual List
+	UI.VirtualList = function (items, itemHeight, height, generatorFn) {
+	    // based on Virtual DOM List
+	    // https://github.com/sergi/virtual-list
+	    // The MIT License (MIT)
+	    // Copyright (C) 2013 Sergi Mansilla
+	    UI.Element.call(this);
+	    items = items || [];
+	    itemHeight = itemHeight || 20;
+	    height = height || 300;
+	    generatorFn = generatorFn || function () { };
+	    var dom = document.createElement('div');
+	    dom.className = 'VirtualList';
+	    dom.style.height = height + 'px';
+	    var totalRows = items.length;
+	    var screenItemsCount = Math.ceil(height / itemHeight);
+	    var cachedItemsCount = screenItemsCount * 3;
+	    var lastRepaintY;
+	    var maxBuffer = screenItemsCount * itemHeight;
+	    var lastScrolled = 0;
+	    var renderChunkCallback = function () { };
+	    var list = document.createElement('div');
+	    list.style.width = '100%';
+	    list.style.height = height + 'px';
+	    list.style['overflow-y'] = 'auto';
+	    list.style.position = 'relative';
+	    list.style.padding = 0;
+	    var scroller = document.createElement('div');
+	    scroller.style.opacity = 0;
+	    scroller.style.position = 'absolute';
+	    scroller.style.top = 0;
+	    scroller.style.left = 0;
+	    scroller.style.width = '1px';
+	    scroller.style.height = (itemHeight * totalRows) + 'px';
+	    function createRow(i) {
+	        var item = generatorFn(i);
+	        item.classList.add('VirtualListRow');
+	        item.style.height = itemHeight + 'px';
+	        item.style.top = (i * itemHeight) + 'px';
+	        return item;
+	    }
+	    function renderChunk(from) {
+	        var finalItem = Math.min(totalRows, from + cachedItemsCount);
+	        renderChunkCallback(from, finalItem);
+	        // Append all the new rows in a document fragment
+	        // that we will later append to the parent node
+	        var fragment = document.createDocumentFragment();
+	        for (var i = from; i < finalItem; i++) {
+	            fragment.appendChild(createRow(i));
+	        }
+	        // Hide and mark obsolete nodes for deletion.
+	        for (var j = 1, l = list.childNodes.length; j < l; j++) {
+	            list.childNodes[j].style.display = 'none';
+	            list.childNodes[j].setAttribute('data-rm', '1');
+	        }
+	        list.appendChild(fragment);
+	    }
+	    ;
+	    // As soon as scrolling has stopped, this interval asynchronously
+	    // removes all the nodes that are not used anymore
+	    var rmNodeInterval = setInterval(function () {
+	        // check if list is still attached to dom
+	        var element = dom;
+	        while (element !== document && element.parentNode) {
+	            element = element.parentNode;
+	        }
+	        // if list not attached to dom, clear interval
+	        if (element !== document) {
+	            clearInterval(rmNodeInterval);
+	        }
+	        // remove tagged nodes
+	        if (Date.now() - lastScrolled > 100) {
+	            var badNodes = list.querySelectorAll('[data-rm="1"]');
+	            for (var i = 0, l = badNodes.length; i < l; i++) {
+	                list.removeChild(badNodes[i]);
+	            }
+	        }
+	    }, 500);
+	    function onScroll(e) {
+	        var scrollTop = e.target.scrollTop; // Triggers reflow
+	        if (!lastRepaintY || Math.abs(scrollTop - lastRepaintY) > maxBuffer) {
+	            var first = Math.floor(scrollTop / itemHeight);
+	            renderChunk(Math.max(0, first - screenItemsCount));
+	            lastRepaintY = scrollTop;
+	        }
+	        lastScrolled = Date.now();
+	        e.preventDefault && e.preventDefault();
+	    }
+	    // API
+	    this.setItems = function (value) {
+	        items = value;
+	        totalRows = items.length;
+	        scroller.style.height = (itemHeight * totalRows) + 'px';
+	        renderChunk(0);
+	        return this;
+	    };
+	    this.setItemHeight = function (value) {
+	        itemHeight = value;
+	        screenItemsCount = Math.ceil(height / itemHeight);
+	        cachedItemsCount = screenItemsCount * 3;
+	        maxBuffer = screenItemsCount * itemHeight;
+	        scroller.style.height = (itemHeight * totalRows) + 'px';
+	        renderChunk(0);
+	        return this;
+	    };
+	    this.setHeight = function (value) {
+	        UI.Element.prototype.setHeight.call(this, value + 'px');
+	        height = value;
+	        screenItemsCount = Math.ceil(height / itemHeight);
+	        cachedItemsCount = screenItemsCount * 3;
+	        maxBuffer = screenItemsCount * itemHeight;
+	        list.style.height = height + 'px';
+	        scroller.style.height = height + 'px';
+	        renderChunk(0);
+	        return this;
+	    };
+	    this.setGeneratorFn = function (value) {
+	        generatorFn = value;
+	        renderChunk(0);
+	        return this;
+	    };
+	    this.setRenderChunkCallback = function (value) {
+	        renderChunkCallback = value;
+	    };
+	    this.redraw = function () {
+	        var first = Math.floor(list.scrollTop / itemHeight);
+	        renderChunk(Math.max(0, first - screenItemsCount));
+	        lastRepaintY = list.scrollTop;
+	        return this;
+	    };
+	    //
+	    list.appendChild(scroller);
+	    dom.appendChild(list);
+	    list.addEventListener('scroll', onScroll);
+	    renderChunk(0);
+	    this.dom = dom;
+	    return this;
+	};
+	UI.VirtualList.prototype = Object.create(UI.Element.prototype);
+	// Virtual Table
+	UI.VirtualTable = function (items, itemHeight, height, columns, params) {
+	    var p = params || {};
+	    UI.Panel.call(this);
+	    // this.setOverflow( "scroll" );
+	    var defaultWidth = p.defaultWidth !== undefined ? p.defaultWidth : 30;
+	    var defaultMargin = p.defaultMargin !== undefined ? p.defaultMargin : 5;
+	    var defaultAlign = p.defaultAlign !== undefined ? p.defaultAlign : 'left';
+	    var onRowSelect = p.onRowSelect;
+	    // header
+	    var header = new UI.Panel()
+	        .setWhiteSpace('nowrap')
+	        .setDisplay('inline-block')
+	        .setOverflow('')
+	        .setWidth('100%');
+	    var fullWidth = 0;
+	    var selected = [];
+	    var numericalSort = function (a, b) {
+	        return a - b;
+	    };
+	    var lexicalSort = function (a, b) {
+	        return a.localeCompare(b);
+	    };
+	    var sortColumn = function (idx, flag) {
+	        var sort;
+	        if (typeof items[0][idx] === 'string') {
+	            sort = lexicalSort;
+	        }
+	        else {
+	            sort = numericalSort;
+	        }
+	        items.sort(function (a, b) {
+	            if (flag) {
+	                return sort(b[idx], a[idx]);
+	            }
+	            else {
+	                return sort(a[idx], b[idx]);
+	            }
+	        });
+	        virtualList.redraw();
+	        return this;
+	    };
+	    var selectRow = function (event, idx) {
+	        selected.length = 0;
+	        if (onRowSelect)
+	            onRowSelect(event, idx);
+	        if (idx !== undefined) {
+	            selected.push(items[idx][0]);
+	        }
+	        virtualList.redraw();
+	        return this;
+	    };
 	    columns.forEach(function (col) {
-	      var value = items[ index ][ col.index ]
-	      if (col.format) value = col.format(value)
-	
-	      var width = col.width || defaultWidth
-	      var margin = col.margin || defaultMargin
-	
-	      var element
-	      if (typeof value === 'object') {
-	        element = value
-	      } else {
-	        element = new UI.Text()
-	          .setValue(value)
-	      }
-	
-	      element
-	        .setWidth(width + 'px')
-	        .setTextAlign(col.align || defaultAlign)
-	        .setMarginLeft(margin + 'px')
-	        .setMarginRight(margin + 'px')
-	        .onClick(function (event) {
-	          if (typeof col.onClick === 'function') {
-	            col.onClick(event, index, value)
-	          }
-	        })
-	        .onMouseOver(function (event) {
-	          if (typeof col.onMouseOver === 'function') {
-	            col.onMouseOver(event, index, value)
-	          }
-	        })
-	        .onMouseOut(function (event) {
-	          if (typeof col.onMouseOut === 'function') {
-	            col.onMouseOut(event, index, value)
-	          }
-	        })
-	
-	      panel.add(element)
-	    })
-	
-	    panel
-	      .setCursor('pointer')
-	      .onClick(function (event) {
-	        selectRow(event, index)
-	      })
-	
-	    if (selected.indexOf(items[ index ][ 0 ]) !== -1) {
-	      panel.dom.classList.add('highlight')
-	    }
-	
-	    return panel.dom
-	  }
-	
-	  var virtualList = new UI.VirtualList(
-	    items, itemHeight, height, generatorFn
-	  ).setWidth((fullWidth + 20) + 'px')
-	
-	  //
-	
-	  this.add(header, virtualList)
-	
-	  // API
-	
-	  this.header = header
-	  this.list = virtualList
-	  this.sortColumn = sortColumn
-	  this.selectRow = function (idx) {
-	    selectRow(undefined, idx)
-	  }
-	
-	  return this
-	}
-	
-	UI.VirtualTable.prototype = Object.create(UI.Panel.prototype)
-	
-	// Popup Menu (requires Tether)
-	
+	        var width = col.width || defaultWidth;
+	        var margin = col.margin || defaultMargin;
+	        var text = new UI.EllipsisText()
+	            .setValue(col.name)
+	            .setWidth(width + 'px')
+	            .setTextAlign(col.align || defaultAlign)
+	            .setMarginLeft(margin + 'px')
+	            .setMarginRight(margin + 'px')
+	            .setCursor('pointer')
+	            .onClick(function (e) {
+	            var flag = col.__sortFlag === 'ASC';
+	            sortColumn(col.index, flag);
+	            if (flag) {
+	                col.__sortFlag = 'DESC';
+	            }
+	            else {
+	                col.__sortFlag = 'ASC';
+	            }
+	        });
+	        header.add(text);
+	        fullWidth += width + 2 * margin;
+	    });
+	    // list
+	    var generatorFn = function (index) {
+	        var panel = new UI.Panel();
+	        columns.forEach(function (col) {
+	            var value = items[index][col.index];
+	            if (col.format)
+	                value = col.format(value);
+	            var width = col.width || defaultWidth;
+	            var margin = col.margin || defaultMargin;
+	            var element;
+	            if (typeof value === 'object') {
+	                element = value;
+	            }
+	            else {
+	                element = new UI.Text()
+	                    .setValue(value);
+	            }
+	            element
+	                .setWidth(width + 'px')
+	                .setTextAlign(col.align || defaultAlign)
+	                .setMarginLeft(margin + 'px')
+	                .setMarginRight(margin + 'px')
+	                .onClick(function (event) {
+	                if (typeof col.onClick === 'function') {
+	                    col.onClick(event, index, value);
+	                }
+	            })
+	                .onMouseOver(function (event) {
+	                if (typeof col.onMouseOver === 'function') {
+	                    col.onMouseOver(event, index, value);
+	                }
+	            })
+	                .onMouseOut(function (event) {
+	                if (typeof col.onMouseOut === 'function') {
+	                    col.onMouseOut(event, index, value);
+	                }
+	            });
+	            panel.add(element);
+	        });
+	        panel
+	            .setCursor('pointer')
+	            .onClick(function (event) {
+	            selectRow(event, index);
+	        });
+	        if (selected.indexOf(items[index][0]) !== -1) {
+	            panel.dom.classList.add('highlight');
+	        }
+	        return panel.dom;
+	    };
+	    var virtualList = new UI.VirtualList(items, itemHeight, height, generatorFn).setWidth((fullWidth + 20) + 'px');
+	    //
+	    this.add(header, virtualList);
+	    // API
+	    this.header = header;
+	    this.list = virtualList;
+	    this.sortColumn = sortColumn;
+	    this.selectRow = function (idx) {
+	        selectRow(undefined, idx);
+	    };
+	    return this;
+	};
+	UI.VirtualTable.prototype = Object.create(UI.Panel.prototype);
 	UI.PopupMenu = function (iconClass, heading, constraintTo) {
-	  constraintTo = constraintTo || 'scrollParent'
-	
-	  UI.Panel.call(this)
-	
-	  var entryLabelWidth = '100px'
-	
-	  var icon = new UI.Icon(iconClass || 'bars')
-	
-	  var panel = new UI.OverlayPanel()
-	    .setDisplay('none')
-	    .attach(this.dom)
-	
-	  var xOffset = 0
-	  var yOffset = 0
-	
-	  var prevX = 0
-	  var prevY = 0
-	
-	  function onMousemove (e) {
-	    if (prevX === 0) {
-	      prevX = e.clientX
-	      prevY = e.clientY
+	    constraintTo = constraintTo || 'scrollParent';
+	    UI.Panel.call(this);
+	    var entryLabelWidth = '100px';
+	    var icon = new UI.Icon(iconClass || 'bars');
+	    var panel = new UI.OverlayPanel()
+	        .setDisplay('none')
+	        .attach(this.dom);
+	    var xOffset = 0;
+	    var yOffset = 0;
+	    var prevX = 0;
+	    var prevY = 0;
+	    function onMousemove(e) {
+	        if (prevX === 0) {
+	            prevX = e.clientX;
+	            prevY = e.clientY;
+	        }
+	        xOffset += prevX - e.clientX;
+	        yOffset += prevY - e.clientY;
+	        prevX = e.clientX;
+	        prevY = e.clientY;
 	    }
-	    xOffset += prevX - e.clientX
-	    yOffset += prevY - e.clientY
-	    prevX = e.clientX
-	    prevY = e.clientY
-	    tether.setOptions({
-	      element: panel.dom,
-	      target: icon.dom,
-	      attachment: 'top right',
-	      targetAttachment: 'top left',
-	      offset: yOffset + 'px ' + xOffset + 'px',
-	      constraints: [{
-	        to: constraintTo,
-	        pin: ['top', 'bottom']
-	      }]
-	    })
-	    tether.position()
-	  }
-	
-	  var headingPanel = new UI.Panel()
-	    .setBorderBottom('1px solid #555')
-	    .setMarginBottom('10px')
-	    .setHeight('25px')
-	    .setCursor('move')
-	    .onMouseDown(function (e) {
-	      if (e.which === 1) {
-	        document.addEventListener('mousemove', onMousemove)
-	      }
-	      document.addEventListener('mouseup', function (e) {
-	        document.removeEventListener('mousemove', onMousemove)
-	      })
-	    })
-	
-	  headingPanel
-	    .add(
-	      new UI.Icon('times')
+	    var headingPanel = new UI.Panel()
+	        .setBorderBottom('1px solid #555')
+	        .setMarginBottom('10px')
+	        .setHeight('25px')
+	        .setCursor('move')
+	        .onMouseDown(function (e) {
+	        if (e.which === 1) {
+	            document.addEventListener('mousemove', onMousemove);
+	        }
+	        document.addEventListener('mouseup', function (e) {
+	            document.removeEventListener('mousemove', onMousemove);
+	        });
+	    });
+	    headingPanel
+	        .add(new UI.Icon('times')
 	        .setFloat('right')
 	        .setCursor('pointer')
 	        .onClick(function () {
-	          this.setMenuDisplay('none')
-	        }.bind(this))
-	    )
-	    .add(
-	      new UI.Text(heading)
-	    )
-	
-	  panel.add(headingPanel)
-	
-	  var tether
-	
-	  icon.setTitle('menu')
-	  icon.setCursor('pointer')
-	  icon.onClick(function (e) {
-	    if (panel.getDisplay() === 'block') {
-	      this.setMenuDisplay('none')
-	      tether.destroy()
-	      return
-	    }
-	
-	    panel.setMaxHeight((window.innerHeight / 1.2) + 'px')
-	    this.setMenuDisplay('block')
-	
-	    xOffset = 5
-	    yOffset = 0
-	
-	    tether = new Tether({
-	      element: panel.dom,
-	      target: icon.dom,
-	      attachment: 'top right',
-	      targetAttachment: 'top left',
-	      offset: '0px 5px',
-	      constraints: [{
-	        to: constraintTo,
-	        attachment: 'element',
-	        pin: ['top', 'bottom']
-	      }]
-	    })
-	
-	    tether.position()
-	  }.bind(this))
-	
-	  this.add(icon)
-	
-	  this.setClass('')
-	    .setDisplay('inline')
-	
-	  this.icon = icon
-	  this.panel = panel
-	  this.entryLabelWidth = entryLabelWidth
-	
-	  return this
-	}
-	
-	UI.PopupMenu.prototype = Object.create(UI.Panel.prototype)
-	
+	        this.setMenuDisplay('none');
+	    }.bind(this)))
+	        .add(new UI.Text(heading));
+	    panel.add(headingPanel);
+	    icon.setTitle('menu');
+	    icon.setCursor('pointer');
+	    icon.onClick(function (e) {
+	        if (panel.getDisplay() === 'block') {
+	            this.setMenuDisplay('none');
+	            return;
+	        }
+	        panel.setMaxHeight((window.innerHeight / 1.2) + 'px');
+	        this.setMenuDisplay('block');
+	        xOffset = 5;
+	        yOffset = 0;
+	    }.bind(this));
+	    this.add(icon);
+	    this.setClass('')
+	        .setDisplay('inline');
+	    this.icon = icon;
+	    this.panel = panel;
+	    this.entryLabelWidth = entryLabelWidth;
+	    return this;
+	};
+	UI.PopupMenu.prototype = Object.create(UI.Panel.prototype);
 	UI.PopupMenu.prototype.addEntry = function (label, entry) {
-	  this.panel
-	    .add(new UI.Text(label)
-	      // .setWhiteSpace( "nowrap" )
-	      .setWidth(this.entryLabelWidth))
-	    .add(entry || new UI.Panel())
-	    .add(new UI.Break())
-	
-	  return this
-	}
-	
+	    this.panel
+	        .add(new UI.Text(label)
+	        // .setWhiteSpace( "nowrap" )
+	        .setWidth(this.entryLabelWidth))
+	        .add(entry || new UI.Panel())
+	        .add(new UI.Break());
+	    return this;
+	};
 	UI.PopupMenu.prototype.setEntryLabelWidth = function (value) {
-	  this.entryLabelWidth = value
-	
-	  return this
-	}
-	
+	    this.entryLabelWidth = value;
+	    return this;
+	};
 	UI.PopupMenu.prototype.setMenuDisplay = function (value) {
-	  this.panel.setDisplay(value)
-	
-	  if (value !== 'none') this.panel.dom.focus()
-	
-	  return this
-	}
-	
+	    this.panel.setDisplay(value);
+	    if (value !== 'none')
+	        this.panel.dom.focus();
+	    return this;
+	};
 	UI.PopupMenu.prototype.setIconTitle = function (value) {
-	  this.icon.setTitle(value)
-	
-	  return this
-	}
-	
+	    this.icon.setTitle(value);
+	    return this;
+	};
 	UI.PopupMenu.prototype.dispose = function () {
-	  this.panel.dispose()
-	
-	  UI.Element.prototype.dispose.call(this)
-	}
-	
+	    this.panel.dispose();
+	    UI.Element.prototype.dispose.call(this);
+	};
 	// Collapsible Icon Panel
-	
 	UI.CollapsibleIconPanel = function (iconClass1, iconClass2) {
-	  UI.Panel.call(this)
-	
-	  this.dom.className = 'Panel CollapsiblePanel'
-	
-	  if (iconClass1 === undefined) {
-	    // iconClass1 = iconClass1 || "plus-square";
-	    // iconClass2 = iconClass2 || "minus-square";
-	
-	    iconClass1 = iconClass1 || 'chevron-down'
-	    iconClass2 = iconClass2 || 'chevron-right'
-	  }
-	
-	  this.button = new UI.Icon(iconClass1)
-	    .setTitle('expand/collapse')
-	    .setCursor('pointer')
-	    .setWidth('12px')
-	    .setMarginRight('6px')
-	  this.addStatic(this.button)
-	
-	  var scope = this
-	  this.button.dom.addEventListener('click', function (event) {
-	    scope.toggle()
-	  }, false)
-	
-	  this.content = document.createElement('div')
-	  this.content.className = 'CollapsibleContent'
-	  this.dom.appendChild(this.content)
-	
-	  this.isCollapsed = false
-	
-	  this.iconClass1 = iconClass1
-	  this.iconClass2 = iconClass2
-	
-	  return this
-	}
-	
-	UI.CollapsibleIconPanel.prototype = Object.create(UI.CollapsiblePanel.prototype)
-	
+	    UI.Panel.call(this);
+	    this.dom.className = 'Panel CollapsiblePanel';
+	    if (iconClass1 === undefined) {
+	        // iconClass1 = iconClass1 || "plus-square";
+	        // iconClass2 = iconClass2 || "minus-square";
+	        iconClass1 = iconClass1 || 'chevron-down';
+	        iconClass2 = iconClass2 || 'chevron-right';
+	    }
+	    this.button = new UI.Icon(iconClass1)
+	        .setTitle('expand/collapse')
+	        .setCursor('pointer')
+	        .setWidth('12px')
+	        .setMarginRight('6px');
+	    this.addStatic(this.button);
+	    var scope = this;
+	    this.button.dom.addEventListener('click', function (event) {
+	        scope.toggle();
+	    }, false);
+	    this.content = document.createElement('div');
+	    this.content.className = 'CollapsibleContent';
+	    this.dom.appendChild(this.content);
+	    this.isCollapsed = false;
+	    this.iconClass1 = iconClass1;
+	    this.iconClass2 = iconClass2;
+	    return this;
+	};
+	UI.CollapsibleIconPanel.prototype = Object.create(UI.CollapsiblePanel.prototype);
 	UI.CollapsibleIconPanel.prototype.setCollapsed = function (setCollapsed) {
-	  if (setCollapsed) {
-	    this.dom.classList.add('collapsed')
-	
-	    if (this.iconClass2) {
-	      this.button.switchClass(this.iconClass2, this.iconClass1)
-	    } else {
-	      this.button.addClass('rotate-90')
+	    if (setCollapsed) {
+	        this.dom.classList.add('collapsed');
+	        if (this.iconClass2) {
+	            this.button.switchClass(this.iconClass2, this.iconClass1);
+	        }
+	        else {
+	            this.button.addClass('rotate-90');
+	        }
 	    }
-	  } else {
-	    this.dom.classList.remove('collapsed')
-	
-	    if (this.iconClass2) {
-	      this.button.switchClass(this.iconClass1, this.iconClass2)
-	    } else {
-	      this.button.removeClass('rotate-90')
+	    else {
+	        this.dom.classList.remove('collapsed');
+	        if (this.iconClass2) {
+	            this.button.switchClass(this.iconClass1, this.iconClass2);
+	        }
+	        else {
+	            this.button.removeClass('rotate-90');
+	        }
 	    }
-	  }
-	
-	  this.isCollapsed = setCollapsed
-	}
-	
+	    this.isCollapsed = setCollapsed;
+	};
 	// Color picker (requires FlexiColorPicker)
 	// https://github.com/DavidDurman/FlexiColorPicker
 	// https://github.com/zvin/FlexiColorPicker
-	
 	UI.ColorPicker = function () {
-	  var scope = this
-	
-	  UI.Panel.call(this)
-	
-	  // slider
-	
-	  this.slideWrapper = new UI.Panel()
-	    .setClass('slide-wrapper')
-	
-	  this.sliderIndicator = new UI.Panel()
-	    .setClass('slide-indicator')
-	
-	  this.slider = new UI.Panel()
-	    .setClass('slide')
-	    .setWidth('25px')
-	    .setHeight('80px')
-	
-	  this.slideWrapper.add(
-	    this.slider,
-	    this.sliderIndicator
-	  )
-	
-	  // picker
-	
-	  this.pickerWrapper = new UI.Panel()
-	    .setClass('picker-wrapper')
-	
-	  this.pickerIndicator = new UI.Panel()
-	    .setClass('picker-indicator')
-	
-	  this.picker = new UI.Panel()
-	    .setClass('picker')
-	    .setWidth('130px')
-	    .setHeight('80px')
-	
-	  this.pickerWrapper.add(
-	    this.picker,
-	    this.pickerIndicator
-	  )
-	
-	  // event
-	
-	  var changeEvent = document.createEvent('Event')
-	  changeEvent.initEvent('change', true, true)
-	
-	  // finalize
-	
-	  this.add(
-	    this.pickerWrapper,
-	    this.slideWrapper
-	  )
-	
-	  this.colorPicker = ColorPicker(
-	
-	    this.slider.dom,
-	    this.picker.dom,
-	
-	    function (hex, hsv, rgb, pickerCoordinate, sliderCoordinate) {
-	      if (!pickerCoordinate && sliderCoordinate && hsv.s < 0.05) {
-	        hsv.s = 0.5
-	        hsv.v = 0.7
-	        scope.colorPicker.setHsv(hsv)
-	
-	        return
-	      }
-	
-	      ColorPicker.positionIndicators(
-	        scope.sliderIndicator.dom, scope.pickerIndicator.dom,
-	        sliderCoordinate, pickerCoordinate
-	      )
-	
-	      scope.hex = hex
-	      scope.hsv = hsv
-	      scope.rgb = rgb
-	
-	      if (!scope._settingValue) {
-	        scope.dom.dispatchEvent(changeEvent)
-	      }
-	    }
-	
-	  )
-	
-	  this.colorPicker.fixIndicators(
-	    this.sliderIndicator.dom,
-	    this.pickerIndicator.dom
-	  )
-	
-	  return this
-	}
-	
-	UI.ColorPicker.prototype = Object.create(UI.Panel.prototype)
-	
+	    var scope = this;
+	    UI.Panel.call(this);
+	    // slider
+	    this.slideWrapper = new UI.Panel()
+	        .setClass('slide-wrapper');
+	    this.sliderIndicator = new UI.Panel()
+	        .setClass('slide-indicator');
+	    this.slider = new UI.Panel()
+	        .setClass('slide')
+	        .setWidth('25px')
+	        .setHeight('80px');
+	    this.slideWrapper.add(this.slider, this.sliderIndicator);
+	    // picker
+	    this.pickerWrapper = new UI.Panel()
+	        .setClass('picker-wrapper');
+	    this.pickerIndicator = new UI.Panel()
+	        .setClass('picker-indicator');
+	    this.picker = new UI.Panel()
+	        .setClass('picker')
+	        .setWidth('130px')
+	        .setHeight('80px');
+	    this.pickerWrapper.add(this.picker, this.pickerIndicator);
+	    // event
+	    var changeEvent = document.createEvent('Event');
+	    changeEvent.initEvent('change', true, true);
+	    // finalize
+	    this.add(this.pickerWrapper, this.slideWrapper);
+	    this.colorPicker = ColorPicker(this.slider.dom, this.picker.dom, function (hex, hsv, rgb, pickerCoordinate, sliderCoordinate) {
+	        if (!pickerCoordinate && sliderCoordinate && hsv.s < 0.05) {
+	            hsv.s = 0.5;
+	            hsv.v = 0.7;
+	            scope.colorPicker.setHsv(hsv);
+	            return;
+	        }
+	        ColorPicker.positionIndicators(scope.sliderIndicator.dom, scope.pickerIndicator.dom, sliderCoordinate, pickerCoordinate);
+	        scope.hex = hex;
+	        scope.hsv = hsv;
+	        scope.rgb = rgb;
+	        if (!scope._settingValue) {
+	            scope.dom.dispatchEvent(changeEvent);
+	        }
+	    });
+	    this.colorPicker.fixIndicators(this.sliderIndicator.dom, this.pickerIndicator.dom);
+	    return this;
+	};
+	UI.ColorPicker.prototype = Object.create(UI.Panel.prototype);
 	UI.ColorPicker.prototype.setValue = function (value) {
-	  if (value !== this.hex) {
-	    this._settingValue = true
-	    this.colorPicker.setHex(value)
-	    this._settingValue = false
-	  }
-	
-	  return this
-	}
-	
+	    if (value !== this.hex) {
+	        this._settingValue = true;
+	        this.colorPicker.setHex(value);
+	        this._settingValue = false;
+	    }
+	    return this;
+	};
 	UI.ColorPicker.prototype.getValue = function () {
-	  return this.hex
-	}
-	
+	    return this.hex;
+	};
 	module.exports = {
 	    "UI": UI
-	}
-
+	};
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidWkuZXh0cmEuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvdWkvdWkuZXh0cmEuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7O0dBRUc7QUFFSCxPQUFPO0FBRVAsSUFBSSxFQUFFLEdBQUcsT0FBTyxDQUFDLFNBQVMsQ0FBQyxDQUFDLEVBQUUsQ0FBQztBQUUvQixFQUFFLENBQUMsSUFBSSxHQUFHLFVBQVUsSUFBSTtJQUN0QixFQUFFLENBQUMsT0FBTyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQTtJQUVyQixJQUFJLEdBQUcsR0FBRyxRQUFRLENBQUMsYUFBYSxDQUFDLE1BQU0sQ0FBQyxDQUFBO0lBQ3hDLEdBQUcsQ0FBQyxTQUFTLEdBQUcsTUFBTSxDQUFBO0lBQ3RCLEdBQUcsQ0FBQyxLQUFLLENBQUMsTUFBTSxHQUFHLFNBQVMsQ0FBQTtJQUM1QixHQUFHLENBQUMsS0FBSyxDQUFDLE9BQU8sR0FBRyxjQUFjLENBQUE7SUFDbEMsR0FBRyxDQUFDLEtBQUssQ0FBQyxhQUFhLEdBQUcsUUFBUSxDQUFBO0lBRWxDLElBQUksQ0FBQyxHQUFHLEdBQUcsR0FBRyxDQUFBO0lBQ2QsSUFBSSxDQUFDLFFBQVEsQ0FBQyxJQUFJLENBQUMsQ0FBQTtJQUVuQixPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxJQUFJLENBQUMsU0FBUyxHQUFHLE1BQU0sQ0FBQyxNQUFNLENBQUMsRUFBRSxDQUFDLE9BQU8sQ0FBQyxTQUFTLENBQUMsQ0FBQTtBQUV2RCxFQUFFLENBQUMsSUFBSSxDQUFDLFNBQVMsQ0FBQyxRQUFRLEdBQUcsVUFBVSxLQUFLO0lBQzFDLElBQUksS0FBSyxLQUFLLFNBQVMsRUFBRTtRQUN2QixJQUFJLENBQUMsR0FBRyxDQUFDLFNBQVMsR0FBRyxLQUFLLENBQUE7S0FDM0I7SUFFRCxPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELE9BQU87QUFFUCxFQUFF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
 
 /***/ }),
 /* 15 */
@@ -16282,2816 +15730,282 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	 * @file UI NGL
 	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
 	 */
-	
 	// Color
-	
 	var NGL = __webpack_require__(3);
 	var UI = __webpack_require__(14).UI;
-	
 	UI.ColorPopupMenu = function () {
-	  var scope = this
-	
-	  UI.Panel.call(this)
-	
-	  this.iconText = new UI.Text('')
-	    .setCursor('pointer')
-	    .setClass('fa-stack-1x')
-	    .setFontFamily('Arial, sans-serif')
-	    .setColor('#111')
-	
-	  this.iconSquare = new UI.Icon('square', 'stack-1x')
-	  // .setMarginTop( "0.05em" );
-	
-	  this.menu = new UI.PopupMenu('stack', 'Color')
-	
-	  this.menu.icon
-	    .setTitle('color')
-	    .setWidth('1em').setHeight('1em').setLineHeight('1em')
-	    .add(this.iconSquare)
-	    .add(this.iconText)
-	
-	  var changeEvent = document.createEvent('Event')
-	  changeEvent.initEvent('change', true, true)
-	
-	  this.colorInput = new UI.Input()
-	    .onChange(function () {
-	      scope.setColor(scope.colorInput.getValue())
-	      scope.dom.dispatchEvent(changeEvent)
-	    })
-	
-	  this.colorPicker = new UI.ColorPicker()
-	    .setDisplay('inline-block')
-	    .onChange(function (e) {
-	      scope.setColor(scope.colorPicker.getValue())
-	      scope.dom.dispatchEvent(changeEvent)
-	    })
-	
-	  this.menu
-	    .addEntry('Input', this.colorInput)
-	    .addEntry('Picker', this.colorPicker)
-	
-	  this.add(this.menu)
-	
-	  this.setClass('')
-	    .setDisplay('inline')
-	
-	  return this
-	}
-	
-	UI.ColorPopupMenu.prototype = Object.create(UI.Panel.prototype)
-	
+	    var scope = this;
+	    UI.Panel.call(this);
+	    this.iconText = new UI.Text('')
+	        .setCursor('pointer')
+	        .setClass('fa-stack-1x')
+	        .setFontFamily('Arial, sans-serif')
+	        .setColor('#111');
+	    this.iconSquare = new UI.Icon('square', 'stack-1x');
+	    // .setMarginTop( "0.05em" );
+	    this.menu = new UI.PopupMenu('stack', 'Color');
+	    this.menu.icon
+	        .setTitle('color')
+	        .setWidth('1em').setHeight('1em').setLineHeight('1em')
+	        .add(this.iconSquare)
+	        .add(this.iconText);
+	    var changeEvent = document.createEvent('Event');
+	    changeEvent.initEvent('change', true, true);
+	    this.colorInput = new UI.Input()
+	        .onChange(function () {
+	        scope.setColor(scope.colorInput.getValue());
+	        scope.dom.dispatchEvent(changeEvent);
+	    });
+	    this.colorPicker = new UI.ColorPicker()
+	        .setDisplay('inline-block')
+	        .onChange(function (e) {
+	        scope.setColor(scope.colorPicker.getValue());
+	        scope.dom.dispatchEvent(changeEvent);
+	    });
+	    this.menu
+	        .addEntry('Input', this.colorInput)
+	        .addEntry('Picker', this.colorPicker);
+	    this.add(this.menu);
+	    this.setClass('')
+	        .setDisplay('inline');
+	    return this;
+	};
+	UI.ColorPopupMenu.prototype = Object.create(UI.Panel.prototype);
 	UI.ColorPopupMenu.prototype.setColor = (function () {
-	  var c = new NGL.Color()
-	
-	  return function (value) {
-	    c.set(value)
-	    value = '#' + c.getHexString()
-	
-	    this.colorInput
-	      .setBackgroundColor(value)
-	      .setValue(value)
-	
-	    this.colorPicker.setValue(value)
-	
-	    this.iconSquare.setColor(value)
-	
-	    // perceived brightness (http://alienryderflex.com/hsp.html)
-	    var brightness = Math.sqrt(
-	      c.r * 255 * c.r * 255 * 0.241 +
-	              c.g * 255 * c.g * 255 * 0.691 +
-	              c.b * 255 * c.b * 255 * 0.068
-	    )
-	
-	    if (brightness > 130) {
-	      this.iconText.setColor('#000000')
-	      this.colorInput.setColor('#000000')
-	    } else {
-	      this.iconText.setColor('#FFFFFF')
-	      this.colorInput.setColor('#FFFFFF')
-	    }
-	
-	    return this
-	  }
-	}())
-	
-	UI.ColorPopupMenu.prototype.getColor = function () {
-	  return this.colorInput.getValue()
-	}
-	
-	UI.ColorPopupMenu.prototype.getValue = function () {
-	  return this.getColor()
-	}
-	
-	UI.ColorPopupMenu.prototype.setValue = function (value) {
-	  this.setColor(value)
-	
-	  return this
-	}
-	
-	UI.ColorPopupMenu.prototype.dispose = function () {
-	  this.menu.dispose()
-	
-	  UI.Panel.prototype.dispose.call(this)
-	}
-	
-	// Vector3
-	
-	UI.Vector3 = function (value) {
-	  UI.Panel.call(this).setDisplay('inline-block')
-	
-	  this.xNumber = new UI.Number(0).setWidth('40px')
-	  this.yNumber = new UI.Number(0).setWidth('40px')
-	  this.zNumber = new UI.Number(0).setWidth('40px')
-	
-	  this.add(this.xNumber, this.yNumber, this.zNumber)
-	  this.setValue(value)
-	
-	  var changeEvent = document.createEvent('Event')
-	  changeEvent.initEvent('change', true, true)
-	
-	  this.xNumber.onChange(function () {
-	    this.dom.dispatchEvent(changeEvent)
-	  }.bind(this))
-	  this.yNumber.onChange(function () {
-	    this.dom.dispatchEvent(changeEvent)
-	  }.bind(this))
-	  this.zNumber.onChange(function () {
-	    this.dom.dispatchEvent(changeEvent)
-	  }.bind(this))
-	
-	  return this
-	}
-	
-	UI.Vector3.prototype = Object.create(UI.Panel.prototype)
-	
-	UI.Vector3.prototype.getValue = function () {
-	  return {
-	    x: this.xNumber.getValue(),
-	    y: this.yNumber.getValue(),
-	    z: this.zNumber.getValue()
-	  }
-	}
-	
-	UI.Vector3.prototype.setValue = function (value) {
-	  if (value) {
-	    this.xNumber.setValue(value.x)
-	    this.yNumber.setValue(value.y)
-	    this.zNumber.setValue(value.z)
-	  }
-	
-	  return this
-	}
-	
-	UI.Vector3.prototype.setPrecision = function (precision) {
-	  this.xNumber.setPrecision(precision)
-	  this.yNumber.setPrecision(precision)
-	  this.zNumber.setPrecision(precision)
-	
-	  return this
-	}
-	
-	UI.Vector3.prototype.setRange = function (min, max) {
-	  this.xNumber.setRange(min, max)
-	  this.yNumber.setRange(min, max)
-	  this.zNumber.setRange(min, max)
-	
-	  return this
-	}
-	
-	// Selection
-	
-	UI.SelectionInput = function (selection) {
-	  UI.AdaptiveTextArea.call(this)
-	
-	  this.setSpellcheck(false)
-	
-	  if (!(selection.type === 'selection')) {
-	    NGL.error('UI.SelectionInput: not a selection', selection)
-	
-	    return this
-	  }
-	
-	  this.setValue(selection.string)
-	
-	  this.selection = selection
-	
-	  var scope = this
-	
-	  var signals = selection.signals
-	
-	  signals.stringChanged.add(function (string) {
-	    scope.setValue(string)
-	  })
-	
-	  this.onEnter()
-	
-	  return this
-	}
-	
-	UI.SelectionInput.prototype = Object.create(UI.AdaptiveTextArea.prototype)
-	
-	UI.SelectionInput.prototype.setValue = function (value) {
-	  UI.AdaptiveTextArea.prototype.setValue.call(this, value)
-	
-	  return this
-	}
-	
-	UI.SelectionInput.prototype.onEnter = function (callback) {
-	  // TODO more a private method
-	
-	  var scope = this
-	
-	  var check = function (string) {
-	    var selection = new NGL.Selection(string)
-	
-	    return !selection.selection[ 'error' ]
-	  }
-	
-	  this.onKeyPress(function (e) {
-	    var value = scope.getValue()
-	    var character = String.fromCharCode(e.which)
-	
-	    if (e.keyCode === 13) {
-	      e.preventDefault()
-	
-	      if (check(value)) {
-	        if (typeof callback === 'function') {
-	          callback(value)
-	        } else {
-	          scope.selection.setString(value)
+	    var c = new NGL.Color();
+	    return function (value) {
+	        c.set(value);
+	        value = '#' + c.getHexString();
+	        this.colorInput
+	            .setBackgroundColor(value)
+	            .setValue(value);
+	        this.colorPicker.setValue(value);
+	        this.iconSquare.setColor(value);
+	        // perceived brightness (http://alienryderflex.com/hsp.html)
+	        var brightness = Math.sqrt(c.r * 255 * c.r * 255 * 0.241 +
+	            c.g * 255 * c.g * 255 * 0.691 +
+	            c.b * 255 * c.b * 255 * 0.068);
+	        if (brightness > 130) {
+	            this.iconText.setColor('#000000');
+	            this.colorInput.setColor('#000000');
 	        }
-	
-	        scope.setBackgroundColor('white')
-	      } else {
-	        scope.setBackgroundColor('tomato')
-	      }
-	    } else if (scope.selection.string !== value + character) {
-	      scope.setBackgroundColor('skyblue')
-	    } else {
-	      scope.setBackgroundColor('white')
+	        else {
+	            this.iconText.setColor('#FFFFFF');
+	            this.colorInput.setColor('#FFFFFF');
+	        }
+	        return this;
+	    };
+	}());
+	UI.ColorPopupMenu.prototype.getColor = function () {
+	    return this.colorInput.getValue();
+	};
+	UI.ColorPopupMenu.prototype.getValue = function () {
+	    return this.getColor();
+	};
+	UI.ColorPopupMenu.prototype.setValue = function (value) {
+	    this.setColor(value);
+	    return this;
+	};
+	UI.ColorPopupMenu.prototype.dispose = function () {
+	    this.menu.dispose();
+	    UI.Panel.prototype.dispose.call(this);
+	};
+	// Vector3
+	UI.Vector3 = function (value) {
+	    UI.Panel.call(this).setDisplay('inline-block');
+	    this.xNumber = new UI.Number(0).setWidth('40px');
+	    this.yNumber = new UI.Number(0).setWidth('40px');
+	    this.zNumber = new UI.Number(0).setWidth('40px');
+	    this.add(this.xNumber, this.yNumber, this.zNumber);
+	    this.setValue(value);
+	    var changeEvent = document.createEvent('Event');
+	    changeEvent.initEvent('change', true, true);
+	    this.xNumber.onChange(function () {
+	        this.dom.dispatchEvent(changeEvent);
+	    }.bind(this));
+	    this.yNumber.onChange(function () {
+	        this.dom.dispatchEvent(changeEvent);
+	    }.bind(this));
+	    this.zNumber.onChange(function () {
+	        this.dom.dispatchEvent(changeEvent);
+	    }.bind(this));
+	    return this;
+	};
+	UI.Vector3.prototype = Object.create(UI.Panel.prototype);
+	UI.Vector3.prototype.getValue = function () {
+	    return {
+	        x: this.xNumber.getValue(),
+	        y: this.yNumber.getValue(),
+	        z: this.zNumber.getValue()
+	    };
+	};
+	UI.Vector3.prototype.setValue = function (value) {
+	    if (value) {
+	        this.xNumber.setValue(value.x);
+	        this.yNumber.setValue(value.y);
+	        this.zNumber.setValue(value.z);
 	    }
-	  })
-	
-	  this.onKeyUp(function (e) {
-	    var value = scope.getValue()
-	
-	    if (!check(value)) {
-	      scope.setBackgroundColor('tomato')
-	    } else if (scope.selection.string === scope.getValue()) {
-	      scope.setBackgroundColor('white')
-	    } else {
-	      scope.setBackgroundColor('skyblue')
+	    return this;
+	};
+	UI.Vector3.prototype.setPrecision = function (precision) {
+	    this.xNumber.setPrecision(precision);
+	    this.yNumber.setPrecision(precision);
+	    this.zNumber.setPrecision(precision);
+	    return this;
+	};
+	UI.Vector3.prototype.setRange = function (min, max) {
+	    this.xNumber.setRange(min, max);
+	    this.yNumber.setRange(min, max);
+	    this.zNumber.setRange(min, max);
+	    return this;
+	};
+	// Selection
+	UI.SelectionInput = function (selection) {
+	    UI.AdaptiveTextArea.call(this);
+	    this.setSpellcheck(false);
+	    if (!(selection.type === 'selection')) {
+	        NGL.error('UI.SelectionInput: not a selection', selection);
+	        return this;
 	    }
-	  })
-	
-	  return this
-	}
-	
+	    this.setValue(selection.string);
+	    this.selection = selection;
+	    var scope = this;
+	    var signals = selection.signals;
+	    signals.stringChanged.add(function (string) {
+	        scope.setValue(string);
+	    });
+	    this.onEnter();
+	    return this;
+	};
+	UI.SelectionInput.prototype = Object.create(UI.AdaptiveTextArea.prototype);
+	UI.SelectionInput.prototype.setValue = function (value) {
+	    UI.AdaptiveTextArea.prototype.setValue.call(this, value);
+	    return this;
+	};
+	UI.SelectionInput.prototype.onEnter = function (callback) {
+	    // TODO more a private method
+	    var scope = this;
+	    var check = function (string) {
+	        var selection = new NGL.Selection(string);
+	        return !selection.selection['error'];
+	    };
+	    this.onKeyPress(function (e) {
+	        var value = scope.getValue();
+	        var character = String.fromCharCode(e.which);
+	        if (e.keyCode === 13) {
+	            e.preventDefault();
+	            if (check(value)) {
+	                if (typeof callback === 'function') {
+	                    callback(value);
+	                }
+	                else {
+	                    scope.selection.setString(value);
+	                }
+	                scope.setBackgroundColor('white');
+	            }
+	            else {
+	                scope.setBackgroundColor('tomato');
+	            }
+	        }
+	        else if (scope.selection.string !== value + character) {
+	            scope.setBackgroundColor('skyblue');
+	        }
+	        else {
+	            scope.setBackgroundColor('white');
+	        }
+	    });
+	    this.onKeyUp(function (e) {
+	        var value = scope.getValue();
+	        if (!check(value)) {
+	            scope.setBackgroundColor('tomato');
+	        }
+	        else if (scope.selection.string === scope.getValue()) {
+	            scope.setBackgroundColor('white');
+	        }
+	        else {
+	            scope.setBackgroundColor('skyblue');
+	        }
+	    });
+	    return this;
+	};
 	UI.SelectionPanel = function (selection) {
-	  UI.Panel.call(this)
-	
-	  this.icon = new UI.Icon('filter')
-	    .setTitle('filter selection')
-	    .addClass('lg')
-	    .setMarginRight('10px')
-	
-	  this.input = new UI.SelectionInput(selection)
-	
-	  this.add(this.icon, this.input)
-	
-	  return this
-	}
-	
-	UI.SelectionPanel.prototype = Object.create(UI.Panel.prototype)
-	
+	    UI.Panel.call(this);
+	    this.icon = new UI.Icon('filter')
+	        .setTitle('filter selection')
+	        .addClass('lg')
+	        .setMarginRight('10px');
+	    this.input = new UI.SelectionInput(selection);
+	    this.add(this.icon, this.input);
+	    return this;
+	};
+	UI.SelectionPanel.prototype = Object.create(UI.Panel.prototype);
 	UI.SelectionPanel.prototype.setInputWidth = function (value) {
-	  this.input.setWidth(value)
-	
-	  return this
-	}
-	
+	    this.input.setWidth(value);
+	    return this;
+	};
 	// Component
-	
 	UI.ComponentPanel = function (component) {
-	  UI.Panel.call(this)
-	
-	  var stage = component.stage
-	  var signals = component.signals
-	
-	  signals.nameChanged.add(function (value) {
-	    name.setValue(value)
-	  })
-	
-	  signals.visibilityChanged.add(function (value) {
-	    toggle.setValue(value)
-	  })
-	
-	  signals.disposed.add(function () {
-	    menu.dispose()
-	  })
-	
-	  // Name
-	
-	  var name = new UI.EllipsisText(component.name)
-	    .setWidth('100px')
-	
+	    UI.Panel.call(this);
+	    var stage = component.stage;
+	    var signals = component.signals;
+	    signals.nameChanged.add(function (value) {
+	        name.setValue(value);
+	    });
+	    signals.visibilityChanged.add(function (value) {
+	        toggle.setValue(value);
+	    });
+	    signals.disposed.add(function () {
+	        menu.dispose();
+	    });
+	    // Name
+	    var name = new UI.EllipsisText(component.name)
+	        .setWidth('100px');
 	    // Actions
-	
-	  var toggle = new UI.ToggleIcon(component.visible, 'eye', 'eye-slash')
-	    .setTitle('hide/show')
-	    .setCursor('pointer')
-	    .setMarginLeft('25px')
-	    .onClick(function () {
-	      component.setVisibility(!component.visible)
-	    })
-	
-	  var center = new UI.Icon('bullseye')
-	    .setTitle('center')
-	    .setCursor('pointer')
-	    .setMarginLeft('10px')
-	    .onClick(function () {
-	      component.autoView(1000)
-	    })
-	
-	  var dispose = new UI.DisposeIcon()
-	    .setMarginLeft('10px')
-	    .setDisposeFunction(function () {
-	      stage.removeComponent(component)
-	    })
-	
+	    var toggle = new UI.ToggleIcon(component.visible, 'eye', 'eye-slash')
+	        .setTitle('hide/show')
+	        .setCursor('pointer')
+	        .setMarginLeft('25px')
+	        .onClick(function () {
+	        component.setVisibility(!component.visible);
+	    });
+	    var center = new UI.Icon('bullseye')
+	        .setTitle('center')
+	        .setCursor('pointer')
+	        .setMarginLeft('10px')
+	        .onClick(function () {
+	        component.autoView(1000);
+	    });
+	    var dispose = new UI.DisposeIcon()
+	        .setMarginLeft('10px')
+	        .setDisposeFunction(function () {
+	        stage.removeComponent(component);
+	    });
 	    // Menu
-	
-	  var menu = new UI.PopupMenu('bars', component.type)
-	    .setMarginLeft('46px')
-	    .setEntryLabelWidth('110px')
-	
+	    var menu = new UI.PopupMenu('bars', component.type)
+	        .setMarginLeft('46px')
+	        .setEntryLabelWidth('110px');
 	    //
-	
-	  this.add(name, toggle, center, dispose, menu)
-	
-	  //
-	
-	  this.menu = menu
-	
-	  return this
-	}
-	
-	UI.ComponentPanel.prototype = Object.create(UI.Panel.prototype)
-	
+	    this.add(name, toggle, center, dispose, menu);
+	    //
+	    this.menu = menu;
+	    return this;
+	};
+	UI.ComponentPanel.prototype = Object.create(UI.Panel.prototype);
 	UI.ComponentPanel.prototype.addMenuEntry = function (label, entry) {
-	  this.menu.addEntry(label, entry)
-	
-	  return this
-	}
-	
+	    this.menu.addEntry(label, entry);
+	    return this;
+	};
 	UI.ComponentPanel.prototype.setMenuDisplay = function (value) {
-	  this.menu.setMenuDisplay(value)
-	
-	  return this
-	}
-	
-	
+	    this.menu.setMenuDisplay(value);
+	    return this;
+	};
 	module.exports = {
 	    "UI": UI
-	}
-
+	};
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidWkubmdsLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL3VpL3VpLm5nbC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7O0dBR0c7QUFFSCxRQUFRO0FBRVIsSUFBSSxHQUFHLEdBQUcsT0FBTyxDQUFDLEtBQUssQ0FBQyxDQUFDO0FBQ3pCLElBQUksRUFBRSxHQUFHLE9BQU8sQ0FBQyxlQUFlLENBQUMsQ0FBQyxFQUFFLENBQUM7QUFFckMsRUFBRSxDQUFDLGNBQWMsR0FBRztJQUNsQixJQUFJLEtBQUssR0FBRyxJQUFJLENBQUE7SUFFaEIsRUFBRSxDQUFDLEtBQUssQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUE7SUFFbkIsSUFBSSxDQUFDLFFBQVEsR0FBRyxJQUFJLEVBQUUsQ0FBQyxJQUFJLENBQUMsRUFBRSxDQUFDO1NBQzVCLFNBQVMsQ0FBQyxTQUFTLENBQUM7U0FDcEIsUUFBUSxDQUFDLGFBQWEsQ0FBQztTQUN2QixhQUFhLENBQUMsbUJBQW1CLENBQUM7U0FDbEMsUUFBUSxDQUFDLE1BQU0sQ0FBQyxDQUFBO0lBRW5CLElBQUksQ0FBQyxVQUFVLEdBQUcsSUFBSSxFQUFFLENBQUMsSUFBSSxDQUFDLFFBQVEsRUFBRSxVQUFVLENBQUMsQ0FBQTtJQUNuRCw2QkFBNkI7SUFFN0IsSUFBSSxDQUFDLElBQUksR0FBRyxJQUFJLEVBQUUsQ0FBQyxTQUFTLENBQUMsT0FBTyxFQUFFLE9BQU8sQ0FBQyxDQUFBO0lBRTlDLElBQUksQ0FBQyxJQUFJLENBQUMsSUFBSTtTQUNYLFFBQVEsQ0FBQyxPQUFPLENBQUM7U0FDakIsUUFBUSxDQUFDLEtBQUssQ0FBQyxDQUFDLFNBQVMsQ0FBQyxLQUFLLENBQUMsQ0FBQyxhQUFhLENBQUMsS0FBSyxDQUFDO1NBQ3JELEdBQUcsQ0FBQyxJQUFJLENBQUMsVUFBVSxDQUFDO1NBQ3BCLEdBQUcsQ0FBQyxJQUFJLENBQUMsUUFBUSxDQUFDLENBQUE7SUFFckIsSUFBSSxXQUFX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QUc7SUFDOUIsT0FBTztRQUNMLENBQUMsRUFBRSxJQUFJLENBQUMsT0FBTyxDQUFDLFFBQVEsRUFBRTtRQUMxQixDQUFDLEVBQUUsSUFBSSxDQUFDLE9BQU8sQ0FBQyxRQUFRLEVBQUU7UUFDMUIsQ0FBQyxFQUFFLElBQUksQ0FBQyxPQUFPLENBQUMsUUFBUSxFQUFFO0tBQzNCLENBQUE7QUFDSCxDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsT0FBTyxDQUFDLFNBQVMsQ0FBQyxRQUFRLEdBQUcsVUFBVSxLQUFLO0lBQzdDLElBQUksS0FBSyxFQUFFO1FBQ1QsSUFBSSxDQUFDLE9BQU8sQ0FBQyxRQUFRLENBQUMsS0FBSyxDQUFDLENBQUMsQ0FBQyxDQUFBO1FBQzlCLElBQUksQ0FBQyxPQUFPLENBQUMsUUFBUSxDQUFDLEtBQUssQ0FBQyxDQUFDLENBQUMsQ0FBQTtRQUM5QixJQUFJLENBQUMsT0FBTyxDQUFDLFFBQVEsQ0FBQyxLQUFLLENBQUMsQ0FBQyxDQUFDLENBQUE7S0FDL0I7SUFFRCxPQUFPLElBQUksQ0FBQTtBQUNiLENBQUMsQ0FBQTtBQUVELEVBQUUsQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLFlBQVksR0FBRyxVQUFVLFNBQVM7SUFDckQsSUFBSSxDQUFDLE9BQU8sQ0FBQyxZQUFZLENBQUMsU0FBUyxDQUFDLENBQUE7SUFDcEMsSUFBSSxDQUFDLE9BQU8sQ0FBQyxZQUFZLENBQUMsU0FBUyxDQUFDLENBQUE7SUFDcEMsSUFBSSxDQUFDLE9BQU8sQ0FBQyxZQUFZLENBQUMsU0FBUyxDQUFDLENBQUE7SUFFcEMsT0FBTyxJQUFJLENBQUE7QUFDYixDQUFDLENBQUE7QUFFRCxFQUFFLENBQUMsT0FBTyxDQUFDLFNBQVMsQ0FBQyxRQUFRLEdBQUcsVUFBVSxHQUFHLEVBQUUsR0FBRztJQUNoRCxJQUFJLENBQUMsT0FBTyxDQUFDLFFBQVEsQ0FBQyxHQUFHLEVBQUUsR0FBRyxDQUFDLENBQUE7SUFDL0IsSUFBSSxDQUFDLE9BQU8sQ0FBQyxRQUFRLENBQUMsR0FBRyxFQUFFLEdBQUcsQ0FB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
 
 /***/ }),
 /* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file  Gui
-	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
-	 */
-	var NGL = __webpack_require__(3);
-	var UI = __webpack_require__(13).UI;
-	var signals = __webpack_require__(10);
-	
-	
-	HTMLElement.prototype.getBoundingClientRect = (function () {
-	  // workaround for ie11 behavior with disconnected dom nodes
-	
-	  var _getBoundingClientRect = HTMLElement.prototype.getBoundingClientRect
-	
-	  return function getBoundingClientRect () {
-	    try {
-	      return _getBoundingClientRect.apply(this, arguments)
-	    } catch (e) {
-	      return {
-	        top: 0,
-	        left: 0,
-	        width: this.width,
-	        height: this.height
-	      }
-	    }
-	  }
-	}())
-	
-	NGL.Widget = function () {
-	
-	}
-	
-	NGL.Widget.prototype = {
-	  constructor: NGL.Widget
-	}
-	
-	NGL.createParameterInput = function (p, v) {
-	  if (!p) return
-	
-	  var value = v === undefined ? p.value : v
-	  var input
-	
-	  if (p.type === 'number') {
-	    input = new UI.Number(0)
-	      .setRange(p.min, p.max)
-	      .setPrecision(p.precision)
-	      .setValue(parseFloat(value))
-	  } else if (p.type === 'integer') {
-	    input = new UI.Integer(parseInt(value))
-	      .setRange(p.min, p.max)
-	  } else if (p.type === 'range') {
-	    input = new UI.Range(p.min, p.max, value, p.step)
-	      .setValue(parseFloat(value))
-	  } else if (p.type === 'boolean') {
-	    input = new UI.Checkbox(value)
-	  } else if (p.type === 'text') {
-	    input = new UI.Input(value)
-	  } else if (p.type === 'select') {
-	    input = new UI.Select()
-	      .setWidth('')
-	      .setOptions(p.options)
-	      .setValue(value)
-	  } else if (p.type === 'color') {
-	    input = new UI.ColorPopupMenu(p.label)
-	      .setValue(value)
-	  } else if (p.type === 'vector3') {
-	    input = new UI.Vector3(value)
-	      .setPrecision(p.precision)
-	  } else if (p.type === 'hidden') {
-	
-	    // nothing to display
-	
-	  } else {
-	    console.warn(
-	      'NGL.createParameterInput: unknown parameter type ' +
-	      "'" + p.type + "'"
-	    )
-	  }
-	
-	  return input
-	}
-	
-	/// /////////////
-	// Preferences
-	
-	NGL.Preferences = function (id, defaultParams) {
-	  this.signals = {
-	    keyChanged: new signals.Signal()
-	  }
-	
-	  this.id = id || 'ngl-gui'
-	  var dp = Object.assign({}, defaultParams)
-	
-	  this.storage = {
-	    impostor: true,
-	    quality: 'auto',
-	    sampleLevel: 0,
-	    theme: 'dark',
-	    backgroundColor: 'black',
-	    overview: false,
-	    rotateSpeed: 2.0,
-	    zoomSpeed: 1.2,
-	    panSpeed: 0.8,
-	    clipNear: 0,
-	    clipFar: 100,
-	    clipDist: 10,
-	    fogNear: 50,
-	    fogFar: 100,
-	    cameraFov: 40,
-	    cameraType: 'perspective',
-	    lightColor: 0xdddddd,
-	    lightIntensity: 1.0,
-	    ambientColor: 0xdddddd,
-	    ambientIntensity: 0.2,
-	    hoverTimeout: 0
-	  }
-	
-	  // overwrite default values with params
-	  for (var key in this.storage) {
-	    if (dp[ key ] !== undefined) {
-	      this.storage[ key ] = dp[ key ]
-	    }
-	  }
-	}
-	
-	NGL.Preferences.prototype = {
-	
-	  constructor: NGL.Preferences,
-	
-	  getKey: function (key) {
-	    return this.storage[ key ]
-	  },
-	
-	  setKey: function (key, value) {
-	    this.storage[ key ] = value
-	    this.signals.keyChanged.dispatch(key, value)
-	  },
-	}
-	
-	// Stage
-	
-	StageWidget = function (view) {
-	  // view: NGLView of NGLModel
-	  if (view.options.parent){
-	      el = view.el.parentElement
-	  }else{
-	      el = view.el
-	  }
-	  stage = view.stage
-	  var viewport = new UI.Panel()
-	  viewport.setPosition("absolute")
-	  viewport.dom = stage.viewer.container
-	  this.el = el
-	  this.widgetList = []
-	
-	  // Turn off in Jupyter notebook so user can run the next cell.
-	  // ensure initial focus on viewer canvas for key-stroke listening
-	  // stage.viewer.renderer.domElement.focus()
-	
-	  var preferences = new NGL.Preferences('ngl-stage-widget', stage.getParameters())
-	
-	  var pp = {}
-	  for (var name in preferences.storage) {
-	    pp[ name ] = preferences.getKey(name)
-	  }
-	  stage.setParameters(pp)
-	
-	  preferences.signals.keyChanged.add(function (key, value) {
-	    var sp = {}
-	    sp[ key ] = value
-	    stage.setParameters(sp)
-	    // FIXME: remove?
-	    // if (key === 'theme') {
-	    //   setTheme(value)
-	    // }
-	  }, this)
-	
-	  //
-	
-	  var cssLinkElement = document.createElement('link')
-	  cssLinkElement.rel = 'stylesheet'
-	  cssLinkElement.id = 'theme'
-	
-	  function setTheme (value) {
-	    var cssPath, bgColor
-	    if (value === 'light') {
-	      cssPath = NGL.cssDirectory + 'light.css'
-	      bgColor = 'white'
-	    } else {
-	      cssPath = NGL.cssDirectory + 'dark.css'
-	      bgColor = 'black'
-	    }
-	    cssLinkElement.href = cssPath
-	    stage.setParameters({ backgroundColor: bgColor })
-	  }
-	
-	  // FIXME: remove?
-	  // setTheme(preferences.getKey('theme'))
-	  el.appendChild(cssLinkElement)
-	
-	  //
-	
-	  var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar_ngl')
-	  el.appendChild(toolbar.dom)
-	
-	  var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar_ngl')
-	  el.appendChild(menubar.dom)
-	
-	  var sidebar = new NGL.SidebarWidget(stage).setId('sidebar_ngl')
-	  el.appendChild(sidebar.dom)
-	
-	  this.widgetList.push(toolbar)
-	  this.widgetList.push(menubar)
-	  this.widgetList.push(sidebar)
-	
-	  //
-	
-	  // el.body.style.touchAction = 'none'
-	  el.style.touchAction = 'none'
-	
-	  //
-	
-	  stage.handleResize()
-	  // FIXME hack for ie11
-	  setTimeout(function () { stage.handleResize() }, 500)
-	
-	  //
-	
-	  var doResizeLeft = false
-	  var movedResizeLeft = false
-	  var minResizeLeft = false
-	  var handleResizeInNotebook
-	
-	  var handleResizeLeft = function (clientX) {
-	    if (clientX >= 50 && clientX <= window.innerWidth - 10) {
-	      sidebar.setWidth(window.innerWidth - clientX + 'px')
-	      viewport.setWidth(clientX + 'px')
-	      toolbar.setWidth(clientX + 'px')
-	      stage.handleResize()
-	    }
-	    var sidebarWidth = sidebar.dom.getBoundingClientRect().width
-	    if (clientX === undefined) {
-	      var mainWidth = window.innerWidth - sidebarWidth
-	      viewport.setWidth(mainWidth + 'px')
-	      toolbar.setWidth(mainWidth + 'px')
-	      stage.handleResize()
-	    }
-	    if (sidebarWidth <= 10) {
-	      minResizeLeft = true
-	    } else {
-	      minResizeLeft = false
-	    }
-	    handleResizeInNotebook();
-	  }
-	  handleResizeLeft = NGL.throttle(
-	    handleResizeLeft, 50, { leading: true, trailing: true }
-	  )
-	
-	  var handleResizeInNotebook = function(){
-	      // FIXME
-	      var sw = sidebar.dom.getBoundingClientRect().width
-	      var ew = el.getBoundingClientRect().width
-	      var w = ew - sw + 'px'
-	
-	      stage.viewer.container.style.width = w 
-	      stage.handleResize()
-	  }
-	
-	  var resizeLeft = new UI.Panel()
-	    .setClass('ResizeLeft')
-	    .onMouseDown(function () {
-	      doResizeLeft = true
-	      movedResizeLeft = false
-	    })
-	    .onClick(function () {
-	      if (minResizeLeft) {
-	        handleResizeLeft(window.innerWidth - 300)
-	      } else if (!doResizeLeft && !movedResizeLeft) {
-	        handleResizeLeft(window.innerWidth - 10)
-	      }
-	    })
-	
-	  sidebar.add(resizeLeft)
-	  this.viewport = viewport
-	  this.toolbar = toolbar
-	  this.menubar = menubar
-	  this.sidebar = sidebar
-	
-	  handleResizeInNotebook()
-	
-	  stage.signals.fullscreenChanged.add(function (isFullscreen) {
-	    const box = stage.viewer.container.parentElement.getBoundingClientRect()
-	    console.log("in StageWidget")
-	    stage.setSize(box.width+"px", isFullscreen?box.height+'px':'300px')
-	    stage.handleResize()
-	  })
-	
-	  window.addEventListener(
-	    'mousemove', function (event) {
-	      if (doResizeLeft) {
-	        document.body.style.cursor = 'col-resize'
-	        movedResizeLeft = true
-	        handleResizeLeft(event.clientX)
-	      }
-	    }, false
-	  )
-	
-	  window.addEventListener(
-	    'mouseup', function (event) {
-	      doResizeLeft = false
-	      document.body.style.cursor = ''
-	    }, false
-	  )
-	
-	  window.addEventListener(
-	    'resize', function (event) {
-	      handleResizeLeft()
-	    }, false
-	  )
-	
-	  //
-	
-	  document.addEventListener('dragover', function (e) {
-	    e.stopPropagation()
-	    e.preventDefault()
-	    e.dataTransfer.dropEffect = 'none'
-	  }, false)
-	
-	  document.addEventListener('drop', function (e) {
-	    e.stopPropagation()
-	    e.preventDefault()
-	  }, false)
-	
-	  return this
-	}
-	
-	StageWidget.prototype = {
-	   constructor: StageWidget,
-	
-	   dispose: function(){
-	       for (var i in this.widgetList){
-	           this.widgetList[i].dispose()
-	       }
-	   },
-	}
-	
-	// Viewport
-	
-	NGL.ViewportWidget = function (stage) {
-	  var viewer = stage.viewer
-	  var renderer = viewer.renderer
-	
-	  var container = new UI.Panel()
-	  container.dom = viewer.container
-	  container.setPosition('absolute')
-	
-	  var fileTypesOpen = NGL.flatten([
-	    NGL.ParserRegistry.getStructureExtensions(),
-	    NGL.ParserRegistry.getVolumeExtensions(),
-	    NGL.ParserRegistry.getSurfaceExtensions(),
-	    NGL.DecompressorRegistry.names
-	  ])
-	
-	  // event handlers
-	
-	  container.dom.addEventListener('dragover', function (e) {
-	    e.stopPropagation()
-	    e.preventDefault()
-	    e.dataTransfer.dropEffect = 'copy'
-	  }, false)
-	
-	  container.dom.addEventListener('drop', function (e) {
-	    e.stopPropagation()
-	    e.preventDefault()
-	
-	    var fn = function (file, callback) {
-	      var ext = file.name.split('.').pop().toLowerCase()
-	      if (NGL.ScriptExtensions.includes(ext)) {
-	        stage.loadScript(file).then(callback)
-	      } else if (fileTypesOpen.includes(ext)) {
-	        stage.loadFile(file, { defaultRepresentation: true }).then(callback)
-	      } else {
-	        console.error('unknown filetype: ' + ext)
-	        callback()
-	      }
-	    }
-	    var queue = new NGL.Queue(fn, e.dataTransfer.files)
-	  }, false)
-	
-	  return container
-	}
-	
-	// Toolbar
-	
-	NGL.ToolbarWidget = function (stage) {
-	  var container = new UI.Panel()
-	
-	  var messageText = new UI.Text()
-	  var messagePanel = new UI.Panel()
-	    .setDisplay('inline')
-	    .setFloat('left')
-	    .add(messageText)
-	
-	  var statsText = new UI.Text()
-	  var statsPanel = new UI.Panel()
-	    .setDisplay('inline')
-	    .setFloat('right')
-	    .add(statsText)
-	
-	  stage.signals.clicked.add(function (pickingProxy) {
-	    messageText.setValue(pickingProxy ? pickingProxy.getLabel() : 'nothing')
-	  })
-	
-	  stage.viewer.stats.signals.updated.add(function () {
-	    if (NGL.Debug) {
-	      statsText.setValue(
-	        stage.viewer.stats.lastDuration.toFixed(2) + ' ms | ' +
-	        stage.viewer.stats.lastFps + ' fps'
-	      )
-	    } else {
-	      statsText.setValue('')
-	    }
-	  })
-	
-	  container.add(messagePanel, statsPanel)
-	
-	  return container
-	}
-	
-	// Menubar
-	
-	NGL.MenubarWidget = function (stage, preferences) {
-	  var container = new UI.Panel()
-	
-	  container.add(new NGL.MenubarFileWidget(stage))
-	  container.add(new NGL.MenubarViewWidget(stage, preferences))
-	  if (NGL.examplesListUrl && NGL.examplesScriptUrl) {
-	    container.add(new NGL.MenubarExamplesWidget(stage))
-	  }
-	  container.add(new NGL.MenubarHelpWidget(stage, preferences))
-	
-	  container.add(
-	    new UI.Panel().setClass('menu').setFloat('right').add(
-	      new UI.Text('NGL Viewer ' + NGL.Version).setClass('title')
-	    )
-	  )
-	
-	  return container
-	}
-	
-	NGL.MenubarFileWidget = function (stage) {
-	  var fileTypesOpen = NGL.flatten([
-	    NGL.ParserRegistry.getStructureExtensions(),
-	    NGL.ParserRegistry.getVolumeExtensions(),
-	    NGL.ParserRegistry.getSurfaceExtensions(),
-	    NGL.DecompressorRegistry.names,
-	    NGL.ScriptExtensions
-	  ])
-	
-	  function fileInputOnChange (e) {
-	    var fn = function (file, callback) {
-	      var ext = file.name.split('.').pop().toLowerCase()
-	      if (NGL.ScriptExtensions.includes(ext)) {
-	        stage.loadScript(file).then(callback)
-	      } else if (fileTypesOpen.includes(ext)) {
-	        stage.loadFile(file, { defaultRepresentation: true }).then(callback)
-	      } else {
-	        console.error('unknown filetype: ' + ext)
-	        callback()
-	      }
-	    }
-	    var queue = new NGL.Queue(fn, e.target.files)
-	  }
-	
-	  var fileInput = document.createElement('input')
-	  fileInput.type = 'file'
-	  fileInput.multiple = true
-	  fileInput.style.display = 'none'
-	  fileInput.accept = '.' + fileTypesOpen.join(',.')
-	  fileInput.addEventListener('change', fileInputOnChange, false)
-	
-	  // export image
-	
-	  var exportImageWidget = new NGL.ExportImageWidget(stage)
-	    .setDisplay('none')
-	    .attach(stage.viewer.container.parentElement)
-	
-	  // event handlers
-	
-	  function onOpenOptionClick () {
-	    fileInput.click()
-	  }
-	
-	  function onImportOptionClick () {
-	    var dirWidget
-	    function onListingClick (info) {
-	      var ext = info.path.split('.').pop().toLowerCase()
-	      if (NGL.ScriptExtensions.includes(ext)) {
-	        stage.loadScript(NGL.ListingDatasource.getUrl(info.path))
-	        dirWidget.dispose()
-	      } else if (fileTypesOpen.includes(ext)) {
-	        stage.loadFile(NGL.ListingDatasource.getUrl(info.path), {
-	          defaultRepresentation: true
-	        })
-	        dirWidget.dispose()
-	      } else {
-	        console.error('unknown filetype: ' + ext)
-	      }
-	    }
-	
-	    dirWidget = new NGL.DirectoryListingWidget(
-	      NGL.ListingDatasource, stage, 'Import file',
-	      fileTypesOpen, onListingClick
-	    )
-	
-	    dirWidget
-	      .setOpacity('0.9')
-	      .setLeft('50px')
-	      .setTop('80px')
-	      .attach()
-	  }
-	
-	  function onExportImageOptionClick () {
-	    exportImageWidget
-	      .setOpacity('0.9')
-	      .setLeft('50px')
-	      .setTop('80px')
-	      .setDisplay('block')
-	  }
-	
-	  function onScreenshotOptionClick () {
-	    stage.makeImage({
-	      factor: 1,
-	      antialias: true,
-	      trim: false,
-	      transparent: false
-	    }).then(function (blob) {
-	      NGL.download(blob, 'screenshot.png')
-	    })
-	  }
-	
-	  function onPdbInputKeyDown (e) {
-	    if (e.keyCode === 13) {
-	      stage.loadFile('rcsb://' + e.target.value.trim(), {
-	        defaultRepresentation: true
-	      })
-	      e.target.value = ''
-	    }
-	  }
-	
-	  function onFirstModelOnlyChange (e) {
-	    stage.defaultFileParams.firstModelOnly = e.target.checked
-	  }
-	
-	  function onCAlphaOnlyChange (e) {
-	    stage.defaultFileParams.cAlphaOnly = e.target.checked
-	  }
-	
-	  // configure menu contents
-	
-	  var createOption = UI.MenubarHelper.createOption
-	  var createInput = UI.MenubarHelper.createInput
-	  var createCheckbox = UI.MenubarHelper.createCheckbox
-	  var createDivider = UI.MenubarHelper.createDivider
-	
-	  var menuConfig = [
-	    createOption('Open...', onOpenOptionClick),
-	    createInput('PDB', onPdbInputKeyDown),
-	    createCheckbox('firstModelOnly', false, onFirstModelOnlyChange),
-	    createCheckbox('cAlphaOnly', false, onCAlphaOnlyChange),
-	    createDivider(),
-	    createOption('Screenshot', onScreenshotOptionClick, 'camera'),
-	    createOption('Export image...', onExportImageOptionClick)
-	  ]
-	
-	  if (NGL.ListingDatasource) {
-	    menuConfig.splice(
-	      1, 0, createOption('Import...', onImportOptionClick)
-	    )
-	  }
-	
-	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
-	  optionsPanel.dom.appendChild(fileInput)
-	
-	  return UI.MenubarHelper.createMenuContainer('File', optionsPanel)
-	}
-	
-	NGL.MenubarViewWidget = function (stage, preferences) {
-	  // event handlers
-	
-	  function onLightThemeOptionClick () {
-	    preferences.setKey('theme', 'light')
-	  }
-	
-	  function onDarkThemeOptionClick () {
-	    preferences.setKey('theme', 'dark')
-	  }
-	
-	  function onPerspectiveCameraOptionClick () {
-	    stage.setParameters({ cameraType: 'perspective' })
-	  }
-	
-	  function onOrthographicCameraOptionClick () {
-	    stage.setParameters({ cameraType: 'orthographic' })
-	  }
-	
-	  function onStereoCameraOptionClick () {
-	    stage.setParameters({ cameraType: 'stereo' })
-	  }
-	
-	  function onFullScreenOptionClick () {
-	    stage.toggleFullscreen(stage.viewer.container.parentElement);
-	  }
-	
-	  function onCenterOptionClick () {
-	    stage.autoView(1000)
-	  }
-	
-	  function onToggleSpinClick () {
-	    stage.toggleSpin()
-	  }
-	
-	  function onToggleRockClick () {
-	    stage.toggleRock()
-	  }
-	
-	  function onGetOrientationClick () {
-	    window.prompt(
-	      'Get orientation',
-	      JSON.stringify(
-	        stage.viewerControls.getOrientation().toArray(),
-	        function (k, v) {
-	          return v.toFixed ? Number(v.toFixed(2)) : v
-	        }
-	      )
-	    )
-	  }
-	
-	  function onSetOrientationClick () {
-	    stage.viewerControls.orient(
-	      JSON.parse(window.prompt('Set orientation'))
-	    )
-	  }
-	
-	  var that = this;
-	  stage.signals.fullscreenChanged.add(function (isFullscreen) {
-	    // const box = stage.viewer.container.parentElement.getBoundingClientRect()
-	    // stage.setSize(box.width+"px", box.height+"px")
-	    // stage.handleResize()
-	    var icon = menuConfig[ 4 ].children[ 0 ]
-	    if (isFullscreen) {
-	      icon.switchClass('compress', 'expand')
-	    } else {
-	      icon.switchClass('expand', 'compress')
-	    }
-	  })
-	
-	  // configure menu contents
-	
-	  var createOption = UI.MenubarHelper.createOption
-	  var createDivider = UI.MenubarHelper.createDivider
-	
-	  var menuConfig = [
-	    // createOption('Light theme', onLightThemeOptionClick),
-	    // createOption('Dark theme', onDarkThemeOptionClick),
-	    // createDivider(),
-	    createOption('Perspective', onPerspectiveCameraOptionClick),
-	    createOption('Orthographic', onOrthographicCameraOptionClick),
-	    createOption('Stereo', onStereoCameraOptionClick),
-	    createDivider(),
-	    createOption('Full screen', onFullScreenOptionClick, 'expand'),
-	    createOption('Center', onCenterOptionClick, 'bullseye'),
-	    createDivider(),
-	    createOption('Toggle spin', onToggleSpinClick),
-	    createOption('Toggle rock', onToggleRockClick),
-	    // createDivider(),
-	    // createOption('Get orientation', onGetOrientationClick),
-	    // createOption('Set orientation', onSetOrientationClick)
-	  ]
-	
-	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
-	
-	  return UI.MenubarHelper.createMenuContainer('View', optionsPanel)
-	}
-	
-	NGL.MenubarExamplesWidget = function (stage) {
-	  // configure menu contents
-	
-	  var createOption = UI.MenubarHelper.createOption
-	  var optionsPanel = UI.MenubarHelper.createOptionsPanel([])
-	  optionsPanel.setWidth('300px')
-	
-	  var xhr = new XMLHttpRequest()
-	  xhr.open('GET', NGL.examplesListUrl)
-	  xhr.responseType = 'json'
-	  xhr.onload = function (e) {
-	    var response = this.response
-	    if (typeof response === 'string') {
-	      // for ie11
-	      response = JSON.parse(response)
-	    }
-	    response.sort().forEach(function (name) {
-	      var option = createOption(name, function () {
-	        stage.loadScript(NGL.examplesScriptUrl + name + '.js')
-	      })
-	      optionsPanel.add(option)
-	    })
-	  }
-	  xhr.send()
-	
-	  return UI.MenubarHelper.createMenuContainer('Examples', optionsPanel)
-	}
-	
-	NGL.MenubarHelpWidget = function (stage, preferences) {
-	  // event handlers
-	
-	  function onOverviewOptionClick () {
-	    overviewWidget
-	      .setOpacity('0.9')
-	      .setDisplay('block')
-	      .setWidgetPosition(50, 80)
-	  }
-	
-	  function onDocOptionClick () {
-	    window.open(NGL.documentationUrl, '_blank')
-	  }
-	
-	  function onDebugOnClick () {
-	    NGL.setDebug(true)
-	    stage.viewer.updateHelper()
-	    stage.viewer.requestRender()
-	  }
-	
-	  function onDebugOffClick () {
-	    NGL.setDebug(false)
-	    stage.viewer.updateHelper()
-	    stage.viewer.requestRender()
-	  }
-	
-	  function onPreferencesOptionClick () {
-	    preferencesWidget
-	      .setOpacity('0.9')
-	      .setDisplay('block')
-	      .setWidgetPosition(50, 80)
-	  }
-	
-	  // export image
-	
-	  var preferencesWidget = new NGL.PreferencesWidget(stage, preferences)
-	    .setDisplay('none')
-	    .attach(stage.viewer.container.parentElement)
-	
-	  // overview
-	
-	  var overviewWidget = new NGL.OverviewWidget(stage, preferences)
-	    .setDisplay('none')
-	    .attach(stage.viewer.container.parentElement)
-	
-	  if (preferences.getKey('overview')) {
-	    onOverviewOptionClick()
-	  }
-	
-	  // configure menu contents
-	
-	  var createOption = UI.MenubarHelper.createOption
-	  var createDivider = UI.MenubarHelper.createDivider
-	
-	  var menuConfig = [
-	    createOption('Overview', onOverviewOptionClick),
-	    // createOption('Documentation', onDocOptionClick),
-	    // createDivider(),
-	    // createOption('Debug on', onDebugOnClick),
-	    // createOption('Debug off', onDebugOffClick),
-	    // createDivider(),
-	    createOption('Preferences', onPreferencesOptionClick, 'sliders')
-	  ]
-	
-	  var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig)
-	
-	  return UI.MenubarHelper.createMenuContainer('Help', optionsPanel)
-	}
-	
-	// Overview
-	
-	NGL.OverviewWidget = function (stage, preferences) {
-	  var container = new UI.OverlayPanel()
-	
-	  var xOffset = 0
-	  var yOffset = 0
-	
-	  var prevX = 0
-	  var prevY = 0
-	
-	  function onMousemove (e) {
-	    if (prevX === 0) {
-	      prevX = e.clientX
-	      prevY = e.clientY
-	    }
-	    xOffset -= prevX - e.clientX
-	    yOffset -= prevY - e.clientY
-	    prevX = e.clientX
-	    prevY = e.clientY
-	    container.dom.style.top = yOffset + 'px'
-	    container.dom.style.left = xOffset + 'px'
-	  }
-	
-	  function setWidgetPosition (left, top) {
-	    xOffset = left
-	    yOffset = top
-	    prevX = 0
-	    prevY = 0
-	    container.dom.style.top = yOffset + 'px'
-	    container.dom.style.left = xOffset + 'px'
-	  }
-	  container.setWidgetPosition = setWidgetPosition
-	
-	  var headingPanel = new UI.Panel()
-	    .setBorderBottom('1px solid #555')
-	    .setHeight('25px')
-	    .setCursor('move')
-	    .onMouseDown(function (e) {
-	      if (e.which === 1) {
-	        document.addEventListener('mousemove', onMousemove)
-	      }
-	      document.addEventListener('mouseup', function (e) {
-	        document.removeEventListener('mousemove', onMousemove)
-	      })
-	    })
-	
-	  var listingPanel = new UI.Panel()
-	    .setMarginTop('10px')
-	    .setMinHeight('100px')
-	    .setMaxHeight('500px')
-	    .setMaxWidth('600px')
-	    .setOverflow('auto')
-	
-	  headingPanel.add(
-	    new UI.Text('NGL Viewer').setFontStyle('italic'),
-	    new UI.Html('&nbsp;&mdash;&nbsp;Overview')
-	  )
-	  headingPanel.add(
-	    new UI.Icon('times')
-	      .setCursor('pointer')
-	      .setMarginLeft('20px')
-	      .setFloat('right')
-	      .onClick(function () {
-	        container.setDisplay('none')
-	      })
-	  )
-	
-	  container.add(headingPanel)
-	  container.add(listingPanel)
-	
-	  //
-	
-	  function addIcon (name, text) {
-	    var panel = new UI.Panel()
-	
-	    var icon = new UI.Icon(name)
-	      .setWidth('20px')
-	      .setFloat('left')
-	
-	    var label = new UI.Text(text)
-	      .setDisplay('inline')
-	      .setMarginLeft('5px')
-	
-	    panel
-	      .setMarginLeft('20px')
-	      .add(icon, label)
-	    listingPanel.add(panel)
-	  }
-	
-	  listingPanel
-	    .add(new UI.Panel().add(new UI.Html("To load a new structure use the <i>File</i> menu in the top left via drag'n'drop.")))
-	    .add(new UI.Break())
-	
-	  listingPanel
-	    .add(new UI.Panel().add(new UI.Text('A number of clickable icons provide common actions. Most icons can be clicked on, just try it or hover the mouse pointer over it to see a tooltip.')))
-	    .add(new UI.Break())
-	
-	  addIcon('eye', 'Controls the visibility of a component.')
-	  addIcon('trash-o', 'Deletes a component. Note that a second click is required to confirm the action.')
-	  addIcon('bullseye', 'Centers a component.')
-	  addIcon('bars', 'Opens a menu with further options.')
-	  addIcon('square', 'Opens a menu with coloring options.')
-	  addIcon('filter', 'Indicates atom-selection input fields.')
-	
-	  listingPanel
-	    .add(new UI.Text('Mouse controls'))
-	    .add(new UI.Html(
-	      '<ul>' +
-	          '<li>Left button hold and move to rotate camera around center.</li>' +
-	          '<li>Left button click to pick atom.</li>' +
-	          '<li>Middle button hold and move to zoom camera in and out.</li>' +
-	          '<li>Middle button click to center camera on atom.</li>' +
-	          '<li>Right button hold and move to translate camera in the screen plane.</li>' +
-	      '</ul>'
-	    ))
-	
-	  listingPanel
-	    .add(new UI.Panel().add(new UI.Html(
-	      'For more information please visit the ' +
-	      "<a href='" + NGL.documentationUrl + "' target='_blank'>documentation pages</a>."
-	    )))
-	
-	  var overview = preferences.getKey('overview')
-	  var showOverviewCheckbox = new UI.Checkbox(overview)
-	    .onClick(function () {
-	      preferences.setKey(
-	        'overview',
-	        showOverviewCheckbox.getValue()
-	      )
-	    })
-	
-	  listingPanel
-	    .add(new UI.HorizontalRule()
-	      .setBorderTop('1px solid #555')
-	      .setMarginTop('15px')
-	    )
-	    .add(new UI.Panel().add(
-	      showOverviewCheckbox,
-	      new UI.Text(
-	        'Show on startup. Always available from Menu > Help > Overview.'
-	      ).setMarginLeft('5px')
-	    ))
-	
-	  return container
-	}
-	
-	// Preferences
-	
-	NGL.PreferencesWidget = function (stage, preferences) {
-	  var container = new UI.OverlayPanel()
-	
-	  var xOffset = 0
-	  var yOffset = 0
-	
-	  var prevX = 0
-	  var prevY = 0
-	
-	  function onMousemove (e) {
-	    if (prevX === 0) {
-	      prevX = e.clientX
-	      prevY = e.clientY
-	    }
-	    xOffset -= prevX - e.clientX
-	    yOffset -= prevY - e.clientY
-	    prevX = e.clientX
-	    prevY = e.clientY
-	    container.dom.style.top = yOffset + 'px'
-	    container.dom.style.left = xOffset + 'px'
-	  }
-	
-	  function setWidgetPosition (left, top) {
-	    xOffset = left
-	    yOffset = top
-	    prevX = 0
-	    prevY = 0
-	    container.dom.style.top = yOffset + 'px'
-	    container.dom.style.left = xOffset + 'px'
-	  }
-	  container.setWidgetPosition = setWidgetPosition
-	
-	  var headingPanel = new UI.Panel()
-	    .setBorderBottom('1px solid #555')
-	    .setHeight('25px')
-	    .setCursor('move')
-	    .onMouseDown(function (e) {
-	      if (e.which === 1) {
-	        document.addEventListener('mousemove', onMousemove)
-	      }
-	      document.addEventListener('mouseup', function (e) {
-	        document.removeEventListener('mousemove', onMousemove)
-	      })
-	    })
-	
-	  var listingPanel = new UI.Panel()
-	    .setMarginTop('10px')
-	    .setMinHeight('100px')
-	    .setMaxHeight('500px')
-	    .setOverflow('auto')
-	
-	  headingPanel.add(new UI.Text('Preferences'))
-	  headingPanel.add(
-	    new UI.Icon('times')
-	      .setCursor('pointer')
-	      .setMarginLeft('20px')
-	      .setFloat('right')
-	      .onClick(function () {
-	        container.setDisplay('none')
-	      })
-	  )
-	
-	  container.add(headingPanel)
-	  container.add(listingPanel)
-	
-	  //
-	
-	  Object.keys(NGL.UIStageParameters).forEach(function (name) {
-	    var p = NGL.UIStageParameters[ name ]
-	    if (p.label === undefined) p.label = name
-	    var input = NGL.createParameterInput(p, stage.parameters[ name ])
-	
-	    if (!input) return
-	
-	    preferences.signals.keyChanged.add(function (key, value) {
-	      if (key === name) input.setValue(value)
-	    })
-	
-	    function setParam () {
-	      var sp = {}
-	      sp[ name ] = input.getValue()
-	      preferences.setKey(name, sp[ name ])
-	    }
-	
-	    var ua = navigator.userAgent
-	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
-	      input.onInput(setParam)
-	    } else {
-	      input.onChange(setParam)
-	    }
-	
-	    listingPanel
-	      .add(new UI.Text(name).setWidth('120px'))
-	      .add(input)
-	      .add(new UI.Break())
-	  })
-	
-	  return container
-	}
-	
-	// Export image
-	
-	NGL.ExportImageWidget = function (stage) {
-	  var container = new UI.OverlayPanel()
-	
-	  var headingPanel = new UI.Panel()
-	    .setBorderBottom('1px solid #555')
-	    .setHeight('25px')
-	
-	  var listingPanel = new UI.Panel()
-	    .setMarginTop('10px')
-	    .setMinHeight('100px')
-	    .setMaxHeight('500px')
-	    .setOverflow('auto')
-	
-	  headingPanel.add(new UI.Text('Image export'))
-	  headingPanel.add(
-	    new UI.Icon('times')
-	      .setCursor('pointer')
-	      .setMarginLeft('20px')
-	      .setFloat('right')
-	      .onClick(function () {
-	        container.setDisplay('none')
-	      })
-	  )
-	
-	  container.add(headingPanel)
-	  container.add(listingPanel)
-	
-	  var factorSelect = new UI.Select()
-	    .setOptions({
-	      '1': '1x',
-	      '2': '2x',
-	      '3': '3x',
-	      '4': '4x',
-	      '5': '5x',
-	      '6': '6x',
-	      '7': '7x',
-	      '8': '8x',
-	      '9': '9x',
-	      '10': '10x'
-	    })
-	    .setValue('4')
-	
-	  var antialiasCheckbox = new UI.Checkbox()
-	    .setValue(true)
-	
-	  var trimCheckbox = new UI.Checkbox()
-	    .setValue(false)
-	
-	  var transparentCheckbox = new UI.Checkbox()
-	    .setValue(false)
-	
-	  var progress = new UI.Progress()
-	    .setDisplay('none')
-	
-	  var exportButton = new UI.Button('export')
-	    .onClick(function () {
-	      exportButton.setDisplay('none')
-	      progress.setDisplay('inline-block')
-	      function onProgress (i, n, finished) {
-	        if (i === 1) {
-	          progress.setMax(n)
-	        }
-	        if (i >= n) {
-	          progress.setIndeterminate()
-	        } else {
-	          progress.setValue(i)
-	        }
-	        if (finished) {
-	          progress.setDisplay('none')
-	          exportButton.setDisplay('inline-block')
-	        }
-	      }
-	
-	      setTimeout(function () {
-	        stage.makeImage({
-	          factor: parseInt(factorSelect.getValue()),
-	          antialias: antialiasCheckbox.getValue(),
-	          trim: trimCheckbox.getValue(),
-	          transparent: transparentCheckbox.getValue(),
-	          onProgress: onProgress
-	        }).then(function (blob) {
-	          NGL.download(blob, 'screenshot.png')
-	        })
-	      }, 50)
-	    })
-	
-	  function addEntry (label, entry) {
-	    listingPanel
-	      .add(new UI.Text(label).setWidth('80px'))
-	      .add(entry || new UI.Panel())
-	      .add(new UI.Break())
-	  }
-	
-	  addEntry('scale', factorSelect)
-	  addEntry('antialias', antialiasCheckbox)
-	  addEntry('trim', trimCheckbox)
-	  addEntry('transparent', transparentCheckbox)
-	
-	  listingPanel.add(
-	    new UI.Break(),
-	    exportButton, progress
-	  )
-	
-	  return container
-	}
-	
-	// Sidebar
-	
-	NGL.SidebarWidget = function (stage) {
-	  var signals = stage.signals
-	  var container = new UI.Panel()
-	
-	  var widgetContainer = new UI.Panel()
-	    .setClass('Content')
-	
-	  var compList = []
-	  var widgetList = []
-	
-	  function handleComponent(component) {
-	    var widget
-	
-	    switch (component.type) {
-	      case 'structure':
-	        widget = new NGL.StructureComponentWidget(component, stage)
-	        break
-	
-	      case 'surface':
-	        widget = new NGL.SurfaceComponentWidget(component, stage)
-	        break
-	
-	      case 'volume':
-	        widget = new NGL.VolumeComponentWidget(component, stage)
-	        break
-	
-	      case 'shape':
-	        widget = new NGL.ShapeComponentWidget(component, stage)
-	        break
-	
-	      default:
-	        console.warn('NGL.SidebarWidget: component type unknown', component)
-	        return
-	    }
-	
-	    widgetContainer.add(widget)
-	
-	    compList.push(component)
-	    widgetList.push(widget)
-	
-	  }
-	
-	  // In case user adds components directly from notebook
-	  stage.compList.forEach(function(comp){
-	      handleComponent(comp)
-	  })
-	
-	  signals.componentAdded.add(handleComponent)
-	
-	  signals.componentRemoved.add(function (component) {
-	    var idx = compList.indexOf(component)
-	
-	    if (idx !== -1) {
-	      widgetList[ idx ].dispose()
-	
-	      compList.splice(idx, 1)
-	      widgetList.splice(idx, 1)
-	    }
-	  })
-	
-	  // actions
-	
-	  var expandAll = new UI.Icon('plus-square')
-	    .setTitle('expand all')
-	    .setCursor('pointer')
-	    .onClick(function () {
-	      widgetList.forEach(function (widget) {
-	        widget.expand()
-	      })
-	    })
-	
-	  var collapseAll = new UI.Icon('minus-square')
-	    .setTitle('collapse all')
-	    .setCursor('pointer')
-	    .setMarginLeft('10px')
-	    .onClick(function () {
-	      widgetList.forEach(function (widget) {
-	        widget.collapse()
-	      })
-	    })
-	
-	  var centerAll = new UI.Icon('bullseye')
-	    .setTitle('center all')
-	    .setCursor('pointer')
-	    .setMarginLeft('10px')
-	    .onClick(function () {
-	      stage.autoView(1000)
-	    })
-	
-	  var disposeAll = new UI.DisposeIcon()
-	    .setMarginLeft('10px')
-	    .setDisposeFunction(function () {
-	      stage.removeAllComponents()
-	    })
-	
-	  var settingsMenu = new UI.PopupMenu('cogs', 'Settings', 'window')
-	    .setIconTitle('settings')
-	    .setMarginLeft('10px')
-	  settingsMenu.entryLabelWidth = '120px'
-	
-	  // Busy indicator
-	
-	  var busy = new UI.Panel()
-	    .setDisplay('inline')
-	    .add(
-	      new UI.Icon('spinner')
-	        .addClass('spin')
-	        .setMarginLeft('45px')
-	    )
-	
-	  stage.tasks.signals.countChanged.add(function (delta, count) {
-	    if (count > 0) {
-	      actions.add(busy)
-	    } else {
-	      try {
-	        actions.remove(busy)
-	      } catch (e) {
-	        // already removed
-	      }
-	    }
-	  })
-	
-	  var paramNames = [
-	    'clipNear', 'clipFar', 'clipDist', 'fogNear', 'fogFar',
-	    'lightColor', 'lightIntensity', 'ambientColor', 'ambientIntensity'
-	  ]
-	
-	  paramNames.forEach(function (name) {
-	    var p = NGL.UIStageParameters[ name ]
-	    if (p.label === undefined) p.label = name
-	    var input = NGL.createParameterInput(p, stage.parameters[ name ])
-	
-	    if (!input) return
-	
-	    stage.signals.parametersChanged.add(function (params) {
-	      input.setValue(params[ name ])
-	    })
-	
-	    function setParam () {
-	      var sp = {}
-	      sp[ name ] = input.getValue()
-	      stage.setParameters(sp)
-	    }
-	
-	    var ua = navigator.userAgent
-	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
-	      input.onInput(setParam)
-	    } else {
-	      input.onChange(setParam)
-	    }
-	
-	    settingsMenu.addEntry(name, input)
-	  })
-	
-	  //
-	
-	  var actions = new UI.Panel()
-	    .setClass('Panel Sticky')
-	    .add(
-	      expandAll,
-	      collapseAll,
-	      centerAll,
-	      disposeAll,
-	      settingsMenu
-	    )
-	
-	  container.add(
-	    actions,
-	    widgetContainer
-	  )
-	
-	  return container
-	}
-	
-	// Component
-	
-	NGL.StructureComponentWidget = function (component, stage) {
-	  var signals = component.signals
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	
-	  var reprContainer = new UI.Panel()
-	  var trajContainer = new UI.Panel()
-	
-	  function handleRepr(repr){
-	    reprContainer.add(
-	      new NGL.RepresentationElementWidget(repr, stage)
-	    )
-	  }
-	
-	  component.reprList.forEach(function(repr){
-	      handleRepr(repr)
-	  })
-	
-	  signals.representationAdded.add(handleRepr)
-	
-	  signals.trajectoryAdded.add(function (traj) {
-	    trajContainer.add(new NGL.TrajectoryElementWidget(traj, stage))
-	  })
-	
-	  signals.defaultAssemblyChanged.add(function () {
-	    assembly.setValue(component.parameters.defaultAssembly)
-	  })
-	
-	  // Selection
-	
-	  container.add(
-	    new UI.SelectionPanel(component.selection)
-	      .setMarginLeft('20px')
-	      .setInputWidth('214px')
-	  )
-	
-	  // Export PDB
-	
-	  var pdb = new UI.Button('export').onClick(function () {
-	    var pdbWriter = new NGL.PdbWriter(component.structure)
-	    pdbWriter.download('structure')
-	    componentPanel.setMenuDisplay('none')
-	  })
-	
-	  // Add representation
-	
-	  var repr = new UI.Select()
-	    .setColor('#444')
-	    .setOptions((function () {
-	      var reprOptions = { '': '[ add ]' }
-	      NGL.RepresentationRegistry.names.forEach(function (key) {
-	        reprOptions[ key ] = key
-	      })
-	      return reprOptions
-	    })())
-	    .onChange(function () {
-	      component.addRepresentation(repr.getValue())
-	      repr.setValue('')
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  // Assembly
-	
-	  var assembly = new UI.Select()
-	    .setColor('#444')
-	    .setOptions((function () {
-	      var biomolDict = component.structure.biomolDict
-	      var assemblyOptions = {
-	        '': (component.structure.unitcell ? 'AU' : 'FULL')
-	      }
-	      Object.keys(biomolDict).forEach(function (k) {
-	        assemblyOptions[ k ] = k
-	      })
-	      return assemblyOptions
-	    })())
-	    .setValue(component.parameters.defaultAssembly)
-	    .onChange(function () {
-	      component.setDefaultAssembly(assembly.getValue())
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  // Open trajectory
-	
-	  var trajExt = []
-	  NGL.ParserRegistry.getTrajectoryExtensions().forEach(function (ext) {
-	    trajExt.push('.' + ext, '.' + ext + '.gz')
-	  })
-	
-	  function framesInputOnChange (e) {
-	    var fn = function (file, callback) {
-	      NGL.autoLoad(file).then(function (frames) {
-	        component.addTrajectory(frames)
-	        callback()
-	      })
-	    }
-	    var queue = new NGL.Queue(fn, e.target.files)
-	    e.target.value = ''
-	  }
-	
-	  var framesInput = document.createElement('input')
-	  framesInput.type = 'file'
-	  framesInput.multiple = true
-	  framesInput.style.display = 'none'
-	  framesInput.accept = trajExt.join(',')
-	  framesInput.addEventListener('change', framesInputOnChange, false)
-	
-	  var traj = new UI.Button('open').onClick(function () {
-	    framesInput.click()
-	    componentPanel.setMenuDisplay('none')
-	  })
-	
-	  // Import remote trajectory
-	
-	  var remoteTraj = new UI.Button('import').onClick(function () {
-	    componentPanel.setMenuDisplay('none')
-	
-	    // TODO list of extensions should be provided by trajectory datasource
-	    var remoteTrajExt = [
-	      'xtc', 'trr', 'netcdf', 'dcd', 'ncdf', 'nc', 'gro', 'pdb',
-	      'lammpstrj', 'xyz', 'mdcrd', 'gz', 'binpos', 'h5', 'dtr',
-	      'arc', 'tng', 'trj', 'trz'
-	    ]
-	    var dirWidget
-	
-	    function onListingClick (info) {
-	      var ext = info.path.split('.').pop().toLowerCase()
-	      if (remoteTrajExt.indexOf(ext) !== -1) {
-	        component.addTrajectory(info.path + '?struc=' + component.structure.path)
-	        dirWidget.dispose()
-	      } else {
-	        NGL.log('unknown trajectory type: ' + ext)
-	      }
-	    }
-	
-	    dirWidget = new NGL.DirectoryListingWidget(
-	      NGL.ListingDatasource, stage, 'Import trajectory',
-	      remoteTrajExt, onListingClick
-	    )
-	
-	    dirWidget
-	      .setOpacity('0.9')
-	      .setLeft('50px')
-	      .setTop('80px')
-	      .attach()
-	  })
-	
-	  // Superpose
-	
-	  function setSuperposeOptions () {
-	    var superposeOptions = { '': '[ structure ]' }
-	    stage.eachComponent(function (o, i) {
-	      if (o !== component) {
-	        superposeOptions[ i ] = o.name
-	      }
-	    }, NGL.StructureComponent)
-	    superpose.setOptions(superposeOptions)
-	  }
-	
-	  stage.signals.componentAdded.add(setSuperposeOptions)
-	  stage.signals.componentRemoved.add(setSuperposeOptions)
-	
-	  var superpose = new UI.Select()
-	    .setColor('#444')
-	    .onChange(function () {
-	      component.superpose(
-	        stage.compList[ superpose.getValue() ],
-	        true
-	      )
-	      component.autoView(1000)
-	      superpose.setValue('')
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  setSuperposeOptions()
-	
-	  // Principal axes
-	
-	  var alignAxes = new UI.Button('align').onClick(function () {
-	    var pa = component.structure.getPrincipalAxes()
-	    var q = pa.getRotationQuaternion()
-	    q.multiply(component.quaternion.clone().inverse())
-	    stage.animationControls.rotate(q)
-	    stage.animationControls.move(component.getCenter())
-	  })
-	
-	  // Measurements removal
-	
-	  var removeMeasurements = new UI.Button('remove').onClick(function () {
-	    component.removeAllMeasurements()
-	  })
-	
-	  // Annotations visibility
-	
-	  var showAnnotations = new UI.Button('show').onClick(function () {
-	    component.annotationList.forEach(function (annotation) {
-	      annotation.setVisibility(true)
-	    })
-	  })
-	
-	  var hideAnnotations = new UI.Button('hide').onClick(function () {
-	    component.annotationList.forEach(function (annotation) {
-	      annotation.setVisibility(false)
-	    })
-	  })
-	
-	  var annotationButtons = new UI.Panel()
-	    .setDisplay('inline-block')
-	    .add(showAnnotations, hideAnnotations)
-	
-	  // Open validation
-	
-	  function validationInputOnChange (e) {
-	    var fn = function (file, callback) {
-	      NGL.autoLoad(file, { ext: 'validation' }).then(function (validation) {
-	        component.structure.validation = validation
-	        callback()
-	      })
-	    }
-	    var queue = new NGL.Queue(fn, e.target.files)
-	  }
-	
-	  var validationInput = document.createElement('input')
-	  validationInput.type = 'file'
-	  validationInput.style.display = 'none'
-	  validationInput.accept = '.xml'
-	  validationInput.addEventListener('change', validationInputOnChange, false)
-	
-	  var vali = new UI.Button('open').onClick(function () {
-	    validationInput.click()
-	    componentPanel.setMenuDisplay('none')
-	  })
-	
-	  // Position
-	
-	  var position = new UI.Vector3()
-	    .onChange(function () {
-	      component.setPosition(position.getValue())
-	    })
-	
-	  // Rotation
-	
-	  var q = new NGL.Quaternion()
-	  var e = new NGL.Euler()
-	  var rotation = new UI.Vector3()
-	    .setRange(-6.28, 6.28)
-	    .onChange(function () {
-	      e.setFromVector3(rotation.getValue())
-	      q.setFromEuler(e)
-	      component.setRotation(q)
-	    })
-	
-	  // Scale
-	
-	  var scale = new UI.Number(1)
-	    .setRange(0.01, 100)
-	    .onChange(function () {
-	      component.setScale(scale.getValue())
-	    })
-	
-	  // Matrix
-	
-	  signals.matrixChanged.add(function () {
-	    position.setValue(component.position)
-	    rotation.setValue(e.setFromQuaternion(component.quaternion))
-	    scale.setValue(component.scale.x)
-	  })
-	
-	  // Component panel
-	
-	  var componentPanel = new UI.ComponentPanel(component)
-	    .setDisplay('inline-block')
-	    .setMargin('0px')
-	    .addMenuEntry('PDB file', pdb)
-	    .addMenuEntry('Representation', repr)
-	    .addMenuEntry('Assembly', assembly)
-	    .addMenuEntry('Superpose', superpose)
-	    .addMenuEntry(
-	      'File', new UI.Text(component.structure.path)
-	        .setMaxWidth('100px')
-	        .setOverflow('auto')
-	      // .setWordWrap( "break-word" )
-	    )
-	    .addMenuEntry('Trajectory', traj)
-	    .addMenuEntry('Principal axes', alignAxes)
-	    .addMenuEntry('Measurements', removeMeasurements)
-	    .addMenuEntry('Annotations', annotationButtons)
-	    .addMenuEntry('Validation', vali)
-	    .addMenuEntry('Position', position)
-	    .addMenuEntry('Rotation', rotation)
-	    .addMenuEntry('Scale', scale)
-	
-	  if (NGL.ListingDatasource && NGL.TrajectoryDatasource) {
-	    componentPanel.addMenuEntry('Remote trajectory', remoteTraj)
-	  }
-	
-	  // Fill container
-	
-	  container
-	    .addStatic(componentPanel)
-	    .add(trajContainer)
-	    .add(reprContainer)
-	
-	  return container
-	}
-	
-	NGL.SurfaceComponentWidget = function (component, stage) {
-	  var signals = component.signals
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	
-	  var reprContainer = new UI.Panel()
-	
-	  signals.representationAdded.add(function (repr) {
-	    reprContainer.add(
-	      new NGL.RepresentationElementWidget(repr, stage)
-	    )
-	  })
-	
-	  // Add representation
-	
-	  var repr = new UI.Select()
-	    .setColor('#444')
-	    .setOptions((function () {
-	      var reprOptions = {
-	        '': '[ add ]',
-	        'surface': 'surface',
-	        'dot': 'dot'
-	      }
-	      return reprOptions
-	    })())
-	    .onChange(function () {
-	      component.addRepresentation(repr.getValue())
-	      repr.setValue('')
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  // Position
-	
-	  var position = new UI.Vector3()
-	    .onChange(function () {
-	      component.setPosition(position.getValue())
-	    })
-	
-	  // Rotation
-	
-	  var q = new NGL.Quaternion()
-	  var e = new NGL.Euler()
-	  var rotation = new UI.Vector3()
-	    .setRange(-6.28, 6.28)
-	    .onChange(function () {
-	      e.setFromVector3(rotation.getValue())
-	      q.setFromEuler(e)
-	      component.setRotation(q)
-	    })
-	
-	  // Scale
-	
-	  var scale = new UI.Number(1)
-	    .setRange(0.01, 100)
-	    .onChange(function () {
-	      component.setScale(scale.getValue())
-	    })
-	
-	  // Matrix
-	
-	  signals.matrixChanged.add(function () {
-	    position.setValue(component.position)
-	    rotation.setValue(e.setFromQuaternion(component.quaternion))
-	    scale.setValue(component.scale.x)
-	  })
-	
-	  // Component panel
-	
-	  var componentPanel = new UI.ComponentPanel(component)
-	    .setDisplay('inline-block')
-	    .setMargin('0px')
-	    .addMenuEntry('Representation', repr)
-	    .addMenuEntry(
-	      'File', new UI.Text(component.surface.path)
-	        .setMaxWidth('100px')
-	        .setWordWrap('break-word'))
-	    .addMenuEntry('Position', position)
-	    .addMenuEntry('Rotation', rotation)
-	    .addMenuEntry('Scale', scale)
-	
-	  // Fill container
-	
-	  container
-	    .addStatic(componentPanel)
-	    .add(reprContainer)
-	
-	  return container
-	}
-	
-	NGL.VolumeComponentWidget = function (component, stage) {
-	  var signals = component.signals
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	
-	  var reprContainer = new UI.Panel()
-	
-	  signals.representationAdded.add(function (repr) {
-	    reprContainer.add(
-	      new NGL.RepresentationElementWidget(repr, stage)
-	    )
-	  })
-	
-	  // Add representation
-	
-	  var repr = new UI.Select()
-	    .setColor('#444')
-	    .setOptions((function () {
-	      var reprOptions = {
-	        '': '[ add ]',
-	        'surface': 'surface',
-	        'dot': 'dot',
-	        'slice': 'slice'
-	      }
-	      return reprOptions
-	    })())
-	    .onChange(function () {
-	      component.addRepresentation(repr.getValue())
-	      repr.setValue('')
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  // Position
-	
-	  var position = new UI.Vector3()
-	    .onChange(function () {
-	      component.setPosition(position.getValue())
-	    })
-	
-	  // Rotation
-	
-	  var q = new NGL.Quaternion()
-	  var e = new NGL.Euler()
-	  var rotation = new UI.Vector3()
-	    .setRange(-6.28, 6.28)
-	    .onChange(function () {
-	      e.setFromVector3(rotation.getValue())
-	      q.setFromEuler(e)
-	      component.setRotation(q)
-	    })
-	
-	  // Scale
-	
-	  var scale = new UI.Number(1)
-	    .setRange(0.01, 100)
-	    .onChange(function () {
-	      component.setScale(scale.getValue())
-	    })
-	
-	  // Matrix
-	
-	  signals.matrixChanged.add(function () {
-	    position.setValue(component.position)
-	    rotation.setValue(e.setFromQuaternion(component.quaternion))
-	    scale.setValue(component.scale.x)
-	  })
-	
-	  // Component panel
-	
-	  var componentPanel = new UI.ComponentPanel(component)
-	    .setDisplay('inline-block')
-	    .setMargin('0px')
-	    .addMenuEntry('Representation', repr)
-	    .addMenuEntry(
-	      'File', new UI.Text(component.volume.path)
-	        .setMaxWidth('100px')
-	        .setWordWrap('break-word'))
-	    .addMenuEntry('Position', position)
-	    .addMenuEntry('Rotation', rotation)
-	    .addMenuEntry('Scale', scale)
-	
-	  // Fill container
-	
-	  container
-	    .addStatic(componentPanel)
-	    .add(reprContainer)
-	
-	  return container
-	}
-	
-	NGL.ShapeComponentWidget = function (component, stage) {
-	  var signals = component.signals
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	
-	  var reprContainer = new UI.Panel()
-	
-	  signals.representationAdded.add(function (repr) {
-	    reprContainer.add(
-	      new NGL.RepresentationElementWidget(repr, stage)
-	    )
-	  })
-	
-	  // Add representation
-	
-	  var repr = new UI.Select()
-	    .setColor('#444')
-	    .setOptions((function () {
-	      var reprOptions = {
-	        '': '[ add ]',
-	        'buffer': 'buffer'
-	      }
-	      return reprOptions
-	    })())
-	    .onChange(function () {
-	      component.addRepresentation(repr.getValue())
-	      repr.setValue('')
-	      componentPanel.setMenuDisplay('none')
-	    })
-	
-	  // Position
-	
-	  var position = new UI.Vector3()
-	    .onChange(function () {
-	      component.setPosition(position.getValue())
-	    })
-	
-	    // Rotation
-	
-	  var q = new NGL.Quaternion()
-	  var e = new NGL.Euler()
-	  var rotation = new UI.Vector3()
-	    .setRange(-6.28, 6.28)
-	    .onChange(function () {
-	      e.setFromVector3(rotation.getValue())
-	      q.setFromEuler(e)
-	      component.setRotation(q)
-	    })
-	
-	  // Scale
-	
-	  var scale = new UI.Number(1)
-	    .setRange(0.01, 100)
-	    .onChange(function () {
-	      component.setScale(scale.getValue())
-	    })
-	
-	  // Matrix
-	
-	  signals.matrixChanged.add(function () {
-	    position.setValue(component.position)
-	    rotation.setValue(e.setFromQuaternion(component.quaternion))
-	    scale.setValue(component.scale.x)
-	  })
-	
-	  // Component panel
-	
-	  var componentPanel = new UI.ComponentPanel(component)
-	    .setDisplay('inline-block')
-	    .setMargin('0px')
-	    .addMenuEntry('Representation', repr)
-	    .addMenuEntry(
-	      'File', new UI.Text(component.shape.path)
-	        .setMaxWidth('100px')
-	        .setWordWrap('break-word'))
-	    .addMenuEntry('Position', position)
-	    .addMenuEntry('Rotation', rotation)
-	    .addMenuEntry('Scale', scale)
-	
-	  // Fill container
-	
-	  container
-	    .addStatic(componentPanel)
-	    .add(reprContainer)
-	
-	  return container
-	}
-	
-	// Representation
-	
-	NGL.RepresentationElementWidget = function (element, stage) {
-	  var signals = element.signals
-	
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	    .setMarginLeft('20px')
-	
-	  signals.visibilityChanged.add(function (value) {
-	    toggle.setValue(value)
-	  })
-	
-	  signals.nameChanged.add(function (value) {
-	    name.setValue(value)
-	  })
-	
-	  signals.disposed.add(function () {
-	    menu.dispose()
-	    container.dispose()
-	  })
-	
-	  // Name
-	
-	  var name = new UI.EllipsisText(element.name)
-	    .setWidth('103px')
-	
-	    // Actions
-	
-	  var toggle = new UI.ToggleIcon(element.visible, 'eye', 'eye-slash')
-	    .setTitle('hide/show')
-	    .setCursor('pointer')
-	    .setMarginLeft('25px')
-	    .onClick(function () {
-	      element.setVisibility(!element.visible)
-	    })
-	
-	  var disposeIcon = new UI.DisposeIcon()
-	    .setMarginLeft('10px')
-	    .setDisposeFunction(function () {
-	      element.dispose()
-	    })
-	
-	  container
-	    .addStatic(name)
-	    .addStatic(toggle)
-	    .addStatic(disposeIcon)
-	
-	  // Selection
-	
-	  if ((element.parent.type === 'structure' ||
-	          element.parent.type === 'trajectory') &&
-	        element.repr.selection && element.repr.selection.type === 'selection'
-	  ) {
-	    container.add(
-	      new UI.SelectionPanel(element.repr.selection)
-	        .setMarginLeft('20px')
-	        .setInputWidth('194px')
-	    )
-	  }
-	
-	  // Menu
-	
-	  var menu = new UI.PopupMenu('bars', 'Representation')
-	    .setMarginLeft('45px')
-	    .setEntryLabelWidth('190px')
-	
-	  menu.addEntry('type', new UI.Text(element.repr.type))
-	
-	  // Parameters
-	
-	  var repr = element.repr
-	  var rp = repr.getParameters()
-	
-	  Object.keys(repr.parameters).forEach(function (name) {
-	    if (!repr.parameters[ name ]) return
-	    var p = Object.assign({}, repr.parameters[ name ])
-	    p.value = rp[ name ]
-	    if (p.label === undefined) p.label = name
-	    var input = NGL.createParameterInput(p)
-	
-	    if (!input) return
-	
-	    signals.parametersChanged.add(function (params) {
-	      if (typeof input.setValue === 'function') {
-	        input.setValue(params[ name ])
-	      }
-	    })
-	
-	    function setParam () {
-	      var po = {}
-	      po[ name ] = input.getValue()
-	      element.setParameters(po)
-	      stage.viewer.requestRender()
-	    }
-	
-	    var ua = navigator.userAgent
-	    if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
-	      input.onInput(setParam)
-	    } else {
-	      input.onChange(setParam)
-	    }
-	
-	    menu.addEntry(name, input)
-	  })
-	
-	  container
-	    .addStatic(menu)
-	
-	  return container
-	}
-	
-	// Trajectory
-	
-	NGL.TrajectoryElementWidget = function (element, stage) {
-	  var signals = element.signals
-	  var traj = element.trajectory
-	
-	  var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
-	    .setMarginLeft('20px')
-	
-	  signals.disposed.add(function () {
-	    menu.dispose()
-	    container.dispose()
-	  })
-	
-	  var frameCount = new UI.Panel()
-	    .setDisplay('inline')
-	    .add(new UI.Icon('spinner')
-	      .addClass('spin')
-	      .setMarginRight('99px')
-	    )
-	
-	  var frameTime = new UI.Panel()
-	    .setMarginLeft('5px')
-	    .setDisplay('inline')
-	
-	  function setFrame (value) {
-	    frame.setValue(value)
-	    if (traj.deltaTime && value >= 0) {
-	      var t = traj.getFrameTime(value) / 1000
-	      time.setValue(t.toFixed(9).replace(/\.?0+$/g, '') + 'ns')
-	    } else {
-	      time.setValue('')
-	    }
-	    frameRange.setValue(value)
-	    frameCount.clear().add(frame.setWidth('40px'))
-	    frameTime.clear().add(time.setWidth('90px'))
-	  }
-	
-	  function init (value) {
-	    frame.setRange(-1, value - 1)
-	    frameRange.setRange(-1, value - 1)
-	
-	    setFrame(traj.currentFrame)
-	
-	    if (element.parameters.defaultStep !== undefined) {
-	      step.setValue(element.parameters.defaultStep)
-	    } else {
-	      // 1000 = n / step
-	      step.setValue(Math.ceil((value + 1) / 100))
-	    }
-	
-	    player.setParameters({step: step.getValue()})
-	    player.setParameters({end: value - 1})
-	  }
-	
-	  signals.countChanged.add(init)
-	  signals.frameChanged.add(setFrame)
-	
-	  // Name
-	
-	  var name = new UI.EllipsisText(element.parameters.name)
-	    .setWidth('103px')
-	
-	  signals.nameChanged.add(function (value) {
-	    name.setValue(value)
-	  })
-	
-	  container.addStatic(name)
-	  container.addStatic(frameTime)
-	
-	  // frames
-	
-	  var frame = new UI.Integer(-1)
-	    .setWidth('40px')
-	    .setTextAlign('right')
-	    .setMarginLeft('5px')
-	    .setRange(-1, -1)
-	    .onChange(function (e) {
-	      traj.setFrame(frame.getValue())
-	      menu.setMenuDisplay('none')
-	    })
-	
-	  var time = new UI.Text()
-	    .setTextAlign('right')
-	    .setWidth('90px')
-	
-	  var step = new UI.Integer(1)
-	    .setWidth('50px')
-	    .setRange(1, 10000)
-	    .onChange(function () {
-	      player.setParameters({step: step.getValue()})
-	    })
-	
-	  var frameRow = new UI.Panel()
-	
-	  var frameRange = new UI.Range(-1, -1, -1, 1)
-	    .setWidth('147px')
-	    .setMargin('0px')
-	    .setPadding('0px')
-	    .setBorder('0px')
-	    .onInput(function (e) {
-	      var value = frameRange.getValue()
-	
-	      if (value === traj.currentFrame) {
-	        return
-	      }
-	
-	      if (traj.player && traj.player.isRunning) {
-	        traj.setPlayer()
-	        traj.setFrame(value)
-	      } else if (!traj.inProgress) {
-	        traj.setFrame(value)
-	      }
-	    })
-	
-	  var interpolateType = new UI.Select()
-	    .setColor('#444')
-	    .setOptions({
-	      '': 'none',
-	      'linear': 'linear',
-	      'spline': 'spline'
-	    })
-	    .setValue(element.parameters.defaultInterpolateType)
-	    .onChange(function () {
-	      player.setParameters({interpolateType: interpolateType.getValue()})
-	    })
-	
-	  var interpolateStep = new UI.Integer(element.parameters.defaultInterpolateStep)
-	    .setWidth('30px')
-	    .setRange(1, 50)
-	    .onChange(function () {
-	      player.setParameters({interpolateStep: interpolateStep.getValue()})
-	    })
-	
-	  var playDirection = new UI.Select()
-	    .setColor('#444')
-	    .setOptions({
-	      'forward': 'forward',
-	      'backward': 'backward',
-	      'bounce': 'bounce'
-	    })
-	    .setValue(element.parameters.defaultDirection)
-	    .onChange(function () {
-	      player.setParameters({direction: playDirection.getValue()})
-	    })
-	
-	  var playMode = new UI.Select()
-	    .setColor('#444')
-	    .setOptions({
-	      'loop': 'loop',
-	      'once': 'once'
-	    })
-	    .setValue(element.parameters.defaultMode)
-	    .onChange(function () {
-	      player.setParameters({mode: playMode.getValue()})
-	    })
-	
-	  // player
-	
-	  var timeout = new UI.Integer(element.parameters.defaultTimeout)
-	    .setWidth('30px')
-	    .setRange(10, 1000)
-	    .onChange(function () {
-	      player.setParameters({timeout: timeout.getValue()})
-	    })
-	
-	  var player = new NGL.TrajectoryPlayer(traj, {
-	    step: step.getValue(),
-	    timeout: timeout.getValue(),
-	    start: 0,
-	    end: traj.frameCount - 1,
-	    interpolateType: interpolateType.getValue(),
-	    interpolateStep: interpolateStep.getValue(),
-	    direction: playDirection.getValue(),
-	    mode: playMode.getValue()
-	  })
-	  traj.setPlayer(player)
-	
-	  var playerButton = new UI.ToggleIcon(true, 'play', 'pause')
-	    .setMarginRight('10px')
-	    .setMarginLeft('20px')
-	    .setCursor('pointer')
-	    .setWidth('12px')
-	    .setTitle('play')
-	    .onClick(function () {
-	      player.toggle()
-	    })
-	
-	  player.signals.startedRunning.add(function () {
-	    playerButton
-	      .setTitle('pause')
-	      .setValue(false)
-	  })
-	
-	  player.signals.haltedRunning.add(function () {
-	    playerButton
-	      .setTitle('play')
-	      .setValue(true)
-	  })
-	
-	  frameRow.add(playerButton, frameRange, frameCount)
-	
-	  // Selection
-	
-	  container.add(
-	    new UI.SelectionPanel(traj.selection)
-	      .setMarginLeft('20px')
-	      .setInputWidth('194px')
-	  )
-	
-	  // Options
-	
-	  var setCenterPbc = new UI.Checkbox(traj.centerPbc)
-	    .onChange(function () {
-	      element.setParameters({
-	        'centerPbc': setCenterPbc.getValue()
-	      })
-	    })
-	
-	  var setRemovePeriodicity = new UI.Checkbox(traj.removePeriodicity)
-	    .onChange(function () {
-	      element.setParameters({
-	        'removePeriodicity': setRemovePeriodicity.getValue()
-	      })
-	    })
-	
-	  var setRemovePbc = new UI.Checkbox(traj.removePbc)
-	    .onChange(function () {
-	      element.setParameters({
-	        'removePbc': setRemovePbc.getValue()
-	      })
-	    })
-	
-	  var setSuperpose = new UI.Checkbox(traj.superpose)
-	    .onChange(function () {
-	      element.setParameters({
-	        'superpose': setSuperpose.getValue()
-	      })
-	    })
-	
-	  var setDeltaTime = new UI.Number(traj.deltaTime)
-	    .setWidth('55px')
-	    .setRange(0, 1000000)
-	    .onChange(function () {
-	      element.setParameters({
-	        'deltaTime': setDeltaTime.getValue()
-	      })
-	    })
-	
-	  var setTimeOffset = new UI.Number(traj.timeOffset)
-	    .setWidth('55px')
-	    .setRange(0, 1000000000)
-	    .onChange(function () {
-	      element.setParameters({
-	        'timeOffset': setTimeOffset.getValue()
-	      })
-	    })
-	
-	  signals.parametersChanged.add(function (params) {
-	    setCenterPbc.setValue(traj.centerPbc)
-	    setRemovePeriodicity.setValue(traj.removePeriodicity)
-	    setRemovePbc.setValue(traj.removePbc)
-	    setSuperpose.setValue(traj.superpose)
-	    setDeltaTime.setValue(traj.deltaTime)
-	    setTimeOffset.setValue(traj.timeOffset)
-	    traj.setFrame(frame.getValue())
-	  })
-	
-	  // Dispose
-	
-	  var dispose = new UI.DisposeIcon()
-	    .setDisposeFunction(function () {
-	      element.parent.removeTrajectory(element)
-	    })
-	
-	  //
-	
-	  if (traj.frameCount) {
-	    init(traj.frameCount)
-	  }
-	
-	  // Menu
-	
-	  var menu = new UI.PopupMenu('bars', 'Trajectory')
-	    .setMarginLeft('10px')
-	    .setEntryLabelWidth('130px')
-	    .addEntry('Center', setCenterPbc)
-	    .addEntry('Remove Periodicity', setRemovePeriodicity)
-	    .addEntry('Remove PBC', setRemovePbc)
-	    .addEntry('Superpose', setSuperpose)
-	    .addEntry('Step size', step)
-	    .addEntry('Interpolation type', interpolateType)
-	    .addEntry('Interpolation steps', interpolateStep)
-	    .addEntry('Play timeout', timeout)
-	    .addEntry('Play direction', playDirection)
-	    .addEntry('Play mode', playMode)
-	    .addEntry('Delta time [ps]', setDeltaTime)
-	    .addEntry('Time offset [ps]', setTimeOffset)
-	    .addEntry('File',
-	      new UI.Text(traj.trajPath)
-	        .setMaxWidth('100px')
-	        .setWordWrap('break-word'))
-	    .addEntry('Dispose', dispose)
-	
-	  container
-	    .addStatic(menu)
-	
-	  container
-	    .add(frameRow)
-	
-	  return container
-	}
-	
-	// Listing
-	
-	NGL.DirectoryListingWidget = function (datasource, stage, heading, filter, callback) {
-	  // from http://stackoverflow.com/a/20463021/1435042
-	  function fileSizeSI (a, b, c, d, e) {
-	    return (b = Math, c = b.log, d = 1e3, e = c(a) / c(d) | 0, a / b.pow(d, e)).toFixed(2) +
-	            String.fromCharCode(160) + (e ? 'kMGTPEZY'[--e] + 'B' : 'Bytes')
-	  }
-	
-	  function getFolderDict (path) {
-	    path = path || ''
-	    var options = { '': '' }
-	    var full = []
-	    path.split('/').forEach(function (chunk) {
-	      full.push(chunk)
-	      options[ full.join('/') ] = chunk
-	    })
-	    return options
-	  }
-	
-	  var container = new UI.OverlayPanel()
-	
-	  var headingPanel = new UI.Panel()
-	    .setBorderBottom('1px solid #555')
-	    .setHeight('30px')
-	
-	  var listingPanel = new UI.Panel()
-	    .setMarginTop('10px')
-	    .setMinHeight('100px')
-	    .setMaxHeight('500px')
-	    .setPaddingRight('15px')
-	    .setOverflow('auto')
-	
-	  var folderSelect = new UI.Select()
-	    .setColor('#444')
-	    .setMarginLeft('20px')
-	    .setWidth('')
-	    .setMaxWidth('200px')
-	    .setOptions(getFolderDict())
-	    .onChange(function () {
-	      datasource.getListing(folderSelect.getValue())
-	        .then(onListingLoaded)
-	    })
-	
-	  heading = heading || 'Directoy listing'
-	
-	  headingPanel.add(new UI.Text(heading))
-	  headingPanel.add(folderSelect)
-	  headingPanel.add(
-	    new UI.Icon('times')
-	      .setCursor('pointer')
-	      .setMarginLeft('20px')
-	      .setFloat('right')
-	      .onClick(function () {
-	        container.dispose()
-	      })
-	  )
-	
-	  container.add(headingPanel)
-	  container.add(listingPanel)
-	
-	  function onListingLoaded (listing) {
-	    var folder = listing.path
-	    var data = listing.data
-	
-	    NGL.lastUsedDirectory = folder
-	    listingPanel.clear()
-	
-	    folderSelect
-	      .setOptions(getFolderDict(folder))
-	      .setValue(folder)
-	
-	    data.forEach(function (info) {
-	      var ext = info.path.split('.').pop().toLowerCase()
-	      if (filter && !info.dir && filter.indexOf(ext) === -1) {
-	        return
-	      }
-	
-	      var icon, name
-	      if (info.dir) {
-	        icon = 'folder-o'
-	        name = info.name
-	      } else {
-	        icon = 'file-o'
-	        name = info.name + String.fromCharCode(160) +
-	                '(' + fileSizeSI(info.size) + ')'
-	      }
-	
-	      var pathRow = new UI.Panel()
-	        .setDisplay('block')
-	        .setWhiteSpace('nowrap')
-	        .add(new UI.Icon(icon).setWidth('20px'))
-	        .add(new UI.Text(name))
-	        .onClick(function () {
-	          if (info.dir) {
-	            datasource.getListing(info.path)
-	              .then(onListingLoaded)
-	          } else {
-	            callback(info)
-	          }
-	        })
-	
-	      if (info.restricted) {
-	        pathRow.add(new UI.Icon('lock').setMarginLeft('5px'))
-	      }
-	
-	      listingPanel.add(pathRow)
-	    })
-	  }
-	
-	  datasource.getListing(NGL.lastUsedDirectory)
-	    .then(onListingLoaded)
-	
-	  return container
-	}
-	
-	module.exports = {
-	    "StageWidget": StageWidget
-	}
-
-
-/***/ }),
-/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -19117,20 +16031,20 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(18),
-				__webpack_require__(28),
-				__webpack_require__(29),
-				__webpack_require__(36),
-				__webpack_require__(38),
+				__webpack_require__(8),
+				__webpack_require__(17),
 				__webpack_require__(27),
-				__webpack_require__(39),
+				__webpack_require__(28),
+				__webpack_require__(35),
+				__webpack_require__(37),
+				__webpack_require__(26),
+				__webpack_require__(38),
+				__webpack_require__(32),
 				__webpack_require__(33),
-				__webpack_require__(34),
+				__webpack_require__(39),
 				__webpack_require__(40),
-				__webpack_require__(41),
-				__webpack_require__(21),
-				__webpack_require__(20)
+				__webpack_require__(20),
+				__webpack_require__(19)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -20037,7 +16951,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20063,15 +16977,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
+				__webpack_require__(8),
 	
 				// These are only for backcompat
 				// TODO: Remove after 1.12
-				__webpack_require__(19),
-				__webpack_require__(22),
+				__webpack_require__(18),
+				__webpack_require__(21),
 	
-				__webpack_require__(27),
-				__webpack_require__(20)
+				__webpack_require__(26),
+				__webpack_require__(19)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -20429,7 +17343,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20455,8 +17369,8 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(20)
+				__webpack_require__(8),
+				__webpack_require__(19)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -20733,7 +17647,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20755,7 +17669,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21472,14 +18386,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21495,7 +18409,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -21522,11 +18436,11 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
+				__webpack_require__(8),
+				__webpack_require__(22),
 				__webpack_require__(23),
-				__webpack_require__(24),
-				__webpack_require__(26),
-				__webpack_require__(20)
+				__webpack_require__(25),
+				__webpack_require__(19)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -21787,14 +18701,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21814,7 +18728,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -21836,9 +18750,9 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(25),
-				__webpack_require__(21)
+				__webpack_require__(8),
+				__webpack_require__(24),
+				__webpack_require__(20)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -21897,14 +18811,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21923,7 +18837,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -21944,7 +18858,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21), __webpack_require__(23) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20), __webpack_require__(22) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -21991,7 +18905,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -22012,7 +18926,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -22042,7 +18956,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -22066,15 +18980,15 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(29),
+				__webpack_require__(8),
+				__webpack_require__(28),
+				__webpack_require__(30),
 				__webpack_require__(31),
 				__webpack_require__(32),
 				__webpack_require__(33),
 				__webpack_require__(34),
-				__webpack_require__(35),
-				__webpack_require__(21),
-				__webpack_require__(20)
+				__webpack_require__(20),
+				__webpack_require__(19)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -23298,7 +20212,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -23320,10 +20234,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(30),
-				__webpack_require__(21),
-				__webpack_require__(20)
+				__webpack_require__(8),
+				__webpack_require__(29),
+				__webpack_require__(20),
+				__webpack_require__(19)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -23530,14 +20444,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -23551,7 +20465,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -23572,7 +20486,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -23596,14 +20510,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -23646,14 +20560,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -23692,14 +20606,14 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -23719,7 +20633,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -23740,7 +20654,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -23770,7 +20684,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -23796,12 +20710,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	
 			// AMD. Register as an anonymous module.
 			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-				__webpack_require__(7),
-				__webpack_require__(29),
-				__webpack_require__(37),
-				__webpack_require__(32),
-				__webpack_require__(21),
-				__webpack_require__(20)
+				__webpack_require__(8),
+				__webpack_require__(28),
+				__webpack_require__(36),
+				__webpack_require__(31),
+				__webpack_require__(20),
+				__webpack_require__(19)
 			], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
@@ -24977,7 +21891,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -24999,7 +21913,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -25029,7 +21943,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -25050,7 +21964,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -25119,7 +22033,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -25143,7 +22057,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -25623,7 +22537,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -25644,7 +22558,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21), __webpack_require__(38) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20), __webpack_require__(37) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -25664,7 +22578,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -25685,7 +22599,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 		if ( true ) {
 	
 			// AMD. Register as an anonymous module.
-			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(7), __webpack_require__(21) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(8), __webpack_require__(20) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 	
 			// Browser globals
@@ -25719,16 +22633,16 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(43);
+	var content = __webpack_require__(42);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(72)(content, {});
+	var update = __webpack_require__(71)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -25745,13 +22659,13 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	}
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
-	exports.i(__webpack_require__(45), "");
-	exports.i(__webpack_require__(65), "");
+	exports.i(__webpack_require__(44), "");
+	exports.i(__webpack_require__(64), "");
 	
 	// module
 	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n */\n", ""]);
@@ -25760,7 +22674,7 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports) {
 
 	/*
@@ -25816,11 +22730,12 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
+	exports.i(__webpack_require__(45), "");
 	exports.i(__webpack_require__(46), "");
 	exports.i(__webpack_require__(47), "");
 	exports.i(__webpack_require__(48), "");
@@ -25839,7 +22754,6 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 	exports.i(__webpack_require__(61), "");
 	exports.i(__webpack_require__(62), "");
 	exports.i(__webpack_require__(63), "");
-	exports.i(__webpack_require__(64), "");
 	
 	// module
 	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n */\n", ""]);
@@ -25848,10 +22762,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 46 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -25862,10 +22776,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 47 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -25876,10 +22790,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 48 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -25890,10 +22804,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 49 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -25904,10 +22818,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 50 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -25918,10 +22832,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 51 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -25932,10 +22846,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 52 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -25946,10 +22860,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 53 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -25960,10 +22874,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 54 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -25974,10 +22888,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 55 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -25988,10 +22902,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 56 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -26002,10 +22916,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 57 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -26016,10 +22930,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 58 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -26030,10 +22944,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 59 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -26044,10 +22958,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 60 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -26058,10 +22972,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 61 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -26072,10 +22986,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 62 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -26086,10 +23000,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 63 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -26100,10 +23014,10 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 64 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
@@ -26114,57 +23028,57 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
-/* 65 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
+	exports = module.exports = __webpack_require__(43)();
 	// imports
 	
 	
 	// module
-	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n *\n * To view and modify this theme, visit http://jqueryui.com/themeroller/\n */\n\n\n/* Component containers\n----------------------------------*/\n.ui-widget {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em/*{fsDefault}*/;\n}\n.ui-widget .ui-widget {\n\tfont-size: 1em;\n}\n.ui-widget input,\n.ui-widget select,\n.ui-widget textarea,\n.ui-widget button {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em;\n}\n.ui-widget.ui-widget-content {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n}\n.ui-widget-content {\n\tborder: 1px solid #dddddd/*{borderColorContent}*/;\n\tbackground: #ffffff/*{bgColorContent}*/ /*{bgImgUrlContent}*/ /*{bgContentXPos}*/ /*{bgContentYPos}*/ /*{bgContentRepeat}*/;\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-content a {\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-header {\n\tborder: 1px solid #dddddd/*{borderColorHeader}*/;\n\tbackground: #e9e9e9/*{bgColorHeader}*/ /*{bgImgUrlHeader}*/ /*{bgHeaderXPos}*/ /*{bgHeaderYPos}*/ /*{bgHeaderRepeat}*/;\n\tcolor: #333333/*{fcHeader}*/;\n\tfont-weight: bold;\n}\n.ui-widget-header a {\n\tcolor: #333333/*{fcHeader}*/;\n}\n\n/* Interaction states\n----------------------------------*/\n.ui-state-default,\n.ui-widget-content .ui-state-default,\n.ui-widget-header .ui-state-default,\n.ui-button,\n\n/* We use html here because we need a greater specificity to make sure disabled\nworks properly when clicked or hovered */\nhtml .ui-button.ui-state-disabled:hover,\nhtml .ui-button.ui-state-disabled:active {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n\tbackground: #f6f6f6/*{bgColorDefault}*/ /*{bgImgUrlDefault}*/ /*{bgDefaultXPos}*/ /*{bgDefaultYPos}*/ /*{bgDefaultRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #454545/*{fcDefault}*/;\n}\n.ui-state-default a,\n.ui-state-default a:link,\n.ui-state-default a:visited,\na.ui-button,\na:link.ui-button,\na:visited.ui-button,\n.ui-button {\n\tcolor: #454545/*{fcDefault}*/;\n\ttext-decoration: none;\n}\n.ui-state-hover,\n.ui-widget-content .ui-state-hover,\n.ui-widget-header .ui-state-hover,\n.ui-state-focus,\n.ui-widget-content .ui-state-focus,\n.ui-widget-header .ui-state-focus,\n.ui-button:hover,\n.ui-button:focus {\n\tborder: 1px solid #cccccc/*{borderColorHover}*/;\n\tbackground: #ededed/*{bgColorHover}*/ /*{bgImgUrlHover}*/ /*{bgHoverXPos}*/ /*{bgHoverYPos}*/ /*{bgHoverRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #2b2b2b/*{fcHover}*/;\n}\n.ui-state-hover a,\n.ui-state-hover a:hover,\n.ui-state-hover a:link,\n.ui-state-hover a:visited,\n.ui-state-focus a,\n.ui-state-focus a:hover,\n.ui-state-focus a:link,\n.ui-state-focus a:visited,\na.ui-button:hover,\na.ui-button:focus {\n\tcolor: #2b2b2b/*{fcHover}*/;\n\ttext-decoration: none;\n}\n\n.ui-visual-focus {\n\tbox-shadow: 0 0 3px 1px rgb(94, 158, 214);\n}\n.ui-state-active,\n.ui-widget-content .ui-state-active,\n.ui-widget-header .ui-state-active,\na.ui-button:active,\n.ui-button:active,\n.ui-button.ui-state-active:hover {\n\tborder: 1px solid #003eff/*{borderColorActive}*/;\n\tbackground: #007fff/*{bgColorActive}*/ /*{bgImgUrlActive}*/ /*{bgActiveXPos}*/ /*{bgActiveYPos}*/ /*{bgActiveRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #ffffff/*{fcActive}*/;\n}\n.ui-icon-background,\n.ui-state-active .ui-icon-background {\n\tborder: #003eff/*{borderColorActive}*/;\n\tbackground-color: #ffffff/*{fcActive}*/;\n}\n.ui-state-active a,\n.ui-state-active a:link,\n.ui-state-active a:visited {\n\tcolor: #ffffff/*{fcActive}*/;\n\ttext-decoration: none;\n}\n\n/* Interaction Cues\n----------------------------------*/\n.ui-state-highlight,\n.ui-widget-content .ui-state-highlight,\n.ui-widget-header .ui-state-highlight {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/ /*{bgImgUrlHighlight}*/ /*{bgHighlightXPos}*/ /*{bgHighlightYPos}*/ /*{bgHighlightRepeat}*/;\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-checked {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/;\n}\n.ui-state-highlight a,\n.ui-widget-content .ui-state-highlight a,\n.ui-widget-header .ui-state-highlight a {\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-error,\n.ui-widget-content .ui-state-error,\n.ui-widget-header .ui-state-error {\n\tborder: 1px solid #f1a899/*{borderColorError}*/;\n\tbackground: #fddfdf/*{bgColorError}*/ /*{bgImgUrlError}*/ /*{bgErrorXPos}*/ /*{bgErrorYPos}*/ /*{bgErrorRepeat}*/;\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error a,\n.ui-widget-content .ui-state-error a,\n.ui-widget-header .ui-state-error a {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error-text,\n.ui-widget-content .ui-state-error-text,\n.ui-widget-header .ui-state-error-text {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-priority-primary,\n.ui-widget-content .ui-priority-primary,\n.ui-widget-header .ui-priority-primary {\n\tfont-weight: bold;\n}\n.ui-priority-secondary,\n.ui-widget-content .ui-priority-secondary,\n.ui-widget-header .ui-priority-secondary {\n\topacity: .7;\n\tfilter:Alpha(Opacity=70); /* support: IE8 */\n\tfont-weight: normal;\n}\n.ui-state-disabled,\n.ui-widget-content .ui-state-disabled,\n.ui-widget-header .ui-state-disabled {\n\topacity: .35;\n\tfilter:Alpha(Opacity=35); /* support: IE8 */\n\tbackground-image: none;\n}\n.ui-state-disabled .ui-icon {\n\tfilter:Alpha(Opacity=35); /* support: IE8 - See #6059 */\n}\n\n/* Icons\n----------------------------------*/\n\n/* states and images */\n.ui-icon {\n\twidth: 16px;\n\theight: 16px;\n}\n.ui-icon,\n.ui-widget-content .ui-icon {\n\tbackground-image: url(" + __webpack_require__(66) + ");\n}\n.ui-widget-header .ui-icon {\n\tbackground-image: url(" + __webpack_require__(66) + ");\n}\n.ui-state-hover .ui-icon,\n.ui-state-focus .ui-icon,\n.ui-button:hover .ui-icon,\n.ui-button:focus .ui-icon {\n\tbackground-image: url(" + __webpack_require__(67) + ");\n}\n.ui-state-active .ui-icon,\n.ui-button:active .ui-icon {\n\tbackground-image: url(" + __webpack_require__(68) + ");\n}\n.ui-state-highlight .ui-icon,\n.ui-button .ui-state-highlight.ui-icon {\n\tbackground-image: url(" + __webpack_require__(69) + ");\n}\n.ui-state-error .ui-icon,\n.ui-state-error-text .ui-icon {\n\tbackground-image: url(" + __webpack_require__(70) + ");\n}\n.ui-button .ui-icon {\n\tbackground-image: url(" + __webpack_require__(71) + ");\n}\n\n/* positioning */\n.ui-icon-blank { background-position: 16px 16px; }\n.ui-icon-caret-1-n { background-position: 0 0; }\n.ui-icon-caret-1-ne { background-position: -16px 0; }\n.ui-icon-caret-1-e { background-position: -32px 0; }\n.ui-icon-caret-1-se { background-position: -48px 0; }\n.ui-icon-caret-1-s { background-position: -65px 0; }\n.ui-icon-caret-1-sw { background-position: -80px 0; }\n.ui-icon-caret-1-w { background-position: -96px 0; }\n.ui-icon-caret-1-nw { background-position: -112px 0; }\n.ui-icon-caret-2-n-s { background-position: -128px 0; }\n.ui-icon-caret-2-e-w { background-position: -144px 0; }\n.ui-icon-triangle-1-n { background-position: 0 -16px; }\n.ui-icon-triangle-1-ne { background-position: -16px -16px; }\n.ui-icon-triangle-1-e { background-position: -32px -16px; }\n.ui-icon-triangle-1-se { background-position: -48px -16px; }\n.ui-icon-triangle-1-s { background-position: -65px -16px; }\n.ui-icon-triangle-1-sw { background-position: -80px -16px; }\n.ui-icon-triangle-1-w { background-position: -96px -16px; }\n.ui-icon-triangle-1-nw { background-position: -112px -16px; }\n.ui-icon-triangle-2-n-s { background-position: -128px -16px; }\n.ui-icon-triangle-2-e-w { background-position: -144px -16px; }\n.ui-icon-arrow-1-n { background-position: 0 -32px; }\n.ui-icon-arrow-1-ne { background-position: -16px -32px; }\n.ui-icon-arrow-1-e { background-position: -32px -32px; }\n.ui-icon-arrow-1-se { background-position: -48px -32px; }\n.ui-icon-arrow-1-s { background-position: -65px -32px; }\n.ui-icon-arrow-1-sw { background-position: -80px -32px; }\n.ui-icon-arrow-1-w { background-position: -96px -32px; }\n.ui-icon-arrow-1-nw { background-position: -112px -32px; }\n.ui-icon-arrow-2-n-s { background-position: -128px -32px; }\n.ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }\n.ui-icon-arrow-2-e-w { background-position: -160px -32px; }\n.ui-icon-arrow-2-se-nw { background-position: -176px -32px; }\n.ui-icon-arrowstop-1-n { background-position: -192px -32px; }\n.ui-icon-arrowstop-1-e { background-position: -208px -32px; }\n.ui-icon-arrowstop-1-s { background-position: -224px -32px; }\n.ui-icon-arrowstop-1-w { background-position: -240px -32px; }\n.ui-icon-arrowthick-1-n { background-position: 1px -48px; }\n.ui-icon-arrowthick-1-ne { background-position: -16px -48px; }\n.ui-icon-arrowthick-1-e { background-position: -32px -48px; }\n.ui-icon-arrowthick-1-se { background-position: -48px -48px; }\n.ui-icon-arrowthick-1-s { background-position: -64px -48px; }\n.ui-icon-arrowthick-1-sw { background-position: -80px -48px; }\n.ui-icon-arrowthick-1-w { background-position: -96px -48px; }\n.ui-icon-arrowthick-1-nw { background-position: -112px -48px; }\n.ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }\n.ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }\n.ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }\n.ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }\n.ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }\n.ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }\n.ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }\n.ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }\n.ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }\n.ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }\n.ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }\n.ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }\n.ui-icon-arrowreturn-1-w { background-position: -64px -64px; }\n.ui-icon-arrowreturn-1-n { background-position: -80px -64px; }\n.ui-icon-arrowreturn-1-e { background-position: -96px -64px; }\n.ui-icon-arrowreturn-1-s { background-position: -112px -64px; }\n.ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }\n.ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }\n.ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }\n.ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }\n.ui-icon-arrow-4 { background-position: 0 -80px; }\n.ui-icon-arrow-4-diag { background-position: -16px -80px; }\n.ui-icon-extlink { background-position: -32px -80px; }\n.ui-icon-newwin { background-position: -48px -80px; }\n.ui-icon-refresh { background-position: -64px -80px; }\n.ui-icon-shuffle { background-position: -80px -80px; }\n.ui-icon-transfer-e-w { background-position: -96px -80px; }\n.ui-icon-transferthick-e-w { background-position: -112px -80px; }\n.ui-icon-folder-collapsed { background-position: 0 -96px; }\n.ui-icon-folder-open { background-position: -16px -96px; }\n.ui-icon-document { background-position: -32px -96px; }\n.ui-icon-document-b { background-position: -48px -96px; }\n.ui-icon-note { background-position: -64px -96px; }\n.ui-icon-mail-closed { background-position: -80px -96px; }\n.ui-icon-mail-open { background-position: -96px -96px; }\n.ui-icon-suitcase { background-position: -112px -96px; }\n.ui-icon-comment { background-position: -128px -96px; }\n.ui-icon-person { background-position: -144px -96px; }\n.ui-icon-print { background-position: -160px -96px; }\n.ui-icon-trash { background-position: -176px -96px; }\n.ui-icon-locked { background-position: -192px -96px; }\n.ui-icon-unlocked { background-position: -208px -96px; }\n.ui-icon-bookmark { background-position: -224px -96px; }\n.ui-icon-tag { background-position: -240px -96px; }\n.ui-icon-home { background-position: 0 -112px; }\n.ui-icon-flag { background-position: -16px -112px; }\n.ui-icon-calendar { background-position: -32px -112px; }\n.ui-icon-cart { background-position: -48px -112px; }\n.ui-icon-pencil { background-position: -64px -112px; }\n.ui-icon-clock { background-position: -80px -112px; }\n.ui-icon-disk { background-position: -96px -112px; }\n.ui-icon-calculator { background-position: -112px -112px; }\n.ui-icon-zoomin { background-position: -128px -112px; }\n.ui-icon-zoomout { background-position: -144px -112px; }\n.ui-icon-search { background-position: -160px -112px; }\n.ui-icon-wrench { background-position: -176px -112px; }\n.ui-icon-gear { background-position: -192px -112px; }\n.ui-icon-heart { background-position: -208px -112px; }\n.ui-icon-star { background-position: -224px -112px; }\n.ui-icon-link { background-position: -240px -112px; }\n.ui-icon-cancel { background-position: 0 -128px; }\n.ui-icon-plus { background-position: -16px -128px; }\n.ui-icon-plusthick { background-position: -32px -128px; }\n.ui-icon-minus { background-position: -48px -128px; }\n.ui-icon-minusthick { background-position: -64px -128px; }\n.ui-icon-close { background-position: -80px -128px; }\n.ui-icon-closethick { background-position: -96px -128px; }\n.ui-icon-key { background-position: -112px -128px; }\n.ui-icon-lightbulb { background-position: -128px -128px; }\n.ui-icon-scissors { background-position: -144px -128px; }\n.ui-icon-clipboard { background-position: -160px -128px; }\n.ui-icon-copy { background-position: -176px -128px; }\n.ui-icon-contact { background-position: -192px -128px; }\n.ui-icon-image { background-position: -208px -128px; }\n.ui-icon-video { background-position: -224px -128px; }\n.ui-icon-script { background-position: -240px -128px; }\n.ui-icon-alert { background-position: 0 -144px; }\n.ui-icon-info { background-position: -16px -144px; }\n.ui-icon-notice { background-position: -32px -144px; }\n.ui-icon-help { background-position: -48px -144px; }\n.ui-icon-check { background-position: -64px -144px; }\n.ui-icon-bullet { background-position: -80px -144px; }\n.ui-icon-radio-on { background-position: -96px -144px; }\n.ui-icon-radio-off { background-position: -112px -144px; }\n.ui-icon-pin-w { background-position: -128px -144px; }\n.ui-icon-pin-s { background-position: -144px -144px; }\n.ui-icon-play { background-position: 0 -160px; }\n.ui-icon-pause { background-position: -16px -160px; }\n.ui-icon-seek-next { background-position: -32px -160px; }\n.ui-icon-seek-prev { background-position: -48px -160px; }\n.ui-icon-seek-end { background-position: -64px -160px; }\n.ui-icon-seek-start { background-position: -80px -160px; }\n/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */\n.ui-icon-seek-first { background-position: -80px -160px; }\n.ui-icon-stop { background-position: -96px -160px; }\n.ui-icon-eject { background-position: -112px -160px; }\n.ui-icon-volume-off { background-position: -128px -160px; }\n.ui-icon-volume-on { background-position: -144px -160px; }\n.ui-icon-power { background-position: 0 -176px; }\n.ui-icon-signal-diag { background-position: -16px -176px; }\n.ui-icon-signal { background-position: -32px -176px; }\n.ui-icon-battery-0 { background-position: -48px -176px; }\n.ui-icon-battery-1 { background-position: -64px -176px; }\n.ui-icon-battery-2 { background-position: -80px -176px; }\n.ui-icon-battery-3 { background-position: -96px -176px; }\n.ui-icon-circle-plus { background-position: 0 -192px; }\n.ui-icon-circle-minus { background-position: -16px -192px; }\n.ui-icon-circle-close { background-position: -32px -192px; }\n.ui-icon-circle-triangle-e { background-position: -48px -192px; }\n.ui-icon-circle-triangle-s { background-position: -64px -192px; }\n.ui-icon-circle-triangle-w { background-position: -80px -192px; }\n.ui-icon-circle-triangle-n { background-position: -96px -192px; }\n.ui-icon-circle-arrow-e { background-position: -112px -192px; }\n.ui-icon-circle-arrow-s { background-position: -128px -192px; }\n.ui-icon-circle-arrow-w { background-position: -144px -192px; }\n.ui-icon-circle-arrow-n { background-position: -160px -192px; }\n.ui-icon-circle-zoomin { background-position: -176px -192px; }\n.ui-icon-circle-zoomout { background-position: -192px -192px; }\n.ui-icon-circle-check { background-position: -208px -192px; }\n.ui-icon-circlesmall-plus { background-position: 0 -208px; }\n.ui-icon-circlesmall-minus { background-position: -16px -208px; }\n.ui-icon-circlesmall-close { background-position: -32px -208px; }\n.ui-icon-squaresmall-plus { background-position: -48px -208px; }\n.ui-icon-squaresmall-minus { background-position: -64px -208px; }\n.ui-icon-squaresmall-close { background-position: -80px -208px; }\n.ui-icon-grip-dotted-vertical { background-position: 0 -224px; }\n.ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }\n.ui-icon-grip-solid-vertical { background-position: -32px -224px; }\n.ui-icon-grip-solid-horizontal { background-position: -48px -224px; }\n.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }\n.ui-icon-grip-diagonal-se { background-position: -80px -224px; }\n\n\n/* Misc visuals\n----------------------------------*/\n\n/* Corner radius */\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-left,\n.ui-corner-tl {\n\tborder-top-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-right,\n.ui-corner-tr {\n\tborder-top-right-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-left,\n.ui-corner-bl {\n\tborder-bottom-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-right,\n.ui-corner-br {\n\tborder-bottom-right-radius: 3px/*{cornerRadius}*/;\n}\n\n/* Overlays */\n.ui-widget-overlay {\n\tbackground: #aaaaaa/*{bgColorOverlay}*/ /*{bgImgUrlOverlay}*/ /*{bgOverlayXPos}*/ /*{bgOverlayYPos}*/ /*{bgOverlayRepeat}*/;\n\topacity: .3/*{opacityOverlay}*/;\n\tfilter: Alpha(Opacity=30)/*{opacityFilterOverlay}*/; /* support: IE8 */\n}\n.ui-widget-shadow {\n\t-webkit-box-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n\tbox-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n}\n", ""]);
+	exports.push([module.id, "/*!\n * jQuery UI CSS Framework 1.12.1\n * http://jqueryui.com\n *\n * Copyright jQuery Foundation and other contributors\n * Released under the MIT license.\n * http://jquery.org/license\n *\n * http://api.jqueryui.com/category/theming/\n *\n * To view and modify this theme, visit http://jqueryui.com/themeroller/\n */\n\n\n/* Component containers\n----------------------------------*/\n.ui-widget {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em/*{fsDefault}*/;\n}\n.ui-widget .ui-widget {\n\tfont-size: 1em;\n}\n.ui-widget input,\n.ui-widget select,\n.ui-widget textarea,\n.ui-widget button {\n\tfont-family: Arial,Helvetica,sans-serif/*{ffDefault}*/;\n\tfont-size: 1em;\n}\n.ui-widget.ui-widget-content {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n}\n.ui-widget-content {\n\tborder: 1px solid #dddddd/*{borderColorContent}*/;\n\tbackground: #ffffff/*{bgColorContent}*/ /*{bgImgUrlContent}*/ /*{bgContentXPos}*/ /*{bgContentYPos}*/ /*{bgContentRepeat}*/;\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-content a {\n\tcolor: #333333/*{fcContent}*/;\n}\n.ui-widget-header {\n\tborder: 1px solid #dddddd/*{borderColorHeader}*/;\n\tbackground: #e9e9e9/*{bgColorHeader}*/ /*{bgImgUrlHeader}*/ /*{bgHeaderXPos}*/ /*{bgHeaderYPos}*/ /*{bgHeaderRepeat}*/;\n\tcolor: #333333/*{fcHeader}*/;\n\tfont-weight: bold;\n}\n.ui-widget-header a {\n\tcolor: #333333/*{fcHeader}*/;\n}\n\n/* Interaction states\n----------------------------------*/\n.ui-state-default,\n.ui-widget-content .ui-state-default,\n.ui-widget-header .ui-state-default,\n.ui-button,\n\n/* We use html here because we need a greater specificity to make sure disabled\nworks properly when clicked or hovered */\nhtml .ui-button.ui-state-disabled:hover,\nhtml .ui-button.ui-state-disabled:active {\n\tborder: 1px solid #c5c5c5/*{borderColorDefault}*/;\n\tbackground: #f6f6f6/*{bgColorDefault}*/ /*{bgImgUrlDefault}*/ /*{bgDefaultXPos}*/ /*{bgDefaultYPos}*/ /*{bgDefaultRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #454545/*{fcDefault}*/;\n}\n.ui-state-default a,\n.ui-state-default a:link,\n.ui-state-default a:visited,\na.ui-button,\na:link.ui-button,\na:visited.ui-button,\n.ui-button {\n\tcolor: #454545/*{fcDefault}*/;\n\ttext-decoration: none;\n}\n.ui-state-hover,\n.ui-widget-content .ui-state-hover,\n.ui-widget-header .ui-state-hover,\n.ui-state-focus,\n.ui-widget-content .ui-state-focus,\n.ui-widget-header .ui-state-focus,\n.ui-button:hover,\n.ui-button:focus {\n\tborder: 1px solid #cccccc/*{borderColorHover}*/;\n\tbackground: #ededed/*{bgColorHover}*/ /*{bgImgUrlHover}*/ /*{bgHoverXPos}*/ /*{bgHoverYPos}*/ /*{bgHoverRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #2b2b2b/*{fcHover}*/;\n}\n.ui-state-hover a,\n.ui-state-hover a:hover,\n.ui-state-hover a:link,\n.ui-state-hover a:visited,\n.ui-state-focus a,\n.ui-state-focus a:hover,\n.ui-state-focus a:link,\n.ui-state-focus a:visited,\na.ui-button:hover,\na.ui-button:focus {\n\tcolor: #2b2b2b/*{fcHover}*/;\n\ttext-decoration: none;\n}\n\n.ui-visual-focus {\n\tbox-shadow: 0 0 3px 1px rgb(94, 158, 214);\n}\n.ui-state-active,\n.ui-widget-content .ui-state-active,\n.ui-widget-header .ui-state-active,\na.ui-button:active,\n.ui-button:active,\n.ui-button.ui-state-active:hover {\n\tborder: 1px solid #003eff/*{borderColorActive}*/;\n\tbackground: #007fff/*{bgColorActive}*/ /*{bgImgUrlActive}*/ /*{bgActiveXPos}*/ /*{bgActiveYPos}*/ /*{bgActiveRepeat}*/;\n\tfont-weight: normal/*{fwDefault}*/;\n\tcolor: #ffffff/*{fcActive}*/;\n}\n.ui-icon-background,\n.ui-state-active .ui-icon-background {\n\tborder: #003eff/*{borderColorActive}*/;\n\tbackground-color: #ffffff/*{fcActive}*/;\n}\n.ui-state-active a,\n.ui-state-active a:link,\n.ui-state-active a:visited {\n\tcolor: #ffffff/*{fcActive}*/;\n\ttext-decoration: none;\n}\n\n/* Interaction Cues\n----------------------------------*/\n.ui-state-highlight,\n.ui-widget-content .ui-state-highlight,\n.ui-widget-header .ui-state-highlight {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/ /*{bgImgUrlHighlight}*/ /*{bgHighlightXPos}*/ /*{bgHighlightYPos}*/ /*{bgHighlightRepeat}*/;\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-checked {\n\tborder: 1px solid #dad55e/*{borderColorHighlight}*/;\n\tbackground: #fffa90/*{bgColorHighlight}*/;\n}\n.ui-state-highlight a,\n.ui-widget-content .ui-state-highlight a,\n.ui-widget-header .ui-state-highlight a {\n\tcolor: #777620/*{fcHighlight}*/;\n}\n.ui-state-error,\n.ui-widget-content .ui-state-error,\n.ui-widget-header .ui-state-error {\n\tborder: 1px solid #f1a899/*{borderColorError}*/;\n\tbackground: #fddfdf/*{bgColorError}*/ /*{bgImgUrlError}*/ /*{bgErrorXPos}*/ /*{bgErrorYPos}*/ /*{bgErrorRepeat}*/;\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error a,\n.ui-widget-content .ui-state-error a,\n.ui-widget-header .ui-state-error a {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-state-error-text,\n.ui-widget-content .ui-state-error-text,\n.ui-widget-header .ui-state-error-text {\n\tcolor: #5f3f3f/*{fcError}*/;\n}\n.ui-priority-primary,\n.ui-widget-content .ui-priority-primary,\n.ui-widget-header .ui-priority-primary {\n\tfont-weight: bold;\n}\n.ui-priority-secondary,\n.ui-widget-content .ui-priority-secondary,\n.ui-widget-header .ui-priority-secondary {\n\topacity: .7;\n\tfilter:Alpha(Opacity=70); /* support: IE8 */\n\tfont-weight: normal;\n}\n.ui-state-disabled,\n.ui-widget-content .ui-state-disabled,\n.ui-widget-header .ui-state-disabled {\n\topacity: .35;\n\tfilter:Alpha(Opacity=35); /* support: IE8 */\n\tbackground-image: none;\n}\n.ui-state-disabled .ui-icon {\n\tfilter:Alpha(Opacity=35); /* support: IE8 - See #6059 */\n}\n\n/* Icons\n----------------------------------*/\n\n/* states and images */\n.ui-icon {\n\twidth: 16px;\n\theight: 16px;\n}\n.ui-icon,\n.ui-widget-content .ui-icon {\n\tbackground-image: url(" + __webpack_require__(65) + ");\n}\n.ui-widget-header .ui-icon {\n\tbackground-image: url(" + __webpack_require__(65) + ");\n}\n.ui-state-hover .ui-icon,\n.ui-state-focus .ui-icon,\n.ui-button:hover .ui-icon,\n.ui-button:focus .ui-icon {\n\tbackground-image: url(" + __webpack_require__(66) + ");\n}\n.ui-state-active .ui-icon,\n.ui-button:active .ui-icon {\n\tbackground-image: url(" + __webpack_require__(67) + ");\n}\n.ui-state-highlight .ui-icon,\n.ui-button .ui-state-highlight.ui-icon {\n\tbackground-image: url(" + __webpack_require__(68) + ");\n}\n.ui-state-error .ui-icon,\n.ui-state-error-text .ui-icon {\n\tbackground-image: url(" + __webpack_require__(69) + ");\n}\n.ui-button .ui-icon {\n\tbackground-image: url(" + __webpack_require__(70) + ");\n}\n\n/* positioning */\n.ui-icon-blank { background-position: 16px 16px; }\n.ui-icon-caret-1-n { background-position: 0 0; }\n.ui-icon-caret-1-ne { background-position: -16px 0; }\n.ui-icon-caret-1-e { background-position: -32px 0; }\n.ui-icon-caret-1-se { background-position: -48px 0; }\n.ui-icon-caret-1-s { background-position: -65px 0; }\n.ui-icon-caret-1-sw { background-position: -80px 0; }\n.ui-icon-caret-1-w { background-position: -96px 0; }\n.ui-icon-caret-1-nw { background-position: -112px 0; }\n.ui-icon-caret-2-n-s { background-position: -128px 0; }\n.ui-icon-caret-2-e-w { background-position: -144px 0; }\n.ui-icon-triangle-1-n { background-position: 0 -16px; }\n.ui-icon-triangle-1-ne { background-position: -16px -16px; }\n.ui-icon-triangle-1-e { background-position: -32px -16px; }\n.ui-icon-triangle-1-se { background-position: -48px -16px; }\n.ui-icon-triangle-1-s { background-position: -65px -16px; }\n.ui-icon-triangle-1-sw { background-position: -80px -16px; }\n.ui-icon-triangle-1-w { background-position: -96px -16px; }\n.ui-icon-triangle-1-nw { background-position: -112px -16px; }\n.ui-icon-triangle-2-n-s { background-position: -128px -16px; }\n.ui-icon-triangle-2-e-w { background-position: -144px -16px; }\n.ui-icon-arrow-1-n { background-position: 0 -32px; }\n.ui-icon-arrow-1-ne { background-position: -16px -32px; }\n.ui-icon-arrow-1-e { background-position: -32px -32px; }\n.ui-icon-arrow-1-se { background-position: -48px -32px; }\n.ui-icon-arrow-1-s { background-position: -65px -32px; }\n.ui-icon-arrow-1-sw { background-position: -80px -32px; }\n.ui-icon-arrow-1-w { background-position: -96px -32px; }\n.ui-icon-arrow-1-nw { background-position: -112px -32px; }\n.ui-icon-arrow-2-n-s { background-position: -128px -32px; }\n.ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }\n.ui-icon-arrow-2-e-w { background-position: -160px -32px; }\n.ui-icon-arrow-2-se-nw { background-position: -176px -32px; }\n.ui-icon-arrowstop-1-n { background-position: -192px -32px; }\n.ui-icon-arrowstop-1-e { background-position: -208px -32px; }\n.ui-icon-arrowstop-1-s { background-position: -224px -32px; }\n.ui-icon-arrowstop-1-w { background-position: -240px -32px; }\n.ui-icon-arrowthick-1-n { background-position: 1px -48px; }\n.ui-icon-arrowthick-1-ne { background-position: -16px -48px; }\n.ui-icon-arrowthick-1-e { background-position: -32px -48px; }\n.ui-icon-arrowthick-1-se { background-position: -48px -48px; }\n.ui-icon-arrowthick-1-s { background-position: -64px -48px; }\n.ui-icon-arrowthick-1-sw { background-position: -80px -48px; }\n.ui-icon-arrowthick-1-w { background-position: -96px -48px; }\n.ui-icon-arrowthick-1-nw { background-position: -112px -48px; }\n.ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }\n.ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }\n.ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }\n.ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }\n.ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }\n.ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }\n.ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }\n.ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }\n.ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }\n.ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }\n.ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }\n.ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }\n.ui-icon-arrowreturn-1-w { background-position: -64px -64px; }\n.ui-icon-arrowreturn-1-n { background-position: -80px -64px; }\n.ui-icon-arrowreturn-1-e { background-position: -96px -64px; }\n.ui-icon-arrowreturn-1-s { background-position: -112px -64px; }\n.ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }\n.ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }\n.ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }\n.ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }\n.ui-icon-arrow-4 { background-position: 0 -80px; }\n.ui-icon-arrow-4-diag { background-position: -16px -80px; }\n.ui-icon-extlink { background-position: -32px -80px; }\n.ui-icon-newwin { background-position: -48px -80px; }\n.ui-icon-refresh { background-position: -64px -80px; }\n.ui-icon-shuffle { background-position: -80px -80px; }\n.ui-icon-transfer-e-w { background-position: -96px -80px; }\n.ui-icon-transferthick-e-w { background-position: -112px -80px; }\n.ui-icon-folder-collapsed { background-position: 0 -96px; }\n.ui-icon-folder-open { background-position: -16px -96px; }\n.ui-icon-document { background-position: -32px -96px; }\n.ui-icon-document-b { background-position: -48px -96px; }\n.ui-icon-note { background-position: -64px -96px; }\n.ui-icon-mail-closed { background-position: -80px -96px; }\n.ui-icon-mail-open { background-position: -96px -96px; }\n.ui-icon-suitcase { background-position: -112px -96px; }\n.ui-icon-comment { background-position: -128px -96px; }\n.ui-icon-person { background-position: -144px -96px; }\n.ui-icon-print { background-position: -160px -96px; }\n.ui-icon-trash { background-position: -176px -96px; }\n.ui-icon-locked { background-position: -192px -96px; }\n.ui-icon-unlocked { background-position: -208px -96px; }\n.ui-icon-bookmark { background-position: -224px -96px; }\n.ui-icon-tag { background-position: -240px -96px; }\n.ui-icon-home { background-position: 0 -112px; }\n.ui-icon-flag { background-position: -16px -112px; }\n.ui-icon-calendar { background-position: -32px -112px; }\n.ui-icon-cart { background-position: -48px -112px; }\n.ui-icon-pencil { background-position: -64px -112px; }\n.ui-icon-clock { background-position: -80px -112px; }\n.ui-icon-disk { background-position: -96px -112px; }\n.ui-icon-calculator { background-position: -112px -112px; }\n.ui-icon-zoomin { background-position: -128px -112px; }\n.ui-icon-zoomout { background-position: -144px -112px; }\n.ui-icon-search { background-position: -160px -112px; }\n.ui-icon-wrench { background-position: -176px -112px; }\n.ui-icon-gear { background-position: -192px -112px; }\n.ui-icon-heart { background-position: -208px -112px; }\n.ui-icon-star { background-position: -224px -112px; }\n.ui-icon-link { background-position: -240px -112px; }\n.ui-icon-cancel { background-position: 0 -128px; }\n.ui-icon-plus { background-position: -16px -128px; }\n.ui-icon-plusthick { background-position: -32px -128px; }\n.ui-icon-minus { background-position: -48px -128px; }\n.ui-icon-minusthick { background-position: -64px -128px; }\n.ui-icon-close { background-position: -80px -128px; }\n.ui-icon-closethick { background-position: -96px -128px; }\n.ui-icon-key { background-position: -112px -128px; }\n.ui-icon-lightbulb { background-position: -128px -128px; }\n.ui-icon-scissors { background-position: -144px -128px; }\n.ui-icon-clipboard { background-position: -160px -128px; }\n.ui-icon-copy { background-position: -176px -128px; }\n.ui-icon-contact { background-position: -192px -128px; }\n.ui-icon-image { background-position: -208px -128px; }\n.ui-icon-video { background-position: -224px -128px; }\n.ui-icon-script { background-position: -240px -128px; }\n.ui-icon-alert { background-position: 0 -144px; }\n.ui-icon-info { background-position: -16px -144px; }\n.ui-icon-notice { background-position: -32px -144px; }\n.ui-icon-help { background-position: -48px -144px; }\n.ui-icon-check { background-position: -64px -144px; }\n.ui-icon-bullet { background-position: -80px -144px; }\n.ui-icon-radio-on { background-position: -96px -144px; }\n.ui-icon-radio-off { background-position: -112px -144px; }\n.ui-icon-pin-w { background-position: -128px -144px; }\n.ui-icon-pin-s { background-position: -144px -144px; }\n.ui-icon-play { background-position: 0 -160px; }\n.ui-icon-pause { background-position: -16px -160px; }\n.ui-icon-seek-next { background-position: -32px -160px; }\n.ui-icon-seek-prev { background-position: -48px -160px; }\n.ui-icon-seek-end { background-position: -64px -160px; }\n.ui-icon-seek-start { background-position: -80px -160px; }\n/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */\n.ui-icon-seek-first { background-position: -80px -160px; }\n.ui-icon-stop { background-position: -96px -160px; }\n.ui-icon-eject { background-position: -112px -160px; }\n.ui-icon-volume-off { background-position: -128px -160px; }\n.ui-icon-volume-on { background-position: -144px -160px; }\n.ui-icon-power { background-position: 0 -176px; }\n.ui-icon-signal-diag { background-position: -16px -176px; }\n.ui-icon-signal { background-position: -32px -176px; }\n.ui-icon-battery-0 { background-position: -48px -176px; }\n.ui-icon-battery-1 { background-position: -64px -176px; }\n.ui-icon-battery-2 { background-position: -80px -176px; }\n.ui-icon-battery-3 { background-position: -96px -176px; }\n.ui-icon-circle-plus { background-position: 0 -192px; }\n.ui-icon-circle-minus { background-position: -16px -192px; }\n.ui-icon-circle-close { background-position: -32px -192px; }\n.ui-icon-circle-triangle-e { background-position: -48px -192px; }\n.ui-icon-circle-triangle-s { background-position: -64px -192px; }\n.ui-icon-circle-triangle-w { background-position: -80px -192px; }\n.ui-icon-circle-triangle-n { background-position: -96px -192px; }\n.ui-icon-circle-arrow-e { background-position: -112px -192px; }\n.ui-icon-circle-arrow-s { background-position: -128px -192px; }\n.ui-icon-circle-arrow-w { background-position: -144px -192px; }\n.ui-icon-circle-arrow-n { background-position: -160px -192px; }\n.ui-icon-circle-zoomin { background-position: -176px -192px; }\n.ui-icon-circle-zoomout { background-position: -192px -192px; }\n.ui-icon-circle-check { background-position: -208px -192px; }\n.ui-icon-circlesmall-plus { background-position: 0 -208px; }\n.ui-icon-circlesmall-minus { background-position: -16px -208px; }\n.ui-icon-circlesmall-close { background-position: -32px -208px; }\n.ui-icon-squaresmall-plus { background-position: -48px -208px; }\n.ui-icon-squaresmall-minus { background-position: -64px -208px; }\n.ui-icon-squaresmall-close { background-position: -80px -208px; }\n.ui-icon-grip-dotted-vertical { background-position: 0 -224px; }\n.ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }\n.ui-icon-grip-solid-vertical { background-position: -32px -224px; }\n.ui-icon-grip-solid-horizontal { background-position: -48px -224px; }\n.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }\n.ui-icon-grip-diagonal-se { background-position: -80px -224px; }\n\n\n/* Misc visuals\n----------------------------------*/\n\n/* Corner radius */\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-left,\n.ui-corner-tl {\n\tborder-top-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-top,\n.ui-corner-right,\n.ui-corner-tr {\n\tborder-top-right-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-left,\n.ui-corner-bl {\n\tborder-bottom-left-radius: 3px/*{cornerRadius}*/;\n}\n.ui-corner-all,\n.ui-corner-bottom,\n.ui-corner-right,\n.ui-corner-br {\n\tborder-bottom-right-radius: 3px/*{cornerRadius}*/;\n}\n\n/* Overlays */\n.ui-widget-overlay {\n\tbackground: #aaaaaa/*{bgColorOverlay}*/ /*{bgImgUrlOverlay}*/ /*{bgOverlayXPos}*/ /*{bgOverlayYPos}*/ /*{bgOverlayRepeat}*/;\n\topacity: .3/*{opacityOverlay}*/;\n\tfilter: Alpha(Opacity=30)/*{opacityFilterOverlay}*/; /* support: IE8 */\n}\n.ui-widget-shadow {\n\t-webkit-box-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n\tbox-shadow: 0/*{offsetLeftShadow}*/ 0/*{offsetTopShadow}*/ 5px/*{thicknessShadow}*/ #666666/*{bgColorShadow}*/;\n}\n", ""]);
 	
 	// exports
 
 
 /***/ }),
-/* 66 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "a4c733ec4baef9ad3896d4e34a8a5448.png";
 
 /***/ }),
-/* 67 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "971364734f3b603e5d363a2634898b42.png";
 
 /***/ }),
-/* 68 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "bf27228a7d3957983584fa7698121ea1.png";
 
 /***/ }),
-/* 69 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "208a290102a4ada58a04de354a1354d7.png";
 
 /***/ }),
-/* 70 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "0de3b51742ed3ac61435875bccd8973b.png";
 
 /***/ }),
-/* 71 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "73a1fd052c9d84c0ee0bea3ee85892ed.png";
 
 /***/ }),
-/* 72 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -26416,90 +23330,2121 @@ define(["@jupyter-widgets/base"], function(__WEBPACK_EXTERNAL_MODULE_2__) { retu
 
 
 /***/ }),
+/* 72 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file  Gui
+	 * @author Alexander Rose <alexander.rose@weirdbyte.de>
+	 */
+	var NGL = __webpack_require__(3);
+	var UI = __webpack_require__(13).UI;
+	var signals = __webpack_require__(11);
+	HTMLElement.prototype.getBoundingClientRect = (function () {
+	    // workaround for ie11 behavior with disconnected dom nodes
+	    var _getBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;
+	    return function getBoundingClientRect() {
+	        try {
+	            return _getBoundingClientRect.apply(this, arguments);
+	        }
+	        catch (e) {
+	            return {
+	                top: 0,
+	                left: 0,
+	                width: this.width,
+	                height: this.height
+	            };
+	        }
+	    };
+	}());
+	NGL.Widget = function () {
+	};
+	NGL.Widget.prototype = {
+	    constructor: NGL.Widget
+	};
+	NGL.createParameterInput = function (p, v) {
+	    if (!p)
+	        return;
+	    var value = v === undefined ? p.value : v;
+	    var input;
+	    if (p.type === 'number') {
+	        input = new UI.Number(0)
+	            .setRange(p.min, p.max)
+	            .setPrecision(p.precision)
+	            .setValue(parseFloat(value));
+	    }
+	    else if (p.type === 'integer') {
+	        input = new UI.Integer(parseInt(value))
+	            .setRange(p.min, p.max);
+	    }
+	    else if (p.type === 'range') {
+	        input = new UI.Range(p.min, p.max, value, p.step)
+	            .setValue(parseFloat(value));
+	    }
+	    else if (p.type === 'boolean') {
+	        input = new UI.Checkbox(value);
+	    }
+	    else if (p.type === 'text') {
+	        input = new UI.Input(value);
+	    }
+	    else if (p.type === 'select') {
+	        input = new UI.Select()
+	            .setWidth('')
+	            .setOptions(p.options)
+	            .setValue(value);
+	    }
+	    else if (p.type === 'color') {
+	        input = new UI.ColorPopupMenu(p.label)
+	            .setValue(value);
+	    }
+	    else if (p.type === 'vector3') {
+	        input = new UI.Vector3(value)
+	            .setPrecision(p.precision);
+	    }
+	    else if (p.type === 'hidden') {
+	        // nothing to display
+	    }
+	    else {
+	        console.warn('NGL.createParameterInput: unknown parameter type ' +
+	            "'" + p.type + "'");
+	    }
+	    return input;
+	};
+	/// /////////////
+	// Preferences
+	NGL.Preferences = function (id, defaultParams) {
+	    this.signals = {
+	        keyChanged: new signals.Signal()
+	    };
+	    this.id = id || 'ngl-gui';
+	    var dp = Object.assign({}, defaultParams);
+	    this.storage = {
+	        impostor: true,
+	        quality: 'auto',
+	        sampleLevel: 0,
+	        theme: 'dark',
+	        backgroundColor: 'black',
+	        overview: false,
+	        rotateSpeed: 2.0,
+	        zoomSpeed: 1.2,
+	        panSpeed: 0.8,
+	        clipNear: 0,
+	        clipFar: 100,
+	        clipDist: 10,
+	        fogNear: 50,
+	        fogFar: 100,
+	        cameraFov: 40,
+	        cameraType: 'perspective',
+	        lightColor: 0xdddddd,
+	        lightIntensity: 1.0,
+	        ambientColor: 0xdddddd,
+	        ambientIntensity: 0.2,
+	        hoverTimeout: 0
+	    };
+	    // overwrite default values with params
+	    for (var key in this.storage) {
+	        if (dp[key] !== undefined) {
+	            this.storage[key] = dp[key];
+	        }
+	    }
+	};
+	NGL.Preferences.prototype = {
+	    constructor: NGL.Preferences,
+	    getKey: function (key) {
+	        return this.storage[key];
+	    },
+	    setKey: function (key, value) {
+	        this.storage[key] = value;
+	        this.signals.keyChanged.dispatch(key, value);
+	    },
+	};
+	// Stage
+	class StageWidget {
+	    constructor(view) {
+	        // view: NGLView of NGLModel
+	        var el;
+	        var stage = view.stage;
+	        var viewport = new UI.Panel();
+	        if (view.options.parent) {
+	            el = view.el.parentElement;
+	        }
+	        else {
+	            el = view.el;
+	        }
+	        viewport.setPosition("absolute");
+	        viewport.dom = stage.viewer.container;
+	        this.el = el;
+	        this.widgetList = [];
+	        // Turn off in Jupyter notebook so user can run the next cell.
+	        // ensure initial focus on viewer canvas for key-stroke listening
+	        // stage.viewer.renderer.domElement.focus()
+	        var preferences = new NGL.Preferences('ngl-stage-widget', stage.getParameters());
+	        var pp = {};
+	        for (var name in preferences.storage) {
+	            pp[name] = preferences.getKey(name);
+	        }
+	        stage.setParameters(pp);
+	        preferences.signals.keyChanged.add(function (key, value) {
+	            var sp = {};
+	            sp[key] = value;
+	            stage.setParameters(sp);
+	            // FIXME: remove?
+	            // if (key === 'theme') {
+	            //   setTheme(value)
+	            // }
+	        }, this);
+	        //
+	        var cssLinkElement = document.createElement('link');
+	        cssLinkElement.rel = 'stylesheet';
+	        cssLinkElement.id = 'theme';
+	        function setTheme(value) {
+	            var cssPath, bgColor;
+	            if (value === 'light') {
+	                cssPath = NGL.cssDirectory + 'light.css';
+	                bgColor = 'white';
+	            }
+	            else {
+	                cssPath = NGL.cssDirectory + 'dark.css';
+	                bgColor = 'black';
+	            }
+	            cssLinkElement.href = cssPath;
+	            stage.setParameters({ backgroundColor: bgColor });
+	        }
+	        // FIXME: remove?
+	        // setTheme(preferences.getKey('theme'))
+	        el.appendChild(cssLinkElement);
+	        var toolbar = new NGL.ToolbarWidget(stage).setId('toolbar_ngl');
+	        el.appendChild(toolbar.dom);
+	        var menubar = new NGL.MenubarWidget(stage, preferences).setId('menubar_ngl');
+	        el.appendChild(menubar.dom);
+	        var sidebar = new NGL.SidebarWidget(stage, view).setId('sidebar_ngl');
+	        el.appendChild(sidebar.dom);
+	        this.widgetList.push(toolbar);
+	        this.widgetList.push(menubar);
+	        this.widgetList.push(sidebar);
+	        //
+	        // el.body.style.touchAction = 'none'
+	        el.style.touchAction = 'none';
+	        //
+	        stage.handleResize();
+	        // FIXME hack for ie11
+	        setTimeout(function () { stage.handleResize(); }, 500);
+	        //
+	        var doResizeLeft = false;
+	        var movedResizeLeft = false;
+	        var minResizeLeft = false;
+	        var handleResizeInNotebook;
+	        var handleResizeLeft = function (clientX) {
+	            if (clientX >= 50 && clientX <= window.innerWidth - 10) {
+	                sidebar.setWidth(window.innerWidth - clientX + 'px');
+	                viewport.setWidth(clientX + 'px');
+	                toolbar.setWidth(clientX + 'px');
+	                stage.handleResize();
+	            }
+	            var sidebarWidth = sidebar.dom.getBoundingClientRect().width;
+	            if (clientX === undefined) {
+	                var mainWidth = window.innerWidth - sidebarWidth;
+	                viewport.setWidth(mainWidth + 'px');
+	                toolbar.setWidth(mainWidth + 'px');
+	                stage.handleResize();
+	            }
+	            if (sidebarWidth <= 10) {
+	                minResizeLeft = true;
+	            }
+	            else {
+	                minResizeLeft = false;
+	            }
+	            handleResizeInNotebook();
+	        };
+	        handleResizeLeft = NGL.throttle(handleResizeLeft, 50, { leading: true, trailing: true });
+	        var handleResizeInNotebook = function () {
+	            // FIXME
+	            var sw = sidebar.dom.getBoundingClientRect().width;
+	            var ew = el.getBoundingClientRect().width;
+	            var w = ew - sw + 'px';
+	            stage.viewer.container.style.width = w;
+	            stage.handleResize();
+	        };
+	        var resizeLeft = new UI.Panel()
+	            .setClass('ResizeLeft')
+	            .onMouseDown(function () {
+	            doResizeLeft = true;
+	            movedResizeLeft = false;
+	        })
+	            .onClick(function () {
+	            if (minResizeLeft) {
+	                handleResizeLeft(window.innerWidth - 300);
+	            }
+	            else if (!doResizeLeft && !movedResizeLeft) {
+	                handleResizeLeft(window.innerWidth - 10);
+	            }
+	        });
+	        sidebar.add(resizeLeft);
+	        this.viewport = viewport;
+	        this.toolbar = toolbar;
+	        this.menubar = menubar;
+	        this.sidebar = sidebar;
+	        handleResizeInNotebook();
+	        stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	            const box = stage.viewer.container.parentElement.getBoundingClientRect();
+	            stage.setSize(box.width + "px", isFullscreen ? box.height + 'px' : '300px');
+	            view.handleResize();
+	        });
+	        window.addEventListener('mousemove', function (event) {
+	            if (doResizeLeft) {
+	                document.body.style.cursor = 'col-resize';
+	                movedResizeLeft = true;
+	                handleResizeLeft(event.clientX);
+	            }
+	        }, false);
+	        window.addEventListener('mouseup', function (event) {
+	            doResizeLeft = false;
+	            document.body.style.cursor = '';
+	        }, false);
+	        window.addEventListener('resize', function (event) {
+	            handleResizeLeft();
+	        }, false);
+	        //
+	        document.addEventListener('dragover', function (e) {
+	            e.stopPropagation();
+	            e.preventDefault();
+	            e.dataTransfer.dropEffect = 'none';
+	        }, false);
+	        document.addEventListener('drop', function (e) {
+	            e.stopPropagation();
+	            e.preventDefault();
+	        }, false);
+	    }
+	    dispose() {
+	        for (var i in this.widgetList) {
+	            this.widgetList[i].dispose();
+	        }
+	    }
+	}
+	// Viewport
+	NGL.ViewportWidget = function (stage) {
+	    var viewer = stage.viewer;
+	    var renderer = viewer.renderer;
+	    var container = new UI.Panel();
+	    container.dom = viewer.container;
+	    container.setPosition('absolute');
+	    var fileTypesOpen = NGL.flatten([
+	        NGL.ParserRegistry.getStructureExtensions(),
+	        NGL.ParserRegistry.getVolumeExtensions(),
+	        NGL.ParserRegistry.getSurfaceExtensions(),
+	        NGL.DecompressorRegistry.names
+	    ]);
+	    // event handlers
+	    container.dom.addEventListener('dragover', function (e) {
+	        e.stopPropagation();
+	        e.preventDefault();
+	        e.dataTransfer.dropEffect = 'copy';
+	    }, false);
+	    container.dom.addEventListener('drop', function (e) {
+	        e.stopPropagation();
+	        e.preventDefault();
+	        var fn = function (file, callback) {
+	            var ext = file.name.split('.').pop().toLowerCase();
+	            if (NGL.ScriptExtensions.includes(ext)) {
+	                stage.loadScript(file).then(callback);
+	            }
+	            else if (fileTypesOpen.includes(ext)) {
+	                stage.loadFile(file, { defaultRepresentation: true }).then(callback);
+	            }
+	            else {
+	                console.error('unknown filetype: ' + ext);
+	                callback();
+	            }
+	        };
+	        var queue = new NGL.Queue(fn, e.dataTransfer.files);
+	    }, false);
+	    return container;
+	};
+	// Toolbar
+	NGL.ToolbarWidget = function (stage) {
+	    var container = new UI.Panel();
+	    var messageText = new UI.Text();
+	    var messagePanel = new UI.Panel()
+	        .setDisplay('inline')
+	        .setFloat('left')
+	        .add(messageText);
+	    var statsText = new UI.Text();
+	    var statsPanel = new UI.Panel()
+	        .setDisplay('inline')
+	        .setFloat('right')
+	        .add(statsText);
+	    stage.signals.clicked.add(function (pickingProxy) {
+	        messageText.setValue(pickingProxy ? pickingProxy.getLabel() : 'nothing');
+	    });
+	    stage.viewer.stats.signals.updated.add(function () {
+	        if (NGL.Debug) {
+	            statsText.setValue(stage.viewer.stats.lastDuration.toFixed(2) + ' ms | ' +
+	                stage.viewer.stats.lastFps + ' fps');
+	        }
+	        else {
+	            statsText.setValue('');
+	        }
+	    });
+	    container.add(messagePanel, statsPanel);
+	    return container;
+	};
+	// Menubar
+	NGL.MenubarWidget = function (stage, preferences) {
+	    var container = new UI.Panel();
+	    container.add(new NGL.MenubarFileWidget(stage));
+	    container.add(new NGL.MenubarViewWidget(stage, preferences));
+	    if (NGL.examplesListUrl && NGL.examplesScriptUrl) {
+	        container.add(new NGL.MenubarExamplesWidget(stage));
+	    }
+	    container.add(new NGL.MenubarHelpWidget(stage, preferences));
+	    container.add(new UI.Panel().setClass('menu').setFloat('right').add(new UI.Text('NGL Viewer ' + NGL.Version).setClass('title')));
+	    return container;
+	};
+	NGL.MenubarFileWidget = function (stage) {
+	    var fileTypesOpen = NGL.flatten([
+	        NGL.ParserRegistry.getStructureExtensions(),
+	        NGL.ParserRegistry.getVolumeExtensions(),
+	        NGL.ParserRegistry.getSurfaceExtensions(),
+	        NGL.DecompressorRegistry.names,
+	        NGL.ScriptExtensions
+	    ]);
+	    function fileInputOnChange(e) {
+	        var fn = function (file, callback) {
+	            var ext = file.name.split('.').pop().toLowerCase();
+	            if (NGL.ScriptExtensions.includes(ext)) {
+	                stage.loadScript(file).then(callback);
+	            }
+	            else if (fileTypesOpen.includes(ext)) {
+	                stage.loadFile(file, { defaultRepresentation: true }).then(callback);
+	            }
+	            else {
+	                console.error('unknown filetype: ' + ext);
+	                callback();
+	            }
+	        };
+	        var queue = new NGL.Queue(fn, e.target.files);
+	    }
+	    var fileInput = document.createElement('input');
+	    fileInput.type = 'file';
+	    fileInput.multiple = true;
+	    fileInput.style.display = 'none';
+	    fileInput.accept = '.' + fileTypesOpen.join(',.');
+	    fileInput.addEventListener('change', fileInputOnChange, false);
+	    // export image
+	    var exportImageWidget = new NGL.ExportImageWidget(stage)
+	        .setDisplay('none')
+	        .attach(stage.viewer.container.parentElement);
+	    // event handlers
+	    function onOpenOptionClick() {
+	        fileInput.click();
+	    }
+	    function onImportOptionClick() {
+	        var dirWidget;
+	        function onListingClick(info) {
+	            var ext = info.path.split('.').pop().toLowerCase();
+	            if (NGL.ScriptExtensions.includes(ext)) {
+	                stage.loadScript(NGL.ListingDatasource.getUrl(info.path));
+	                dirWidget.dispose();
+	            }
+	            else if (fileTypesOpen.includes(ext)) {
+	                stage.loadFile(NGL.ListingDatasource.getUrl(info.path), {
+	                    defaultRepresentation: true
+	                });
+	                dirWidget.dispose();
+	            }
+	            else {
+	                console.error('unknown filetype: ' + ext);
+	            }
+	        }
+	        dirWidget = new NGL.DirectoryListingWidget(NGL.ListingDatasource, stage, 'Import file', fileTypesOpen, onListingClick);
+	        dirWidget
+	            .setOpacity('0.9')
+	            .setLeft('50px')
+	            .setTop('80px')
+	            .attach();
+	    }
+	    function onExportImageOptionClick() {
+	        exportImageWidget
+	            .setOpacity('0.9')
+	            .setLeft('50px')
+	            .setTop('80px')
+	            .setDisplay('block');
+	    }
+	    function onScreenshotOptionClick() {
+	        stage.makeImage({
+	            factor: 1,
+	            antialias: true,
+	            trim: false,
+	            transparent: false
+	        }).then(function (blob) {
+	            NGL.download(blob, 'screenshot.png');
+	        });
+	    }
+	    function onPdbInputKeyDown(e) {
+	        if (e.keyCode === 13) {
+	            stage.loadFile('rcsb://' + e.target.value.trim(), {
+	                defaultRepresentation: true
+	            });
+	            e.target.value = '';
+	        }
+	    }
+	    function onFirstModelOnlyChange(e) {
+	        stage.defaultFileParams.firstModelOnly = e.target.checked;
+	    }
+	    function onCAlphaOnlyChange(e) {
+	        stage.defaultFileParams.cAlphaOnly = e.target.checked;
+	    }
+	    // configure menu contents
+	    var createOption = UI.MenubarHelper.createOption;
+	    var createInput = UI.MenubarHelper.createInput;
+	    var createCheckbox = UI.MenubarHelper.createCheckbox;
+	    var createDivider = UI.MenubarHelper.createDivider;
+	    var menuConfig = [
+	        createOption('Open...', onOpenOptionClick),
+	        createInput('PDB', onPdbInputKeyDown),
+	        createCheckbox('firstModelOnly', false, onFirstModelOnlyChange),
+	        createCheckbox('cAlphaOnly', false, onCAlphaOnlyChange),
+	        createDivider(),
+	        createOption('Screenshot', onScreenshotOptionClick, 'camera'),
+	        createOption('Export image...', onExportImageOptionClick)
+	    ];
+	    if (NGL.ListingDatasource) {
+	        menuConfig.splice(1, 0, createOption('Import...', onImportOptionClick));
+	    }
+	    var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig);
+	    optionsPanel.dom.appendChild(fileInput);
+	    return UI.MenubarHelper.createMenuContainer('File', optionsPanel);
+	};
+	NGL.MenubarViewWidget = function (stage, preferences) {
+	    // event handlers
+	    function onLightThemeOptionClick() {
+	        preferences.setKey('theme', 'light');
+	    }
+	    function onDarkThemeOptionClick() {
+	        preferences.setKey('theme', 'dark');
+	    }
+	    function onPerspectiveCameraOptionClick() {
+	        stage.setParameters({ cameraType: 'perspective' });
+	    }
+	    function onOrthographicCameraOptionClick() {
+	        stage.setParameters({ cameraType: 'orthographic' });
+	    }
+	    function onStereoCameraOptionClick() {
+	        stage.setParameters({ cameraType: 'stereo' });
+	    }
+	    function onFullScreenOptionClick() {
+	        stage.toggleFullscreen(stage.viewer.container.parentElement);
+	    }
+	    function onCenterOptionClick() {
+	        stage.autoView(1000);
+	    }
+	    function onToggleSpinClick() {
+	        stage.toggleSpin();
+	    }
+	    function onToggleRockClick() {
+	        stage.toggleRock();
+	    }
+	    function onGetOrientationClick() {
+	        window.prompt('Get orientation', JSON.stringify(stage.viewerControls.getOrientation().toArray(), function (k, v) {
+	            return v.toFixed ? Number(v.toFixed(2)) : v;
+	        }));
+	    }
+	    function onSetOrientationClick() {
+	        stage.viewerControls.orient(JSON.parse(window.prompt('Set orientation')));
+	    }
+	    var that = this;
+	    stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	        // const box = stage.viewer.container.parentElement.getBoundingClientRect()
+	        // stage.setSize(box.width+"px", box.height+"px")
+	        // stage.handleResize()
+	        var icon = menuConfig[4].children[0];
+	        if (isFullscreen) {
+	            icon.switchClass('compress', 'expand');
+	        }
+	        else {
+	            icon.switchClass('expand', 'compress');
+	        }
+	    });
+	    // configure menu contents
+	    var createOption = UI.MenubarHelper.createOption;
+	    var createDivider = UI.MenubarHelper.createDivider;
+	    var menuConfig = [
+	        // createOption('Light theme', onLightThemeOptionClick),
+	        // createOption('Dark theme', onDarkThemeOptionClick),
+	        // createDivider(),
+	        createOption('Perspective', onPerspectiveCameraOptionClick),
+	        createOption('Orthographic', onOrthographicCameraOptionClick),
+	        createOption('Stereo', onStereoCameraOptionClick),
+	        createDivider(),
+	        createOption('Full screen', onFullScreenOptionClick, 'expand'),
+	        createOption('Center', onCenterOptionClick, 'bullseye'),
+	        createDivider(),
+	        createOption('Toggle spin', onToggleSpinClick),
+	        createOption('Toggle rock', onToggleRockClick),
+	    ];
+	    var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig);
+	    return UI.MenubarHelper.createMenuContainer('View', optionsPanel);
+	};
+	NGL.MenubarExamplesWidget = function (stage) {
+	    // configure menu contents
+	    var createOption = UI.MenubarHelper.createOption;
+	    var optionsPanel = UI.MenubarHelper.createOptionsPanel([]);
+	    optionsPanel.setWidth('300px');
+	    var xhr = new XMLHttpRequest();
+	    xhr.open('GET', NGL.examplesListUrl);
+	    xhr.responseType = 'json';
+	    xhr.onload = function (e) {
+	        var response = this.response;
+	        if (typeof response === 'string') {
+	            // for ie11
+	            response = JSON.parse(response);
+	        }
+	        response.sort().forEach(function (name) {
+	            var option = createOption(name, function () {
+	                stage.loadScript(NGL.examplesScriptUrl + name + '.js');
+	            });
+	            optionsPanel.add(option);
+	        });
+	    };
+	    xhr.send();
+	    return UI.MenubarHelper.createMenuContainer('Examples', optionsPanel);
+	};
+	NGL.MenubarHelpWidget = function (stage, preferences) {
+	    // event handlers
+	    function onOverviewOptionClick() {
+	        overviewWidget
+	            .setOpacity('0.9')
+	            .setDisplay('block')
+	            .setWidgetPosition(50, 80);
+	    }
+	    function onDocOptionClick() {
+	        window.open(NGL.documentationUrl, '_blank');
+	    }
+	    function onDebugOnClick() {
+	        NGL.setDebug(true);
+	        stage.viewer.updateHelper();
+	        stage.viewer.requestRender();
+	    }
+	    function onDebugOffClick() {
+	        NGL.setDebug(false);
+	        stage.viewer.updateHelper();
+	        stage.viewer.requestRender();
+	    }
+	    function onPreferencesOptionClick() {
+	        preferencesWidget
+	            .setOpacity('0.9')
+	            .setDisplay('block')
+	            .setWidgetPosition(50, 80);
+	    }
+	    // export image
+	    var preferencesWidget = new NGL.PreferencesWidget(stage, preferences)
+	        .setDisplay('none')
+	        .attach(stage.viewer.container.parentElement);
+	    // overview
+	    var overviewWidget = new NGL.OverviewWidget(stage, preferences)
+	        .setDisplay('none')
+	        .attach(stage.viewer.container.parentElement);
+	    if (preferences.getKey('overview')) {
+	        onOverviewOptionClick();
+	    }
+	    // configure menu contents
+	    var createOption = UI.MenubarHelper.createOption;
+	    var createDivider = UI.MenubarHelper.createDivider;
+	    var menuConfig = [
+	        createOption('Overview', onOverviewOptionClick),
+	        // createOption('Documentation', onDocOptionClick),
+	        // createDivider(),
+	        // createOption('Debug on', onDebugOnClick),
+	        // createOption('Debug off', onDebugOffClick),
+	        // createDivider(),
+	        createOption('Preferences', onPreferencesOptionClick, 'sliders')
+	    ];
+	    var optionsPanel = UI.MenubarHelper.createOptionsPanel(menuConfig);
+	    return UI.MenubarHelper.createMenuContainer('Help', optionsPanel);
+	};
+	// Overview
+	NGL.OverviewWidget = function (stage, preferences) {
+	    var container = new UI.OverlayPanel();
+	    var xOffset = 0;
+	    var yOffset = 0;
+	    var prevX = 0;
+	    var prevY = 0;
+	    function onMousemove(e) {
+	        if (prevX === 0) {
+	            prevX = e.clientX;
+	            prevY = e.clientY;
+	        }
+	        xOffset -= prevX - e.clientX;
+	        yOffset -= prevY - e.clientY;
+	        prevX = e.clientX;
+	        prevY = e.clientY;
+	        container.dom.style.top = yOffset + 'px';
+	        container.dom.style.left = xOffset + 'px';
+	    }
+	    function setWidgetPosition(left, top) {
+	        xOffset = left;
+	        yOffset = top;
+	        prevX = 0;
+	        prevY = 0;
+	        container.dom.style.top = yOffset + 'px';
+	        container.dom.style.left = xOffset + 'px';
+	    }
+	    container.setWidgetPosition = setWidgetPosition;
+	    var headingPanel = new UI.Panel()
+	        .setBorderBottom('1px solid #555')
+	        .setHeight('25px')
+	        .setCursor('move')
+	        .onMouseDown(function (e) {
+	        if (e.which === 1) {
+	            document.addEventListener('mousemove', onMousemove);
+	        }
+	        document.addEventListener('mouseup', function (e) {
+	            document.removeEventListener('mousemove', onMousemove);
+	        });
+	    });
+	    var listingPanel = new UI.Panel()
+	        .setMarginTop('10px')
+	        .setMinHeight('100px')
+	        .setMaxHeight('500px')
+	        .setMaxWidth('600px')
+	        .setOverflow('auto');
+	    headingPanel.add(new UI.Text('NGL Viewer').setFontStyle('italic'), new UI.Html('&nbsp;&mdash;&nbsp;Overview'));
+	    headingPanel.add(new UI.Icon('times')
+	        .setCursor('pointer')
+	        .setMarginLeft('20px')
+	        .setFloat('right')
+	        .onClick(function () {
+	        container.setDisplay('none');
+	    }));
+	    container.add(headingPanel);
+	    container.add(listingPanel);
+	    //
+	    function addIcon(name, text) {
+	        var panel = new UI.Panel();
+	        var icon = new UI.Icon(name)
+	            .setWidth('20px')
+	            .setFloat('left');
+	        var label = new UI.Text(text)
+	            .setDisplay('inline')
+	            .setMarginLeft('5px');
+	        panel
+	            .setMarginLeft('20px')
+	            .add(icon, label);
+	        listingPanel.add(panel);
+	    }
+	    listingPanel
+	        .add(new UI.Panel().add(new UI.Html("To load a new structure use the <i>File</i> menu in the top left via drag'n'drop.")))
+	        .add(new UI.Break());
+	    listingPanel
+	        .add(new UI.Panel().add(new UI.Text('A number of clickable icons provide common actions. Most icons can be clicked on, just try it or hover the mouse pointer over it to see a tooltip.')))
+	        .add(new UI.Break());
+	    addIcon('eye', 'Controls the visibility of a component.');
+	    addIcon('trash-o', 'Deletes a component. Note that a second click is required to confirm the action.');
+	    addIcon('bullseye', 'Centers a component.');
+	    addIcon('bars', 'Opens a menu with further options.');
+	    addIcon('square', 'Opens a menu with coloring options.');
+	    addIcon('filter', 'Indicates atom-selection input fields.');
+	    listingPanel
+	        .add(new UI.Text('Mouse controls'))
+	        .add(new UI.Html('<ul>' +
+	        '<li>Left button hold and move to rotate camera around center.</li>' +
+	        '<li>Left button click to pick atom.</li>' +
+	        '<li>Middle button hold and move to zoom camera in and out.</li>' +
+	        '<li>Middle button click to center camera on atom.</li>' +
+	        '<li>Right button hold and move to translate camera in the screen plane.</li>' +
+	        '</ul>'));
+	    listingPanel
+	        .add(new UI.Panel().add(new UI.Html('For more information please visit the ' +
+	        "<a href='" + NGL.documentationUrl + "' target='_blank'>documentation pages</a>.")));
+	    var overview = preferences.getKey('overview');
+	    var showOverviewCheckbox = new UI.Checkbox(overview)
+	        .onClick(function () {
+	        preferences.setKey('overview', showOverviewCheckbox.getValue());
+	    });
+	    listingPanel
+	        .add(new UI.HorizontalRule()
+	        .setBorderTop('1px solid #555')
+	        .setMarginTop('15px'))
+	        .add(new UI.Panel().add(showOverviewCheckbox, new UI.Text('Show on startup. Always available from Menu > Help > Overview.').setMarginLeft('5px')));
+	    return container;
+	};
+	// Preferences
+	NGL.PreferencesWidget = function (stage, preferences) {
+	    var container = new UI.OverlayPanel();
+	    var xOffset = 0;
+	    var yOffset = 0;
+	    var prevX = 0;
+	    var prevY = 0;
+	    function onMousemove(e) {
+	        if (prevX === 0) {
+	            prevX = e.clientX;
+	            prevY = e.clientY;
+	        }
+	        xOffset -= prevX - e.clientX;
+	        yOffset -= prevY - e.clientY;
+	        prevX = e.clientX;
+	        prevY = e.clientY;
+	        container.dom.style.top = yOffset + 'px';
+	        container.dom.style.left = xOffset + 'px';
+	    }
+	    function setWidgetPosition(left, top) {
+	        xOffset = left;
+	        yOffset = top;
+	        prevX = 0;
+	        prevY = 0;
+	        container.dom.style.top = yOffset + 'px';
+	        container.dom.style.left = xOffset + 'px';
+	    }
+	    container.setWidgetPosition = setWidgetPosition;
+	    var headingPanel = new UI.Panel()
+	        .setBorderBottom('1px solid #555')
+	        .setHeight('25px')
+	        .setCursor('move')
+	        .onMouseDown(function (e) {
+	        if (e.which === 1) {
+	            document.addEventListener('mousemove', onMousemove);
+	        }
+	        document.addEventListener('mouseup', function (e) {
+	            document.removeEventListener('mousemove', onMousemove);
+	        });
+	    });
+	    var listingPanel = new UI.Panel()
+	        .setMarginTop('10px')
+	        .setMinHeight('100px')
+	        .setMaxHeight('500px')
+	        .setOverflow('auto');
+	    headingPanel.add(new UI.Text('Preferences'));
+	    headingPanel.add(new UI.Icon('times')
+	        .setCursor('pointer')
+	        .setMarginLeft('20px')
+	        .setFloat('right')
+	        .onClick(function () {
+	        container.setDisplay('none');
+	    }));
+	    container.add(headingPanel);
+	    container.add(listingPanel);
+	    //
+	    Object.keys(NGL.UIStageParameters).forEach(function (name) {
+	        var p = NGL.UIStageParameters[name];
+	        if (p.label === undefined)
+	            p.label = name;
+	        var input = NGL.createParameterInput(p, stage.parameters[name]);
+	        if (!input)
+	            return;
+	        preferences.signals.keyChanged.add(function (key, value) {
+	            if (key === name)
+	                input.setValue(value);
+	        });
+	        function setParam() {
+	            var sp = {};
+	            sp[name] = input.getValue();
+	            preferences.setKey(name, sp[name]);
+	        }
+	        var ua = navigator.userAgent;
+	        if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	            input.onInput(setParam);
+	        }
+	        else {
+	            input.onChange(setParam);
+	        }
+	        listingPanel
+	            .add(new UI.Text(name).setWidth('120px'))
+	            .add(input)
+	            .add(new UI.Break());
+	    });
+	    return container;
+	};
+	// Export image
+	NGL.ExportImageWidget = function (stage) {
+	    var container = new UI.OverlayPanel();
+	    var headingPanel = new UI.Panel()
+	        .setBorderBottom('1px solid #555')
+	        .setHeight('25px');
+	    var listingPanel = new UI.Panel()
+	        .setMarginTop('10px')
+	        .setMinHeight('100px')
+	        .setMaxHeight('500px')
+	        .setOverflow('auto');
+	    headingPanel.add(new UI.Text('Image export'));
+	    headingPanel.add(new UI.Icon('times')
+	        .setCursor('pointer')
+	        .setMarginLeft('20px')
+	        .setFloat('right')
+	        .onClick(function () {
+	        container.setDisplay('none');
+	    }));
+	    container.add(headingPanel);
+	    container.add(listingPanel);
+	    var factorSelect = new UI.Select()
+	        .setOptions({
+	        '1': '1x',
+	        '2': '2x',
+	        '3': '3x',
+	        '4': '4x',
+	        '5': '5x',
+	        '6': '6x',
+	        '7': '7x',
+	        '8': '8x',
+	        '9': '9x',
+	        '10': '10x'
+	    })
+	        .setValue('4');
+	    var antialiasCheckbox = new UI.Checkbox()
+	        .setValue(true);
+	    var trimCheckbox = new UI.Checkbox()
+	        .setValue(false);
+	    var transparentCheckbox = new UI.Checkbox()
+	        .setValue(false);
+	    var progress = new UI.Progress()
+	        .setDisplay('none');
+	    var exportButton = new UI.Button('export')
+	        .onClick(function () {
+	        exportButton.setDisplay('none');
+	        progress.setDisplay('inline-block');
+	        function onProgress(i, n, finished) {
+	            if (i === 1) {
+	                progress.setMax(n);
+	            }
+	            if (i >= n) {
+	                progress.setIndeterminate();
+	            }
+	            else {
+	                progress.setValue(i);
+	            }
+	            if (finished) {
+	                progress.setDisplay('none');
+	                exportButton.setDisplay('inline-block');
+	            }
+	        }
+	        setTimeout(function () {
+	            stage.makeImage({
+	                factor: parseInt(factorSelect.getValue()),
+	                antialias: antialiasCheckbox.getValue(),
+	                trim: trimCheckbox.getValue(),
+	                transparent: transparentCheckbox.getValue(),
+	                onProgress: onProgress
+	            }).then(function (blob) {
+	                NGL.download(blob, 'screenshot.png');
+	            });
+	        }, 50);
+	    });
+	    function addEntry(label, entry) {
+	        listingPanel
+	            .add(new UI.Text(label).setWidth('80px'))
+	            .add(entry || new UI.Panel())
+	            .add(new UI.Break());
+	    }
+	    addEntry('scale', factorSelect);
+	    addEntry('antialias', antialiasCheckbox);
+	    addEntry('trim', trimCheckbox);
+	    addEntry('transparent', transparentCheckbox);
+	    listingPanel.add(new UI.Break(), exportButton, progress);
+	    return container;
+	};
+	// Sidebar
+	NGL.SidebarWidget = function (stage, view = undefined) {
+	    var signals = stage.signals;
+	    var container = new UI.Panel();
+	    container.view = view;
+	    var widgetContainer = new UI.Panel()
+	        .setClass('Content');
+	    var compList = [];
+	    var widgetList = [];
+	    function handleComponent(component) {
+	        console.log('handleComponent');
+	        var widget;
+	        switch (component.type) {
+	            case 'structure':
+	                widget = new NGL.StructureComponentWidget(component, stage);
+	                break;
+	            case 'surface':
+	                widget = new NGL.SurfaceComponentWidget(component, stage);
+	                break;
+	            case 'volume':
+	                widget = new NGL.VolumeComponentWidget(component, stage);
+	                break;
+	            case 'shape':
+	                widget = new NGL.ShapeComponentWidget(component, stage);
+	                break;
+	            default:
+	                console.warn('NGL.SidebarWidget: component type unknown', component);
+	                return;
+	        }
+	        widgetContainer.add(widget);
+	        compList.push(component);
+	        widgetList.push(widget);
+	    }
+	    // In case user adds components directly from notebook
+	    if (!view.isEmbeded()) {
+	        stage.compList.forEach(function (comp) {
+	            handleComponent(comp);
+	        });
+	    }
+	    signals.componentAdded.add(handleComponent);
+	    signals.componentRemoved.add(function (component) {
+	        var idx = compList.indexOf(component);
+	        if (idx !== -1) {
+	            widgetList[idx].dispose();
+	            compList.splice(idx, 1);
+	            widgetList.splice(idx, 1);
+	        }
+	    });
+	    // actions
+	    var expandAll = new UI.Icon('plus-square')
+	        .setTitle('expand all')
+	        .setCursor('pointer')
+	        .onClick(function () {
+	        widgetList.forEach(function (widget) {
+	            widget.expand();
+	        });
+	    });
+	    var collapseAll = new UI.Icon('minus-square')
+	        .setTitle('collapse all')
+	        .setCursor('pointer')
+	        .setMarginLeft('10px')
+	        .onClick(function () {
+	        widgetList.forEach(function (widget) {
+	            widget.collapse();
+	        });
+	    });
+	    var centerAll = new UI.Icon('bullseye')
+	        .setTitle('center all')
+	        .setCursor('pointer')
+	        .setMarginLeft('10px')
+	        .onClick(function () {
+	        stage.autoView(1000);
+	    });
+	    var disposeAll = new UI.DisposeIcon()
+	        .setMarginLeft('10px')
+	        .setDisposeFunction(function () {
+	        stage.removeAllComponents();
+	    });
+	    var syncRepr = new UI.Icon('superpowers')
+	        .setTitle('sync repr')
+	        .setCursor('pointer')
+	        .setMarginLeft('10px')
+	        .onClick(function () {
+	        if (view) {
+	            view.syncReprWithMe();
+	        }
+	    });
+	    var settingsMenu = new UI.PopupMenu('cogs', 'Settings', 'window')
+	        .setIconTitle('settings')
+	        .setMarginLeft('10px');
+	    settingsMenu.entryLabelWidth = '120px';
+	    // Busy indicator
+	    var busy = new UI.Panel()
+	        .setDisplay('inline')
+	        .add(new UI.Icon('spinner')
+	        .addClass('spin')
+	        .setMarginLeft('45px'));
+	    stage.tasks.signals.countChanged.add(function (delta, count) {
+	        if (count > 0) {
+	            actions.add(busy);
+	        }
+	        else {
+	            try {
+	                actions.remove(busy);
+	            }
+	            catch (e) {
+	                // already removed
+	            }
+	        }
+	    });
+	    var paramNames = [
+	        'clipNear', 'clipFar', 'clipDist', 'fogNear', 'fogFar',
+	        'lightColor', 'lightIntensity', 'ambientColor', 'ambientIntensity'
+	    ];
+	    paramNames.forEach(function (name) {
+	        var p = NGL.UIStageParameters[name];
+	        if (p.label === undefined)
+	            p.label = name;
+	        var input = NGL.createParameterInput(p, stage.parameters[name]);
+	        if (!input)
+	            return;
+	        stage.signals.parametersChanged.add(function (params) {
+	            input.setValue(params[name]);
+	        });
+	        function setParam() {
+	            var sp = {};
+	            sp[name] = input.getValue();
+	            stage.setParameters(sp);
+	        }
+	        var ua = navigator.userAgent;
+	        if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	            input.onInput(setParam);
+	        }
+	        else {
+	            input.onChange(setParam);
+	        }
+	        settingsMenu.addEntry(name, input);
+	    });
+	    //
+	    var actions = new UI.Panel()
+	        .setClass('Panel Sticky')
+	        .add(expandAll, collapseAll, centerAll, disposeAll, syncRepr, settingsMenu);
+	    container.add(actions, widgetContainer);
+	    return container;
+	};
+	// Component
+	NGL.StructureComponentWidget = function (component, stage) {
+	    var signals = component.signals;
+	    var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square');
+	    var reprContainer = new UI.Panel();
+	    var trajContainer = new UI.Panel();
+	    function handleRepr(repr) {
+	        reprContainer.add(new NGL.RepresentationElementWidget(repr, stage));
+	    }
+	    component.reprList.forEach(function (repr) {
+	        handleRepr(repr);
+	    });
+	    signals.representationAdded.add(handleRepr);
+	    signals.trajectoryAdded.add(function (traj) {
+	        trajContainer.add(new NGL.TrajectoryElementWidget(traj, stage));
+	    });
+	    signals.defaultAssemblyChanged.add(function () {
+	        assembly.setValue(component.parameters.defaultAssembly);
+	    });
+	    // Selection
+	    container.add(new UI.SelectionPanel(component.selection)
+	        .setMarginLeft('20px')
+	        .setInputWidth('214px'));
+	    // Export PDB
+	    var pdb = new UI.Button('export').onClick(function () {
+	        var pdbWriter = new NGL.PdbWriter(component.structure);
+	        pdbWriter.download('structure');
+	        componentPanel.setMenuDisplay('none');
+	    });
+	    // Add representation
+	    var repr = new UI.Select()
+	        .setColor('#444')
+	        .setOptions((function () {
+	        var reprOptions = { '': '[ add ]' };
+	        NGL.RepresentationRegistry.names.forEach(function (key) {
+	            reprOptions[key] = key;
+	        });
+	        return reprOptions;
+	    })())
+	        .onChange(function () {
+	        component.addRepresentation(repr.getValue());
+	        repr.setValue('');
+	        componentPanel.setMenuDisplay('none');
+	    });
+	    // Assembly
+	    var assembly = new UI.Select()
+	        .setColor('#444')
+	        .setOptions((function () {
+	        var biomolDict = component.structure.biomolDict;
+	        var assemblyOptions = {
+	            '': (component.structure.unitcell ? 'AU' : 'FULL')
+	        };
+	        Object.keys(biomolDict).forEach(function (k) {
+	            assemblyOptions[k] = k;
+	        });
+	        return assemblyOptions;
+	    })())
+	        .setValue(component.parameters.defaultAssembly)
+	        .onChange(function () {
+	        component.setDefaultAssembly(assembly.getValue());
+	        componentPanel.setMenuDisplay('none');
+	    });
+	    // Open trajectory
+	    var trajExt = [];
+	    NGL.ParserRegistry.getTrajectoryExtensions().forEach(function (ext) {
+	        trajExt.push('.' + ext, '.' + ext + '.gz');
+	    });
+	    function framesInputOnChange(e) {
+	        var fn = function (file, callback) {
+	            NGL.autoLoad(file).then(function (frames) {
+	                component.addTrajectory(frames);
+	                callback();
+	            });
+	        };
+	        var queue = new NGL.Queue(fn, e.target.files);
+	        e.target.value = '';
+	    }
+	    var framesInput = document.createElement('input');
+	    framesInput.type = 'file';
+	    framesInput.multiple = true;
+	    framesInput.style.display = 'none';
+	    framesInput.accept = trajExt.join(',');
+	    framesInput.addEventListener('change', framesInputOnChange, false);
+	    var traj = new UI.Button('open').onClick(function () {
+	        framesInput.click();
+	        componentPanel.setMenuDisplay('none');
+	    });
+	    // Import remote trajectory
+	    var remoteTraj = new UI.Button('import').onClick(function () {
+	        componentPanel.setMenuDisplay('none');
+	        // TODO list of extensions should be provided by trajectory datasource
+	        var remoteTrajExt = [
+	            'xtc', 'trr', 'netcdf', 'dcd', 'ncdf', 'nc', 'gro', 'pdb',
+	            'lammpstrj', 'xyz', 'mdcrd', 'gz', 'binpos', 'h5', 'dtr',
+	            'arc', 'tng', 'trj', 'trz'
+	        ];
+	        var dirWidget;
+	        function onListingClick(info) {
+	            var ext = info.path.split('.').pop().toLowerCase();
+	            if (remoteTrajExt.indexOf(ext) !== -1) {
+	                component.addTrajectory(info.path + '?struc=' + component.structure.path);
+	                dirWidget.dispose();
+	            }
+	            else {
+	                NGL.log('unknown trajectory type: ' + ext);
+	            }
+	        }
+	        dirWidget = new NGL.DirectoryListingWidget(NGL.ListingDatasource, stage, 'Import trajectory', remoteTrajExt, onListingClick);
+	        dirWidget
+	            .setOpacity('0.9')
+	            .setLeft('50px')
+	            .setTop('80px')
+	            .attach();
+	    });
+	    // Superpose
+	    function setSuperposeOptions() {
+	        var superposeOptions = { '': '[ structure ]' };
+	        stage.eachComponent(function (o, i) {
+	            if (o !== component) {
+	                superposeOptions[i] = o.name;
+	            }
+	        }, NGL.StructureComponent);
+	        superpose.setOptions(superposeOptions);
+	    }
+	    stage.signals.componentAdded.add(setSuperposeOptions);
+	    stage.signals.componentRemoved.add(setSuperposeOptions);
+	    var superpose = new UI.Select()
+	        .setColor('#444')
+	        .onChange(function () {
+	        component.superpose(stage.compList[superpose.getValue()], true);
+	        component.autoView(1000);
+	        superpose.setValue('');
+	        componentPanel.setMenuDisplay('none');
+	    });
+	    setSuperposeOptions();
+	    // Principal axes
+	    var alignAxes = new UI.Button('align').onClick(function () {
+	        var pa = component.structure.getPrincipalAxes();
+	        var q = pa.getRotationQuaternion();
+	        q.multiply(component.quaternion.clone().inverse());
+	        stage.animationControls.rotate(q);
+	        stage.animationControls.move(component.getCenter());
+	    });
+	    // Measurements removal
+	    var removeMeasurements = new UI.Button('remove').onClick(function () {
+	        component.removeAllMeasurements();
+	    });
+	    // Annotations visibility
+	    var showAnnotations = new UI.Button('show').onClick(function () {
+	        component.annotationList.forEach(function (annotation) {
+	            annotation.setVisibility(true);
+	        });
+	    });
+	    var hideAnnotations = new UI.Button('hide').onClick(function () {
+	        component.annotationList.forEach(function (annotation) {
+	            annotation.setVisibility(false);
+	        });
+	    });
+	    var annotationButtons = new UI.Panel()
+	        .setDisplay('inline-block')
+	        .add(showAnnotations, hideAnnotations);
+	    // Open validation
+	    function validationInputOnChange(e) {
+	        var fn = function (file, callback) {
+	            NGL.autoLoad(file, { ext: 'validation' }).then(function (validation) {
+	                component.structure.validation = validation;
+	                callback();
+	            });
+	        };
+	        var queue = new NGL.Queue(fn, e.target.files);
+	    }
+	    var validationInput = document.createElement('input');
+	    validationInput.type = 'file';
+	    validationInput.style.display = 'none';
+	    validationInput.accept = '.xml';
+	    validationInput.addEventListener('change', validationInputOnChange, false);
+	    var vali = new UI.Button('open').onClick(function () {
+	        validationInput.click();
+	        componentPanel.setMenuDisplay('none');
+	    });
+	    // Position
+	    var position = new UI.Vector3()
+	        .onChange(function () {
+	        component.setPosition(position.getValue());
+	    });
+	    // Rotation
+	    var q = new NGL.Quaternion();
+	    var e = new NGL.Euler();
+	    var rotation = new UI.Vector3()
+	        .setRange(-6.28, 6.28)
+	        .onChange(function () {
+	        e.setFromVector3(rotation.getValue());
+	        q.setFromEuler(e);
+	        component.setRotation(q);
+	    });
+	    // Scale
+	    var scale = new UI.Number(1)
+	        .setRange(0.01, 100)
+	        .onChange(function () {
+	        component.setScale(scale.getValue());
+	    });
+	    // Matrix
+	    signals.matrixChanged.add(function () {
+	        position.setValue(component.position);
+	        rotation.setValue(e.setFromQuaternion(component.quaternion));
+	        scale.setValue(component.scale.x);
+	    });
+	    // Component panel
+	    var componentPanel = new UI.ComponentPanel(component)
+	        .setDisplay('inline-block')
+	        .setMargin('0px')
+	        .addMenuEntry('PDB file', pdb)
+	        .addMenuEntry('Representation', repr)
+	        .addMenuEntry('Assembly', assembly)
+	        .addMenuEntry('Superpose', superpose)
+	        .addMenuEntry('File', new UI.Text(component.structure.path)
+	        .setMaxWidth('100px')
+	        .setOverflow('auto')
+	    // .setWordWrap( "break-word" )
+	    )
+	        .addMenuEntry('Trajectory', traj)
+	        .addMenuEntry('Principal axes', alignAxes)
+	        .addMenuEntry('Measurements', removeMeasurements)
+	        .addMenuEntry('Annotations', annotationButtons)
+	        .addMenuEntry('Validation', vali)
+	        .addMenuEntry('Position', position)
+	        .addMenuEntry('Rotation', rotation)
+	        .addMenuEntry('Scale', scale);
+	    if (NGL.ListingDatasource && NGL.TrajectoryDatasource) {
+	        componentPanel.addMenuEntry('Remote trajectory', remoteTraj);
+	    }
+	    // Fill container
+	    container
+	        .addStatic(componentPanel)
+	        .add(trajContainer)
+	        .add(reprContainer);
+	    return container;
+	};
+	NGL.SurfaceComponentWidget = function (component, stage) {
+	    var signals = component.signals;
+	    var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square');
+	    var reprContainer = new UI.Panel();
+	    signals.representationAdded.add(function (repr) {
+	        reprContainer.add(new NGL.RepresentationElementWidget(repr, stage));
+	    });
+	    // Add representation
+	    var repr = new UI.Select()
+	        .setColor('#444')
+	        .setOptions((function () {
+	        var reprOptions = {
+	            '': '[ add ]',
+	            'surface': 'surface',
+	            'dot': 'dot'
+	        };
+	        return reprOptions;
+	    })())
+	        .onChange(function () {
+	        component.addRepresentation(repr.getValue());
+	        repr.setValue('');
+	        componentPanel.setMenuDisplay('none');
+	    });
+	    // Position
+	    var position = new UI.Vector3()
+	        .onChange(function () {
+	        component.setPosition(position.getValue());
+	    });
+	    // Rotation
+	    var q = new NGL.Quaternion();
+	    var e = new NGL.Euler();
+	    var rotation = new UI.Vector3()
+	        .setRange(-6.28, 6.28)
+	        .onChange(function () {
+	        e.setFromVector3(rotation.getValue());
+	        q.setFromEuler(e);
+	        component.setRotation(q);
+	    });
+	    // Scale
+	    var scale = new UI.Number(1)
+	        .setRange(0.01, 100)
+	        .onChange(function () {
+	        component.setScale(scale.getValue());
+	    });
+	    // Matrix
+	    signals.matrixChanged.add(function () {
+	        position.setValue(component.position);
+	        rotation.setValue(e.setFromQuaternion(component.quaternion));
+	        scale.setValue(component.scale.x);
+	    });
+	    // Component panel
+	    var componentPanel = new UI.ComponentPanel(component)
+	        .setDisplay('inline-block')
+	        .setMargin('0px')
+	        .addMenuEntry('Representation', repr)
+	        .addMenuEntry('File', new UI.Text(component.surface.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	        .addMenuEntry('Position', position)
+	        .addMenuEntry('Rotation', rotation)
+	        .addMenuEntry('Scale', scale);
+	    // Fill container
+	    container
+	        .addStatic(componentPanel)
+	        .add(reprContainer);
+	    return container;
+	};
+	NGL.VolumeComponentWidget = function (component, stage) {
+	    var signals = component.signals;
+	    var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square');
+	    var reprContainer = new UI.Panel();
+	    signals.representationAdded.add(function (repr) {
+	        reprContainer.add(new NGL.RepresentationElementWidget(repr, stage));
+	    });
+	    // Add representation
+	    var repr = new UI.Select()
+	        .setColor('#444')
+	        .setOptions((function () {
+	        var reprOptions = {
+	            '': '[ add ]',
+	            'surface': 'surface',
+	            'dot': 'dot',
+	            'slice': 'slice'
+	        };
+	        return reprOptions;
+	    })())
+	        .onChange(function () {
+	        component.addRepresentation(repr.getValue());
+	        repr.setValue('');
+	        componentPanel.setMenuDisplay('none');
+	    });
+	    // Position
+	    var position = new UI.Vector3()
+	        .onChange(function () {
+	        component.setPosition(position.getValue());
+	    });
+	    // Rotation
+	    var q = new NGL.Quaternion();
+	    var e = new NGL.Euler();
+	    var rotation = new UI.Vector3()
+	        .setRange(-6.28, 6.28)
+	        .onChange(function () {
+	        e.setFromVector3(rotation.getValue());
+	        q.setFromEuler(e);
+	        component.setRotation(q);
+	    });
+	    // Scale
+	    var scale = new UI.Number(1)
+	        .setRange(0.01, 100)
+	        .onChange(function () {
+	        component.setScale(scale.getValue());
+	    });
+	    // Matrix
+	    signals.matrixChanged.add(function () {
+	        position.setValue(component.position);
+	        rotation.setValue(e.setFromQuaternion(component.quaternion));
+	        scale.setValue(component.scale.x);
+	    });
+	    // Component panel
+	    var componentPanel = new UI.ComponentPanel(component)
+	        .setDisplay('inline-block')
+	        .setMargin('0px')
+	        .addMenuEntry('Representation', repr)
+	        .addMenuEntry('File', new UI.Text(component.volume.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	        .addMenuEntry('Position', position)
+	        .addMenuEntry('Rotation', rotation)
+	        .addMenuEntry('Scale', scale);
+	    // Fill container
+	    container
+	        .addStatic(componentPanel)
+	        .add(reprContainer);
+	    return container;
+	};
+	NGL.ShapeComponentWidget = function (component, stage) {
+	    var signals = component.signals;
+	    var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square');
+	    var reprContainer = new UI.Panel();
+	    signals.representationAdded.add(function (repr) {
+	        reprContainer.add(new NGL.RepresentationElementWidget(repr, stage));
+	    });
+	    // Add representation
+	    var repr = new UI.Select()
+	        .setColor('#444')
+	        .setOptions((function () {
+	        var reprOptions = {
+	            '': '[ add ]',
+	            'buffer': 'buffer'
+	        };
+	        return reprOptions;
+	    })())
+	        .onChange(function () {
+	        component.addRepresentation(repr.getValue());
+	        repr.setValue('');
+	        componentPanel.setMenuDisplay('none');
+	    });
+	    // Position
+	    var position = new UI.Vector3()
+	        .onChange(function () {
+	        component.setPosition(position.getValue());
+	    });
+	    // Rotation
+	    var q = new NGL.Quaternion();
+	    var e = new NGL.Euler();
+	    var rotation = new UI.Vector3()
+	        .setRange(-6.28, 6.28)
+	        .onChange(function () {
+	        e.setFromVector3(rotation.getValue());
+	        q.setFromEuler(e);
+	        component.setRotation(q);
+	    });
+	    // Scale
+	    var scale = new UI.Number(1)
+	        .setRange(0.01, 100)
+	        .onChange(function () {
+	        component.setScale(scale.getValue());
+	    });
+	    // Matrix
+	    signals.matrixChanged.add(function () {
+	        position.setValue(component.position);
+	        rotation.setValue(e.setFromQuaternion(component.quaternion));
+	        scale.setValue(component.scale.x);
+	    });
+	    // Component panel
+	    var componentPanel = new UI.ComponentPanel(component)
+	        .setDisplay('inline-block')
+	        .setMargin('0px')
+	        .addMenuEntry('Representation', repr)
+	        .addMenuEntry('File', new UI.Text(component.shape.path)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	        .addMenuEntry('Position', position)
+	        .addMenuEntry('Rotation', rotation)
+	        .addMenuEntry('Scale', scale);
+	    // Fill container
+	    container
+	        .addStatic(componentPanel)
+	        .add(reprContainer);
+	    return container;
+	};
+	// Representation
+	NGL.RepresentationElementWidget = function (element, stage) {
+	    var signals = element.signals;
+	    var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	        .setMarginLeft('20px');
+	    signals.visibilityChanged.add(function (value) {
+	        toggle.setValue(value);
+	    });
+	    signals.nameChanged.add(function (value) {
+	        name.setValue(value);
+	    });
+	    signals.disposed.add(function () {
+	        menu.dispose();
+	        container.dispose();
+	    });
+	    // Name
+	    var name = new UI.EllipsisText(element.name)
+	        .setWidth('103px');
+	    // Actions
+	    var toggle = new UI.ToggleIcon(element.visible, 'eye', 'eye-slash')
+	        .setTitle('hide/show')
+	        .setCursor('pointer')
+	        .setMarginLeft('25px')
+	        .onClick(function () {
+	        element.setVisibility(!element.visible);
+	    });
+	    var disposeIcon = new UI.DisposeIcon()
+	        .setMarginLeft('10px')
+	        .setDisposeFunction(function () {
+	        element.dispose();
+	    });
+	    container
+	        .addStatic(name)
+	        .addStatic(toggle)
+	        .addStatic(disposeIcon);
+	    // Selection
+	    if ((element.parent.type === 'structure' ||
+	        element.parent.type === 'trajectory') &&
+	        element.repr.selection && element.repr.selection.type === 'selection') {
+	        container.add(new UI.SelectionPanel(element.repr.selection)
+	            .setMarginLeft('20px')
+	            .setInputWidth('194px'));
+	    }
+	    // Menu
+	    var menu = new UI.PopupMenu('bars', 'Representation')
+	        .setMarginLeft('45px')
+	        .setEntryLabelWidth('190px');
+	    menu.addEntry('type', new UI.Text(element.repr.type));
+	    // Parameters
+	    var repr = element.repr;
+	    var rp = repr.getParameters();
+	    Object.keys(repr.parameters).forEach(function (name) {
+	        if (!repr.parameters[name])
+	            return;
+	        var p = Object.assign({}, repr.parameters[name]);
+	        p.value = rp[name];
+	        if (p.label === undefined)
+	            p.label = name;
+	        var input = NGL.createParameterInput(p);
+	        if (!input)
+	            return;
+	        signals.parametersChanged.add(function (params) {
+	            if (typeof input.setValue === 'function') {
+	                input.setValue(params[name]);
+	            }
+	        });
+	        function setParam() {
+	            var po = {};
+	            po[name] = input.getValue();
+	            element.setParameters(po);
+	            stage.viewer.requestRender();
+	        }
+	        var ua = navigator.userAgent;
+	        if (p.type === 'range' && !/Trident/.test(ua) && !/MSIE/.test(ua)) {
+	            input.onInput(setParam);
+	        }
+	        else {
+	            input.onChange(setParam);
+	        }
+	        menu.addEntry(name, input);
+	    });
+	    container
+	        .addStatic(menu);
+	    return container;
+	};
+	// Trajectory
+	NGL.TrajectoryElementWidget = function (element, stage) {
+	    var signals = element.signals;
+	    var traj = element.trajectory;
+	    var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
+	        .setMarginLeft('20px');
+	    signals.disposed.add(function () {
+	        menu.dispose();
+	        container.dispose();
+	    });
+	    var frameCount = new UI.Panel()
+	        .setDisplay('inline')
+	        .add(new UI.Icon('spinner')
+	        .addClass('spin')
+	        .setMarginRight('99px'));
+	    var frameTime = new UI.Panel()
+	        .setMarginLeft('5px')
+	        .setDisplay('inline');
+	    function setFrame(value) {
+	        frame.setValue(value);
+	        if (traj.deltaTime && value >= 0) {
+	            var t = traj.getFrameTime(value) / 1000;
+	            time.setValue(t.toFixed(9).replace(/\.?0+$/g, '') + 'ns');
+	        }
+	        else {
+	            time.setValue('');
+	        }
+	        frameRange.setValue(value);
+	        frameCount.clear().add(frame.setWidth('40px'));
+	        frameTime.clear().add(time.setWidth('90px'));
+	    }
+	    function init(value) {
+	        frame.setRange(-1, value - 1);
+	        frameRange.setRange(-1, value - 1);
+	        setFrame(traj.currentFrame);
+	        if (element.parameters.defaultStep !== undefined) {
+	            step.setValue(element.parameters.defaultStep);
+	        }
+	        else {
+	            // 1000 = n / step
+	            step.setValue(Math.ceil((value + 1) / 100));
+	        }
+	        player.setParameters({ step: step.getValue() });
+	        player.setParameters({ end: value - 1 });
+	    }
+	    signals.countChanged.add(init);
+	    signals.frameChanged.add(setFrame);
+	    // Name
+	    var name = new UI.EllipsisText(element.parameters.name)
+	        .setWidth('103px');
+	    signals.nameChanged.add(function (value) {
+	        name.setValue(value);
+	    });
+	    container.addStatic(name);
+	    container.addStatic(frameTime);
+	    // frames
+	    var frame = new UI.Integer(-1)
+	        .setWidth('40px')
+	        .setTextAlign('right')
+	        .setMarginLeft('5px')
+	        .setRange(-1, -1)
+	        .onChange(function (e) {
+	        traj.setFrame(frame.getValue());
+	        menu.setMenuDisplay('none');
+	    });
+	    var time = new UI.Text()
+	        .setTextAlign('right')
+	        .setWidth('90px');
+	    var step = new UI.Integer(1)
+	        .setWidth('50px')
+	        .setRange(1, 10000)
+	        .onChange(function () {
+	        player.setParameters({ step: step.getValue() });
+	    });
+	    var frameRow = new UI.Panel();
+	    var frameRange = new UI.Range(-1, -1, -1, 1)
+	        .setWidth('147px')
+	        .setMargin('0px')
+	        .setPadding('0px')
+	        .setBorder('0px')
+	        .onInput(function (e) {
+	        var value = frameRange.getValue();
+	        if (value === traj.currentFrame) {
+	            return;
+	        }
+	        if (traj.player && traj.player.isRunning) {
+	            traj.setPlayer();
+	            traj.setFrame(value);
+	        }
+	        else if (!traj.inProgress) {
+	            traj.setFrame(value);
+	        }
+	    });
+	    var interpolateType = new UI.Select()
+	        .setColor('#444')
+	        .setOptions({
+	        '': 'none',
+	        'linear': 'linear',
+	        'spline': 'spline'
+	    })
+	        .setValue(element.parameters.defaultInterpolateType)
+	        .onChange(function () {
+	        player.setParameters({ interpolateType: interpolateType.getValue() });
+	    });
+	    var interpolateStep = new UI.Integer(element.parameters.defaultInterpolateStep)
+	        .setWidth('30px')
+	        .setRange(1, 50)
+	        .onChange(function () {
+	        player.setParameters({ interpolateStep: interpolateStep.getValue() });
+	    });
+	    var playDirection = new UI.Select()
+	        .setColor('#444')
+	        .setOptions({
+	        'forward': 'forward',
+	        'backward': 'backward',
+	        'bounce': 'bounce'
+	    })
+	        .setValue(element.parameters.defaultDirection)
+	        .onChange(function () {
+	        player.setParameters({ direction: playDirection.getValue() });
+	    });
+	    var playMode = new UI.Select()
+	        .setColor('#444')
+	        .setOptions({
+	        'loop': 'loop',
+	        'once': 'once'
+	    })
+	        .setValue(element.parameters.defaultMode)
+	        .onChange(function () {
+	        player.setParameters({ mode: playMode.getValue() });
+	    });
+	    // player
+	    var timeout = new UI.Integer(element.parameters.defaultTimeout)
+	        .setWidth('30px')
+	        .setRange(10, 1000)
+	        .onChange(function () {
+	        player.setParameters({ timeout: timeout.getValue() });
+	    });
+	    var player = new NGL.TrajectoryPlayer(traj, {
+	        step: step.getValue(),
+	        timeout: timeout.getValue(),
+	        start: 0,
+	        end: traj.frameCount - 1,
+	        interpolateType: interpolateType.getValue(),
+	        interpolateStep: interpolateStep.getValue(),
+	        direction: playDirection.getValue(),
+	        mode: playMode.getValue()
+	    });
+	    traj.setPlayer(player);
+	    var playerButton = new UI.ToggleIcon(true, 'play', 'pause')
+	        .setMarginRight('10px')
+	        .setMarginLeft('20px')
+	        .setCursor('pointer')
+	        .setWidth('12px')
+	        .setTitle('play')
+	        .onClick(function () {
+	        player.toggle();
+	    });
+	    player.signals.startedRunning.add(function () {
+	        playerButton
+	            .setTitle('pause')
+	            .setValue(false);
+	    });
+	    player.signals.haltedRunning.add(function () {
+	        playerButton
+	            .setTitle('play')
+	            .setValue(true);
+	    });
+	    frameRow.add(playerButton, frameRange, frameCount);
+	    // Selection
+	    container.add(new UI.SelectionPanel(traj.selection)
+	        .setMarginLeft('20px')
+	        .setInputWidth('194px'));
+	    // Options
+	    var setCenterPbc = new UI.Checkbox(traj.centerPbc)
+	        .onChange(function () {
+	        element.setParameters({
+	            'centerPbc': setCenterPbc.getValue()
+	        });
+	    });
+	    var setRemovePeriodicity = new UI.Checkbox(traj.removePeriodicity)
+	        .onChange(function () {
+	        element.setParameters({
+	            'removePeriodicity': setRemovePeriodicity.getValue()
+	        });
+	    });
+	    var setRemovePbc = new UI.Checkbox(traj.removePbc)
+	        .onChange(function () {
+	        element.setParameters({
+	            'removePbc': setRemovePbc.getValue()
+	        });
+	    });
+	    var setSuperpose = new UI.Checkbox(traj.superpose)
+	        .onChange(function () {
+	        element.setParameters({
+	            'superpose': setSuperpose.getValue()
+	        });
+	    });
+	    var setDeltaTime = new UI.Number(traj.deltaTime)
+	        .setWidth('55px')
+	        .setRange(0, 1000000)
+	        .onChange(function () {
+	        element.setParameters({
+	            'deltaTime': setDeltaTime.getValue()
+	        });
+	    });
+	    var setTimeOffset = new UI.Number(traj.timeOffset)
+	        .setWidth('55px')
+	        .setRange(0, 1000000000)
+	        .onChange(function () {
+	        element.setParameters({
+	            'timeOffset': setTimeOffset.getValue()
+	        });
+	    });
+	    signals.parametersChanged.add(function (params) {
+	        setCenterPbc.setValue(traj.centerPbc);
+	        setRemovePeriodicity.setValue(traj.removePeriodicity);
+	        setRemovePbc.setValue(traj.removePbc);
+	        setSuperpose.setValue(traj.superpose);
+	        setDeltaTime.setValue(traj.deltaTime);
+	        setTimeOffset.setValue(traj.timeOffset);
+	        traj.setFrame(frame.getValue());
+	    });
+	    // Dispose
+	    var dispose = new UI.DisposeIcon()
+	        .setDisposeFunction(function () {
+	        element.parent.removeTrajectory(element);
+	    });
+	    //
+	    if (traj.frameCount) {
+	        init(traj.frameCount);
+	    }
+	    // Menu
+	    var menu = new UI.PopupMenu('bars', 'Trajectory')
+	        .setMarginLeft('10px')
+	        .setEntryLabelWidth('130px')
+	        .addEntry('Center', setCenterPbc)
+	        .addEntry('Remove Periodicity', setRemovePeriodicity)
+	        .addEntry('Remove PBC', setRemovePbc)
+	        .addEntry('Superpose', setSuperpose)
+	        .addEntry('Step size', step)
+	        .addEntry('Interpolation type', interpolateType)
+	        .addEntry('Interpolation steps', interpolateStep)
+	        .addEntry('Play timeout', timeout)
+	        .addEntry('Play direction', playDirection)
+	        .addEntry('Play mode', playMode)
+	        .addEntry('Delta time [ps]', setDeltaTime)
+	        .addEntry('Time offset [ps]', setTimeOffset)
+	        .addEntry('File', new UI.Text(traj.trajPath)
+	        .setMaxWidth('100px')
+	        .setWordWrap('break-word'))
+	        .addEntry('Dispose', dispose);
+	    container
+	        .addStatic(menu);
+	    container
+	        .add(frameRow);
+	    return container;
+	};
+	// Listing
+	NGL.DirectoryListingWidget = function (datasource, stage, heading, filter, callback) {
+	    // from http://stackoverflow.com/a/20463021/1435042
+	    function fileSizeSI(a, b, c, d, e) {
+	        return (b = Math, c = b.log, d = 1e3, e = c(a) / c(d) | 0, a / b.pow(d, e)).toFixed(2) +
+	            String.fromCharCode(160) + (e ? 'kMGTPEZY'[--e] + 'B' : 'Bytes');
+	    }
+	    function getFolderDict(path) {
+	        path = path || '';
+	        var options = { '': '' };
+	        var full = [];
+	        path.split('/').forEach(function (chunk) {
+	            full.push(chunk);
+	            options[full.join('/')] = chunk;
+	        });
+	        return options;
+	    }
+	    var container = new UI.OverlayPanel();
+	    var headingPanel = new UI.Panel()
+	        .setBorderBottom('1px solid #555')
+	        .setHeight('30px');
+	    var listingPanel = new UI.Panel()
+	        .setMarginTop('10px')
+	        .setMinHeight('100px')
+	        .setMaxHeight('500px')
+	        .setPaddingRight('15px')
+	        .setOverflow('auto');
+	    var folderSelect = new UI.Select()
+	        .setColor('#444')
+	        .setMarginLeft('20px')
+	        .setWidth('')
+	        .setMaxWidth('200px')
+	        .setOptions(getFolderDict())
+	        .onChange(function () {
+	        datasource.getListing(folderSelect.getValue())
+	            .then(onListingLoaded);
+	    });
+	    heading = heading || 'Directoy listing';
+	    headingPanel.add(new UI.Text(heading));
+	    headingPanel.add(folderSelect);
+	    headingPanel.add(new UI.Icon('times')
+	        .setCursor('pointer')
+	        .setMarginLeft('20px')
+	        .setFloat('right')
+	        .onClick(function () {
+	        container.dispose();
+	    }));
+	    container.add(headingPanel);
+	    container.add(listingPanel);
+	    function onListingLoaded(listing) {
+	        var folder = listing.path;
+	        var data = listing.data;
+	        NGL.lastUsedDirectory = folder;
+	        listingPanel.clear();
+	        folderSelect
+	            .setOptions(getFolderDict(folder))
+	            .setValue(folder);
+	        data.forEach(function (info) {
+	            var ext = info.path.split('.').pop().toLowerCase();
+	            if (filter && !info.dir && filter.indexOf(ext) === -1) {
+	                return;
+	            }
+	            var icon, name;
+	            if (info.dir) {
+	                icon = 'folder-o';
+	                name = info.name;
+	            }
+	            else {
+	                icon = 'file-o';
+	                name = info.name + String.fromCharCode(160) +
+	                    '(' + fileSizeSI(info.size) + ')';
+	            }
+	            var pathRow = new UI.Panel()
+	                .setDisplay('block')
+	                .setWhiteSpace('nowrap')
+	                .add(new UI.Icon(icon).setWidth('20px'))
+	                .add(new UI.Text(name))
+	                .onClick(function () {
+	                if (info.dir) {
+	                    datasource.getListing(info.path)
+	                        .then(onListingLoaded);
+	                }
+	                else {
+	                    callback(info);
+	                }
+	            });
+	            if (info.restricted) {
+	                pathRow.add(new UI.Icon('lock').setMarginLeft('5px'));
+	            }
+	            listingPanel.add(pathRow);
+	        });
+	    }
+	    datasource.getListing(NGL.lastUsedDirectory)
+	        .then(onListingLoaded);
+	    return container;
+	};
+	module.exports = {
+	    "StageWidget": StageWidget
+	};
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZ3VpLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL2d1aS5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7O0dBR0c7QUFDSCxJQUFJLEdBQUcsR0FBRyxPQUFPLENBQUMsS0FBSyxDQUFDLENBQUM7QUFDekIsSUFBSSxFQUFFLEdBQUcsT0FBTyxDQUFDLFlBQVksQ0FBQyxDQUFDLEVBQUUsQ0FBQztBQUNsQyxJQUFJLE9BQU8sR0FBRyxPQUFPLENBQUMsc0JBQXNCLENBQUMsQ0FBQztBQUc5QyxXQUFXLENBQUMsU0FBUyxDQUFDLHFCQUFxQixHQUFHLENBQUM7SUFDN0MsMkRBQTJEO0lBRTNELElBQUksc0JBQXNCLEdBQUcsV0FBVyxDQUFDLFNBQVMsQ0FBQyxxQkFBcUIsQ0FBQTtJQUV4RSxPQUFPLFNBQVMscUJBQXFCO1FBQ25DLElBQUk7WUFDRixPQUFPLHNCQUFzQixDQUFDLEtBQUssQ0FBQyxJQUFJLEVBQUUsU0FBUyxDQUFDLENBQUE7U0FDckQ7UUFBQyxPQUFPLENBQUMsRUFBRTtZQUNWLE9BQU87Z0JBQ0wsR0FBRyxFQUFFLENBQUM7Z0JBQ04sSUFBSSxFQUFFLENBQUM7Z0JBQ1AsS0FBSyxFQUFFLElBQUksQ0FBQyxLQUFLO2dCQUNqQixNQUFNLEVBQUUsSUFBSSxDQUFDLE1BQU07YUFDcEIsQ0FBQTtTQUNGO0lBQ0gsQ0FBQyxDQUFBO0FBQ0gsQ0FBQyxFQUFFLENBQUMsQ0FBQTtBQUVKLEdBQUcsQ0FBQyxNQUFNLEdBQUc7QUFFYixDQUFDLENBQUE7QUFFRCxHQUFHLENBQUMsTUFBTSxDQUFDLFNBQVMsR0FBRztJQUNyQixXQUFXLEVBQUUsR0FBRyxDQUFDLE1BQU07Q0FDeEIsQ0FBQTtBQUVELEdBQUcsQ0FBQyxvQkFBb0IsR0FBRyxVQUFVLENBQUMsRUFBRSxDQUFDO0lBQ3ZDLElBQUksQ0FBQyxDQUFDO1FBQUUsT0FBTTtJQUVkLElBQUksS0FBSyxHQUFHLENBQUMsS0FBSyxTQUFTLENBQUMsQ0FBQyxDQUFD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
+
+/***/ }),
 /* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(74);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(72)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!./light.css", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!./light.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const widgets = __webpack_require__(2);
+	const NGL = __webpack_require__(3);
+	const base_1 = __webpack_require__(7);
+	class FullscreenModel extends widgets.DOMWidgetModel {
+	    defaults() {
+	        return Object.assign({}, super.defaults(), { _model_name: 'FullscreenModel', _model_module: 'nglview-js-widgets', _model_module_version: __webpack_require__(74).version, _view_name: "FullscreenView", _view_module: "nglview-js-widgets", _view_module_version: __webpack_require__(74).version });
+	    }
 	}
+	exports.FullscreenModel = FullscreenModel;
+	class ABC {
+	}
+	exports.ABC = ABC;
+	class FullscreenView extends base_1.BaseView {
+	    render() {
+	        this.stage = new NGL.Stage();
+	        var that = this;
+	        this.model.on("msg:custom", function (msg) {
+	            that.on_msg(msg);
+	        });
+	        this.handleSignals();
+	    }
+	    fullscreen(model_id) {
+	        var that = this;
+	        this.model.widget_manager.get_model(model_id).then((model) => {
+	            var key = Object.keys(model.views)[0];
+	            model.views[key].then((view) => {
+	                that.stage.toggleFullscreen(view.el);
+	            });
+	        });
+	    }
+	    handleSignals() {
+	        var that = this;
+	        this.stage.signals.fullscreenChanged.add(function (isFullscreen) {
+	            that.model.set("_is_fullscreen", isFullscreen);
+	            that.touch();
+	        });
+	    }
+	    executeCode(code) {
+	        eval(code);
+	    }
+	    on_msg(msg) {
+	        if ('executeCode' in msg) {
+	            this.executeCode(msg.executeCode);
+	        }
+	    }
+	}
+	exports.FullscreenView = FullscreenView;
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZnVsbHNjcmVlbi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uL3NyYy9mdWxsc2NyZWVuLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsaURBQWdEO0FBQ2hELDJCQUEwQjtBQUMxQixpQ0FBaUM7QUFHakMsTUFDTSxlQUFnQixTQUFRLE9BQU8sQ0FBQyxjQUFjO0lBQ2hELFFBQVE7UUFDSix5QkFDVyxLQUFLLENBQUMsUUFBUSxFQUFFLElBQ25CLFdBQVcsRUFBRSxpQkFBaUIsRUFDOUIsYUFBYSxFQUFFLG9CQUFvQixFQUNuQyxxQkFBcUIsRUFBRSxPQUFPLENBQUMsaUJBQWlCLENBQUMsQ0FBQyxPQUFPLEVBQ3pELFVBQVUsRUFBRSxnQkFBZ0IsRUFDNUIsWUFBWSxFQUFFLG9CQUFvQixFQUNsQyxvQkFBb0IsRUFBRSxPQUFPLENBQUMsaUJBQWlCLENBQUMsQ0FBQyxPQUFPLElBQzNEO0lBQ0wsQ0FBQztDQUNSO0FBYkQsMENBYUM7QUFFRCxNQUNNLEdBQUc7Q0FDUjtBQUZELGtCQUVDO0FBR0QsTUFDTSxjQUFlLFNBQVEsZUFBUTtJQUVqQyxNQUFNO1FBQ0YsSUFBSSxDQUFDLEtBQUssR0FBRyxJQUFJLEdBQUcsQ0FBQyxLQUFLLEVBQUUsQ0FBQTtRQUM1QixJQUFJLElBQUksR0FBRyxJQUFJLENBQUE7UUFDZixJQUFJLENBQUMsS0FBSyxDQUFDLEVBQUUsQ0FBQyxZQUFZLEVBQUUsVUFBUyxHQUFHO1lBQ3BDLElBQUksQ0FBQyxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUE7UUFDcEIsQ0FBQyxDQUFDLENBQUE7UUFDRixJQUFJLENBQUMsYUFBYSxFQUFFLENBQUE7SUFDeEIsQ0FBQztJQUVELFVBQVUsQ0FBQyxRQUFRO1FBQ2YsSUFBSSxJQUFJLEdBQUcsSUFBSSxDQUFBO1FBQ2YsSUFBSSxDQUFDLEtBQUssQ0FBQyxjQUFjLENBQUMsU0FBUyxDQUFDLFFBQVEsQ0FBQyxDQUFDLElBQUksQ0FBQyxDQUFDLEtBQUssRUFBRSxFQUFFO1lBQ3pELElBQUksR0FBRyxHQUFHLE1BQU0sQ0FBQyxJQUFJLENBQUMsS0FBSyxDQUFDLEtBQUssQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFBO1lBQ3JDLEtBQUssQ0FBQyxLQUFLLENBQUMsR0FBRyxDQUFDLENBQUMsSUFBSSxDQUFDLENBQUMsSUFBSSxFQUFFLEVBQUU7Z0JBQzNCLElBQUksQ0FBQyxLQUFLLENBQUMsZ0JBQWdCLENBQUMsSUFBSSxDQUFDLEVBQUUsQ0FBQyxDQUFBO1lBQ3hDLENBQUMsQ0FBQyxDQUFBO1FBQ04sQ0FBQyxDQUFDLENBQUE7SUFDTixDQUFDO0lBRUQsYUFBYTtRQUNULElBQUksSUFBSSxHQUFHLElBQUksQ0FBQTtRQUNmLElBQUksQ0FBQyxLQUFLLENBQUMsT0FBTyxDQUFDLGlCQUFpQixDQUFDLEdBQUcsQ0FBQyxVQUFVLFlBQVk7WUFDM0QsSUFBSSxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsZ0JBQWdCLEVBQUUsWUFBWSxDQUFDLENBQUE7WUFDOUMsSUFBSSxDQUFDLEtBQUssRUFBRSxDQUFBO1FBQ2hCLENBQUMsQ0FBQyxDQUFBO0lBQ04sQ0FBQztJQUVELFdBQVcsQ0FBQyxJQUFJO1FBQ1osSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDO0lBQ2YsQ0FBQztJQUVELE1BQU0sQ0FBQyxHQUFHO1FBQ04sSUFBSSxhQUFhLElBQUksR0FBRyxFQUFDO1lBQ3JCLElBQUksQ0FBQyxXQUFXLENBQUMsR0FBRyxDQUFDLFdBQVcsQ0FBQyxDQUFBO1NBQ3BDO0lBQ0wsQ0FBQztDQUNKO0FBdkNELHdDQXVDQyJ9
 
 /***/ }),
 /* 74 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-	exports = module.exports = __webpack_require__(44)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "\n/* text color */\n\n/** Turn this off to avoid affecting Jupyter notebook\n* {\n    color: #555555;\n}\n\ninput,\ntextarea,\nbutton,\nselect,\noption {\n    color: #111111;\n}\n\ninput[type=range]:focus:after {\n    color: #555555;\n}\n\na{\n    color: #1956d8;\n}\n\ninput.Number, input.File {\n    color: #79952e;\n}\n\n\n/* background color */\n\n.OverlayPanel,\n#menubar_ngl,\n#menubar_ngl .menu .options,\n#sidebar_ngl,\n#toolbar_ngl\n{\n    background-color: #e1e4eb;\n}\n\n\n/* border color */\n\n.OverlayPanel,\n#menubar_ngl .menu .options hr,\n#sidebar_ngl > .Panel,\n#sidebar_ngl > .Content > .Panel {\n    border-color: #cccccc;\n}\n\n\n/* special */\n\n#menubar_ngl .menu .options .option:hover,\n.option:hover > .Icon,\n.option:hover > .Text {\n    color: #D8D8D8;\n    background-color: #345a69;\n}\n\n.highlight,\n.highlight > .Icon,\n.highlight > .Text {\n    color: #D8D8D8;\n    background-color: #345a69;\n}\n\n.EllipsisMultilineText:after {\n    background: linear-gradient(to right, rgba(255, 255, 255, 0), #e1e4eb 50%, #e1e4eb);\n}\n", ""]);
-	
-	// exports
-
+	module.exports = {"name":"nglview-js-widgets","version":"2.6.9","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"tsc && webpack","ts":"tsc","test":"mocha"},"devDependencies":{"@types/node":"^12.0.2","@types/chai":"^4.1.4","@types/expect.js":"^0.3.29","@types/mocha":"^2.2.48","@types/requirejs":"^2.1.31","typescript":"~3.0.0","babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
 
 /***/ }),
 /* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(76);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(72)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!./main.css", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!./main.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const _ = __webpack_require__(9);
+	const NGL = __webpack_require__(3);
+	const base_1 = __webpack_require__(7);
+	const widgets = __webpack_require__(2);
+	class ColormakerRegistryModel extends widgets.DOMWidgetModel {
+	    defaults() {
+	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+	            _model_name: 'ColormakerRegistryModel',
+	            _model_module: 'nglview-js-widgets',
+	            _model_module_version: __webpack_require__(74).version,
+	            _view_name: "ColormakerRegistryView",
+	            _view_module: "nglview-js-widgets",
+	            _view_module_version: __webpack_require__(74).version,
+	        });
+	    }
 	}
+	exports.ColormakerRegistryModel = ColormakerRegistryModel;
+	class ColormakerRegistryView extends base_1.BaseView {
+	    render() {
+	        super.render();
+	        if (this.isEmbeded()) {
+	            console.log("Embed mode for ColormakerRegistryView");
+	            this.handleEmbed();
+	        }
+	    }
+	    handleEmbed() {
+	        // should be called by NGLView later
+	        this.model.get("_msg_ar").forEach(msg => {
+	            this.on_msg(msg);
+	        });
+	    }
+	    addSelectionScheme(label, args) {
+	        var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
+	        this._updateId(id, label);
+	    }
+	    addSelectionSchemeOriginal(label, args) {
+	        var id = NGL.ColormakerRegistry.addSelectionScheme(args, label);
+	        var scheme = NGL.ColormakerRegistry.userSchemes[id];
+	        NGL.ColormakerRegistry.removeScheme(id);
+	        // hard code the scheme ID
+	        NGL.ColormakerRegistry.add(label, scheme);
+	    }
+	    addScheme(label, func_str) {
+	        var func = Function("return " + func_str)();
+	        var id = NGL.ColormakerRegistry.addScheme(function (params) {
+	            this.atomColor = func;
+	        });
+	        this._updateId(id, label);
+	    }
+	    _updateId(oldId, newId) {
+	        var scheme = NGL.ColormakerRegistry.userSchemes[oldId];
+	        NGL.ColormakerRegistry.add(newId, scheme);
+	        NGL.ColormakerRegistry.removeScheme(oldId);
+	    }
+	}
+	exports.ColormakerRegistryView = ColormakerRegistryView;
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29sb3IuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvY29sb3IudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSxnQ0FBK0I7QUFDL0IsMkJBQTBCO0FBQzFCLGlDQUFpQztBQUNqQyxpREFBZ0Q7QUFHaEQsTUFDTSx1QkFBd0IsU0FBUSxPQUFPLENBQUMsY0FBYztJQUN4RCxRQUFRO1FBQ0osT0FBTyxDQUFDLENBQUMsTUFBTSxDQUFDLE9BQU8sQ0FBQyxjQUFjLENBQUMsU0FBUyxDQUFDLFFBQVEsRUFBRSxFQUFFO1lBQ3pELFdBQVcsRUFBRSx5QkFBeUI7WUFDdEMsYUFBYSxFQUFFLG9CQUFvQjtZQUNuQyxxQkFBcUIsRUFBRSxPQUFPLENBQUMsaUJBQWlCLENBQUMsQ0FBQyxPQUFPO1lBQ3pELFVBQVUsRUFBRSx3QkFBd0I7WUFDcEMsWUFBWSxFQUFFLG9CQUFvQjtZQUNsQyxvQkFBb0IsRUFBRSxPQUFPLENBQUMsaUJBQWlCLENBQUMsQ0FBQyxPQUFPO1NBQzNELENBQUMsQ0FBQTtJQUNOLENBQUM7Q0FDSjtBQVpELDBEQVlDO0FBR0QsTUFDTSxzQkFBdUIsU0FBUSxlQUFRO0lBRXpDLE1BQU07UUFDRixLQUFLLENBQUMsTUFBTSxFQUFFLENBQUE7UUFDZCxJQUFJLElBQUksQ0FBQyxTQUFTLEVBQUUsRUFBQztZQUNqQixPQUFPLENBQUMsR0FBRyxDQUFDLHVDQUF1QyxDQUFDLENBQUE7WUFDcEQsSUFBSSxDQUFDLFdBQVcsRUFBRSxDQUFBO1NBQ3JCO0lBQ0wsQ0FBQztJQUVELFdBQVc7UUFDUCxvQ0FBb0M7UUFDcEMsSUFBSSxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsU0FBUyxDQUFDLENBQUMsT0FBTyxDQUFDLEdBQUcsQ0FBQyxFQUFFO1lBQ3BDLElBQUksQ0FBQyxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUE7UUFDcEIsQ0FBQyxDQUFDLENBQUE7SUFDTixDQUFDO0lBRUQsa0JBQWtCLENBQUMsS0FBSyxFQUFFLElBQUk7UUFDMUIsSUFBSSxFQUFFLEdBQUcsR0FBRyxDQUFDLGtCQUFrQixDQUFDLGtCQUFrQixDQUFDLElBQUksRUFBRSxLQUFLLENBQUMsQ0FBQTtRQUMvRCxJQUFJLENBQUMsU0FBUyxDQUFDLEVBQUUsRUFBRSxLQUFLLENBQUMsQ0FBQTtJQUM3QixDQUFDO0lBRUQsMEJBQTBCLENBQUMsS0FBSyxFQUFFLElBQUk7UUFDbEMsSUFBSSxFQUFFLEdBQUcsR0FBRyxDQUFDLGtCQUFrQixDQUFDLGtCQUFrQixDQUFDLElBQUksRUFBRSxLQUFLLENBQUMsQ0FBQztRQUNoRSxJQUFJLE1BQU0sR0FBRyxHQUFHLENBQUMsa0JBQWtCLENBQUMsV0FBVyxDQUFDLEVBQUUsQ0FBQyxDQUFDO1FBQ3BELEdBQUcsQ0FBQyxrQkFBa0IsQ0FBQyxZQUFZLENBQUMsRUFBRSxDQUFDLENBQUM7UUFDeEMsMEJBQTBCO1FBQzFCLEdBQUcsQ0FBQyxrQkFBa0IsQ0FBQyxHQUFHLENBQUMsS0FBSyxFQUFFLE1BQU0sQ0FBQyxDQUFDO0lBQzlDLENBQUM7SUFFRCxTQUFTLENBQUMsS0FBSyxFQUFFLFFBQVE7UUFDckIsSUFBSSxJQUFJLEdBQUcsUUFBUSxDQUFDLFNBQVMsR0FBRyxRQUFRLENBQUMsRUFBRSxDQUFBO1FBQzNDLElBQUksRUFBRSxHQUFHLEdBQUcsQ0FBQyxrQkFBa0IsQ0FBQyxTQUFTLENBQUMsVUFBUyxNQUFNO1lBQ3JELElBQUksQ0FBQyxTQUFTLEdBQUcsSUFBSSxDQUFBO1FBQ3pCLENBQUMsQ0FBQyxDQUFBO1FBQ0YsSUFBSSxDQUFDLFNBQVMsQ0FBQyxFQUFFLEVBQUUsS0FBSyxDQUFDLENBQUE7SUFDN0IsQ0FBQztJQUVELFNBQVMsQ0FBQyxLQUFLLEVBQUUsS0FBSztRQUNsQixJQUFJLE1BQU0sR0FBRyxHQUFHLENBQUMsa0JBQWtCLENBQUMsV0FBVyxDQUFDLEtBQUssQ0FBQyxDQUFBO1FBQ3RELEdBQUcsQ0FBQyxrQkFBa0IsQ0FBQyxHQUFHLENBQUMsS0FBSyxFQUFFLE1BQU0sQ0FBQyxDQUFBO1FBQ3pDLEdBQUcsQ0FBQyxrQkFBa0IsQ0FBQyxZQUFZLENBQUMsS0FBSyxDQUFDLENBQUE7SUFDOUMsQ0FBQztDQUNKO0FBNUNELHdEQTRDQyJ9
 
 /***/ }),
 /* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(44)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "\n* {\n\tvertical-align: middle;\n}\n\n/* Webkit micro scrollbars */\n\n::-webkit-scrollbar {\n    width:9px;\n    height:9px;\n}\n\n::-webkit-scrollbar-track {\n    -webkit-border-radius:5px;\n    border-radius:5px;\n    background:rgba(140,140,140,0.1);\n}\n\n::-webkit-scrollbar-thumb {\n    -webkit-border-radius:5px;\n    border-radius:5px;\n    background:rgba(140,140,140,0.2);\n}\n\n::-webkit-scrollbar-thumb:hover {\n    background:rgba(140,140,140,0.4);\n}\n\n::-webkit-scrollbar-thumb:window-inactive {\n    background:rgba(140,140,140,0.5);\n}\n\n/* elmement */\n\nbody {\n\tfont-family: Arial, sans-serif;\n\tfont-size: 14px;\n\tmargin: 0;\n\toverflow: hidden;\n}\n\nhr {\n\tborder: 0px;\n\tborder-top: 1px solid #ccc;\n}\n\nbutton {\n    position: relative;\n    margin-left: 0px;\n}\n\nselect {\n    margin-left: 1px;\n}\n\n/* NOTE (FIXME): turning this on will affect notebook */\n\n/**\ntextarea {\n\twhite-space: pre;\n\tword-wrap: normal;\n}\n\n\ttextarea.success {\n\t\tborder-color: #8b8 !important;\n\t}\n\n\ttextarea.fail {\n\t\tborder-color: #f00 !important;\n\t\tbackground-color: rgba(255,0,0,0.05);\n\t}\n\ntextarea, input { outline: none; } /* osx */\n\ninput.Number {\n    font-size: 12px;                            /** TODO: Use of !imporant is not ideal **/\n    background-color: transparent!important;    /* For now this is a quick fix a rendering issue due to inherited background */\n    border: 1px solid transparent;\n    padding: 2px;\n    cursor: col-resize;\n}\n\ninput.File {\n    border: 0px solid !important;\n    padding: 0px !important;\n}\n\ninput[type=range]:focus:after {\n    position: absolute;\n    transform: translate(-100%,-50% );\n    content: attr(value);\n    font-size: 12px;\n}\n\n/* class */\n\n.deleteInfo:after {\n    position: absolute;\n    transform: translate(-50%,-250% );\n    content: \"double-click to delete\";\n    font-size: 10px;\n    display: block;\n}\n\n.Panel {\n\n    -moz-user-select: none;\n    -webkit-user-select: none;\n    -ms-user-select: none;\n\n    /* No support for these yet */\n    -o-user-select: none;\n    user-select: none;\n}\n\n.OverlayPanel {\n    z-index: 10;\n    position: absolute;\n    padding: 10px;\n    overflow: auto;\n    border: 1px solid;\n}\n\n.OverlayPanel:focus {\n    z-index: 20;\n}\n\n.Text {\n    cursor: default;\n}\n\n.FancySelect {\n    padding: 0;\n    cursor: default;\n    overflow: auto;\n    outline: none;\n}\n\n    .FancySelect .option {\n        padding: 4px;\n        white-space: nowrap;\n    }\n\n.CollapsiblePanel .CollapsiblePanelButton {\n    float: left;\n    margin-right: 6px;\n    width: 0px;\n    height: 0px;\n    border: 6px solid transparent;\n}\n\n.CollapsiblePanel.collapsed > .CollapsiblePanelButton {\n    margin-top: 2px;\n    border-left-color: #555;\n}\n\n.CollapsiblePanel:not(.collapsed) > .CollapsiblePanelButton {\n    margin-top: 6px;\n    border-top-color: #555;\n}\n\n.CollapsiblePanel.collapsed .CollapsibleContent {\n    display: none;\n}\n\n.CollapsiblePanel:not(.collapsed) > .CollapsibleContent {\n    clear: both;\n}\n\n/* http://www.brianchu.com/blog/2013/11/02/creating-an-auto-growing-text-input/ */\n\n.AdaptiveTextAreaContainer {\n    position: relative;\n    display: inline-block;\n    margin-top: 2px;\n    margin-bottom: 2px;\n}\n\n.AdaptiveTextArea, .AdaptiveTextAreaSize {\n    min-height: 21px;\n    /* need to manually set font and font size */\n    font-family: Arial, sans-serif;\n    font-size: 13px;\n    box-sizing: border-box;\n    padding: 2px;\n    border: 1px solid #ccc;\n\n    overflow: hidden;\n    width: 100%;\n}\n\n.AdaptiveTextArea {\n    height: 100%;\n    position: absolute;\n    resize: none;\n\n    /*\n    \"pre\" or \"preline\" or \"normal\" fixes Chrome issue where\n    whitespace at end of lines does not trigger a line break.\n    However, it causes the text to exhibit the behavior seen with\n    \"pre\" that is described below.\n    */\n    white-space: normal;\n    word-wrap: break-word;\n    overflow-wrap: break-word;\n}\n\n.AdaptiveTextAreaSize {\n    visibility: hidden;\n\n    /*\n    Pre-wrap: preserve spacing and newlines, but wrap text.\n    Pre: preserve spacing and newlines but don't wrap text.\n\n    \"pre\" does not wrap well on Firefox, even with word-wrap:break-word.\n    \"pre\" on Chrome works with word-wrap, but exhibits different behavior:\n    Instead of entire words being moved to the next line for wrapping,\n    the browser will cut words in the middle for wrapping.\n    \"pre-line\" has Firefox issues\n    */\n    white-space: pre-wrap;\n    /* Required for wrapping lines in Webkit,\n    but not necessary in Firefox if you have white-space wrapping\n    (pre-wrap, normal, pre-line) already set */\n    word-wrap: break-word;\n    overflow-wrap: break-word;\n}\n\n/* FlexiColorPicker */\n\n.picker-wrapper,\n.slide-wrapper {\n    position: relative;\n    float: left;\n}\n\n.picker-indicator,\n.slide-indicator {\n    position: absolute;\n    left: 0;\n    top: 0;\n    pointer-events: none;\n}\n\n.picker,\n.slide {\n    cursor: crosshair;\n    float: left;\n}\n\n.slide-wrapper {\n    margin-left: 10px;\n}\n\n.picker-indicator {\n    width: 5px;\n    height: 5px;\n    border: 2px solid darkblue;\n    -moz-border-radius: 4px;\n    -o-border-radius: 4px;\n    -webkit-border-radius: 4px;\n    border-radius: 4px;\n    opacity: .5;\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)\";\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);\n    filter: alpha(opacity=50);\n    background-color: white;\n}\n\n.slide-indicator {\n    width: 100%;\n    height: 10px;\n    left: -4px;\n    opacity: .6;\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)\";\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);\n    filter: alpha(opacity=60);\n    border: 4px solid lightblue;\n    -moz-border-radius: 4px;\n    -o-border-radius: 4px;\n    -webkit-border-radius: 4px;\n    border-radius: 4px;\n    background-color: white;\n}\n\n/* http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/ */\n\n.EllipsisMultilineText {\n    overflow: hidden;\n    max-height: 2.6em;\n    line-height: 1.3em;\n}\n\n.EllipsisMultilineText:before {\n    content:\"\";\n    float: left;\n    width: 5px;\n    max-height: 2.6em;\n}\n\n.EllipsisMultilineText > *:first-child {\n    float: right;\n    width: 100%;\n    margin-top: 0px;\n    margin-bottom: 0px;\n    margin-left: -5px;\n    word-wrap: break-word;\n}\n\n.EllipsisMultilineText:after {\n    content: \"\\2026\";\n\n    box-sizing: content-box;\n    -webkit-box-sizing: content-box;\n    -moz-box-sizing: content-box;\n\n    float: right; position: relative;\n    top: 1.3em; left: 100%;\n    width: 3em; margin-left: -3em;\n    padding-right: 5px;\n\n    text-align: right;\n}\n\n/* resize */\n\n.ResizeLeft, .ResizeLeft:hover {\n    position: relative;\n    float: left;\n    height: 100%;\n    width: 10px;\n}\n\n.ResizeLeft:hover{\n    cursor: col-resize;\n}\n\n/* virtual list */\n\n.VirtualListRow {\n    position: absolute;\n    overflow: hidden;\n    white-space: nowrap;\n    display: inline-block;\n}\n\n.VirtualListRow > .Text {\n    cursor: inherit;\n}\n\n/* id */\n\n#viewport {\n    position: absolute;\n    top: 32px;\n    left: 0px;\n    right: 300px;\n    bottom: 32px;\n}\n\n#menubar_ngl {\n    position: absolute;\n    width: 100%;\n    height: 32px;\n    padding: 0px;\n    margin: 0px;\n    z-index: 100;\n    top: 0px;\n    left: 0px;\n}\n\n    #menubar_ngl .menu {\n        float: left;\n        cursor: pointer;\n        position: relative;\n    }\n\n        #menubar_ngl .menu .title {\n            margin: 0px;\n            padding: 8px;\n        }\n\n        #menubar_ngl .menu .options {\n            display: none;\n            padding: 5px 0px;\n            width: 140px;\n            position: absolute;\n            top: 32px;\n        }\n\n        #menubar_ngl .menu:hover .options {\n            display: block;\n            max-height: 600px;\n            overflow: auto;\n        }\n\n            #menubar_ngl .menu .options .option {\n                background-color: transparent;\n                padding: 5px 10px;\n                margin: 0px !important;\n            }\n\n#sidebar_ngl {\n    position: absolute;\n    right: 0px;\n    top: 32px;\n    bottom: 0px;\n    width: 300px;\n    overflow: hidden;\n}\n\n    #sidebar_ngl .Panel {\n        margin-bottom: 10px;\n    }\n\n    #sidebar_ngl .Panel.collapsed {\n        margin-bottom: 0px;\n    }\n\n    #sidebar_ngl .CollapsibleContent {\n        margin-top: 10px;\n    }\n\n    #sidebar_ngl > .Panel {\n        padding: 10px;\n        border-top: 1px solid;\n    }\n\n    #sidebar_ngl > .Content > .Panel {\n        padding: 10px;\n        border-top: 1px solid;\n    }\n\n    #sidebar_ngl .Content {\n        top: 40px;\n        bottom: 0px;\n        position: absolute;\n        overflow: auto;\n        right: 0px;\n        width: 100%;\n    }\n\n#toolbar_ngl {\n    position: absolute;\n    left: 0px;\n    right: 300px;\n    bottom: 0px;\n    height: 32px;\n}\n\n    #toolbar_ngl .Panel {\n        padding: 6px;\n    }\n\n    #toolbar_ngl button {\n        margin-right: 6px;\n    }\n", ""]);
-	
-	// exports
-
-
-/***/ }),
-/* 77 */
-/***/ (function(module, exports) {
-
-	module.exports = {"name":"nglview-js-widgets","version":"2.6.2","description":"nglview-js-widgets","author":"Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>","license":"MIT","main":"src/index.js","repository":{"type":"git","url":"git+https://github.com/arose/nglview.git"},"bugs":{"url":"https://github.com/arose/nglview/issues"},"files":["dist","src"],"keywords":["molecular graphics","molecular structure","jupyter","widgets","ipython","ipywidgets","science"],"scripts":{"lint":"eslint src test","prepublish":"webpack","test":"mocha"},"devDependencies":{"babel-eslint":"^7.0.0","babel-register":"^6.11.6","css-loader":"^0.23.1","eslint":"^3.2.2","eslint-config-google":"^0.7.1","file-loader":"^0.8.5","json-loader":"^0.5.4","ngl":"2.0.0-dev.36","style-loader":"^0.13.1","webpack":"^1.12.14"},"dependencies":{"jquery":"^3.2.1","jquery-ui":"^1.12.1","underscore":"^1.8.3","ngl":"2.0.0-dev.36","@jupyter-widgets/base":"^1.1 || ^2"},"jupyterlab":{"extension":"src/jupyterlab-plugin"},"homepage":"https://github.com/arose/nglview#readme","directories":{"test":"test"}}
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	const _ = __webpack_require__(9);
+	const base_1 = __webpack_require__(7);
+	const widgets = __webpack_require__(2);
+	class ThemeManagerModel extends widgets.DOMWidgetModel {
+	    defaults() {
+	        return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
+	            _model_name: 'ThemeManagerModel',
+	            _model_module: 'nglview-js-widgets',
+	            _model_module_version: __webpack_require__(74).version,
+	            _view_name: "ThemeManagerView",
+	            _view_module: "nglview-js-widgets",
+	            _view_module_version: __webpack_require__(74).version,
+	        });
+	    }
+	}
+	exports.ThemeManagerModel = ThemeManagerModel;
+	class ThemeManagerView extends base_1.BaseView {
+	    render() {
+	        super.render();
+	        this.displayed.then(() => this.handleThemeChanged());
+	    }
+	    handleThemeChanged() {
+	        console.log("ThemeManagerView: handleThemeChanged");
+	        this.setTheme(this.model.get("_theme_css"));
+	    }
+	    handleEmbed() {
+	        this.handleThemeChanged();
+	    }
+	    setTheme(cssContent) {
+	        if (cssContent == undefined) {
+	            return;
+	        }
+	        var ele = document.getElementById('nglview_style');
+	        if (ele) {
+	            document.head.removeChild(ele);
+	        }
+	        ele = document.createElement('style');
+	        ele.id = 'nglview_style';
+	        ele.appendChild(document.createTextNode(cssContent));
+	        document.head.appendChild(ele);
+	        this.send({ 'type': 'call_method', 'data': 'handle_resize' });
+	    }
+	}
+	exports.ThemeManagerView = ThemeManagerView;
+	//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGhlbWUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvdGhlbWUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSxnQ0FBK0I7QUFDL0IsaUNBQWlDO0FBQ2pDLGlEQUFnRDtBQUdoRCxNQUNNLGlCQUFrQixTQUFRLE9BQU8sQ0FBQyxjQUFjO0lBQ2xELFFBQVE7UUFDSixPQUFPLENBQUMsQ0FBQyxNQUFNLENBQUMsT0FBTyxDQUFDLGNBQWMsQ0FBQyxTQUFTLENBQUMsUUFBUSxFQUFFLEVBQUU7WUFDekQsV0FBVyxFQUFFLG1CQUFtQjtZQUNoQyxhQUFhLEVBQUUsb0JBQW9CO1lBQ25DLHFCQUFxQixFQUFFLE9BQU8sQ0FBQyxpQkFBaUIsQ0FBQyxDQUFDLE9BQU87WUFDekQsVUFBVSxFQUFFLGtCQUFrQjtZQUM5QixZQUFZLEVBQUUsb0JBQW9CO1lBQ2xDLG9CQUFvQixFQUFFLE9BQU8sQ0FBQyxpQkFBaUIsQ0FBQyxDQUFDLE9BQU87U0FDM0QsQ0FBQyxDQUFBO0lBQ04sQ0FBQztDQUNKO0FBWkQsOENBWUM7QUFHRCxNQUNNLGdCQUFpQixTQUFRLGVBQVE7SUFFbkMsTUFBTTtRQUNGLEtBQUssQ0FBQyxNQUFNLEVBQUUsQ0FBQTtRQUNkLElBQUksQ0FBQyxTQUFTLENBQUMsSUFBSSxDQUFDLEdBQUcsRUFBRSxDQUFDLElBQUksQ0FBQyxrQkFBa0IsRUFBRSxDQUFDLENBQUE7SUFDeEQsQ0FBQztJQUVELGtCQUFrQjtRQUNkLE9BQU8sQ0FBQyxHQUFHLENBQUMsc0NBQXNDLENBQUMsQ0FBQTtRQUNuRCxJQUFJLENBQUMsUUFBUSxDQUFDLElBQUksQ0FBQyxLQUFLLENBQUMsR0FBRyxDQUFDLFlBQVksQ0FBQyxDQUFDLENBQUE7SUFDL0MsQ0FBQztJQUVELFdBQVc7UUFDUCxJQUFJLENBQUMsa0JBQWtCLEVBQUUsQ0FBQTtJQUM3QixDQUFDO0lBRUQsUUFBUSxDQUFDLFVBQWtCO1FBQ3ZCLElBQUksVUFBVSxJQUFJLFNBQVMsRUFBQztZQUN4QixPQUFNO1NBQ1Q7UUFDRCxJQUFJLEdBQUcsR0FBRyxRQUFRLENBQUMsY0FBYyxDQUFDLGVBQWUsQ0FBQyxDQUFBO1FBQ2xELElBQUksR0FBRyxFQUFDO1lBQ0osUUFBUSxDQUFDLElBQUksQ0FBQyxXQUFXLENBQUMsR0FBRyxDQUFDLENBQUE7U0FDakM7UUFDRCxHQUFHLEdBQUcsUUFBUSxDQUFDLGFBQWEsQ0FBQyxPQUFPLENBQUMsQ0FBQTtRQUNyQyxHQUFHLENBQUMsRUFBRSxHQUFHLGVBQWUsQ0FBQTtRQUN4QixHQUFHLENBQUMsV0FBVyxDQUFDLFFBQVEsQ0FBQyxjQUFjLENBQUMsVUFBVSxDQUFDLENBQUMsQ0FBQTtRQUNwRCxRQUFRLENBQUMsSUFBSSxDQUFDLFdBQVcsQ0FBQyxHQUFHLENBQUMsQ0FBQTtRQUM5QixJQUFJLENBQUMsSUFBSSxDQUFDLEVBQUMsTUFBTSxFQUFFLGFBQWEsRUFBRSxNQUFNLEVBQUUsZUFBZSxFQUFDLENBQUMsQ0FBQTtJQUMvRCxDQUFDO0NBQ0o7QUEvQkQsNENBK0JDIn0=
 
 /***/ })
 /******/ ])});;
