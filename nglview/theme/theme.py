@@ -38,7 +38,7 @@ class ThemeManager(BaseWidget):
     @observe("_theme_css")
     def _on_theme_changed(self, _):
         """
-        Without this method, we can't change the theme without below code
+        Without this method, we can't change the theme with below code
 
         # cell 1
         >>> import nglview as nv

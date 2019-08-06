@@ -9,7 +9,7 @@ import ipywidgets as widgets
 import ipywidgets.embed
 import numpy as np
 from IPython.display import display
-from ipywidgets import (Box, DOMWidget, HBox, IntSlider, Output, Play, Widget,
+from ipywidgets import (Image, Box, DOMWidget, HBox, IntSlider, Output, Play, Widget,
                         jslink)
 from ipywidgets import widget as _widget
 from traitlets import (Bool, CaselessStrEnum, Dict, Instance, Int, Integer,
@@ -34,11 +34,6 @@ from ._frontend import __frontend_version__
 from .base import BaseWidget
 
 widget_serialization = _widget.widget_serialization
-try:
-    # ipywidgets >= 7.4
-    from ipywidgets import Image
-except ImportError:
-    from ipywidgets.widget_image import Image
 
 __all__ = ['NGLWidget', 'ComponentViewer']
 _EXCLUDED_CALLBACK_AFTER_FIRING = {
@@ -89,6 +84,7 @@ def write_html(fp, views, frame_range=None):
     color = None
     theme = None
     for k, v in views[0].widgets.items():
+        print(v)
         if v.__class__.__name__ == '_ColormakerRegistry':
             color = v
         if v.__class__.__name__ == 'ThemeManager':
