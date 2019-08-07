@@ -125,6 +125,7 @@ class MovieMaker:
         self._time_range = range(start, stop, step)
         self._iframe = iter(self._time_range)
         self._progress = IntProgress(max=len(self._time_range)-1)
+        self._woutput = Output()
         self._event = threading.Event()
         self._thread = None
         self._image_array = []
@@ -210,6 +211,7 @@ class MovieMaker:
         iframe = tee(self._iframe, 1)[0]
         # trigger movie making communication between backend and frontend
         self.view._set_coordinates(next(iframe), movie_making=True)
+        self._progress.description = 'Rendering ...'
         def on_msg(widget, msg, _):
             if msg['type'] == 'movie_image_data':
                 image_array.append(msg.get('data'))
@@ -218,8 +220,12 @@ class MovieMaker:
                     self.view._set_coordinates(frame, movie_making=True)
                     self._progress.value = frame
                 except StopIteration:
-                    self._make_from_array(image_array)
+                    self._progress.description = 'Making...'
+                    with self._woutput:
+                        # suppress moviepy's log
+                        self._make_from_array(image_array)
                     self._remove_on_msg()
+                    self._progress.description = 'Done'
                     if keep_data:
                         self._image_array = image_array
         self._on_msg = on_msg
@@ -234,11 +240,12 @@ class MovieMaker:
     def _make_from_array(self, image_array: List[str]):
         image_files = [self._base64_to_ndarray(a) for a in image_array]
         clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
-        if self.output.endswith('.gif'):
-            clip.write_gif(self.output,
-                           fps=self.fps,
-                           verbose=False,
-                           **self.moviepy_params)
+        with self._woutput:
+            if self.output.endswith('.gif'):
+                clip.write_gif(self.output,
+                               fps=self.fps,
+                               verbose=False,
+                               **self.moviepy_params)
 
     def interupt(self):
         """ Stop making process """
