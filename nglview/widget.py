@@ -1050,17 +1050,6 @@ class NGLWidget(DOMWidget):
             self._image_data = msg.get('data')
             Widget.widgets[msg.get('ID')].value = base64.b64decode(
                 self._image_data)
-        elif msg_type == 'movie_image_data':
-            self._image_data = msg.get('data')
-            self._image_array.append(
-                self._image_data)
-            # send coordinates with movie_making=True in message.
-            try:
-                frame = next(self._movie._iframe)
-                self._set_coordinates(frame, movie_making=True)
-                self._movie._progress.value = frame
-            except StopIteration:
-                self._movie._make_from_array(self._image_array)
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         if self.n_components > 0:

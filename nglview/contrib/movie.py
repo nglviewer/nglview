@@ -10,6 +10,7 @@ import os
 import threading
 import time
 from ipywidgets import Button, Output, IntProgress
+from itertools import tee
 
 
 class MovieMaker:
@@ -194,6 +195,27 @@ class MovieMaker:
         self.thread.start()
         return progress
     
+    def make_new(self):
+        image_array = []
+        iframe = tee(self._iframe)
+        def on_msg(widget, msg, _):
+            if msg['type'] == 'movie_image_data':
+                image_array.append(msg.get('data'))
+                try:
+                    frame = next(iframe)
+                    self.view._set_coordinates(frame, movie_making=True)
+                    self._progress.value = frame
+                except StopIteration:
+                    self._make_from_array(self._image_array)
+                finally:
+                    self._remove_on_msg()
+        self._on_msg = on_msg
+        self.view.on_msg(on_msg)
+        return self._progress
+
+    def _remove_on_msg(self):
+        self.view.on_msg(self._on_msg, remove=True)
+
     def _make_from_array(self, image_array: List[str]):
         image_files = [self._base64_to_ndarray(a) for a in image_array]
         clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
