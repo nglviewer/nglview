@@ -226,9 +226,6 @@ def test_API_promise_to_have():
     view.add_representation('surface', selection='*', useWorker=True)
     view.add_representation('surface', selection='*', component=1)
     view.center()
-    view._hold_image = True
-    view._on_render_image(change=dict(new='xyz'))
-    view._hold_image = False
     view._on_render_image(change=dict(new='xyz'))
     view.render_image()
     view.render_image(frame=2)

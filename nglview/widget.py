@@ -169,7 +169,6 @@ class NGLWidget(DOMWidget):
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
     _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
     _widget_theme = None
-    _hold_image = Bool(False).tag(sync=False)
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
     _ngl_coordinate_resource = Dict().tag(sync=True)
@@ -714,7 +713,8 @@ class NGLWidget(DOMWidget):
 
         return RepresentationControl(self, component, repr_index, name=name)
 
-    def _set_coordinates(self, index):
+    def _set_coordinates(self, index, movie_making=False):
+        # FIXME: use movie_making here seems awkward.
         '''update coordinates for all trajectories at index-th frame
         '''
         if self._trajlist:
@@ -738,11 +738,11 @@ class NGLWidget(DOMWidget):
                 except (IndexError, ValueError):
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
 
-            self.set_coordinates(coordinates_dict)
+            self.set_coordinates(coordinates_dict, movie_making=movie_making)
         else:
             print("no trajectory available")
 
-    def set_coordinates(self, arr_dict):
+    def set_coordinates(self, arr_dict, movie_making=False):
         # type: (Dict[int, np.ndarray]) -> None
         """Used for update coordinates of a given trajectory
         >>> # arr: numpy array, ndim=2
@@ -751,35 +751,21 @@ class NGLWidget(DOMWidget):
         """
         self._coordinates_dict = arr_dict
 
-        if not self._send_binary:
-            # DEPRECATED: This is not efficient, cause lots of lagging.
-            # should send binary
-            # send base64
-            encoded_coordinates_dict = {
-                k: encode_base64(v)
-                for (k, v) in self._coordinates_dict.items()
+        buffers = []
+        coordinates_meta = dict()
+        for index, arr in self._coordinates_dict.items():
+            buffers.append(arr.astype('f4').tobytes())
+            coordinates_meta[index] = index
+        msg = {
+                'type': 'binary_single',
+                'data': coordinates_meta,
             }
-            mytime = time.time() * 1000
-            self.send({
-                'type': 'base64_single',
-                'data': encoded_coordinates_dict,
-                'mytime': mytime
-            })
-        else:
-            # send binary
-            buffers = []
-            coordinates_meta = dict()
-            for index, arr in self._coordinates_dict.items():
-                buffers.append(arr.astype('f4').tobytes())
-                coordinates_meta[index] = index
-            mytime = time.time() * 1000
-            self.send(
-                {
-                    'type': 'binary_single',
-                    'data': coordinates_meta,
-                    'mytime': mytime
-                },
-                buffers=buffers)
+        if movie_making:
+            msg['movie_making'] = movie_making
+
+        self.send(
+            msg,
+            buffers=buffers)
 
     @observe('frame')
     def _on_frame_changed(self, change):
@@ -930,8 +916,6 @@ class NGLWidget(DOMWidget):
         method name might be changed
         '''
         self._widget_image._b64value = change['new']
-        if self._hold_image:
-            self._image_array.append(change['new'])
 
     def render_image(self,
                      frame=None,
@@ -1066,6 +1050,15 @@ class NGLWidget(DOMWidget):
             self._image_data = msg.get('data')
             Widget.widgets[msg.get('ID')].value = base64.b64decode(
                 self._image_data)
+        elif msg_type == 'movie_image_data':
+            self._image_data = msg.get('data')
+            self._image_array.append(base64.b64decode(
+                self._image_data))
+            # send coordinates with movie_making=True in message.
+            try:
+                self._set_coordinates(next(self._movie.iframe), movie_making=True)
+            except StopIteration:
+                pass
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         if self.n_components > 0:
