@@ -195,9 +195,21 @@ class MovieMaker:
         self.thread.start()
         return progress
     
-    def make_new(self):
+    def make_new(self, movie=True, keep_data=False):
+        """ 
+
+        Parameters
+        ----------
+        keep_data: bool
+            if True, save the image data in self._image_array
+        movie: bool
+            if True, make the movie
+            else, only do the rendering (make sure keep_data=True in this case)
+        """
         image_array = []
-        iframe = tee(self._iframe)
+        iframe = tee(self._iframe, 1)[0]
+        # trigger movie making communication between backend and frontend
+        self.view._set_coordinates(next(iframe), movie_making=True)
         def on_msg(widget, msg, _):
             if msg['type'] == 'movie_image_data':
                 image_array.append(msg.get('data'))
@@ -206,10 +218,13 @@ class MovieMaker:
                     self.view._set_coordinates(frame, movie_making=True)
                     self._progress.value = frame
                 except StopIteration:
-                    self._make_from_array(self._image_array)
-                finally:
+                    self._make_from_array(image_array)
                     self._remove_on_msg()
+                    if keep_data:
+                        self._image_array = image_array
         self._on_msg = on_msg
+        # FIXME: if exception happens, the on_msg callback will be never removed
+        # from `self.view`
         self.view.on_msg(on_msg)
         return self._progress
 
