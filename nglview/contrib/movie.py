@@ -1,3 +1,4 @@
+from typing import List
 try:
     import moviepy.editor as mpy
 except ImportError:
@@ -121,6 +122,8 @@ class MovieMaker:
         if stop < 0:
             stop = self.view.max_frame + 1
         self._time_range = range(start, stop, step)
+        self._iframe = iter(self._time_range)
+        self._progress = IntProgress(max=len(self._time_range)-1)
         self._event = threading.Event()
         self._thread = None
         self._image_array = []

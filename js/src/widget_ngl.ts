@@ -998,8 +998,9 @@ class NGLView extends widgets.DOMWidgetView{
         }
     }
 
-    handleMovieMaking(params) {
+    handleMovieMaking() {
         if (this.ngl_view_id == this.get_last_child_id()){
+            var params = {} // FIXME
             this.stage.makeImage(params).then(function(blob) {
                 var reader = new FileReader();
                 var arr_str;
