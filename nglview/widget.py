@@ -1058,7 +1058,7 @@ class NGLWidget(DOMWidget):
             try:
                 self._set_coordinates(next(self._movie.iframe), movie_making=True)
             except StopIteration:
-                pass
+                self._movie._make_from_array(self._image_array)
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         if self.n_components > 0:

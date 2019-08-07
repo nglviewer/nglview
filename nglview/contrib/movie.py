@@ -190,6 +190,15 @@ class MovieMaker:
         self.thread.daemon = True
         self.thread.start()
         return progress
+    
+    def _make_from_array(self, image_array: List[str]):
+        image_files = [self._base64_to_ndarray(a) for a in image_array]
+        clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
+        if self.output.endswith('.gif'):
+            clip.write_gif(self.output,
+                           fps=self.fps,
+                           verbose=False,
+                           **self.moviepy_params)
 
     def interupt(self):
         """ Stop making process """
