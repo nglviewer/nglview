@@ -713,10 +713,11 @@ class NGLWidget(DOMWidget):
 
         return RepresentationControl(self, component, repr_index, name=name)
 
-    def _set_coordinates(self, index, movie_making=False):
+    def _set_coordinates(self, index, movie_making=False, render_params=None):
         # FIXME: use movie_making here seems awkward.
         '''update coordinates for all trajectories at index-th frame
         '''
+        render_params = render_params or {}
         if self._trajlist:
             coordinates_dict = {}
             for trajectory in self._trajlist:
@@ -738,17 +739,21 @@ class NGLWidget(DOMWidget):
                 except (IndexError, ValueError):
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
 
-            self.set_coordinates(coordinates_dict, movie_making=movie_making)
+            self.set_coordinates(coordinates_dict,
+                    render_params=render_params,
+                    movie_making=movie_making)
         else:
             print("no trajectory available")
 
-    def set_coordinates(self, arr_dict, movie_making=False):
+    def set_coordinates(self, arr_dict, movie_making=False,
+            render_params=None):
         # type: (Dict[int, np.ndarray]) -> None
         """Used for update coordinates of a given trajectory
         >>> # arr: numpy array, ndim=2
         >>> # update coordinates of 1st trajectory
         >>> view.set_coordinates({0: arr})# doctest: +SKIP
         """
+        render_params = render_params or {}
         self._coordinates_dict = arr_dict
 
         buffers = []
@@ -762,6 +767,7 @@ class NGLWidget(DOMWidget):
             }
         if movie_making:
             msg['movie_making'] = movie_making
+            msg['render_params'] = render_params,
 
         self.send(
             msg,

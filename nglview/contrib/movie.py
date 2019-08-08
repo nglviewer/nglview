@@ -112,13 +112,13 @@ class MovieMaker:
         self.timeout = timeout
         self.fps = fps
         self.in_memory = in_memory
-        self.render_params = render_params if render_params is not None else {}
-        self.moviepy_params = moviepy_params if moviepy_params is not None else {}
+        self.render_params = render_params or dict(
+                     factor=4,
+                     antialias=True,
+                     trim=False,
+                     transparent=False)
+        self.moviepy_params = moviepy_params or {}
         self.perframe_hook = perframe_hook
-        if self.render_params is not None:
-            assert isinstance(self.render_params, dict)
-        if self.moviepy_params is not None:
-            assert isinstance(self.moviepy_params, dict)
         self.output = output
         if stop < 0:
             stop = self.view.max_frame + 1
@@ -210,14 +210,16 @@ class MovieMaker:
         image_array = []
         iframe = tee(self._iframe, 1)[0]
         # trigger movie making communication between backend and frontend
-        self.view._set_coordinates(next(iframe), movie_making=True)
+        self.view._set_coordinates(next(iframe), movie_making=True,
+                render_params=self.render_params)
         self._progress.description = 'Rendering ...'
         def on_msg(widget, msg, _):
             if msg['type'] == 'movie_image_data':
                 image_array.append(msg.get('data'))
                 try:
                     frame = next(iframe)
-                    self.view._set_coordinates(frame, movie_making=True)
+                    self.view._set_coordinates(frame, movie_making=True,
+                            render_params=self.render_params)
                     self._progress.value = frame
                 except StopIteration:
                     self._progress.description = 'Making...'

@@ -17,6 +17,8 @@ import { FullscreenModel, FullscreenView } from "./fullscreen"
 import { ColormakerRegistryModel, ColormakerRegistryView } from "./color"
 import { ThemeManagerModel, ThemeManagerView} from "./theme"
 
+NGL.nglview_debug = false
+
 // From NGL
 // http://www.broofa.com/Tools/Math.uuid.htm
 const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
@@ -998,10 +1000,10 @@ class NGLView extends widgets.DOMWidgetView{
         }
     }
 
-    handleMovieMaking() {
+    handleMovieMaking(render_params) {
+        console.log('handleMovieMaking: render_params', render_params)
         if (this.ngl_view_id == this.get_last_child_id()){
-            var params = {} // FIXME
-            this.stage.makeImage(params).then(function(blob) {
+            this.stage.makeImage(render_params).then(function(blob) {
                 var reader = new FileReader();
                 var arr_str;
                 reader.onload = function() {
@@ -1193,7 +1195,7 @@ class NGLView extends widgets.DOMWidgetView{
                 }
             }
             if (msg.movie_making){
-                this.handleMovieMaking()
+                this.handleMovieMaking(msg.render_params)
             }
         } else if (msg.type == 'get') {
             if (msg.data == 'camera') {
