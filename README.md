@@ -182,6 +182,11 @@ view.update_cartoon(opacity=0.4, component=0)
 
 # remove ALL cartoons of component 0 (default)
 view.remove_cartoon(opacity=0.4, component=0)
+
+# Not using default representation
+view = nv.show_file('your.pdb', default=False)
+view.center()
+view.add_rope()
 ```
 
 And many more, please check [NGL website](http://arose.github.io/ngl/api/index.html)
