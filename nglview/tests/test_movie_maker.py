@@ -29,3 +29,4 @@ def test_movie_maker(ImageSequenceClip):
                        moviepy_params={},
                        stop=2)
     movie.make()
+    movie.make_old_impl()
