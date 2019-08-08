@@ -210,9 +210,9 @@ def test_API_promise_to_have():
     view._theme = 'dark'
     view._ipython_display_()
 
-    view.display(gui=True)
+    view.display(gui=True, style='ngl')
     view.display(gui=False)
-    view.display(gui=True, use_box=True)
+    view.display(gui=True, style='ipywidgets')
     view._set_sync_camera([view])
     view._set_unsync_camera([view])
     view._set_selection('.CA')
