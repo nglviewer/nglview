@@ -133,7 +133,7 @@ class MovieMaker:
     def sleep(self):
         time.sleep(self.timeout)
 
-    def make(self, in_memory=False):
+    def make_old_impl(self, in_memory=False):
         # TODO : make base class so we can reuse this with sandbox/base.py
         progress = IntProgress(description='Rendering...', max=len(self._time_range)-1)
         self._event = threading.Event()
@@ -196,7 +196,7 @@ class MovieMaker:
         self.thread.start()
         return progress
     
-    def make_new(self, movie=True, keep_data=False):
+    def make(self, movie=True, keep_data=False):
         """ 
 
         Parameters
