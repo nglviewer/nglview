@@ -9,7 +9,7 @@ import ipywidgets as widgets
 import ipywidgets.embed
 import numpy as np
 from IPython.display import display
-from ipywidgets import (Image, Box, DOMWidget, HBox, IntSlider, Output, Play, Widget,
+from ipywidgets import (Image, Box, DOMWidget, HBox, VBox, IntSlider, Output, Play, Widget,
                         jslink)
 from ipywidgets import widget as _widget
 from traitlets import (Bool, CaselessStrEnum, Dict, Instance, Int, Integer,
@@ -522,17 +522,32 @@ class NGLWidget(DOMWidget):
                 self._gui = self.player._display()
             display(self._gui)
 
-    def display(self, gui=False, use_box=False):
+    def display(self, gui=False, style='ngl'):
+        """
+
+        Parameters
+        ----------
+        gui : bool
+            If True: turn on GUI
+        style : str, {'ngl', 'ipywidgets}, default 'ngl'
+            GUI style (with gui=True)
+        """
         if gui:
-            self._gui = self.player._display()
-            if use_box:
-                box = Box([self, self._gui])
-                box._gui_style = 'row'
-                return box
-            else:
-                display(self)
-                display(self._gui)
-                return None
+            if style == 'ipywidgets':
+                # For the old implementation
+                # is there anyone using this?
+                self.gui_style = None # turn off the NGL's GUI
+                self._gui = self.player._display()
+                self._gui.layout.align_self = 'stretch'
+                self._gui.layout.width = '400px'
+                b = HBox([self, self._gui])
+                def on(b):
+                    self.handle_resize()
+                b.on_displayed(on)
+                return b
+            elif style == 'ngl':
+                self.gui_style = 'ngl'
+                return self
         else:
             return self
 
