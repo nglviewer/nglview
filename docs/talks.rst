@@ -14,4 +14,5 @@
       Rose <http://arose.github.io/talks/ngl-web3d>`__
 
 - Videos from users
+    - ["The universe as balls and springs: molecular dynamics in Python" - Lily Wang (PyCon AU 2019)](https://youtu.be/X5umNQDqfqQ)
     - https://www.youtube.com/watch?v=RWgt1WMwMUs
