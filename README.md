@@ -302,7 +302,7 @@ Interaction controls
 Movie making
 ------------
 
-Notes: Unstable feature.
+Require: moviepy (`pip install moviepy`)
 
 ```python
 from nglview.contrib.movie import MovieMaker
