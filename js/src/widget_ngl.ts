@@ -45,15 +45,13 @@ function generateUUID () {
 }
 
 
-function createView(that, trait_name){
+async function createView(that, trait_name){
     // Create a view for the model with given `trait_name`
     // e.g: in backend, 'view.<trait_name>`
     console.log("Creating view for model " + trait_name);
     var manager = that.model.widget_manager
     var model_id = that.model.get(trait_name).replace("IPY_MODEL_", "");
-    return manager.get_model(model_id).then(function(model){
-        return manager.create_view(model)
-    })
+    return await manager.create_view(await manager.get_model(model_id))
 }
 
 
@@ -222,7 +220,7 @@ class NGLView extends widgets.DOMWidgetView{
           });
       }, this);
 
-      this.stage.signals.componentRemoved.add(function(component) {
+      this.stage.signals.componentRemoved.add(async function(component) {
           var that = this
           var cindex = this.comp_uuids.indexOf(component.uuid)
           this.comp_uuids.splice(cindex, 1)
@@ -236,23 +234,22 @@ class NGLView extends widgets.DOMWidgetView{
               pviews.push(this.model.views[k])
           }
 
-          Promise.all(pviews).then((views) => {
-              console.log(views)
-              var update_backend = false
-              for (var k in views){
-                  var view = views[k]
-                  if ((view.uuid != that.uuid) && (view.stage.compList.length > n_components)){
-                      // remove component from NGL's GUI
-                      // pass
-                      view.stage.removeComponent(view.stage.compList[cindex])
-                      update_backend = true
-                  }
+          var views = await Promise.all(pviews)
+          console.log(views)
+          var update_backend = false
+          for (var k in views){
+              var view = views[k]
+              if ((view.uuid != that.uuid) && (view.stage.compList.length > n_components)){
+                  // remove component from NGL's GUI
+                  // pass
+                  view.stage.removeComponent(view.stage.compList[cindex])
+                  update_backend = true
               }
-              if (update_backend){
-                  console.log("should update backend")
-                  that.send({"type": "removeComponent", "data": cindex})
-              }
-          })
+          }
+          if (update_backend){
+              console.log("should update backend")
+              that.send({"type": "removeComponent", "data": cindex})
+          }
       }, this);
 
       this.stage.signals.parametersChanged.add(function(){
@@ -263,18 +260,15 @@ class NGLView extends widgets.DOMWidgetView{
           this.serialize_camera_orientation();
           var m = this.stage.viewerControls.getOrientation();
           if (that._synced_model_ids.length > 0 && that._ngl_focused == 1){
-              that._synced_model_ids.forEach(function(mid){
-                  that.model.widget_manager.get_model(mid).then(function(model){
-                      for (var k in model.views){
-                          var pview = model.views[k];
-                          pview.then(function(view){
-                              // not sync with itself
-                              if (view.uuid != that.uuid){
-                                  view.stage.viewerControls.orient(m);
-                              }
-                          })
+              that._synced_model_ids.forEach(async function(mid){
+                  var model = await that.model.widget_manager.get_model(mid)
+                  for (var k in model.views){
+                      var pview = model.views[k];
+                      var view = await model.views[k]
+                      if (view.uuid != that.uuid){
+                          view.stage.viewerControls.orient(m);
                       }
-                  })
+                  }
               })
           }
       }.bind(this));
@@ -329,29 +323,27 @@ class NGLView extends widgets.DOMWidgetView{
       }, this);
     }
 
-    mouseOverDisplay(type){
+    async mouseOverDisplay(type){
         var that = this;
         if (this.btn_pview_fullscreen){
-            this.btn_pview_fullscreen.then(function(v){
-                v.el.style.display = type
-                if (that.stage_widget){
-                    // If NGL's GUI exists, use its fullscreen button.
-                    v.el.style.display = 'none'
-                }
-            })
+            var btn = await this.btn_pview_fullscreen
+            btn.el.style.display = type
+            if (that.stage_widget){
+                // If NGL's GUI exists, use its fullscreen button.
+                btn.el.style.display = 'none'
+            }
         }
 
         var that = this;
         if (this.player_pview){
-            this.player_pview.then(function(v){
+            var v = await this.player_pview
                 v.el.style.display = type
                 // Need to check if max_frame is available (otherwise NaN)
                 // https://github.com/jupyter-widgets/ipywidgets/issues/2485
                 if (!that.model.get("max_frame") || (that.model.get("max_frame") == 0)){
                     // always hide if there's no trajectory.
                     v.el.style.display = 'none'
-                }
-            })
+            }
         }
     }
 
@@ -398,7 +390,7 @@ class NGLView extends widgets.DOMWidgetView{
         }
     }
 
-    handleEmbed(){
+    async handleEmbed(){
         var that = this;
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
         var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
@@ -416,37 +408,35 @@ class NGLView extends widgets.DOMWidgetView{
         });
 
 
-        Promise.all(loadfile_list).then(function(compList){
-            that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
-            that.stage.setParameters(ngl_stage_params);
-            that.set_camera_orientation(that.model.get("_camera_orientation"));
-            that.touch();
+        var compList = await Promise.all(loadfile_list)
+        that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
+        that.stage.setParameters(ngl_stage_params);
+        that.set_camera_orientation(that.model.get("_camera_orientation"));
+        that.touch();
 
-            // Outside notebook
-            if (that.model.comm === undefined){
-                var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
-                var n_frames = ngl_coordinate_resource['n_frames'] || 1
-                that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
-                that.touch()
-                that.getPlayerModel().then(function(model){
-                    var pmodel = model.get("children")[0];
-                    that.listenTo(pmodel,
-                        "change:value", function(){
-                            that.updateCoordinatesFromDict(ngl_coordinate_resource,
-                            pmodel.get("value"))})
-                })
+        // Outside notebook
+        if (that.model.comm === undefined){
+            var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
+            var n_frames = ngl_coordinate_resource['n_frames'] || 1
+            that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
+            that.touch()
+            var model = await that.getPlayerModel()
+            var pmodel = model.get("children")[0];
+            that.listenTo(pmodel,
+                "change:value", function(){
+                    that.updateCoordinatesFromDict(ngl_coordinate_resource,
+                    pmodel.get("value"))})
+        }
+
+
+        // fire any msg with "fire_embed"
+        that.model.get("_ngl_msg_archive").forEach(function(msg){
+            if (msg.fire_embed){
+                that.on_msg(msg);
             }
+        })
 
-
-            // fire any msg with "fire_embed"
-            that.model.get("_ngl_msg_archive").forEach(function(msg){
-                if (msg.fire_embed){
-                    that.on_msg(msg);
-                }
-            })
-
-            that.handleResize() // FIXME: really need this?
-        }); // Promise.all
+        that.handleResize() // FIXME: really need this?
     }
 
     updateCoordinatesFromDict(cdict, frame_index){
@@ -500,18 +490,15 @@ class NGLView extends widgets.DOMWidgetView{
         });
         var that = this
         if (that._synced_repr_model_ids.length > 0){
-            that._synced_repr_model_ids.forEach(function(mid){
-                that.model.widget_manager.get_model(mid).then(function(model){
+            that._synced_repr_model_ids.forEach(async function(mid){
+                var model = await that.model.widget_manager.get_model(mid)
                     for (var k in model.views){
-                        var pview = model.views[k];
-                        pview.then(function(view){
-                            // not sync with itself
-                            if (view.uuid != that.uuid){
-                                view._set_representation_from_repr_dict(repr_dict)
-                            }
-                        })
+                        var view = await model.views[k];
+                        // not sync with itself
+                        if (view.uuid != that.uuid){
+                            view._set_representation_from_repr_dict(repr_dict)
+                        }
                     }
-                })
             })
         }
     }
@@ -541,17 +528,16 @@ class NGLView extends widgets.DOMWidgetView{
         }
     }
 
-    syncReprWithMe(){
+    async syncReprWithMe(){
         // Make sure views of the same model has the same representations
         // Only needed if we use Sidebar that connects to specific view.
         var that = this
         var repr_dict = this.getReprDictFrontEnd()
         for (var k in this.model.views){
-            this.model.views[k].then((v) =>{
-                if (v.uuid != that.uuid){
-                    v._set_representation_from_repr_dict(repr_dict)
-                }
-            })
+            var v = await this.model.views[k]
+            if (v.uuid != that.uuid){
+                v._set_representation_from_repr_dict(repr_dict)
+            }
         }
         this.request_repr_dict()
     }
@@ -592,15 +578,13 @@ class NGLView extends widgets.DOMWidgetView{
         }
     }
 
-    createView(trait_name){
+    async createView(trait_name){
         // Create a view for the model with given `trait_name`
         // e.g: in backend, 'view.<trait_name>`
         console.log("Creating view for model " + trait_name);
         var manager = this.model.widget_manager;
         var model_id = this.model.get(trait_name).replace("IPY_MODEL_", "");
-        return this.model.widget_manager.get_model(model_id).then(function(model){
-            return manager.create_view(model)
-        })
+        return await manager.create_view(await manager.get_model(model_id))
     }
 
     getPlayerModel(){
@@ -609,78 +593,72 @@ class NGLView extends widgets.DOMWidgetView{
         return this.model.widget_manager.get_model(model_id)
     }
 
-    createIPlayer(){
+    async createIPlayer(){
         this.player_pview = this.createView("_iplayer");
+        var view = await this.player_pview
         var that = this;
-        this.player_pview.then(function(view){
-                var pe = view.el
-                pe.style.position = 'absolute'
-                pe.style.zIndex = 100
-                pe.style.bottom = '5%'
-                pe.style.left = '10%'
-                pe.style.opacity = '0.7'
-                that.stage.viewer.container.append(view.el);
-                pe.style.display = 'none'
-            })
+        var pe = view.el
+        pe.style.position = 'absolute'
+        pe.style.zIndex = 100
+        pe.style.bottom = '5%'
+        pe.style.left = '10%'
+        pe.style.opacity = '0.7'
+        that.stage.viewer.container.append(view.el);
+        pe.style.display = 'none'
     }
 
-    createImageBtn(){
+    async createImageBtn(){
         this.image_btn_pview = this.createView("_ibtn_image");
-        var that = this;
-        this.image_btn_pview.then(function(view){
-           var pe = view.el
-           pe.style.position = 'absolute'
-           pe.style.zIndex = 100
-           pe.style.top = '5%'
-           pe.style.right = '10%'
-           pe.style.opacity = '0.7'
-           pe.style.width = '35px'
-           that.stage.viewer.container.append(view.el);
-        })
+        var view = await this.image_btn_pview
+        var pe = view.el
+        pe.style.position = 'absolute'
+        pe.style.zIndex = 100
+        pe.style.top = '5%'
+        pe.style.right = '10%'
+        pe.style.opacity = '0.7'
+        pe.style.width = '35px'
+        this.stage.viewer.container.append(view.el);
     }
 
-    createFullscreenBtn(){
+    async createFullscreenBtn(){
         this.btn_pview_fullscreen = this.createView("_ibtn_fullscreen");
-        var that = this;
-        var stage = that.stage;
-        this.btn_pview_fullscreen.then(function(view){
-           var pe = view.el
-           pe.style.position = 'absolute'
-           pe.style.zIndex = 100
-           pe.style.top = '5%'
-           pe.style.right = '5%'
-           pe.style.opacity = '0.7'
-           pe.style.width = '35px'
-           pe.style.background = 'white'
-           pe.style.opacity = '0.3'
-           pe.style.display = 'none'
-           pe.onclick = function(){
-               that.stage.toggleFullscreen();
-           }
-           stage.viewer.container.append(view.el);
-           stage.signals.fullscreenChanged.add(function (isFullscreen) {
-             if (isFullscreen) {
-               view.model.set("icon", "compress")
-             } else {
-               view.model.set("icon", "expand")
-             }
-           })
+        var view = await this.btn_pview_fullscreen
+        var stage = this.stage;
+
+        var pe = view.el
+        pe.style.position = 'absolute'
+        pe.style.zIndex = 100
+        pe.style.top = '5%'
+        pe.style.right = '5%'
+        pe.style.opacity = '0.7'
+        pe.style.width = '35px'
+        pe.style.background = 'white'
+        pe.style.opacity = '0.3'
+        pe.style.display = 'none'
+        pe.onclick = function(){
+            this.stage.toggleFullscreen();
+        }.bind(this)
+        stage.viewer.container.append(view.el);
+        stage.signals.fullscreenChanged.add(function (isFullscreen) {
+          if (isFullscreen) {
+            view.model.set("icon", "compress")
+          } else {
+            view.model.set("icon", "expand")
+          }
         })
     }
 
 
-    createGUI(){
+    async createGUI(){
         this.pgui_view = this.createView("_igui");
-        var that = this;
-        this.pgui_view.then(function(view){
-                var pe = view.el
-                pe.style.position = 'absolute'
-                pe.style.zIndex = 100
-                pe.style.top = '5%'
-                pe.style.right = '10%'
-                pe.style.width = '300px'
-                that.stage.viewer.container.append(view.el);
-            })
+        var view = await this.pgui_view
+        var pe = view.el
+        pe.style.position = 'absolute'
+        pe.style.zIndex = 100
+        pe.style.top = '5%'
+        pe.style.right = '10%'
+        pe.style.width = '300px'
+        this.stage.viewer.container.append(view.el);
     }
 
 
@@ -830,27 +808,26 @@ class NGLView extends widgets.DOMWidgetView{
         shapeComp.addRepresentation("buffer");
     }
 
-    replaceStructure(structure){
+    async replaceStructure(structure){
          var blob = new Blob([structure.data], {type: "text/plain"});
+         var stage = this.stage
          var params = structure.params || {};
          params.ext = structure.ext;
          params.defaultRepresentation = false;
          var comp = this.stage.compList[0];
          var representations = comp.reprList.slice();
          var old_orientation = this.stage.viewerControls.getOrientation();
-         var that = this;
-         this.stage.loadFile(blob, params).then(function(component) {
-             that.stage.viewerControls.orient(old_orientation);
-             representations.forEach(function(repr) {
-                 var repr_name = repr.name;
-                 var repr_params = repr.repr.getParameters();
-                 // Note: not using repr.repr.type, repr.repr.params
-                 // since seems to me that repr.repr.params won't return correct "sele"
-                 component.addRepresentation(repr_name, repr_params);
-             });
-             that.stage.removeComponent(comp);
-             that._handleLoadFileFinished();
+         var component = await this.stage.loadFile(blob, params)
+         stage.viewerControls.orient(old_orientation);
+         representations.forEach(function(repr) {
+             var repr_name = repr.name;
+             var repr_params = repr.repr.getParameters();
+             // Note: not using repr.repr.type, repr.repr.params
+             // since seems to me that repr.repr.params won't return correct "sele"
+             component.addRepresentation(repr_name, repr_params);
          });
+         stage.removeComponent(comp);
+         this._handleLoadFileFinished();
     }
 
     superpose(cindex0, cindex1, align, sele0, sele1) {
@@ -971,17 +948,16 @@ class NGLView extends widgets.DOMWidgetView{
         })
     }
 
-    _downloadImage(filename, params) {
+    async _downloadImage(filename, params) {
         if (this.ngl_view_id == this.get_last_child_id()){
-            this.stage.makeImage(params).then(function(blob) {
-                NGL.download(blob, filename);
-            })
+            var blob = await this.stage.makeImage(params)
+            NGL.download(blob, filename);
         }
     }
 
-    _exportImage(wid, params) {
+    async _exportImage(wid, params) {
         if (this.ngl_view_id == this.get_last_child_id()){
-            this.stage.makeImage(params).then(function(blob) {
+            var blob = await this.stage.makeImage(params)
                 var reader = new FileReader();
                 var arr_str;
                 reader.onload = function() {
@@ -996,29 +972,26 @@ class NGLView extends widgets.DOMWidgetView{
                     this.send({'type': 'async_message', 'data': 'ok'});
                 }.bind(this);
                 reader.readAsDataURL(blob);
-            }.bind(this));
-        }
-    }
+    }}
 
-    handleMovieMaking(render_params) {
+    async handleMovieMaking(render_params) {
         console.log('handleMovieMaking: render_params', render_params)
         if (this.ngl_view_id == this.get_last_child_id()){
-            this.stage.makeImage(render_params).then(function(blob) {
-                var reader = new FileReader();
-                var arr_str;
-                reader.onload = function() {
-                    arr_str = (reader.result as string).replace("data:image/png;base64,", "");
-                    // this.model.set("_image_data", arr_str);
-                    // this.touch();
-                    this.send({
-                        "data": arr_str,
-                        "type": "movie_image_data",
-                        }); // tell backend that image render is finished, 
-                            // backend will send next frame's coordinates.
-                    this.send({'type': 'async_message', 'data': 'ok'});
-                }.bind(this);
-                reader.readAsDataURL(blob);
-            }.bind(this));
+            var blob = await this.stage.makeImage(render_params)
+            var reader = new FileReader();
+            var arr_str;
+            reader.onload = function() {
+                arr_str = (reader.result as string).replace("data:image/png;base64,", "");
+                // this.model.set("_image_data", arr_str);
+                // this.touch();
+                this.send({
+                    "data": arr_str,
+                    "type": "movie_image_data",
+                    }); // tell backend that image render is finished, 
+                        // backend will send next frame's coordinates.
+                this.send({'type': 'async_message', 'data': 'ok'});
+            }.bind(this);
+            reader.readAsDataURL(blob);
         }
     }
 
@@ -1068,16 +1041,13 @@ class NGLView extends widgets.DOMWidgetView{
         return keys[keys.length-1]
     }
 
-    _handleStageLoadFile(msg){
+    async _handleStageLoadFile(msg){
         // args = [{'type': ..., 'data': ...}]
         if (this.ngl_view_id != this.get_last_child_id() && msg.last_child){
             return
         }
-        var that = this;
-        this._getLoadFilePromise(msg).then(function(o){
-            that._handleLoadFileFinished();
-            o;
-        });
+        var o = this._getLoadFilePromise(msg)
+        this._handleLoadFileFinished();
     }
 
 	addColorScheme(args, label){
