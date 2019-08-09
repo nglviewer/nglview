@@ -12,3 +12,4 @@ dependencies:
 - pip:
     - pytraj
     - ipython_blocking
+    - moviepy
