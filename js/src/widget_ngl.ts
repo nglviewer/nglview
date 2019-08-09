@@ -17,6 +17,8 @@ import { FullscreenModel, FullscreenView } from "./fullscreen"
 import { ColormakerRegistryModel, ColormakerRegistryView } from "./color"
 import { ThemeManagerModel, ThemeManagerView} from "./theme"
 
+NGL.nglview_debug = false
+
 // From NGL
 // http://www.broofa.com/Tools/Math.uuid.htm
 const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
@@ -152,7 +154,6 @@ class NGLView extends widgets.DOMWidgetView{
         }, this);
 
         if (this.model.comm) {
-            // for embeding in website
             this.model.comm.on_msg(function(msg) {
                 var buffers = msg.buffers;
                 var content = msg.content.data.content;
@@ -999,6 +1000,28 @@ class NGLView extends widgets.DOMWidgetView{
         }
     }
 
+    handleMovieMaking(render_params) {
+        console.log('handleMovieMaking: render_params', render_params)
+        if (this.ngl_view_id == this.get_last_child_id()){
+            this.stage.makeImage(render_params).then(function(blob) {
+                var reader = new FileReader();
+                var arr_str;
+                reader.onload = function() {
+                    arr_str = (reader.result as string).replace("data:image/png;base64,", "");
+                    // this.model.set("_image_data", arr_str);
+                    // this.touch();
+                    this.send({
+                        "data": arr_str,
+                        "type": "movie_image_data",
+                        }); // tell backend that image render is finished, 
+                            // backend will send next frame's coordinates.
+                    this.send({'type': 'async_message', 'data': 'ok'});
+                }.bind(this);
+                reader.readAsDataURL(blob);
+            }.bind(this));
+        }
+    }
+
 
     _handleLoadFileFinished() {
         this.send({'type': 'async_message', 'data': 'ok'});
@@ -1170,6 +1193,9 @@ class NGLView extends widgets.DOMWidgetView{
                 if (coordinates.byteLength > 0) {
                     this.updateCoordinates(coordinates, traj_index);
                 }
+            }
+            if (msg.movie_making){
+                this.handleMovieMaking(msg.render_params)
             }
         } else if (msg.type == 'get') {
             if (msg.data == 'camera') {
