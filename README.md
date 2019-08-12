@@ -58,13 +58,6 @@ Released version
    jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
-## Version Compatibility
-
-| nglview | ipywidgets | ipykernel |
-| --------|:----------:|----------:|
-| < 1.0   | 5.2.2      | N/A
-| 1.0     | 7.0.0      | 4.6
-
 ## Notes
 
 If you are using `notebook` v5.0, you need to increase the `iopub_data_rate_limit`
@@ -99,9 +92,6 @@ The development version can be installed directly from github:
     
     # tested with ipywidgets 5.2.2, notebook 4.2.1
 ```
-### jupyterlab user
-
-Not supported yet.
 
 Example
 =======
@@ -162,7 +152,7 @@ Representations
 ---------------
 
 ```python
-view.add_representation(repr_type='cartoon', selection='protein')
+view.add_representation('cartoon', selection='protein')
 
 # or shorter
 view.add_cartoon(selection="protein")
@@ -230,14 +220,14 @@ view.frame = 100
 
 ```Python
 # parameters for the NGL stage object
-view.parameters = {
+view.stage.set_parameters(**{
     # "percentages, "dist" is distance too camera in Angstrom
     "clipNear": 0, "clipFar": 100, "clipDist": 10,
     # percentages, start of fog and where on full effect
     "fogNear": 0, "fogFar": 100,
     # background color
     "backgroundColor": "black",
-}
+})
 
 # note: NGLView accepts both origin camel NGL keywords (e.g. "clipNear")
 # and snake keywords (e.g "clip_near")
@@ -306,7 +296,7 @@ Require: moviepy (`pip install moviepy`)
 
 ```python
 from nglview.contrib.movie import MovieMaker
-movie = MovieMaker(view, output='my.gif')
+movie = MovieMaker(view, output='my.gif', in_memory=True)
 movie.make()
 ```
 
@@ -343,11 +333,8 @@ nglview my.parm7 -c traj.nc
 # make sure to use quote " "
 nglview my.parm7 -c "*.nc"
 
-# open notebook, copy content from `myscript.py` then execute it
+# open notebook, copy content from `myscript.py`
 nglview myscript.py
-
-# open notebook and execute 1st cell
-nglview mynotebook.ipynb
 
 # create a remote notebook
 # just follow its instruction
@@ -357,9 +344,6 @@ nglview mynotebook.ipynb --remote
 
 # demo (don't need pytraj)
 nglview demo
-
-# disable autorun the 1st cell of the notebook
-nglview my.pdb --disable-autorun
 
 # specify web browser
 nglview my.pdb --browser=google-chrome
