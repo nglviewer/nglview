@@ -8,7 +8,8 @@ dependencies:
 - ipywidgets=7.5.1
 - notebook
 - ipykernel
-- nglview=2.6.1
+- nglview=2.7
+- rdkit::rdkit
 - pip:
     - pytraj
     - ipython_blocking
