@@ -4,7 +4,7 @@
   "description": "nglview-js-widgets",
   "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
   "license": "MIT",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arose/nglview.git"
@@ -14,7 +14,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "lib"
   ],
   "keywords": [
     "molecular graphics",
@@ -57,7 +58,7 @@
     "@jupyter-widgets/base": "^1.1 || ^2"
   },
   "jupyterlab": {
-    "extension": "src/jupyterlab-plugin"
+    "extension": "lib/jupyterlab-plugin"
   },
   "homepage": "https://github.com/arose/nglview#readme",
   "directories": {
