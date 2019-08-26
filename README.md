@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/arose/nglview.svg?branch=master)](https://travis-ci.org/arose/nglview)
 [![Coverage Status](https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master)](https://coveralls.io/github/arose/nglview)
 
-## Try nglview online: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/hainm/nglview-binder/master?filepath=nglview%2Fnotebooks)
+## Try nglview online: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/hainm/nglview-binder/master?urlpath=lab/tree/nglview/notebooks)
 
 
 An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular structures and trajectories. Utilizes the embeddable [NGL Viewer](https://github.com/arose/ngl) for rendering. Support for showing data from the file-system, [RCSB PDB](http:www.rcsb.org), [simpletraj](https://github.com/arose/simpletraj) and from objects of analysis libraries [mdtraj](http://mdtraj.org/), [pytraj](http://amber-md.github.io/pytraj/latest/index.html), [mdanalysis](http://www.mdanalysis.org/), [ParmEd](http://parmed.github.io/ParmEd/), [rdkit](https://github.com/rdkit/rdkit), [ase](https://wiki.fysik.dtu.dk/ase/), [HTMD](https://www.htmd.org), [biopython](https://github.com/biopython/biopython.github.io/), [cctbx](https://cci.lbl.gov/cctbx_docs/iotbx/), [pyrosetta](http://pyrosetta.org), [schrodinger's Structure](http://content.schrodinger.com/Docs/r2015-4/python_api/api/schrodinger.structure.Structure-class.html)
