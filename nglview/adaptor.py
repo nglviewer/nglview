@@ -1,4 +1,5 @@
 import os
+import warnings
 import os.path
 import uuid
 from functools import partial
@@ -432,8 +433,10 @@ class MDAnalysisTrajectory(Trajectory, Structure):
         f = mda.lib.util.NamedStream(StringIO(), 'tmp.pdb')
         atoms = self.atomgroup.atoms
         # add PDB output to the named stream
-        with mda.Writer(f, atoms.n_atoms, multiframe=False) as W:
-            W.write(atoms)
+        with mda.Writer(f, atoms.n_atoms, multiframe=False) as w:
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
+                w.write(atoms)
         # extract from the stream
         pdb_string = f.read()
         return pdb_string
