@@ -220,6 +220,7 @@ class MovieMaker:
                     frame = next(iframe)
                     self.view._set_coordinates(frame, movie_making=True,
                             render_params=self.render_params)
+                    self.view.frame = frame
                     if self.perframe_hook:
                         self.perframe_hook(self.view)
                     self._progress.value = frame
