@@ -80,9 +80,9 @@ class MovieMaker:
 
     Requires
     --------
-    
+
     moviepy. e.g:
-    
+
         pip install moviepy
         conda install freeimage
 
@@ -195,9 +195,9 @@ class MovieMaker:
         self.thread.daemon = True
         self.thread.start()
         return progress
-    
+
     def make(self, movie=True, keep_data=False):
-        """ 
+        """
 
         Parameters
         ----------
@@ -220,6 +220,8 @@ class MovieMaker:
                     frame = next(iframe)
                     self.view._set_coordinates(frame, movie_making=True,
                             render_params=self.render_params)
+                    if self.perframe_hook:
+                        self.perframe_hook(self.view)
                     self._progress.value = frame
                 except StopIteration:
                     self._progress.description = 'Making...'
