@@ -23,6 +23,7 @@ class MovieMaker:
         Folder that stores images. You can not arbitarily set this folder. It must be
         the download directory of the web browser you are using.
         If None, $HOME/Downloads/ will be used.
+        NOTE: This is DEPRECAGED (used with `make_old_impl`)
     prefix : str, default 'movie'
         prefix name of rendered image.
     output : str, default 'my_movie.gif'
@@ -36,10 +37,9 @@ class MovieMaker:
         if True, do not render any frame and uses existings images in `download_folder`
         for movie making.
         if False, perform rendering first.
-    timeout : a number (second), default 1.
+    timeout : a number (second), default 0.1
         The waiting time between rendering two consecutive frames.
-        You need to decide the "good" value by your self. `timeout` should be larger than
-        the rendering time of each frame.
+        This option should be only used with `perframe_hook` option.
     render_params : dict or None, default None
         NGL rendering params. see NGLWidget.download_image.
         If None, use default values
@@ -98,7 +98,7 @@ class MovieMaker:
                  stop=-1,
                  step=1,
                  skip_render=False,
-                 timeout=1.,
+                 timeout=0.1,
                  in_memory=False,
                  perframe_hook=None,
                  render_params=None,
@@ -209,8 +209,17 @@ class MovieMaker:
         """
         image_array = []
         iframe = tee(self._iframe, 1)[0]
+        frame = next(iframe)
+
+        def hook(frame):
+            self.view.frame = frame
+            time.sleep(self.timeout)
+            self.perframe_hook(self.view)
+            time.sleep(self.timeout)
+
         # trigger movie making communication between backend and frontend
-        self.view._set_coordinates(next(iframe), movie_making=True,
+        self.perframe_hook and hook(frame)
+        self.view._set_coordinates(frame, movie_making=True,
                 render_params=self.render_params)
         self._progress.description = 'Rendering ...'
         def on_msg(widget, msg, _):
@@ -218,11 +227,9 @@ class MovieMaker:
                 image_array.append(msg.get('data'))
                 try:
                     frame = next(iframe)
+                    self.perframe_hook and hook(frame)
                     self.view._set_coordinates(frame, movie_making=True,
                             render_params=self.render_params)
-                    self.view.frame = frame
-                    if self.perframe_hook:
-                        self.perframe_hook(self.view)
                     self._progress.value = frame
                 except StopIteration:
                     self._progress.description = 'Making...'
