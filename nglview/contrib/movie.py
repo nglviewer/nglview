@@ -23,7 +23,7 @@ class MovieMaker:
         Folder that stores images. You can not arbitarily set this folder. It must be
         the download directory of the web browser you are using.
         If None, $HOME/Downloads/ will be used.
-        NOTE: This is DEPRECAGED (used with `make_old_impl`)
+        NOTE: This is DEPRECATED (used with `make_old_impl`)
     prefix : str, default 'movie'
         prefix name of rendered image.
     output : str, default 'my_movie.gif'
