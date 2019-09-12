@@ -1,39 +1,14 @@
-language: cpp
-
 matrix:
   include:
      - { os: linux, env: PYTHON_VERSION=3.7 }
      - { os: linux, env: PYTHON_VERSION=3.6 }
 
-sudo: true
-dist: trusty
-
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - gcc-5
-    - g++-5
-    - clang-3.6
-    - unzip
-
-before_install:
-    - source devtools/travis-ci/install_chrome.sh
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        brew tap homebrew/science;
-        brew update;
-        brew install netcdf fftw;
-      fi
-
 install:
     - source devtools/travis-ci/setup_env.sh
-    - source devtools/travis-ci/clone_nbtest.sh
     - source devtools/travis-ci/install_nglview.sh
 
 script:
     - source devtools/travis-ci/run_tests.sh
-    - if [ "$CONDA_BUILD" == "True" ]; then conda build devtools/recipe; fi
 
 after_success:
     - echo "Congrats"
