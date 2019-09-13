@@ -610,15 +610,12 @@ def test_encode_and_decode():
 @unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
 @unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
 def test_coordinates_meta():
-    from mdtraj.testing import get_fn
-    fn, tn = [
-        get_fn('frame0.pdb'),
-    ] * 2
+    from MDAnalysis import Universe
+    fn, tn = [nv.datafiles.ALA3]*2
     trajs = [pt.load(fn, tn), md.load(fn, top=tn), pmd.load_file(tn, fn)]
 
     N_FRAMES = trajs[0].n_frames
 
-    from MDAnalysis import Universe
     u = Universe(tn, fn)
     trajs.append(Universe(tn, fn))
 
