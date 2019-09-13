@@ -8,7 +8,8 @@ install:
     - source devtools/travis-ci/install_nglview.sh
 
 script:
-    - source devtools/travis-ci/run_tests.sh
+    - (cd nglview/tests && pytest --cov=nglview -vs .)
+      # - source devtools/travis-ci/run_tests.sh
 
 after_success:
     - echo "Congrats"
