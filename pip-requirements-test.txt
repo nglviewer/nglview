@@ -12,7 +12,7 @@ pandas==0.24
 ase
 parmed
 pytraj
-biopython
+# biopython # too many warnings
 pymatgen
 simpletraj
 
