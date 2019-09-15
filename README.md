@@ -391,6 +391,7 @@ Projects integrating NGLView
 - [BioSimSpace](https://biosimspace.org/): An interoperable framework for biomolecular simulation
 - [pyrod](https://github.com/schallerdavid/pyrod): PyRod - Tracing water molecules in molecular dynamics simulations
 - [kugupu](https://github.com/kugupu/kugupu): kugupu - a molecular network generator to study charge transport pathways in amorphous materials
+- [pnab](https://github.com/alenaizan/pnab): proto-Nucleic Acid Builder
 
 Acknowledgment
 ==============
