@@ -1183,7 +1183,7 @@ class NGLWidget(DOMWidget):
         # if passed a supported object, convert "filename" to nglview.Trajectory
         try:
             package_name = filename.__module__.split('.')[0]
-        except TypeError:
+        except (TypeError, AttributeError):
             # string filename
             pass
         else:
