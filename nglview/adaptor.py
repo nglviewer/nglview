@@ -81,6 +81,7 @@ class TextStructure(Structure):
         return self._text
 
 
+@register_backend('rdkit')
 class RdkitStructure(Structure):
     def __init__(self, rdkit_mol, ext="pdb"):
         super().__init__()
