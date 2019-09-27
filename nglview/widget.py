@@ -1110,8 +1110,9 @@ class NGLWidget(DOMWidget):
 
         Parameters
         ----------
-        trajectory: nglview.Trajectory or its derived class or 
-            pytraj.Trajectory-like, mdtraj.Trajectory or MDAnalysis objects
+        trajectory: nglview.Trajectory or its derived class or
+            a supported object, eg pytraj.Trajectory-like,
+            mdtraj.Trajectory, MDAnalysis objects, etc
 
         See Also
         --------
@@ -1179,6 +1180,16 @@ class NGLWidget(DOMWidget):
         If you want to load binary file such as density data, mmtf format, it is
         faster to load file from current or subfolder.
         '''
+        # if passed a supported object, convert "filename" to nglview.Trajectory
+        try:
+            package_name = filename.__module__.split('.')[0]
+        except TypeError:
+            # string filename
+            pass
+        else:
+            if package_name in BACKENDS:
+                filename = BACKENDS[package_name](filename)
+
         self._load_data(filename, **kwargs)
         # assign an ID
         self._ngl_component_ids.append(str(uuid.uuid4()))
