@@ -91,8 +91,8 @@ class RdkitStructure(Structure):
 
     def get_structure_string(self):
         from rdkit import Chem
-        fh = StringIO(Chem.MolToPDBBlock(self._rdkit_mol))
-        return fh.read()
+
+        return Chem.MolToPDBBlock(self._rdkit_mol)
 
 
 class PdbIdStructure(Structure):
