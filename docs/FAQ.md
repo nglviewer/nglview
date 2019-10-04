@@ -23,7 +23,7 @@ Double check if you are having two ipywidgets version (e.g: one installed via pi
 You are likely using older JavaScript distribution of nglview. Check if it is 
 `$HOME/.local/share/jupyter/nbextensions/nglview-js-widgets/`, if Yes, delete it.
 
-If you're using macos, might need to delete the folder `$HOME/Library/Jupyter/nbextensions/Library/Jupyter/nbextensions/nglview-js-widgets/`
+If you're using macos, might need to delete the folder `$HOME/Library/Jupyter/nbextensions/nglview-js-widgets/`
 
 Why? This directory has a higher preference over sys-prefix so notebook will load Javascripts files from here first.
 
