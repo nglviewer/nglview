@@ -208,7 +208,7 @@ class MovieMaker:
             else, only do the rendering (make sure keep_data=True in this case)
         """
         image_array = []
-        iframe = tee(self._iframe, 1)[0]
+        iframe = iter(self._time_range)
         frame = next(iframe)
 
         def hook(frame):

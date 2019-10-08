@@ -782,7 +782,7 @@ class NGLWidget(DOMWidget):
             }
         if movie_making:
             msg['movie_making'] = movie_making
-            msg['render_params'] = render_params,
+            msg['render_params'] = render_params
 
         self.send(
             msg,
