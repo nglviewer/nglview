@@ -202,13 +202,13 @@ def test_API_promise_to_have():
     view.on_loaded(change=dict(new=False))
 
     view._first_time_loaded = False
-    view._ipython_display_()
+    view
     view._first_time_loaded = True
-    view._ipython_display_()
+    view
     view._init_gui = True
-    view._ipython_display_()
+    view
     view._theme = 'dark'
-    view._ipython_display_()
+    view
 
     view.display(gui=True, style='ngl')
     view.display(gui=False)
@@ -265,7 +265,6 @@ def test_API_promise_to_have():
     ])
     view._js_console()
     view._get_full_params()
-    # view._set_place_proxy(HBox())
 
     # iter
     for c in view:
@@ -606,35 +605,6 @@ def test_encode_and_decode():
     aa_eq(xyz, new_xyz)
 
 
-@unittest.skipUnless(has_pytraj, 'skip if not having pytraj')
-@unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
-@unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
-def test_coordinates_meta():
-    from mdtraj.testing import get_fn
-    fn, tn = [
-        get_fn('frame0.pdb'),
-    ] * 2
-    trajs = [pt.load(fn, tn), md.load(fn, top=tn), pmd.load_file(tn, fn)]
-
-    N_FRAMES = trajs[0].n_frames
-
-    from MDAnalysis import Universe
-    u = Universe(tn, fn)
-    trajs.append(Universe(tn, fn))
-
-    views = [
-        nv.show_pytraj(trajs[0]),
-        nv.show_mdtraj(trajs[1]),
-        nv.show_parmed(trajs[2])
-    ]
-    views.append(nv.show_mdanalysis(trajs[3]))
-
-    for index, (view, traj) in enumerate(zip(views, trajs)):
-        view.frame = 3
-
-        assert view._trajlist[0].n_frames == N_FRAMES
-
-
 def test_structure_file():
     for fn in [get_fn('tz2.pdb'), nv.datafiles.GRO]:
         content = open(fn, 'r').read()
@@ -797,20 +767,20 @@ def test_loaded_attribute():
     view.loaded = False
     view.add_structure(structure)
     view.add_trajectory(traj)
-    view._ipython_display_()
+    view
 
     # False, constructor with a single Structure
     view = nv.NGLWidget(structure)
     view.loaded = False
     view.add_trajectory(traj)
-    view._ipython_display_()
+    view
 
     # True
     view = nv.NGLWidget()
     view.loaded = True
     view.add_structure(structure)
     view.add_trajectory(traj)
-    view._ipython_display_()
+    view
 
     # False then True, empty constructor
     view = nv.NGLWidget()
@@ -818,7 +788,7 @@ def test_loaded_attribute():
     view.add_structure(structure)
     view.loaded = True
     view.add_trajectory(traj)
-    view._ipython_display_()
+    view
 
     # False then True, constructor with a Trajectory
     view = nv.NGLWidget(nv.PyTrajTrajectory(traj))
@@ -826,7 +796,7 @@ def test_loaded_attribute():
     view.add_structure(structure)
     view.loaded = True
     view.add_trajectory(traj)
-    view._ipython_display_()
+    view
 
 
 def test_player_simple():
@@ -892,7 +862,7 @@ def test_player_submit_text():
 def test_player_click_button():
     """ test_player_click_button """
     view = nv.demo(gui=True)
-    view._ipython_display_()
+    view
     view._ngl_repr_dict = REPR_DICT
     view.player._create_all_widgets()
     view.player.widget_export_image = view.player._make_button_export_image()

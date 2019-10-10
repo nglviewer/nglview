@@ -32,8 +32,7 @@ install:
     - source devtools/travis-ci/install_nglview.sh
 
 script:
-    - source devtools/travis-ci/run_tests.sh
-    - if [ "$CONDA_BUILD" == "True" ]; then conda build devtools/recipe; fi
+    - bash devtools/travis-ci/run_tests.sh
 
 after_success:
     - echo "Congrats"
