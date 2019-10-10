@@ -1232,7 +1232,7 @@ NGL.SidebarWidget = function (stage, view=undefined) {
     })
 
   var syncRepr = new UI.Icon('superpowers')
-    .setTitle('sync repr')
+    .setTitle('sync representation')
     .setCursor('pointer')
     .setMarginLeft('10px')
     .onClick(function(){
@@ -1332,7 +1332,7 @@ NGL.StructureComponentWidget = function (component, stage) {
 
   function handleRepr(repr){
     reprContainer.add(
-      new NGL.RepresentationElementWidget(repr, stage)
+      new NGL.RepresentationElementWidget(repr, stage, component)
     )
   }
 
@@ -1893,7 +1893,7 @@ NGL.ShapeComponentWidget = function (component, stage) {
 
 // Representation
 
-NGL.RepresentationElementWidget = function (element, stage) {
+NGL.RepresentationElementWidget = function (element, stage, component=undefined) {
   var signals = element.signals
 
   var container = new UI.CollapsibleIconPanel('minus-square', 'plus-square')
@@ -1927,16 +1927,32 @@ NGL.RepresentationElementWidget = function (element, stage) {
       element.setVisibility(!element.visible)
     })
 
+  var center = new UI.Icon('bullseye')
+    .setTitle('center')
+    .setCursor('pointer')
+    .setMarginLeft('10px')
+    .onClick(function () {
+      component.autoView(element.repr.selection.string, 1000)
+    })
+
   var disposeIcon = new UI.DisposeIcon()
     .setMarginLeft('10px')
     .setDisposeFunction(function () {
       element.dispose()
     })
 
-  container
-    .addStatic(name)
-    .addStatic(toggle)
-    .addStatic(disposeIcon)
+  if (component){
+    container
+      .addStatic(name)
+      .addStatic(toggle)
+      .addStatic(center)
+      .addStatic(disposeIcon)
+  }else{
+    container
+      .addStatic(name)
+      .addStatic(toggle)
+      .addStatic(disposeIcon)
+  }
 
   // Selection
 
