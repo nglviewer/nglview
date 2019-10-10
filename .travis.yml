@@ -32,11 +32,12 @@ install:
     - source devtools/travis-ci/install_nglview.sh
 
 script:
-    - bash devtools/travis-ci/run_tests.sh
+    # Not run in root folder to avoid wrongfully report the coverage
+    - (cd nglview/tests && pytest -vs . --cov=nglview --cov-report=html --disable-pytest-warnings)
 
 after_success:
     - echo "Congrats"
-    - coveralls
+    - (cd nglview/tests && coveralls)
 
 notifications:
   email: false
