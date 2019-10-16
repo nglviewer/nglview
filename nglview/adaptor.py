@@ -94,7 +94,8 @@ class RdkitStructure(Structure):
     def get_structure_string(self):
         from rdkit import Chem
 
-        reader = Chem.MolToPDBBlock if self.ext == "pdb" else Chem.MolToMolBlock
+        reader = (self.ext == "pdb") and \
+                 Chem.MolToPDBBlock or Chem.MolToMolBlock
         return reader(self._rdkit_mol, confId=self._conf_id)
 
 

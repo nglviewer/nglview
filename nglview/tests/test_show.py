@@ -1,13 +1,11 @@
-import subprocess
 import sys
+import subprocess
 
+import unittest
 import numpy as np
-from mock import MagicMock
+from mock import MagicMock, patch
 
 import nglview
-
-# TODO : add more show_xxx
-# (check test_widgets.py)
 
 
 def _write(*args, **kargs):
@@ -135,3 +133,51 @@ def test_show_prody():
     st = MagicMock()
     nglview.show_prody(st)
     assert prody.writePDB.called
+
+
+
+try:
+    import rdkit
+    from rdkit import Chem
+    from rdkit.Chem import AllChem
+    has_rdkit = True
+except ImportError:
+    rdkit = AllChem = None
+    has_rdkit = False
+
+
+@unittest.skipUnless(has_rdkit, 'must have rdkit')
+def test_show_rdkit():
+    import rdkit.Chem as Chem
+    rdkit_mol = Chem.AddHs(
+        Chem.MolFromSmiles(
+            'COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4'))
+    AllChem.EmbedMultipleConfs(rdkit_mol,
+                               useExpTorsionAnglePrefs=True,
+                               useBasicKnowledge=True)
+    # FIXME: create test_adaptor.py?
+    # Test RdkitStructure
+    structure = nglview.RdkitStructure(rdkit_mol)
+    assert "HETATM" in structure.get_structure_string()
+    structure = nglview.RdkitStructure(rdkit_mol, ext="sdf")
+    assert "RDKit          3D" in structure.get_structure_string()
+    structure2 = nglview.RdkitStructure(rdkit_mol, ext="sdf", conf_id=0)
+    assert "RDKit          3D" in structure2.get_structure_string()
+    assert structure.get_structure_string() == structure2.get_structure_string()
+    structure3 = nglview.RdkitStructure(rdkit_mol, ext="sdf", conf_id=1)
+    assert "RDKit          3D" in structure3.get_structure_string()
+    assert structure.get_structure_string() != structure3.get_structure_string()
+
+    # Test show_rdkit
+    with patch.object(Chem, 'MolToPDBBlock') as mock_MolToPDBBlock,\
+            patch.object(Chem, 'MolToMolBlock') as mock_MolToMolBlock:
+        nglview.show_rdkit(rdkit_mol, fmt='sdf', conf_id=1)
+        assert mock_MolToMolBlock.called
+        assert not mock_MolToPDBBlock.called
+        assert mock_MolToMolBlock.call_args_list[-1][-1] == {'confId': 1}
+    with patch.object(Chem, 'MolToPDBBlock') as mock_MolToPDBBlock,\
+            patch.object(Chem, 'MolToMolBlock') as mock_MolToMolBlock:
+        nglview.show_rdkit(rdkit_mol)
+        assert not mock_MolToMolBlock.called
+        assert mock_MolToPDBBlock.called
+        assert mock_MolToPDBBlock.call_args_list[-1][-1] == {'confId': -1}
