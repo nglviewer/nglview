@@ -337,6 +337,14 @@ def show_rdkit(rdkit_mol, **kwargs):
     ----------
     rdkit_mol : rdkit.Chem.rdchem.Mol
     kwargs : additional keyword argument
+    If kwargs contains the "confId" key, this will be passed to the
+    RDKit Chem.MolToXXXBlock function as a parameter.
+    If kwargs contains the "fmt" key, this will be used to decide
+    whether rdkit_mol should be visualized as a PDB block (fmt == "pdb")
+    or as a SDF block (fmt == "sdf").
+    If the "fmt" key is not provided, a simple heuristic is used:
+    if the first atom contains PDB residue information, rdkit_mol
+    is visualized as a PDB block, otherwise as a SDF block.
 
     Examples
     --------
@@ -359,7 +367,18 @@ def show_rdkit(rdkit_mol, **kwargs):
     >>> view = nv.show_rdkit(m, parmed=True) # doctest: +SKIP
     '''
     from rdkit import Chem
-    fh = StringIO(Chem.MolToPDBBlock(rdkit_mol))
+    try:
+        confId = kwargs.pop("confId")
+    except KeyError:
+        confId = -1
+    try:
+        fmt = kwargs.pop("fmt")
+    except KeyError:
+        has_residue_info = (rdkit_mol.GetNumAtoms() and
+            rdkit_mol.GetAtomWithIdx(0).GetPDBResidueInfo())
+        fmt = "pdb" if has_residue_info else "sdf"
+    mol_read_fn = Chem.MolToPDBBlock if fmt == "pdb" else Chem.MolToMolBlock
+    fh = StringIO(mol_read_fn(rdkit_mol, confId=confId))
 
     try:
         use_parmed = kwargs.pop("parmed")
@@ -368,7 +387,7 @@ def show_rdkit(rdkit_mol, **kwargs):
 
     if not use_parmed:
         view = NGLWidget()
-        view.add_component(fh, ext='pdb', **kwargs)
+        view.add_component(fh, ext=fmt, **kwargs)
         return view
     else:
         import parmed as pmd
