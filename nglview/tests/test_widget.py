@@ -592,8 +592,16 @@ def test_show_rdkit():
     assert not view._trajlist
     view = nv.show_rdkit(rdkit_mol, parmed=True)
     assert view._trajlist
-
-    view = nv.RdkitStructure(rdkit_mol)
+    structure = nv.RdkitStructure(rdkit_mol)
+    assert "HETATM" in structure.get_structure_string()
+    structure = nv.RdkitStructure(rdkit_mol, ext="sdf")
+    assert "RDKit          3D" in structure.get_structure_string()
+    structure2 = nv.RdkitStructure(rdkit_mol, ext="sdf", conf_id=0)
+    assert "RDKit          3D" in structure2.get_structure_string()
+    assert structure.get_structure_string() == structure2.get_structure_string()
+    structure3 = nv.RdkitStructure(rdkit_mol, ext="sdf", conf_id=1)
+    assert "RDKit          3D" in structure3.get_structure_string()
+    assert structure.get_structure_string() != structure3.get_structure_string()
 
 
 def test_encode_and_decode():

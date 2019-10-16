@@ -337,8 +337,9 @@ def show_rdkit(rdkit_mol, **kwargs):
     ----------
     rdkit_mol : rdkit.Chem.rdchem.Mol
     kwargs : additional keyword argument
-    If kwargs contains the "confId" key, this will be passed to the
-    RDKit Chem.MolToXXXBlock function as a parameter.
+    If kwargs contains the "conf_id" key, this will be passed to the
+    RDKit Chem.MolToXXXBlock function as the confId parameter.
+    If the "conf_id" key is not provided, -1 will be used as confId.
     If kwargs contains the "fmt" key, this will be used to decide
     whether rdkit_mol should be visualized as a PDB block (fmt == "pdb")
     or as a SDF block (fmt == "sdf").
@@ -367,18 +368,16 @@ def show_rdkit(rdkit_mol, **kwargs):
     >>> view = nv.show_rdkit(m, parmed=True) # doctest: +SKIP
     '''
     from rdkit import Chem
-    try:
-        confId = kwargs.pop("confId")
-    except KeyError:
-        confId = -1
+    confId = kwargs.pop("confId", -1)
     try:
         fmt = kwargs.pop("fmt")
     except KeyError:
-        has_residue_info = (rdkit_mol.GetNumAtoms() and
-            rdkit_mol.GetAtomWithIdx(0).GetPDBResidueInfo())
-        fmt = "pdb" if has_residue_info else "sdf"
-    mol_read_fn = Chem.MolToPDBBlock if fmt == "pdb" else Chem.MolToMolBlock
-    fh = StringIO(mol_read_fn(rdkit_mol, confId=confId))
+        if rdkit_mol.GetNumAtoms() and rdkit_mol.GetAtomWithIdx(0).GetPDBResidueInfo():
+            fmt = "pdb"
+        else:
+            fmt = "sdf"
+    reader = Chem.MolToPDBBlock if fmt == "pdb" else Chem.MolToMolBlock
+    fh = StringIO(reader(rdkit_mol, confId=confId))
 
     try:
         use_parmed = kwargs.pop("parmed")
