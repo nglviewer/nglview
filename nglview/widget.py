@@ -159,7 +159,7 @@ class NGLWidget(DOMWidget):
     _camera_orientation = List().tag(sync=True)
     _synced_model_ids = List().tag(sync=True)
     _synced_repr_model_ids = List().tag(sync=True)
-    _ngl_view_id = List(Unicode).tag(sync=True)
+    _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)

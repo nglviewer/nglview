@@ -8,6 +8,7 @@ from .adaptor import (ASEStructure, ASETrajectory, BiopythonStructure,
                       ProdyStructure, ProdyTrajectory, PyTrajTrajectory,
                       QCelementalStructure, RosettaStructure,
                       SchrodingerStructure, SchrodingerTrajectory,
+                      RdkitStructure,
                       TextStructure)
 from .widget import NGLWidget
 
@@ -367,40 +368,10 @@ def show_rdkit(rdkit_mol, **kwargs):
     >>> # load as trajectory, need to have ParmEd
     >>> view = nv.show_rdkit(m, parmed=True) # doctest: +SKIP
     '''
-    from rdkit import Chem
-    confId = kwargs.pop("confId", -1)
-    try:
-        fmt = kwargs.pop("fmt")
-    except KeyError:
-        if rdkit_mol.GetNumAtoms() and rdkit_mol.GetAtomWithIdx(0).GetPDBResidueInfo():
-            fmt = "pdb"
-        else:
-            fmt = "sdf"
-    reader = Chem.MolToPDBBlock if fmt == "pdb" else Chem.MolToMolBlock
-    fh = StringIO(reader(rdkit_mol, confId=confId))
-
-    try:
-        use_parmed = kwargs.pop("parmed")
-    except KeyError:
-        use_parmed = False
-
-    if not use_parmed:
-        view = NGLWidget()
-        view.add_component(fh, ext=fmt, **kwargs)
-        return view
-    else:
-        import parmed as pmd
-        parm = pmd.load_rdkit(rdkit_mol)
-        parm_nv = ParmEdTrajectory(parm)
-
-        # set option for ParmEd
-        parm_nv.only_save_1st_model = False
-
-        # set option for NGL
-        # wait for: https://github.com/arose/ngl/issues/126
-        # to be fixed in NGLView
-        # parm_nv.params = dict(firstModelOnly=True)
-        return NGLWidget(parm_nv, **kwargs)
+    ext = kwargs.pop("fmt", "pdb")
+    conf_id = kwargs.pop("conf_id", -1)
+    struc = RdkitStructure(rdkit_mol, ext=ext, conf_id=conf_id)
+    return  NGLWidget(struc, **kwargs)
 
 
 def show_mdanalysis(atomgroup, **kwargs):
