@@ -8,6 +8,7 @@ from .adaptor import (ASEStructure, ASETrajectory, BiopythonStructure,
                       ProdyStructure, ProdyTrajectory, PyTrajTrajectory,
                       QCelementalStructure, RosettaStructure,
                       SchrodingerStructure, SchrodingerTrajectory,
+                      RdkitStructure,
                       TextStructure)
 from .widget import NGLWidget
 
@@ -337,6 +338,15 @@ def show_rdkit(rdkit_mol, **kwargs):
     ----------
     rdkit_mol : rdkit.Chem.rdchem.Mol
     kwargs : additional keyword argument
+    If kwargs contains the "conf_id" key, this will be passed to the
+    RDKit Chem.MolToXXXBlock function as the confId parameter.
+    If the "conf_id" key is not provided, -1 will be used as confId.
+    If kwargs contains the "fmt" key, this will be used to decide
+    whether rdkit_mol should be visualized as a PDB block (fmt == "pdb")
+    or as a SDF block (fmt == "sdf").
+    If the "fmt" key is not provided, a simple heuristic is used:
+    if the first atom contains PDB residue information, rdkit_mol
+    is visualized as a PDB block, otherwise as a SDF block.
 
     Examples
     --------
@@ -358,31 +368,10 @@ def show_rdkit(rdkit_mol, **kwargs):
     >>> # load as trajectory, need to have ParmEd
     >>> view = nv.show_rdkit(m, parmed=True) # doctest: +SKIP
     '''
-    from rdkit import Chem
-    fh = StringIO(Chem.MolToPDBBlock(rdkit_mol))
-
-    try:
-        use_parmed = kwargs.pop("parmed")
-    except KeyError:
-        use_parmed = False
-
-    if not use_parmed:
-        view = NGLWidget()
-        view.add_component(fh, ext='pdb', **kwargs)
-        return view
-    else:
-        import parmed as pmd
-        parm = pmd.load_rdkit(rdkit_mol)
-        parm_nv = ParmEdTrajectory(parm)
-
-        # set option for ParmEd
-        parm_nv.only_save_1st_model = False
-
-        # set option for NGL
-        # wait for: https://github.com/arose/ngl/issues/126
-        # to be fixed in NGLView
-        # parm_nv.params = dict(firstModelOnly=True)
-        return NGLWidget(parm_nv, **kwargs)
+    ext = kwargs.pop("fmt", "pdb")
+    conf_id = kwargs.pop("conf_id", -1)
+    struc = RdkitStructure(rdkit_mol, ext=ext, conf_id=conf_id)
+    return  NGLWidget(struc, **kwargs)
 
 
 def show_mdanalysis(atomgroup, **kwargs):

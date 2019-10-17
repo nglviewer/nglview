@@ -50,15 +50,6 @@ except ImportError:
     has_parmed = False
 
 try:
-    import rdkit
-    from rdkit import Chem
-    from rdkit.Chem import AllChem
-    has_rdkit = True
-except ImportError:
-    rdkit = AllChem = None
-    has_rdkit = False
-
-try:
     import MDAnalysis
     has_MDAnalysis = True
 except ImportError:
@@ -580,22 +571,6 @@ def test_show_parmed():
     ngl_traj.get_structure_string()
 
 
-@unittest.skipUnless(has_rdkit, 'must have rdkit')
-def test_show_rdkit():
-    rdkit_mol = Chem.AddHs(
-        Chem.MolFromSmiles(
-            'COc1ccc2[C@H](O)[C@@H](COc2c1)N3CCC(O)(CC3)c4ccc(F)cc4'))
-    AllChem.EmbedMultipleConfs(rdkit_mol,
-                               useExpTorsionAnglePrefs=True,
-                               useBasicKnowledge=True)
-    view = nv.show_rdkit(rdkit_mol, parmed=False)
-    assert not view._trajlist
-    view = nv.show_rdkit(rdkit_mol, parmed=True)
-    assert view._trajlist
-
-    view = nv.RdkitStructure(rdkit_mol)
-
-
 def test_encode_and_decode():
     xyz = np.arange(100).astype('f4')
     shape = xyz.shape
@@ -1056,7 +1031,9 @@ def test_write_html(mock_unset):
     assert len(view._ngl_coordinate_resource[1]) == 3
 
     # box
-    nv.write_html(fp, [HBox([view])], frame_range=(0, 3))
+    with patch.object(embed, 'embed_snippet') as mock_embed:
+        nv.write_html(fp, [HBox([view])], frame_range=(0, 3))
+        # FIXME: assertion?
 
 
 def test_trim_messages():

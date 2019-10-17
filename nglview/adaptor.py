@@ -83,17 +83,20 @@ class TextStructure(Structure):
 
 @register_backend('rdkit')
 class RdkitStructure(Structure):
-    def __init__(self, rdkit_mol, ext="pdb"):
+    def __init__(self, rdkit_mol, ext="pdb", conf_id=-1):
         super().__init__()
         self.path = ''
         self.ext = ext
+        self._conf_id = conf_id
         self.params = {}
         self._rdkit_mol = rdkit_mol
 
     def get_structure_string(self):
         from rdkit import Chem
 
-        return Chem.MolToPDBBlock(self._rdkit_mol)
+        reader = (self.ext == "pdb") and \
+                 Chem.MolToPDBBlock or Chem.MolToMolBlock
+        return reader(self._rdkit_mol, confId=self._conf_id)
 
 
 class PdbIdStructure(Structure):
