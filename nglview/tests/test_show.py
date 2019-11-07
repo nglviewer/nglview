@@ -87,6 +87,9 @@ def test_show_qcelemental_show_psi4():
         def to_string(self, format):
             return '1\nHe\nHe                    0.000000000000     0.000000000000     0.000000000000\n'
 
+        def orient_molecule(self):
+            return self
+
     v = nglview.show_qcelemental(MockMol())
     v
     nglview.show_psi4(MockMol())

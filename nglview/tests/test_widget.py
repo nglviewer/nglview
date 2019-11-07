@@ -79,6 +79,12 @@ try:
 except ImportError:
     has_bio = False
 
+try:
+    import qcelemental
+    has_qcelemental = True
+except ImportError:
+    has_qcelemental = False
+
 
 def default_view():
     traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
@@ -509,6 +515,15 @@ def test_show_pymatgen():
     structure = mg.Structure(lattice, ["Cs", "Cl"],
                              [[0, 0, 0], [0.5, 0.5, 0.5]])
     view = nv.show_pymatgen(structure)
+    view
+
+
+@unittest.skipUnless(has_qcelemental, 'skip if not having qcelemental')
+def test_show_qcelemental():
+    import qcelemental as qcel
+
+    mol = qcel.models.Molecule.from_data("He 0 0 0") 
+    view = nv.show_qcelemental(mol)
     view
 
 

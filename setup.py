@@ -193,6 +193,7 @@ setup_args = {
         "rdkit": ["rdkit"],
         "ase": ["ase"],
         "htmd": ["htmd"],
+        "qcelemental": ["qcelemental"],
     },
     'packages': set(find_packages() + 
                 ['nglview',
