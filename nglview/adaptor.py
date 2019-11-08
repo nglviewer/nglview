@@ -22,7 +22,7 @@ __all__ = [
     'BiopythonStructure',
     'IOTBXStructure',
     'IODataStructure',
-    'QCelementalStructure',
+    'QCElementalStructure',
     'Psi4Structure',
     'OpenbabelStructure',
     'RosettaStructure',
@@ -137,22 +137,17 @@ class IODataStructure(Structure):
             return ASEStructure(ase.io.read(fh.name)).get_structure_string()
 
 
-class QCelementalStructure(Structure):
+class QCElementalStructure(Structure):
     def __init__(self, obj):
         super().__init__()
         self._obj = obj
+        self.ext = 'sdf'
 
     def get_structure_string(self):
-        """Require `ase` package
-        """
-        import ase.io
-        with NamedTemporaryFile(suffix='.xyz') as fh:
-            with open(fh.name, 'w') as fh2:
-                fh2.write(self._obj.to_string('xyz'))
-            return ASEStructure(ase.io.read(fh.name)).get_structure_string()
+        return self._obj.orient_molecule().to_string('nglview-sdf')
 
 
-class Psi4Structure(QCelementalStructure):
+class Psi4Structure(QCElementalStructure):
     pass
 
 

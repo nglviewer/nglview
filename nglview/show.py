@@ -6,7 +6,7 @@ from .adaptor import (ASEStructure, ASETrajectory, BiopythonStructure,
                       IOTBXStructure, MDAnalysisTrajectory, MDTrajTrajectory,
                       OpenbabelStructure, ParmEdTrajectory, PdbIdStructure,
                       ProdyStructure, ProdyTrajectory, PyTrajTrajectory,
-                      QCelementalStructure, RosettaStructure,
+                      QCElementalStructure, RosettaStructure,
                       SchrodingerStructure, SchrodingerTrajectory,
                       RdkitStructure,
                       TextStructure)
@@ -100,7 +100,7 @@ def show_iodata(obj, **kwargs):
 
 
 def show_qcelemental(obj, **kwargs):
-    """Show QCelemental's Molecule (require `ase` package).
+    """Show QCElemental's Molecule.
 
     Examples
     --------
@@ -110,11 +110,11 @@ def show_qcelemental(obj, **kwargs):
     ... view = nv.show_qcelemental(mol)
     ... view
     """
-    return NGLWidget(QCelementalStructure(obj), **kwargs)
+    return NGLWidget(QCElementalStructure(obj), **kwargs)
 
 
 def show_psi4(obj, **kwargs):
-    """Show psi4's Molecule (require `ase` package)
+    """Show Psi4's Molecule.
 
     Examples
     --------
@@ -124,7 +124,7 @@ def show_psi4(obj, **kwargs):
     ... view = nv.show_psi4(mol)
     ... view
     """
-    return NGLWidget(QCelementalStructure(obj), **kwargs)
+    return NGLWidget(QCElementalStructure(obj), **kwargs)
 
 
 def show_openbabel(obj, **kwargs):
