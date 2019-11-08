@@ -42,7 +42,7 @@
     "babel-eslint": "^7.0.0",
     "babel-register": "^6.11.6",
     "css-loader": "^0.23.1",
-    "eslint": "^3.2.2",
+    "eslint": "^6.6.0",
     "eslint-config-google": "^0.7.1",
     "file-loader": "^0.8.5",
     "json-loader": "^0.5.4",
