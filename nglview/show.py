@@ -100,7 +100,7 @@ def show_iodata(obj, **kwargs):
 
 
 def show_qcelemental(obj, **kwargs):
-    """Show QCElemental's Molecule (require `ase` package).
+    """Show QCElemental's Molecule.
 
     Examples
     --------
@@ -114,7 +114,7 @@ def show_qcelemental(obj, **kwargs):
 
 
 def show_psi4(obj, **kwargs):
-    """Show psi4's Molecule (require `ase` package)
+    """Show Psi4's Molecule.
 
     Examples
     --------
