@@ -1,10 +1,11 @@
 import os
+from contextlib import contextmanager
 import warnings
 import os.path
 import uuid
 from functools import partial
 from io import StringIO
-from tempfile import NamedTemporaryFile
+from tempfile import mkstemp
 from urllib.request import urlopen
 
 import numpy as np
@@ -41,10 +42,23 @@ __all__ = [
 ]
 
 
+@contextmanager
+def mkstemp_wrapper(*args, **kwargs):
+    # NamedTemporaryFile cannot be used here because it makes it impossible
+    # on Windows to the file for writing. mkstemp is a bit less restrictive
+    # in this regard.
+    fd, fname = mkstemp(*args, **kwargs)
+    yield fname
+    # On windows, the file must be closed before it can be removed.
+    os.close(fd)
+    os.remove(fname)
+
+
 def _get_structure_string(write_method, suffix='.pdb'):
-    with NamedTemporaryFile(suffix=suffix) as fh:
-        write_method(fh.name)
-        return fh.read().decode()
+    with mkstemp_wrapper(suffix=suffix) as fname:
+        write_method(fname)
+        with open(fname) as fh:
+            return fh.read()
 
 
 class register_backend:
@@ -132,9 +146,9 @@ class IODataStructure(Structure):
         """Require `ase` package
         """
         import ase.io
-        with NamedTemporaryFile(suffix='.xyz') as fh:
-            self._obj.to_file(fh.name)
-            return ASEStructure(ase.io.read(fh.name)).get_structure_string()
+        with mkstemp_wrapper(suffix='.xyz') as fname:
+            self._obj.to_file(fname)
+            return ASEStructure(ase.io.read(fname)).get_structure_string()
 
 
 class QCElementalStructure(Structure):
@@ -358,13 +372,14 @@ class ParmEdStructure(Structure):
 
     def get_structure_string(self):
         # only write 1st model
-        with NamedTemporaryFile(suffix='.pdb') as fh:
+        with mkstemp_wrapper(suffix='.pdb') as fname:
             if self.only_save_1st_model:
                 self._structure.write_pdb(
-                    fh.name, coordinates=self._structure.coordinates)
+                    fname, coordinates=self._structure.coordinates)
             else:
-                self._structure.write_pdb(fh.name)
-            return fh.read().decode()
+                self._structure.write_pdb(fname)
+            with open(fname) as fh:
+                return fh.read()
 
 
 @register_backend('parmed')
