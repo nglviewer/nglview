@@ -1,5 +1,6 @@
 REPRESENTATION_NAME_PAIRS = [
     ('axes', 'axes'),
+    ('principal_axes', 'axes'),
     ('point', 'point'),
     ('line', 'line'),
     ('rope', 'rope'),
