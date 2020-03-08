@@ -546,9 +546,7 @@ def test_show_simpletraj():
 @unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
 def test_show_mdtraj():
     import mdtraj as md
-    from mdtraj.testing import get_fn
-    fn = nv.datafiles.PDB
-    traj = md.load(fn)
+    traj = md.load(nv.datafiles.PDB)
     view = nv.show_mdtraj(traj)
 
 
