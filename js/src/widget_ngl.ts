@@ -202,6 +202,11 @@ class NGLView extends widgets.DOMWidgetView{
           that.mouseOverDisplay('none')
       }, false);
 
+      container.addEventListener('contextmenu', function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+      }, true);
+
       this.stage.signals.componentAdded.add(function(component) {
           this.comp_uuids.push(component.uuid)
           var len = this.stage.compList.length;
@@ -987,7 +992,7 @@ class NGLView extends widgets.DOMWidgetView{
                 this.send({
                     "data": arr_str,
                     "type": "movie_image_data",
-                    }); // tell backend that image render is finished, 
+                    }); // tell backend that image render is finished,
                         // backend will send next frame's coordinates.
                 this.send({'type': 'async_message', 'data': 'ok'});
             }.bind(this);
