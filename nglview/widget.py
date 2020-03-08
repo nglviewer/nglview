@@ -258,6 +258,7 @@ class NGLWidget(DOMWidget):
         # Updating only self.layout.{width, height} don't handle
         # resizing NGL widget properly.
         self._sync_with_layout()
+        # self.layout.width = 'auto'
         self._create_player()
         self._create_ibtn_fullscreen()
 
