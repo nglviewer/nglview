@@ -68,7 +68,7 @@
     "@jupyter-widgets/base": "^1.1 || ^2 || ^3"
   },
   "jupyterlab": {
-    "extension": true
+    "extension": "lib/jupyterlab-plugin"
   },
   "homepage": "https://github.com/arose/nglview#readme",
   "directories": {
