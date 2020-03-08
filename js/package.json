@@ -30,7 +30,13 @@
     "lint": "eslint src test",
     "prepublish": "tsc && webpack",
     "ts": "tsc",
-    "test": "mocha"
+    "test": "mocha",
+    "clean": "rimraf dist/",
+    "build": "yarn run build:lib",
+    "build:labextension": "cd jupyter_archive && rimraf labextension && mkdirp labextension && cd labextension && npm pack ../..",
+    "build:lib": "tsc",
+    "build:all": "yarn run build:labextension",
+    "watch": "tsc -w"
   },
   "devDependencies": {
     "@types/node": "^12.0.2",
@@ -48,14 +54,16 @@
     "json-loader": "^0.5.4",
     "ngl": "2.0.0-dev.36",
     "style-loader": "^0.13.1",
-    "webpack": "^1.12.14"
+    "webpack": "^3.5.5",
+    "rimraf": "^2.6.1"
   },
   "dependencies": {
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "underscore": "^1.8.3",
     "ngl": "2.0.0-dev.36",
-    "@jupyter-widgets/base": "^1.1 || ^2"
+    "lodash": "^4.17.4",
+    "@jupyter-widgets/base": "^1.1 || ^2 || ^3"
   },
   "jupyterlab": {
     "extension": "lib/jupyterlab-plugin"

@@ -58,6 +58,12 @@ Released version
    jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
+To use in Jupyter Lab you need to install appropriate extension:
+
+```bash
+jupyter labextension install  nglview-js-widgets
+```
+
 ## Notes
 
 If you are using `notebook` v5.0, you need to increase the `iopub_data_rate_limit`
@@ -80,7 +86,7 @@ The development version can be installed directly from github:
     git clone https://github.com/arose/nglview
     cd nglview
     python setup.py install
-    
+
     # if you edit files in ./js folder, make sure to rebuild the code
     cd js
     npm install
@@ -89,7 +95,7 @@ The development version can be installed directly from github:
     # python -m ipykernel install --sys-prefix
     # jupyter nbextension enable --py --sys-prefix widgetsnbextension
     # jupyter nbextension enable --py --sys-prefix nglview
-    
+
     # tested with ipywidgets 5.2.2, notebook 4.2.1
 ```
 
@@ -255,7 +261,7 @@ Trajectory
 ```python
 # adding new trajectory
 view.add_trajectory(traj)
-# traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`, 
+# traj could be a `pytraj.Trajectory`, `mdtraj.Trajectory`, `MDAnalysis.Universe`,
 # `parmed.Structure`, `htmd.Molecule` or derived class of `nglview.Trajectory`
 
 # change representation
@@ -316,7 +322,7 @@ Command line
 ```bash
 
 # open a notebook and import nglview
-nglview 
+nglview
 
 # Require installing pytraj (PR for other backends is welcome)
 # open notebook, load `my.pdb` to pytraj's trajectory then display `view`
@@ -385,7 +391,7 @@ Projects integrating NGLView
 - [nanoribbon](https://github.com/oschuett/nanoribbon)
 - [ase](https://github.com/rosswhitfield/ase): Atomic Simulation Environment
 - [pida](https://github.com/jharman25/pida): Software for analyzing multiple protein-protein interaction docking solutions,
-- [pytim](https://github.com/Marcello-Sega/pytim) 
+- [pytim](https://github.com/Marcello-Sega/pytim)
 - [MobleyLab/drug-computing](https://github.com/MobleyLab/drug-computing) Educational materials for, and related to, UC Irvine's Drug Discovery Computing Techniques course.
 - [pyiron](https://pyiron.github.io/): an integrated development environment for implementing, testing, and running simulations in computational materials science.
 - [BioSimSpace](https://biosimspace.org/): An interoperable framework for biomolecular simulation

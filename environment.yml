@@ -1,0 +1,37 @@
+channels:
+    - conda-forge
+
+dependencies:
+    - python>=3.6
+    - pip
+    - pytest
+    - jupyterlab
+    - nodejs
+    - yarn
+    - ipywidgets
+
+    # Testing
+    - mock
+    - coverage
+    - nose
+    - pytest
+    - pytest-cov
+    - coveralls
+
+    # Scientific
+    - numpy
+    - pandas
+    - ase
+    - parmed
+    - biopython
+    - pymatgen
+    - simpletraj
+    - rdkit
+    - mdanalysis
+    - mdtraj
+
+    # Movie making
+    - matplotlib
+    - moviepy
+    - imageio
+    - pillow

@@ -14,3 +14,8 @@ selenium-debug.log
 nbtests/
 
 js/node_modules/
+
+.vscode/
+js/yarn.lock
+js/dist/
+js/lib/
