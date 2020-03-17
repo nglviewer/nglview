@@ -1,4 +1,5 @@
 from .utils.py_utils import _update_url
+import uuid
 
 SHAPE_EXAMPLES = {
     'mesh':
@@ -121,6 +122,10 @@ class Shape:
         self.view._add_shape([
             args,
         ])
+        # Added to remain in sync with the JS components
+        self.view._ngl_component_ids.append(str(uuid.uuid4()))
+        self.view._ngl_component_names.append('nglview.shape.Shape')
+        self.view._update_component_auto_completion()
 
     def add_buffer(self, name, **kwargs):
         """
