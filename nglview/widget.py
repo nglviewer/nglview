@@ -1366,28 +1366,27 @@ class NGLWidget(DOMWidget):
 
     def _trim_message(self, messages):
         messages = messages[:]
-        load_comps = [
-            index for index, msg in enumerate(messages)
-            if msg['methodName'] == 'loadFile'
-        ]
+
         remove_comps = [(index, msg['args'][0])
                         for index, msg in enumerate(messages)
                         if msg['methodName'] == 'removeComponent']
-        remove_comps.reverse()
-        while remove_comps:
-            index, cindex = remove_comps.pop()
-            messages.pop(index)
-            messages.pop(load_comps[cindex])
-            load_comps.remove(load_comps[cindex])
-            load_comps = [
-                index for index, msg in enumerate(messages)
-                if msg['methodName'] == 'loadFile'
-            ]
-            remove_comps = [(index, msg['args'][0])
-                            for index, msg in enumerate(messages)
-                            if msg['methodName'] == 'removeComponent']
-            remove_comps.reverse()
-        return messages
+
+        if len(remove_comps) == 0:
+            return messages
+
+        load_comps = [
+            index for index, msg in enumerate(messages)
+            if msg['methodName'] in ('loadFile', 'addShape', 'addBuffer')
+        ]
+
+        messages_rm = [r[0] for r in remove_comps]
+        messages_rm += [load_comps[r[1]] for r in remove_comps]
+        messages_rm = set(messages_rm)
+
+        return [
+            msg for i, msg in enumerate(messages)
+            if i not in messages_rm
+        ]
 
     def _remote_call(self,
                      method_name,
