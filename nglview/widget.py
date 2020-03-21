@@ -1383,8 +1383,8 @@ class NGLWidget(DOMWidget):
         if not remove_comps:
             return messages
 
-            load_comps = [
-                index for index, msg in enumerate(messages)
+        load_comps = [
+            index for index, msg in enumerate(messages)
             if msg['methodName'] in ('loadFile', 'addShape')
         ]
 
@@ -1395,7 +1395,7 @@ class NGLWidget(DOMWidget):
         return [
             msg for i, msg in enumerate(messages)
             if i not in messages_rm
-            ]
+        ]
 
     def _remote_call(self,
                      method_name,
