@@ -134,5 +134,8 @@ class Shape:
         ...     color2=[0, 1, 0],
         ...     radius= [1])
         """
-
-        self.view._add_buffer(name, **kwargs)
+        self.view._remote_call("addBuffer",
+                               target="Widget",
+                               args=[name],
+                               kwargs=kwargs,
+                               fire_embed=True)
