@@ -91,7 +91,7 @@ class Shape:
         from types import MethodType
 
         def make_func(name):
-            def func(this, *args):
+            def func(self, *args):
                 args_with_name = [
                     name,
                 ] + list(args)

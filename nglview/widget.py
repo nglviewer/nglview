@@ -844,6 +844,16 @@ class NGLWidget(DOMWidget):
 
         self._remote_call('addShape', target='Widget', args=[name, shapes], fire_embed=True)
 
+        # Added to remain in sync with the JS components
+        # Similarly to _loadData
+        self._ngl_component_ids.append(str(uuid.uuid4()))
+
+        comp_name = py_utils.get_name(self.shape, {})
+        self._ngl_component_names.append(comp_name)
+
+        self._update_component_auto_completion()
+        return self[-1]
+
     @_update_url
     def add_representation(self, repr_type, selection='all', **kwargs):
         '''Add structure representation (cartoon, licorice, ...) for given atom selection.
@@ -1366,28 +1376,27 @@ class NGLWidget(DOMWidget):
 
     def _trim_message(self, messages):
         messages = messages[:]
-        load_comps = [
-            index for index, msg in enumerate(messages)
-            if msg['methodName'] == 'loadFile'
-        ]
+
         remove_comps = [(index, msg['args'][0])
                         for index, msg in enumerate(messages)
                         if msg['methodName'] == 'removeComponent']
-        remove_comps.reverse()
-        while remove_comps:
-            index, cindex = remove_comps.pop()
-            messages.pop(index)
-            messages.pop(load_comps[cindex])
-            load_comps.remove(load_comps[cindex])
+
+        if not remove_comps:
+            return messages
+
             load_comps = [
                 index for index, msg in enumerate(messages)
-                if msg['methodName'] == 'loadFile'
+            if msg['methodName'] in ('loadFile', 'addShape')
+        ]
+
+        messages_rm = [r[0] for r in remove_comps]
+        messages_rm += [load_comps[r[1]] for r in remove_comps]
+        messages_rm = set(messages_rm)
+
+        return [
+            msg for i, msg in enumerate(messages)
+            if i not in messages_rm
             ]
-            remove_comps = [(index, msg['args'][0])
-                            for index, msg in enumerate(messages)
-                            if msg['methodName'] == 'removeComponent']
-            remove_comps.reverse()
-        return messages
 
     def _remote_call(self,
                      method_name,
