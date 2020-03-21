@@ -125,7 +125,6 @@ def write_html(fp, views, frame_range=None):
     _unset_serialization(views)
 
 
-
 class NGLWidget(DOMWidget):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
@@ -144,8 +143,8 @@ class NGLWidget(DOMWidget):
     loaded = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
     n_components = Int(0).tag(sync=True)
-    _view_width = Unicode().tag(sync=True) # px
-    _view_height = Unicode().tag(sync=True) # px
+    _view_width = Unicode().tag(sync=True)  # px
+    _view_height = Unicode().tag(sync=True)  # px
     _scene_position = Dict().tag(sync=True)
     _scene_rotation = Dict().tag(sync=True)
     # hack to always display movie
@@ -167,7 +166,8 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
-    _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
+    _gui_theme = CaselessStrEnum(
+        ['dark', 'light'], allow_none=True).tag(sync=True)
     _widget_theme = None
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
@@ -182,7 +182,7 @@ class NGLWidget(DOMWidget):
     _igui = Instance(widgets.Tab,
                      allow_none=True).tag(sync=True, **widget_serialization)
     _ibtn_fullscreen = Instance(widgets.Button,
-            allow_none=True).tag(sync=True, **widget_serialization)
+                                allow_none=True).tag(sync=True, **widget_serialization)
 
     def __init__(self,
                  structure=None,
@@ -268,7 +268,6 @@ class NGLWidget(DOMWidget):
         # onclick is implemented in frontend
         self._ibtn_fullscreen = button
 
-
     def _sync_with_layout(self):
         def on_change_layout(change):
             new = change['new']
@@ -332,7 +331,7 @@ class NGLWidget(DOMWidget):
     @camera.setter
     def camera(self, value):
         """
-        
+
         Parameters
         ----------
         value : str, {'perspective', 'orthographic'}
@@ -473,7 +472,7 @@ class NGLWidget(DOMWidget):
     def _update_max_frame(self):
         self.max_frame = max(
             int(traj.n_frames) for traj in self._trajlist
-            if hasattr(traj, 'n_frames')) - 1 # index starts from 0
+            if hasattr(traj, 'n_frames')) - 1  # index starts from 0
 
     def _wait_until_finished(self, timeout=0.0001):
         # NGL need to send 'finished' signal to
@@ -537,11 +536,12 @@ class NGLWidget(DOMWidget):
             if style == 'ipywidgets':
                 # For the old implementation
                 # is there anyone using this?
-                self.gui_style = None # turn off the NGL's GUI
+                self.gui_style = None  # turn off the NGL's GUI
                 self._gui = self.player._display()
                 self._gui.layout.align_self = 'stretch'
                 self._gui.layout.width = '400px'
                 b = HBox([self, self._gui])
+
                 def on(b):
                     self.handle_resize()
                 b.on_displayed(on)
@@ -578,7 +578,8 @@ class NGLWidget(DOMWidget):
 
     def _set_unsync_repr(self, other_views):
         model_ids = {v._model_id for v in other_views}
-        self._synced_repr_model_ids = list(set(self._synced_repr_model_ids) - model_ids)
+        self._synced_repr_model_ids = list(
+            set(self._synced_repr_model_ids) - model_ids)
         self._remote_call("setSyncRepr",
                           target="Widget",
                           args=[self._synced_repr_model_ids])
@@ -646,7 +647,7 @@ class NGLWidget(DOMWidget):
     def representations(self, reps):
         if isinstance(reps, dict):
             self._remote_call("_set_representation_from_repr_dict",
-                    args=[reps])
+                              args=[reps])
         else:
             self._representations = reps[:]
             for index in range(len(self._ngl_component_ids)):
@@ -682,7 +683,7 @@ class NGLWidget(DOMWidget):
 
     def set_representations(self, representations, component=0):
         """
-        
+
         Parameters
         ----------
         representations : list of dict
@@ -756,13 +757,13 @@ class NGLWidget(DOMWidget):
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
 
             self.set_coordinates(coordinates_dict,
-                    render_params=render_params,
-                    movie_making=movie_making)
+                                 render_params=render_params,
+                                 movie_making=movie_making)
         else:
             print("no trajectory available")
 
     def set_coordinates(self, arr_dict, movie_making=False,
-            render_params=None):
+                        render_params=None):
         # type: (Dict[int, np.ndarray]) -> None
         """Used for update coordinates of a given trajectory
         >>> # arr: numpy array, ndim=2
@@ -778,9 +779,9 @@ class NGLWidget(DOMWidget):
             buffers.append(arr.astype('f4').tobytes())
             coordinates_meta[index] = index
         msg = {
-                'type': 'binary_single',
-                'data': coordinates_meta,
-            }
+            'type': 'binary_single',
+            'data': coordinates_meta,
+        }
         if movie_making:
             msg['movie_making'] = movie_making
             msg['render_params'] = render_params
@@ -828,7 +829,7 @@ class NGLWidget(DOMWidget):
         Notes
         -----
         Supported shape: 'mesh', 'sphere', 'ellipsoid', 'cylinder', 'cone', 'arrow'.
-        
+
         See also
         --------
         {ngl_url}
@@ -842,7 +843,52 @@ class NGLWidget(DOMWidget):
         >>> view._add_shape([sphere, arrow], name='my_shape')
         """
 
-        self._remote_call('addShape', target='Widget', args=[name, shapes], fire_embed=True)
+        self._remote_call('addShape', target='Widget', args=[
+                          name, shapes], fire_embed=True)
+
+        # Added to remain in sync with the JS components
+        # Based on add_component
+        self._ngl_component_ids.append(str(uuid.uuid4()))
+        self._ngl_component_names.append('nglview.shape.Shape')
+        self._update_component_auto_completion()
+        return self[-1]
+
+    def _add_buffer(self, name='buffer', **kwargs):
+        """add buffer objects
+
+        TODO: update doc
+
+        Parameters
+        ----------
+        name : str, default 'buffer'
+            name of given buffer
+
+        See also
+        --------
+        {ngl_url}
+
+        Examples
+        --------
+        >>> view.shape.add_buffer("cone",
+        ...     position1=[0, 0, 0],
+        ...     position2=[1, 1, 1],
+        ...     color=[1, 0, 0],
+        ...     color2=[0, 1, 0],
+        ...     radius=[1])
+        """
+
+        self._remote_call("addBuffer",
+                          target="Widget",
+                          args=[name],
+                          kwargs=kwargs,
+                          fire_embed=True)
+
+        # Added to remain in sync with the JS components
+        # Based on add_component
+        self._ngl_component_ids.append(str(uuid.uuid4()))
+        self._ngl_component_names.append('nglview.shape.Shape')
+        self._update_component_auto_completion()
+        return self[-1]
 
     @_update_url
     def add_representation(self, repr_type, selection='all', **kwargs):
@@ -962,7 +1008,7 @@ class NGLWidget(DOMWidget):
         --------
             # tell NGL to render send image data to notebook.
             view.render_image()
-            
+
             # make sure to call `get_image` method
             view.get_image()
 
@@ -1303,7 +1349,7 @@ class NGLWidget(DOMWidget):
                              kwargs=None,
                              **other_kwargs):
         """call NGL's methods from Python.
-        
+
         Parameters
         ----------
         method_name : str
@@ -1366,28 +1412,27 @@ class NGLWidget(DOMWidget):
 
     def _trim_message(self, messages):
         messages = messages[:]
-        load_comps = [
-            index for index, msg in enumerate(messages)
-            if msg['methodName'] == 'loadFile'
-        ]
+
         remove_comps = [(index, msg['args'][0])
                         for index, msg in enumerate(messages)
                         if msg['methodName'] == 'removeComponent']
-        remove_comps.reverse()
-        while remove_comps:
-            index, cindex = remove_comps.pop()
-            messages.pop(index)
-            messages.pop(load_comps[cindex])
-            load_comps.remove(load_comps[cindex])
-            load_comps = [
-                index for index, msg in enumerate(messages)
-                if msg['methodName'] == 'loadFile'
-            ]
-            remove_comps = [(index, msg['args'][0])
-                            for index, msg in enumerate(messages)
-                            if msg['methodName'] == 'removeComponent']
-            remove_comps.reverse()
-        return messages
+
+        if len(remove_comps) == 0:
+            return messages
+
+        load_comps = [
+            index for index, msg in enumerate(messages)
+            if msg['methodName'] in ('loadFile', 'addShape', 'addBuffer')
+        ]
+
+        messages_rm = [r[0] for r in remove_comps]
+        messages_rm += [load_comps[r[1]] for r in remove_comps]
+        messages_rm = set(messages_rm)
+
+        return [
+            msg for i, msg in enumerate(messages)
+            if i not in messages_rm
+        ]
 
     def _remote_call(self,
                      method_name,
