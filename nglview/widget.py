@@ -852,6 +852,7 @@ class NGLWidget(DOMWidget):
         self._ngl_component_names.append(comp_name)
 
         self._update_component_auto_completion()
+        return ComponentViewer(self, len(self._ngl_component_ids) - 1)
 
     @_update_url
     def add_representation(self, repr_type, selection='all', **kwargs):

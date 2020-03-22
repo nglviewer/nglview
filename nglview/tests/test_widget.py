@@ -444,10 +444,13 @@ def test_add_new_shape():
     view = nv.NGLWidget()
     sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
     arrow = ('arrow', [1, 2, 7], [30, 3, 3], [1, 0, 1], 1.0)
-    view._add_shape([sphere, arrow], name='my_shape')
+    c0 = view._add_shape([sphere, arrow], name='my_shape')
 
     # Shape
-    view.shape.add_arrow([1, 2, 7], [30, 3, 3], [1, 0, 1], 1.0)
+    c1 = view.shape.add_arrow([1, 2, 7], [30, 3, 3], [1, 0, 1], 1.0)
+    assert len(view._ngl_component_ids) == 2
+    view.remove_component(c0)
+    assert len(view._ngl_component_ids) == 1
 
 
 def test_add_buffer():
@@ -460,12 +463,6 @@ def test_add_buffer():
     }
 
     view.shape.add_buffer('sphere', **kwargs)
-
-
-def test_add_new_shape():
-    view = nv.demo()
-    view
-    view.stage.set_parameters(mousePreset='default')
 
 
 def test_remote_call():
