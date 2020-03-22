@@ -839,19 +839,21 @@ class NGLWidget(DOMWidget):
         >>> view = nglview.demo()
         >>> sphere = ('sphere', [0, 0, 9], [1, 0, 0], 1.5)
         >>> arrow = ('arrow', [1, 2, 7 ], [30, 3, 3], [1, 0, 1], 1.0)
-        >>> view._add_shape([sphere, arrow], name='my_shape')
+        >>> c = view._add_shape([sphere, arrow], name='my_shape')
         """
 
         self._remote_call('addShape', target='Widget', args=[name, shapes], fire_embed=True)
 
         # Added to remain in sync with the JS components
         # Similarly to _loadData
-        self._ngl_component_ids.append(str(uuid.uuid4()))
+        cid = str(uuid.uuid4())
+        self._ngl_component_ids.append(cid)
 
         comp_name = py_utils.get_name(self.shape, {})
         self._ngl_component_names.append(comp_name)
 
         self._update_component_auto_completion()
+        return ComponentViewer(self, cid)
 
     @_update_url
     def add_representation(self, repr_type, selection='all', **kwargs):
@@ -1528,7 +1530,7 @@ class NGLWidget(DOMWidget):
         trajids = [traj.id for traj in self._trajlist]
 
         for index, cid in enumerate(self._ngl_component_ids):
-            comp = ComponentViewer(self, index)
+            comp = ComponentViewer(self, cid)
             name = 'component_' + str(index)
             setattr(self, name, comp)
 
@@ -1541,7 +1543,7 @@ class NGLWidget(DOMWidget):
         """
         postive_index = py_utils.get_positive_index(
             index, len(self._ngl_component_ids))
-        return ComponentViewer(self, postive_index)
+        return ComponentViewer(self, self._ngl_component_ids[postive_index])
 
     def __iter__(self):
         """return ComponentViewer
