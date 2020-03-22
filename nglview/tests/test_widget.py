@@ -452,6 +452,9 @@ def test_add_new_shape():
     view.remove_component(c0)
     assert len(view._ngl_component_ids) == 1
 
+    view.remove_component(c1)
+    assert len(view._ngl_component_ids) == 0
+
 
 def test_add_buffer():
     view = nv.NGLWidget()
@@ -610,8 +613,12 @@ def test_camelize_parameters():
 
 
 def test_component_for_duck_typing():
+    # FIXME: deprecate duck typing?
+    # syntax looks ugly.
     view = NGLWidget()
     traj = pt.load(nv.datafiles.PDB)
+
+    # add 3 components (trajectory is a component)
     view.add_component(get_fn('tz2.pdb'))
     view.add_component(get_fn('tz2_2.pdb.gz'))
     view.add_trajectory(nv.PyTrajTrajectory(traj))
@@ -629,11 +636,14 @@ def test_component_for_duck_typing():
     c0.show()
     c0.hide()
 
+    # 2 components left
     view.remove_component(c0.id)
+    # c1 become 1st component
     assert not hasattr(view, 'component_2')
+    assert len(view._ngl_component_ids) == 2
 
     # negative indexing
-    assert view[-1]._index == c1._index
+    assert view[0]._index == c1._index
 
 
 def test_trajectory_show_hide_sending_cooridnates():
