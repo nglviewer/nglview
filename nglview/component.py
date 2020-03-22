@@ -15,9 +15,9 @@ class ComponentViewer:
     ... view.remove_component(c)
     """
 
-    def __init__(self, view, index):
+    def __init__(self, view, id):
         self._view = view
-        self._index = index
+        self._id = id
         widget_utils._add_repr_method_shortcut(self, self._view)
         self._borrow_attribute(self._view, [
             'clear_representations', '_remove_representations_by_name',
@@ -27,7 +27,12 @@ class ComponentViewer:
 
     @property
     def id(self):
-        return self._view._ngl_component_ids[self._index]
+        return self._id
+
+    @property
+    def _index(self):
+        # FIXME: not use private attribute from `self._view`
+        return self._view._ngl_component_ids.index(self._id)
 
     def set_coordinates(self, coordinates):
         """

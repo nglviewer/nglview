@@ -1051,7 +1051,7 @@ class NGLView extends widgets.DOMWidgetView{
         if (this.ngl_view_id != this.get_last_child_id() && msg.last_child){
             return
         }
-        var o = this._getLoadFilePromise(msg)
+        var o = await this._getLoadFilePromise(msg)
         this._handleLoadFileFinished();
     }
 

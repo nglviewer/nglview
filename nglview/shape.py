@@ -91,11 +91,11 @@ class Shape:
         from types import MethodType
 
         def make_func(name):
-            def func(this, *args):
+            def func(self, *args):
                 args_with_name = [
                     name,
                 ] + list(args)
-                self.add(*args_with_name)
+                return self.add(*args_with_name)
 
             func.__doc__ = SHAPE_EXAMPLES[name]
             return func
@@ -118,7 +118,7 @@ class Shape:
         {ngl_url}
         """
 
-        self.view._add_shape([
+        return self.view._add_shape([
             args,
         ])
 
