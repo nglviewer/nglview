@@ -176,6 +176,7 @@ setup_args = {
          'nglview/static/index.js',
          'nglview/static/index.js.map',
         ]),
+        ('etc/jupyter/nbconfig/notebook.d/' , ['nglview.json'])
     ],
     'tests_require': [
         'pytest'
