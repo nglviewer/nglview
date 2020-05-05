@@ -37,36 +37,6 @@ try:
 except ValueError:
     conda_build = False
 
-def enable_extentions():
-    print("Trying to enable extensions")
-    # this is for normal users
-    # for developers, you should know what to do. :D
-    try:
-        # enable_nbextension_python does not exist in older notebook
-        # use try ... except in case users do not have notebook yet
-        from notebook.nbextensions import enable_nbextension_python
-        enable_nbextension_python('widgetsnbextension', user=False, sys_prefix=True)
-
-        subprocess.check_call([
-            'jupyter', 'nbextension', 'install', '--py',
-            '--sys-prefix', 'nglview'
-        ])
-
-        subprocess.check_call([
-            'jupyter', 'nbextension', 'enable', '--py',
-            '--sys-prefix', 'nglview'
-        ])
-        print("Seems OK")
-    except (ImportError, OSError, subprocess.CalledProcessError) as e:
-        # TODO: add type of exception here?
-        # Case: 
-        #    - notebook is not installed before nglview
-        #    - permission denied? 
-        print('Failed to enable extensions.')
-        print('Skip. Tips: Do it yourself')
-        print('    nglview install')
-        print('    nglview enable')
-
 def js_prerelease(command, strict=False):
     """decorator for building minified js/css prior to another command"""
     class DecoratedCommand(command):
@@ -176,7 +146,7 @@ setup_args = {
          'nglview/static/index.js',
          'nglview/static/index.js.map',
         ]),
-        ('etc/jupyter/nbconfig/notebook.d/' , ['nglview-js-widgets.json'])
+        ('etc/jupyter/nbconfig/notebook.d' , ['nglview-js-widgets.json'])
     ],
     'tests_require': [
         'pytest'
@@ -247,4 +217,5 @@ setup_args = {
 
 setup(**setup_args)
 if not conda_build:
-    enable_extentions()
+    # enable_extentions()
+    pass
