@@ -26,16 +26,13 @@ log.set_verbosity(log.DEBUG)
 log.info('setup.py entered')
 log.info('$PATH=%s' % os.environ['PATH'])
 
+
 try:
     sys.argv.remove('--npm')
     rebuild_nglview_js = True
 except ValueError:
     rebuild_nglview_js = False
-try:
-    sys.argv.remove('--conda')
-    conda_build = True
-except ValueError:
-    conda_build = False
+
 
 def js_prerelease(command, strict=False):
     """decorator for building minified js/css prior to another command"""
@@ -216,6 +213,3 @@ setup_args = {
 }
 
 setup(**setup_args)
-if not conda_build:
-    # enable_extentions()
-    pass
