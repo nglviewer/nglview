@@ -11,7 +11,7 @@ An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular
 
 Should work with Python 3. If you experience problems, please file an [issue](https://github.com/arose/nglview/issues).
 
-Ask question about usage? Please post [here](https://github.com/arose/nglview/issues/785)
+Ask question about usage? Please post [here](https://github.com/arose/nglview/issues/901)
 
 ![membrane](examples/images/membrane.gif)
 
