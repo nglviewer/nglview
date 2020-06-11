@@ -171,7 +171,11 @@ class OpenbabelStructure(Structure):
         self._obj = obj
 
     def get_structure_string(self):
-        import openbabel
+        try:
+            # Open Babel >= 3.0.0
+            from openbabel import openbabel
+        except ImportError:
+            import openbabel
         oc = openbabel.OBConversion()
         oc.SetOutFormat('pdb')
         write = partial(oc.WriteFile, self._obj)
