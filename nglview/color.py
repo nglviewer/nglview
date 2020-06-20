@@ -44,7 +44,7 @@ class _ColormakerRegistry(BaseWidget):
         super().__init__(*args, **kwargs)
         try:
             get_ipython() # only display in notebook
-            display(self)
+            self._ipython_display_()
         except NameError:
             pass
 
@@ -52,6 +52,11 @@ class _ColormakerRegistry(BaseWidget):
         if self._ready:
             return
         super()._ipython_display_(**kwargs)
+
+    def __repr__(self):
+        # Prevent ipywidgets to print _ColormakerRegistry() in non-notebook
+        # context
+        return ""
 
     def add_selection_scheme(self, scheme_id, arg):
         """
