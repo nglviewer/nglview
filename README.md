@@ -64,6 +64,8 @@ To use in Jupyter Lab you need to install appropriate extension:
 jupyter labextension install  nglview-js-widgets
 ```
 
+But please read this sample script first: https://github.com/arose/nglview/blob/master/devtools/nglview-jupyterlab.sh
+
 ## Notes
 
 If you are using `notebook` v5.0, you need to increase the `iopub_data_rate_limit`
