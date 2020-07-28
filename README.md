@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/11846/arose/nglview.svg)](https://zenodo.org/badge/latestdoi/11846/arose/nglview)
 [![Build Status](https://travis-ci.org/nglviewer/nglview.svg?branch=master)](https://travis-ci.org/nglviewer/nglview)
-[![Coverage Status](https://coveralls.io/repos/github/nglviewer/nglview/badge.png?branch=master)](https://coveralls.io/github/arose/nglview)
+[![Coverage Status](https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master)](https://coveralls.io/github/arose/nglview)
 
 ## Try nglview online: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/hainm/nglview-binder/master?urlpath=lab/tree/nglview/notebooks)
 
