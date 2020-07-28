@@ -314,9 +314,9 @@ Embed widget
 
 API doc
 =======
-- [Latest version](http://arose.github.io/nglview/latest/api.html)
-- [All releases versions](http://arose.github.io/nglview/release/index.html)
-- [Development version](http://arose.github.io/nglview/dev/api.html)
+- [Latest version](http://nglviewer.github.io/nglview/latest/api.html)
+- [All releases versions](http://nglviewer.github.io/nglview/release/index.html)
+- [Development version](http://nglviewer.github.io/nglview/dev/api.html)
 
 Command line
 ============
@@ -365,8 +365,8 @@ FAQ
 Website
 =======
 
-- http://arose.github.io/nglview/latest
-- http://arose.github.io/nglview/dev
+- http://nglviewer.github.io/nglview/latest
+- http://nglviewer.github.io/nglview/dev
 
 Talks
 =====
