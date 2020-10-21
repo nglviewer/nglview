@@ -380,7 +380,7 @@ Contributing
 Projects integrating NGLView
 ============================
 
-(Feel free to make a PR to add/remove your project here)
+(Feel free to make a PR to add/remove your project here. Thanks.)
 
 - [AMBER](http://ambermd.org/) -  A package of programs for molecular dynamics simulations of proteins and nucleic acids
 - [mbuild](https://github.com/iModels/mbuild) - A hierarchical, component based molecule builder
@@ -400,6 +400,7 @@ Projects integrating NGLView
 - [pyrod](https://github.com/schallerdavid/pyrod): PyRod - Tracing water molecules in molecular dynamics simulations
 - [kugupu](https://github.com/kugupu/kugupu): kugupu - a molecular network generator to study charge transport pathways in amorphous materials
 - [pnab](https://github.com/alenaizan/pnab): proto-Nucleic Acid Builder
+- [opencadd](https://github.com/volkamerlab/opencadd): A Python library for structural cheminformatics
 
 Acknowledgment
 ==============
