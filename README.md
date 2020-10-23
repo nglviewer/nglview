@@ -187,11 +187,9 @@ view.center()
 view.add_rope()
 ```
 
-And many more, please check [NGL website](http://arose.github.io/ngl/api/index.html)
-
 Representations can also be changed by overwriting the `representations` property
 of the widget instance `view`. The available `type` and `params` are described
-in the NGL Viewer [documentation](http://arose.github.io/ngl/api/index.html).
+in the NGL Viewer [documentation](http://nglviewer.org/ngl/api/index.html).
 
 ```Python
 view.representations = [
