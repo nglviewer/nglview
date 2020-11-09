@@ -84,7 +84,7 @@ class ComponentViewer:
         ----------
         rot: List-like of float, length = 3
         """
-        self._call('setPosition', rot)
+        self._call('setRotation', rot)
 
     def set_scale(self, scale):
         """
