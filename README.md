@@ -399,6 +399,7 @@ Projects integrating NGLView
 - [kugupu](https://github.com/kugupu/kugupu): kugupu - a molecular network generator to study charge transport pathways in amorphous materials
 - [pnab](https://github.com/alenaizan/pnab): proto-Nucleic Acid Builder
 - [opencadd](https://github.com/volkamerlab/opencadd): A Python library for structural cheminformatics
+- [teachopencadd](https://github.com/volkamerlab/teachopencadd): TeachOpenCADD: a teaching platform for computer-aided drug design (CADD) using open source packages and data
 - [cando](https://github.com/cando-developers/cando): Computer Aided Nanostructure Design and Optimization
 
 Acknowledgment
