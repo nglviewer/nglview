@@ -2,5 +2,5 @@
     - [AMBER developer meeting, Hai Nguyen](http://hainm.github.io/talks/amber_meeting_2017/)
     - [PyEMMA 2017, projX: Interative molecular projection visualization,  Guillermo Pérez-Hernández](https://www.youtube.com/watch?v=AT69NfUMV2U)
 - 2016
-    - [ngl-3dsig, Alexander Rose](http://arose.github.io/talks/ngl-3dsig/)
-    - [ngl-web3d, Alexander Rose](http://arose.github.io/talks/ngl-web3d)
+    - [ngl-3dsig, Alexander Rose](http://nglviewer.org/talks/ngl-3dsig/)
+    - [ngl-web3d, Alexander Rose](http://nglviewer.org/talks/ngl-web3d)

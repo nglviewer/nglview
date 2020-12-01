@@ -9,9 +9,9 @@
 -  2016
 
    -  `ngl-3dsig, Alexander
-      Rose <http://arose.github.io/talks/ngl-3dsig/>`__
+      Rose <http://nglviewer.org/talks/ngl-3dsig/>`__
    -  `ngl-web3d, Alexander
-      Rose <http://arose.github.io/talks/ngl-web3d>`__
+      Rose <http://nglviewer.org/talks/ngl-web3d>`__
 
 - Videos from users
     - `"The universe as balls and springs: molecular dynamics in Python" - Lily Wang (PyCon AU 2019)], <https://youtu.be/X5umNQDqfqQ>`__

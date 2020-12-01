@@ -243,12 +243,12 @@ Representations
     view.remove_cartoon(opacity=0.4, component=0)
 
 And many more, please check `NGL
-website <http://arose.github.io/ngl/api/index.html>`__
+website <http://nglviewer.org/ngl/api/index.html>`__
 
 Representations can also be changed by overwriting the
 ``representations`` property of the widget instance ``view``. The
 available ``type`` and ``params`` are described in the NGL Viewer
-`documentation <http://arose.github.io/ngl/api/index.html>`__.
+`documentation <http://nglviewer.org/ngl/api/index.html>`__.
 
 .. code:: python
 
@@ -392,10 +392,10 @@ Notes: Unstable feature.
 API doc
 =======
 
--  `Latest version <http://arose.github.io/nglview/latest/api.html>`__
+-  `Latest version <http://nglviewer.org/nglview/latest/api.html>`__
 -  `All releases
-   versions <http://arose.github.io/nglview/release/index.html>`__
--  `Development version <http://arose.github.io/nglview/dev/api.html>`__
+   versions <http://nglviewer.org/nglview/release/index.html>`__
+-  `Development version <http://nglviewer.org/nglview/dev/api.html>`__
 
 Command line
 ============
@@ -450,8 +450,8 @@ FAQ
 Website
 =======
 
--  http://arose.github.io/nglview/latest
--  http://arose.github.io/nglview/dev
+-  http://nglviewer.org/nglview/latest
+-  http://nglviewer.org/nglview/dev
 
 Talks
 =====
