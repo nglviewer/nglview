@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Try nglview online: &#8212; NGLView 2.7.7+1.gf915b3e.dirty documentation</title>
+    <title>Try nglview online: &#8212; NGLView 2.7.7+0.gd41dfb9.dirty documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
@@ -29,7 +29,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 2.7.7+1.gf915b3e.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">NGLView 2.7.7+0.gd41dfb9.dirty documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Try nglview online: </a></li> 
       </ul>
     </div>  
@@ -44,11 +44,11 @@
 line</a> | <a class="reference external" href="#api-doc">API doc</a> | <a class="reference external" href="interface_classes.html">Interface
 classes</a> | <a class="reference external" href="#website">Website</a> |
 <a class="reference external" href="#acknowledgment">Acknowledgment</a></p>
-<p><a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/arose/nglview"><img alt="Build Status" src="https://travis-ci.org/arose/nglview.svg?branch=master" /></a> <a class="reference external" href="https://coveralls.io/github/arose/nglview"><img alt="Coverage Status" src="https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master" /></a></p>
+<p><a class="reference external" href="https://zenodo.org/badge/latestdoi/11846/arose/nglview"><img alt="DOI" src="https://zenodo.org/badge/11846/arose/nglview.svg" /></a> <a class="reference external" href="https://travis-ci.org/nglviewer/nglview"><img alt="Build Status" src="https://travis-ci.org/nglviewer/nglview.svg?branch=master" /></a> <a class="reference external" href="https://coveralls.io/github/arose/nglview"><img alt="Coverage Status" src="https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master" /></a></p>
 <div class="section" id="try-nglview-online-binder">
 <h1>Try nglview online: <a class="reference external" href="https://mybinder.org/v2/gh/hainm/nglview-binder/master?urlpath=lab/tree/nglview/notebooks"><img alt="Binder" src="https://mybinder.org/badge_logo.svg" /></a><a class="headerlink" href="#try-nglview-online-binder" title="Permalink to this headline">¶</a></h1>
 <p>An <a class="reference external" href="http://jupyter.org/">IPython/Jupyter</a> widget to interactively
-view molecular structures and trajectories. Utilizes the embeddable <a class="reference external" href="https://github.com/arose/ngl">NGL
+view molecular structures and trajectories. Utilizes the embeddable <a class="reference external" href="https://github.com/nglviewer/ngl">NGL
 Viewer</a> for rendering. Support for
 showing data from the file-system, <a class="reference external" href="http:www.rcsb.org">RCSB PDB</a>,
 <a class="reference external" href="https://github.com/arose/simpletraj">simpletraj</a> and from objects of
@@ -64,9 +64,9 @@ analysis libraries <a class="reference external" href="http://mdtraj.org/">mdtra
 <a class="reference external" href="http://pyrosetta.org">pyrosetta</a>, <a class="reference external" href="http://content.schrodinger.com/Docs/r2015-4/python_api/api/schrodinger.structure.Structure-class.html">schrodinger’s
 Structure</a></p>
 <p>Should work with Python 3. If you experience problems, please file an
-<a class="reference external" href="https://github.com/arose/nglview/issues">issue</a>.</p>
+<a class="reference external" href="https://github.com/nglviewer/nglview/issues">issue</a>.</p>
 <p>Ask question about usage? Please post
-<a class="reference external" href="https://github.com/arose/nglview/issues/901">here</a></p>
+<a class="reference external" href="https://github.com/nglviewer/nglview/issues/901">here</a></p>
 <div class="figure align-default" id="id1">
 <img alt="membrane" src="https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true" />
 <p class="caption"><span class="caption-text">membrane</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
@@ -117,6 +117,8 @@ jupyter-nbextension <span class="nb">enable</span> nglview --py --sys-prefix
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jupyter labextension install  nglview-js-widgets
 </pre></div>
 </div>
+<p>But please read this sample script first:
+<a class="reference external" href="https://github.com/arose/nglview/blob/master/devtools/nglview-jupyterlab.sh">https://github.com/arose/nglview/blob/master/devtools/nglview-jupyterlab.sh</a></p>
 </div>
 <div class="section" id="notes">
 <h1>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h1>
@@ -297,12 +299,10 @@ entities</p></td>
 <span class="n">view</span><span class="o">.</span><span class="n">add_rope</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>And many more, please check <a class="reference external" href="http://arose.github.io/ngl/api/index.html">NGL
-website</a></p>
 <p>Representations can also be changed by overwriting the
 <code class="docutils literal notranslate"><span class="pre">representations</span></code> property of the widget instance <code class="docutils literal notranslate"><span class="pre">view</span></code>. The
 available <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">params</span></code> are described in the NGL Viewer
-<a class="reference external" href="http://arose.github.io/ngl/api/index.html">documentation</a>.</p>
+<a class="reference external" href="http://nglviewer.org/ngl/api/index.html">documentation</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">representations</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;cartoon&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;sele&quot;</span><span class="p">:</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;residueindex&quot;</span>
@@ -414,10 +414,12 @@ available <code class="docutils literal notranslate"><span class="pre">type</spa
 <div class="section" id="api-doc">
 <h2>API doc<a class="headerlink" href="#api-doc" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="http://arose.github.io/nglview/latest/api.html">Latest version</a></p></li>
-<li><p><a class="reference external" href="http://arose.github.io/nglview/release/index.html">All releases
+<li><p><a class="reference external" href="http://nglviewer.github.io/nglview/latest/api.html">Latest
+version</a></p></li>
+<li><p><a class="reference external" href="http://nglviewer.github.io/nglview/release/index.html">All releases
 versions</a></p></li>
-<li><p><a class="reference external" href="http://arose.github.io/nglview/dev/api.html">Development version</a></p></li>
+<li><p><a class="reference external" href="http://nglviewer.github.io/nglview/dev/api.html">Development
+version</a></p></li>
 </ul>
 </div>
 <div class="section" id="command-line">
@@ -464,8 +466,8 @@ nglview my.pdb --browser<span class="o">=</span>google-chrome
 <div class="section" id="website">
 <h2>Website<a class="headerlink" href="#website" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="http://arose.github.io/nglview/latest">http://arose.github.io/nglview/latest</a></p></li>
-<li><p><a class="reference external" href="http://arose.github.io/nglview/dev">http://arose.github.io/nglview/dev</a></p></li>
+<li><p><a class="reference external" href="http://nglviewer.github.io/nglview/latest">http://nglviewer.github.io/nglview/latest</a></p></li>
+<li><p><a class="reference external" href="http://nglviewer.github.io/nglview/dev">http://nglviewer.github.io/nglview/dev</a></p></li>
 </ul>
 </div>
 <div class="section" id="talks">
@@ -478,7 +480,7 @@ nglview my.pdb --browser<span class="o">=</span>google-chrome
 </div>
 <div class="section" id="projects-integrating-nglview">
 <h2>Projects integrating NGLView<a class="headerlink" href="#projects-integrating-nglview" title="Permalink to this headline">¶</a></h2>
-<p>(Feel free to make a PR to add/remove your project here)</p>
+<p>(Feel free to make a PR to add/remove your project here. Thanks.)</p>
 <ul class="simple">
 <li><p><a class="reference external" href="http://ambermd.org/">AMBER</a> - A package of programs for molecular
 dynamics simulations of proteins and nucleic acids</p></li>
@@ -518,6 +520,13 @@ network generator to study charge transport pathways in amorphous
 materials</p></li>
 <li><p><a class="reference external" href="https://github.com/alenaizan/pnab">pnab</a>: proto-Nucleic Acid
 Builder</p></li>
+<li><p><a class="reference external" href="https://github.com/volkamerlab/opencadd">opencadd</a>: A Python
+library for structural cheminformatics</p></li>
+<li><p><a class="reference external" href="https://github.com/volkamerlab/teachopencadd">teachopencadd</a>:
+TeachOpenCADD: a teaching platform for computer-aided drug design
+(CADD) using open source packages and data</p></li>
+<li><p><a class="reference external" href="https://github.com/cando-developers/cando">cando</a>: Computer Aided
+Nanostructure Design and Optimization</p></li>
 </ul>
 </div>
 <div class="section" id="acknowledgment">
@@ -621,7 +630,7 @@ molecular graphics for Jupyter notebooks, Bioinformatics, , btx789,
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">NGLView 2.7.7+1.gf915b3e.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">NGLView 2.7.7+0.gd41dfb9.dirty documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Try nglview online: </a></li> 
       </ul>
     </div>

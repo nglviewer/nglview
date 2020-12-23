@@ -11,7 +11,7 @@ Try nglview online: |Binder|
 
 An `IPython/Jupyter <http://jupyter.org/>`__ widget to interactively
 view molecular structures and trajectories. Utilizes the embeddable `NGL
-Viewer <https://github.com/arose/ngl>`__ for rendering. Support for
+Viewer <https://github.com/nglviewer/ngl>`__ for rendering. Support for
 showing data from the file-system, `RCSB PDB <http:www.rcsb.org>`__,
 `simpletraj <https://github.com/arose/simpletraj>`__ and from objects of
 analysis libraries `mdtraj <http://mdtraj.org/>`__,
@@ -27,10 +27,10 @@ analysis libraries `mdtraj <http://mdtraj.org/>`__,
 Structure <http://content.schrodinger.com/Docs/r2015-4/python_api/api/schrodinger.structure.Structure-class.html>`__
 
 Should work with Python 3. If you experience problems, please file an
-`issue <https://github.com/arose/nglview/issues>`__.
+`issue <https://github.com/nglviewer/nglview/issues>`__.
 
 Ask question about usage? Please post
-`here <https://github.com/arose/nglview/issues/901>`__
+`here <https://github.com/nglviewer/nglview/issues/901>`__
 
 .. figure:: https://github.com/arose/nglview/blob/master/examples/images/membrane.gif?raw=true
    :alt: membrane
@@ -84,6 +84,9 @@ To use in Jupyter Lab you need to install appropriate extension:
 .. code:: bash
 
    jupyter labextension install  nglview-js-widgets
+
+But please read this sample script first:
+https://github.com/arose/nglview/blob/master/devtools/nglview-jupyterlab.sh
 
 Notes
 -----
@@ -249,13 +252,10 @@ Representations
    view.center()
    view.add_rope()
 
-And many more, please check `NGL
-website <http://arose.github.io/ngl/api/index.html>`__
-
 Representations can also be changed by overwriting the
 ``representations`` property of the widget instance ``view``. The
 available ``type`` and ``params`` are described in the NGL Viewer
-`documentation <http://arose.github.io/ngl/api/index.html>`__.
+`documentation <http://nglviewer.org/ngl/api/index.html>`__.
 
 .. code:: python
 
@@ -381,10 +381,12 @@ Embed widget
 API doc
 =======
 
--  `Latest version <http://arose.github.io/nglview/latest/api.html>`__
+-  `Latest
+   version <http://nglviewer.github.io/nglview/latest/api.html>`__
 -  `All releases
-   versions <http://arose.github.io/nglview/release/index.html>`__
--  `Development version <http://arose.github.io/nglview/dev/api.html>`__
+   versions <http://nglviewer.github.io/nglview/release/index.html>`__
+-  `Development
+   version <http://nglviewer.github.io/nglview/dev/api.html>`__
 
 Command line
 ============
@@ -433,8 +435,8 @@ FAQ
 Website
 =======
 
--  http://arose.github.io/nglview/latest
--  http://arose.github.io/nglview/dev
+-  http://nglviewer.github.io/nglview/latest
+-  http://nglviewer.github.io/nglview/dev
 
 Talks
 =====
@@ -449,7 +451,7 @@ Contributing
 Projects integrating NGLView
 ============================
 
-(Feel free to make a PR to add/remove your project here)
+(Feel free to make a PR to add/remove your project here. Thanks.)
 
 -  `AMBER <http://ambermd.org/>`__ - A package of programs for molecular
    dynamics simulations of proteins and nucleic acids
@@ -489,6 +491,13 @@ Projects integrating NGLView
    materials
 -  `pnab <https://github.com/alenaizan/pnab>`__: proto-Nucleic Acid
    Builder
+-  `opencadd <https://github.com/volkamerlab/opencadd>`__: A Python
+   library for structural cheminformatics
+-  `teachopencadd <https://github.com/volkamerlab/teachopencadd>`__:
+   TeachOpenCADD: a teaching platform for computer-aided drug design
+   (CADD) using open source packages and data
+-  `cando <https://github.com/cando-developers/cando>`__: Computer Aided
+   Nanostructure Design and Optimization
 
 Acknowledgment
 ==============
@@ -518,8 +527,8 @@ Generally MIT, see the LICENSE file for details.
 
 .. |DOI| image:: https://zenodo.org/badge/11846/arose/nglview.svg
    :target: https://zenodo.org/badge/latestdoi/11846/arose/nglview
-.. |Build Status| image:: https://travis-ci.org/arose/nglview.svg?branch=master
-   :target: https://travis-ci.org/arose/nglview
+.. |Build Status| image:: https://travis-ci.org/nglviewer/nglview.svg?branch=master
+   :target: https://travis-ci.org/nglviewer/nglview
 .. |Coverage Status| image:: https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master
    :target: https://coveralls.io/github/arose/nglview
 .. |Binder| image:: https://mybinder.org/badge_logo.svg
