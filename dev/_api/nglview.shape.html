@@ -1,21 +1,22 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>nglview.shape &#8212; NGLView 2.1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nglview.shape &#8212; NGLView 2.7.7+12.g5136ac2.dirty documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.14.0/dist/embed.js"></script>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
@@ -28,7 +29,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.7.7+12.g5136ac2.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.shape</a></li> 
       </ul>
     </div>  
 
@@ -41,14 +43,14 @@
 <h1>nglview.shape<a class="headerlink" href="#nglview-shape" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-nglview.shape">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nglview.shape" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="nglview.shape.Shape">
-<em class="property">class </em><code class="descclassname">nglview.shape.</code><code class="descname">Shape</code><span class="sig-paren">(</span><em>view</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/shape.html#Shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.shape.Shape" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">nglview.shape.</code><code class="sig-name descname">Shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">view</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/shape.html#Shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.shape.Shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>TODO: doc</p>
 <p>view : nglview.NGLWidget</p>
 <p>Unstable feature</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">NGLWidget</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">view</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">shape</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">view</span><span class="o">=</span><span class="n">view</span><span class="p">)</span>
@@ -56,19 +58,19 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">shape</span><span class="o">.</span><span class="n">add_sphere</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="method">
+<dl class="py method">
 <dt id="nglview.shape.Shape.add">
-<code class="descname">add</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/shape.html#Shape.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.shape.Shape.add" title="Permalink to this definition">¶</a></dt>
-<dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;Meow&#39;</span><span class="p">)</span>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/shape.html#Shape.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.shape.Shape.add" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;Meow&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><a class="reference external" href="http://arose.github.io/ngl/api/">http://arose.github.io/ngl/api/</a></p>
+<p><a class="reference external" href="http://nglviewer.org/ngl/">http://nglviewer.org/ngl/</a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="nglview.shape.Shape.add_buffer">
-<code class="descname">add_buffer</code><span class="sig-paren">(</span><em>name</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/shape.html#Shape.add_buffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.shape.Shape.add_buffer" title="Permalink to this definition">¶</a></dt>
-<dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">add_buffer</span><span class="p">(</span><span class="s2">&quot;cone&quot;</span><span class="p">,</span>
+<code class="sig-name descname">add_buffer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/shape.html#Shape.add_buffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.shape.Shape.add_buffer" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">view</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">add_buffer</span><span class="p">(</span><span class="s2">&quot;cone&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">position1</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
 <span class="gp">... </span>    <span class="n">position2</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
 <span class="gp">... </span>    <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
@@ -84,6 +86,7 @@
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -105,17 +108,15 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -129,13 +130,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.7.7+12.g5136ac2.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.shape</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on May 31, 2019.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
+      Last updated on Dec 22, 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.0.
     </div>
   </body>
 </html>

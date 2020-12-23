@@ -1,21 +1,22 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>nglview.player &#8212; NGLView 2.1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nglview.player &#8212; NGLView 2.7.7+12.g5136ac2.dirty documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.14.0/dist/embed.js"></script>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
@@ -28,7 +29,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.7.7+12.g5136ac2.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.player</a></li> 
       </ul>
     </div>  
 
@@ -41,199 +43,206 @@
 <h1>nglview.player<a class="headerlink" href="#nglview-player" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-nglview.player">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nglview.player" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="nglview.player.TrajectoryPlayer">
-<em class="property">class </em><code class="descclassname">nglview.player.</code><code class="descname">TrajectoryPlayer</code><span class="sig-paren">(</span><em>view</em>, <em>step=1</em>, <em>delay=100</em>, <em>sync_frame=False</em>, <em>min_delay=40</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/player.html#TrajectoryPlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.player.TrajectoryPlayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">nglview.player.</code><code class="sig-name descname">TrajectoryPlayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/player.html#TrajectoryPlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.player.TrajectoryPlayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">traitlets.traitlets.HasTraits</span></code></p>
-<dl class="attribute">
+<dl class="py attribute">
+<dt id="nglview.player.TrajectoryPlayer.btn_center">
+<code class="sig-name descname">btn_center</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.btn_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait which allows any value.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.camera">
-<code class="descname">camera</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.camera" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">camera</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.camera" title="Permalink to this definition">¶</a></dt>
 <dd><p>An enum of strings where the case should be ignored.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="nglview.player.TrajectoryPlayer.count">
-<code class="descname">count</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.count" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.delay">
-<code class="descname">delay</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.delay" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">delay</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.delay" title="Permalink to this definition">¶</a></dt>
 <dd><p>A float trait.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="nglview.player.TrajectoryPlayer.frame">
-<code class="descname">frame</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.frame" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">frame</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.frame" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.interpolate">
-<code class="descname">interpolate</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.interpolate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">interpolate</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.interpolate" title="Permalink to this definition">¶</a></dt>
 <dd><p>A boolean (True, False) trait.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.iparams">
-<code class="descname">iparams</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.iparams" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">iparams</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.iparams" title="Permalink to this definition">¶</a></dt>
 <dd><p>An instance of a Python dict.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
+<dt id="nglview.player.TrajectoryPlayer.max_frame">
+<em class="property">property </em><code class="sig-name descname">max_frame</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.max_frame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.on_camera_changed">
-<code class="descname">on_camera_changed</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.on_camera_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">on_camera_changed</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.on_camera_changed" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.parameters">
-<code class="descname">parameters</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.parameters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parameters</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>An instance of a Python dict.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="nglview.player.TrajectoryPlayer.smooth">
-<code class="descname">smooth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/player.html#TrajectoryPlayer.smooth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.player.TrajectoryPlayer.smooth" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">smooth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/player.html#TrajectoryPlayer.smooth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.player.TrajectoryPlayer.smooth" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="nglview.player.TrajectoryPlayer.spin">
-<code class="descname">spin</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.spin" title="Permalink to this definition">¶</a></dt>
-<dd><p>A boolean (True, False) trait.</p>
-</dd></dl>
-
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.step">
-<code class="descname">step</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.step" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">step</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.step" title="Permalink to this definition">¶</a></dt>
 <dd><p>An int trait.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="nglview.player.TrajectoryPlayer.sync_frame">
-<code class="descname">sync_frame</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.sync_frame" title="Permalink to this definition">¶</a></dt>
-<dd><p>A boolean (True, False) trait.</p>
-</dd></dl>
-
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.update_parameters">
-<code class="descname">update_parameters</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.update_parameters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_parameters</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.update_parameters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="nglview.player.TrajectoryPlayer.update_sync_frame">
-<code class="descname">update_sync_frame</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.update_sync_frame" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_accordion_repr_parameters">
-<code class="descname">widget_accordion_repr_parameters</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_accordion_repr_parameters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_accordion_repr_parameters</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_accordion_repr_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
+<dt id="nglview.player.TrajectoryPlayer.widget_background">
+<code class="sig-name descname">widget_background</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_background" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait which allows any value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="nglview.player.TrajectoryPlayer.widget_camera">
+<code class="sig-name descname">widget_camera</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait which allows any value.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_component_dropdown">
-<code class="descname">widget_component_dropdown</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_component_dropdown" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_component_dropdown</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_component_dropdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_component_slider">
-<code class="descname">widget_component_slider</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_component_slider" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_component_slider</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_component_slider" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_export_image">
-<code class="descname">widget_export_image</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_export_image" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_export_image</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_export_image" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_extra">
-<code class="descname">widget_extra</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_extra" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_extra</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_extra" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_general">
-<code class="descname">widget_general</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_general" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_general</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_general" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_help">
-<code class="descname">widget_help</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_help" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_help</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_help" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_picked">
-<code class="descname">widget_picked</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_picked" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_picked</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_picked" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
+<dt id="nglview.player.TrajectoryPlayer.widget_player">
+<code class="sig-name descname">widget_player</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_player" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait which allows any value.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_preference">
-<code class="descname">widget_preference</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_preference" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_preference</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_preference" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_quick_repr">
-<code class="descname">widget_quick_repr</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_quick_repr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_quick_repr</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_quick_repr" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_repr">
-<code class="descname">widget_repr</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_repr</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_repr_add">
-<code class="descname">widget_repr_add</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_repr_add</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_add" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_repr_choices">
-<code class="descname">widget_repr_choices</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_choices" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_repr_choices</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_choices" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_repr_control_buttons">
-<code class="descname">widget_repr_control_buttons</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_control_buttons" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_repr_control_buttons</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_control_buttons" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_repr_name">
-<code class="descname">widget_repr_name</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_repr_name</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_repr_parameters">
-<code class="descname">widget_repr_parameters</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_parameters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_repr_parameters</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_repr_parameters_dialog">
-<code class="descname">widget_repr_parameters_dialog</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_parameters_dialog" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_repr_parameters_dialog</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_parameters_dialog" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_repr_slider">
-<code class="descname">widget_repr_slider</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_slider" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_repr_slider</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_repr_slider" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="nglview.player.TrajectoryPlayer.widget_tab">
-<code class="descname">widget_tab</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_tab" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">widget_tab</code><a class="headerlink" href="#nglview.player.TrajectoryPlayer.widget_tab" title="Permalink to this definition">¶</a></dt>
 <dd><p>A trait which allows any value.</p>
 </dd></dl>
 
@@ -243,6 +252,7 @@
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -264,17 +274,15 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -288,13 +296,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.1.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.7.7+12.g5136ac2.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.player</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on May 31, 2019.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
+      Last updated on Dec 22, 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.0.
     </div>
   </body>
 </html>

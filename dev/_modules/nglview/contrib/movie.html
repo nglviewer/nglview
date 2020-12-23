@@ -1,21 +1,22 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>nglview.contrib.movie &#8212; NGLView 2.1.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nglview.contrib.movie &#8212; NGLView 2.7.7+12.g5136ac2.dirty documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/font-awesome@4.5.0/css/font-awesome.min.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.14.0/dist/embed.js"></script>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -28,8 +29,9 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 2.1.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 2.7.7+12.g5136ac2.dirty documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.contrib.movie</a></li> 
       </ul>
     </div>  
 
@@ -39,7 +41,8 @@
           <div class="body" role="main">
             
   <h1>Source code for nglview.contrib.movie</h1><div class="highlight"><pre>
-<span></span><span class="k">try</span><span class="p">:</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="k">as</span> <span class="nn">mpy</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You have to install moviepy, imageio and ffmeg&quot;</span><span class="p">)</span>
@@ -47,8 +50,10 @@
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pip install imageio==1.6&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Output</span><span class="p">,</span> <span class="n">IntProgress</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">tee</span>
 
 
 <div class="viewcode-block" id="MovieMaker"><a class="viewcode-back" href="../../../_api/nglview.contrib.movie.html#nglview.contrib.movie.MovieMaker">[docs]</a><span class="k">class</span> <span class="nc">MovieMaker</span><span class="p">:</span>
@@ -61,6 +66,7 @@
 <span class="sd">        Folder that stores images. You can not arbitarily set this folder. It must be</span>
 <span class="sd">        the download directory of the web browser you are using.</span>
 <span class="sd">        If None, $HOME/Downloads/ will be used.</span>
+<span class="sd">        NOTE: This is DEPRECATED (used with `make_old_impl`)</span>
 <span class="sd">    prefix : str, default &#39;movie&#39;</span>
 <span class="sd">        prefix name of rendered image.</span>
 <span class="sd">    output : str, default &#39;my_movie.gif&#39;</span>
@@ -74,10 +80,9 @@
 <span class="sd">        if True, do not render any frame and uses existings images in `download_folder`</span>
 <span class="sd">        for movie making.</span>
 <span class="sd">        if False, perform rendering first.</span>
-<span class="sd">    timeout : a number (second), default 1.</span>
+<span class="sd">    timeout : a number (second), default 0.1</span>
 <span class="sd">        The waiting time between rendering two consecutive frames.</span>
-<span class="sd">        You need to decide the &quot;good&quot; value by your self. `timeout` should be larger than</span>
-<span class="sd">        the rendering time of each frame.</span>
+<span class="sd">        This option should be only used with `perframe_hook` option.</span>
 <span class="sd">    render_params : dict or None, default None</span>
 <span class="sd">        NGL rendering params. see NGLWidget.download_image.</span>
 <span class="sd">        If None, use default values</span>
@@ -118,15 +123,15 @@
 
 <span class="sd">    Requires</span>
 <span class="sd">    --------</span>
-<span class="sd">    </span>
+
 <span class="sd">    moviepy. e.g:</span>
-<span class="sd">    </span>
+
 <span class="sd">        pip install moviepy</span>
 <span class="sd">        conda install freeimage</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">view</span><span class="p">,</span>
                  <span class="n">download_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;movie&#39;</span><span class="p">,</span>
@@ -136,7 +141,7 @@
                  <span class="n">stop</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
                  <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                  <span class="n">skip_render</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">timeout</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>
+                 <span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
                  <span class="n">in_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">perframe_hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">render_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -150,17 +155,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="n">fps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">in_memory</span> <span class="o">=</span> <span class="n">in_memory</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">render_params</span> <span class="o">=</span> <span class="n">render_params</span> <span class="k">if</span> <span class="n">render_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">moviepy_params</span> <span class="o">=</span> <span class="n">moviepy_params</span> <span class="k">if</span> <span class="n">moviepy_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">render_params</span> <span class="o">=</span> <span class="n">render_params</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">antialias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moviepy_params</span> <span class="o">=</span> <span class="n">moviepy_params</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perframe_hook</span> <span class="o">=</span> <span class="n">perframe_hook</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">render_params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">moviepy_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moviepy_params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
         <span class="k">if</span> <span class="n">stop</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">count</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">max_frame</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iframe</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_progress</span> <span class="o">=</span> <span class="n">IntProgress</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_woutput</span> <span class="o">=</span> <span class="n">Output</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span> <span class="o">=</span> <span class="p">[]</span>
@@ -168,14 +173,18 @@
 <div class="viewcode-block" id="MovieMaker.sleep"><a class="viewcode-back" href="../../../_api/nglview.contrib.movie.html#nglview.contrib.movie.MovieMaker.sleep">[docs]</a>    <span class="k">def</span> <span class="nf">sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MovieMaker.make"><a class="viewcode-back" href="../../../_api/nglview.contrib.movie.html#nglview.contrib.movie.MovieMaker.make">[docs]</a>    <span class="k">def</span> <span class="nf">make</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MovieMaker.make_old_impl"><a class="viewcode-back" href="../../../_api/nglview.contrib.movie.html#nglview.contrib.movie.MovieMaker.make_old_impl">[docs]</a>    <span class="k">def</span> <span class="nf">make_old_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># TODO : make base class so we can reuse this with sandbox/base.py</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="n">IntProgress</span><span class="p">(</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Rendering...&#39;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">_make</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
             <span class="n">image_files</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">iw</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_render</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span><span class="p">:</span>
+                    <span class="n">progress</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">i</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">i</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
@@ -187,36 +196,124 @@
                                 <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">,</span>
                                 <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">render_params</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">render_image</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">render_params</span><span class="p">)</span>
+                            <span class="n">iw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">render_image</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">render_params</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_memory</span><span class="p">:</span>
                             <span class="n">rgb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base64_to_ndarray</span><span class="p">(</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">_image_data</span><span class="p">)</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">iw</span><span class="p">:</span>
+                                <span class="n">iw</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># free memory</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_memory</span><span class="p">:</span>
                     <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">.png&quot;</span>
                     <span class="n">image_files</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="n">image_dir</span>
-                        <span class="k">for</span> <span class="n">image_dir</span> <span class="ow">in</span> <span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">download_folder</span><span class="p">,</span>
-                                                          <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                        <span class="k">for</span> <span class="n">image_dir</span> <span class="ow">in</span> <span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">download_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
                                           <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">image_dir</span><span class="p">)</span>
                     <span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">image_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="n">progress</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Writing ...&quot;</span>
                 <span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">ImageSequenceClip</span><span class="p">(</span><span class="n">image_files</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gif&#39;</span><span class="p">):</span>
-                    <span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">moviepy_params</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">clip</span><span class="o">.</span><span class="n">write_videofile</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">moviepy_params</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">Output</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gif&#39;</span><span class="p">):</span>
+                        <span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
+                            <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span>
+                            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">moviepy_params</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">clip</span><span class="o">.</span><span class="n">write_videofile</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">moviepy_params</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">progress</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Done&#39;</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">progress</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_make</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="p">,</span> <span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">progress</span></div>
+
+<div class="viewcode-block" id="MovieMaker.make"><a class="viewcode-back" href="../../../_api/nglview.contrib.movie.html#nglview.contrib.movie.MovieMaker.make">[docs]</a>    <span class="k">def</span> <span class="nf">make</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">movie</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keep_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        keep_data: bool</span>
+<span class="sd">            if True, save the image data in self._image_array</span>
+<span class="sd">        movie: bool</span>
+<span class="sd">            if True, make the movie</span>
+<span class="sd">            else, only do the rendering (make sure keep_data=True in this case)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_woutput</span><span class="o">.</span><span class="n">clear_output</span><span class="p">()</span>
+        <span class="n">image_array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">iframe</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_range</span><span class="p">)</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">iframe</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">hook</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">perframe_hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="c1"># trigger movie making communication between backend and frontend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perframe_hook</span> <span class="ow">and</span> <span class="n">hook</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">_set_coordinates</span><span class="p">(</span>
+            <span class="n">frame</span><span class="p">,</span> <span class="n">movie_making</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">render_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">render_params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_progress</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Rendering ...&#39;</span>
+
+        <span class="k">def</span> <span class="nf">on_msg</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;movie_image_data&#39;</span><span class="p">:</span>
+                <span class="n">image_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">))</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">frame</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">iframe</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">perframe_hook</span> <span class="ow">and</span> <span class="n">hook</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">_set_coordinates</span><span class="p">(</span>
+                        <span class="n">frame</span><span class="p">,</span>
+                        <span class="n">movie_making</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">render_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">render_params</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_progress</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">frame</span>
+                <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">movie</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_progress</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Making movie...&#39;</span>
+                        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_woutput</span><span class="p">:</span>
+                            <span class="c1"># suppress moviepy&#39;s log</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_make_from_array</span><span class="p">(</span><span class="n">image_array</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_progress</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;ERROR: Check the maker&#39;s log&quot;</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_progress</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Done&#39;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_remove_on_msg</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">keep_data</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_image_array</span> <span class="o">=</span> <span class="n">image_array</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_msg</span> <span class="o">=</span> <span class="n">on_msg</span>
+        <span class="c1"># FIXME: if exception happens, the on_msg callback will be never removed</span>
+        <span class="c1"># from `self.view`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">on_msg</span><span class="p">(</span><span class="n">on_msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_progress</span></div>
+
+    <span class="k">def</span> <span class="nf">_remove_on_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">on_msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_msg</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_make_from_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_array</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="n">image_files</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_base64_to_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">image_array</span><span class="p">]</span>
+        <span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">ImageSequenceClip</span><span class="p">(</span><span class="n">image_files</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_woutput</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gif&#39;</span><span class="p">):</span>
+                <span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
+                    <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span>
+                    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">moviepy_params</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">clip</span><span class="o">.</span><span class="n">write_videofile</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">moviepy_params</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MovieMaker.interupt"><a class="viewcode-back" href="../../../_api/nglview.contrib.movie.html#nglview.contrib.movie.MovieMaker.interupt">[docs]</a>    <span class="k">def</span> <span class="nf">interupt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Stop making process &quot;&quot;&quot;</span>
@@ -234,23 +331,22 @@
         <span class="k">return</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">im_bytes</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;PNG&#39;</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -264,14 +360,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 2.1.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 2.7.7+12.g5136ac2.dirty documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.contrib.movie</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
-      Last updated on May 31, 2019.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
+      Last updated on Dec 22, 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.0.
     </div>
   </body>
 </html>
