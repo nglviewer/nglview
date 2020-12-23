@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Changelog &#8212; NGLView 2.7.7+1.gf915b3e.dirty documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="_static/thebelab.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 2.7.7+1.gf915b3e.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Changelog</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-1-0">
+<h2>Version 1.0<a class="headerlink" href="#version-1-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>SUPPORT ipywidgets 7.0 and drop ipywidgets 5.2</p></li>
+<li><p>UPGRADE: NGL v1.0.0-beta.4</p></li>
+<li><p>SUPPORT: Jupyterlab v0.27</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">show_biopython</span></code></p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">show_iotbx</span></code></p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">show_rosetta</span></code></p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">show_file</span></code></p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">add_slice</span></code></p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">add_buffer</span></code></p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">add_label</span></code></p></li>
+<li><p>ADD: movie making</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">set_coordinates</span></code> for ComponentViewer</p></li>
+<li><p>FIX: <code class="docutils literal notranslate"><span class="pre">nglview</span> <span class="pre">install</span></code> always overwrite</p></li>
+<li><p>SUPPORT: widget serialization and sphinx-jupyter</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">write_html</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="version-0-5-2">
+<h2>Version 0.5.2<a class="headerlink" href="#version-0-5-2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">nglview</span></code> command line for quickly opening notebook.</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">add_text</span></code> to display</p></li>
+<li><p>FIX: view.background assignment.</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-5-1">
+<h2>Version 0.5.1<a class="headerlink" href="#version-0-5-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>FIX: correctly handle player when adding a structure first</p></li>
+<li><p>FIX: cleaned-up outdated notebooks</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-5">
+<h2>Version 0.5<a class="headerlink" href="#version-0-5" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://dx.doi.org/10.5281/zenodo.44700"><img alt="DOI" src="https://zenodo.org/badge/doi/10.5281/zenodo.44700.svg" /></a></p>
+<ul class="simple">
+<li><p>ADD: basic use of binary messages for faster coordinate data transfer</p></li>
+<li><p>ADD: updated to newer <code class="docutils literal notranslate"><span class="pre">NGL</span></code> version, (e.g. orthographic camera,
+anti-aliasing, much faster rendering, …)</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">view.delay</span></code> property to adjust trajectory playback</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">show_url</span></code> function for loading &amp; viewing from an url</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">view.hide()</span></code> and <code class="docutils literal notranslate"><span class="pre">view.show_only()</span></code> convenience methods</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">show_rdkit</span></code> function to view rdkit Mol objects</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">view.clear()</span></code> for clearing all representations</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">view.add_unitcell()</span></code>, support for the new NGL unitcell
+representation</p></li>
+<li><p>ADD: automatic creation of attributes: <code class="docutils literal notranslate"><span class="pre">view.trajectory_0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">view.trajectory_1</span></code>, <code class="docutils literal notranslate"><span class="pre">view.component_0</span></code>, …</p></li>
+<li><p>ADD: specify <code class="docutils literal notranslate"><span class="pre">component</span></code> index in <code class="docutils literal notranslate"><span class="pre">view.add_representations</span></code>,
+<code class="docutils literal notranslate"><span class="pre">view.clear_representations</span></code></p></li>
+<li><p>ADD: drag and drop files into widget</p></li>
+<li><p>ADD: extra TrajectoryPlayer widget available via <code class="docutils literal notranslate"><span class="pre">view.player</span></code></p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">view.camera</span></code> property (<code class="docutils literal notranslate"><span class="pre">perspective</span></code> and <code class="docutils literal notranslate"><span class="pre">orthographic</span></code>,
+new in NGL)</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">view.background</span></code> property to change the viewer background
+(color name or hex value)</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">view.orientation</span></code> property to synchronize cameras of two
+viewer widgets</p></li>
+<li><p>ADD: view multiple trajectories via <code class="docutils literal notranslate"><span class="pre">view.add_trajectory()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">view.add_component()</span></code></p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">view.download_image()</span></code> to render high quality image and
+trigger download in browser</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">view.render_image()</span></code> to render image for display in the
+notebook</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">view.center_view()</span></code> to center</p></li>
+<li><p>ADD: select atoms by their indices, given as a List</p></li>
+<li><p>ADD: shortcuts for view.add_representation (view.add_cartoon,
+view.add_rope, …)</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">ParmEdTrajectory</span></code> adaptor and <code class="docutils literal notranslate"><span class="pre">show_parmed</span></code> function to
+view ParmEd objects</p></li>
+<li><p>ENH: <code class="docutils literal notranslate"><span class="pre">view.add_trajectory</span></code> now accept <code class="docutils literal notranslate"><span class="pre">pytraj.Trajectory</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mdtraj.Trajectory</span></code>, <code class="docutils literal notranslate"><span class="pre">MDAnalysis.Universe</span></code>, <code class="docutils literal notranslate"><span class="pre">parmed.Structure</span></code></p></li>
+<li><p>ENH: view.add_representations now accepts keywords in both snake_case
+and CamelCase</p></li>
+<li><p>ENH: smoother trajectory playing</p></li>
+<li><p>ENH: smoother rendering when adding new representation</p></li>
+<li><p>MIGRATION: change html/static to js/</p></li>
+<li><p>MIGRATION: change sending base64 to binary coordinates</p></li>
+<li><p>MIGRATION: change <code class="docutils literal notranslate"><span class="pre">view.trajectory</span></code> to <code class="docutils literal notranslate"><span class="pre">view.trajlist</span></code></p></li>
+<li><p>MIGRATION: change <code class="docutils literal notranslate"><span class="pre">get_frame_count</span></code> method to <code class="docutils literal notranslate"><span class="pre">n_frames</span></code> property</p></li>
+<li><p>MIGRATION: remove <code class="docutils literal notranslate"><span class="pre">get_coordinates_dict</span></code></p></li>
+<li><p>FIX: symlink error</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-4">
+<h2>Version 0.4<a class="headerlink" href="#version-0-4" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://dx.doi.org/10.5281/zenodo.44700"><img alt="DOI" src="https://zenodo.org/badge/doi/10.5281/zenodo.44700.svg" /></a></p>
+<ul class="simple">
+<li><p>ADD: Convenience methods to show widget from various sources</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">PyTrajTrajectory</span></code> adaptor</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">MDAnalysisTrajectory</span></code> adaptor</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">NGLWidget.add_representation()</span></code> method</p></li>
+<li><p>ADD: append a “WebGL not supported message” to widget if so</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">parameters</span></code> widget property, passed to NGL stage object</p></li>
+<li><p>ADD: <code class="docutils literal notranslate"><span class="pre">params</span></code> property for <code class="docutils literal notranslate"><span class="pre">Structure</span></code>, dict passed to NGL</p></li>
+<li><p>CODE: be less noisy when importing nglview</p></li>
+<li><p>DOC: more usage examples, API description</p></li>
+<li><p>DOC: added CHANGELOG file</p></li>
+<li><p>BUILD: added example files in the package</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-3">
+<h2>Version 0.3<a class="headerlink" href="#version-0-3" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://dx.doi.org/10.5281/zenodo.44700"><img alt="DOI" src="https://zenodo.org/badge/doi/10.5281/zenodo.44700.svg" /></a></p>
+<ul class="simple">
+<li><p>MIGRATION: <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> classes need <code class="docutils literal notranslate"><span class="pre">get_frame_count</span></code> method</p></li>
+<li><p>MIGRATION: removed <code class="docutils literal notranslate"><span class="pre">set_frame</span></code> method use new <code class="docutils literal notranslate"><span class="pre">frame</span></code> property</p></li>
+<li><p>ADD: simple trajectory player</p></li>
+<li><p>ADD: widget resizing support</p></li>
+<li><p>ADD: picking support (gui info; <code class="docutils literal notranslate"><span class="pre">picked</span></code> property)</p></li>
+<li><p>CODE: check for file existence in <code class="docutils literal notranslate"><span class="pre">FileStructure</span></code> and
+<code class="docutils literal notranslate"><span class="pre">SimpletrajTrajectory</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="version-0-2">
+<h2>Version 0.2<a class="headerlink" href="#version-0-2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>MIGRATION: changed <code class="docutils literal notranslate"><span class="pre">get_string</span></code> to <code class="docutils literal notranslate"><span class="pre">get_structure_string</span></code></p></li>
+<li><p>MIGRATION: changed <code class="docutils literal notranslate"><span class="pre">get_coordinates</span></code> to <code class="docutils literal notranslate"><span class="pre">get_coordinates_list</span></code></p></li>
+<li><p>DOC: usage, interface classes</p></li>
+<li><p>ADD: MDTrajTrajectory adaptor</p></li>
+<li><p>CODE: added interface classes</p></li>
+<li><p>CODE: suggested packages; mdtraj, simpletraj</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-1">
+<h2>Version 0.1<a class="headerlink" href="#version-0-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>initial version, no release</p></li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#version-1-0">Version 1.0</a></li>
+<li><a class="reference internal" href="#version-0-5-2">Version 0.5.2</a></li>
+<li><a class="reference internal" href="#version-0-5-1">Version 0.5.1</a></li>
+<li><a class="reference internal" href="#version-0-5">Version 0.5</a></li>
+<li><a class="reference internal" href="#version-0-4">Version 0.4</a></li>
+<li><a class="reference internal" href="#version-0-3">Version 0.3</a></li>
+<li><a class="reference internal" href="#version-0-2">Version 0.2</a></li>
+<li><a class="reference internal" href="#version-0-1">Version 0.1</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/changelog.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">NGLView 2.7.7+1.gf915b3e.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Changelog</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
+      Last updated on Dec 22, 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,677 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nglview.adaptor &#8212; NGLView 2.7.7+1.gf915b3e.dirty documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 2.7.7+1.gf915b3e.dirty documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.adaptor</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for nglview.adaptor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">mkstemp</span>
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">.base_adaptor</span> <span class="kn">import</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">Trajectory</span>
+<span class="kn">from</span> <span class="nn">.utils.py_utils</span> <span class="kn">import</span> <span class="n">FileManager</span><span class="p">,</span> <span class="n">tempfolder</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;FileStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TextStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;RdkitStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PdbIdStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ASEStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BiopythonStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;IOTBXStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;IODataStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;QCElementalStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Psi4Structure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;OpenbabelStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;RosettaStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ProdyStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SimpletrajTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ProdyTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MDTrajTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PyTrajTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ParmEdTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MDAnalysisTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HTMDTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ASETrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SchrodingerStructure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SchrodingerTrajectory&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;register_backend&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">mkstemp_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># NamedTemporaryFile cannot be used here because it makes it impossible</span>
+    <span class="c1"># on Windows to the file for writing. mkstemp is a bit less restrictive</span>
+    <span class="c1"># in this regard.</span>
+    <span class="n">fd</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">mkstemp</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">fname</span>
+    <span class="c1"># On windows, the file must be closed before it can be removed.</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_structure_string</span><span class="p">(</span><span class="n">write_method</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.pdb&#39;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">mkstemp_wrapper</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span> <span class="k">as</span> <span class="n">fname</span><span class="p">:</span>
+        <span class="n">write_method</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="register_backend"><a class="viewcode-back" href="../../api.html#nglview.adaptor.register_backend">[docs]</a><span class="k">class</span> <span class="nc">register_backend</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package_name</span><span class="p">):</span>
+        <span class="c1"># package_name must match exactly to your Python package</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">package_name</span> <span class="o">=</span> <span class="n">package_name</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">BACKENDS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">package_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
+        <span class="k">return</span> <span class="bp">cls</span></div>
+
+
+<div class="viewcode-block" id="FileStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.FileStructure">[docs]</a><span class="k">class</span> <span class="nc">FileStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fm</span> <span class="o">=</span> <span class="n">FileManager</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fm</span><span class="o">.</span><span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+
+<div class="viewcode-block" id="FileStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.FileStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fm</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">force_buffer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TextStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.TextStructure">[docs]</a><span class="k">class</span> <span class="nc">TextStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_text</span> <span class="o">=</span> <span class="n">text</span>
+
+<div class="viewcode-block" id="TextStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.TextStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text</span></div></div>
+
+
+<div class="viewcode-block" id="RdkitStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.RdkitStructure">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;rdkit&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">RdkitStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdkit_mol</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;pdb&quot;</span><span class="p">,</span> <span class="n">conf_id</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conf_id</span> <span class="o">=</span> <span class="n">conf_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_mol</span> <span class="o">=</span> <span class="n">rdkit_mol</span>
+
+<div class="viewcode-block" id="RdkitStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.RdkitStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+
+        <span class="n">reader</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;pdb&quot;</span><span class="p">)</span> <span class="ow">and</span> \
+                 <span class="n">Chem</span><span class="o">.</span><span class="n">MolToPDBBlock</span> <span class="ow">or</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolToMolBlock</span>
+        <span class="k">return</span> <span class="n">reader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_mol</span><span class="p">,</span> <span class="n">confId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_id</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PdbIdStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.PdbIdStructure">[docs]</a><span class="k">class</span> <span class="nc">PdbIdStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdbid</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdbid</span> <span class="o">=</span> <span class="n">pdbid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;cif&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="PdbIdStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.PdbIdStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://www.rcsb.org/pdb/files/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdbid</span> <span class="o">+</span> <span class="s2">&quot;.cif&quot;</span>
+        <span class="k">return</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ASEStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ASEStructure">[docs]</a><span class="k">class</span> <span class="nc">ASEStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ase_atoms</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ase_atoms</span> <span class="o">=</span> <span class="n">ase_atoms</span>
+
+<div class="viewcode-block" id="ASEStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ASEStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ase_atoms</span><span class="o">.</span><span class="n">write</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="IODataStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.IODataStructure">[docs]</a><span class="k">class</span> <span class="nc">IODataStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">obj</span>
+
+<div class="viewcode-block" id="IODataStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.IODataStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Require `ase` package</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">ase.io</span>
+        <span class="k">with</span> <span class="n">mkstemp_wrapper</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.xyz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fname</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ASEStructure</span><span class="p">(</span><span class="n">ase</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span><span class="o">.</span><span class="n">get_structure_string</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="QCElementalStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.QCElementalStructure">[docs]</a><span class="k">class</span> <span class="nc">QCElementalStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;sdf&#39;</span>
+
+<div class="viewcode-block" id="QCElementalStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.QCElementalStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">orient_molecule</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="s1">&#39;nglview-sdf&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Psi4Structure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.Psi4Structure">[docs]</a><span class="k">class</span> <span class="nc">Psi4Structure</span><span class="p">(</span><span class="n">QCElementalStructure</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="OpenbabelStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.OpenbabelStructure">[docs]</a><span class="k">class</span> <span class="nc">OpenbabelStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">obj</span>
+
+<div class="viewcode-block" id="OpenbabelStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.OpenbabelStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Open Babel &gt;= 3.0.0</span>
+            <span class="kn">from</span> <span class="nn">openbabel</span> <span class="kn">import</span> <span class="n">openbabel</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">openbabel</span>
+        <span class="n">oc</span> <span class="o">=</span> <span class="n">openbabel</span><span class="o">.</span><span class="n">OBConversion</span><span class="p">()</span>
+        <span class="n">oc</span><span class="o">.</span><span class="n">SetOutFormat</span><span class="p">(</span><span class="s1">&#39;pdb&#39;</span><span class="p">)</span>
+        <span class="n">write</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">oc</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_get_structure_string</span><span class="p">(</span><span class="n">write</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BiopythonStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.BiopythonStructure">[docs]</a><span class="k">class</span> <span class="nc">BiopythonStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entity</span> <span class="o">=</span> <span class="n">entity</span>
+
+<div class="viewcode-block" id="BiopythonStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.BiopythonStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">Bio.PDB</span> <span class="kn">import</span> <span class="n">PDBIO</span>
+        <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+        <span class="n">io_pdb</span> <span class="o">=</span> <span class="n">PDBIO</span><span class="p">()</span>
+        <span class="n">io_pdb</span><span class="o">.</span><span class="n">set_structure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity</span><span class="p">)</span>
+        <span class="n">io_str</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">io_pdb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">io_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">io_str</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="IOTBXStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.IOTBXStructure">[docs]</a><span class="k">class</span> <span class="nc">IOTBXStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        obj must have as_pdb_string method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span> <span class="o">=</span> <span class="n">obj</span>
+
+<div class="viewcode-block" id="IOTBXStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.IOTBXStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span><span class="o">.</span><span class="n">as_pdb_string</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="RosettaStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.RosettaStructure">[docs]</a><span class="k">class</span> <span class="nc">RosettaStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="c1"># type: (pyrosetta.rosetta.core.pose.Pose, str, Dict) -&gt; None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span> <span class="o">=</span> <span class="n">pose</span>
+
+<div class="viewcode-block" id="RosettaStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.RosettaStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mol</span><span class="o">.</span><span class="n">dump_pdb</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ProdyStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ProdyStructure">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;prody&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ProdyStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;pdb&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="ProdyStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ProdyStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">prody</span>
+
+        <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="n">prody</span><span class="o">.</span><span class="n">Ensemble</span><span class="p">):</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
+            <span class="n">prody</span><span class="o">.</span><span class="n">writePDB</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">st</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_get_structure_string</span><span class="p">(</span><span class="n">write</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ProdyTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ProdyTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;prody&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ProdyTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">ProdyStructure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="n">ProdyStructure</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">numConfs</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ProdyTrajectory.get_coordinates"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ProdyTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">getConformation</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">getCoords</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="SimpletrajTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SimpletrajTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;simpletraj&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SimpletrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;simpletraj adaptor.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
+<span class="sd">    &gt;&gt;&gt; t = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)</span>
+<span class="sd">    &gt;&gt;&gt; w = nv.NGLWidget(t)</span>
+<span class="sd">    &gt;&gt;&gt; w</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">structure_path</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">simpletraj</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;SimpletrajTrajectory&#39; requires the &#39;simpletraj&#39; package&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traj_cache</span> <span class="o">=</span> <span class="n">simpletraj</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">TrajectoryCache</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_structure_path</span> <span class="o">=</span> <span class="n">structure_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">structure_path</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">traj_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+<div class="viewcode-block" id="SimpletrajTrajectory.get_coordinates"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SimpletrajTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">frame</span><span class="p">[</span><span class="s2">&quot;coords&quot;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SimpletrajTrajectory.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SimpletrajTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_structure_path</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">traj</span><span class="o">.</span><span class="n">numframes</span></div>
+
+
+<div class="viewcode-block" id="MDTrajTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.MDTrajTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;mdtraj&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">MDTrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;mdtraj adaptor.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
+<span class="sd">    &gt;&gt;&gt; import mdtraj as md</span>
+<span class="sd">    &gt;&gt;&gt; traj = md.load(nv.datafiles.XTC, nv.datafiles.GRO)</span>
+<span class="sd">    &gt;&gt;&gt; t = MDTrajTrajectory(traj)</span>
+<span class="sd">    &gt;&gt;&gt; w = nv.NGLWidget(t)</span>
+<span class="sd">    &gt;&gt;&gt; w</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+<div class="viewcode-block" id="MDTrajTrajectory.get_coordinates"><a class="viewcode-back" href="../../api.html#nglview.adaptor.MDTrajTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">10</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">n_frames</span>
+
+<div class="viewcode-block" id="MDTrajTrajectory.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.MDTrajTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">save_pdb</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PyTrajTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.PyTrajTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;pytraj&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">PyTrajTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;PyTraj adaptor.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
+<span class="sd">    &gt;&gt;&gt; import pytraj as pt</span>
+<span class="sd">    &gt;&gt;&gt; traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)</span>
+<span class="sd">    &gt;&gt;&gt; t = nv.PyTrajTrajectory(traj)</span>
+<span class="sd">    &gt;&gt;&gt; w = nv.NGLWidget(t)</span>
+<span class="sd">    &gt;&gt;&gt; w</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+<div class="viewcode-block" id="PyTrajTrajectory.get_coordinates"><a class="viewcode-back" href="../../api.html#nglview.adaptor.PyTrajTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">xyz</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">n_frames</span>
+
+<div class="viewcode-block" id="PyTrajTrajectory.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.PyTrajTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="n">index</span><span class="p">:</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">)</span></div></div>
+
+
+<span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;parmed&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ParmEdStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_structure</span> <span class="o">=</span> <span class="n">structure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">only_save_1st_model</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># only write 1st model</span>
+        <span class="k">with</span> <span class="n">mkstemp_wrapper</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.pdb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fname</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_save_1st_model</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_structure</span><span class="o">.</span><span class="n">write_pdb</span><span class="p">(</span>
+                    <span class="n">fname</span><span class="p">,</span> <span class="n">coordinates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_structure</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_structure</span><span class="o">.</span><span class="n">write_pdb</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="ParmEdTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ParmEdTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;parmed&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ParmEdTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">ParmEdStructure</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;ParmEd adaptor.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">):</span>
+        <span class="n">ParmEdStructure</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_structure</span> <span class="o">=</span> <span class="n">trajectory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># only call get_coordinates once</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ParmEdTrajectory.get_coordinates"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ParmEdTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MDAnalysisTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.MDAnalysisTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;MDAnalysis&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">MDAnalysisTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;MDAnalysis adaptor.</span>
+
+<span class="sd">    Can take either a Universe or AtomGroup.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
+<span class="sd">    &gt;&gt;&gt; import MDAnalysis as mda</span>
+<span class="sd">    &gt;&gt;&gt; u = mda.Universe(nv.datafiles.GRO, nv.datafiles.XTC)</span>
+<span class="sd">    &gt;&gt;&gt; prot = u.select_atoms(&#39;protein&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; t = nv.MDAnalysisTrajectory(prot)</span>
+<span class="sd">    &gt;&gt;&gt; w = nv.NGLWidget(t)</span>
+<span class="sd">    &gt;&gt;&gt; w</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atomgroup</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span> <span class="o">=</span> <span class="n">atomgroup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+<div class="viewcode-block" id="MDAnalysisTrajectory.get_coordinates"><a class="viewcode-back" href="../../api.html#nglview.adaptor.MDAnalysisTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">positions</span>
+        <span class="k">return</span> <span class="n">xyz</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">n_frames</span>
+
+<div class="viewcode-block" id="MDAnalysisTrajectory.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.MDAnalysisTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="k">as</span> <span class="nn">mda</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;MDAnalysisTrajectory&#39; requires the &#39;MDAnalysis&#39; package&quot;</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">universe</span>
+        <span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">NamedStream</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(),</span> <span class="s1">&#39;tmp.pdb&#39;</span><span class="p">)</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">atoms</span>
+        <span class="c1"># add PDB output to the named stream</span>
+        <span class="k">with</span> <span class="n">mda</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">atoms</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">multiframe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">w</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+                <span class="n">w</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+        <span class="c1"># extract from the stream</span>
+        <span class="n">pdb_string</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">pdb_string</span></div></div>
+
+
+<div class="viewcode-block" id="HTMDTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.HTMDTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;htmd&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">HTMDTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;HTMD adaptor.</span>
+
+<span class="sd">    Takes a Molecule object.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
+<span class="sd">    &gt;&gt;&gt; from htmd import Molecule</span>
+<span class="sd">    &gt;&gt;&gt; mol = Molecule(nv.datafiles.PDB)</span>
+<span class="sd">    &gt;&gt;&gt; t = nv.HTMDTrajectory(mol)</span>
+<span class="sd">    &gt;&gt;&gt; w = nv.NGLWidget(t)</span>
+<span class="sd">    &gt;&gt;&gt; w</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mol</span> <span class="o">=</span> <span class="n">mol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+<div class="viewcode-block" id="HTMDTrajectory.get_coordinates"><a class="viewcode-back" href="../../api.html#nglview.adaptor.HTMDTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">coords</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">index</span><span class="p">])</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">numFrames</span>
+
+<div class="viewcode-block" id="HTMDTrajectory.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.HTMDTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">write</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ASETrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ASETrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;ase&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ASETrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;asetraj adaptor.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import nglview as nv</span>
+<span class="sd">    &gt;&gt;&gt; from ase.io.trajectory import Trajectory</span>
+<span class="sd">    &gt;&gt;&gt; traj = Trajectory(nv.datafiles.ASE_Traj)</span>
+<span class="sd">    &gt;&gt;&gt; t = nv.ASETrajectory(traj)</span>
+<span class="sd">    &gt;&gt;&gt; w = nv.NGLWidget(t)</span>
+<span class="sd">    &gt;&gt;&gt; w.add_spacefill()</span>
+<span class="sd">    &gt;&gt;&gt; w</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ase_traj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;pdb&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="n">ase_traj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ASETrajectory.get_coordinates"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ASETrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">positions</span></div>
+
+<div class="viewcode-block" id="ASETrajectory.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.ASETrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">write</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SchrodingerStructure"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SchrodingerStructure">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;schrodinger&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SchrodingerStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Only read first structure</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;pdb&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schrodinger_structure</span> <span class="o">=</span> <span class="n">structure</span>
+
+<div class="viewcode-block" id="SchrodingerStructure.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SchrodingerStructure.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># NOTE: For some reasons, _get_structure_string always return</span>
+        <span class="c1"># empty string in this case.</span>
+        <span class="k">with</span> <span class="n">tempfolder</span><span class="p">():</span>
+            <span class="n">pdb_fn</span> <span class="o">=</span> <span class="s1">&#39;tmp.pdb&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_schrodinger_structure</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">content</span>
+
+        <span class="k">return</span> <span class="n">_get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_schrodinger_structure</span><span class="o">.</span><span class="n">write</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SchrodingerTrajectory"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SchrodingerTrajectory">[docs]</a><span class="nd">@register_backend</span><span class="p">(</span><span class="s1">&#39;schrodinger&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SchrodingerTrajectory</span><span class="p">(</span><span class="n">SchrodingerStructure</span><span class="p">,</span> <span class="n">Trajectory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Require `parmed` package.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">traj</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_traj</span> <span class="o">=</span> <span class="n">traj</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_traj</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traj</span> <span class="k">else</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="SchrodingerTrajectory.get_coordinates"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SchrodingerTrajectory.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traj</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SchrodingerTrajectory.get_structure_string"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SchrodingerTrajectory.get_structure_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Require `parmed` package.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">parmed</span> <span class="k">as</span> <span class="nn">pmd</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schrodinger_structure</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">pmd</span><span class="o">.</span><span class="n">Structure</span><span class="p">()</span>
+        <span class="n">fsys</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fsys_ct</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s1">&#39;fsys_ct&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">c</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">fsys</span><span class="o">.</span><span class="n">atom</span><span class="p">:</span>
+            <span class="n">parm_atom</span> <span class="o">=</span> <span class="n">pmd</span><span class="o">.</span><span class="n">Atom</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">pdbname</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                                 <span class="n">atomic_number</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">atomic_number</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">add_atom</span><span class="p">(</span><span class="n">parm_atom</span><span class="p">,</span>
+                       <span class="n">atom</span><span class="o">.</span><span class="n">pdbres</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                       <span class="n">atom</span><span class="o">.</span><span class="n">resnum</span><span class="p">,</span>
+                       <span class="n">chain</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">chain</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">fsys</span><span class="o">.</span><span class="n">getXYZ</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ParmEdStructure</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">get_structure_string</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SchrodingerTrajectory.from_files"><a class="viewcode-back" href="../../api.html#nglview.adaptor.SchrodingerTrajectory.from_files">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_files</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cms_fname</span><span class="p">,</span> <span class="n">traj_fname</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">schrodinger.application.desmond.packages</span> <span class="kn">import</span> <span class="n">topo</span><span class="p">,</span> <span class="n">traj</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">topo</span><span class="o">.</span><span class="n">read_cms</span><span class="p">(</span><span class="n">cms_fname</span><span class="p">)</span>
+        <span class="n">traj</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">read_traj</span><span class="p">(</span><span class="n">traj_fname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">traj</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">NGLView 2.7.7+1.gf915b3e.dirty documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.adaptor</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
+      Last updated on Dec 22, 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.0.
+    </div>
+  </body>
+</html>

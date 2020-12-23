@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nglview.scripts.nglview &#8212; NGLView 2.7.7+1.gf915b3e.dirty documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 2.7.7+1.gf915b3e.dirty documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.scripts.nglview</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for nglview.scripts.nglview</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">.cmd_example</span> <span class="kn">import</span> <span class="n">CMD_EXAMPLE</span>
+
+<span class="n">bin_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="s1">&#39;bin&#39;</span><span class="p">)</span>
+
+<span class="n">simple_source</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">import nglview as nv</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+<span class="n">demo_source</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">import nglview as nv</span>
+
+<span class="s2">view = nv.demo(gui=True)</span>
+<span class="s2">view</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+<span class="n">density_source</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">import nglview as nv</span>
+
+<span class="s2">view = nv.NGLWidget(gui=True)</span>
+<span class="s2">view.add_component(&#39;filename&#39;)</span>
+<span class="s2">view</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_is_density_data</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">nglview.utils</span> <span class="kn">import</span> <span class="n">FileManager</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">fm</span> <span class="o">=</span> <span class="n">FileManager</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fm</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dx&#39;</span><span class="p">,</span> <span class="s1">&#39;ccp4&#39;</span><span class="p">,</span> <span class="s1">&#39;mrc&#39;</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="s1">&#39;dxbin&#39;</span><span class="p">,</span> <span class="s1">&#39;cube&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="n">notebook_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="s2">&quot;cell_type&quot;</span><span class="p">:</span>
+        <span class="s2">&quot;code&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;execution_count&quot;</span><span class="p">:</span>
+        <span class="s1">&#39;null&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;collapsed&quot;</span><span class="p">:</span> <span class="kc">True</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;import nglview as nv</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;import pytraj as pt</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;traj = pt.iterload(&#39;test.nc&#39;, top=&#39;prmtop&#39;)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;view = nv.show_pytraj(traj)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}],</span>
+    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;kernelspec&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;display_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Python 3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;language&quot;</span><span class="p">:</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;python3&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;language_info&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;codemirror_mode&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ipython&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="mi">3</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;file_extension&quot;</span><span class="p">:</span> <span class="s2">&quot;.py&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mimetype&quot;</span><span class="p">:</span> <span class="s2">&quot;text/x-python&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nbconvert_exporter&quot;</span><span class="p">:</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pygments_lexer&quot;</span><span class="p">:</span> <span class="s2">&quot;ipython&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.5.1&quot;</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;nbformat&quot;</span><span class="p">:</span>
+    <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;nbformat_minor&quot;</span><span class="p">:</span>
+    <span class="mi">0</span>
+<span class="p">}</span>
+
+<span class="n">remote_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Try to use port = </span><span class="si">{port}</span><span class="s2"></span>
+
+<span class="se">\033</span><span class="s2">[32m In your local machine, run: </span><span class="se">\033</span><span class="s2">[0m</span>
+
+<span class="s2">    </span><span class="si">{client_cm}</span><span class="s2"></span>
+
+<span class="se">\033</span><span class="s2">[32m NOTE: you might want to replace </span><span class="si">{hostname}</span><span class="s2"> by full hostname with domain name </span><span class="se">\033</span><span class="s2">[0m</span>
+
+<span class="se">\033</span><span class="s2">[32m Then open your web browser, copy and paste: </span><span class="se">\033</span><span class="s2">[0m</span>
+<span class="s2">    http://localhost:</span><span class="si">{port}</span><span class="s2">/notebooks/</span><span class="si">{notebook_name}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="get_remote_port"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.get_remote_port">[docs]</a><span class="k">def</span> <span class="nf">get_remote_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">notebook_path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">socket</span>
+    <span class="kn">from</span> <span class="nn">nglview.scripts.app</span> <span class="kn">import</span> <span class="n">NGLViewApp</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="n">NGLViewApp</span><span class="p">()</span><span class="o">.</span><span class="n">get_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+
+    <span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getlogin</span><span class="p">()</span>
+    <span class="n">hostname</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span>
+    <span class="n">client_cm</span> <span class="o">=</span> <span class="s2">&quot;ssh -NL localhost:</span><span class="si">{port}</span><span class="s2">:localhost:</span><span class="si">{port}</span><span class="s2"> </span><span class="si">{username}</span><span class="s2">@</span><span class="si">{hostname}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+    <span class="n">base_notebook_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">notebook_path</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="n">remote_msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">client_cm</span><span class="o">=</span><span class="n">client_cm</span><span class="p">,</span>
+                          <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+                          <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">,</span>
+                          <span class="n">notebook_name</span><span class="o">=</span><span class="n">base_notebook_name</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">port</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../_api/nglview.scripts.html#nglview.scripts.nglview.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">notebook_dict</span><span class="o">=</span><span class="n">notebook_dict</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># typte: (Dict, List[str]) -&gt; None</span>
+    <span class="n">pyv_full_string</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">)</span>
+    <span class="n">pyv_short_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">default_jexe</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s1">&#39;-m jupyter_core&#39;</span><span class="p">))</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;NGLView: An IPython/Jupyter widget to &#39;</span>
+        <span class="s1">&#39;interactively view molecular structures and trajectories.&#39;</span><span class="p">,</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="n">CMD_EXAMPLE</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;command&#39;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span>
+        <span class="s1">&#39;command could be a topology filename (.pdb, .mol2, .parm7, ...) or </span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;could be a python script (.py), a notebook (.ipynb). &#39;</span>
+        <span class="s1">&#39;If not given, a notebook will be created with only nglview imported&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;traj&#39;</span><span class="p">,</span>
+                        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;coordinate filename, optional&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--crd&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;coordinate filename&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--browser&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;web browser&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-j&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;--jexe&#39;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="n">default_jexe</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;jupyter path&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--notebook-name&#39;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;tmpnb_ngl.ipynb&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;notebook name&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--port&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;port number&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--remote&#39;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;create remote notebook&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--clean&#39;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;delete temp file after closing notebook&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--auto&#39;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Run 1st cell right after openning notebook&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--symlink&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Create symlink for nglview-js-widgets (developer mode)&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+    <span class="n">command</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span>
+    <span class="k">if</span> <span class="n">command</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;install&#39;</span><span class="p">,</span> <span class="s1">&#39;enable&#39;</span><span class="p">,</span> <span class="s1">&#39;uninstall&#39;</span><span class="p">]:</span>
+        <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;jupyter&#39;</span><span class="p">,</span> <span class="s1">&#39;nbextension&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="s1">&#39;--py&#39;</span><span class="p">,</span> <span class="s1">&#39;--sys-prefix&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nglview&#39;</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;install&#39;</span><span class="p">:</span>
+            <span class="n">cmds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;--overwrite&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">symlink</span><span class="p">:</span>
+            <span class="n">cmds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;--symlink&#39;</span><span class="p">)</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">cmds</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">crd</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">traj</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">crd</span>
+    <span class="k">if</span> <span class="n">crd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">crd</span> <span class="o">=</span> <span class="n">command</span>
+
+    <span class="n">browser</span> <span class="o">=</span> <span class="s1">&#39;--browser &#39;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">browser</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">browser</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">create_new_nb</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">command</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">command</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.ipynb&#39;</span><span class="p">):</span>
+        <span class="n">notebook_name</span> <span class="o">=</span> <span class="n">command</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">notebook_name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">notebook_name</span>
+        <span class="k">if</span> <span class="n">command</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># create a notebook and import nglview</span>
+            <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simple_source</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.py&#39;</span><span class="p">):</span>
+            <span class="c1"># a Python script</span>
+            <span class="n">pycontent</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pycontent</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;demo&#39;</span><span class="p">:</span>
+            <span class="c1"># running demo</span>
+            <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">demo_source</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s1">&#39;test.nc&#39;</span><span class="p">,</span> <span class="n">crd</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;prmtop&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_is_density_data</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+            <span class="c1"># check if density data</span>
+            <span class="n">notebook_dict</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">density_source</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">notebook_dict</span><span class="p">)</span>
+            <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s1">&#39;test.nc&#39;</span><span class="p">,</span> <span class="n">crd</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;prmtop&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> does not exists&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">command</span><span class="p">)</span>
+
+        <span class="n">nb_json</span> <span class="o">=</span> <span class="n">nb_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;null&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;null&#39;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">nb_json</span><span class="p">)</span>
+            <span class="n">create_new_nb</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">remote</span><span class="p">:</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{jupyter}</span><span class="s1"> notebook </span><span class="si">{notebook_name}</span><span class="s1"> </span><span class="si">{browser}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">,</span> <span class="n">notebook_name</span><span class="o">=</span><span class="n">notebook_name</span><span class="p">,</span> <span class="n">browser</span><span class="o">=</span><span class="n">browser</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">get_remote_port</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">notebook_name</span><span class="p">)</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{jupyter}</span><span class="s1"> notebook --no-browser --port </span><span class="si">{port}</span><span class="s1"> &#39;</span> \
+              <span class="s1">&#39;--notebook-dir </span><span class="si">{dirname}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">,</span>
+                                                <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+                                                <span class="n">dirname</span><span class="o">=</span><span class="n">dirname</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NOTE: make sure to open </span><span class="si">{}</span><span class="s1"> in your local machine</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">notebook_name</span><span class="p">))</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">clean</span> <span class="ow">and</span> <span class="n">create_new_nb</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;deleting </span><span class="si">{</span><span class="n">notebook_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">notebook_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">auto</span><span class="p">:</span>
+            <span class="n">disable_extension</span><span class="p">(</span><span class="n">jupyter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">jexe</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">NGLView 2.7.7+1.gf915b3e.dirty documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.scripts.nglview</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
+      Last updated on Dec 22, 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.0.
+    </div>
+  </body>
+</html>
