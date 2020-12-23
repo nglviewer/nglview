@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nglview.contrib.movie &#8212; NGLView 2.7.7+0.gd41dfb9.dirty documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.7.7+0.gd41dfb9.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.contrib.movie</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="nglview-contrib-movie">
+<h1>nglview.contrib.movie<a class="headerlink" href="#nglview-contrib-movie" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-nglview.contrib.movie">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nglview.contrib.movie" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="nglview.contrib.movie.MovieMaker">
+<em class="property">class </em><code class="sig-prename descclassname">nglview.contrib.movie.</code><code class="sig-name descname">MovieMaker</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">view</span></em>, <em class="sig-param"><span class="n">download_folder</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">'movie'</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">'my_movie.gif'</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">8</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">skip_render</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">in_memory</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">perframe_hook</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">render_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">moviepy_params</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/contrib/movie.html#MovieMaker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.contrib.movie.MovieMaker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Unstable API</p>
+<p>view : NGLWidget
+download_folder : str or None</p>
+<blockquote>
+<div><p>Folder that stores images. You can not arbitarily set this folder. It must be
+the download directory of the web browser you are using.
+If None, $HOME/Downloads/ will be used.
+NOTE: This is DEPRECATED (used with <cite>make_old_impl</cite>)</p>
+</div></blockquote>
+<dl>
+<dt>prefix<span class="classifier">str, default ‘movie’</span></dt><dd><p>prefix name of rendered image.</p>
+</dd>
+<dt>output<span class="classifier">str, default ‘my_movie.gif’</span></dt><dd><p>output filename of the movie.
+if output has ‘.gif’, call <cite>write_gif</cite>, otherwise calling <cite>write_videofile</cite></p>
+</dd>
+<dt>fps<span class="classifier">8</span></dt><dd><p>frame per second</p>
+</dd>
+<dt>start, stop, step<span class="classifier">int, default (0, -1, 1)</span></dt><dd><p>how many frames you want to render.</p>
+</dd>
+<dt>skip_render<span class="classifier">bool, default False</span></dt><dd><p>if True, do not render any frame and uses existings images in <cite>download_folder</cite>
+for movie making.
+if False, perform rendering first.</p>
+</dd>
+<dt>timeout<span class="classifier">a number (second), default 0.1</span></dt><dd><p>The waiting time between rendering two consecutive frames.
+This option should be only used with <cite>perframe_hook</cite> option.</p>
+</dd>
+<dt>render_params<span class="classifier">dict or None, default None</span></dt><dd><p>NGL rendering params. see NGLWidget.download_image.
+If None, use default values</p>
+</dd>
+<dt>moviepy_params<span class="classifier">dict or None, default None</span></dt><dd><p>moviepy params for <cite>write_gif</cite> method.
+if None, use default values</p>
+</dd>
+<dt>in_memory<span class="classifier">bool, default False</span></dt><dd><p>if False, save rendered images to disk first
+if True, keep all image data in memory (good for small video)</p>
+</dd>
+<dt>perframe_hook<span class="classifier">callable with <cite>view</cite> as a single argument, default None</span></dt><dd><p>if given, update the <cite>view</cite> by <cite>perframe_hook</cite>.</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nglview</span> <span class="k">as</span> <span class="nn">nv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytraj</span> <span class="k">as</span> <span class="nn">pt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">traj</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">XTC</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">nv</span><span class="o">.</span><span class="n">datafiles</span><span class="o">.</span><span class="n">PDB</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">view</span> <span class="o">=</span> <span class="n">nv</span><span class="o">.</span><span class="n">show_pytraj</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nglview.contrib.movie</span> <span class="kn">import</span> <span class="n">MovieMaker</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">download_folder</span> <span class="o">=</span> <span class="s1">&#39;/Users/xxx/Downloads&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="s1">&#39;my.gif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mov</span> <span class="o">=</span> <span class="n">MovieMaker</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">download_folder</span><span class="o">=</span><span class="n">download_folder</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mov</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># write avi format</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nglview.contrib.movie</span> <span class="kn">import</span> <span class="n">MovieMaker</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">moviepy_params</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;codec&#39;</span><span class="p">:</span> <span class="s1">&#39;mpeg4&#39;</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">movie</span> <span class="o">=</span> <span class="n">MovieMaker</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;my.avi&#39;</span><span class="p">,</span> <span class="n">in_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">moviepy_params</span><span class="o">=</span><span class="n">moviepy_params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">movie</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>unstable API. Currently supports .gif format
+If you are using remote notebook, make sure to set in_memory=True</p>
+<p>moviepy. e.g:</p>
+<blockquote>
+<div><p>pip install moviepy
+conda install freeimage</p>
+</div></blockquote>
+<dl class="py method">
+<dt id="nglview.contrib.movie.MovieMaker.interupt">
+<code class="sig-name descname">interupt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/contrib/movie.html#MovieMaker.interupt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.contrib.movie.MovieMaker.interupt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop making process</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nglview.contrib.movie.MovieMaker.make">
+<code class="sig-name descname">make</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">movie</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">keep_data</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/contrib/movie.html#MovieMaker.make"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.contrib.movie.MovieMaker.make" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>keep_data: bool</dt><dd><p>if True, save the image data in self._image_array</p>
+</dd>
+<dt>movie: bool</dt><dd><p>if True, make the movie
+else, only do the rendering (make sure keep_data=True in this case)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nglview.contrib.movie.MovieMaker.make_old_impl">
+<code class="sig-name descname">make_old_impl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_memory</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/contrib/movie.html#MovieMaker.make_old_impl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.contrib.movie.MovieMaker.make_old_impl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="nglview.contrib.movie.MovieMaker.sleep">
+<code class="sig-name descname">sleep</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nglview/contrib/movie.html#MovieMaker.sleep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nglview.contrib.movie.MovieMaker.sleep" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">nglview.contrib.movie</a><ul>
+<li><a class="reference internal" href="#module-nglview.contrib.movie">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/_api/nglview.contrib.movie.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">NGLView 2.7.7+0.gd41dfb9.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nglview.contrib.movie</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Alexander Rose, Hai Nguyen.
+      Last updated on Dec 22, 2020.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.0.
+    </div>
+  </body>
+</html>
