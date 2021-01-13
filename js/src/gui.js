@@ -262,6 +262,10 @@ class StageWidget{
           // FIXME
           var sw = sidebar.dom.getBoundingClientRect().width
           var ew = el.getBoundingClientRect().width
+          if (ew == sw) {
+              sw = 300 // could be set as percentage of ew?
+          }
+
           var w = ew - sw + 'px'
 
           stage.viewer.container.style.width = w 
