@@ -263,7 +263,7 @@ class StageWidget{
           var sw = sidebar.dom.getBoundingClientRect().width
           var ew = el.getBoundingClientRect().width
           if (ew == sw) {
-              sw = 300 // could be set as percentage of ew?
+              sw = ew / 4
           }
 
           var w = ew - sw + 'px'
