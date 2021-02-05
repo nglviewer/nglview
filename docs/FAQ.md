@@ -37,3 +37,55 @@ Absolutely yes. In general, trajectory data in NGLview are read (e.g. loaded fro
 # Default views using HBox are not centered
 
 Please use `view.layout.width = 'auto'`
+
+# How to make nglview view object write PNG file?
+In other words: What is a correct way to get image data to your script (not trigger image download to your browser)?
+
+You have to run your script in another Thread to wait for the image data (via time.sleep). Using different thread to avoid blocking the notebook code (it is important to put the code in two separate cells):
+```python
+import time
+import nglview as nv
+
+view = nv.demo()
+view
+```
+```python
+def generate_images(v=view):
+    v.clear()
+    v.add_cartoon(color='red')
+    im0 = v.render_image()
+    v.clear()
+    v.add_cartoon(color='blue')
+    im1 = v.render_image()
+    for im in [im0, im1]:
+        while not im.value:
+            time.sleep(0.1)
+    for n, im in zip('ab', [im0, im1]):
+        with open(f'figure_{n}.png', 'wb') as fh:
+            fh.write(im.value)
+
+import threading
+thread = threading.Thread(
+    target=generate_images,
+)
+thread.daemon = True
+thread.start()
+```
+
+# How to make embedded nglview widget into specific size?
+
+You need to wrap it in the `ipywidgets.Box` object of appropriate size (in two separate notebook cells);
+
+```python
+import nglview as nv
+from ipywidgets import Box
+
+v = nv.demo()
+box = Box([v])
+box.layout.width = '600px'
+box.layout.height = '600px'
+box
+```
+```python
+nv.write_html('embed.html', box)
+```
