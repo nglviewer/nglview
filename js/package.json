@@ -2,7 +2,16 @@
   "name": "nglview-js-widgets",
   "version": "2.7.7",
   "description": "nglview-js-widgets",
-  "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
+  "author": {
+    "name": "Hay Nguyen",
+    "email": "<hainm.comp@gmail.com>"
+  },
+  "contributors": [
+    {
+      "name": "Alexander Rose",
+      "email": "alexander.rose@weirdbyte.de"
+    }
+  ],
   "license": "MIT",
   "main": "lib/index.js",
   "repository": {
@@ -15,7 +24,8 @@
   "files": [
     "dist",
     "src",
-    "lib"
+    "lib",
+    "style/index.js"
   ],
   "keywords": [
     "molecular graphics",
@@ -27,49 +37,70 @@
     "science"
   ],
   "scripts": {
-    "lint": "eslint src test",
-    "prepublish": "tsc && webpack",
-    "ts": "tsc",
-    "test": "mocha",
-    "clean": "rimraf dist/",
-    "build": "yarn run build:lib",
-    "build:labextension": "cd jupyter_archive && rimraf labextension && mkdirp labextension && cd labextension && npm pack ../..",
-    "build:lib": "tsc",
+    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
     "build:all": "yarn run build:labextension",
-    "watch": "tsc -w"
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
+    "clean": "jlpm run clean:lib",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
+    "clean:labextension": "rimraf nglview-js-widgets/labextension",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "eslint": "eslint . --ext .ts,.tsx --fix",
+    "eslint:check": "eslint . --ext .ts,.tsx",
+    "install:extension": "jupyter labextension develop --overwrite .",
+    "lint": "eslint src test",
+    "prepare": "jlpm run clean && jlpm run build:prod",
+    "prepublish": "tsc && webpack",
+    "test": "mocha",
+    "ts": "tsc",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:labextension": "jupyter labextension watch .",
+    "watch:src": "tsc -w"
   },
   "devDependencies": {
-    "@types/node": "^12.0.2",
+    "@jupyterlab/builder": "^3.0.0",
     "@types/chai": "^4.1.4",
     "@types/expect.js": "^0.3.29",
     "@types/mocha": "^2.2.48",
+    "@types/node": "^12.0.2",
     "@types/requirejs": "^2.1.31",
-    "typescript": "~3.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
     "babel-eslint": "^7.0.0",
     "babel-register": "^6.11.6",
     "css-loader": "^0.23.1",
-    "eslint": "^6.6.0",
+    "eslint": "^7.14.0",
     "eslint-config-google": "^0.7.1",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
     "file-loader": "^0.8.5",
     "json-loader": "^0.5.4",
     "ngl": "2.0.0-dev.36",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.1",
+    "rimraf": "^3.0.2",
     "style-loader": "^0.13.1",
-    "webpack": "^3.5.5",
-    "rimraf": "^2.6.1"
+    "typescript": "~4.1.3",
+    "webpack": "^3.5.5"
   },
   "dependencies": {
+    "@jupyter-widgets/base": "^1.1 || ^2 || ^3",
+    "@jupyterlab/application": "^3.0.6",
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
-    "underscore": "^1.8.3",
-    "ngl": "2.0.0-dev.36",
     "lodash": "^4.17.4",
-    "@jupyter-widgets/base": "^1.1 || ^2 || ^3"
+    "ngl": "2.0.0-dev.36",
+    "underscore": "^1.8.3"
   },
   "jupyterlab": {
-    "extension": "lib/jupyterlab-plugin"
+    "extension": "lib/jupyterlab-plugin",
+    "outputDir": "nglview-js-widgets/labextension"
   },
   "homepage": "https://github.com/arose/nglview#readme",
   "directories": {
     "test": "test"
-  }
+  },
+  "styleModule": "style/index.js"
 }

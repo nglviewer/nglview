@@ -1,25 +1,32 @@
 {
-"compilerOptions": {
-    "noImplicitAny": false,
-    "lib": ["dom", "es5", "es2015.promise", "es2015.iterable"],
-    "noEmitOnError": false,
-    "strictNullChecks": true,
-    "module": "commonjs",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "composite": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "incremental": true,
+    "jsx": "react",
+    "module": "esnext",
     "moduleResolution": "node",
-    "target": "es2015",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "preserveWatchOutput": true,
+    "resolveJsonModule": true,
     "outDir": "lib",
-    "skipLibCheck": true,
+    "rootDir": "src",
+    "strict": true,
     "strictNullChecks": false,
-    // "sourceMap": true,
-    // inline seems to work better with karma
-    "inlineSourceMap": true,
-    "allowJs": true
+    "target": "es2017",
+    "types": [
+      "node"
+    ]
   },
   "include": [
-      "./src/**/*",
+    "src/*"
   ],
   "exclude": [
-        "node_modules",
-        "**/*.spec.ts"
+    "node_modules",
+    "**/*.spec.ts"
   ]
 }

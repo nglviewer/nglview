@@ -1,18 +1,17 @@
-module.exports = {};
+import {
+  JupyterFrontEnd,
+  JupyterFrontEndPlugin
+} from '@jupyterlab/application';
 
-var loadedModules = [
-    require("./widget_ngl.js"),
-]
+/**
+ * Initialization data for the nglview-js-widgets extension.
+ */
+const extension: JupyterFrontEndPlugin<void> = {
+  id: 'nglview-js-widgets:plugin',
+  autoStart: true,
+  activate: (app: JupyterFrontEnd) => {
+    console.log('JupyterLab extension nglview-js-widgets is activated!');
+  }
+};
 
-for (var i in loadedModules) {
-    if (loadedModules.hasOwnProperty(i)) {
-        var loadedModule = loadedModules[i];
-        for (var target_name in loadedModule) {
-            if (loadedModule.hasOwnProperty(target_name)) {
-                module.exports[target_name] = loadedModule[target_name];
-            }
-        }
-    }
-}
-
-module.exports['version'] = require('../package.json').version;
+export default extension;
