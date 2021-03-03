@@ -1,39 +1,36 @@
-import widgets from "@jupyter-widgets/base"
+import widgets from '@jupyter-widgets/base';
 
-
-export
-class BaseView extends widgets.DOMWidgetView {
-
-    render(){
-    if (this.isEmbeded()){
-            // embed mode: let NGLView call the handleEmbed directly
-            return
-        }
-        this.handleMessage();
-        this.displayed.then(() =>{
-            this.model.set("_ready", true)
-            this.touch()
-        })
+export class BaseView extends widgets.DOMWidgetView {
+  render() {
+    if (this.isEmbeded()) {
+      // embed mode: let NGLView call the handleEmbed directly
+      return;
     }
+    this.handleMessage();
+    this.displayed.then(() => {
+      this.model.set('_ready', true);
+      this.touch();
+    });
+  }
 
-    executeCode(code){
-        eval(code);
-    }
+  executeCode(code) {
+    eval(code);
+  }
 
-    handleMessage(){
-        this.model.on("msg:custom", function(msg){
-            this.on_msg(msg)
-        }.bind(this))
-    }
+  handleMessage() {
+    this.model.on('msg:custom', msg => {
+      this.on_msg(msg);
+    });
+  }
 
-    on_msg(msg){
-        if (msg.type == 'callMethod'){
-            console.log("from BaseView", msg)
-            this[msg.methodName].apply(this, msg.args, msg.kwargs)
-        }
+  on_msg(msg) {
+    if (msg.type == 'callMethod') {
+      console.log('from BaseView', msg);
+      this[msg.methodName].apply(this, msg.args, msg.kwargs);
     }
+  }
 
-    isEmbeded(){
-        return (this.model.comm == undefined)
-    }
+  isEmbeded() {
+    return this.model.comm == undefined;
+  }
 }
