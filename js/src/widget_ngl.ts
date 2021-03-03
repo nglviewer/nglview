@@ -1,7 +1,5 @@
-var Jupyter
 var widgets = require("@jupyter-widgets/base")
 var NGL = require('ngl')
-var BaseView = require('./base').BaseView
 import * as $ from 'jquery'
 import * as _ from 'underscore'
 import "./lib/signals.min.js"
@@ -42,16 +40,6 @@ function generateUUID () {
   }
 
   return uuid.join('')
-}
-
-
-async function createView(that, trait_name){
-    // Create a view for the model with given `trait_name`
-    // e.g: in backend, 'view.<trait_name>`
-    console.log("Creating view for model " + trait_name);
-    var manager = that.model.widget_manager
-    var model_id = that.model.get(trait_name).replace("IPY_MODEL_", "");
-    return await manager.create_view(await manager.get_model(model_id))
 }
 
 
@@ -109,7 +97,6 @@ class NGLView extends widgets.DOMWidgetView{
             stage_params["backgroundColor"] = "white"
         }
         NGL.useWorker = false;
-        var view_parent = this.options.parent
         this.stage = new NGL.Stage(undefined)
         this.$container = $(this.stage.viewer.container);
         this.$el.append(this.$container)
@@ -268,7 +255,6 @@ class NGLView extends widgets.DOMWidgetView{
               that._synced_model_ids.forEach(async function(mid){
                   var model = await that.model.widget_manager.get_model(mid)
                   for (var k in model.views){
-                      var pview = model.views[k];
                       var view = await model.views[k]
                       if (view.uuid != that.uuid){
                           view.stage.viewerControls.orient(m);
@@ -290,7 +276,6 @@ class NGLView extends widgets.DOMWidgetView{
           .css("opacity", "0.7")
           .appendTo(this.$container);
 
-      var that = this;
       this.stage.signals.clicked.add(function (pd) {
           if (pd) {
               this.model.set('picked', {}); //refresh signal
@@ -413,7 +398,6 @@ class NGLView extends widgets.DOMWidgetView{
         });
 
 
-        var compList = await Promise.all(loadfile_list)
         that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
         that.stage.setParameters(ngl_stage_params);
         that.set_camera_orientation(that.model.get("_camera_orientation"));
@@ -705,7 +689,6 @@ class NGLView extends widgets.DOMWidgetView{
 
     updateRepresentationForComponent(repr_index, component_index, params) {
         var component = this.stage.compList[component_index];
-        var that = this;
         var repr = component.reprList[repr_index];
         if (repr) {
             repr.setParameters(params);
@@ -1022,7 +1005,6 @@ class NGLView extends widgets.DOMWidgetView{
              }
              return this.stage.loadFile(blob, msg.kwargs)
          } else {
-             var file = new File([""], args0.data);
              // FIXME: if not "any", typescipt complains there is no
              // "exists" method.
              var path = "";
@@ -1051,7 +1033,6 @@ class NGLView extends widgets.DOMWidgetView{
         if (this.ngl_view_id != this.get_last_child_id() && msg.last_child){
             return
         }
-        var o = await this._getLoadFilePromise(msg)
         this._handleLoadFileFinished();
     }
 

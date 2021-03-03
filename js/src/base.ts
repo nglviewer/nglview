@@ -1,5 +1,4 @@
-import * as widgets from "@jupyter-widgets/base"
-var NGL = require("ngl") // not sure why I can not import it
+import widgets from "@jupyter-widgets/base"
 
 
 export
