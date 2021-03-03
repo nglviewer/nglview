@@ -1,17 +1,18 @@
-import * as _ from 'underscore';
-import * as NGL from 'ngl';
+import _ from 'underscore';
+import NGL from 'ngl';
 import { BaseView } from './base';
-import * as widgets from '@jupyter-widgets/base';
+import widgets from '@jupyter-widgets/base';
+import pkg = require('../package.json');
 
 export class ColormakerRegistryModel extends widgets.DOMWidgetModel {
   defaults() {
     return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
       _model_name: 'ColormakerRegistryModel',
       _model_module: 'nglview-js-widgets',
-      _model_module_version: require('../package.json').version,
+      _model_module_version: pkg.version,
       _view_name: 'ColormakerRegistryView',
       _view_module: 'nglview-js-widgets',
-      _view_module_version: require('../package.json').version
+      _view_module_version: pkg.version
     });
   }
 }

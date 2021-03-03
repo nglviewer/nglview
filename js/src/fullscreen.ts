@@ -1,6 +1,7 @@
-import * as widgets from '@jupyter-widgets/base';
-import * as NGL from 'ngl';
+import widgets from '@jupyter-widgets/base';
+import NGL from 'ngl';
 import { BaseView } from './base';
+import pkg = require('../package.json');
 
 export class FullscreenModel extends widgets.DOMWidgetModel {
   defaults() {
@@ -8,10 +9,10 @@ export class FullscreenModel extends widgets.DOMWidgetModel {
       ...super.defaults(),
       _model_name: 'FullscreenModel',
       _model_module: 'nglview-js-widgets',
-      _model_module_version: require('../package.json').version,
+      _model_module_version: pkg.version,
       _view_name: 'FullscreenView',
       _view_module: 'nglview-js-widgets',
-      _view_module_version: require('../package.json').version
+      _view_module_version: pkg.version
     };
   }
 }
