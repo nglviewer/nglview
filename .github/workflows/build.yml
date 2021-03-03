@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: $GITHUB_WORKSPACE/js
     steps:
     - name: Checkout
       uses: actions/checkout@v2
