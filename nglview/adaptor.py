@@ -158,7 +158,7 @@ class QCElementalStructure(Structure):
         self.ext = 'sdf'
 
     def get_structure_string(self):
-        return self._obj.orient_molecule().to_string('nglview-sdf')
+        return self._obj.to_string('nglview-sdf')
 
 
 class Psi4Structure(QCElementalStructure):
