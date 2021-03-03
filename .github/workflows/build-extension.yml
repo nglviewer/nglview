@@ -47,7 +47,7 @@ jobs:
     - name: Install dependencies
       run: python -m pip install -U jupyterlab~=3.0 jupyter_packaging~=0.7.9
     - name: Build the extension
-      working-directory: $GITHUB_WORKSPACE/js
+      working-directory: js
       run: |
         jlpm
         jlpm run eslint:check
