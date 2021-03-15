@@ -401,7 +401,7 @@ Projects integrating NGLView
 - [opencadd](https://github.com/volkamerlab/opencadd): A Python library for structural cheminformatics
 - [teachopencadd](https://github.com/volkamerlab/teachopencadd): TeachOpenCADD: a teaching platform for computer-aided drug design (CADD) using open source packages and data
 - [cando](https://github.com/cando-developers/cando): Computer Aided Nanostructure Design and Optimization
-- [](https://query.libretexts.org/Sandboxes/jupyterteam@ucdavis.edu): query.libretexts.org
+- [query.libretexts.org](https://query.libretexts.org/Sandboxes/jupyterteam@ucdavis.edu): query.libretexts.org
 
 Acknowledgment
 ==============
