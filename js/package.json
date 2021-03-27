@@ -25,16 +25,16 @@
   "contributors": [
     {
       "name": "Hay Nguyen",
-      "email": "<hainm.comp@gmail.com>"
+      "email": "hainm.comp@gmail.com"
     }
   ],
   "files": [
-    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-    "style/**/*.{css,.js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+    "dist",
+    "src",
+    "lib",
+    "style/index.js"
   ],
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "style": "style/index.css",
   "repository": {
     "type": "git",
     "url": "https://github.com/nglviewer/nglview.git"
@@ -59,12 +59,12 @@
     "test": "mocha"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^1.1 || ^2 || ^3",
-    "@jupyterlab/application": "^3.0.0",
+    "@jupyter-widgets/base": "^4.0.0",
+    "@jupyter-widgets/jupyterlab-manager": "^3.0.0",
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "lodash": "^4.17.4",
-    "ngl": "2.0.0-dev.37",
+    "ngl": "2.0.0-dev.36",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -79,17 +79,16 @@
     "babel-register": "^6.11.6",
     "css-loader": "^0.23.1",
     "eslint": "^7.14.0",
-    "eslint-config-google": "^0.7.1",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "file-loader": "^0.8.5",
+    "file-loader": "^1.1.6",
     "json-loader": "^0.5.4",
-    "ngl": "2.0.0-dev.37",
+    "mkdirp": "^1.0.3",
+    "ngl": "2.0.0-dev.36",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.1",
     "rimraf": "^3.0.2",
     "style-loader": "^0.13.1",
-    "typescript": "~4.1.3"
+    "typescript": "~4.1.3",
+    "webpack": "^3.5.5"
   },
   "sideEffects": [
     "style/*.css",
