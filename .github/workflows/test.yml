@@ -25,24 +25,22 @@ jobs:
     - name: Cache conda
       uses: actions/cache@v1
       env:
-        CACHE_NUMBER: 0  # Increase this value to reset cache if .github/nglview-gha.yml has not changed
+        CACHE_NUMBER: 1  # Increase this value to reset cache if .github/nglview-gha.yml has not changed
       with:
         path: ~/conda_pkgs_dir
         key:
           ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('.github/nglview-gha.yml') }}
 
-    - name: Set up conda environment using Mamba
+    - name: Set up conda environment
       uses: conda-incubator/setup-miniconda@v2
       with:
-          auto-update-conda: true
-          auto-activate-base: false
-          activate-environment: nglview-gha
-          environment-file: .github/nglview-gha.yml
-          mamba-version: "*"
-          channels: conda-forge,ambermd
-          channel-priority: true
-          python-version: ${{ matrix.python-version }}
-          use-only-tar-bz2: true  # IMPORTANT: This needs to be set for caching to work properly!
+        auto-update-conda: true
+        auto-activate-base: false
+        activate-environment: nglview-gha
+        environment-file: .github/nglview-gha.yml
+        channel-priority: true
+        python-version: ${{ matrix.python-version }}
+        use-only-tar-bz2: true  # IMPORTANT: This needs to be set for caching to work properly!
 
     - name: Run tests
       run: |
