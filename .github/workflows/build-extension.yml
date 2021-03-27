@@ -2,9 +2,11 @@ name: Build extension
 
 on:
   push:
-    branches: '*'
+    branches: 
+    - "*"
   pull_request:
-    branches: '*'
+    branches: 
+    - "*"
 
 jobs:
   build:
