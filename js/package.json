@@ -96,7 +96,7 @@
   ],
   "styleModule": "style/index.js",
   "jupyterlab": {
-    "extension": true,
+    "extension": "lib/jupyterlab-plugin",
     "outputDir": "nglview-js-widgets/labextension"
   },
   "directories": {
