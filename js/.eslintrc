@@ -1,9 +1,11 @@
 {
-  "parser": "espree",
+  "parser": "@typescript-eslint/parser",
   "extends": "eslint:recommended",
   "rules": {
     "no-console": "off",
     "no-constant-condition": "off",
+    "no-unused-vars": "off",
+    "no-redeclare": "off",
     "valid-jsdoc": "error"
   },
   "env": {
