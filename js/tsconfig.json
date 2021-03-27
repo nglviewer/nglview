@@ -1,41 +1,24 @@
 {
   "compilerOptions": {
-    // Project options
-    "composite": true,
-    "declaration": true,
-    "incremental": true,
-    "jsx": "react",
-    "module": "esnext",
-    "outDir": "lib",
-    "rootDir": "src",
-    "target": "es2017",
-    // Strict check options
-    "noImplicitAny": false,
-    "noImplicitThis": false,
-    "strict": true,
-    "strictBindCallApply": false,
-    "strictNullChecks": false,
-    // Module resolution options
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "types": [
-      "node"
+      "noImplicitAny": false,
+      "lib": ["dom", "es5", "es2015.promise", "es2015.iterable"],
+      "noEmitOnError": false,
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "target": "es2015",
+      "outDir": "lib",
+      "skipLibCheck": true,
+      "strictNullChecks": false,
+      // "sourceMap": true,
+      // inline seems to work better with karma
+      "inlineSourceMap": true,
+      "allowJs": true
+    },
+    "include": [
+        "./src/**/*",
     ],
-    // Linter checks options
-    "noUnusedLocals": true,
-    // Advanced options
-    "noEmitOnError": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    // Command line options
-    "preserveWatchOutput": true
-  },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
-}
+    "exclude": [
+          "node_modules",
+          "**/*.spec.ts"
+    ]
+  }
