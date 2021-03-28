@@ -22,18 +22,6 @@ jobs:
     - name: Checkout nglview repository
       uses: actions/checkout@v2
 
-#    - name: Checkout ngl data repo
-#      uses: actions/checkout@v2
-#      with:
-#        repository: arose/ngl
-#        path: ../ngl
-#
-#    - name: Checkout nbtests repo
-#      uses: actions/checkout@v2
-#      with:
-#        repository: hainm/nbtests
-#        path: nbtests
-
     - name: Cache conda
       uses: actions/cache@v1
       env:
@@ -71,28 +59,3 @@ jobs:
         python setup.py sdist
         pip install dist/*gz
         python -c "import nglview as nv; print(nv.__version__)"
-
-  conda-build:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: true
-          auto-activate-base: false
-          activate-environment: deploy
-          environment-file: .github/deploy.yml
-          python-version: 3.8
-
-      - name: Build conda recipe
-        run: |
-          conda build \
-                --verify \
-                -c conda-forge \
-                devtools/conda-recipe
