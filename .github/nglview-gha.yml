@@ -6,10 +6,8 @@ channels:
 
 dependencies:
   - python>=3.6
-  - conda-build
-  - jinja2
-  - anaconda-client
   - pip
+  - qcelemental
   - traitlets
   - ipywidgets
   - mock

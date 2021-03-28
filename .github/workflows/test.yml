@@ -23,17 +23,17 @@ jobs:
     - name: Checkout nglview repository
       uses: actions/checkout@v2
 
-    - name: Checkout ngl data repo
-      uses: actions/checkout@v2
-      with:
-        repository: arose/ngl
-        path: ngl
-
-    - name: Checkout nbtests repo
-      uses: actions/checkout@v2
-      with:
-        repository: hainm/nbtests
-        path: nbtests
+#    - name: Checkout ngl data repo
+#      uses: actions/checkout@v2
+#      with:
+#        repository: arose/ngl
+#        path: ../ngl
+#
+#    - name: Checkout nbtests repo
+#      uses: actions/checkout@v2
+#      with:
+#        repository: hainm/nbtests
+#        path: nbtests
 
     - name: Cache conda
       uses: actions/cache@v1
@@ -64,5 +64,4 @@ jobs:
     - name: Code coverage with coveralls
       uses: coverallsapp/github-action@master
       with:
-        base-path: "nglview/tests"
         github-token: ${{ secrets.GITHUB_TOKEN }}
