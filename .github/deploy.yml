@@ -1,0 +1,5 @@
+name: deploy
+dependencies:
+  - anaconda-client
+  - conda-build
+  - conda-verify
