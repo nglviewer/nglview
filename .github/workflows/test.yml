@@ -16,31 +16,53 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout nglview repository
+      uses: actions/checkout@v2
+
+    - name: Checkout ngl data repo
+      uses: actions/checkout@v2
+      with:
+        repository: arose/ngl
+        path: ngl
+
+    - name: Checkout nbtests repo
+      uses: actions/checkout@v2
+      with:
+        repository: hainm/nbtests
+        path: nbtests
 
     - name: Cache conda
       uses: actions/cache@v1
       env:
-        CACHE_NUMBER: 0  # Increase this value to reset cache if environment.yml has not changed
+        CACHE_NUMBER: 0  # Increase this value to reset cache if .github/nglview-gha.yml has not changed
       with:
         path: ~/conda_pkgs_dir
         key:
-          ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
+          ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('.github/nglview-gha.yml') }}
 
-    - uses: conda-incubator/setup-miniconda@v2
+    - name: Set up conda environment using Mamba
+      uses: conda-incubator/setup-miniconda@v2
       with:
           auto-update-conda: true
           auto-activate-base: false
-          activate-environment: nglview
-          environment-file: environment.yml
+          activate-environment: nglview-gha
+          environment-file: .github/nglview-gha.yml
+          mamba-version: "*"
+          channels: conda-forge,ambermd
           channel-priority: true
           python-version: ${{ matrix.python-version }}
           use-only-tar-bz2: true  # IMPORTANT: This needs to be set for caching to work properly!
 
-    - run: |
-        conda info
-        conda list
+    - name: Run tests
+      run: |
+        python -m pytest -vs nglview/tests --cov=nglview --cov-report=html --disable-pytest-warnings
+
+    - name: Code coverage with coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        base-path: "nglview/tests"
+        github-token: ${{ secrets.GITHUB_TOKEN }}
