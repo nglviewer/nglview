@@ -510,9 +510,9 @@ def test_show_ase():
 
 @unittest.skipUnless(has_pymatgen, 'skip if not having pymatgen')
 def test_show_pymatgen():
-    import pymatgen as mg
-    lattice = mg.Lattice.cubic(4.2)
-    structure = mg.Structure(lattice, ["Cs", "Cl"],
+    from pymatgen.core import Lattice, Structure
+    lattice = Lattice.cubic(4.2)
+    structure = Structure(lattice, ["Cs", "Cl"],
                              [[0, 0, 0], [0.5, 0.5, 0.5]])
     view = nv.show_pymatgen(structure)
     view

@@ -1,0 +1,39 @@
+name: nglview-gha
+
+channels:
+  - conda-forge
+  - ambermd
+
+dependencies:
+  - python>=3.6
+  - pip
+  - qcelemental
+  - traitlets
+  - ipywidgets
+  - mock
+  - coverage
+  - nose
+  - pytest
+  - pytest-cov
+  - coveralls
+  - pandas
+  - ase
+  - parmed
+  - biopython
+  - pymatgen
+  - simpletraj
+  - matplotlib
+  - moviepy
+  - imageio
+  - pillow
+  - numpy
+  - pandas
+  - ase
+  - parmed
+  - biopython
+  - pymatgen
+  - simpletraj
+  - rdkit
+  - mdanalysis
+  - mdtraj
+  - pytraj

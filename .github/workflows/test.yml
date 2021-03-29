@@ -1,0 +1,61 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+    - name: Checkout nglview repository
+      uses: actions/checkout@v2
+
+    - name: Cache conda
+      uses: actions/cache@v1
+      env:
+        CACHE_NUMBER: 0  # Increase this value to reset cache if .github/nglview-gha.yml has not changed
+      with:
+        path: ~/conda_pkgs_dir
+        key:
+          ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('.github/nglview-gha.yml') }}
+
+    - name: Set up conda environment using Mamba
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+          auto-update-conda: true
+          auto-activate-base: false
+          activate-environment: nglview-gha
+          environment-file: .github/nglview-gha.yml
+          mamba-version: "*"
+          channels: conda-forge,ambermd
+          channel-priority: true
+          python-version: ${{ matrix.python-version }}
+          use-only-tar-bz2: true  # IMPORTANT: This needs to be set for caching to work properly!
+
+    - name: Run tests
+      run: |
+        python -m pytest -vs nglview/tests --cov=nglview --cov-report=html --disable-pytest-warnings
+
+    - name: Code coverage with coveralls
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        coveralls
+
+    - name: Check installation with pip
+      run: |
+        python setup.py sdist
+        pip install dist/*gz
+        python -c "import nglview as nv; print(nv.__version__)"
