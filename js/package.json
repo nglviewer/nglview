@@ -18,16 +18,6 @@
     "url": "https://github.com/nglviewer/nglview/issues"
   },
   "license": "MIT",
-  "author": {
-    "name": "Alexander Rose",
-    "email": "alexander.rose@weirdbyte.de"
-  },
-  "contributors": [
-    {
-      "name": "Hai Nguyen",
-      "email": "hainm.comp@gmail.com"
-    }
-  ],
   "files": [
     "dist",
     "src",
