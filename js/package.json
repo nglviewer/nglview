@@ -2,73 +2,97 @@
   "name": "nglview-js-widgets",
   "version": "2.7.7",
   "description": "nglview-js-widgets",
-  "author": "Hai Nguyen <hainm.comp@gmail.com>, Alexander Rose <alexander.rose@weirdbyte.de>",
-  "license": "MIT",
-  "main": "lib/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/arose/nglview.git"
-  },
+  "keywords": [
+    "ipython",
+    "ipywidgets",
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension",
+    "molecular graphics",
+    "molecular structure",
+    "science",
+    "widgets"
+  ],
+  "homepage": "https://github.com/nglviewer/nglview/js",
   "bugs": {
-    "url": "https://github.com/arose/nglview/issues"
+    "url": "https://github.com/nglviewer/nglview/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Alexander Rose, Hai Nguyen",
+    "email": "alexander.rose@weirdbyte.de, hainm.comp@gmail.com"
   },
   "files": [
     "dist",
     "src",
-    "lib"
+    "lib",
+    "style/index.js"
   ],
-  "keywords": [
-    "molecular graphics",
-    "molecular structure",
-    "jupyter",
-    "widgets",
-    "ipython",
-    "ipywidgets",
-    "science"
-  ],
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nglviewer/nglview.git"
+  },
   "scripts": {
-    "lint": "eslint src test",
-    "prepublish": "tsc && webpack",
-    "ts": "tsc",
-    "test": "mocha",
-    "clean": "rimraf dist/",
-    "build": "yarn run build:lib",
-    "build:labextension": "cd jupyter_archive && rimraf labextension && mkdirp labextension && cd labextension && npm pack ../..",
+    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
+    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib": "tsc",
-    "build:all": "yarn run build:labextension",
-    "watch": "tsc -w"
+    "clean": "jlpm run clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf myextension/labextension",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
+    "eslint": "eslint . --ext .ts,.tsx --fix",
+    "eslint:check": "eslint . --ext .ts,.tsx",
+    "install:extension": "jupyter labextension develop --overwrite .",
+    "prepare": "jlpm run clean && jlpm run build:prod",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch .",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "@jupyter-widgets/base": "^4.0.0",
+    "@jupyter-widgets/jupyterlab-manager": "^3.0.0",
+    "jquery": "^3.2.1",
+    "jquery-ui": "^1.12.1",
+    "lodash": "^4.17.4",
+    "ngl": "2.0.0-dev.36",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "@types/node": "^12.0.2",
+    "@jupyterlab/builder": "^3.0.0",
     "@types/chai": "^4.1.4",
     "@types/expect.js": "^0.3.29",
     "@types/mocha": "^2.2.48",
+    "@types/node": "^12.0.2",
     "@types/requirejs": "^2.1.31",
-    "typescript": "~3.0.0",
-    "babel-eslint": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
     "babel-register": "^6.11.6",
     "css-loader": "^0.23.1",
-    "eslint": "^6.6.0",
-    "eslint-config-google": "^0.7.1",
-    "file-loader": "^0.8.5",
+    "eslint": "^7.14.0",
+    "file-loader": "^1.1.6",
     "json-loader": "^0.5.4",
+    "mkdirp": "^1.0.3",
     "ngl": "2.0.0-dev.36",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.1",
+    "rimraf": "^3.0.2",
     "style-loader": "^0.13.1",
-    "webpack": "^3.5.5",
-    "rimraf": "^2.6.1"
+    "typescript": "~4.1.3",
+    "webpack": "^3.5.5"
   },
-  "dependencies": {
-    "jquery": "^3.2.1",
-    "jquery-ui": "^1.12.1",
-    "underscore": "^1.8.3",
-    "ngl": "2.0.0-dev.36",
-    "lodash": "^4.17.4",
-    "@jupyter-widgets/base": "^1.1 || ^2 || ^3"
-  },
+  "sideEffects": [
+    "style/*.css",
+    "style/index.js"
+  ],
+  "styleModule": "style/index.js",
   "jupyterlab": {
-    "extension": "lib/jupyterlab-plugin"
+    "extension": "lib/jupyterlab-plugin",
+    "outputDir": "nglview-js-widgets/labextension"
   },
-  "homepage": "https://github.com/arose/nglview#readme",
   "directories": {
     "test": "test"
   }
