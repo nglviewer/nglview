@@ -1,12 +1,6 @@
-pythonversion=3.8
-nglviewversion=2.7.7
-labversion=2.1.5
-ipywidgetsversion=7.5.1
-
-conda create -n lab python=$pythonversion -y
-source activate lab
-conda install ipywidgets==$ipywidgetsversion -c conda-forge -y
-conda install nglview==$nglviewversion -c conda-forge -y
-conda install jupyterlab=$labversion  -y -c conda-forge
-jupyter-labextension install @jupyter-widgets/jupyterlab-manager
-jupyter-labextension install nglview-js-widgets@$nglviewversion
+conda create -n lab python=3.8 -y 
+source  activate lab
+conda install jupyterlab=3 -c conda-forge -y
+pip install jupyterlab_widgets
+pip install nglview # Python part
+pip install https://github.com/nglviewer/nglview/releases/download/v2.7.7/nglview-js-widgets-2.7.7.tar.gz # JS part for Lab
