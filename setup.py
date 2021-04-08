@@ -1,3 +1,7 @@
+"""Use `pip install` rather than `python setup.py install`
+to correctly distribute the notebook and lab extensions.
+"""
+
 import os
 import subprocess
 import sys
@@ -74,6 +78,7 @@ def update_package_data(distribution):
 
 
 class NPM(Command):
+    # FIXME: remove this class
     description = 'install package.json dependencies using npm'
 
     user_options = []
@@ -141,6 +146,10 @@ data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
 ]
 
+if not (lab_path/"package.json").exists():
+    sys.exit("Missing lab extension files. "
+            "To build lab extension: cd js && npm install && npm run copy:labextension")
+
 cmdclass = create_cmdclass("jsdeps",
     package_data_spec=package_data_spec,
     data_files_spec=data_files_spec
@@ -176,6 +185,7 @@ setup_args = {
     ],
     'install_requires': [
         'ipywidgets>=7',
+        'jupyterlab_widgets',
         'numpy',
     ],
     'extras_require': {

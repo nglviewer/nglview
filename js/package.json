@@ -34,7 +34,8 @@
     "url": "https://github.com/nglviewer/nglview.git"
   },
   "scripts": {
-    "prepublish": "jlpm build:prod && webpack && cp -r nglview-js-widgets/labextension/* ../nglview/labextension/",
+    "prepublish": "jlpm build:prod && webpack && jlpm run copy:labextension",
+    "copy:labextension": "cp -r nglview-js-widgets/labextension/* ../nglview/labextension/",
     "build": "jlpm run build:lib && jlpm run build:labextension:dev",
     "build:prod": "jlpm run build:lib && jlpm run build:labextension",
     "build:labextension": "jupyter labextension build .",
