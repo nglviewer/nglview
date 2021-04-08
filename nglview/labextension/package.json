@@ -1,0 +1,106 @@
+{
+  "name": "nglview-js-widgets",
+  "version": "2.7.7",
+  "description": "nglview-js-widgets",
+  "keywords": [
+    "ipython",
+    "ipywidgets",
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension",
+    "molecular graphics",
+    "molecular structure",
+    "science",
+    "widgets"
+  ],
+  "homepage": "https://github.com/nglviewer/nglview/js",
+  "bugs": {
+    "url": "https://github.com/nglviewer/nglview/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Alexander Rose, Hai Nguyen",
+    "email": "alexander.rose@weirdbyte.de, hainm.comp@gmail.com"
+  },
+  "files": [
+    "dist",
+    "src",
+    "lib",
+    "style/index.js"
+  ],
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nglviewer/nglview.git"
+  },
+  "scripts": {
+    "prepublish": "jlpm build:prod && webpack && jlpm run copy:labextension",
+    "copy:labextension": "cp -r nglview-js-widgets/labextension/* ../nglview/labextension/",
+    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
+    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "clean": "jlpm run clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf myextension/labextension",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
+    "eslint": "eslint . --ext .ts,.tsx --fix",
+    "eslint:check": "eslint . --ext .ts,.tsx",
+    "install:extension": "jupyter labextension develop --overwrite .",
+    "prepare": "jlpm run clean && jlpm run build:prod",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch .",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "@jupyter-widgets/base": "^4.0.0",
+    "@jupyter-widgets/jupyterlab-manager": "^3.0.0",
+    "jquery": "^3.2.1",
+    "jquery-ui": "^1.12.1",
+    "lodash": "^4.17.4",
+    "ngl": "2.0.0-dev.36",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^3.0.0",
+    "@types/chai": "^4.1.4",
+    "@types/expect.js": "^0.3.29",
+    "@types/mocha": "^2.2.48",
+    "@types/node": "^12.0.2",
+    "@types/requirejs": "^2.1.31",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "babel-register": "^6.11.6",
+    "css-loader": "^0.23.1",
+    "eslint": "^7.14.0",
+    "file-loader": "^1.1.6",
+    "json-loader": "^0.5.4",
+    "mkdirp": "^1.0.3",
+    "ngl": "2.0.0-dev.36",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.1",
+    "rimraf": "^3.0.2",
+    "style-loader": "^0.13.1",
+    "typescript": "~4.1.3",
+    "webpack": "^3.5.5"
+  },
+  "sideEffects": [
+    "style/*.css",
+    "style/index.js"
+  ],
+  "styleModule": "style/index.js",
+  "jupyterlab": {
+    "extension": "lib/jupyterlab-plugin",
+    "outputDir": "nglview-js-widgets/labextension",
+    "_build": {
+      "load": "static/remoteEntry.283b03066e74058eed4d.js",
+      "extension": "./extension",
+      "style": "./style"
+    }
+  },
+  "directories": {
+    "test": "test"
+  }
+}
