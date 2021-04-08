@@ -135,7 +135,7 @@ class NPM(Command):
 HERE = Path(__file__).parent.resolve()
 # The name of the project
 name = "nglview-js-widgets"
-lab_path = (HERE / "nglview"/ "labextension")
+lab_path = (HERE / "nglview"/ "staticlab")
 package_data_spec = {
     name: ["*"],
 }
@@ -151,6 +151,10 @@ cmdclass = create_cmdclass("jsdeps",
     data_files_spec=data_files_spec
 )
 cmdclass['jsdeps'] = NPM
+cmdclass['version'] = get_cmdclass()['version']
+cmdclass['build_py'] = js_prerelease(build_py)
+cmdclass['sdist'] = js_prerelease(sdist, strict=True)
+cmdclass['egg_info']: js_prerelease(egg_info)
 
 setup_args = {
     'name': 'nglview',
@@ -163,7 +167,7 @@ setup_args = {
          "nglview.scripts": ["*"],
          "nglview.theme": ["*"],
          "nglview.static": ["*"],
-         "nglview.labextension": ["*"],
+         "nglview.staticlab": ["*"],
      },
     'entry_points': {'console_scripts':
           ['nglview = nglview.scripts.nglview:main',]
@@ -198,7 +202,7 @@ setup_args = {
     'packages': set(find_packages() + 
                 ['nglview',
                  'nglview.static',
-                 'nglview.labextension',
+                 'nglview.staticlab',
                  'nglview.theme',
                  'nglview.datafiles',
                  'nglview.utils',
@@ -208,13 +212,6 @@ setup_args = {
                  'nglview.scripts']),
     'zip_safe': False,
     'cmdclass': cmdclass,
-    # 'cmdclass': {
-    #     'build_py': js_prerelease(build_py),
-    #     'egg_info': js_prerelease(egg_info),
-    #     'sdist': js_prerelease(sdist, strict=True),
-    #     'jsdeps': NPM,
-    #     'version': get_cmdclass()['version']
-    # },
 
     'author': 'Alexander S. Rose, Hai Nguyen',
     'author_email': 'alexander.rose@weirdbyte.de',
