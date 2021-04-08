@@ -1,10 +1,12 @@
+#!/usr/bin/env python
+
 import json
 from pathlib import Path
 import sys
 from packaging.version import parse as parse_version
 
 version = sys.argv[1]
-HERE = (Path(__file__).parent / '../').resolve().absolute()
+HERE = Path(__file__).parents[1].resolve().absolute()
 sys.path.insert(0, str(HERE))
 
 import versioneer
