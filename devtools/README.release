@@ -1,9 +1,10 @@
 - cd js:
-    - Update version in package.json
-    - npm install && npm publish
+    - Update version in package.json (via: python devtools/update_versions.py [version])
+    - npm install && npm publish # to publish nglview-js-widgets for html embeding.
+    - npm copy:labextension # to copy labextension files to nglview/labextension
 - Update version in /nglview/_frontend.py
 - Commit the change and push to master
 - Create a release tag in github
 - git fetch origin && git checkout <tag-number>
-- ./devtools/release.py
+- PYTHONPATH=`pwd` ./devtools/release.py
 - twine upload ./dist/<package>

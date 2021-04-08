@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "2.7.7",
+  "version": "3.0.0",
   "description": "nglview-js-widgets",
   "keywords": [
     "ipython",
@@ -34,6 +34,8 @@
     "url": "https://github.com/nglviewer/nglview.git"
   },
   "scripts": {
+    "prepublish": "jlpm build:prod && webpack && jlpm run copy:labextension",
+    "copy:labextension": "cp -r nglview-js-widgets/labextension/* ../nglview/labextension/",
     "build": "jlpm run build:lib && jlpm run build:labextension:dev",
     "build:prod": "jlpm run build:lib && jlpm run build:labextension",
     "build:labextension": "jupyter labextension build .",
