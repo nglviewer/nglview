@@ -57,13 +57,7 @@ Released version
    jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
-To use in Jupyter Lab you need to install appropriate extension:
-
-```bash
-jupyter labextension install  nglview-js-widgets
-```
-
-But please read this sample script first: https://github.com/arose/nglview/blob/master/devtools/nglview-jupyterlab.sh
+Jupyterlab: `nglview` works best with jupyterlab >= 3.0.
 
 ## Notes
 
