@@ -401,6 +401,7 @@ Projects integrating NGLView
 - [teachopencadd](https://github.com/volkamerlab/teachopencadd): TeachOpenCADD: a teaching platform for computer-aided drug design (CADD) using open source packages and data
 - [cando](https://github.com/cando-developers/cando): Computer Aided Nanostructure Design and Optimization
 - [query.libretexts.org](https://query.libretexts.org/Sandboxes/jupyterteam@ucdavis.edu): query.libretexts.org
+- [datamol](https://github.com/datamol-org/datamol):  A python library to work with molecules.
 
 Acknowledgment
 ==============
