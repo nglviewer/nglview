@@ -135,7 +135,7 @@ class NPM(Command):
 HERE = Path(__file__).parent.resolve()
 # The name of the project
 name = "nglview-js-widgets"
-lab_path = (HERE / "nglview"/ "labextension")
+lab_path = (HERE / "nglview"/ "staticlab")
 package_data_spec = {
     name: ["*"],
 }
@@ -167,7 +167,7 @@ setup_args = {
          "nglview.scripts": ["*"],
          "nglview.theme": ["*"],
          "nglview.static": ["*"],
-         "nglview.labextension": ["*"],
+         "nglview.staticlab": ["*"],
      },
     'entry_points': {'console_scripts':
           ['nglview = nglview.scripts.nglview:main',]
@@ -202,7 +202,7 @@ setup_args = {
     'packages': set(find_packages() + 
                 ['nglview',
                  'nglview.static',
-                 'nglview.labextension',
+                 'nglview.staticlab',
                  'nglview.theme',
                  'nglview.datafiles',
                  'nglview.utils',
