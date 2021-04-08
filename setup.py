@@ -151,6 +151,10 @@ cmdclass = create_cmdclass("jsdeps",
     data_files_spec=data_files_spec
 )
 cmdclass['jsdeps'] = NPM
+cmdclass['version'] = get_cmdclass()['version']
+cmdclass['build_py'] = js_prerelease(build_py)
+cmdclass['sdist'] = js_prerelease(sdist, strict=True)
+cmdclass['egg_info']: js_prerelease(egg_info)
 
 setup_args = {
     'name': 'nglview',
@@ -208,13 +212,6 @@ setup_args = {
                  'nglview.scripts']),
     'zip_safe': False,
     'cmdclass': cmdclass,
-    # 'cmdclass': {
-    #     'build_py': js_prerelease(build_py),
-    #     'egg_info': js_prerelease(egg_info),
-    #     'sdist': js_prerelease(sdist, strict=True),
-    #     'jsdeps': NPM,
-    #     'version': get_cmdclass()['version']
-    # },
 
     'author': 'Alexander S. Rose, Hai Nguyen',
     'author_email': 'alexander.rose@weirdbyte.de',
