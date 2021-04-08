@@ -56,6 +56,7 @@ jobs:
 
     - name: Check installation with pip
       run: |
+        (cd js && npm install && npm run copy:labextension)
         python setup.py sdist
         pip install dist/*gz
         python -c "import nglview as nv; print(nv.__version__)"
