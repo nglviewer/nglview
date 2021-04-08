@@ -1,3 +1,5 @@
+# NOTE: Check "npm install && npm run copy:labextension"
+
 # nglview-js-widgets
 
 ![Github Actions Status](git+https://github.com/arose/nglview.git/workflows/Build/badge.svg)
