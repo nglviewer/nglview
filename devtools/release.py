@@ -2,6 +2,10 @@
 
 import subprocess
 import sys
+from pathlib import Path
+
+HERE = (Path(__file__).parent / '../').resolve().absolute()
+sys.path.insert(0, str(HERE))
 
 import nglview
 
