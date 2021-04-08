@@ -3,9 +3,14 @@ import subprocess
 import sys
 from distutils import log
 from subprocess import check_call
+from pathlib import Path
 
 from setuptools import Command, find_packages, setup
 from setuptools.command.egg_info import egg_info
+
+from jupyter_packaging import (
+    create_cmdclass,
+)
 
 import versioneer
 from versioneer import get_cmdclass
@@ -122,6 +127,26 @@ class NPM(Command):
         # update package data in case this created new files
         update_package_data(self.distribution)
 
+HERE = Path(__file__).parent.resolve()
+# The name of the project
+name = "nglview-js-widgets"
+lab_path = (HERE / "nglview"/ "labextension")
+package_data_spec = {
+    name: ["*"],
+}
+
+labext_name = "nglview-js-widgets"
+data_files_spec = [
+    ("share/jupyter/labextensions/%s" % labext_name, str(lab_path), "**"),
+    ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
+]
+
+cmdclass = create_cmdclass("jsdeps",
+    package_data_spec=package_data_spec,
+    data_files_spec=data_files_spec
+)
+cmdclass['jsdeps'] = NPM
+
 setup_args = {
     'name': 'nglview',
     'version': versioneer.get_version(),
@@ -133,6 +158,7 @@ setup_args = {
          "nglview.scripts": ["*"],
          "nglview.theme": ["*"],
          "nglview.static": ["*"],
+         "nglview.labextension": ["*"],
      },
     'entry_points': {'console_scripts':
           ['nglview = nglview.scripts.nglview:main',]
@@ -166,6 +192,7 @@ setup_args = {
     'packages': set(find_packages() + 
                 ['nglview',
                  'nglview.static',
+                 'nglview.labextension',
                  'nglview.theme',
                  'nglview.datafiles',
                  'nglview.utils',
@@ -174,13 +201,14 @@ setup_args = {
                  'nglview.contrib',
                  'nglview.scripts']),
     'zip_safe': False,
-    'cmdclass': {
-        'build_py': js_prerelease(build_py),
-        'egg_info': js_prerelease(egg_info),
-        'sdist': js_prerelease(sdist, strict=True),
-        'jsdeps': NPM,
-        'version': get_cmdclass()['version']
-    },
+    'cmdclass': cmdclass,
+    # 'cmdclass': {
+    #     'build_py': js_prerelease(build_py),
+    #     'egg_info': js_prerelease(egg_info),
+    #     'sdist': js_prerelease(sdist, strict=True),
+    #     'jsdeps': NPM,
+    #     'version': get_cmdclass()['version']
+    # },
 
     'author': 'Alexander S. Rose, Hai Nguyen',
     'author_email': 'alexander.rose@weirdbyte.de',
