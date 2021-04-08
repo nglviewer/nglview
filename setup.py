@@ -146,10 +146,6 @@ data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
 ]
 
-if not (lab_path/"package.json").exists():
-    sys.exit("Missing lab extension files. "
-            "To build lab extension: cd js && npm install && npm run copy:labextension")
-
 cmdclass = create_cmdclass("jsdeps",
     package_data_spec=package_data_spec,
     data_files_spec=data_files_spec
