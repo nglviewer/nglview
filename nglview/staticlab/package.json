@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "nglview-js-widgets",
   "keywords": [
     "ipython",
@@ -35,7 +35,7 @@
   },
   "scripts": {
     "prepublish": "jlpm build:prod && webpack && jlpm run copy:labextension",
-    "copy:labextension": "cp -r nglview-js-widgets/labextension/* ../nglview/labextension/",
+    "copy:labextension": "cp -r nglview-js-widgets/labextension/* ../nglview/staticlab/",
     "build": "jlpm run build:lib && jlpm run build:labextension:dev",
     "build:prod": "jlpm run build:lib && jlpm run build:labextension",
     "build:labextension": "jupyter labextension build .",
@@ -95,7 +95,7 @@
     "extension": "lib/jupyterlab-plugin",
     "outputDir": "nglview-js-widgets/labextension",
     "_build": {
-      "load": "static/remoteEntry.e11678c4549ac1e5a714.js",
+      "load": "static/remoteEntry.4560fdad4055be520b35.js",
       "extension": "./extension",
       "style": "./style"
     }
