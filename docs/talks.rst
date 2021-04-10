@@ -13,6 +13,7 @@
    -  `ngl-web3d, Alexander
       Rose <http://nglviewer.org/talks/ngl-web3d>`__
 
-- Videos from users
+- Articles/Videos from users
     - `"The universe as balls and springs: molecular dynamics in Python" - Lily Wang (PyCon AU 2019)], <https://youtu.be/X5umNQDqfqQ>`__
-    - https://www.youtube.com/watch?v=RWgt1WMwMUs
+    - `Looking at molecules using Python <https://www.youtube.com/watch?v=RWgt1WMwMUs>`__
+    - `Visualizing and Analyzing Proteins in Python <https://towardsdatascience.com/visualizing-and-analyzing-proteins-in-python-bd99521ccd>`__
