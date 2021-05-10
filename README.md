@@ -396,6 +396,7 @@ Projects integrating NGLView
 - [cando](https://github.com/cando-developers/cando): Computer Aided Nanostructure Design and Optimization
 - [query.libretexts.org](https://query.libretexts.org/Sandboxes/jupyterteam@ucdavis.edu): query.libretexts.org
 - [datamol](https://github.com/datamol-org/datamol):  A python library to work with molecules.
+- [dynophores](https://github.com/dominiquesydow/dynophores): Dynamic pharmacophore modeling of molecular interactions
 
 Acknowledgment
 ==============
