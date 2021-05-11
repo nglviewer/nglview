@@ -397,6 +397,7 @@ Projects integrating NGLView
 - [query.libretexts.org](https://query.libretexts.org/Sandboxes/jupyterteam@ucdavis.edu): query.libretexts.org
 - [datamol](https://github.com/datamol-org/datamol):  A python library to work with molecules.
 - [dynophores](https://github.com/dominiquesydow/dynophores): Dynamic pharmacophore modeling of molecular interactions
+- [pychemcurv](https://github.com/gVallverdu/pychemcurv): Discrete and local curvature applied to chemistry and chemical reactivity
 
 Acknowledgment
 ==============
