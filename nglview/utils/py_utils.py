@@ -252,7 +252,11 @@ class FileManager:
         if hasattr(self.src, 'read'):
             return False
         else:
-            return os.path.isfile(self.src)
+            # This can fail on Windows with "path too long"
+            try:
+                return os.path.isfile(self.src)
+            except ValueError:
+                return False
 
     @property
     def is_binary(self):
