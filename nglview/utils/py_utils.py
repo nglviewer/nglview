@@ -51,7 +51,7 @@ def decode_base64(data, shape, dtype='f4'):
     return np.frombuffer(decoded_str, dtype=dtype).reshape(shape)
 
 
-def get_name(obj, kwargs):
+def get_name(obj, **kwargs):
     name = kwargs.pop('name', str(obj))
     if name.startswith('<nglview.'):
         name = name.split()[0].strip('<')

@@ -233,12 +233,12 @@ class NGLWidget(DOMWidget):
         if parameters:
             self.parameters = parameters
         if isinstance(structure, Trajectory):
-            name = py_utils.get_name(structure, kwargs)
+            name = py_utils.get_name(structure, **kwargs)
             self.add_trajectory(structure, name=name, **kwargs)
         elif isinstance(structure, (list, tuple)):
             trajectories = structure
             for trajectory in trajectories:
-                name = py_utils.get_name(trajectory, kwargs)
+                name = py_utils.get_name(trajectory, **kwargs)
                 self.add_trajectory(trajectory, name=name, **kwargs)
         else:
             if structure is not None:
@@ -849,7 +849,7 @@ class NGLWidget(DOMWidget):
         cid = str(uuid.uuid4())
         self._ngl_component_ids.append(cid)
 
-        comp_name = py_utils.get_name(self.shape, {})
+        comp_name = py_utils.get_name(self.shape)
         self._ngl_component_names.append(comp_name)
 
         self._update_component_auto_completion()
@@ -1258,7 +1258,7 @@ class NGLWidget(DOMWidget):
             url = obj
             args = [{'type': blob_type, 'data': url, 'binary': False}]
 
-        name = py_utils.get_name(obj, kwargs2)
+        name = py_utils.get_name(obj, **kwargs2)
         self._ngl_component_names.append(name)
         self._remote_call("loadFile",
                           target='Stage',

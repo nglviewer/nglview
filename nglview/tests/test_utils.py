@@ -19,8 +19,8 @@ def assert_equal(x, y):
 
 def test_get_name():
     fn = nglview.datafiles.PDB
-    assert_equal(py_utils.get_name(object, dict(name='hello')), 'hello')
-    assert_equal(py_utils.get_name(nglview.FileStructure(fn), dict()),
+    assert_equal(py_utils.get_name(object, name='hello'), 'hello')
+    assert_equal(py_utils.get_name(nglview.FileStructure(fn)),
                  'nglview.adaptor.FileStructure')
 
 
