@@ -57,7 +57,7 @@ Released version
    jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
-Jupyterlab: `nglview` works best with jupyterlab >= 3.0.
+Jupyterlab: `nglview` works best with jupyterlab >= 3.0 and no further steps needed.
 
 ## Notes
 
