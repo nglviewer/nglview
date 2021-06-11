@@ -154,7 +154,7 @@ cmdclass['jsdeps'] = NPM
 cmdclass['version'] = get_cmdclass()['version']
 cmdclass['build_py'] = js_prerelease(build_py)
 cmdclass['sdist'] = js_prerelease(sdist, strict=True)
-cmdclass['egg_info']: js_prerelease(egg_info)
+cmdclass['egg_info'] = js_prerelease(egg_info)
 
 setup_args = {
     'name': 'nglview',
