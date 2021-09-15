@@ -54,7 +54,7 @@ Released version
 
 ```bash
    pip install nglview
-   jupyter-nbextension enable nglview --py --sys-prefix
+   # might need: jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
 Jupyterlab: `nglview` works best with jupyterlab >= 3.0 and no further steps needed.
