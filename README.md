@@ -10,7 +10,7 @@ An [IPython/Jupyter](http://jupyter.org/) widget to interactively view molecular
 
 Should work with Python 3. If you experience problems, please file an [issue](https://github.com/nglviewer/nglview/issues).
 
-Ask question about usage? Please post [here](https://github.com/nglviewer/nglview/issues/948)
+Ask question about usage? Please post [here](hhttps://github.com/nglviewer/nglview/labels/Q%26A)
 
 ![membrane](examples/images/membrane.gif)
 
