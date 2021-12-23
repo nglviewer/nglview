@@ -102,7 +102,8 @@ Example
 
 Showcase from users
 ===================
-Please check [user examples](examples/user_examples.md). Feel free to contribute.
+- Please check [user examples](examples/user_examples.md). Feel free to contribute.
+- Also check [a series of excelent tutorials about/using nglview from volkamerlab](https://projects.volkamerlab.org/teachopencadd/search.html?q=nglview)
 
 Usage
 =====
