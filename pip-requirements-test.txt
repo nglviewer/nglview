@@ -3,10 +3,9 @@ ipywidgets==7
 
 mock
 coverage
+coveralls
 nose # for mdtraj's get_fn
 pytest
-pytest-cov
-coveralls
 
 pandas==0.24
 ase
