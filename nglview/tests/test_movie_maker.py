@@ -2,8 +2,8 @@ import os
 
 from mock import MagicMock, patch
 
-import nglview
-import pytraj
+import nglview as nv
+import parmed as pmd
 from make_dummy_comm import *
 import PIL.Image
 
@@ -14,8 +14,8 @@ def test_movie_maker(mock_image, ImageSequenceClip):
     from nglview.contrib.movie import MovieMaker
     ImageSequenceClip.write_gif = MagicMock()
     ImageSequenceClip.write_videofile = MagicMock()
-    traj = pytraj.datafiles.load_tz2()
-    view = nglview.show_pytraj(traj)
+    parm = pmd.load_file(nv.datafiles.PDB)
+    view = nv.show_parmed(parm)
 
     movie = MovieMaker(view,
                        in_memory=True,
