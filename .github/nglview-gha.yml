@@ -37,4 +37,4 @@ dependencies:
   - rdkit
   - mdanalysis
   - mdtraj
-  - pytraj
+  # - pytraj
