@@ -400,6 +400,7 @@ Projects integrating NGLView
 - [dynophores](https://github.com/dominiquesydow/dynophores): Dynamic pharmacophore modeling of molecular interactions
 - [pychemcurv](https://github.com/gVallverdu/pychemcurv): Discrete and local curvature applied to chemistry and chemical reactivity
 - [AutoSolvate](https://github.com/Liu-group/AutoSolvate): Automated workflow for generating quantum chemistry calculation of explicitly solvated molecules
+- [plipify](https://github.com/volkamerlab/plipify): PLIPify: Protein-Ligand Interaction Frequencies across Multiple Structures
 
 Acknowledgment
 ==============
