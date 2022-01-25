@@ -394,7 +394,6 @@ Projects integrating NGLView
 - [pnab](https://github.com/alenaizan/pnab): proto-Nucleic Acid Builder
 - [opencadd](https://github.com/volkamerlab/opencadd): A Python library for structural cheminformatics
 - [teachopencadd](https://github.com/volkamerlab/teachopencadd): TeachOpenCADD: a teaching platform for computer-aided drug design (CADD) using open source packages and data
-- [cando](https://github.com/cando-developers/cando): Computer Aided Nanostructure Design and Optimization
 - [query.libretexts.org](https://query.libretexts.org/Sandboxes/jupyterteam@ucdavis.edu): query.libretexts.org
 - [datamol](https://github.com/datamol-org/datamol):  A python library to work with molecules.
 - [dynophores](https://github.com/dominiquesydow/dynophores): Dynamic pharmacophore modeling of molecular interactions
