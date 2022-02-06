@@ -4,6 +4,7 @@
 - [Default views using HBox are not centered](#default-views-using-hbox-are-not-centered)
 - [How to make nglview view object write PNG file?](#how-to-make-nglview-view-object-write-png-file)
 - [How to make embedded nglview widget into specific size?](#how-to-make-embedded-nglview-widget-into-specific-size)
+- [Is it possible to make a shape assume a different position in each frame?](#is-it-possible-to-make-a-shape-assume-a-different-position-in-each-frame)
 
 # Can not import nglview although successfully installed it?
 
@@ -96,3 +97,6 @@ box
 ```python
 nv.write_html('embed.html', box)
 ```
+
+#  Is it possible to make a shape assume a different position in each frame?
+https://github.com/nglviewer/nglview/discussions/1002#discussioncomment-2118844
