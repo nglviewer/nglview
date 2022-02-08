@@ -400,6 +400,7 @@ Projects integrating NGLView
 - [pychemcurv](https://github.com/gVallverdu/pychemcurv): Discrete and local curvature applied to chemistry and chemical reactivity
 - [AutoSolvate](https://github.com/Liu-group/AutoSolvate): Automated workflow for generating quantum chemistry calculation of explicitly solvated molecules
 - [plipify](https://github.com/volkamerlab/plipify): PLIPify: Protein-Ligand Interaction Frequencies across Multiple Structures
+- [Melodia](https://github.com/rwmontalvao/Melodia): Differential Geometry of Proteins Backbones
 
 Acknowledgment
 ==============
