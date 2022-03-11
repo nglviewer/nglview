@@ -19,4 +19,4 @@ simpletraj
 matplotlib==2.0.2
 moviepy==0.2.2.11
 imageio==1.6
-pillow==7.1.0
+pillow==9.0.1
