@@ -38,6 +38,10 @@ Why? This directory has a higher preference over sys-prefix so notebook will loa
 - Extensive debug experience from users
     - https://github.com/SBRG/ssbio/wiki/Troubleshooting#nglviewer-fresh-install-tips
 
+# Can nglview render image from command line without the notebook?
+
+No, nglview can not do that. nglview (using NGL) needs browser for rendering.
+
 # Can nglview handle large trajectories?
 
 Absolutely yes. In general, trajectory data in NGLview are read (e.g. loaded from file) by external libraries. Some of the libraries, including pytraj and mdanalysis, have out-of-core readers for trajectory files, that is they don’t require loading the whole trajectory into memory for accessing and process the coordinates. With respect to the data loading aspect, this features enables viewing very large trajectory files with NGLview. The corresponding command in pytraj is `iterload` (see http://amber-md.github.io/pytraj/latest/_api/pytraj.html#pytraj.iterload). Trajectories in MDAnalysis are by default read out-of-core when using the `Universe` object to load the coordinates (see https://www.mdanalysis.org/docs/documentation_pages/core/universe.html).
