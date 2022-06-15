@@ -402,6 +402,7 @@ Projects integrating NGLView
 - [plipify](https://github.com/volkamerlab/plipify): PLIPify: Protein-Ligand Interaction Frequencies across Multiple Structures
 - [Melodia](https://github.com/rwmontalvao/Melodia): Differential Geometry of Proteins Backbones
 - [pyrosetta_viewer3d](https://github.com/RosettaCommons/pyrosetta_viewer3d): Display PackedPose objects, Pose objects, or PDB files within a Jupyter notebook and Google Colab
+- [py4vasp](https://vasp.at/py4vasp): Python interface for VASP
 
 Acknowledgment
 ==============
