@@ -60,7 +60,7 @@
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "lodash": "^4.17.4",
-    "ngl": "2.0.0-dev.40",
+    "ngl": "2.0.0-dev.39",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -78,7 +78,7 @@
     "file-loader": "^1.1.6",
     "json-loader": "^0.5.4",
     "mkdirp": "^1.0.3",
-    "ngl": "2.0.0-dev.36",
+    "ngl": "2.0.0-dev.39",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.1",
     "rimraf": "^3.0.2",
@@ -95,7 +95,7 @@
     "extension": "lib/jupyterlab-plugin",
     "outputDir": "nglview-js-widgets/labextension",
     "_build": {
-      "load": "static/remoteEntry.017ad48ff10aa824d27c.js",
+      "load": "static/remoteEntry.08554612fd96651a0411.js",
       "extension": "./extension",
       "style": "./style"
     }
