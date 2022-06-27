@@ -95,7 +95,7 @@
     "extension": "lib/jupyterlab-plugin",
     "outputDir": "nglview-js-widgets/labextension",
     "_build": {
-      "load": "static/remoteEntry.4560fdad4055be520b35.js",
+      "load": "static/remoteEntry.886a400937d8e20f840b.js",
       "extension": "./extension",
       "style": "./style"
     }

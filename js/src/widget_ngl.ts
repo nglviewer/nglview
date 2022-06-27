@@ -414,7 +414,6 @@ class NGLView extends widgets.DOMWidgetView{
 
 
         var compList = await Promise.all(loadfile_list)
-        that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
         that.stage.setParameters(ngl_stage_params);
         that.set_camera_orientation(that.model.get("_camera_orientation"));
         that.touch();
@@ -441,6 +440,11 @@ class NGLView extends widgets.DOMWidgetView{
             }
         })
 
+        // Must call _set_representation_from_repr_dict after "fire_embed"
+        // User might add Shape (buffer component) to the view and the buffer component
+        // is not created yet via loadFile
+        // https://github.com/nglviewer/nglview/issues/1003
+        that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
         that.handleResize() // FIXME: really need this?
     }
 
