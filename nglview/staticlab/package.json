@@ -68,7 +68,7 @@
     "@types/chai": "^4.1.4",
     "@types/expect.js": "^0.3.29",
     "@types/mocha": "^2.2.48",
-    "@types/node": "^12.0.2",
+    "@types/node": "^14.0.0",
     "@types/requirejs": "^2.1.31",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
@@ -95,7 +95,7 @@
     "extension": "lib/jupyterlab-plugin",
     "outputDir": "nglview-js-widgets/labextension",
     "_build": {
-      "load": "static/remoteEntry.500fa65f2cab982eeccf.js",
+      "load": "static/remoteEntry.017ad48ff10aa824d27c.js",
       "extension": "./extension",
       "style": "./style"
     }
