@@ -3,7 +3,6 @@ import os
 from mock import MagicMock, patch
 
 import nglview
-import pytraj
 from make_dummy_comm import *
 import PIL.Image
 
@@ -14,8 +13,8 @@ def test_movie_maker(mock_image, ImageSequenceClip):
     from nglview.contrib.movie import MovieMaker
     ImageSequenceClip.write_gif = MagicMock()
     ImageSequenceClip.write_videofile = MagicMock()
-    traj = pytraj.datafiles.load_tz2()
-    view = nglview.show_pytraj(traj)
+    traj = nglview.SimpletrajTrajectory(nglview.datafiles.XTC, nglview.datafiles.PDB)
+    view = nglview.show_simpletraj(traj)
 
     movie = MovieMaker(view,
                        in_memory=True,
@@ -24,4 +23,3 @@ def test_movie_maker(mock_image, ImageSequenceClip):
                        moviepy_params={},
                        stop=2)
     movie.make()
-    # movie.make_old_impl()
