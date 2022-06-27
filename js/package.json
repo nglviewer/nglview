@@ -60,7 +60,7 @@
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "lodash": "^4.17.4",
-    "ngl": "2.0.0-dev.36",
+    "ngl": "2.0.0-dev.40",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
