@@ -403,6 +403,7 @@ Projects integrating NGLView
 - [Melodia](https://github.com/rwmontalvao/Melodia): Differential Geometry of Proteins Backbones
 - [pyrosetta_viewer3d](https://github.com/RosettaCommons/pyrosetta_viewer3d): Display PackedPose objects, Pose objects, or PDB files within a Jupyter notebook and Google Colab
 - [py4vasp](https://vasp.at/py4vasp): Python interface for VASP
+- [eminus](https://github.com/wangenau/eminus): A plane wave density functional theory code.
 
 Acknowledgment
 ==============
