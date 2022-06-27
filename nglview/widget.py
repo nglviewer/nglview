@@ -870,9 +870,7 @@ class NGLWidget(DOMWidget):
         Example
         -------
         >>> import nglview as nv
-        >>> import pytraj 
-        >>> t = pytraj.datafiles.load_tz2()
-        >>> w = nv.show_pytraj(t)
+        >>> w = nv.demo()
         >>> w.add_representation('cartoon', selection='protein', color='blue')
         >>> w.add_representation('licorice', selection=[3, 8, 9, 11], color='red')
         >>> w # doctest: +SKIP
@@ -1135,7 +1133,7 @@ class NGLWidget(DOMWidget):
         >>> import nglview as nv
         >>> traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.PDB)
         >>> view = nv.NGLWidget()
-        >>> view.add_trajectory(traj)
+        >>> c = view.add_trajectory(traj)
         '''
         backends = BACKENDS
 

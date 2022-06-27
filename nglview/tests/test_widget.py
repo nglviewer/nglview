@@ -348,10 +348,10 @@ def test_base_adaptor():
 
 def test_coordinates_dict():
     traj = get_simple_traj()
-    vew = nv.NGLWidget(traj)
+    view = nv.NGLWidget(traj)
     view.frame = 1
     coords = view._coordinates_dict[0]
-    aa_eq(coords, traj.get_coordinates(1).xyz)
+    aa_eq(coords, traj.get_coordinates(1))
 
     # dummy
     view._send_binary = False

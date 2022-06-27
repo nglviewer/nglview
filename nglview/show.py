@@ -301,11 +301,11 @@ def show_pytraj(pytraj_trajectory, **kwargs):
 
     Examples
     --------
-    >>> import nglview as nv
-    >>> import pytraj as pt
-    >>> t = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
-    >>> w = nv.show_pytraj(t)
-    >>> w # doctest: +SKIP
+    >>> import nglview as nv # doctest: +SKIP
+    ... import pytraj as pt
+    ... t = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
+    ... w = nv.show_pytraj(t)
+    ... w
     '''
     trajlist = pytraj_trajectory if isinstance(pytraj_trajectory,
                                                (list, tuple)) else [
