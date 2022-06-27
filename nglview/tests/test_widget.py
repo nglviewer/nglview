@@ -36,6 +36,7 @@ try:
     import pytraj as pt
     has_pytraj = True
 except ImportError:
+    pt = None
     has_pytraj = False
 
 try:
@@ -86,9 +87,14 @@ except ImportError:
     has_qcelemental = False
 
 
+def get_simple_traj():
+    return nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
+
+
 def default_view():
-    traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
-    return nv.show_pytraj(traj)
+    view = nv.NGLWidget()
+    view.add_trajectory(get_simple_traj())
+    return view
 
 
 #-----------------------------------------------------------------------------
@@ -171,7 +177,7 @@ def test_API_promise_to_have():
     # other backends will be tested in other sections
 
     # constructor
-    ngl_traj = nv.PyTrajTrajectory(pt.datafiles.load_ala3())
+    ngl_traj = get_simple_traj()
     nv.NGLWidget(ngl_traj, parameters=dict(background_color='black'))
     nv.NGLWidget(ngl_traj, representations=[dict(type='cartoon', params={})])
 
@@ -312,7 +318,7 @@ def test_API_promise_to_have_add_more_backend():
 
 def test_handling_n_components_changed():
     view = nv.NGLWidget()
-    n_traj = nv.PyTrajTrajectory(pt.load(nv.datafiles.PDB))
+    n_traj = get_simple_traj()
     view.add_trajectory(n_traj)
     # fake updating n_components and _repr_dict from front-end
     view._ngl_repr_dict = REPR_DICT
@@ -341,11 +347,11 @@ def test_base_adaptor():
 
 
 def test_coordinates_dict():
-    traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
-    view = nv.show_pytraj(traj)
+    traj = get_simple_traj()
+    vew = nv.NGLWidget(traj)
     view.frame = 1
     coords = view._coordinates_dict[0]
-    aa_eq(coords, traj[1].xyz)
+    aa_eq(coords, traj.get_coordinates(1).xyz)
 
     # dummy
     view._send_binary = False
@@ -356,7 +362,7 @@ def test_coordinates_dict():
 
 
 def test_load_data():
-    view = nv.show_pytraj(pt.datafiles.load_tz2())
+    view = default_view()
 
     # load blob with ext
     blob = open(nv.datafiles.PDB).read()
@@ -371,7 +377,7 @@ def test_load_data():
         view._load_data(hahahaha)
 
     # load PyTrajectory
-    t0 = nv.PyTrajTrajectory(pt.datafiles.load_ala3())
+    t0 = get_simple_traj()
     view._load_data(t0)
 
     # load current folder
@@ -379,7 +385,7 @@ def test_load_data():
 
 
 def test_representations():
-    view = nv.show_pytraj(pt.datafiles.load_tz2())
+    view = default_view()
     view.representations = DEFAULT_REPR
     view.add_cartoon()
     representations_2 = DEFAULT_REPR[:]
@@ -416,7 +422,7 @@ def test_representation_control():
 
 
 def test_add_repr_shortcut():
-    view = nv.show_pytraj(pt.datafiles.load_tz2())
+    view = default_view()
     assert isinstance(view, nv.NGLWidget), 'must be instance of NGLWidget'
 
     # add
@@ -470,7 +476,7 @@ def test_add_buffer():
 
 def test_remote_call():
     # how to test JS?
-    view = nv.show_pytraj(pt.datafiles.load_tz2())
+    view = default_view()
     view._remote_call('centerView', target='stage')
 
     fn = 'notebooks/tz2.pdb'
@@ -483,7 +489,7 @@ def test_remote_call():
 def test_download_image():
     """just make sure it can be called
     """
-    view = nv.show_pytraj(pt.datafiles.load_tz2())
+    view = default_view()
     view.download_image('myname.png', 2, False, False, True)
 
 
@@ -616,12 +622,12 @@ def test_component_for_duck_typing():
     # FIXME: deprecate duck typing?
     # syntax looks ugly.
     view = NGLWidget()
-    traj = pt.load(nv.datafiles.PDB)
+    traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
 
     # add 3 components (trajectory is a component)
     view.add_component(get_fn('tz2.pdb'))
     view.add_component(get_fn('tz2_2.pdb.gz'))
-    view.add_trajectory(nv.PyTrajTrajectory(traj))
+    view.add_trajectory(traj)
     view.component_0.add_representation('cartoon')
 
     c0 = view[0]
@@ -649,11 +655,11 @@ def test_component_for_duck_typing():
 def test_trajectory_show_hide_sending_cooridnates():
     view = NGLWidget()
 
-    traj0 = pt.datafiles.load_tz2()
-    traj1 = pt.datafiles.load_trpcage()
+    traj0 = get_simple_traj()
+    traj1 = get_simple_traj()
 
-    view.add_trajectory(nv.PyTrajTrajectory(traj0))
-    view.add_trajectory(nv.PyTrajTrajectory(traj1))
+    view.add_trajectory(traj0)
+    view.add_trajectory(traj1)
 
     for traj in view._trajlist:
         assert traj.shown
@@ -665,8 +671,8 @@ def test_trajectory_show_hide_sending_cooridnates():
         return {k: v.copy() for k, v in view._coordinates_dict.items()}
 
     coordinates_dict = copy_coordinate_dict(view)
-    aa_eq(coordinates_dict[0], traj0[1].xyz)
-    aa_eq(coordinates_dict[1], traj1[1].xyz)
+    aa_eq(coordinates_dict[0], traj0.get_coordinates(1))
+    aa_eq(coordinates_dict[1], traj1.get_coordinates(1))
 
     # hide 0
     view.hide([
@@ -679,7 +685,7 @@ def test_trajectory_show_hide_sending_cooridnates():
     view.frame = 2
     coordinates_dict = copy_coordinate_dict(view)
     assert coordinates_dict[0].shape[0] == 0
-    aa_eq(coordinates_dict[1], traj1[2].xyz)
+    aa_eq(coordinates_dict[1], traj1.get_coordinates(2))
 
     # hide 0, 1
     view.hide([0, 1])
@@ -697,7 +703,7 @@ def test_trajectory_show_hide_sending_cooridnates():
     assert view._trajlist[1].shown
     coordinates_dict = copy_coordinate_dict(view)
     assert coordinates_dict[0].shape[0] == 0
-    aa_eq(coordinates_dict[1], traj1[0].xyz)
+    aa_eq(coordinates_dict[1], traj1.get_coordinates(0))
 
     # show all
     view[1].show()
@@ -710,8 +716,8 @@ def test_trajectory_show_hide_sending_cooridnates():
     view.frame = 1
     assert view._trajlist[1].shown
     coordinates_dict = copy_coordinate_dict(view)
-    aa_eq(coordinates_dict[0], traj0[1].xyz)
-    aa_eq(coordinates_dict[1], traj1[1].xyz)
+    aa_eq(coordinates_dict[0], traj0.get_coordinates(1))
+    aa_eq(coordinates_dict[1], traj1.get_coordinates(1))
 
     # hide all
     view[1].hide()
@@ -744,17 +750,18 @@ def test_add_structure():
 def test_add_struture_then_trajectory():
     view = nv.show_structure_file(get_fn('tz2.pdb'))
     view.loaded = True
-    traj = pt.datafiles.load_trpcage()
+    traj = get_simple_traj()
     view.add_trajectory(traj)
     view.frame = 3
     coords = view._coordinates_dict[1].copy()
-    aa_eq(coords, traj[3].xyz)
+    expected = traj.get_coordinates(3)
+    aa_eq(coords, expected)
     view.loaded = False
     view.add_trajectory(traj)
 
 
 def test_loaded_attribute():
-    traj = pt.datafiles.load_tz2()
+    traj = get_simple_traj()
     structure = nv.FileStructure(nv.datafiles.PDB)
 
     # False, empty constructor
@@ -786,7 +793,7 @@ def test_loaded_attribute():
     view
 
     # False then True, constructor with a Trajectory
-    view = nv.NGLWidget(nv.PyTrajTrajectory(traj))
+    view = nv.NGLWidget(traj)
     view.loaded = False
     view.add_structure(structure)
     view.loaded = True
@@ -795,8 +802,7 @@ def test_loaded_attribute():
 
 
 def test_player_simple():
-    traj = pt.datafiles.load_tz2()
-    view = nv.show_pytraj(traj)
+    view = default_view()
 
     # dummy
     component_slider = ipywidgets.IntSlider()
@@ -879,8 +885,7 @@ def test_player_click_button():
 
 
 def test_player_link_to_ipywidgets():
-    traj = pt.datafiles.load_tz2()
-    view = nv.show_pytraj(traj)
+    view = default_view()
 
     int_text = IntText(2)
     float_text = BoundedFloatText(40, min=10)
@@ -959,9 +964,8 @@ def test_player_click_tab():
 
 def test_interpolate():
     # dummy test
-    traj = pt.datafiles.load_tz2()
-    ngl_traj = nv.PyTrajTrajectory(traj)
-    interpolate.linear(0, 0.4, ngl_traj, step=1)
+    traj = get_simple_traj()
+    interpolate.linear(0, 0.4, traj, step=1)
 
 
 def dummy_test_to_increase_coverage():
@@ -985,27 +989,6 @@ def test_viewer_control():
     view.control.zoom(0.3)
     view.control.rotate(mat)
     view.control.spin(vector, 0.1)
-
-
-def test_ambermd():
-    from nglview.sandbox import amber
-    with patch("pytraj.load") as mock_pytraj_load, \
-         patch("pytraj.superpose") as mock_pytraj_superpose, \
-         patch("os.path.exists") as mock_exists:
-        ambermd = amber.AmberMD(top='hey.parm7',
-                                restart='hey.rst7',
-                                reference='hey.ref')
-        view = ambermd.initialize()
-        ambermd.event = MagicMock()
-        ambermd.event.is_set = MagicMock()
-        ambermd.event.is_set.return_value = False
-        ambermd.update(timeout=2)
-        time.sleep(5)
-
-        assert mock_pytraj_load.called
-        assert mock_pytraj_superpose.called
-
-        ambermd.stop()
 
 
 def test_queuing_messages():
@@ -1033,8 +1016,8 @@ def test_write_html(mock_unset):
     import ipywidgets.embed as embed
 
     tm = ThemeManager()
-    traj0 = pt.datafiles.load_trpcage()
-    traj1 = pt.datafiles.load_tz2()
+    traj0 = get_simple_traj()
+    traj1 = get_simple_traj()
     view = nv.NGLWidget()
     view.add_trajectory(traj0)
     view.add_trajectory(traj1)
