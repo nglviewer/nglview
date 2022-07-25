@@ -1,7 +1,7 @@
 [Citation](#cite) | [Installation](#installation) | [Example](#example) | [Usage](#usage) | [Command line](#command-line) | [API doc](#api-doc) | [Interface classes](docs/interface_classes.md) | [Website](#website) | [Acknowledgment](#acknowledgment)
 
-[![Build Status](https://travis-ci.org/nglviewer/nglview.svg?branch=master)](https://travis-ci.org/nglviewer/nglview)
-[![Coverage Status](https://coveralls.io/repos/github/arose/nglview/badge.png?branch=master)](https://coveralls.io/github/arose/nglview)
+![Build Status](https://github.com/nglviewer/nglview/actions/workflows/test.yml/badge.svg)
+![Build Extension Status](https://github.com/nglviewer/nglview/actions/workflows/build-extension.yml/badge.svg)
 
 ## Try nglview online: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/hainm/nglview-binder/master?urlpath=lab/tree/nglview/notebooks)
 
