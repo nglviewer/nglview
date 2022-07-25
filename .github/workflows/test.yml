@@ -48,12 +48,6 @@ jobs:
       run: |
         python -m pytest -vs nglview/tests --cov=nglview --cov-report=html --disable-pytest-warnings
 
-    - name: Code coverage with coveralls
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        coveralls --service=github
-
     - name: Check installation with pip
       run: |
         python setup.py sdist
