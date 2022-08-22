@@ -8,7 +8,7 @@ dependencies:
     - jupyterlab
     - nodejs
     - yarn
-    - ipywidgets
+    - ipywidgets==7.*
 
     # Testing
     - mock
