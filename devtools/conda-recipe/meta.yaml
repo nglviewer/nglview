@@ -7,13 +7,13 @@ requirements:
     - python
     - setuptools
     - jupyter
-    - ipywidgets >5.1.0
+    - ipywidgets==7.*
     - notebook >4.1
     - traitlets
   run:
     - python
     - numpy
-    - ipywidgets >5.1.0
+    - ipywidgets==7.*
     - notebook >4.1
     - jupyter
     - traitlets
