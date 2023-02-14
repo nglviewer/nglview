@@ -71,7 +71,7 @@ jupyter notebook --NotebookApp.iopub_data_rate_limit=10000000
 Development version
 -------------------
 
-Requirement: `ipywidgets >= 7.0,<8`, `notebook >= 4.2`
+Requirement: `ipywidgets >= 7.0`, `notebook >= 4.2`
 
 The development version can be installed directly from github:
 

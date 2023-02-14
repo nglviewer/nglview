@@ -517,7 +517,11 @@ class NGLWidget(DOMWidget):
         self._run_on_another_thread(_call, self._event)
 
     def _ipython_display_(self, **kwargs):
-        super()._ipython_display_(**kwargs)
+        try:
+            # ipywidgets < 8
+            super()._ipython_display_(**kwargs)
+        except AttributeError:
+            display(super()._repr_mimebundle_(), raw=True)
         if self._init_gui:
             if self._gui is None:
                 self._gui = self.player._display()
