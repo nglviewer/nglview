@@ -10,7 +10,7 @@ dependencies:
   - jupyter-packaging
   - qcelemental
   - traitlets
-  - ipywidgets==7.*
+  - ipywidgets
   - mock
   - coverage
   - nose
