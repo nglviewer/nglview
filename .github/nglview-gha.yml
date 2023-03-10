@@ -34,4 +34,5 @@ dependencies:
   - rdkit
   - mdanalysis
   - mdtraj
+  - parmed
   - ambertools
