@@ -2,7 +2,6 @@ name: nglview-gha
 
 channels:
   - conda-forge
-  - ambermd
 
 dependencies:
   - python>=3.6
@@ -19,7 +18,6 @@ dependencies:
   - coveralls
   - pandas
   - ase
-  - parmed
   - biopython
   - pymatgen
   - simpletraj
@@ -30,11 +28,11 @@ dependencies:
   - numpy
   - pandas
   - ase
-  - parmed
   - biopython
   - pymatgen
   - simpletraj
   - rdkit
   - mdanalysis
   - mdtraj
-  - pytraj
+  - parmed
+  - ambertools
