@@ -83,7 +83,9 @@ def write_html(fp, views, frame_range=None):
     embed = ipywidgets.embed
     color = None
     theme = None
-    for k, v in views[0].widgets.items():
+    # TODO: Widget.widgets is deprecated.
+    # https://github.com/jupyter-widgets/ipywidgets/pull/3567
+    for k, v in embed.Widget.widgets.items():
         if v.__class__.__name__ == '_ColormakerRegistry':
             color = v
         if v.__class__.__name__ == 'ThemeManager':
