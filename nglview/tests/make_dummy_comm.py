@@ -32,12 +32,17 @@ def setup():
     _widget_attrs['_comm_default'] = getattr(Widget, '_comm_default',
                                              undefined)
     Widget._comm_default = lambda self: DummyComm()
-    _widget_attrs['_ipython_display_'] = Widget._ipython_display_
+
+    try:
+        orig = Widget._ipython_display_
+    except AttributeError:
+        pass
+    else:
+        _widget_attrs['_ipython_display_'] = orig
+        Widget._ipython_display_ = lambda _: _
 
     def raise_not_implemented(*args, **kwargs):
         raise NotImplementedError()
-
-    Widget._ipython_display_ = lambda _: _
 
 
 def teardown():

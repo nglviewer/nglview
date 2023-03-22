@@ -548,7 +548,14 @@ class NGLWidget(DOMWidget):
                 b = HBox([self, self._gui])
                 def on(b):
                     self.handle_resize()
-                b.on_displayed(on)
+                try:
+                    # ipywidgets < 8
+                    b.on_displayed(on)
+                except AttributeError:
+                    logging.warn(
+                        "display(style='ipywidgets') is not supported"
+                        " with this version of ipywidgets"
+                    )
                 return b
             elif style == 'ngl':
                 self.gui_style = 'ngl'
