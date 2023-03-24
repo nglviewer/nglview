@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Cache conda
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       env:
         CACHE_NUMBER: 2  # Increase this value to reset cache if .github/nglview-gha.yml has not changed
       with:
