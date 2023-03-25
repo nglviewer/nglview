@@ -1,9 +1,9 @@
 import base64
 import json
-import logging
 import threading
 import time
 import uuid
+from logging import getLogger
 
 import ipywidgets as widgets
 import ipywidgets.embed
@@ -33,6 +33,8 @@ from .viewer_control import ViewerControl
 from ._frontend import __frontend_version__
 from .base import BaseWidget
 
+logger = getLogger(__name__)
+
 widget_serialization = _widget.widget_serialization
 
 __all__ = ['NGLWidget', 'ComponentViewer']
@@ -50,7 +52,7 @@ _EXCLUDED_CALLBACK_AFTER_FIRING = {
 def _deprecated(msg):
     def wrap_1(func):
         def wrap_2(*args, **kwargs):
-            logging.warn(msg)
+            logger.warn(msg)
             return func(*args, **kwargs)
 
         return wrap_2
@@ -554,7 +556,7 @@ class NGLWidget(DOMWidget):
                     # ipywidgets < 8
                     b.on_displayed(on)
                 except AttributeError:
-                    logging.warn(
+                    logger.warn(
                         "display(style='ipywidgets') is not supported"
                         " with this version of ipywidgets"
                     )
