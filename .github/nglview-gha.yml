@@ -9,7 +9,10 @@ dependencies:
   - jupyter-packaging
   - qcelemental
   - traitlets
-  - ipywidgets==7.*
+  - ipywidgets>=8.0.5
+  - comm>=0.1.3  # see https://github.com/jupyter-widgets/ipywidgets/issues/3729
+  - ipykernel
+  - notebook
   - mock
   - coverage
   - nose
@@ -26,11 +29,6 @@ dependencies:
   - imageio
   - pillow
   - numpy
-  - pandas
-  - ase
-  - biopython
-  - pymatgen
-  - simpletraj
   - rdkit
   - mdanalysis
   - mdtraj

@@ -51,7 +51,11 @@ class _ColormakerRegistry(BaseWidget):
     def _ipython_display_(self, **kwargs):
         if self._ready:
             return
-        super()._ipython_display_(**kwargs)
+        try:
+            # ipywidgets < 8
+            super()._ipython_display_(**kwargs)
+        except AttributeError:
+            display(super()._repr_mimebundle_(), raw=True)
 
     def __repr__(self):
         # Prevent ipywidgets to print _ColormakerRegistry() in non-notebook

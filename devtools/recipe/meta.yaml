@@ -9,13 +9,13 @@ requirements:
   build:
     - python
     - setuptools
-    - ipywidgets==7.*
+    - ipywidgets
     - notebook
 
   run:
     - python
     - numpy
-    - ipywidgets==7.*
+    - ipywidgets
     - notebook
 
 test:

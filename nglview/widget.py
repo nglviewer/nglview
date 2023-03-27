@@ -1,9 +1,9 @@
 import base64
 import json
-import logging
 import threading
 import time
 import uuid
+from logging import getLogger
 
 import ipywidgets as widgets
 import ipywidgets.embed
@@ -33,6 +33,8 @@ from .viewer_control import ViewerControl
 from ._frontend import __frontend_version__
 from .base import BaseWidget
 
+logger = getLogger(__name__)
+
 widget_serialization = _widget.widget_serialization
 
 __all__ = ['NGLWidget', 'ComponentViewer']
@@ -50,7 +52,7 @@ _EXCLUDED_CALLBACK_AFTER_FIRING = {
 def _deprecated(msg):
     def wrap_1(func):
         def wrap_2(*args, **kwargs):
-            logging.warn(msg)
+            logger.warn(msg)
             return func(*args, **kwargs)
 
         return wrap_2
@@ -83,7 +85,9 @@ def write_html(fp, views, frame_range=None):
     embed = ipywidgets.embed
     color = None
     theme = None
-    for k, v in views[0].widgets.items():
+    # TODO: Widget.widgets is deprecated.
+    # https://github.com/jupyter-widgets/ipywidgets/pull/3567
+    for k, v in embed.Widget.widgets.items():
         if v.__class__.__name__ == '_ColormakerRegistry':
             color = v
         if v.__class__.__name__ == 'ThemeManager':
@@ -517,7 +521,11 @@ class NGLWidget(DOMWidget):
         self._run_on_another_thread(_call, self._event)
 
     def _ipython_display_(self, **kwargs):
-        super()._ipython_display_(**kwargs)
+        try:
+            # ipywidgets < 8
+            super()._ipython_display_(**kwargs)
+        except AttributeError:
+            display(super()._repr_mimebundle_(), raw=True)
         if self._init_gui:
             if self._gui is None:
                 self._gui = self.player._display()
@@ -544,7 +552,14 @@ class NGLWidget(DOMWidget):
                 b = HBox([self, self._gui])
                 def on(b):
                     self.handle_resize()
-                b.on_displayed(on)
+                try:
+                    # ipywidgets < 8
+                    b.on_displayed(on)
+                except AttributeError:
+                    logger.warn(
+                        "display(style='ipywidgets') is not supported"
+                        " with this version of ipywidgets"
+                    )
                 return b
             elif style == 'ngl':
                 self.gui_style = 'ngl'

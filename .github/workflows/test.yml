@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Cache conda
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       env:
         CACHE_NUMBER: 2  # Increase this value to reset cache if .github/nglview-gha.yml has not changed
       with:
@@ -42,7 +42,7 @@ jobs:
         channels: conda-forge
         channel-priority: true
         python-version: ${{ matrix.python-version }}
-        use-only-tar-bz2: true  # IMPORTANT: This needs to be set for caching to work properly!
+        use-only-tar-bz2: false  # https://github.com/conda-incubator/setup-miniconda/issues/264
 
     - name: Run tests
       run: |
