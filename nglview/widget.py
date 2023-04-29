@@ -48,6 +48,9 @@ _EXCLUDED_CALLBACK_AFTER_FIRING = {
     'set_representation_from_backend',
 }
 
+_INIT_VIEWS = {'color_maker_registry': color.ColormakerRegistry}
+_TRACKED_WIDGETS = {}
+
 
 def _deprecated(msg):
     def wrap_1(func):
@@ -85,16 +88,9 @@ def write_html(fp, views, frame_range=None):
     embed = ipywidgets.embed
     color = None
     theme = None
-    # TODO: Widget.widgets is deprecated.
-    # https://github.com/jupyter-widgets/ipywidgets/pull/3567
-    for k, v in embed.Widget.widgets.items():
-        if v.__class__.__name__ == '_ColormakerRegistry':
-            color = v
-        if v.__class__.__name__ == 'ThemeManager':
-            theme = v
 
-    for v in [color, theme]:
-        v and views.insert(0, v)
+    for _, v in _INIT_VIEWS.items():
+        views.insert(0, v)
 
     def _set_serialization(views):
         for view in views:
@@ -209,7 +205,7 @@ class NGLWidget(DOMWidget):
         self.stage = Stage(view=self)
         self.control = ViewerControl(view=self)
         self._handle_msg_thread = threading.Thread(
-            target=self.on_msg, args=(self._ngl_handle_msg, ))
+            target=self.on_msg, args=(self._handle_custom_msg, ))
         # # register to get data from JS side
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
@@ -365,6 +361,7 @@ class NGLWidget(DOMWidget):
             if self._widget_theme is None:
                 from .theme import ThemeManager
                 self._widget_theme = ThemeManager()
+                _INIT_VIEWS['theme_mananager'] = self._widget_theme
                 if self._widget_theme._theme is None:
                     self._widget_theme.light()
         return val
@@ -1007,6 +1004,7 @@ class NGLWidget(DOMWidget):
                           args=[iw.model_id],
                           kwargs=params)
         # iw.value will be updated later after frontend send the image_data back.
+        _TRACKED_WIDGETS[iw.model_id] = iw
         return iw
 
     def download_image(self,
@@ -1037,13 +1035,13 @@ class NGLWidget(DOMWidget):
                           ],
                           kwargs=params)
 
-    def _ngl_handle_msg(self, widget, msg, buffers):
+    def _handle_custom_msg(self, msg, buffers):
         """store message sent from Javascript.
 
         How? use view.on_msg(get_msg)
 
         Notes: message format should be {'type': type, 'data': data}
-        _ngl_handle_msg will call appropriate function to handle message "type"
+        _handle_custom_msg will call appropriate function to handle message "type"
         """
         self._ngl_msg = msg
 
@@ -1094,7 +1092,7 @@ class NGLWidget(DOMWidget):
                 self._event.set()
         elif msg_type == 'image_data':
             self._image_data = msg.get('data')
-            Widget.widgets[msg.get('ID')].value = base64.b64decode(
+            _TRACKED_WIDGETS[msg.get('ID')].value = base64.b64decode(
                 self._image_data)
 
     def _request_repr_parameters(self, component=0, repr_index=0):

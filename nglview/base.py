@@ -40,3 +40,9 @@ class BaseWidget(DOMWidget):
                 msg = self._msg_q.pop(0)
                 self.send(msg)
 
+    def _ipython_display_(self, **kwargs):
+        try:
+            # ipywidgets < 8
+            super()._ipython_display_(**kwargs)
+        except AttributeError:
+            display(super()._repr_mimebundle_(), raw=True)
