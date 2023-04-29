@@ -238,30 +238,29 @@ def test_API_promise_to_have():
                          [view])['methodName'] == 'setSyncCamera'
 
     msg = dict(type='request_frame', data=dict())
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._handle_custom_msg(msg=msg, buffers=[])
     msg = dict(type='repr_parameters', data=dict(name='hello'))
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._handle_custom_msg(msg=msg, buffers=[])
     view.loaded = True
     msg = dict(type='request_loaded', data=True)
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._handle_custom_msg(msg=msg, buffers=[])
     view.loaded = False
     msg = dict(type='request_loaded', data=True)
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._handle_custom_msg(msg=msg, buffers=[])
     msg = dict(type='all_reprs_info', data=REPR_DICT)
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._handle_custom_msg(msg=msg, buffers=[])
     msg = dict(type='stage_parameters', data=dict())
-    view._ngl_handle_msg(view, msg=msg, buffers=[])
+    view._handle_custom_msg(msg=msg, buffers=[])
     # test negative frame (it will be set to self.count - 1)
     view.frame = -1
     msg = dict(type='request_frame', data=dict())
     # async_message
     msg  = {'type': 'async_message', 'data': 'ok'}
-    view._ngl_handle_msg(view, msg, [])
+    view._handle_custom_msg(msg, [])
     # render_image
     r = view.render_image()
-    Widget.widgets[r.model_id] = r
     msg = {'type': 'image_data', 'ID': r.model_id, 'data': b'YmxhIGJsYQ=='}
-    view._ngl_handle_msg(view, msg, [])
+    view._handle_custom_msg(msg, [])
     view.loaded = True
     view.show_only([
         0,
