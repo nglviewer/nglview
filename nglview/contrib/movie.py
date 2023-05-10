@@ -281,8 +281,10 @@ class MovieMaker:
     def _base64_to_ndarray(cls, value):
         import io
         import base64
-        import matplotlib.image as mpimg
+        from PIL import Image
+        import numpy as np
         im_bytes = base64.b64decode(value)
         im_bytes = io.BytesIO(im_bytes)
         # convert to numpy RGB value (for moviepy.editor.VideoClip)
-        return mpimg.imread(im_bytes, format='PNG')
+        return np.array(Image.open(im_bytes))
+
