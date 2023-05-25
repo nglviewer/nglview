@@ -93,7 +93,13 @@
   "styleModule": "style/index.js",
   "jupyterlab": {
     "extension": "lib/jupyterlab-plugin",
-    "outputDir": "nglview-js-widgets/labextension"
+    "outputDir": "nglview-js-widgets/labextension",
+    "sharedPackages": {
+      "@jupyter-widgets/base": {
+        "bundled": false,
+        "singleton": true
+      }
+    }
   },
   "directories": {
     "test": "test"
