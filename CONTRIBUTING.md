@@ -103,43 +103,6 @@ npm install
 - Refresh browser (F5)
 ```
 
-## Jupyterlab Development
-
-Installation:
-
-```bash
-# Install deps
-conda create -n ngl python>=3.5
-conda activate ngl
-conda env update -f environment.yml
-
-# Install nglview Python package
-python -m pip install --no-deps -e .
-
-# Install ipywidgets JLab extension
-jupyter labextension install @jupyter-widgets/jupyterlab-manager
-```
-
-For a development install (requires npm version 4 or later), do the following in the repository directory:
-
-```bash
-cd js/
-jlpm
-jlpm build
-jupyter labextension link .
-```
-
-You can watch the source directory and run JupyterLab in watch mode to watch for changes in the extension's source and automatically rebuild the extension and application.
-
-```bash
-# Watch the source directory in another terminal tab
-jlpm watch
-
-# Run jupyterlab in watch mode in one terminal tab
-cd ../
-jupyter lab --watch --no-browser
-```
-
 ## Using `NGL` locally
 
 1. Change
