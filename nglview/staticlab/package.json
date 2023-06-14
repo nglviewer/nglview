@@ -68,7 +68,7 @@
     "@types/chai": "^4.1.4",
     "@types/expect.js": "^0.3.29",
     "@types/mocha": "^2.2.48",
-    "@types/node": "^14.0.0",
+    "@types/node": "^16.0.0",
     "@types/requirejs": "^2.1.31",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
@@ -94,8 +94,14 @@
   "jupyterlab": {
     "extension": "lib/jupyterlab-plugin",
     "outputDir": "nglview-js-widgets/labextension",
+    "sharedPackages": {
+      "@jupyter-widgets/base": {
+        "bundled": false,
+        "singleton": true
+      }
+    },
     "_build": {
-      "load": "static/remoteEntry.08554612fd96651a0411.js",
+      "load": "static/remoteEntry.083de3aa9e5a4fa345f7.js",
       "extension": "./extension",
       "style": "./style"
     }
