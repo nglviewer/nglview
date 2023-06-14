@@ -140,6 +140,7 @@ class NGLView extends widgets.DOMWidgetView{
                 this.set_camera_orientation(that.model.get("_camera_orientation"));
             }
         }
+        that.model.set("_ngl_is_initialized", true)
     }
 
     isEmbeded(){
@@ -398,6 +399,16 @@ class NGLView extends widgets.DOMWidgetView{
     async handleEmbed(){
         var that = this;
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
+
+        if (!that.model.get("_ngl_is_initialized")) {
+            console.log("No state stored; initializing embedded widget for the first time.");
+            for (const msg of that.model.get("_ngl_msg_archive")) {
+                console.log("Running msg " + JSON.stringify(msg));
+                await that.on_msg(msg);
+            }
+            return
+        }
+
         var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
         var loadfile_list = [];
 
@@ -1068,7 +1079,7 @@ class NGLView extends widgets.DOMWidgetView{
         return label
 	}
 
-    on_msg(msg) {
+    async on_msg(msg) {
         // TODO: re-organize
         if (('ngl_view_id' in msg) && (msg.ngl_view_id !== this.ngl_view_id)){
             return
@@ -1107,9 +1118,9 @@ class NGLView extends widgets.DOMWidgetView{
                             // are serialized separately, also it unwantedly sets the orientation
                             msg.kwargs.defaultRepresentation = false
                         }
-                        this._handleStageLoadFile(msg);
+                        await this._handleStageLoadFile(msg);
                     } else {
-                            stage_func.apply(stage, new_args);
+                        stage_func.apply(stage, new_args);
                     }
                     break;
                 case 'Viewer':
