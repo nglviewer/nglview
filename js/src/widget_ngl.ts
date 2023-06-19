@@ -143,7 +143,6 @@ class NGLView extends widgets.DOMWidgetView{
                 this.set_camera_orientation(that.model.get("_camera_orientation"));
             }
         }
-        that.model.set("_ngl_is_initialized", true)
     }
 
     isEmbeded(){
