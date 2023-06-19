@@ -171,7 +171,6 @@ class NGLWidget(DOMWidget):
     _widget_theme = None
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
-    _ngl_is_initialized = Bool(False).tag(sync=True)
     _ngl_coordinate_resource = Dict().tag(sync=True)
     _representations = List().tag(sync=False)
     _ngl_color_dict = Dict().tag(sync=True)

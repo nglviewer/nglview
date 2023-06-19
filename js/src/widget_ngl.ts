@@ -104,7 +104,10 @@ class NGLView extends widgets.DOMWidgetView{
 
     createStage(){
         // init NGL stage
-        var stage_params = this.model.get("_ngl_full_stage_parameters");
+        var stage_params = {
+            // Shallow copy so that _ngl_full_stage_parameters is not updated yet
+            ...this.model.get("_ngl_full_stage_parameters")
+        };
         if (!("backgroundColor" in stage_params)){
             stage_params["backgroundColor"] = "white"
         }
@@ -399,17 +402,20 @@ class NGLView extends widgets.DOMWidgetView{
     async handleEmbed(){
         var that = this;
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
+        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
+        const camera_orientation = that.model.get("_camera_orientation");
 
-        if (!that.model.get("_ngl_is_initialized")) {
+        if (
+            Object.keys(ngl_stage_params).length === 0
+            && camera_orientation.length === 0
+        ) {
             console.log("No state stored; initializing embedded widget for the first time.");
-            for (const msg of that.model.get("_ngl_msg_archive")) {
-                console.log("Running msg " + JSON.stringify(msg));
+            for (const msg of ngl_msg_archive) {
                 await that.on_msg(msg);
             }
             return
         }
 
-        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
         var loadfile_list = [];
 
         _.each(ngl_msg_archive, function(msg: any){
@@ -426,7 +432,7 @@ class NGLView extends widgets.DOMWidgetView{
 
         var compList = await Promise.all(loadfile_list)
         that.stage.setParameters(ngl_stage_params);
-        that.set_camera_orientation(that.model.get("_camera_orientation"));
+        that.set_camera_orientation(camera_orientation);
         that.touch();
 
         // Outside notebook
