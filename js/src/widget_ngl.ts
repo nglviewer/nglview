@@ -445,11 +445,11 @@ class NGLView extends widgets.DOMWidgetView{
 
 
         // fire any msg with "fire_embed"
-        that.model.get("_ngl_msg_archive").forEach(function(msg){
+        for (const msg of that.model.get("_ngl_msg_archive")) {
             if (msg.fire_embed){
-                that.on_msg(msg);
+                await that.on_msg(msg);
             }
-        })
+        }
 
         // Must call _set_representation_from_repr_dict after "fire_embed"
         // User might add Shape (buffer component) to the view and the buffer component
