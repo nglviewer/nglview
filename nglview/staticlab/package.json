@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "3.0.1",
+  "version": "3.0.6",
   "description": "nglview-js-widgets",
   "keywords": [
     "ipython",
@@ -101,7 +101,7 @@
       }
     },
     "_build": {
-      "load": "static/remoteEntry.c157c608b5b3770ee85f.js",
+      "load": "static/remoteEntry.79cc7fe0815507d1932e.js",
       "extension": "./extension",
       "style": "./style"
     }
