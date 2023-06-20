@@ -104,7 +104,10 @@ class NGLView extends widgets.DOMWidgetView{
 
     createStage(){
         // init NGL stage
-        var stage_params = this.model.get("_ngl_full_stage_parameters");
+        var stage_params = {
+            // Shallow copy so that _ngl_full_stage_parameters is not updated yet
+            ...this.model.get("_ngl_full_stage_parameters")
+        };
         if (!("backgroundColor" in stage_params)){
             stage_params["backgroundColor"] = "white"
         }
@@ -399,6 +402,19 @@ class NGLView extends widgets.DOMWidgetView{
         var that = this;
         var ngl_msg_archive = that.model.get("_ngl_msg_archive");
         var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
+        const camera_orientation = that.model.get("_camera_orientation");
+
+        if (
+            Object.keys(ngl_stage_params).length === 0
+            && camera_orientation.length === 0
+        ) {
+            console.log("No state stored; initializing embedded widget for the first time.");
+            for (const msg of ngl_msg_archive) {
+                await that.on_msg(msg);
+            }
+            return
+        }
+
         var loadfile_list = [];
 
         _.each(ngl_msg_archive, function(msg: any){
@@ -415,7 +431,7 @@ class NGLView extends widgets.DOMWidgetView{
 
         var compList = await Promise.all(loadfile_list)
         that.stage.setParameters(ngl_stage_params);
-        that.set_camera_orientation(that.model.get("_camera_orientation"));
+        that.set_camera_orientation(camera_orientation);
         that.touch();
 
         // Outside notebook
@@ -434,11 +450,11 @@ class NGLView extends widgets.DOMWidgetView{
 
 
         // fire any msg with "fire_embed"
-        that.model.get("_ngl_msg_archive").forEach(function(msg){
+        for (const msg of that.model.get("_ngl_msg_archive")) {
             if (msg.fire_embed){
-                that.on_msg(msg);
+                await that.on_msg(msg);
             }
-        })
+        }
 
         // Must call _set_representation_from_repr_dict after "fire_embed"
         // User might add Shape (buffer component) to the view and the buffer component
@@ -1068,7 +1084,7 @@ class NGLView extends widgets.DOMWidgetView{
         return label
 	}
 
-    on_msg(msg) {
+    async on_msg(msg) {
         // TODO: re-organize
         if (('ngl_view_id' in msg) && (msg.ngl_view_id !== this.ngl_view_id)){
             return
@@ -1107,9 +1123,9 @@ class NGLView extends widgets.DOMWidgetView{
                             // are serialized separately, also it unwantedly sets the orientation
                             msg.kwargs.defaultRepresentation = false
                         }
-                        this._handleStageLoadFile(msg);
+                        await this._handleStageLoadFile(msg);
                     } else {
-                            stage_func.apply(stage, new_args);
+                        stage_func.apply(stage, new_args);
                     }
                     break;
                 case 'Viewer':
