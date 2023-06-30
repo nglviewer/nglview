@@ -43,18 +43,12 @@ Released version
 
     ```bash
     conda install nglview -c conda-forge
-    # might need: jupyter-nbextension enable nglview --py --sys-prefix
-
-    # if you already installed nglview, you can `upgrade`
-    conda upgrade nglview --force
-    # might need: jupyter-nbextension enable nglview --py --sys-prefix
     ```
 
 - Available on [PyPI](https://pypi.python.org/pypi/nglview/)
 
 ```bash
    pip install nglview
-   # might need: jupyter-nbextension enable nglview --py --sys-prefix
 ```
 
 Jupyterlab: `nglview` works best with jupyterlab >= 3.0 and no further steps needed.
