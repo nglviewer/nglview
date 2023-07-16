@@ -1368,38 +1368,38 @@ class NGLWidget(DOMWidget):
                           target='component',
                           args=['*', 200],
                           kwargs={'component_index': 1})
-    """
-    args = [] if args is None else args
-    kwargs = {} if kwargs is None else kwargs
+        """
+        args = [] if args is None else args
+        kwargs = {} if kwargs is None else kwargs
 
-    msg = {}
+        msg = {}
 
-    if 'component_index' in kwargs:
-        msg['component_index'] = kwargs.pop('component_index')
-    if 'repr_index' in kwargs:
-        msg['repr_index'] = kwargs.pop('repr_index')
-    if 'default' in kwargs:
-        kwargs['defaultRepresentation'] = kwargs.pop('default')
+        if 'component_index' in kwargs:
+            msg['component_index'] = kwargs.pop('component_index')
+        if 'repr_index' in kwargs:
+            msg['repr_index'] = kwargs.pop('repr_index')
+        if 'default' in kwargs:
+            kwargs['defaultRepresentation'] = kwargs.pop('default')
 
-    # Color handling
-    reconstruc_color_scheme = False
-    if 'color' in kwargs and isinstance(kwargs['color'], color._ColorScheme):
-        kwargs['color_label'] = kwargs['color'].data['label']
-        kwargs['color'] = kwargs['color'].data['data']
-        reconstruc_color_scheme = True
-    if kwargs.get('colorScheme') == 'volume' and kwargs.get('colorVolume'):
-        assert isinstance(kwargs['colorVolume'], ComponentViewer)
-        kwargs['colorVolume'] = kwargs['colorVolume']._index
+        # Color handling
+        reconstruc_color_scheme = False
+        if 'color' in kwargs and isinstance(kwargs['color'], color._ColorScheme):
+            kwargs['color_label'] = kwargs['color'].data['label']
+            kwargs['color'] = kwargs['color'].data['data']
+            reconstruc_color_scheme = True
+        if kwargs.get('colorScheme') == 'volume' and kwargs.get('colorVolume'):
+            assert isinstance(kwargs['colorVolume'], ComponentViewer)
+            kwargs['colorVolume'] = kwargs['colorVolume']._index
 
-    msg['target'] = target
-    msg['type'] = 'call_method'
-    msg['methodName'] = method_name
-    msg['reconstruc_color_scheme'] = reconstruc_color_scheme
-    msg['args'] = args
-    msg['kwargs'] = kwargs
-    msg.update(other_kwargs)
+        msg['target'] = target
+        msg['type'] = 'call_method'
+        msg['methodName'] = method_name
+        msg['reconstruc_color_scheme'] = reconstruc_color_scheme
+        msg['args'] = args
+        msg['kwargs'] = kwargs
+        msg.update(other_kwargs)
 
-    return msg
+        return msg
 
     def _trim_message(self, messages):
         messages = messages[:]
