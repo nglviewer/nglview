@@ -742,36 +742,36 @@ class NGLWidget(DOMWidget):
         return RepresentationControl(self, component, repr_index, name=name)
 
     def _set_coordinates(self, index, movie_making=False, render_params=None):
-        # FIXME: use movie_making here seems awkward.
-        '''update coordinates for all trajectories at index-th frame
+        '''
+        Update coordinates for all trajectories at the index-th frame.
         '''
         render_params = render_params or {}
-        if self._trajlist:
-            coordinates_dict = {}
-            for trajectory in self._trajlist:
-                traj_index = self._ngl_component_ids.index(trajectory.id)
-
-                try:
-                    if trajectory.shown:
-                        if self.player.interpolate:
-                            t = self.player.iparams.get('t', 0.5)
-                            step = self.player.iparams.get('step', 1)
-                            coordinates_dict[traj_index] = interpolate.linear(
-                                index, t=t, traj=trajectory, step=step)
-                        else:
-                            coordinates_dict[
-                                traj_index] = trajectory.get_coordinates(index)
+        
+        if not self._trajlist:
+            print("No trajectory available")
+            return
+        
+        coordinates_dict = {}
+        for trajectory in self._trajlist:
+            traj_index = self._ngl_component_ids.index(trajectory.id)
+    
+            try:
+                if trajectory.shown:
+                    if self.player.interpolate:
+                        t = self.player.iparams.get('t', 0.5)
+                        step = self.player.iparams.get('step', 1)
+                        coordinates_dict[traj_index] = interpolate.linear(
+                            index, t=t, traj=trajectory, step=step)
                     else:
-                        coordinates_dict[traj_index] = np.empty((0),
-                                                                dtype='f4')
-                except (IndexError, ValueError):
+                        coordinates_dict[traj_index] = trajectory.get_coordinates(index)
+                else:
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
-
-            self.set_coordinates(coordinates_dict,
-                    render_params=render_params,
-                    movie_making=movie_making)
-        else:
-            print("no trajectory available")
+            except (IndexError, ValueError):
+                coordinates_dict[traj_index] = np.empty((0), dtype='f4')
+    
+        self.set_coordinates(coordinates_dict,
+                             render_params=render_params,
+                             movie_making=movie_making)
 
     def set_coordinates(self, arr_dict, movie_making=False,
             render_params=None):
@@ -1036,65 +1036,86 @@ class NGLWidget(DOMWidget):
                           kwargs=params)
 
     def _handle_custom_msg(self, msg, buffers):
-        """store message sent from Javascript.
-
-        How? use view.on_msg(get_msg)
-
+        """Store message sent from JavaScript.
+        
+        How? Use view.on_msg(get_msg)
+        
         Notes: message format should be {'type': type, 'data': data}
-        _handle_custom_msg will call appropriate function to handle message "type"
+        _handle_custom_msg will call the appropriate function to handle the message "type"
         """
         self._ngl_msg = msg
-
+        
         msg_type = self._ngl_msg.get('type')
+        
         if msg_type == 'request_frame':
-            frame = self.frame + self.player.step
-            if frame > self.max_frame:
-                frame = 0
-            elif frame < 0:
-                frame = self.max_frame
-            self.frame = frame
+            self._handle_request_frame()
         elif msg_type == 'updateIDs':
-            self._ngl_view_id = msg['data']
+            self.handle_update_ids(msg['data'])
         elif msg_type == 'removeComponent':
-            cindex = int(msg['data'])
-            self._ngl_component_ids.pop(cindex)
+            self._handle_remove_component(int(msg['data']))
         elif msg_type == 'repr_parameters':
-            data_dict = self._ngl_msg.get('data')
-            name = data_dict.pop('name') + '\n'
-            selection = data_dict.get('sele', '') + '\n'
-            # json change True to true
-            data_dict_json = json.dumps(data_dict).replace(
-                'true', 'True').replace('false', 'False')
-            data_dict_json = data_dict_json.replace('null', '"null"')
-
-            if self.player.widget_repr is not None:
-                # TODO: refactor
-                repr_name_text = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_name_text')
-                repr_selection = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_selection')
-                repr_name_text.value = name
-                repr_selection.value = selection
+            self._handle_repr_parameters(self._ngl_msg.get('data'))
         elif msg_type == 'request_loaded':
-            if not self.loaded:
-                # trick to trigger observe loaded
-                # so two viewers can have the same representations
-                self.loaded = False
-            self.loaded = msg.get('data')
+            self._handle_request_loaded(msg.get('data'))
         elif msg_type == 'request_repr_dict':
-            # update _repr_dict will trigger other things
-            # see _handle_repr_dict_changed
-            self._ngl_repr_dict = self._ngl_msg.get('data')
+            self._handle_request_repr_dict(self._ngl_msg.get('data'))
         elif msg_type == 'stage_parameters':
-            self._ngl_full_stage_parameters = msg.get('data')
+            self._handle_stage_parameters(msg.get('data'))
         elif msg_type == 'async_message':
-            if msg.get('data') == 'ok':
-                self._event.set()
+            self._handle_async_message(msg.get('data'))
         elif msg_type == 'image_data':
-            self._image_data = msg.get('data')
-            _TRACKED_WIDGETS[msg.get('ID')].value = base64.b64decode(
-                self._image_data)
-
+            self._handle_image_data(msg.get('data'))
+    
+    def _handle_request_frame(self):
+        frame = self.frame + self.player.step
+        if frame > self.max_frame:
+            frame = 0
+        elif frame < 0:
+            frame = self.max_frame
+        self.frame = frame
+    
+    def _handle_update_ids(self, data):
+        self._ngl_view_id = data
+    
+    def _handle_remove_component(self, cindex):
+        self._ngl_component_ids.pop(cindex)
+    
+    def _handle_repr_parameters(self, data):
+        name = data.pop('name') + '\n'
+        selection = data.get('sele', '') + '\n'
+        # JSON change True to true
+        data_dict_json = json.dumps(data).replace('true', 'True').replace('false', 'False')
+        data_dict_json = data_dict_json.replace('null', '"null"')
+    
+        if self.player.widget_repr is not None:
+            repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
+            repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
+            repr_name_text.value = name
+            repr_selection.value = selection
+    
+    def _handle_request_loaded(self, data):
+        if not self.loaded:
+            # Trick to trigger observe loaded
+            # so two viewers can have the same representations
+            self.loaded = False
+        self.loaded = data
+    
+    def _handle_request_repr_dict(self, data):
+        # Update _repr_dict will trigger other things
+        # See _handle_repr_dict_changed
+        self._ngl_repr_dict = data
+    
+    def _handle_stage_parameters(self, data):
+        self._ngl_full_stage_parameters = data
+    
+    def _handle_async_message(self, data):
+        if data == 'ok':
+            self._event.set()
+    
+    def _handle_image_data(self, data):
+        self._image_data = data
+        _TRACKED_WIDGETS[data.get('ID')].value = base64.b64decode(self._image_data)
+    
     def _request_repr_parameters(self, component=0, repr_index=0):
         if self.n_components > 0:
             self._remote_call('requestReprParameters',
@@ -1216,62 +1237,63 @@ class NGLWidget(DOMWidget):
         return self[-1]
 
     def _load_data(self, obj, **kwargs):
-        '''
-
-        Parameters
-        ----------
-        obj : nglview.Structure or any object having 'get_structure_string' method or
-              string buffer (open(fn).read())
-        '''
+        """
+        Load data into the viewer.
+    
+        Parameters:
+        - obj: nglview.Structure or any object having 'get_structure_string' method or string buffer (open(fn).read())
+        - **kwargs: additional keyword arguments
+        """
         kwargs2 = _camelize_dict(kwargs)
-
+    
         try:
             is_url = FileManager(obj).is_url
         except NameError:
             is_url = False
-
+    
         if 'defaultRepresentation' not in kwargs2:
             kwargs2['defaultRepresentation'] = True
-
+    
         if not is_url:
             if hasattr(obj, 'get_structure_string'):
-                blob = obj.get_structure_string()
-                kwargs2['ext'] = obj.ext
-                passing_buffer = True
-                binary = False
+                blob, passing_buffer, binary = self._process_structure_object(obj)
             else:
-                fh = FileManager(obj,
-                                 ext=kwargs.get('ext'),
-                                 compressed=kwargs.get('compressed'))
-                # assume passing string
-                blob = fh.read()
-                passing_buffer = not fh.use_filename
-
-                if fh.ext is None and passing_buffer:
-                    raise ValueError('must provide extension')
-
-                kwargs2['ext'] = fh.ext
-                binary = fh.is_binary
-                use_filename = fh.use_filename
-
-            if binary and not use_filename:
-                # send base64
-                blob = base64.b64encode(blob).decode('utf8')
+                blob, passing_buffer, binary = self._process_file_object(obj, kwargs)
+    
             blob_type = 'blob' if passing_buffer else 'path'
             args = [{'type': blob_type, 'data': blob, 'binary': binary}]
         else:
-            # is_url
             blob_type = 'url'
             url = obj
             args = [{'type': blob_type, 'data': url, 'binary': False}]
-
+    
         name = py_utils.get_name(obj, **kwargs2)
         self._ngl_component_names.append(name)
-        self._remote_call("loadFile",
-                          target='Stage',
-                          args=args,
-                          kwargs=kwargs2)
-
+        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs2)
+    
+    def _process_structure_object(self, obj):
+        blob = obj.get_structure_string()
+        kwargs2['ext'] = obj.ext
+        passing_buffer = True
+        binary = False
+        return blob, passing_buffer, binary
+    
+    def _process_file_object(self, obj, kwargs):
+        fh = FileManager(obj, ext=kwargs.get('ext'), compressed=kwargs.get('compressed'))
+        blob = fh.read()
+        passing_buffer = not fh.use_filename
+    
+        if fh.ext is None and passing_buffer:
+            raise ValueError('must provide extension')
+    
+        kwargs2['ext'] = fh.ext
+        binary = fh.is_binary
+        use_filename = fh.use_filename
+    
+        if binary and not use_filename:
+            blob = base64.b64encode(blob).decode('utf8')
+    
+        return blob, passing_buffer, binary
     def remove_component(self, c):
         """remove component by its uuid.
         If isinstance(c, ComponentViewer), `c` won't be associated with `self`
@@ -1346,41 +1368,38 @@ class NGLWidget(DOMWidget):
                           target='component',
                           args=['*', 200],
                           kwargs={'component_index': 1})
-        """
-        # NOTE: _camelize_dict here?
-        args = [] if args is None else args
-        kwargs = {} if kwargs is None else kwargs
+    """
+    args = [] if args is None else args
+    kwargs = {} if kwargs is None else kwargs
 
-        msg = {}
+    msg = {}
 
-        if 'component_index' in kwargs:
-            msg['component_index'] = kwargs.pop('component_index')
-        if 'repr_index' in kwargs:
-            msg['repr_index'] = kwargs.pop('repr_index')
-        if 'default' in kwargs:
-            kwargs['defaultRepresentation'] = kwargs.pop('default')
+    if 'component_index' in kwargs:
+        msg['component_index'] = kwargs.pop('component_index')
+    if 'repr_index' in kwargs:
+        msg['repr_index'] = kwargs.pop('repr_index')
+    if 'default' in kwargs:
+        kwargs['defaultRepresentation'] = kwargs.pop('default')
 
-        # Color handling
-        reconstruc_color_scheme = False
-        if 'color' in kwargs and isinstance(kwargs['color'],
-                                            color._ColorScheme):
-            kwargs['color_label'] = kwargs['color'].data['label']
-            # overite `color`
-            kwargs['color'] = kwargs['color'].data['data']
-            reconstruc_color_scheme = True
-        if kwargs.get('colorScheme') == 'volume' and kwargs.get('colorVolume'):
-            assert isinstance(kwargs['colorVolume'], ComponentViewer)
-            kwargs['colorVolume'] = kwargs['colorVolume']._index
+    # Color handling
+    reconstruc_color_scheme = False
+    if 'color' in kwargs and isinstance(kwargs['color'], color._ColorScheme):
+        kwargs['color_label'] = kwargs['color'].data['label']
+        kwargs['color'] = kwargs['color'].data['data']
+        reconstruc_color_scheme = True
+    if kwargs.get('colorScheme') == 'volume' and kwargs.get('colorVolume'):
+        assert isinstance(kwargs['colorVolume'], ComponentViewer)
+        kwargs['colorVolume'] = kwargs['colorVolume']._index
 
-        msg['target'] = target
-        msg['type'] = 'call_method'
-        msg['methodName'] = method_name
-        msg['reconstruc_color_scheme'] = reconstruc_color_scheme
-        msg['args'] = args
-        msg['kwargs'] = kwargs
-        if other_kwargs:
-            msg.update(other_kwargs)
-        return msg
+    msg['target'] = target
+    msg['type'] = 'call_method'
+    msg['methodName'] = method_name
+    msg['reconstruc_color_scheme'] = reconstruc_color_scheme
+    msg['args'] = args
+    msg['kwargs'] = kwargs
+    msg.update(other_kwargs)
+
+    return msg
 
     def _trim_message(self, messages):
         messages = messages[:]
@@ -1406,38 +1425,30 @@ class NGLWidget(DOMWidget):
             if i not in messages_rm
         ]
 
-    def _remote_call(self,
-                     method_name,
-                     target='Widget',
-                     args=None,
-                     kwargs=None,
-                     **other_kwargs):
-
-        msg = self._get_remote_call_msg(method_name,
-                                        target=target,
-                                        args=args,
-                                        kwargs=kwargs,
-                                        **other_kwargs)
-
-        def callback(widget, msg=msg):
-            widget.send(msg)
-
-        callback._method_name = method_name
-        callback._ngl_msg = msg
-
+    def _remote_call(self, method_name, target='Widget', args=None, kwargs=None, **other_kwargs):
+        msg = self._get_remote_call_msg(method_name, target=target, args=args, kwargs=kwargs, **other_kwargs)
+    
+        callback = self._create_remote_call_callback(method_name, msg)
+    
         if self.loaded:
             self._remote_call_thread.q.append(callback)
         else:
-            # send later
-            # all callbacks will be called right after widget is loaded
             self._ngl_displayed_callbacks_before_loaded.append(callback)
-
-        if callback._method_name not in _EXCLUDED_CALLBACK_AFTER_FIRING and \
-           (not other_kwargs.get("fire_once", False)):
+    
+        if callback._method_name not in _EXCLUDED_CALLBACK_AFTER_FIRING and (not other_kwargs.get("fire_once", False)):
             archive = self._ngl_msg_archive[:]
             archive.append(msg)
             self._ngl_msg_archive = self._trim_message(archive)
-
+    
+    def _create_remote_call_callback(self, method_name, msg):
+        def callback(widget, msg=msg):
+            widget.send(msg)
+    
+        callback._method_name = method_name
+        callback._ngl_msg = msg
+    
+        return callback
+    
     def _get_traj_by_id(self, itsid):
         """return nglview.Trajectory or its derived class object
         """
