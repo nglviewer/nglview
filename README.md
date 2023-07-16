@@ -215,7 +215,7 @@ view.frame = 100
 ```Python
 # parameters for the NGL stage object
 view.stage.set_parameters(**{
-    # "percentages, "dist" is distance too camera in Angstrom
+    # "percentages, "dist" is distance to camera in Angstrom
     "clipNear": 0, "clipFar": 100, "clipDist": 10,
     # percentages, start of fog and where on full effect
     "fogNear": 0, "fogFar": 100,
