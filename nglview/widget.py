@@ -109,6 +109,7 @@ def write_html(fp, views, frame_range=None):
     _set_serialization(views)
     # FIXME: allow add jquery-ui link?
     snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
+    snippet += '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">\n'
     snippet += embed.embed_snippet(views)
     html_code = embed.html_template.format(title='nglview-demo',
                                            snippet=snippet)
