@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "3.0.6",
+  "version": "3.0.8",
   "description": "nglview-js-widgets",
   "keywords": [
     "ipython",
@@ -84,7 +84,7 @@
     "rimraf": "^3.0.2",
     "style-loader": "^0.13.1",
     "typescript": "~4.1.3",
-    "webpack": "^3.5.5"
+    "webpack": "^3.12.0"
   },
   "sideEffects": [
     "style/*.css",
@@ -101,7 +101,7 @@
       }
     },
     "_build": {
-      "load": "static/remoteEntry.79cc7fe0815507d1932e.js",
+      "load": "static/remoteEntry.f04a5ecf8bfa3a6adb94.js",
       "extension": "./extension",
       "style": "./style"
     }
