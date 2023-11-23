@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "nglview-js-widgets",
   "keywords": [
     "ipython",
@@ -55,16 +55,16 @@
     "test": "mocha"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^4.0.0",
+    "@jupyter-widgets/base": "^1 || ^2.0.2 || ^3 || ^4 || ^5 || ^6",
     "@jupyter-widgets/jupyterlab-manager": "^3.0.0",
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "lodash": "^4.17.4",
-    "ngl": "2.0.0-dev.39",
+    "ngl": "2.2.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^3.0.0",
+    "@jupyterlab/builder": "^4.0.9",
     "@types/chai": "^4.1.4",
     "@types/expect.js": "^0.3.29",
     "@types/mocha": "^2.2.48",
@@ -78,7 +78,7 @@
     "file-loader": "^1.1.6",
     "json-loader": "^0.5.4",
     "mkdirp": "^1.0.3",
-    "ngl": "2.0.0-dev.39",
+    "ngl": "2.2.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.1",
     "rimraf": "^3.0.2",
@@ -101,12 +101,13 @@
       }
     },
     "_build": {
-      "load": "static/remoteEntry.f04a5ecf8bfa3a6adb94.js",
+      "load": "static/remoteEntry.bb6e8ac992d96acdc4e3.js",
       "extension": "./extension",
       "style": "./style"
     }
   },
   "directories": {
     "test": "test"
-  }
+  },
+  "packageManager": "yarn@4.0.2"
 }
