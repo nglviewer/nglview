@@ -47,7 +47,7 @@ jobs:
           yarn-
     
     - name: Install dependencies
-      run: python -m pip install -U jupyterlab~=3.0 jupyter_packaging~=0.7.9 jupyterlab_widgets~=1.0.0
+      run: python -m pip install -U jupyterlab~=4.0 jupyter_packaging~=0.7.9 jupyterlab_widgets
     - name: Build the extension
       working-directory: js
       run: |
