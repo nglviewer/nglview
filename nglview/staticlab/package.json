@@ -64,7 +64,7 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^4.0.9",
+    "@jupyterlab/builder": "^3.0.5",
     "@types/chai": "^4.1.4",
     "@types/expect.js": "^0.3.29",
     "@types/mocha": "^2.2.48",
@@ -101,7 +101,7 @@
       }
     },
     "_build": {
-      "load": "static/remoteEntry.bb6e8ac992d96acdc4e3.js",
+      "load": "static/remoteEntry.dbf7c819bb77e825c47b.js",
       "extension": "./extension",
       "style": "./style"
     }
@@ -109,5 +109,5 @@
   "directories": {
     "test": "test"
   },
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@1.22.1"
 }
