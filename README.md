@@ -52,6 +52,7 @@ Released version
 ```
 
 Jupyterlab: `nglview` works best with jupyterlab >= 3.0 and no further steps needed.
+Known to work versions: nglview==3.0.8 ipywidgets==8.1.1 jupyterlab>4 works (Jan 08 20224)
 
 ## Notes
 

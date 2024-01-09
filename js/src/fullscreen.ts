@@ -27,7 +27,7 @@ export
 class FullscreenView extends BaseView{
     stage : any
     render() {
-        this.stage = new NGL.Stage()
+        this.stage = new NGL.Stage(null, null)
         var that = this
         this.model.on("msg:custom", function(msg){
             that.on_msg(msg)
