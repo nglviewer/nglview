@@ -164,14 +164,10 @@ setup_args = {
     'license': "MIT",
     'package_data': {
          "nglview.datafiles": ["*"],
-         "nglview.scripts": ["*"],
          "nglview.theme": ["*"],
          "nglview.static": ["*"],
          "nglview.staticlab": ["*"],
      },
-    'entry_points': {'console_scripts':
-          ['nglview = nglview.scripts.nglview:main',]
-    },
     'data_files': [
         ('share/jupyter/nbextensions/nglview-js-widgets', [
          'nglview/static/extension.js',
@@ -209,7 +205,7 @@ setup_args = {
                  'nglview.tests',
                  'nglview.sandbox',
                  'nglview.contrib',
-                 'nglview.scripts']),
+                 ]),
     'zip_safe': False,
     'cmdclass': cmdclass,
 
