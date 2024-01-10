@@ -1,6 +1,6 @@
 {
   "name": "nglview-js-widgets",
-  "version": "3.0.9",
+  "version": "3.1.0",
   "description": "nglview-js-widgets",
   "keywords": [
     "ipython",
@@ -34,21 +34,21 @@
     "url": "https://github.com/nglviewer/nglview.git"
   },
   "scripts": {
-    "prepublish": "jlpm build:prod && webpack && jlpm run copy:labextension",
+    "prepublish": "yarn build:prod && webpack && yarn run copy:labextension",
     "copy:labextension": "cp -r nglview-js-widgets/labextension/* ../nglview/staticlab/",
-    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
-    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
+    "build": "yarn run build:lib && yarn run build:labextension:dev",
+    "build:prod": "yarn run build:lib && yarn run build:labextension",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib": "tsc",
-    "clean": "jlpm run clean:lib",
+    "clean": "yarn run clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "clean:labextension": "rimraf myextension/labextension",
-    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
+    "clean:all": "yarn run clean:lib && yarn run clean:labextension",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
     "install:extension": "jupyter labextension develop --overwrite .",
-    "prepare": "jlpm run clean && jlpm run build:prod",
+    "prepare": "yarn run clean && yarn run build:prod",
     "watch": "run-p watch:src watch:labextension",
     "watch:src": "tsc -w",
     "watch:labextension": "jupyter labextension watch .",
@@ -64,7 +64,7 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^3.0.5",
+    "@jupyterlab/builder": "^3.0.5 || ^4",
     "@types/chai": "^4.1.4",
     "@types/expect.js": "^0.3.29",
     "@types/mocha": "^2.2.48",
@@ -101,7 +101,7 @@
       }
     },
     "_build": {
-      "load": "static/remoteEntry.17ae7a1ccd60d62c2051.js",
+      "load": "static/remoteEntry.21d0885d0060a84340da.js",
       "extension": "./extension",
       "style": "./style"
     }
