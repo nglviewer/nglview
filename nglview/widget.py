@@ -191,9 +191,8 @@ class NGLWidget(DOMWidget):
                  parameters=None,
                  gui=False,
                  theme='default',
-                 default=True,
-                 **kwargs):
-        super().__init__(**kwargs)
+                 default=True):
+        super().__init__()
 
         self._gui = None
         self._init_gui = gui
