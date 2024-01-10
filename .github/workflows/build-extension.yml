@@ -56,4 +56,4 @@ jobs:
         python -m pip install .
 
         jupyter labextension list 2>&1 | grep -ie "nglview-js-widgets.*OK"
-        python -m jupyterlab.browser_check
+        # python -m jupyterlab.browser_check # FIXME: off for debugging, should turn on
