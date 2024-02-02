@@ -52,7 +52,12 @@ Released version
 ```
 
 Jupyterlab: `nglview` works best with jupyterlab >= 3.0 and no further steps needed.
-Known to work versions: nglview==3.0.8 ipywidgets==8.1.1 jupyterlab>4 works (Jan 08 20224)
+Known to work versions
+
+|nglview|lab|notebook|ipywidgets|Known issue(s)
+|--|--|--|--|--|
+|3.1.0|4.0.10|7.0.6|8.1.1|[HTML embed doesn't work](https://github.com/jupyter-widgets/ipywidgets/issues/3878)
+|3.0.8|4.0.10|7.0.6|8.1.1|[show_pdbid doesn't work](https://github.com/nglviewer/nglview/issues/1082)
 
 ## Notes
 

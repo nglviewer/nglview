@@ -180,7 +180,8 @@ setup_args = {
         'pytest'
     ],
     'install_requires': [
-        'ipywidgets>=7',
+        'ipywidgets>=8',
+        'notebook>=7',
         'jupyterlab_widgets',
         'numpy',
     ],

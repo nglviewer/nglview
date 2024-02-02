@@ -1246,8 +1246,8 @@ class NGLWidget(DOMWidget):
                                  ext=kwargs.get('ext'),
                                  compressed=kwargs.get('compressed'))
                 # assume passing string
-                blob = fh.read()
-                passing_buffer = not fh.use_filename
+                blob = fh.read(force_buffer=True)
+                passing_buffer = True
 
                 if fh.ext is None and passing_buffer:
                     raise ValueError('must provide extension')
