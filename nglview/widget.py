@@ -206,7 +206,7 @@ class NGLWidget(DOMWidget):
         self.stage = Stage(view=self)
         self.control = ViewerControl(view=self)
         self._handle_msg_thread = threading.Thread(
-            target=self.on_msg, args=(self._handle_custom_msg, ))
+            target=self.on_msg, args=(self._handle_nglview_custom_msg, ))
         # # register to get data from JS side
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
@@ -1036,13 +1036,16 @@ class NGLWidget(DOMWidget):
                           ],
                           kwargs=params)
 
-    def _handle_custom_msg(self, msg, buffers):
+    def _handle_nglview_custom_msg(self, _, msg, buffers):
+        # Similar signature to
+        # https://github.com/jupyter-widgets/ipywidgets/blob/b78de43e12ff26e4aa16e6e4c6844a7c82a8ee1c/python/ipywidgets/ipywidgets/widgets/widget_string.py#L122
+        # NOTE: "self" is not counted as first argument.
         """store message sent from Javascript.
 
         How? use view.on_msg(get_msg)
 
         Notes: message format should be {'type': type, 'data': data}
-        _handle_custom_msg will call appropriate function to handle message "type"
+        _handle_nglview_custom_msg will call appropriate function to handle message "type"
         """
         self._ngl_msg = msg
 

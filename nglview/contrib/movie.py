@@ -223,7 +223,7 @@ class MovieMaker:
             frame, movie_making=True, render_params=self.render_params)
         self._progress.description = 'Rendering ...'
 
-        def on_msg(widget, msg, _):
+        def on_msg(widget, msg, buffers):
             if msg['type'] == 'movie_image_data':
                 image_array.append(msg.get('data'))
                 try:
