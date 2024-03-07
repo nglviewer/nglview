@@ -189,12 +189,14 @@ class NGLWidget(DOMWidget):
                  structure=None,
                  representations=None,
                  parameters=None,
-                 **kwargs):
-        super().__init__(**kwargs)
+                 gui=False,
+                 theme='default',
+                 default=True):
+        super().__init__()
 
         self._gui = None
-        self._init_gui = kwargs.pop('gui', False)
-        self._theme = kwargs.pop('theme', 'default')
+        self._init_gui = gui
+        self._theme = theme
         self._widget_image = Image()
         self._widget_image.width = 900.
         self._image_array = []
@@ -224,8 +226,7 @@ class NGLWidget(DOMWidget):
             # initial representations will be set.
             kwargs['default_representation'] = False
         else:
-            if 'default' in kwargs:
-                kwargs['default_representation'] = kwargs['default']
+            kwargs['default_representation'] = default
 
         autoview = 'center' not in kwargs or ('center' in kwargs
                                               and kwargs.pop('center'))
