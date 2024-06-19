@@ -45,8 +45,8 @@
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "clean:labextension": "rimraf myextension/labextension",
     "clean:all": "yarn run clean:lib && yarn run clean:labextension",
-    "eslint": "eslint . --ext .ts,.tsx --fix",
-    "eslint:check": "eslint . --ext .ts,.tsx",
+    "eslint": "eslint '**/*.ts' --fix",
+    "eslint:check": "eslint '**/*.ts'",
     "install:extension": "jupyter labextension develop --overwrite .",
     "prepare": "yarn run clean && yarn run build:prod",
     "watch": "run-p watch:src watch:labextension",
@@ -70,11 +70,11 @@
     "@types/mocha": "^2.2.48",
     "@types/node": "^16.0.0",
     "@types/requirejs": "^2.1.31",
-    "@typescript-eslint/eslint-plugin": "^4.8.1",
-    "@typescript-eslint/parser": "^4.8.1",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
     "babel-register": "^6.11.6",
     "css-loader": "^0.23.1",
-    "eslint": "^9.5",
+    "eslint": "^8.5.6",
     "file-loader": "^1.1.6",
     "json-loader": "^0.5.4",
     "mkdirp": "^1.0.3",
@@ -101,7 +101,7 @@
       }
     },
     "_build": {
-      "load": "static/remoteEntry.f4db6c940369d14cf844.js",
+      "load": "static/remoteEntry.4aa080b2a45dbecd0a13.js",
       "extension": "./extension",
       "style": "./style"
     }
