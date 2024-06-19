@@ -4,7 +4,6 @@ channels:
   - conda-forge
 
 dependencies:
-  - python>=3.6
   - pip
   - jupyter-packaging
   - qcelemental
@@ -15,10 +14,8 @@ dependencies:
   - notebook
   - mock
   - coverage
-  - nose
   - pytest
   - pytest-cov
-  - coveralls
   - pandas
   - ase
   - biopython
@@ -32,5 +29,4 @@ dependencies:
   - rdkit
   - mdanalysis
   - mdtraj
-  - parmed
-  - ambertools
+  - ambertools # have both pytraj and parmed
