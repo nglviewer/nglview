@@ -51,7 +51,6 @@ _EXCLUDED_CALLBACK_AFTER_FIRING = {
 _INIT_VIEWS = {'color_maker_registry': color.ColormakerRegistry}
 _TRACKED_WIDGETS = {}
 
-
 def _deprecated(msg):
     def wrap_1(func):
         def wrap_2(*args, **kwargs):
