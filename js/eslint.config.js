@@ -18,5 +18,5 @@ module.exports = {
   parserOptions: {
     sourceType: 'module',
   },
-  ignorePatterns: ['node_modules', 'dist', 'coverage', '**/*.d.ts', 'tests'],
+  ignorePatterns: ['node_modules', 'dist', 'coverage', '**/*.d.ts'],
 };
