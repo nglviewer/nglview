@@ -74,7 +74,7 @@
     "@typescript-eslint/parser": "^4.8.1",
     "babel-register": "^6.11.6",
     "css-loader": "^0.23.1",
-    "eslint": "^7.14.0",
+    "eslint": "^9.5",
     "file-loader": "^1.1.6",
     "json-loader": "^0.5.4",
     "mkdirp": "^1.0.3",
@@ -101,7 +101,7 @@
       }
     },
     "_build": {
-      "load": "static/remoteEntry.4aa080b2a45dbecd0a13.js",
+      "load": "static/remoteEntry.f4db6c940369d14cf844.js",
       "extension": "./extension",
       "style": "./style"
     }
