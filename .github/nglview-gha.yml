@@ -4,7 +4,6 @@ channels:
   - conda-forge
 
 dependencies:
-  - pip
   - jupyter-packaging
   - qcelemental
   - traitlets
@@ -20,7 +19,6 @@ dependencies:
   - ase
   - biopython
   - pymatgen
-  - simpletraj
   - matplotlib
   - moviepy
   - imageio
@@ -30,3 +28,8 @@ dependencies:
   - mdanalysis
   - mdtraj
   - ambertools # have both pytraj and parmed
+  - pip
+  - pip:
+    - simpletraj
+
+

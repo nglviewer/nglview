@@ -83,7 +83,7 @@
     "prettier": "^2.1.1",
     "rimraf": "^3.0.2",
     "style-loader": "^0.13.1",
-    "typescript": "~4.1.3",
+    "typescript": "~5.4.5",
     "webpack": "^3.12.0"
   },
   "sideEffects": [
@@ -101,7 +101,7 @@
       }
     },
     "_build": {
-      "load": "static/remoteEntry.21d0885d0060a84340da.js",
+      "load": "static/remoteEntry.4aa080b2a45dbecd0a13.js",
       "extension": "./extension",
       "style": "./style"
     }
