@@ -803,28 +803,25 @@ class NGLView extends widgets.DOMWidgetView{
         shapeComp.addRepresentation("buffer");
     }
 
-    async replaceStructure(structure){
-         var blob = new Blob([structure.data], {type: "text/plain"});
-         var stage = this.stage
-         var params = structure.params || {};
-         params.ext = structure.ext;
-         params.defaultRepresentation = false;
-         var comp = this.stage.compList[0];
-         var representations = comp.reprList.slice();
-         var old_orientation = this.stage.viewerControls.getOrientation();
-         var component = await this.stage.loadFile(blob, params)
-         stage.viewerControls.orient(old_orientation);
-         representations.forEach(function(repr) {
-             var repr_name = repr.name;
-             var repr_params = repr.repr.getParameters();
-             // Note: not using repr.repr.type, repr.repr.params
-             // since seems to me that repr.repr.params won't return correct "sele"
-             component.addRepresentation(repr_name, repr_params);
-         });
-         stage.removeComponent(comp);
-         this._handleLoadFileFinished();
-    }
+    async replaceStructure(structure) {
+        const { data, params = {}, ext } = structure;
+        const blob = new Blob([data], { type: "text/plain" });
+        const { compList, viewerControls } = this.stage;
+        const [comp] = compList;
+        const representations = comp.reprList.slice();
+        const oldOrientation = viewerControls.getOrientation();
 
+        const component = await this.stage.loadFile(blob, { ...params, ext, defaultRepresentation: false });
+
+        viewerControls.orient(oldOrientation);
+
+        representations.forEach(({ name, repr }) =>
+            component.addRepresentation(name, repr.getParameters())
+        );
+
+        this.stage.removeComponent(comp);
+        this._handleLoadFileFinished();
+    }
     superpose(cindex0, cindex1, align, sele0, sele1) {
         // superpose two components with given params
         var component0 = this.stage.compList[cindex0];
