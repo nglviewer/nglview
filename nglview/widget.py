@@ -1,9 +1,11 @@
 import base64
 from enum import Enum
+import io
 import json
 import re
 import threading
 import time
+from typing import Union
 import uuid
 from logging import getLogger
 
@@ -76,7 +78,8 @@ class MessageType(Enum):
     IMAGE_DATA = 'image_data'
 
 
-def write_html(fp, views, frame_range=None):
+
+def write_html(fp: Union[str, 'io.TextIOWrapper'], views: Union['DOMWidget', List['DOMWidget']], frame_range=None):
     """EXPERIMENTAL. Likely will be changed.
 
     Make html file to display a list of views. For further options, please
@@ -96,40 +99,33 @@ def write_html(fp, views, frame_range=None):
     >>> nglview.write_html('index.html', [view]) # doctest: +SKIP
     >>> nglview.write_html('index.html', [view], frame_range=(0, 5)) # doctest: +SKIP
     """
-    views = isinstance(views, DOMWidget) and [views] or views
+    views = [views] if isinstance(views, DOMWidget) else views
+    views = list(_INIT_VIEWS.values()) + views
 
-    for _, v in _INIT_VIEWS.items():
-        views.insert(0, v)
-
-    def _set_serialization(views):
+    def _apply_to_views(views, method_name):
         for view in views:
-            if hasattr(view, '_set_serialization'):
-                view._set_serialization(frame_range=frame_range)
+            if hasattr(view, method_name):
+                getattr(view, method_name)(frame_range=frame_range)
             elif isinstance(view, Box):
-                _set_serialization(view.children)
+                _apply_to_views(view.children, method_name)
 
-    def _unset_serialization(views):
-        for view in views:
-            if hasattr(view, '_unset_serialization'):
-                view._unset_serialization()
-            elif isinstance(view, Box):
-                _unset_serialization(view.children)
+    _apply_to_views(views, '_set_serialization')
 
-    _set_serialization(views)
-    # FIXME: allow add jquery-ui link?
-    snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
-    snippet += '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">\n'
-    snippet += embed.embed_snippet(views)
+    snippet = '\n'.join([
+        '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">',
+        '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">',
+        embed.embed_snippet(views)
+    ])
+
     # hacky thing for https://github.com/nglviewer/nglview/issues/1107
     # NGL must be fixed before we can remove this hack
     _frontend = {'__frontend_version__': __frontend_version__}
     pattern = r'("model_module":\s*"nglview-js-widgets",\s*"model_module_version":\s*)"' + re.escape(_frontend['__frontend_version__']) + '",'
     replacement = r'\g<1>"3.0.8",'
     snippet = re.sub(pattern, replacement, snippet)
-    html_code = embed.html_template.format(title='nglview-demo',
-                                           snippet=snippet)
 
-    # from ipywidgets
+    html_code = embed.html_template.format(title='nglview-demo', snippet=snippet)
+
     # Check if fp is writable:
     if hasattr(fp, 'write'):
         fp.write(html_code)
@@ -138,7 +134,7 @@ def write_html(fp, views, frame_range=None):
         with open(fp, "w") as f:
             f.write(html_code)
 
-    _unset_serialization(views)
+    _apply_to_views(views, '_unset_serialization')
 
 
 class NGLWidget(DOMWidget):
@@ -202,6 +198,9 @@ class NGLWidget(DOMWidget):
     picked = Dict().tag(sync=True)
     _parameters = Dict().tag(sync=False)
     _coordinates_dict = Dict().tag(sync=False)
+
+    message_types = Dict({item.name: item.value for item in MessageType}).tag(sync=True)
+
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super().__init__(**kwargs)
