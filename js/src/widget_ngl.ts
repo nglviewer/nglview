@@ -293,50 +293,65 @@ export
 
     handlePicking() {
         this.$pickingInfo = $("<div></div>")
-            .css("position", "absolute")
-            .css("top", "5%")
-            .css("left", "3%")
-            .css("background-color", "white")
-            .css("padding", "2px 5px 2px 5px")
-            .css("opacity", "0.7")
+            .css({
+                position: "absolute",
+                top: "5%",
+                left: "3%",
+                backgroundColor: "white",
+                padding: "2px 5px",
+                opacity: "0.7"
+            })
             .appendTo(this.$container);
 
-        var that = this;
-        this.stage.signals.clicked.add(function (pd) {
+        this.stage.signals.clicked.add((pd) => {
             if (pd) {
                 this.model.set('picked', {}); //refresh signal
                 this.touch();
 
-                var pd2 = {} as any;
-                var pickingText = "";
-                if (pd.atom) {
-                    pd2.atom1 = pd.atom.toObject();
-                    pd2.atom1.name = pd.atom.qualifiedName();
-                    pickingText = "Atom: " + pd2.atom1.name;
-                } else if (pd.bond) {
-                    pd2.bond = pd.bond.toObject();
-                    pd2.atom1 = pd.bond.atom1.toObject();
-                    pd2.atom1.name = pd.bond.atom1.qualifiedName();
-                    pd2.atom2 = pd.bond.atom2.toObject();
-                    pd2.atom2.name = pd.bond.atom2.qualifiedName();
-                    pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
-                }
-                if (pd.instance) pd2.instance = pd.instance;
-
-                var n_components = this.stage.compList.length;
-                for (var i = 0; i < n_components; i++) {
-                    var comp = this.stage.compList[i];
-                    if (comp.uuid == pd.component.uuid) {
-                        pd2.component = i;
-                    }
-                }
+                const pd2 = this.getPickingData(pd);
+                const pickingText = this.getPickingText(pd, pd2);
 
                 this.model.set('picked', pd2);
                 this.touch();
 
                 this.$pickingInfo.text(pickingText);
             }
-        }, this);
+        });
+    }
+
+    getPickingData(pd) {
+        const pd2 = {} as any;
+        if (pd.atom) {
+            pd2.atom1 = pd.atom.toObject();
+            pd2.atom1.name = pd.atom.qualifiedName();
+        } else if (pd.bond) {
+            pd2.bond = pd.bond.toObject();
+            pd2.atom1 = pd.bond.atom1.toObject();
+            pd2.atom1.name = pd.bond.atom1.qualifiedName();
+            pd2.atom2 = pd.bond.atom2.toObject();
+            pd2.atom2.name = pd.bond.atom2.qualifiedName();
+        }
+        if (pd.instance) pd2.instance = pd.instance;
+
+        const n_components = this.stage.compList.length;
+        for (let i = 0; i < n_components; i++) {
+            const comp = this.stage.compList[i];
+            if (comp.uuid == pd.component.uuid) {
+                pd2.component = i;
+            }
+        }
+
+        return pd2;
+    }
+
+    getPickingText(pd, pd2) {
+        let pickingText = "";
+        if (pd.atom) {
+            pickingText = "Atom: " + pd2.atom1.name;
+        } else if (pd.bond) {
+            pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
+        }
+        return pickingText;
     }
 
     async mouseOverDisplay(type) {
