@@ -128,7 +128,6 @@ def write_html(fp, views, frame_range=None):
     _unset_serialization(views)
 
 
-
 class NGLWidget(DOMWidget):
     # Basic widget info
     _view_name = Unicode("NGLView").tag(sync=True)
@@ -288,21 +287,23 @@ class NGLWidget(DOMWidget):
     def _set_serialization(self, frame_range=None):
         self._ngl_serialize = True
         resource = self._ngl_coordinate_resource
+
         if frame_range is not None:
             for t_index, traj in enumerate(self._trajlist):
-                resource[t_index] = []
-                for f_index in range(*frame_range):
-                    if f_index < traj.n_frames:
-                        resource[t_index].append(
-                            encode_base64(traj.get_coordinates(f_index)))
-                    else:
-                        resource[t_index].append(
-                            encode_base64(np.empty((0), dtype='f4')))
+                resource[t_index] = self._encode_trajectory(traj, frame_range)
             resource['n_frames'] = len(resource[0])
 
         self._ngl_coordinate_resource = resource
         self._ngl_color_dict = color._USER_COLOR_DICT.copy()
 
+    def _encode_trajectory(self, traj, frame_range):
+        encoded_traj = []
+        for f_index in range(*frame_range):
+            if f_index < traj.n_frames:
+                encoded_traj.append(encode_base64(traj.get_coordinates(f_index)))
+            else:
+                encoded_traj.append(encode_base64(np.empty((0), dtype='f4')))
+        return encoded_traj
     def _create_player(self):
         player = Play(max=self.max_frame, interval=100)
         slider = IntSlider(max=self.max_frame)
