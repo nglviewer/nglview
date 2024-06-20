@@ -753,11 +753,9 @@ class NGLView extends widgets.DOMWidgetView{
         repr.setColor(schemeId);
     }
 
-    addShape(name, shapes) {
-        // shapes: List[Tuple[str, ...]]
-        // e.g: [('sphere', ...), ('cone', ...)]
-        var shape = new NGL.Shape(name);
-        var shape_dict = {
+    addShape(name: string, shapes: any[]) {
+        const shape = new NGL.Shape(name);
+        const shapeDict = {
             'sphere': shape.addSphere,
             'ellipsoid': shape.addEllipsoid,
             'cylinder': shape.addCylinder,
@@ -770,18 +768,13 @@ class NGLView extends widgets.DOMWidgetView{
             'octahedron': shape.addOctahedron,
             'torus': shape.addTorus
         };
-        for (var i = 0; i < shapes.length; i++) {
-            var shapes_i = shapes[i]
-            var shape_type = shapes_i[0];
-            var params = shapes_i.slice(1, shapes_i.length);
-            // e.g params = ('sphere', [ 0, 0, 9 ], [ 1, 0, 0 ], 1.5)
 
-            var func = shape_dict[shape_type];
+        shapes.forEach(([shapeType, ...params]) => {
+            const func = shapeDict[shapeType];
             func.apply(shape, params);
-            // shape.func(params);
-        }
-        var shapeComp = this.stage.addComponentFromObject(shape);
-        shapeComp.addRepresentation("buffer");
+        });
+
+        const shapeComp = this.stage.addComponentFromObject(shape);
     }
 
     addBuffer(name, kwargs){
