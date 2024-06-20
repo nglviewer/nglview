@@ -16,12 +16,6 @@ from jupyter_packaging import (
     create_cmdclass,
 )
 
-import versioneer
-from versioneer import get_cmdclass
-
-sdist = get_cmdclass()['sdist']
-build_py = get_cmdclass()['build_py']
-
 here = os.path.dirname(os.path.abspath(__file__))
 node_root = os.path.join(here, 'js')
 is_repo = os.path.exists(os.path.join(here, '.git'))
@@ -151,14 +145,12 @@ cmdclass = create_cmdclass("jsdeps",
     data_files_spec=data_files_spec
 )
 cmdclass['jsdeps'] = NPM
-cmdclass['version'] = get_cmdclass()['version']
-cmdclass['build_py'] = js_prerelease(build_py)
-cmdclass['sdist'] = js_prerelease(sdist, strict=True)
 cmdclass['egg_info'] = js_prerelease(egg_info)
 
 setup_args = {
     'name': 'nglview',
-    'version': versioneer.get_version(),
+    "use_scm_version": True,
+    "setup_requires": ['setuptools_scm'],
     'description': 'IPython widget to interactively view molecular structures and trajectories.',
     'include_package_data': True,
     'license': "MIT",
@@ -196,7 +188,7 @@ setup_args = {
         "htmd": ["htmd"],
         "qcelemental": ["qcelemental"],
     },
-    'packages': set(find_packages() + 
+    'packages': set(find_packages() +
                 ['nglview',
                  'nglview.static',
                  'nglview.staticlab',
