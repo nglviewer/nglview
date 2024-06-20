@@ -803,7 +803,7 @@ class NGLView extends widgets.DOMWidgetView{
         shapeComp.addRepresentation("buffer");
     }
 
-    async g(structure) {
+    async replaceStructure(structure) {
         const { data, params = {}, ext } = structure;
         const blob = new Blob([data], { type: "text/plain" });
         const { compList, viewerControls } = this.stage;
