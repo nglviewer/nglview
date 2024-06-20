@@ -130,62 +130,66 @@ def write_html(fp, views, frame_range=None):
 
 
 class NGLWidget(DOMWidget):
+    # Basic widget info
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_name = Unicode("NGLModel").tag(sync=True)
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+
+    # NGL specific attributes
     _ngl_version = Unicode().tag(sync=True)
-    # _model_name = Unicode("NGLView").tag(sync=True)
-    # _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _image_data = Unicode().tag(sync=False)
-    # use Integer here, because mdtraj uses a long datatype here on Python-2.7
-    frame = Integer().tag(sync=True)
-    max_frame = Int(0).tag(sync=True)
-    background = Unicode('white').tag(sync=True)
-    loaded = Bool(False).tag(sync=False)
-    picked = Dict().tag(sync=True)
-    n_components = Int(0).tag(sync=True)
-    _view_width = Unicode().tag(sync=True) # px
-    _view_height = Unicode().tag(sync=True) # px
-    _scene_position = Dict().tag(sync=True)
-    _scene_rotation = Dict().tag(sync=True)
-    # hack to always display movie
-    # TODO: remove _parameters?
-    _parameters = Dict().tag(sync=False)
     _ngl_full_stage_parameters = Dict().tag(sync=True)
     _ngl_original_stage_parameters = Dict().tag(sync=True)
-    _coordinates_dict = Dict().tag(sync=False)
-    _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
-                                  default_value='orthographic').tag(sync=True)
-    _camera_orientation = List().tag(sync=True)
-    _synced_model_ids = List().tag(sync=True)
-    _synced_repr_model_ids = List().tag(sync=True)
     _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
     _ngl_msg = None
+    _ngl_serialize = Bool(False).tag(sync=True)
+    _ngl_msg_archive = List().tag(sync=True)
+    _ngl_coordinate_resource = Dict().tag(sync=True)
+    _ngl_color_dict = Dict().tag(sync=True)
+
+    # Frame and component info
+    frame = Integer().tag(sync=True)
+    max_frame = Int(0).tag(sync=True)
+    n_components = Int(0).tag(sync=True)
+
+    # View and scene attributes
+    background = Unicode('white').tag(sync=True)
+    _view_width = Unicode().tag(sync=True) # px
+    _view_height = Unicode().tag(sync=True) # px
+    _scene_position = Dict().tag(sync=True)
+    _scene_rotation = Dict().tag(sync=True)
+    _camera_str = CaselessStrEnum(['perspective', 'orthographic'], default_value='orthographic').tag(sync=True)
+    _camera_orientation = List().tag(sync=True)
+
+    # Sync and representation info
+    _synced_model_ids = List().tag(sync=True)
+    _synced_repr_model_ids = List().tag(sync=True)
+    _representations = List().tag(sync=False)
+
+    # GUI and player attributes
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
     _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
     _widget_theme = None
-    _ngl_serialize = Bool(False).tag(sync=True)
-    _ngl_msg_archive = List().tag(sync=True)
-    _ngl_coordinate_resource = Dict().tag(sync=True)
-    _representations = List().tag(sync=False)
-    _ngl_color_dict = Dict().tag(sync=True)
     _player_dict = Dict().tag(sync=True)
 
-    # instance
-    _iplayer = Instance(widgets.Box,
-                        allow_none=True).tag(sync=True, **widget_serialization)
-    _igui = Instance(widgets.Tab,
-                     allow_none=True).tag(sync=True, **widget_serialization)
-    _ibtn_fullscreen = Instance(widgets.Button,
-            allow_none=True).tag(sync=True, **widget_serialization)
+    # Instance attributes
+    _iplayer = Instance(widgets.Box, allow_none=True).tag(sync=True, **widget_serialization)
+    _igui = Instance(widgets.Tab, allow_none=True).tag(sync=True, **widget_serialization)
+    _ibtn_fullscreen = Instance(widgets.Button, allow_none=True).tag(sync=True, **widget_serialization)
+
+    # Other attributes
+    loaded = Bool(False).tag(sync=False)
+    picked = Dict().tag(sync=True)
+    _parameters = Dict().tag(sync=False)
+    _coordinates_dict = Dict().tag(sync=False)
 
     def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super().__init__(**kwargs)
