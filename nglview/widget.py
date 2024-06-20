@@ -114,7 +114,7 @@ def write_html(fp, views, frame_range=None):
     # hacky thing for https://github.com/nglviewer/nglview/issues/1107
     # NGL must be fixed before we can remove this hack
     _frontend = {'__frontend_version__': __frontend_version__}
-    pattern = r'("model_name":\s*"NGLModel",\s*"model_module":\s*"nglview-js-widgets",\s*"model_module_version":\s*)"' + re.escape(_frontend['__frontend_version__']) + '",'
+    pattern = r'("model_module":\s*"nglview-js-widgets",\s*"model_module_version":\s*)"' + re.escape(_frontend['__frontend_version__']) + '",'
     replacement = r'\g<1>"3.0.8",'
     snippet = re.sub(pattern, replacement, snippet)
     html_code = embed.html_template.format(title='nglview-demo',
