@@ -749,36 +749,34 @@ class NGLWidget(DOMWidget):
         return RepresentationControl(self, component, repr_index, name=name)
 
     def _set_coordinates(self, index, movie_making=False, render_params=None):
-        # FIXME: use movie_making here seems awkward.
-        '''update coordinates for all trajectories at index-th frame
-        '''
+        '''update coordinates for all trajectories at index-th frame'''
         render_params = render_params or {}
         if self._trajlist:
-            coordinates_dict = {}
-            for trajectory in self._trajlist:
-                traj_index = self._ngl_component_ids.index(trajectory.id)
-
-                try:
-                    if trajectory.shown:
-                        if self.player.interpolate:
-                            t = self.player.iparams.get('t', 0.5)
-                            step = self.player.iparams.get('step', 1)
-                            coordinates_dict[traj_index] = interpolate.linear(
-                                index, t=t, traj=trajectory, step=step)
-                        else:
-                            coordinates_dict[
-                                traj_index] = trajectory.get_coordinates(index)
-                    else:
-                        coordinates_dict[traj_index] = np.empty((0),
-                                                                dtype='f4')
-                except (IndexError, ValueError):
-                    coordinates_dict[traj_index] = np.empty((0), dtype='f4')
-
-            self.set_coordinates(coordinates_dict,
-                    render_params=render_params,
-                    movie_making=movie_making)
+            coordinates_dict = self._get_coordinates_dict(index)
+            self.set_coordinates(coordinates_dict, render_params=render_params, movie_making=movie_making)
         else:
             print("no trajectory available")
+
+    def _get_coordinates_dict(self, index):
+        coordinates_dict = {}
+        for trajectory in self._trajlist:
+            traj_index = self._ngl_component_ids.index(trajectory.id)
+            coordinates_dict[traj_index] = self._get_trajectory_coordinates(trajectory, index, traj_index)
+        return coordinates_dict
+
+    def _get_trajectory_coordinates(self, trajectory, index, traj_index):
+        try:
+            if trajectory.shown:
+                if self.player.interpolate:
+                    t = self.player.iparams.get('t', 0.5)
+                    step = self.player.iparams.get('step', 1)
+                    return interpolate.linear(index, t=t, traj=trajectory, step=step)
+                else:
+                    return trajectory.get_coordinates(index)
+            else:
+                return np.empty((0), dtype='f4')
+        except (IndexError, ValueError):
+            return np.empty((0), dtype='f4')
 
     def set_coordinates(self, arr_dict, movie_making=False,
             render_params=None):
