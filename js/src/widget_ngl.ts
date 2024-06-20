@@ -484,10 +484,10 @@ export
         this.touch();
     }
 
-    requestReprParameters(component_index, repr_index) {
-        var comp = this.stage.compList[component_index];
-        var repr = comp.reprList[repr_index];
-        var msg = repr.repr.getParameters();
+    requestReprParameters(componentIndex, reprIndex) {
+        const comp = this.stage.compList[componentIndex];
+        const repr = comp.reprList[reprIndex];
+        const msg = repr.repr.getParameters();
 
         if (msg) {
             msg['name'] = repr.name;
@@ -498,96 +498,97 @@ export
         }
     }
 
-    request_repr_dict() {
-        var repr_dict = this.getReprDictFrontEnd()
+    async getModelAndView(mid) {
+        const model = await this.model.widget_manager.get_model(mid);
+        for (const k in model.views) {
+            const view = await model.views[k];
+            if (view.uuid != this.uuid) {
+                return view;
+            }
+        }
+        return null;
+    }
+
+    async updateRepresentationForModels(modelIds, reprDict) {
+        for (const mid of modelIds) {
+            const view = await this.getModelAndView(mid);
+            if (view) {
+                view._set_representation_from_repr_dict(reprDict);
+            }
+        }
+    }
+
+    async request_repr_dict() {
+        const repr_dict = this.getReprDictFrontEnd();
         this.send({
-            // make sure we are using "request_repr_dict" name
-            // in backend too.
             'type': 'request_repr_dict',
             'data': repr_dict,
         });
-        var that = this
-        if (that._synced_repr_model_ids.length > 0) {
-            that._synced_repr_model_ids.forEach(async function (mid) {
-                var model = await that.model.widget_manager.get_model(mid)
-                for (var k in model.views) {
-                    var view = await model.views[k];
-                    // not sync with itself
-                    if (view.uuid != that.uuid) {
-                        view._set_representation_from_repr_dict(repr_dict)
-                    }
-                }
-            })
+
+        if (this._synced_repr_model_ids.length > 0) {
+            await this.updateRepresentationForModels(this._synced_repr_model_ids, repr_dict);
         }
     }
 
     getReprDictFrontEnd() {
-        var repr_dict = {};
-        var n_components = this.stage.compList.length;
-        for (var i = 0; i < n_components; i++) {
-            var comp = this.stage.compList[i];
+        const repr_dict = {};
+        const n_components = this.stage.compList.length;
+        for (let i = 0; i < n_components; i++) {
+            const comp = this.stage.compList[i];
             repr_dict[i] = {};
-            var msgi = repr_dict[i];
-            for (var j = 0; j < comp.reprList.length; j++) {
-                var repr = comp.reprList[j];
+            const msgi = repr_dict[i];
+            for (let j = 0; j < comp.reprList.length; j++) {
+                const repr = comp.reprList[j];
                 msgi[j] = {};
                 msgi[j]['type'] = repr.name;
                 msgi[j]['params'] = repr.repr.getParameters();
             }
         }
-        return repr_dict
+        return repr_dict;
     }
 
     syncReprForAllViews() {
-        var repr_dict_backend = this.model.get("_ngl_repr_dict")
-        var repr_dict_frontend = this.getReprDictFrontEnd()
+        const repr_dict_backend = this.model.get("_ngl_repr_dict");
+        const repr_dict_frontend = this.getReprDictFrontEnd();
         if (JSON.stringify(repr_dict_frontend) !== JSON.stringify(repr_dict_backend)) {
-            this._set_representation_from_repr_dict(repr_dict_backend)
+            this._set_representation_from_repr_dict(repr_dict_backend);
         }
     }
 
     async syncReprWithMe() {
-        // Make sure views of the same model has the same representations
-        // Only needed if we use Sidebar that connects to specific view.
-        var that = this
-        var repr_dict = this.getReprDictFrontEnd()
-        for (var k in this.model.views) {
-            var v = await this.model.views[k]
-            if (v.uuid != that.uuid) {
-                v._set_representation_from_repr_dict(repr_dict)
-            }
-        }
-        this.request_repr_dict()
+        const repr_dict = this.getReprDictFrontEnd();
+        await this.updateRepresentationForModels(Object.keys(this.model.views), repr_dict);
+        this.request_repr_dict();
     }
 
     setSyncRepr(model_ids) {
-        this._synced_repr_model_ids = model_ids
+        this._synced_repr_model_ids = model_ids;
     }
 
     setSyncCamera(model_ids) {
-        this._synced_model_ids = model_ids
+        this._synced_model_ids = model_ids;
     }
 
     viewXZPlane() {
-        var m = new NGL.Matrix4().makeRotationX(Math.PI / 2);
-        var q = new NGL.Quaternion().setFromRotationMatrix(m);
+        const m = new NGL.Matrix4().makeRotationX(Math.PI / 2);
+        const q = new NGL.Quaternion().setFromRotationMatrix(m);
         this.stage.viewerControls.rotate(q);
     }
 
     set_representation_from_backend() {
-        var repr_dict = this.model.get('_ngl_repr_dict')
-        this._set_representation_from_repr_dict(repr_dict)
+        const repr_dict = this.model.get('_ngl_repr_dict');
+        this._set_representation_from_repr_dict(repr_dict);
     }
 
     _set_representation_from_repr_dict(repr_dict) {
-        var compList = this.stage.compList
+        const compList = this.stage.compList;
         if (compList.length > 0) {
-            for (var index in repr_dict) {
-                var comp = compList[index];
+            for (const index in repr_dict) {
+                const comp = compList[index];
                 comp.removeAllRepresentations();
-                var reprlist = repr_dict[index];
-                for (var j in reprlist) {
-                    var repr = reprlist[j];
+                const reprlist = repr_dict[index];
+                for (const j in reprlist) {
+                    const repr = reprlist[j];
                     if (repr) {
                         comp.addRepresentation(repr.type, repr.params);
                     }
