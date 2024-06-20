@@ -934,16 +934,19 @@ render() {
 
     async processBlob(blob, type, wid = null) {
         const reader = new FileReader();
-        reader.onload = function () {
-            const arr_str = (reader.result as string).replace("data:image/png;base64,", "");
-            this.send({
-                "data": arr_str,
-                "type": type,
-                "ID": wid,
-            });
-            this.send({ 'type': 'async_message', 'data': 'ok' });
-        }.bind(this);
-        reader.readAsDataURL(blob);
+        const dataUrlPromise = new Promise((resolve, reject) => {
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+        const dataUrl = await dataUrlPromise as string;
+        const arr_str = dataUrl.replace("data:image/png;base64,", "");
+        this.send({
+            "data": arr_str,
+            "type": type,
+            "ID": wid,
+        });
+        this.send({ 'type': 'async_message', 'data': 'ok' });
     }
 
 
