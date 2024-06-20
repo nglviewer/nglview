@@ -741,16 +741,17 @@ class NGLView extends widgets.DOMWidgetView{
             }
         }
     }
-    setColorByResidue(colors, component_index, repr_index){
-        var repr = this.stage.compList[component_index].reprList[repr_index];
-        var schemeId = NGL.ColormakerRegistry.addScheme(function(params){
+
+    setColorByResidue(colors, componentIndex, reprIndex){
+        const repr = this.stage.compList[componentIndex]?.reprList[reprIndex];
+        const schemeId = NGL.ColormakerRegistry.addScheme(function(params){
             this.atomColor = function(atom){
-                 var color = colors[atom.residueIndex];
-                 return color
+                const color = colors[atom.residueIndex];
+                return color;
             };
             params; // to pass eslint; ack;
         });
-        repr.setColor(schemeId);
+        repr?.setColor(schemeId);
     }
 
     addShape(name: string, shapes: any[]) {
