@@ -44,6 +44,14 @@ function generateUUID () {
   return uuid.join('')
 }
 
+enum Targets {
+    Stage = 'Stage',
+    Viewer = 'Viewer',
+    ViewerControls = 'viewerControls',
+    CompList = 'compList',
+    Widget = 'Widget',
+    Representation = 'Representation'
+}
 
 async function createView(that, trait_name){
     // Create a view for the model with given `trait_name`
@@ -1093,22 +1101,22 @@ class NGLView extends widgets.DOMWidgetView{
         this.handleColor(msg, new_args);
 
         switch (msg.target) {
-            case 'Stage':
+            case Targets.Stage:
                 this.handleStageTarget(msg, new_args);
                 break;
-            case 'Viewer':
+            case Targets.Viewer:
                 this.handleViewerTarget(msg, new_args);
                 break;
-            case 'viewerControls':
+            case Targets.ViewerControls:
                 this.handleViewerControlsTarget(msg, new_args);
                 break;
-            case 'compList':
+            case Targets.CompList:
                 this.handleCompListTarget(msg, new_args);
                 break;
-            case 'Widget':
+            case Targets.Widget:
                 this.handleWidgetTarget(msg, new_args);
                 break;
-            case 'Representation':
+            case Targets.Representation:
                 this.handleRepresentationTarget(msg, new_args);
                 break;
             default:
