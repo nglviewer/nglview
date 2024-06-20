@@ -130,9 +130,39 @@ class MovieMaker:
     def sleep(self):
         time.sleep(self.timeout)
 
+    def _set_frame_and_hook(self, frame):
+        """Set frame and hook for the view."""
+        self.view.frame = frame
+        time.sleep(self.timeout)
+        self.perframe_hook(self.view)
+        time.sleep(self.timeout)
+        self.view._set_coordinates(
+            frame, movie_making=True, render_params=self.render_params)
+
+    def _handle_msg(self, widget, msg, buffers, image_array, iframe, movie, keep_data):
+        """Handle messages from the view."""
+        if msg['type'] == 'movie_image_data':
+            image_array.append(msg.get('data'))
+            try:
+                frame = next(iframe)
+                self.perframe_hook and self._set_frame_and_hook(frame)
+                self._progress.value = frame
+            except StopIteration:
+                if movie:
+                    self._progress.description = 'Making movie...'
+                    with self._woutput:
+                        # suppress moviepy's log
+                        self._make_from_array(image_array)
+                    if not os.path.exists(self.output):
+                        self._progress.description = "ERROR: Check the maker's log"
+                    else:
+                        self._progress.description = 'Done'
+                self._remove_on_msg()
+                if keep_data:
+                    self._image_array = image_array
+
     def make(self, movie=True, keep_data=False):
         """
-
         Parameters
         ----------
         keep_data: bool
@@ -146,47 +176,14 @@ class MovieMaker:
         iframe = iter(self._time_range)
         frame = next(iframe)
 
-        def hook(frame):
-            self.view.frame = frame
-            time.sleep(self.timeout)
-            self.perframe_hook(self.view)
-            time.sleep(self.timeout)
-
         # trigger movie making communication between backend and frontend
-        self.perframe_hook and hook(frame)
-        self.view._set_coordinates(
-            frame, movie_making=True, render_params=self.render_params)
+        self.perframe_hook and self._set_frame_and_hook(frame)
         self._progress.description = 'Rendering ...'
 
-        def on_msg(widget, msg, buffers):
-            if msg['type'] == 'movie_image_data':
-                image_array.append(msg.get('data'))
-                try:
-                    frame = next(iframe)
-                    self.perframe_hook and hook(frame)
-                    self.view._set_coordinates(
-                        frame,
-                        movie_making=True,
-                        render_params=self.render_params)
-                    self._progress.value = frame
-                except StopIteration:
-                    if movie:
-                        self._progress.description = 'Making movie...'
-                        with self._woutput:
-                            # suppress moviepy's log
-                            self._make_from_array(image_array)
-                        if not os.path.exists(self.output):
-                            self._progress.description = "ERROR: Check the maker's log"
-                        else:
-                            self._progress.description = 'Done'
-                    self._remove_on_msg()
-                    if keep_data:
-                        self._image_array = image_array
-
-        self._on_msg = on_msg
+        self._on_msg = lambda widget, msg, buffers: self._handle_msg(widget, msg, buffers, image_array, iframe, movie, keep_data)
         # FIXME: if exception happens, the on_msg callback will be never removed
         # from `self.view`
-        self.view.on_msg(on_msg)
+        self.view.on_msg(self._on_msg)
         return self._progress
 
     def _remove_on_msg(self):
