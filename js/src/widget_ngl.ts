@@ -1139,65 +1139,65 @@ class NGLView extends widgets.DOMWidgetView{
         }
     }
 
-    async handleStageTarget(msg, new_args) {
-        var stage_func = this.stage[msg.methodName];
-        var stage = this.stage;
-        if (msg.methodName == 'screenshot') {
+    private methodHandlers = {
+        'screenshot': (msg) => {
             NGL.screenshot(this.stage.viewer, msg.kwargs);
-        } else if (msg.methodName == 'removeComponent') {
-            var index = msg.args[0];
-            var component = this.stage.compList[index];
+        },
+        'removeComponent': (msg) => {
+            const index = msg.args[0];
+            const component = this.stage.compList[index];
             this.stage.removeComponent(component);
-        } else if (msg.methodName == 'loadFile') {
+        },
+        'loadFile': async (msg) => {
             if (this.model.views.length > 1 && msg.kwargs && msg.kwargs.defaultRepresentation) {
                 // no need to add default representation as all representations
                 // are serialized separately, also it unwantedly sets the orientation
                 msg.kwargs.defaultRepresentation = false
             }
             await this._handleStageLoadFile(msg);
+        }
+    };
+
+    async handleStageTarget(msg, new_args) {
+        const handler = this.methodHandlers[msg.methodName];
+        if (handler) {
+            await handler(msg);
         } else {
-            stage_func.apply(stage, new_args);
+            const stage_func = this.stage[msg.methodName];
+            stage_func.apply(this.stage, new_args);
+        }
+    }
+
+    private applyMethod(target: any, methodName: string, args: any[]) {
+        const func = target[methodName];
+        if (func) {
+            func.apply(target, args);
+        } else {
+            console.log(`Cannot find method ${methodName}`);
         }
     }
 
     handleViewerTarget(msg, new_args) {
-        var viewer = this.stage.viewer;
-        var func = this.stage.viewer[msg.methodName];
-        func.apply(viewer, new_args);
+        this.applyMethod(this.stage.viewer, msg.methodName, new_args);
     }
 
     handleViewerControlsTarget(msg, new_args) {
-        var controls = this.stage.viewerControls;
-        var func = controls[msg.methodName];
-        func.apply(controls, new_args);
+        this.applyMethod(this.stage.viewerControls, msg.methodName, new_args);
     }
 
     handleCompListTarget(msg, new_args) {
-        var index = msg['component_index'];
-        var component = this.stage.compList[index];
-        var func = component[msg.methodName];
-        func.apply(component, new_args);
+        const component = this.stage.compList[msg['component_index']];
+        this.applyMethod(component, msg.methodName, new_args);
     }
 
     handleWidgetTarget(msg, new_args) {
-        var func = this[msg.methodName];
-        if (func) {
-            func.apply(this, new_args);
-        } else {
-            // send error message to Python?
-            console.log('can not create func for ' + msg.methodName);
-        }
+        this.applyMethod(this, msg.methodName, new_args);
     }
 
     handleRepresentationTarget(msg, new_args) {
-        var component_index = msg['component_index'];
-        var repr_index = msg['repr_index'];
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index];
-        var func = repr[msg.methodName];
-        if (repr && func) {
-            func.apply(repr, new_args);
-        }
+        const component = this.stage.compList[msg['component_index']];
+        const repr = component.reprList[msg['repr_index']];
+        this.applyMethod(repr, msg.methodName, new_args);
     }
 }
 
