@@ -1366,35 +1366,43 @@ class NGLWidget(DOMWidget):
                           args=['*', 200],
                           kwargs={'component_index': 1})
         """
-        args = args or []
-        kwargs = kwargs or {}
+        # NOTE: _camelize_dict here?
+        args = [] if args is None else args
+        kwargs = {} if kwargs is None else kwargs
 
-        msg = {
-            'component_index': kwargs.pop('component_index', None),
-            'repr_index': kwargs.pop('repr_index', None),
-            'defaultRepresentation': kwargs.pop('default', None),
-            'target': target,
-            'type': 'call_method',
-            'methodName': method_name,
-            'reconstruc_color_scheme': False,
-            'args': args,
-            'kwargs': kwargs
-        }
+
+        msg = {}
+
+
+        if 'component_index' in kwargs:
+            msg['component_index'] = kwargs.pop('component_index')
+        if 'repr_index' in kwargs:
+            msg['repr_index'] = kwargs.pop('repr_index')
+        if 'default' in kwargs:
+            kwargs['defaultRepresentation'] = kwargs.pop('default')
+
 
         # Color handling
-        color = kwargs.get('color')
-        if isinstance(color, color._ColorScheme):
-            kwargs['color_label'] = color.data['label']
-            kwargs['color'] = color.data['data']
-            msg['reconstruc_color_scheme'] = True
-
+        reconstruc_color_scheme = False
+        if 'color' in kwargs and isinstance(kwargs['color'],
+                                            color._ColorScheme):
+            kwargs['color_label'] = kwargs['color'].data['label']
+            # overite `color`
+            kwargs['color'] = kwargs['color'].data['data']
+            reconstruc_color_scheme = True
         if kwargs.get('colorScheme') == 'volume' and kwargs.get('colorVolume'):
             assert isinstance(kwargs['colorVolume'], ComponentViewer)
             kwargs['colorVolume'] = kwargs['colorVolume']._index
 
+
+        msg['target'] = target
+        msg['type'] = 'call_method'
+        msg['methodName'] = method_name
+        msg['reconstruc_color_scheme'] = reconstruc_color_scheme
+        msg['args'] = args
+        msg['kwargs'] = kwargs
         if other_kwargs:
             msg.update(other_kwargs)
-
         return msg
 
     def _trim_message(self, messages):
