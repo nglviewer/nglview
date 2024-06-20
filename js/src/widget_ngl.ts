@@ -79,76 +79,69 @@ export
 
 export
     class NGLView extends widgets.DOMWidgetView {
-    render() {
-        this.beforeDisplay()
-        this.displayed.then(function () {
-            // move all below code inside 'displayed'
-            // to make sure the NGLView and NGLModel are created
-            this.createStage()
-            this.handlePicking()
-            this.handleSignals()
-            this.handleMessage()
-            this.finalizeDisplay()
-        }.bind(this));
-
-    }
+render() {
+    this.beforeDisplay();
+    this.displayed.then(() => {
+        // move all below code inside 'displayed'
+        // to make sure the NGLView and NGLModel are created
+        this.createStage();
+        this.handlePicking();
+        this.handleSignals();
+        this.handleMessage();
+        this.finalizeDisplay();
+    });
+}
 
     beforeDisplay() {
         this.model.on("change:_parameters", this.parametersChanged, this);
         this.model.on("change:gui_style", this.GUIStyleChanged, this);
         this.model.set('_ngl_version', NGL.Version);
-        this._ngl_focused = 0
-        this.uuid = generateUUID()
-        this.stage_widget = undefined
-        this.comp_uuids = []
+        this._ngl_focused = 0;
+        this.uuid = generateUUID();
+        this.stage_widget = undefined;
+        this.comp_uuids = [];
         this._synced_model_ids = this.model.get("_synced_model_ids");
-        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids")
+        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids");
 
         if (this.isEmbeded()) {
-            // embed mode
-            this._handleEmbedBeforeStage()
+            this._handleEmbedBeforeStage();
         }
     }
 
     createStage() {
-        // init NGL stage
-        var stage_params = {
-            // Shallow copy so that _ngl_full_stage_parameters is not updated yet
-            ...this.model.get("_ngl_full_stage_parameters")
+        const stage_params = {
+            ...this.model.get("_ngl_full_stage_parameters"),
+            backgroundColor: this.model.get("_ngl_full_stage_parameters")?.backgroundColor ?? "white"
         };
-        if (!("backgroundColor" in stage_params)) {
-            stage_params["backgroundColor"] = "white"
-        }
-        NGL.useWorker = false;
-        var view_parent = this.options.parent
-        this.stage = new NGL.Stage(undefined)
-        this.$container = $(this.stage.viewer.container);
-        this.$el.append(this.$container)
-        this.stage.setParameters(stage_params);
-        this.$container = $(this.stage.viewer.container);
-        this.handleResizable()
-        this.ngl_view_id = this.uuid
-        this.touch();
-        var that = this;
-        var width = this.model.get("_view_width") || this.$el.parent().width() + "px";
-        var height = this.model.get("_view_height") || "300px";
-        this.setSize(width, height);
-        this.createFullscreenBtn(); // FIXME: move up?
-        this.createIPlayer(); // FIXME: move up?
-        this.GUIStyleChanged(); // must be called after displaying to get correct width and height
 
-        this.$container.resizable(
-            "option", "maxWidth", this.$el.parent().width()
-        );
+        NGL.useWorker = false;
+        const view_parent = this.options.parent;
+        this.stage = new NGL.Stage(undefined);
+        this.$container = $(this.stage.viewer.container);
+        this.$el.append(this.$container);
+        this.stage.setParameters(stage_params);
+        this.handleResizable();
+        this.ngl_view_id = this.uuid;
+        this.touch();
+
+        const width = this.model.get("_view_width") ?? `${this.$el.parent().width()}px`;
+        const height = this.model.get("_view_height") ?? "300px";
+        this.setSize(width, height);
+        this.createFullscreenBtn();
+        this.createIPlayer();
+        this.GUIStyleChanged();
+
+        this.$container.resizable("option", "maxWidth", this.$el.parent().width());
+
         if (this.isEmbeded()) {
-            console.log("Embed mode for NGLView")
-            that.handleEmbed();
+            console.log("Embed mode for NGLView");
+            this.handleEmbed();
         } else {
             this.requestUpdateStageParameters();
-            if (this.model.views.length == 1) {
+            if (this.model.views.length === 1) {
                 this.serialize_camera_orientation();
             } else {
-                this.set_camera_orientation(that.model.get("_camera_orientation"));
+                this.set_camera_orientation(this.model.get("_camera_orientation"));
             }
         }
     }
