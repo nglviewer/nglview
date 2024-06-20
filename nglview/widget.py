@@ -1264,28 +1264,28 @@ class NGLWidget(DOMWidget):
     def _get_object_blob(self, data_object, kwargs, camelized_kwargs):
         if hasattr(data_object, 'get_structure_string'):
             # nglview.Structure or any object having 'get_structure_string' method
-            blob = data_object.get_structure_string()
+            structure_string = data_object.get_structure_string()
             camelized_kwargs['ext'] = data_object.ext
             is_passing_buffer = True
-            is_binary = False
+            is_binary_data = False
         else:
             # string buffer (open(fn).read())
             file_handler = FileManager(data_object, ext=kwargs.get('ext'), compressed=kwargs.get('compressed'))
-            blob = file_handler.read(force_buffer=True)
+            structure_string = file_handler.read(force_buffer=True)
             is_passing_buffer = True
 
             if file_handler.ext is None and is_passing_buffer:
                 raise ValueError('must provide extension')
 
             camelized_kwargs['ext'] = file_handler.ext
-            is_binary = file_handler.is_binary
+            is_binary_data = file_handler.is_binary
             use_filename = file_handler.use_filename
 
-        if is_binary and not use_filename:
+        if is_binary_data and not use_filename:
             # send base64
-            blob = base64.b64encode(blob).decode('utf8')
+            structure_string = base64.b64encode(structure_string).decode('utf8')
 
-        return 'blob' if is_passing_buffer else 'path', blob, is_binary
+        return 'blob' if is_passing_buffer else 'path', structure_string, is_binary_data
 
     def remove_component(self, c):
         """remove component by its uuid.
