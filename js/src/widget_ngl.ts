@@ -755,25 +755,12 @@ class NGLView extends widgets.DOMWidgetView{
 
     addShape(name: string, shapes: any[]) {
         const shape = new NGL.Shape(name);
-        const shapeDict = {
-            'sphere': shape.addSphere,
-            'ellipsoid': shape.addEllipsoid,
-            'cylinder': shape.addCylinder,
-            'cone': shape.addCone,
-            'mesh': shape.addMesh,
-            'arrow': shape.addArrow,
-            'text': shape.addText,
-            'label': shape.addText,
-            'tetrahedron': shape.addTetrahedron,
-            'octahedron': shape.addOctahedron,
-            'torus': shape.addTorus
-        };
-
         shapes.forEach(([shapeType, ...params]) => {
-            const func = shapeDict[shapeType];
-            func.apply(shape, params);
+            const func = shape[shapeType];
+            if (func && typeof func === 'function') {
+                func.apply(shape, params);
+            }
         });
-
         const shapeComp = this.stage.addComponentFromObject(shape);
     }
 
