@@ -1,6 +1,5 @@
 import base64
 import json
-import re
 import threading
 import time
 import uuid
@@ -111,12 +110,6 @@ def write_html(fp, views, frame_range=None):
     snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
     snippet += '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">\n'
     snippet += embed.embed_snippet(views)
-    # hacky thing for https://github.com/nglviewer/nglview/issues/1107
-    # NGL must be fixed before we can remove this hack
-    _frontend = {'__frontend_version__': __frontend_version__}
-    pattern = r'("model_name":\s*"NGLModel",\s*"model_module":\s*"nglview-js-widgets",\s*"model_module_version":\s*)"' + re.escape(_frontend['__frontend_version__']) + '",'
-    replacement = r'\g<1>"3.0.8",'
-    snippet = re.sub(pattern, replacement, snippet)
     html_code = embed.html_template.format(title='nglview-demo',
                                            snippet=snippet)
 
@@ -339,7 +332,7 @@ class NGLWidget(DOMWidget):
     @camera.setter
     def camera(self, value):
         """
-
+        
         Parameters
         ----------
         value : str, {'perspective', 'orthographic'}
@@ -701,7 +694,7 @@ class NGLWidget(DOMWidget):
 
     def set_representations(self, representations, component=0):
         """
-
+        
         Parameters
         ----------
         representations : list of dict
@@ -847,7 +840,7 @@ class NGLWidget(DOMWidget):
         Notes
         -----
         Supported shape: 'mesh', 'sphere', 'ellipsoid', 'cylinder', 'cone', 'arrow'.
-
+        
         See also
         --------
         {ngl_url}
@@ -990,7 +983,7 @@ class NGLWidget(DOMWidget):
         --------
             # tell NGL to render send image data to notebook.
             view.render_image()
-
+            
             # make sure to call `get_image` method
             view.get_image()
 
@@ -1190,7 +1183,7 @@ class NGLWidget(DOMWidget):
         >>> import nglview
         >>> view = nglview.NGLWidget()
         >>> c = view.add_pdbid('1tsu')
-        >>> # which is equal to
+        >>> # which is equal to 
         >>> # view.add_component('rcsb://1tsu.pdb')
         '''
         return self.add_component(f'rcsb://{pdbid}.pdb', **kwargs)
@@ -1338,7 +1331,7 @@ class NGLWidget(DOMWidget):
                              kwargs=None,
                              **other_kwargs):
         """call NGL's methods from Python.
-
+        
         Parameters
         ----------
         method_name : str
