@@ -941,14 +941,14 @@ class NGLView extends widgets.DOMWidgetView{
     }
 
     async _downloadImage(filename, params) {
-        if (this.ngl_view_id == this.get_last_child_id()){
+        if (this.ngl_view_id == this._getLastChildId()){
             const blob = await this.stage.makeImage(params);
             NGL.download(blob, filename);
         }
     }
 
     async _exportImage(wid, params) {
-        if (this.ngl_view_id == this.get_last_child_id()){
+        if (this.ngl_view_id == this._getLastChildId()){
             const blob = await this.stage.makeImage(params);
             this.processBlob(blob, "image_data", wid);
         }
@@ -956,7 +956,7 @@ class NGLView extends widgets.DOMWidgetView{
 
     async handleMovieMaking(render_params) {
         console.log('handleMovieMaking: render_params', render_params);
-        if (this.ngl_view_id == this.get_last_child_id()){
+        if (this.ngl_view_id == this._getLastChildId()){
             const blob = await this.stage.makeImage(render_params);
             this.processBlob(blob, "movie_image_data");
         }
@@ -1017,14 +1017,14 @@ class NGLView extends widgets.DOMWidgetView{
          }
     }
 
-    get_last_child_id(){
+    _getLastChildId(){
         var keys = this.model.get('_ngl_view_id')
         return keys[keys.length-1]
     }
 
     async _handleStageLoadFile(msg){
         // args = [{'type': ..., 'data': ...}]
-        if (this.ngl_view_id != this.get_last_child_id() && msg.last_child){
+        if (this.ngl_view_id != this._getLastChildId() && msg.last_child){
             return
         }
         var o = await this._getLoadFilePromise(msg)
