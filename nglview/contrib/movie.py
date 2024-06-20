@@ -1,4 +1,5 @@
-from typing import List
+from dataclasses import dataclass, field
+from typing import Any, Callable, Dict, List, Optional
 try:
     import moviepy.editor as mpy
 except ImportError:
@@ -13,17 +14,13 @@ from ipywidgets import Button, Output, IntProgress
 from itertools import tee
 
 
+@dataclass
 class MovieMaker:
-    """ Unstable API
+    """
 
     Parameters
     ----------
     view : NGLWidget
-    download_folder : str or None
-        Folder that stores images. You can not arbitarily set this folder. It must be
-        the download directory of the web browser you are using.
-        If None, $HOME/Downloads/ will be used.
-        NOTE: This is DEPRECATED.
     prefix : str, default 'movie'
         prefix name of rendered image.
     output : str, default 'my_movie.gif'
@@ -33,10 +30,6 @@ class MovieMaker:
         frame per second
     start, stop, step : int, default (0, -1, 1)
         how many frames you want to render.
-    skip_render : bool, default False
-        if True, do not render any frame and uses existings images in `download_folder`
-        for movie making.
-        if False, perform rendering first.
     timeout : a number (second), default 0.1
         The waiting time between rendering two consecutive frames.
         This option should be only used with `perframe_hook` option.
@@ -59,9 +52,8 @@ class MovieMaker:
     >>> traj = pt.load(nv.datafiles.XTC, top=nv.datafiles.PDB)
     >>> view = nv.show_pytraj(traj)
     >>> from nglview.contrib.movie import MovieMaker
-    >>> download_folder = '/Users/xxx/Downloads'
     >>> output = 'my.gif'
-    >>> mov = MovieMaker(view, download_folder=download_folder, output=output)
+    >>> mov = MovieMaker(view, output=output)
     >>> mov.make()
 
     >>> # write avi format
@@ -87,39 +79,23 @@ class MovieMaker:
         conda install freeimage
 
     """
+    view: Any
+    prefix: str = 'movie'
+    output: str = 'my_movie.gif'
+    fps: int = 8
+    start: int = 0
+    stop: int = -1
+    step: int = 1
+    timeout: float = 0.1
+    in_memory: bool = False
+    perframe_hook: Optional[Callable] = None
+    render_params: Dict = field(default_factory=lambda: dict(factor=4, antialias=True, trim=False, transparent=False))
+    moviepy_params: Dict = field(default_factory=dict)
 
-    def __init__(self,
-                 view,
-                 download_folder=None,
-                 prefix='movie',
-                 output='my_movie.gif',
-                 fps=8,
-                 start=0,
-                 stop=-1,
-                 step=1,
-                 skip_render=False,
-                 timeout=0.1,
-                 in_memory=False,
-                 perframe_hook=None,
-                 render_params=None,
-                 moviepy_params=None):
-        if download_folder is None:
-            download_folder = os.getenv('HOME', '') + '/Downloads/'
-        self.view = view
-        self.skip_render = skip_render
-        self.prefix = prefix
-        self.download_folder = download_folder
-        self.timeout = timeout
-        self.fps = fps
-        self.in_memory = in_memory
-        self.render_params = render_params or dict(
-            factor=4, antialias=True, trim=False, transparent=False)
-        self.moviepy_params = moviepy_params or {}
-        self.perframe_hook = perframe_hook
-        self.output = output
-        if stop < 0:
-            stop = self.view.max_frame + 1
-        self._time_range = range(start, stop, step)
+    def __post_init__(self):
+        if self.stop < 0:
+            self.stop = self.view.max_frame + 1
+        self._time_range = range(self.start, self.stop, self.step)
         self._iframe = iter(self._time_range)
         self._progress = IntProgress(max=len(self._time_range) - 1)
         self._woutput = Output()
