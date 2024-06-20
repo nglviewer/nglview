@@ -64,7 +64,6 @@ def _deprecated(msg):
 
 
 def write_html(fp, views, frame_range=None):
-    # type: (str, List[NGLWidget]) -> None
     """EXPERIMENTAL. Likely will be changed.
 
     Make html file to display a list of views. For further options, please
@@ -191,13 +190,14 @@ class NGLWidget(DOMWidget):
     _ibtn_fullscreen = Instance(widgets.Button,
             allow_none=True).tag(sync=True, **widget_serialization)
 
-    def __init__(self,
-                 structure=None,
-                 representations=None,
-                 parameters=None,
-                 **kwargs):
+    def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super().__init__(**kwargs)
+        self._initialize_instance_variables(kwargs)
+        self._initialize_structure(structure, parameters, representations, kwargs)
+        self._initialize_threads()
+        self._initialize_layout(kwargs)
 
+    def _initialize_instance_variables(self, kwargs):
         self._gui = None
         self._init_gui = kwargs.pop('gui', False)
         self._theme = kwargs.pop('theme', 'default')
@@ -211,18 +211,10 @@ class NGLWidget(DOMWidget):
         self.shape = Shape(view=self)
         self.stage = Stage(view=self)
         self.control = ViewerControl(view=self)
-        self._handle_msg_thread = threading.Thread(
-            target=self.on_msg, args=(self._handle_nglview_custom_msg, ))
-        # # register to get data from JS side
-        self._handle_msg_thread.daemon = True
-        self._handle_msg_thread.start()
-        self._remote_call_thread = RemoteCallThread(
-            self,
-            registered_funcs=['loadFile', 'replaceStructure', '_exportImage'])
-        self._remote_call_thread.start()
         self._trajlist = []
         self._ngl_component_ids = []
 
+    def _initialize_structure(self, structure, parameters, representations, kwargs):
         if representations:
             # Must be set here before calling
             # add_trajectory or add_struture
@@ -233,8 +225,7 @@ class NGLWidget(DOMWidget):
             if 'default' in kwargs:
                 kwargs['default_representation'] = kwargs['default']
 
-        autoview = 'center' not in kwargs or ('center' in kwargs
-                                              and kwargs.pop('center'))
+        autoview = 'center' not in kwargs or ('center' in kwargs and kwargs.pop('center'))
         # NOTE: Using `pop` to avoid passing `center` to NGL.
 
         if parameters:
@@ -258,14 +249,21 @@ class NGLWidget(DOMWidget):
             if autoview:
                 self.center()
 
+    def _initialize_threads(self):
+        self._handle_msg_thread = threading.Thread(
+            target=self.on_msg, args=(self._handle_nglview_custom_msg, ))
+        self._handle_msg_thread.daemon = True
+        self._handle_msg_thread.start()
+        self._remote_call_thread = RemoteCallThread(
+            self,
+            registered_funcs=['loadFile', 'replaceStructure', '_exportImage'])
+        self._remote_call_thread.start()
+
+    def _initialize_layout(self, kwargs):
         self.player = TrajectoryPlayer(self)
         self._view_width = kwargs.get('width', '')
         self._view_height = kwargs.get('height', '')
-
-        # Updating only self.layout.{width, height} don't handle
-        # resizing NGL widget properly.
         self._sync_with_layout()
-        # self.layout.width = 'auto'
         self._create_player()
         self._create_ibtn_fullscreen()
 
