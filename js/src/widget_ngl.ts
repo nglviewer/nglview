@@ -612,49 +612,54 @@ export
         return this.model.widget_manager.get_model(model_id)
     }
 
-    async createIPlayer() {
-        this.player_pview = this.createView("_iplayer");
-        const view = await this.player_pview;
+    async createViewAndStyle(viewName, styleObj, onClick = null) {
+        const pview = this.createView(viewName);
+        const view = await pview;
         const pe = view.el;
         pe.style.position = 'absolute';
         pe.style.zIndex = '100';
-        pe.style.bottom = '5%';
-        pe.style.left = '10%';
         pe.style.opacity = '0.7';
+
+        for (const [key, value] of Object.entries(styleObj)) {
+            pe.style[key] = value;
+        }
+
+        if (onClick) {
+            pe.onclick = onClick;
+        }
+
         this.stage.viewer.container.append(view.el);
-        pe.style.display = 'none';
+        return view;
+    }
+
+    async createIPlayer() {
+        await this.createViewAndStyle("_iplayer", {
+            bottom: '5%',
+            left: '10%',
+            display: 'none'
+        });
     }
 
     async createImageBtn() {
-        this.image_btn_pview = this.createView("_ibtn_image");
-        const view = await this.image_btn_pview;
-        const pe = view.el;
-        pe.style.position = 'absolute';
-        pe.style.zIndex = '100';
-        pe.style.top = '5%';
-        pe.style.right = '10%';
-        pe.style.opacity = '0.7';
-        pe.style.width = '35px';
-        this.stage.viewer.container.append(view.el);
+        await this.createViewAndStyle("_ibtn_image", {
+            top: '5%',
+            right: '10%',
+            width: '35px'
+        });
     }
 
     async createFullscreenBtn() {
-        this.btn_pview_fullscreen = this.createView("_ibtn_fullscreen");
-        const view = await this.btn_pview_fullscreen;
-        const pe = view.el;
-        pe.style.position = 'absolute';
-        pe.style.zIndex = '100';
-        pe.style.top = '5%';
-        pe.style.right = '5%';
-        pe.style.opacity = '0.7';
-        pe.style.width = '35px';
-        pe.style.background = 'white';
-        pe.style.opacity = '0.3';
-        pe.style.display = 'none';
-        pe.onclick = () => {
+        const view = await this.createViewAndStyle("_ibtn_fullscreen", {
+            top: '5%',
+            right: '5%',
+            width: '35px',
+            background: 'white',
+            opacity: '0.3',
+            display: 'none'
+        }, () => {
             this.stage.toggleFullscreen();
-        };
-        this.stage.viewer.container.append(view.el);
+        });
+
         this.stage.signals.fullscreenChanged.add((isFullscreen) => {
             if (isFullscreen) {
                 view.model.set("icon", "compress");
@@ -665,15 +670,11 @@ export
     }
 
     async createGUI() {
-        this.pgui_view = this.createView("_igui");
-        const view = await this.pgui_view;
-        const pe = view.el;
-        pe.style.position = 'absolute';
-        pe.style.zIndex = '100';
-        pe.style.top = '5%';
-        pe.style.right = '10%';
-        pe.style.width = '300px';
-        this.stage.viewer.container.append(view.el);
+        await this.createViewAndStyle("_igui", {
+            top: '5%',
+            right: '10%',
+            width: '300px'
+        });
     }
 
 
