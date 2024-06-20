@@ -527,7 +527,7 @@ def test_show_pymatgen():
 def test_show_qcelemental():
     import qcelemental as qcel
 
-    mol = qcel.models.Molecule.from_data("He 0 0 0") 
+    mol = qcel.models.Molecule.from_data("He 0 0 0")
     view = nv.show_qcelemental(mol)
     view
 
@@ -1025,15 +1025,17 @@ def test_write_html(mock_unset):
     display(view)
     fp = StringIO()
 
-    with patch.object(embed, 'embed_snippet') as mock_embed:
+    with patch.object(embed, 'embed_snippet') as mock_embed_snippet:
+        mock_embed_snippet.return_value = 'ok'
         nv.write_html(fp, [view], frame_range=(0, 3))
-        mock_embed.assert_called_with([tm, cm, view])
+        mock_embed_snippet.assert_called_with([tm, cm, view])
     mock_unset.assert_called_with()
     assert len(view._ngl_coordinate_resource[0]) == 3
     assert len(view._ngl_coordinate_resource[1]) == 3
 
     # box
-    with patch.object(embed, 'embed_snippet') as mock_embed:
+    with patch.object(embed, 'embed_snippet') as mock_embed_snippet:
+        mock_embed_snippet.return_value = 'ok'
         nv.write_html(fp, [HBox([view])], frame_range=(0, 3))
         # FIXME: assertion?
 
