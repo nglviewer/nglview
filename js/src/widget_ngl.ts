@@ -803,7 +803,7 @@ class NGLView extends widgets.DOMWidgetView{
         shapeComp.addRepresentation("buffer");
     }
 
-    async replaceStructure(structure) {
+    async g(structure) {
         const { data, params = {}, ext } = structure;
         const blob = new Blob([data], { type: "text/plain" });
         const { compList, viewerControls } = this.stage;
@@ -942,49 +942,38 @@ class NGLView extends widgets.DOMWidgetView{
 
     async _downloadImage(filename, params) {
         if (this.ngl_view_id == this.get_last_child_id()){
-            var blob = await this.stage.makeImage(params)
+            const blob = await this.stage.makeImage(params);
             NGL.download(blob, filename);
         }
     }
 
     async _exportImage(wid, params) {
         if (this.ngl_view_id == this.get_last_child_id()){
-            var blob = await this.stage.makeImage(params)
-                var reader = new FileReader();
-                var arr_str;
-                reader.onload = function() {
-                    arr_str = (reader.result as string).replace("data:image/png;base64,", "");
-                    // this.model.set("_image_data", arr_str);
-                    // this.touch();
-                    this.send({
-                        "data": arr_str,
-                        "type": "image_data",
-                        "ID": wid,
-                    });
-                    this.send({'type': 'async_message', 'data': 'ok'});
-                }.bind(this);
-                reader.readAsDataURL(blob);
-    }}
+            const blob = await this.stage.makeImage(params);
+            this.processBlob(blob, "image_data", wid);
+        }
+    }
 
     async handleMovieMaking(render_params) {
-        console.log('handleMovieMaking: render_params', render_params)
+        console.log('handleMovieMaking: render_params', render_params);
         if (this.ngl_view_id == this.get_last_child_id()){
-            var blob = await this.stage.makeImage(render_params)
-            var reader = new FileReader();
-            var arr_str;
-            reader.onload = function() {
-                arr_str = (reader.result as string).replace("data:image/png;base64,", "");
-                // this.model.set("_image_data", arr_str);
-                // this.touch();
-                this.send({
-                    "data": arr_str,
-                    "type": "movie_image_data",
-                    }); // tell backend that image render is finished,
-                        // backend will send next frame's coordinates.
-                this.send({'type': 'async_message', 'data': 'ok'});
-            }.bind(this);
-            reader.readAsDataURL(blob);
+            const blob = await this.stage.makeImage(render_params);
+            this.processBlob(blob, "movie_image_data");
         }
+    }
+
+    async processBlob(blob, type, wid = null) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const arr_str = (reader.result as string).replace("data:image/png;base64,", "");
+            this.send({
+                "data": arr_str,
+                "type": type,
+                "ID": wid,
+            });
+            this.send({'type': 'async_message', 'data': 'ok'});
+        }.bind(this);
+        reader.readAsDataURL(blob);
     }
 
 
