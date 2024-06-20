@@ -199,96 +199,77 @@ export
     }
 
     handleSignals() {
-        var container = this.stage.viewer.container;
-        var that = this;
-        container.addEventListener('mouseover', function (e) {
-            that._ngl_focused = 1;
-            e; // linter
-            that.mouseOverDisplay('block')
-        }, false);
+        const container = this.stage.viewer.container;
 
-        container.addEventListener('mouseout', function (e) {
-            that._ngl_focused = 0;
-            e; // linter
-            that.mouseOverDisplay('none')
-        }, false);
+        const mouseOverHandler = (display) => {
+            this._ngl_focused = display === 'block' ? 1 : 0;
+            this.mouseOverDisplay(display);
+        };
 
-        container.addEventListener('contextmenu', function (e) {
+        container.addEventListener('mouseover', () => mouseOverHandler('block'), false);
+        container.addEventListener('mouseout', () => mouseOverHandler('none'), false);
+
+        container.addEventListener('contextmenu', (e) => {
             e.stopPropagation();
             e.preventDefault();
         }, true);
 
-        this.stage.signals.componentAdded.add(function (component) {
-            this.comp_uuids.push(component.uuid)
-            var len = this.stage.compList.length;
+        this.stage.signals.componentAdded.add((component) => {
+            this.comp_uuids.push(component.uuid);
+            const len = this.stage.compList.length;
             this.model.set("n_components", len);
             this.touch();
-            var comp = this.stage.compList[len - 1];
-            comp.signals.representationRemoved.add(function () {
-                that.request_repr_dict();
+            const comp = this.stage.compList[len - 1];
+            comp.signals.representationRemoved.add(() => this.request_repr_dict());
+            comp.signals.representationAdded.add((repr) => {
+                this.request_repr_dict();
+                repr.signals.parametersChanged.add(() => {
+                    console.log("repr.parametersChanged");
+                    this.request_repr_dict();
+                });
             });
-            comp.signals.representationAdded.add(function (repr) {
-                that.request_repr_dict();
-                repr.signals.parametersChanged.add(function () {
-                    console.log("repr.parametersChanged")
-                    that.request_repr_dict();
-                })
-            });
-        }, this);
+        });
 
-        this.stage.signals.componentRemoved.add(async function (component) {
-            var that = this
-            var cindex = this.comp_uuids.indexOf(component.uuid)
-            this.comp_uuids.splice(cindex, 1)
-            var n_components = this.stage.compList.length
-            this.model.set("n_components", n_components)
-            this.touch()
-            console.log('componentRemoved', component, component.uuid)
+        this.stage.signals.componentRemoved.add(async (component) => {
+            const cindex = this.comp_uuids.indexOf(component.uuid);
+            this.comp_uuids.splice(cindex, 1);
+            const n_components = this.stage.compList.length;
+            this.model.set("n_components", n_components);
+            this.touch();
+            console.log('componentRemoved', component, component.uuid);
 
-            var pviews = []
-            for (var k in this.model.views) {
-                pviews.push(this.model.views[k])
-            }
-
-            var views = await Promise.all(pviews)
-            console.log(views)
-            var update_backend = false
-            for (var k in views) {
-                var view = views[k]
-                if ((view.uuid != that.uuid) && (view.stage.compList.length > n_components)) {
-                    // remove component from NGL's GUI
-                    // pass
-                    view.stage.removeComponent(view.stage.compList[cindex])
-                    update_backend = true
+            const pviews = Object.values(this.model.views);
+            const views = await Promise.all(pviews);
+            console.log(views);
+            let update_backend = false;
+            for (const view of views as any[]) {
+                if ((view.uuid != this.uuid) && (view.stage.compList.length > n_components)) {
+                    view.stage.removeComponent(view.stage.compList[cindex]);
+                    update_backend = true;
                 }
             }
             if (update_backend) {
-                console.log("should update backend")
-                that.send({ "type": "removeComponent", "data": cindex })
+                console.log("should update backend");
+                this.send({ "type": "removeComponent", "data": cindex });
             }
-        }, this);
+        });
 
-        this.stage.signals.parametersChanged.add(function () {
-            this.requestUpdateStageParameters();
-        }, this);
+        this.stage.signals.parametersChanged.add(() => this.requestUpdateStageParameters());
 
-        this.stage.viewerControls.signals.changed.add(function () {
+        this.stage.viewerControls.signals.changed.add(async () => {
             this.serialize_camera_orientation();
-            var m = this.stage.viewerControls.getOrientation();
-            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1) {
-                that._synced_model_ids.forEach(async function (mid) {
-                    var model = await that.model.widget_manager.get_model(mid)
-                    for (var k in model.views) {
-                        var pview = model.views[k];
-                        var view = await model.views[k]
-                        if (view.uuid != that.uuid) {
+            const m = this.stage.viewerControls.getOrientation();
+            if (this._synced_model_ids.length > 0 && this._ngl_focused == 1) {
+                for (const mid of this._synced_model_ids) {
+                    const model = await this.model.widget_manager.get_model(mid);
+                    for (const view of Object.values(model.views)) {
+                        if (view.uuid != this.uuid) {
                             view.stage.viewerControls.orient(m);
                         }
                     }
-                })
+                }
             }
-        }.bind(this));
-
+        });
     }
 
     handlePicking() {
