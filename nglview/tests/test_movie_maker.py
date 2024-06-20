@@ -18,7 +18,6 @@ def test_movie_maker(mock_image, ImageSequenceClip):
 
     movie = MovieMaker(view,
                        in_memory=True,
-                       download_folder='here',
                        render_params={'factor': 4},
                        moviepy_params={},
                        stop=2)

@@ -44,6 +44,14 @@ function generateUUID() {
     return uuid.join('')
 }
 
+enum Targets {
+    Stage = 'Stage',
+    Viewer = 'Viewer',
+    ViewerControls = 'viewerControls',
+    CompList = 'compList',
+    Widget = 'Widget',
+    Representation = 'Representation'
+}
 
 async function createView(that, trait_name) {
     // Create a view for the model with given `trait_name`
@@ -71,76 +79,69 @@ export
 
 export
     class NGLView extends widgets.DOMWidgetView {
-    render() {
-        this.beforeDisplay()
-        this.displayed.then(function () {
-            // move all below code inside 'displayed'
-            // to make sure the NGLView and NGLModel are created
-            this.createStage()
-            this.handlePicking()
-            this.handleSignals()
-            this.handleMessage()
-            this.finalizeDisplay()
-        }.bind(this));
-
-    }
+render() {
+    this.beforeDisplay();
+    this.displayed.then(() => {
+        // move all below code inside 'displayed'
+        // to make sure the NGLView and NGLModel are created
+        this.createStage();
+        this.handlePicking();
+        this.handleSignals();
+        this.handleMessage();
+        this.finalizeDisplay();
+    });
+}
 
     beforeDisplay() {
         this.model.on("change:_parameters", this.parametersChanged, this);
         this.model.on("change:gui_style", this.GUIStyleChanged, this);
         this.model.set('_ngl_version', NGL.Version);
-        this._ngl_focused = 0
-        this.uuid = generateUUID()
-        this.stage_widget = undefined
-        this.comp_uuids = []
+        this._ngl_focused = 0;
+        this.uuid = generateUUID();
+        this.stage_widget = undefined;
+        this.comp_uuids = [];
         this._synced_model_ids = this.model.get("_synced_model_ids");
-        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids")
+        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids");
 
         if (this.isEmbeded()) {
-            // embed mode
-            this._handleEmbedBeforeStage()
+            this._handleEmbedBeforeStage();
         }
     }
 
     createStage() {
-        // init NGL stage
-        var stage_params = {
-            // Shallow copy so that _ngl_full_stage_parameters is not updated yet
-            ...this.model.get("_ngl_full_stage_parameters")
+        const stage_params = {
+            ...this.model.get("_ngl_full_stage_parameters"),
+            backgroundColor: this.model.get("_ngl_full_stage_parameters")?.backgroundColor ?? "white"
         };
-        if (!("backgroundColor" in stage_params)) {
-            stage_params["backgroundColor"] = "white"
-        }
-        NGL.useWorker = false;
-        var view_parent = this.options.parent
-        this.stage = new NGL.Stage(undefined)
-        this.$container = $(this.stage.viewer.container);
-        this.$el.append(this.$container)
-        this.stage.setParameters(stage_params);
-        this.$container = $(this.stage.viewer.container);
-        this.handleResizable()
-        this.ngl_view_id = this.uuid
-        this.touch();
-        var that = this;
-        var width = this.model.get("_view_width") || this.$el.parent().width() + "px";
-        var height = this.model.get("_view_height") || "300px";
-        this.setSize(width, height);
-        this.createFullscreenBtn(); // FIXME: move up?
-        this.createIPlayer(); // FIXME: move up?
-        this.GUIStyleChanged(); // must be called after displaying to get correct width and height
 
-        this.$container.resizable(
-            "option", "maxWidth", this.$el.parent().width()
-        );
+        NGL.useWorker = false;
+        const view_parent = this.options.parent;
+        this.stage = new NGL.Stage(undefined);
+        this.$container = $(this.stage.viewer.container);
+        this.$el.append(this.$container);
+        this.stage.setParameters(stage_params);
+        this.handleResizable();
+        this.ngl_view_id = this.uuid;
+        this.touch();
+
+        const width = this.model.get("_view_width") ?? `${this.$el.parent().width()}px`;
+        const height = this.model.get("_view_height") ?? "300px";
+        this.setSize(width, height);
+        this.createFullscreenBtn();
+        this.createIPlayer();
+        this.GUIStyleChanged();
+
+        this.$container.resizable("option", "maxWidth", this.$el.parent().width());
+
         if (this.isEmbeded()) {
-            console.log("Embed mode for NGLView")
-            that.handleEmbed();
+            console.log("Embed mode for NGLView");
+            this.handleEmbed();
         } else {
             this.requestUpdateStageParameters();
-            if (this.model.views.length == 1) {
+            if (this.model.views.length === 1) {
                 this.serialize_camera_orientation();
             } else {
-                this.set_camera_orientation(that.model.get("_camera_orientation"));
+                this.set_camera_orientation(this.model.get("_camera_orientation"));
             }
         }
     }
@@ -191,144 +192,157 @@ export
     }
 
     handleSignals() {
-        var container = this.stage.viewer.container;
-        var that = this;
-        container.addEventListener('mouseover', function (e) {
-            that._ngl_focused = 1;
-            e; // linter
-            that.mouseOverDisplay('block')
-        }, false);
+        const container = this.stage.viewer.container;
 
-        container.addEventListener('mouseout', function (e) {
-            that._ngl_focused = 0;
-            e; // linter
-            that.mouseOverDisplay('none')
-        }, false);
+        const mouseOverHandler = (display) => {
+            this._ngl_focused = display === 'block' ? 1 : 0;
+            this.mouseOverDisplay(display);
+        };
 
-        container.addEventListener('contextmenu', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-        }, true);
+        const addMouseEvents = () => {
+            container.addEventListener('mouseover', () => mouseOverHandler('block'), false);
+            container.addEventListener('mouseout', () => mouseOverHandler('none'), false);
+        };
 
-        this.stage.signals.componentAdded.add(function (component) {
-            this.comp_uuids.push(component.uuid)
-            var len = this.stage.compList.length;
-            this.model.set("n_components", len);
-            this.touch();
-            var comp = this.stage.compList[len - 1];
-            comp.signals.representationRemoved.add(function () {
-                that.request_repr_dict();
+        const addContextMenuEvent = () => {
+            container.addEventListener('contextmenu', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+            }, true);
+        };
+
+        const addComponentEvents = () => {
+            this.stage.signals.componentAdded.add(this.componentAddedHandler.bind(this));
+            this.stage.signals.componentRemoved.add(this.componentRemovedHandler.bind(this));
+        };
+
+        const addStageEvents = () => {
+            this.stage.signals.parametersChanged.add(() => this.requestUpdateStageParameters());
+            this.stage.viewerControls.signals.changed.add(this.viewerControlsChangedHandler.bind(this));
+        };
+
+        addMouseEvents();
+        addContextMenuEvent();
+        addComponentEvents();
+        addStageEvents();
+    }
+
+    async componentAddedHandler(component) {
+        this.comp_uuids.push(component.uuid);
+        const len = this.stage.compList.length;
+        this.model.set("n_components", len);
+        this.touch();
+        const comp = this.stage.compList[len - 1];
+        comp.signals.representationRemoved.add(() => this.request_repr_dict());
+        comp.signals.representationAdded.add((repr) => {
+            this.request_repr_dict();
+            repr.signals.parametersChanged.add(() => {
+                console.log("repr.parametersChanged");
+                this.request_repr_dict();
             });
-            comp.signals.representationAdded.add(function (repr) {
-                that.request_repr_dict();
-                repr.signals.parametersChanged.add(function () {
-                    console.log("repr.parametersChanged")
-                    that.request_repr_dict();
-                })
-            });
-        }, this);
+        });
+    }
 
-        this.stage.signals.componentRemoved.add(async function (component) {
-            var that = this
-            var cindex = this.comp_uuids.indexOf(component.uuid)
-            this.comp_uuids.splice(cindex, 1)
-            var n_components = this.stage.compList.length
-            this.model.set("n_components", n_components)
-            this.touch()
-            console.log('componentRemoved', component, component.uuid)
+    async componentRemovedHandler(component) {
+        const cindex = this.comp_uuids.indexOf(component.uuid);
+        this.comp_uuids.splice(cindex, 1);
+        const n_components = this.stage.compList.length;
+        this.model.set("n_components", n_components);
+        this.touch();
+        console.log('componentRemoved', component, component.uuid);
 
-            var pviews = []
-            for (var k in this.model.views) {
-                pviews.push(this.model.views[k])
+        const pviews = Object.values(this.model.views);
+        const views = await Promise.all(pviews);
+        console.log(views);
+        let update_backend = false;
+        for (const view of views as any[]) {
+            if ((view.uuid != this.uuid) && (view.stage.compList.length > n_components)) {
+                view.stage.removeComponent(view.stage.compList[cindex]);
+                update_backend = true;
             }
+        }
+        if (update_backend) {
+            console.log("should update backend");
+            this.send({ "type": "removeComponent", "data": cindex });
+        }
+    }
 
-            var views = await Promise.all(pviews)
-            console.log(views)
-            var update_backend = false
-            for (var k in views) {
-                var view = views[k]
-                if ((view.uuid != that.uuid) && (view.stage.compList.length > n_components)) {
-                    // remove component from NGL's GUI
-                    // pass
-                    view.stage.removeComponent(view.stage.compList[cindex])
-                    update_backend = true
+    async viewerControlsChangedHandler() {
+        this.serialize_camera_orientation();
+        const m = this.stage.viewerControls.getOrientation();
+        if (this._synced_model_ids.length > 0 && this._ngl_focused == 1) {
+            for (const mid of this._synced_model_ids) {
+                const model = await this.model.widget_manager.get_model(mid);
+                for (const view of Object.values(model.views as any[])) {
+                    if (view.uuid != this.uuid) {
+                        view.stage.viewerControls.orient(m);
+                    }
                 }
             }
-            if (update_backend) {
-                console.log("should update backend")
-                that.send({ "type": "removeComponent", "data": cindex })
-            }
-        }, this);
-
-        this.stage.signals.parametersChanged.add(function () {
-            this.requestUpdateStageParameters();
-        }, this);
-
-        this.stage.viewerControls.signals.changed.add(function () {
-            this.serialize_camera_orientation();
-            var m = this.stage.viewerControls.getOrientation();
-            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1) {
-                that._synced_model_ids.forEach(async function (mid) {
-                    var model = await that.model.widget_manager.get_model(mid)
-                    for (var k in model.views) {
-                        var pview = model.views[k];
-                        var view = await model.views[k]
-                        if (view.uuid != that.uuid) {
-                            view.stage.viewerControls.orient(m);
-                        }
-                    }
-                })
-            }
-        }.bind(this));
-
+        }
     }
 
     handlePicking() {
         this.$pickingInfo = $("<div></div>")
-            .css("position", "absolute")
-            .css("top", "5%")
-            .css("left", "3%")
-            .css("background-color", "white")
-            .css("padding", "2px 5px 2px 5px")
-            .css("opacity", "0.7")
+            .css({
+                position: "absolute",
+                top: "5%",
+                left: "3%",
+                backgroundColor: "white",
+                padding: "2px 5px",
+                opacity: "0.7"
+            })
             .appendTo(this.$container);
 
-        var that = this;
-        this.stage.signals.clicked.add(function (pd) {
+        this.stage.signals.clicked.add((pd) => {
             if (pd) {
                 this.model.set('picked', {}); //refresh signal
                 this.touch();
 
-                var pd2 = {} as any;
-                var pickingText = "";
-                if (pd.atom) {
-                    pd2.atom1 = pd.atom.toObject();
-                    pd2.atom1.name = pd.atom.qualifiedName();
-                    pickingText = "Atom: " + pd2.atom1.name;
-                } else if (pd.bond) {
-                    pd2.bond = pd.bond.toObject();
-                    pd2.atom1 = pd.bond.atom1.toObject();
-                    pd2.atom1.name = pd.bond.atom1.qualifiedName();
-                    pd2.atom2 = pd.bond.atom2.toObject();
-                    pd2.atom2.name = pd.bond.atom2.qualifiedName();
-                    pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
-                }
-                if (pd.instance) pd2.instance = pd.instance;
-
-                var n_components = this.stage.compList.length;
-                for (var i = 0; i < n_components; i++) {
-                    var comp = this.stage.compList[i];
-                    if (comp.uuid == pd.component.uuid) {
-                        pd2.component = i;
-                    }
-                }
+                const pd2 = this.getPickingData(pd);
+                const pickingText = this.getPickingText(pd, pd2);
 
                 this.model.set('picked', pd2);
                 this.touch();
 
                 this.$pickingInfo.text(pickingText);
             }
-        }, this);
+        });
+    }
+
+    getPickingData(pd) {
+        const pd2 = {} as any;
+        if (pd.atom) {
+            pd2.atom1 = pd.atom.toObject();
+            pd2.atom1.name = pd.atom.qualifiedName();
+        } else if (pd.bond) {
+            pd2.bond = pd.bond.toObject();
+            pd2.atom1 = pd.bond.atom1.toObject();
+            pd2.atom1.name = pd.bond.atom1.qualifiedName();
+            pd2.atom2 = pd.bond.atom2.toObject();
+            pd2.atom2.name = pd.bond.atom2.qualifiedName();
+        }
+        if (pd.instance) pd2.instance = pd.instance;
+
+        const n_components = this.stage.compList.length;
+        for (let i = 0; i < n_components; i++) {
+            const comp = this.stage.compList[i];
+            if (comp.uuid == pd.component.uuid) {
+                pd2.component = i;
+            }
+        }
+
+        return pd2;
+    }
+
+    getPickingText(pd, pd2) {
+        let pickingText = "";
+        if (pd.atom) {
+            pickingText = "Atom: " + pd2.atom1.name;
+        } else if (pd.bond) {
+            pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
+        }
+        return pickingText;
     }
 
     async mouseOverDisplay(type) {
@@ -399,61 +413,46 @@ export
     }
 
     async handleEmbed() {
-        var that = this;
-        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
-        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
-        const camera_orientation = that.model.get("_camera_orientation");
+        const { _ngl_msg_archive, _ngl_full_stage_parameters, _camera_orientation, _ngl_coordinate_resource, _ngl_repr_dict, comm } = this.model.attributes;
 
-        if (
-            Object.keys(ngl_stage_params).length === 0
-            && camera_orientation.length === 0
-        ) {
+        if (Object.keys(_ngl_full_stage_parameters).length === 0 && _camera_orientation.length === 0) {
             console.log("No state stored; initializing embedded widget for the first time.");
-            for (const msg of ngl_msg_archive) {
-                await that.on_msg(msg);
+            for (const msg of _ngl_msg_archive) {
+                await this.on_msg(msg);
             }
-            return
+            return;
         }
 
-        var loadfile_list = [];
-
-        _.each(ngl_msg_archive, function (msg: any) {
-            if (msg.methodName == 'loadFile') {
+        const loadFilePromises = _ngl_msg_archive
+            .filter(msg => msg.methodName === 'loadFile')
+            .map(msg => {
                 if (msg.kwargs && msg.kwargs.defaultRepresentation) {
                     // no need to add default representation as all representations
                     // are serialized separately, also it unwantedly sets the orientation
-                    msg.kwargs.defaultRepresentation = false
+                    msg.kwargs.defaultRepresentation = false;
                 }
-                loadfile_list.push(that._getLoadFilePromise(msg));
-            }
-        });
+                return this._getLoadFilePromise(msg);
+            });
 
-
-        var compList = await Promise.all(loadfile_list)
-        that.stage.setParameters(ngl_stage_params);
-        that.set_camera_orientation(camera_orientation);
-        that.touch();
+        const compList = await Promise.all(loadFilePromises);
+        this.stage.setParameters(_ngl_full_stage_parameters);
+        this.set_camera_orientation(_camera_orientation);
+        this.touch();
 
         // Outside notebook
-        if (that.model.comm === undefined) {
-            var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
-            var n_frames = ngl_coordinate_resource['n_frames'] || 1
-            that.model.set("max_frame", n_frames - 1);  // trigger updating slider and player's max
-            that.touch()
-            var model = await that.getPlayerModel()
-            var pmodel = model.get("children")[0];
-            that.listenTo(pmodel,
-                "change:value", function () {
-                    that.updateCoordinatesFromDict(ngl_coordinate_resource,
-                        pmodel.get("value"))
-                })
+        if (comm === undefined) {
+            const n_frames = _ngl_coordinate_resource['n_frames'] || 1;
+            this.model.set("max_frame", n_frames - 1);  // trigger updating slider and player's max
+            this.touch();
+            const model = await this.getPlayerModel();
+            const pmodel = model.get("children")[0];
+            this.listenTo(pmodel, "change:value", () => this.updateCoordinatesFromDict(_ngl_coordinate_resource, pmodel.get("value")));
         }
 
-
         // fire any msg with "fire_embed"
-        for (const msg of that.model.get("_ngl_msg_archive")) {
+        for (const msg of _ngl_msg_archive) {
             if (msg.fire_embed) {
-                await that.on_msg(msg);
+                await this.on_msg(msg);
             }
         }
 
@@ -461,22 +460,8 @@ export
         // User might add Shape (buffer component) to the view and the buffer component
         // is not created yet via loadFile
         // https://github.com/nglviewer/nglview/issues/1003
-        that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
-        that.handleResize() // FIXME: really need this?
-    }
-
-    updateCoordinatesFromDict(cdict, frame_index) {
-        // update coordinates for given "index"
-        // cdict = Dict[int, List[base64]]
-        var keys = Object.keys(cdict).filter(k => (k !== 'n_frames'));
-
-        for (var i = 0; i < keys.length; i++) {
-            var traj_index = keys[i];
-            var coordinates = this.decode_base64(cdict[traj_index][frame_index]);
-            if (coordinates && coordinates.byteLength > 0) {
-                this.updateCoordinates(coordinates, traj_index);
-            }
-        }
+        this._set_representation_from_repr_dict(_ngl_repr_dict);
+        this.handleResize(); // FIXME: really need this?
     }
 
     requestFrame() {
@@ -492,10 +477,10 @@ export
         this.touch();
     }
 
-    requestReprParameters(component_index, repr_index) {
-        var comp = this.stage.compList[component_index];
-        var repr = comp.reprList[repr_index];
-        var msg = repr.repr.getParameters();
+    requestReprParameters(componentIndex, reprIndex) {
+        const comp = this.stage.compList[componentIndex];
+        const repr = comp.reprList[reprIndex];
+        const msg = repr.repr.getParameters();
 
         if (msg) {
             msg['name'] = repr.name;
@@ -506,96 +491,97 @@ export
         }
     }
 
-    request_repr_dict() {
-        var repr_dict = this.getReprDictFrontEnd()
+    async getModelAndView(mid) {
+        const model = await this.model.widget_manager.get_model(mid);
+        for (const k in model.views) {
+            const view = await model.views[k];
+            if (view.uuid != this.uuid) {
+                return view;
+            }
+        }
+        return null;
+    }
+
+    async updateRepresentationForModels(modelIds, reprDict) {
+        for (const mid of modelIds) {
+            const view = await this.getModelAndView(mid);
+            if (view) {
+                view._set_representation_from_repr_dict(reprDict);
+            }
+        }
+    }
+
+    async request_repr_dict() {
+        const repr_dict = this.getReprDictFrontEnd();
         this.send({
-            // make sure we are using "request_repr_dict" name
-            // in backend too.
             'type': 'request_repr_dict',
             'data': repr_dict,
         });
-        var that = this
-        if (that._synced_repr_model_ids.length > 0) {
-            that._synced_repr_model_ids.forEach(async function (mid) {
-                var model = await that.model.widget_manager.get_model(mid)
-                for (var k in model.views) {
-                    var view = await model.views[k];
-                    // not sync with itself
-                    if (view.uuid != that.uuid) {
-                        view._set_representation_from_repr_dict(repr_dict)
-                    }
-                }
-            })
+
+        if (this._synced_repr_model_ids.length > 0) {
+            await this.updateRepresentationForModels(this._synced_repr_model_ids, repr_dict);
         }
     }
 
     getReprDictFrontEnd() {
-        var repr_dict = {};
-        var n_components = this.stage.compList.length;
-        for (var i = 0; i < n_components; i++) {
-            var comp = this.stage.compList[i];
+        const repr_dict = {};
+        const n_components = this.stage.compList.length;
+        for (let i = 0; i < n_components; i++) {
+            const comp = this.stage.compList[i];
             repr_dict[i] = {};
-            var msgi = repr_dict[i];
-            for (var j = 0; j < comp.reprList.length; j++) {
-                var repr = comp.reprList[j];
+            const msgi = repr_dict[i];
+            for (let j = 0; j < comp.reprList.length; j++) {
+                const repr = comp.reprList[j];
                 msgi[j] = {};
                 msgi[j]['type'] = repr.name;
                 msgi[j]['params'] = repr.repr.getParameters();
             }
         }
-        return repr_dict
+        return repr_dict;
     }
 
     syncReprForAllViews() {
-        var repr_dict_backend = this.model.get("_ngl_repr_dict")
-        var repr_dict_frontend = this.getReprDictFrontEnd()
+        const repr_dict_backend = this.model.get("_ngl_repr_dict");
+        const repr_dict_frontend = this.getReprDictFrontEnd();
         if (JSON.stringify(repr_dict_frontend) !== JSON.stringify(repr_dict_backend)) {
-            this._set_representation_from_repr_dict(repr_dict_backend)
+            this._set_representation_from_repr_dict(repr_dict_backend);
         }
     }
 
     async syncReprWithMe() {
-        // Make sure views of the same model has the same representations
-        // Only needed if we use Sidebar that connects to specific view.
-        var that = this
-        var repr_dict = this.getReprDictFrontEnd()
-        for (var k in this.model.views) {
-            var v = await this.model.views[k]
-            if (v.uuid != that.uuid) {
-                v._set_representation_from_repr_dict(repr_dict)
-            }
-        }
-        this.request_repr_dict()
+        const repr_dict = this.getReprDictFrontEnd();
+        await this.updateRepresentationForModels(Object.keys(this.model.views), repr_dict);
+        this.request_repr_dict();
     }
 
     setSyncRepr(model_ids) {
-        this._synced_repr_model_ids = model_ids
+        this._synced_repr_model_ids = model_ids;
     }
 
     setSyncCamera(model_ids) {
-        this._synced_model_ids = model_ids
+        this._synced_model_ids = model_ids;
     }
 
     viewXZPlane() {
-        var m = new NGL.Matrix4().makeRotationX(Math.PI / 2);
-        var q = new NGL.Quaternion().setFromRotationMatrix(m);
+        const m = new NGL.Matrix4().makeRotationX(Math.PI / 2);
+        const q = new NGL.Quaternion().setFromRotationMatrix(m);
         this.stage.viewerControls.rotate(q);
     }
 
     set_representation_from_backend() {
-        var repr_dict = this.model.get('_ngl_repr_dict')
-        this._set_representation_from_repr_dict(repr_dict)
+        const repr_dict = this.model.get('_ngl_repr_dict');
+        this._set_representation_from_repr_dict(repr_dict);
     }
 
     _set_representation_from_repr_dict(repr_dict) {
-        var compList = this.stage.compList
+        const compList = this.stage.compList;
         if (compList.length > 0) {
-            for (var index in repr_dict) {
-                var comp = compList[index];
+            for (const index in repr_dict) {
+                const comp = compList[index];
                 comp.removeAllRepresentations();
-                var reprlist = repr_dict[index];
-                for (var j in reprlist) {
-                    var repr = reprlist[j];
+                const reprlist = repr_dict[index];
+                for (const j in reprlist) {
+                    const repr = reprlist[j];
                     if (repr) {
                         comp.addRepresentation(repr.type, repr.params);
                     }
@@ -619,72 +605,69 @@ export
         return this.model.widget_manager.get_model(model_id)
     }
 
+    async createViewAndStyle(viewName, styleObj, onClick = null) {
+        const pview = this.createView(viewName);
+        const view = await pview;
+        const pe = view.el;
+        pe.style.position = 'absolute';
+        pe.style.zIndex = '100';
+        pe.style.opacity = '0.7';
+
+        for (const [key, value] of Object.entries(styleObj)) {
+            pe.style[key] = value;
+        }
+
+        if (onClick) {
+            pe.onclick = onClick;
+        }
+
+        this.stage.viewer.container.append(view.el);
+        return view;
+    }
+
     async createIPlayer() {
-        this.player_pview = this.createView("_iplayer");
-        var view = await this.player_pview
-        var that = this;
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.bottom = '5%'
-        pe.style.left = '10%'
-        pe.style.opacity = '0.7'
-        that.stage.viewer.container.append(view.el);
-        pe.style.display = 'none'
+        await this.createViewAndStyle("_iplayer", {
+            bottom: '5%',
+            left: '10%',
+            display: 'none'
+        });
     }
 
     async createImageBtn() {
-        this.image_btn_pview = this.createView("_ibtn_image");
-        var view = await this.image_btn_pview
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.top = '5%'
-        pe.style.right = '10%'
-        pe.style.opacity = '0.7'
-        pe.style.width = '35px'
-        this.stage.viewer.container.append(view.el);
+        await this.createViewAndStyle("_ibtn_image", {
+            top: '5%',
+            right: '10%',
+            width: '35px'
+        });
     }
 
     async createFullscreenBtn() {
-        this.btn_pview_fullscreen = this.createView("_ibtn_fullscreen");
-        var view = await this.btn_pview_fullscreen
-        var stage = this.stage;
-
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.top = '5%'
-        pe.style.right = '5%'
-        pe.style.opacity = '0.7'
-        pe.style.width = '35px'
-        pe.style.background = 'white'
-        pe.style.opacity = '0.3'
-        pe.style.display = 'none'
-        pe.onclick = function () {
+        const view = await this.createViewAndStyle("_ibtn_fullscreen", {
+            top: '5%',
+            right: '5%',
+            width: '35px',
+            background: 'white',
+            opacity: '0.3',
+            display: 'none'
+        }, () => {
             this.stage.toggleFullscreen();
-        }.bind(this)
-        stage.viewer.container.append(view.el);
-        stage.signals.fullscreenChanged.add(function (isFullscreen) {
+        });
+
+        this.stage.signals.fullscreenChanged.add((isFullscreen) => {
             if (isFullscreen) {
-                view.model.set("icon", "compress")
+                view.model.set("icon", "compress");
             } else {
-                view.model.set("icon", "expand")
+                view.model.set("icon", "expand");
             }
-        })
+        });
     }
 
-
     async createGUI() {
-        this.pgui_view = this.createView("_igui");
-        var view = await this.pgui_view
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.top = '5%'
-        pe.style.right = '10%'
-        pe.style.width = '300px'
-        this.stage.viewer.container.append(view.el);
+        await this.createViewAndStyle("_igui", {
+            top: '5%',
+            right: '10%',
+            width: '300px'
+        });
     }
 
 
@@ -693,119 +676,87 @@ export
     }
 
 
-    setVisibilityForRepr(component_index, repr_index, value) {
-        // value = True/False
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index];
+    setVisibilityForRepr(component_index: number, repr_index: number, value: boolean) {
+        const component = this.stage.compList[component_index];
+        const repr = component?.reprList[repr_index];
 
-        if (repr) {
-            repr.setVisibility(value);
-        }
+        repr?.setVisibility(value);
     }
 
-    removeRepresentation(component_index, repr_index) {
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index]
+    removeRepresentation(component_index: number, repr_index: number) {
+        const component = this.stage.compList[component_index];
+        const repr = component?.reprList[repr_index];
 
         if (repr) {
             component.removeRepresentation(repr);
         }
     }
 
-    removeRepresentationsByName(repr_name, component_index) {
-        var component = this.stage.compList[component_index];
+    removeRepresentationsByName(repr_name: string, component_index: number) {
+        const component = this.stage.compList[component_index];
 
-        if (component) {
-            component.reprList.forEach(function (repr) {
-                if (repr.name == repr_name) {
-                    component.removeRepresentation(repr);
-                }
-            })
-        }
+        component?.reprList.forEach((repr) => {
+            if (repr.name === repr_name) {
+                component.removeRepresentation(repr);
+            }
+        });
     }
 
-    updateRepresentationForComponent(repr_index, component_index, params) {
-        var component = this.stage.compList[component_index];
-        var that = this;
-        var repr = component.reprList[repr_index];
-        if (repr) {
-            repr.setParameters(params);
-        }
+    updateRepresentationForComponent(repr_index: number, component_index: number, params: any) {
+        const component = this.stage.compList[component_index];
+        const repr = component?.reprList[repr_index];
+
+        repr?.setParameters(params);
     }
 
-    updateRepresentationsByName(repr_name, component_index, params) {
-        var component = this.stage.compList[component_index];
-        var that = this;
+    updateRepresentationsByName(repr_name: string, component_index: number, params: any) {
+        const component = this.stage.compList[component_index];
 
-        if (component) {
-            component.reprList.forEach(function (repr) {
-                if (repr.name == repr_name) {
-                    repr.setParameters(params);
-                    that.request_repr_dict();
-                }
-            })
-        }
+        component?.reprList.forEach((repr) => {
+            if (repr.name === repr_name) {
+                repr.setParameters(params);
+                this.request_repr_dict();
+            }
+        });
     }
 
-    setRepresentation(name, params, component_index, repr_index) {
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index];
-        var that = this;
+    setRepresentation(name: string, params: any, component_index: number, repr_index: number) {
+        const component = this.stage.compList[component_index];
+        const repr = component?.reprList[repr_index];
 
         if (repr) {
             params['useWorker'] = false;
-            var new_repr = NGL.makeRepresentation(name, component.structure,
-                this.stage.viewer, params);
+            const new_repr = NGL.makeRepresentation(name, component.structure, this.stage.viewer, params);
             if (new_repr) {
                 repr.setRepresentation(new_repr);
                 repr.name = name;
                 component.reprList[repr_index] = repr;
-                that.request_repr_dict();
+                this.request_repr_dict();
             }
         }
     }
 
-    setColorByResidue(colors, component_index, repr_index) {
-        var repr = this.stage.compList[component_index].reprList[repr_index];
-        var schemeId = NGL.ColormakerRegistry.addScheme(function (params) {
+    setColorByResidue(colors, componentIndex, reprIndex) {
+        const repr = this.stage.compList[componentIndex]?.reprList[reprIndex];
+        const schemeId = NGL.ColormakerRegistry.addScheme(function (params) {
             this.atomColor = function (atom) {
-                var color = colors[atom.residueIndex];
-                return color
+                const color = colors[atom.residueIndex];
+                return color;
             };
             params; // to pass eslint; ack;
         });
-        repr.setColor(schemeId);
+        repr?.setColor(schemeId);
     }
 
-    addShape(name, shapes) {
-        // shapes: List[Tuple[str, ...]]
-        // e.g: [('sphere', ...), ('cone', ...)]
-        var shape = new NGL.Shape(name);
-        var shape_dict = {
-            'sphere': shape.addSphere,
-            'ellipsoid': shape.addEllipsoid,
-            'cylinder': shape.addCylinder,
-            'cone': shape.addCone,
-            'mesh': shape.addMesh,
-            'arrow': shape.addArrow,
-            'text': shape.addText,
-            'label': shape.addText,
-            'tetrahedron': shape.addTetrahedron,
-            'octahedron': shape.addOctahedron,
-            'torus': shape.addTorus
-        };
-        for (var i = 0; i < shapes.length; i++) {
-            var shapes_i = shapes[i]
-            var shape_type = shapes_i[0];
-            var params = shapes_i.slice(1, shapes_i.length);
-            // e.g params = ('sphere', [ 0, 0, 9 ], [ 1, 0, 0 ], 1.5)
-
-            var func = shape_dict[shape_type];
-            func.apply(shape, params);
-            // shape.func(params);
-        }
-        var shapeComp = this.stage.addComponentFromObject(shape);
-        shapeComp.addRepresentation("buffer");
+    addShape(name: string, shapes: any[]) {
+        const shape = new NGL.Shape(name);
+        shapes.forEach(([shapeType, ...params]) => {
+            const func = shape[shapeType];
+            if (func && typeof func === 'function') {
+                func.apply(shape, params);
+            }
+        });
+        const shapeComp = this.stage.addComponentFromObject(shape);
     }
 
     addBuffer(name, kwargs) {
@@ -835,27 +786,24 @@ export
     }
 
     async replaceStructure(structure) {
-        var blob = new Blob([structure.data], { type: "text/plain" });
-        var stage = this.stage
-        var params = structure.params || {};
-        params.ext = structure.ext;
-        params.defaultRepresentation = false;
-        var comp = this.stage.compList[0];
-        var representations = comp.reprList.slice();
-        var old_orientation = this.stage.viewerControls.getOrientation();
-        var component = await this.stage.loadFile(blob, params)
-        stage.viewerControls.orient(old_orientation);
-        representations.forEach(function (repr) {
-            var repr_name = repr.name;
-            var repr_params = repr.repr.getParameters();
-            // Note: not using repr.repr.type, repr.repr.params
-            // since seems to me that repr.repr.params won't return correct "sele"
-            component.addRepresentation(repr_name, repr_params);
-        });
-        stage.removeComponent(comp);
+        const { data, params = {}, ext } = structure;
+        const blob = new Blob([data], { type: "text/plain" });
+        const { compList, viewerControls } = this.stage;
+        const [comp] = compList;
+        const representations = comp.reprList.slice();
+        const oldOrientation = viewerControls.getOrientation();
+
+        const component = await this.stage.loadFile(blob, { ...params, ext, defaultRepresentation: false });
+
+        viewerControls.orient(oldOrientation);
+
+        representations.forEach(({ name, repr }) =>
+            component.addRepresentation(name, repr.getParameters())
+        );
+
+        this.stage.removeComponent(comp);
         this._handleLoadFileFinished();
     }
-
     superpose(cindex0, cindex1, align, sele0, sele1) {
         // superpose two components with given params
         var component0 = this.stage.compList[cindex0];
@@ -902,18 +850,6 @@ export
         }
 
         return arraybuffer;
-    }
-
-    updateCoordinates(coordinates, model) {
-        // coordinates must be ArrayBuffer (use this.decode_base64)
-        var component = this.stage.compList[model];
-        if (coordinates && component) {
-            var coords = new Float32Array(coordinates);
-            component.structure.updatePosition(coords);
-            component.updateRepresentations({
-                "position": true
-            });
-        }
     }
 
     handleResizable() {
@@ -975,51 +911,42 @@ export
     }
 
     async _downloadImage(filename, params) {
-        if (this.ngl_view_id == this.get_last_child_id()) {
-            var blob = await this.stage.makeImage(params)
+        if (this.ngl_view_id == this._getLastChildId()) {
+            const blob = await this.stage.makeImage(params);
             NGL.download(blob, filename);
         }
     }
 
     async _exportImage(wid, params) {
-        if (this.ngl_view_id == this.get_last_child_id()) {
-            var blob = await this.stage.makeImage(params)
-            var reader = new FileReader();
-            var arr_str;
-            reader.onload = function () {
-                arr_str = (reader.result as string).replace("data:image/png;base64,", "");
-                // this.model.set("_image_data", arr_str);
-                // this.touch();
-                this.send({
-                    "data": arr_str,
-                    "type": "image_data",
-                    "ID": wid,
-                });
-                this.send({ 'type': 'async_message', 'data': 'ok' });
-            }.bind(this);
-            reader.readAsDataURL(blob);
+        if (this.ngl_view_id == this._getLastChildId()) {
+            const blob = await this.stage.makeImage(params);
+            this.processBlob(blob, "image_data", wid);
         }
     }
 
     async handleMovieMaking(render_params) {
-        console.log('handleMovieMaking: render_params', render_params)
-        if (this.ngl_view_id == this.get_last_child_id()) {
-            var blob = await this.stage.makeImage(render_params)
-            var reader = new FileReader();
-            var arr_str;
-            reader.onload = function () {
-                arr_str = (reader.result as string).replace("data:image/png;base64,", "");
-                // this.model.set("_image_data", arr_str);
-                // this.touch();
-                this.send({
-                    "data": arr_str,
-                    "type": "movie_image_data",
-                }); // tell backend that image render is finished,
-                // backend will send next frame's coordinates.
-                this.send({ 'type': 'async_message', 'data': 'ok' });
-            }.bind(this);
-            reader.readAsDataURL(blob);
+        console.log('handleMovieMaking: render_params', render_params);
+        if (this.ngl_view_id == this._getLastChildId()) {
+            const blob = await this.stage.makeImage(render_params);
+            this.processBlob(blob, "movie_image_data");
         }
+    }
+
+    async processBlob(blob, type, wid = null) {
+        const reader = new FileReader();
+        const dataUrlPromise = new Promise((resolve, reject) => {
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+        const dataUrl = await dataUrlPromise as string;
+        const arr_str = dataUrl.replace("data:image/png;base64,", "");
+        this.send({
+            "data": arr_str,
+            "type": type,
+            "ID": wid,
+        });
+        this.send({ 'type': 'async_message', 'data': 'ok' });
     }
 
 
@@ -1063,14 +990,14 @@ export
         }
     }
 
-    get_last_child_id() {
+    _getLastChildId() {
         var keys = this.model.get('_ngl_view_id')
         return keys[keys.length - 1]
     }
 
     async _handleStageLoadFile(msg) {
         // args = [{'type': ..., 'data': ...}]
-        if (this.ngl_view_id != this.get_last_child_id() && msg.last_child) {
+        if (this.ngl_view_id != this._getLastChildId() && msg.last_child) {
             return
         }
         var o = await this._getLoadFilePromise(msg)
@@ -1087,135 +1014,197 @@ export
     }
 
     async on_msg(msg) {
-        // TODO: re-organize
         if (('ngl_view_id' in msg) && (msg.ngl_view_id !== this.ngl_view_id)) {
-            return
+            return;
         }
+
         if (msg.type == 'call_method') {
-            var index, component, func, stage;
-            var new_args = msg.args.slice();
-            new_args.push(msg.kwargs);
-
-            // handle color
-            if (msg.methodName == 'addRepresentation' &&
-                msg.reconstruc_color_scheme) {
-                msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
-            }
-            if ("colorVolume" in msg.kwargs) {
-                // backend only send component index
-                // so we need to convert to 'volume' data
-                index = msg.kwargs["colorVolume"];
-                msg.kwargs["colorVolume"] = this.stage.compList[index].volume;
-            }
-
-            switch (msg.target) {
-                case 'Stage':
-                    var stage_func = this.stage[msg.methodName];
-                    stage = this.stage;
-                    if (msg.methodName == 'screenshot') {
-                        NGL.screenshot(this.stage.viewer, msg.kwargs);
-                    } else if (msg.methodName == 'removeComponent') {
-                        index = msg.args[0];
-                        component = this.stage.compList[index];
-                        this.stage.removeComponent(component);
-                    } else if (msg.methodName == 'loadFile') {
-                        if (this.model.views.length > 1 && msg.kwargs &&
-                            msg.kwargs.defaultRepresentation) {
-                            // no need to add default representation as all representations
-                            // are serialized separately, also it unwantedly sets the orientation
-                            msg.kwargs.defaultRepresentation = false
-                        }
-                        await this._handleStageLoadFile(msg);
-                    } else {
-                        stage_func.apply(stage, new_args);
-                    }
-                    break;
-                case 'Viewer':
-                    var viewer = this.stage.viewer;
-                    func = this.stage.viewer[msg.methodName];
-                    func.apply(viewer, new_args);
-                    break;
-                case 'viewerControls':
-                    var controls = this.stage.viewerControls;
-                    func = controls[msg.methodName];
-                    func.apply(controls, new_args);
-                    break;
-                case 'compList':
-                    index = msg['component_index'];
-                    component = this.stage.compList[index];
-                    func = component[msg.methodName];
-                    func.apply(component, new_args);
-                    break;
-                case 'Widget':
-                    func = this[msg.methodName];
-                    if (func) {
-                        func.apply(this, new_args);
-                    } else {
-                        // send error message to Python?
-                        console.log('can not create func for ' + msg.methodName);
-                    }
-                    break;
-                case 'Representation':
-                    var component_index = msg['component_index'];
-                    var repr_index = msg['repr_index'];
-                    component = this.stage.compList[component_index];
-                    var repr = component.reprList[repr_index];
-                    func = repr[msg.methodName];
-                    if (repr && func) {
-                        func.apply(repr, new_args);
-                    }
-                    break;
-                default:
-                    console.log('there is no method for ' + msg.target);
-                    break;
-            }
+            this.handleCallMethod(msg);
         } else if (msg.type == 'base64_single') {
-            var coordinatesDict = msg.data;
-            var keys = Object.keys(coordinatesDict);
-
-            for (var i = 0; i < keys.length; i++) {
-                var traj_index = keys[i];
-                var coordinates = this.decode_base64(coordinatesDict[traj_index]);
-                if (coordinates && coordinates.byteLength > 0) {
-                    this.updateCoordinates(coordinates, traj_index);
-                }
-            }
+            this.handleBase64Single(msg);
         } else if (msg.type == 'binary_single') {
-            var coordinateMeta = msg.data;
-            keys = Object.keys(coordinateMeta);
-
-            for (i = 0; i < keys.length; i++) {
-                traj_index = keys[i];
-                coordinates = new Float32Array(msg.buffers[i].buffer);
-                if (coordinates.byteLength > 0) {
-                    this.updateCoordinates(coordinates, traj_index);
-                }
-            }
-            if (msg.movie_making) {
-                this.handleMovieMaking(msg.render_params)
-            }
+            this.handleBinarySingle(msg);
         } else if (msg.type == 'get') {
-            if (msg.data == 'camera') {
-                this.send(JSON.stringify(this.stage.viewer.camera));
-            } else if (msg.data == 'parameters') {
-                this.send(JSON.stringify(this.stage.parameters));
-            } else {
-                console.log("Number of components", this.stage.compList.length);
-                console.log("ngl_view_id", this.ngl_view_id);
+            this.handleGet(msg);
+        }
+    }
+
+    handleCallMethod(msg) {
+        var new_args = msg.args.slice();
+        new_args.push(msg.kwargs);
+
+        this.handleColor(msg, new_args);
+
+        switch (msg.target) {
+            case Targets.Stage:
+                this.handleStageTarget(msg, new_args);
+                break;
+            case Targets.Viewer:
+                this.handleViewerTarget(msg, new_args);
+                break;
+            case Targets.ViewerControls:
+                this.handleViewerControlsTarget(msg, new_args);
+                break;
+            case Targets.CompList:
+                this.handleCompListTarget(msg, new_args);
+                break;
+            case Targets.Widget:
+                this.handleWidgetTarget(msg, new_args);
+                break;
+            case Targets.Representation:
+                this.handleRepresentationTarget(msg, new_args);
+                break;
+            default:
+                console.log('there is no method for ' + msg.target);
+                break;
+        }
+    }
+
+    updateCoordinates(coordinates, model) {
+        // coordinates must be ArrayBuffer (use this.decode_base64)
+        var component = this.stage.compList[model];
+        if (coordinates && component) {
+            var coords = new Float32Array(coordinates);
+            component.structure.updatePosition(coords);
+            component.updateRepresentations({
+                "position": true
+            });
+        }
+    }
+
+    updateCoordinatesFromDict(cdict, frameIndex) {
+        // update coordinates for given "index"
+        // cdict = Dict[int, List[base64]]
+        const keys = Object.keys(cdict).filter(k => k !== 'n_frames');
+
+        for (const key of keys) {
+            const coordinates = this.decode_base64(cdict[key][frameIndex]);
+            if (coordinates && coordinates.byteLength > 0) {
+                this.updateCoordinates(coordinates, key);
             }
         }
     }
+
+    handleBase64Single(msg) {
+        var coordinatesDict = msg.data;
+        var keys = Object.keys(coordinatesDict);
+
+        for (var i = 0; i < keys.length; i++) {
+            var traj_index = keys[i];
+            var coordinates = this.decode_base64(coordinatesDict[traj_index]);
+            if (coordinates && coordinates.byteLength > 0) {
+                this.updateCoordinates(coordinates, traj_index);
+            }
+        }
+    }
+
+    handleBinarySingle(msg) {
+        var coordinateMeta = msg.data;
+        var keys = Object.keys(coordinateMeta);
+
+        for (var i = 0; i < keys.length; i++) {
+            var traj_index = keys[i];
+            var coordinates = new Float32Array(msg.buffers[i].buffer);
+            if (coordinates.byteLength > 0) {
+                this.updateCoordinates(coordinates, traj_index);
+            }
+        }
+        if (msg.movie_making) {
+            this.handleMovieMaking(msg.render_params)
+        }
+    }
+
+    handleGet(msg) {
+        if (msg.data == 'camera') {
+            this.send(JSON.stringify(this.stage.viewer.camera));
+        } else if (msg.data == 'parameters') {
+            this.send(JSON.stringify(this.stage.parameters));
+        } else {
+            console.log("Number of components", this.stage.compList.length);
+            console.log("ngl_view_id", this.ngl_view_id);
+        }
+    }
+
+    handleColor(msg, new_args) {
+        if (msg.methodName == 'addRepresentation' && msg.reconstruc_color_scheme) {
+            msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
+        }
+        if ("colorVolume" in msg.kwargs) {
+            // backend only send component index
+            // so we need to convert to 'volume' data
+            var index = msg.kwargs["colorVolume"];
+            msg.kwargs["colorVolume"] = this.stage.compList[index].volume;
+        }
+    }
+
+    private methodHandlers = {
+        'screenshot': (msg) => {
+            NGL.screenshot(this.stage.viewer, msg.kwargs);
+        },
+        'removeComponent': (msg) => {
+            const index = msg.args[0];
+            const component = this.stage.compList[index];
+            this.stage.removeComponent(component);
+        },
+        'loadFile': async (msg) => {
+            if (this.model.views.length > 1 && msg.kwargs && msg.kwargs.defaultRepresentation) {
+                // no need to add default representation as all representations
+                // are serialized separately, also it unwantedly sets the orientation
+                msg.kwargs.defaultRepresentation = false
+            }
+            await this._handleStageLoadFile(msg);
+        }
+    };
+
+    async handleStageTarget(msg, new_args) {
+        const handler = this.methodHandlers[msg.methodName];
+        if (handler) {
+            await handler(msg);
+        } else {
+            const stage_func = this.stage[msg.methodName];
+            stage_func.apply(this.stage, new_args);
+        }
+    }
+
+    private applyMethod(target: any, methodName: string, args: any[]) {
+        const func = target[methodName];
+        if (func) {
+            func.apply(target, args);
+        } else {
+            console.log(`Cannot find method ${methodName}`);
+        }
+    }
+
+    handleViewerTarget(msg, new_args) {
+        this.applyMethod(this.stage.viewer, msg.methodName, new_args);
+    }
+
+    handleViewerControlsTarget(msg, new_args) {
+        this.applyMethod(this.stage.viewerControls, msg.methodName, new_args);
+    }
+
+    handleCompListTarget(msg, new_args) {
+        const component = this.stage.compList[msg['component_index']];
+        this.applyMethod(component, msg.methodName, new_args);
+    }
+
+    handleWidgetTarget(msg, new_args) {
+        this.applyMethod(this, msg.methodName, new_args);
+    }
+
+    handleRepresentationTarget(msg, new_args) {
+        const component = this.stage.compList[msg['component_index']];
+        const repr = component.reprList[msg['repr_index']];
+        this.applyMethod(repr, msg.methodName, new_args);
+    }
 }
 
-// export all models and views here to make embeding a bit easier
-module.exports = {
-    'NGLView': NGLView,
-    'NGLModel': NGLModel,
-    'NGL': NGL,
-    'FullscreenModel': FullscreenModel,
-    'FullscreenView': FullscreenView,
-    'ColormakerRegistryModel': ColormakerRegistryModel,
-    'ColormakerRegistryView': ColormakerRegistryView,
-    'ThemeManagerModel': ThemeManagerModel,
-    'ThemeManagerView': ThemeManagerView,
+export {
+    NGL,
+    FullscreenModel,
+    FullscreenView,
+    ColormakerRegistryModel,
+    ColormakerRegistryView,
+    ThemeManagerModel,
+    ThemeManagerView,
 }

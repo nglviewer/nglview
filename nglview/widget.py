@@ -1,8 +1,11 @@
 import base64
+from enum import Enum
+import io
 import json
 import re
 import threading
 import time
+from typing import Union
 import uuid
 from logging import getLogger
 
@@ -63,8 +66,20 @@ def _deprecated(msg):
     return wrap_1
 
 
-def write_html(fp, views, frame_range=None):
-    # type: (str, List[NGLWidget]) -> None
+class MessageType(Enum):
+    REQUEST_FRAME = 'request_frame'
+    UPDATE_IDS = 'updateIDs'
+    REMOVE_COMPONENT = 'removeComponent'
+    REPR_PARAMETERS = 'repr_parameters'
+    REQUEST_LOADED = 'request_loaded'
+    REQUEST_REPR_DICT = 'request_repr_dict'
+    STAGE_PARAMETERS = 'stage_parameters'
+    ASYNC_MESSAGE = 'async_message'
+    IMAGE_DATA = 'image_data'
+
+
+
+def write_html(fp: Union[str, 'io.TextIOWrapper'], views: Union['DOMWidget', List['DOMWidget']], frame_range=None):
     """EXPERIMENTAL. Likely will be changed.
 
     Make html file to display a list of views. For further options, please
@@ -84,40 +99,33 @@ def write_html(fp, views, frame_range=None):
     >>> nglview.write_html('index.html', [view]) # doctest: +SKIP
     >>> nglview.write_html('index.html', [view], frame_range=(0, 5)) # doctest: +SKIP
     """
-    views = isinstance(views, DOMWidget) and [views] or views
+    views = [views] if isinstance(views, DOMWidget) else views
+    views = list(_INIT_VIEWS.values()) + views
 
-    for _, v in _INIT_VIEWS.items():
-        views.insert(0, v)
-
-    def _set_serialization(views):
+    def _apply_to_views(views, method_name):
         for view in views:
-            if hasattr(view, '_set_serialization'):
-                view._set_serialization(frame_range=frame_range)
+            if hasattr(view, method_name):
+                getattr(view, method_name)(frame_range=frame_range)
             elif isinstance(view, Box):
-                _set_serialization(view.children)
+                _apply_to_views(view.children, method_name)
 
-    def _unset_serialization(views):
-        for view in views:
-            if hasattr(view, '_unset_serialization'):
-                view._unset_serialization()
-            elif isinstance(view, Box):
-                _unset_serialization(view.children)
+    _apply_to_views(views, '_set_serialization')
 
-    _set_serialization(views)
-    # FIXME: allow add jquery-ui link?
-    snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
-    snippet += '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">\n'
-    snippet += embed.embed_snippet(views)
+    snippet = '\n'.join([
+        '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">',
+        '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">',
+        embed.embed_snippet(views)
+    ])
+
     # hacky thing for https://github.com/nglviewer/nglview/issues/1107
     # NGL must be fixed before we can remove this hack
     _frontend = {'__frontend_version__': __frontend_version__}
     pattern = r'("model_module":\s*"nglview-js-widgets",\s*"model_module_version":\s*)"' + re.escape(_frontend['__frontend_version__']) + '",'
     replacement = r'\g<1>"3.0.8",'
     snippet = re.sub(pattern, replacement, snippet)
-    html_code = embed.html_template.format(title='nglview-demo',
-                                           snippet=snippet)
 
-    # from ipywidgets
+    html_code = embed.html_template.format(title='nglview-demo', snippet=snippet)
+
     # Check if fp is writable:
     if hasattr(fp, 'write'):
         fp.write(html_code)
@@ -126,75 +134,82 @@ def write_html(fp, views, frame_range=None):
         with open(fp, "w") as f:
             f.write(html_code)
 
-    _unset_serialization(views)
-
+    _apply_to_views(views, '_unset_serialization')
 
 
 class NGLWidget(DOMWidget):
+    # Basic widget info
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_name = Unicode("NGLModel").tag(sync=True)
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+
+    # NGL specific attributes
     _ngl_version = Unicode().tag(sync=True)
-    # _model_name = Unicode("NGLView").tag(sync=True)
-    # _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _image_data = Unicode().tag(sync=False)
-    # use Integer here, because mdtraj uses a long datatype here on Python-2.7
-    frame = Integer().tag(sync=True)
-    max_frame = Int(0).tag(sync=True)
-    background = Unicode('white').tag(sync=True)
-    loaded = Bool(False).tag(sync=False)
-    picked = Dict().tag(sync=True)
-    n_components = Int(0).tag(sync=True)
-    _view_width = Unicode().tag(sync=True) # px
-    _view_height = Unicode().tag(sync=True) # px
-    _scene_position = Dict().tag(sync=True)
-    _scene_rotation = Dict().tag(sync=True)
-    # hack to always display movie
-    # TODO: remove _parameters?
-    _parameters = Dict().tag(sync=False)
     _ngl_full_stage_parameters = Dict().tag(sync=True)
     _ngl_original_stage_parameters = Dict().tag(sync=True)
-    _coordinates_dict = Dict().tag(sync=False)
-    _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
-                                  default_value='orthographic').tag(sync=True)
-    _camera_orientation = List().tag(sync=True)
-    _synced_model_ids = List().tag(sync=True)
-    _synced_repr_model_ids = List().tag(sync=True)
     _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
     _ngl_msg = None
+    _ngl_serialize = Bool(False).tag(sync=True)
+    _ngl_msg_archive = List().tag(sync=True)
+    _ngl_coordinate_resource = Dict().tag(sync=True)
+    _ngl_color_dict = Dict().tag(sync=True)
+
+    # Frame and component info
+    frame = Integer().tag(sync=True)
+    max_frame = Int(0).tag(sync=True)
+    n_components = Int(0).tag(sync=True)
+
+    # View and scene attributes
+    background = Unicode('white').tag(sync=True)
+    _view_width = Unicode().tag(sync=True) # px
+    _view_height = Unicode().tag(sync=True) # px
+    _scene_position = Dict().tag(sync=True)
+    _scene_rotation = Dict().tag(sync=True)
+    _camera_str = CaselessStrEnum(['perspective', 'orthographic'], default_value='orthographic').tag(sync=True)
+    _camera_orientation = List().tag(sync=True)
+
+    # Sync and representation info
+    _synced_model_ids = List().tag(sync=True)
+    _synced_repr_model_ids = List().tag(sync=True)
+    _representations = List().tag(sync=False)
+
+    # GUI and player attributes
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
     _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
     _widget_theme = None
-    _ngl_serialize = Bool(False).tag(sync=True)
-    _ngl_msg_archive = List().tag(sync=True)
-    _ngl_coordinate_resource = Dict().tag(sync=True)
-    _representations = List().tag(sync=False)
-    _ngl_color_dict = Dict().tag(sync=True)
     _player_dict = Dict().tag(sync=True)
 
-    # instance
-    _iplayer = Instance(widgets.Box,
-                        allow_none=True).tag(sync=True, **widget_serialization)
-    _igui = Instance(widgets.Tab,
-                     allow_none=True).tag(sync=True, **widget_serialization)
-    _ibtn_fullscreen = Instance(widgets.Button,
-            allow_none=True).tag(sync=True, **widget_serialization)
+    # Instance attributes
+    _iplayer = Instance(widgets.Box, allow_none=True).tag(sync=True, **widget_serialization)
+    _igui = Instance(widgets.Tab, allow_none=True).tag(sync=True, **widget_serialization)
+    _ibtn_fullscreen = Instance(widgets.Button, allow_none=True).tag(sync=True, **widget_serialization)
 
-    def __init__(self,
-                 structure=None,
-                 representations=None,
-                 parameters=None,
-                 **kwargs):
+    # Other attributes
+    loaded = Bool(False).tag(sync=False)
+    picked = Dict().tag(sync=True)
+    _parameters = Dict().tag(sync=False)
+    _coordinates_dict = Dict().tag(sync=False)
+
+    message_types = Dict({item.name: item.value for item in MessageType}).tag(sync=True)
+
+
+    def __init__(self, structure=None, representations=None, parameters=None, **kwargs):
         super().__init__(**kwargs)
+        self._initialize_instance_variables(kwargs)
+        self._initialize_structure(structure, parameters, representations, kwargs)
+        self._initialize_threads()
+        self._initialize_layout(kwargs)
 
+    def _initialize_instance_variables(self, kwargs):
         self._gui = None
         self._init_gui = kwargs.pop('gui', False)
         self._theme = kwargs.pop('theme', 'default')
@@ -208,18 +223,10 @@ class NGLWidget(DOMWidget):
         self.shape = Shape(view=self)
         self.stage = Stage(view=self)
         self.control = ViewerControl(view=self)
-        self._handle_msg_thread = threading.Thread(
-            target=self.on_msg, args=(self._handle_nglview_custom_msg, ))
-        # # register to get data from JS side
-        self._handle_msg_thread.daemon = True
-        self._handle_msg_thread.start()
-        self._remote_call_thread = RemoteCallThread(
-            self,
-            registered_funcs=['loadFile', 'replaceStructure', '_exportImage'])
-        self._remote_call_thread.start()
         self._trajlist = []
         self._ngl_component_ids = []
 
+    def _initialize_structure(self, structure, parameters, representations, kwargs):
         if representations:
             # Must be set here before calling
             # add_trajectory or add_struture
@@ -230,8 +237,7 @@ class NGLWidget(DOMWidget):
             if 'default' in kwargs:
                 kwargs['default_representation'] = kwargs['default']
 
-        autoview = 'center' not in kwargs or ('center' in kwargs
-                                              and kwargs.pop('center'))
+        autoview = 'center' not in kwargs or ('center' in kwargs and kwargs.pop('center'))
         # NOTE: Using `pop` to avoid passing `center` to NGL.
 
         if parameters:
@@ -255,14 +261,21 @@ class NGLWidget(DOMWidget):
             if autoview:
                 self.center()
 
+    def _initialize_threads(self):
+        self._handle_msg_thread = threading.Thread(
+            target=self.on_msg, args=(self._handle_nglview_custom_msg, ))
+        self._handle_msg_thread.daemon = True
+        self._handle_msg_thread.start()
+        self._remote_call_thread = RemoteCallThread(
+            self,
+            registered_funcs=['loadFile', 'replaceStructure', '_exportImage'])
+        self._remote_call_thread.start()
+
+    def _initialize_layout(self, kwargs):
         self.player = TrajectoryPlayer(self)
         self._view_width = kwargs.get('width', '')
         self._view_height = kwargs.get('height', '')
-
-        # Updating only self.layout.{width, height} don't handle
-        # resizing NGL widget properly.
         self._sync_with_layout()
-        # self.layout.width = 'auto'
         self._create_player()
         self._create_ibtn_fullscreen()
 
@@ -286,20 +299,23 @@ class NGLWidget(DOMWidget):
     def _set_serialization(self, frame_range=None):
         self._ngl_serialize = True
         resource = self._ngl_coordinate_resource
+
         if frame_range is not None:
             for t_index, traj in enumerate(self._trajlist):
-                resource[t_index] = []
-                for f_index in range(*frame_range):
-                    if f_index < traj.n_frames:
-                        resource[t_index].append(
-                            encode_base64(traj.get_coordinates(f_index)))
-                    else:
-                        resource[t_index].append(
-                            encode_base64(np.empty((0), dtype='f4')))
+                resource[t_index] = self._encode_trajectory(traj, frame_range)
             resource['n_frames'] = len(resource[0])
 
         self._ngl_coordinate_resource = resource
         self._ngl_color_dict = color._USER_COLOR_DICT.copy()
+
+    def _encode_trajectory(self, traj, frame_range):
+        encoded_traj = []
+        for f_index in range(*frame_range):
+            if f_index < traj.n_frames:
+                encoded_traj.append(encode_base64(traj.get_coordinates(f_index)))
+            else:
+                encoded_traj.append(encode_base64(np.empty((0), dtype='f4')))
+        return encoded_traj
 
     def _create_player(self):
         player = Play(max=self.max_frame, interval=100)
@@ -584,35 +600,27 @@ class NGLWidget(DOMWidget):
         '''
         self._remote_call('setSize', target='Widget', args=[w, h])
 
-    def _set_sync_repr(self, other_views):
+    def _set_model_ids(self, other_views, attribute, remote_call):
         model_ids = {v._model_id for v in other_views}
-        self._synced_repr_model_ids = sorted(
-            set(self._synced_repr_model_ids) | model_ids)
-        self._remote_call("setSyncRepr",
-                          target="Widget",
-                          args=[self._synced_repr_model_ids])
+        setattr(self, attribute, sorted(set(getattr(self, attribute)) | model_ids))
+        self._remote_call(remote_call, target="Widget", args=[getattr(self, attribute)])
+
+    def _unset_model_ids(self, other_views, attribute, remote_call):
+        model_ids = {v._model_id for v in other_views}
+        setattr(self, attribute, list(set(getattr(self, attribute)) - model_ids))
+        self._remote_call(remote_call, target="Widget", args=[getattr(self, attribute)])
+
+    def _set_sync_repr(self, other_views):
+        self._set_model_ids(other_views, "_synced_repr_model_ids", "setSyncRepr")
 
     def _set_unsync_repr(self, other_views):
-        model_ids = {v._model_id for v in other_views}
-        self._synced_repr_model_ids = list(set(self._synced_repr_model_ids) - model_ids)
-        self._remote_call("setSyncRepr",
-                          target="Widget",
-                          args=[self._synced_repr_model_ids])
+        self._unset_model_ids(other_views, "_synced_repr_model_ids", "setSyncRepr")
 
     def _set_sync_camera(self, other_views):
-        model_ids = {v._model_id for v in other_views}
-        self._synced_model_ids = sorted(
-            set(self._synced_model_ids) | model_ids)
-        self._remote_call("setSyncCamera",
-                          target="Widget",
-                          args=[self._synced_model_ids])
+        self._set_model_ids(other_views, "_synced_model_ids", "setSyncCamera")
 
     def _set_unsync_camera(self, other_views):
-        model_ids = {v._model_id for v in other_views}
-        self._synced_model_ids = list(set(self._synced_model_ids) - model_ids)
-        self._remote_call("setSyncCamera",
-                          target="Widget",
-                          args=[self._synced_model_ids])
+        self._unset_model_ids(other_views, "_synced_model_ids", "setSyncCamera")
 
     def _set_spin(self, axis, angle):
         self._remote_call('setSpin', target='Stage', args=[axis, angle])
@@ -746,40 +754,37 @@ class NGLWidget(DOMWidget):
         return RepresentationControl(self, component, repr_index, name=name)
 
     def _set_coordinates(self, index, movie_making=False, render_params=None):
-        # FIXME: use movie_making here seems awkward.
-        '''update coordinates for all trajectories at index-th frame
-        '''
+        '''update coordinates for all trajectories at index-th frame'''
         render_params = render_params or {}
         if self._trajlist:
-            coordinates_dict = {}
-            for trajectory in self._trajlist:
-                traj_index = self._ngl_component_ids.index(trajectory.id)
-
-                try:
-                    if trajectory.shown:
-                        if self.player.interpolate:
-                            t = self.player.iparams.get('t', 0.5)
-                            step = self.player.iparams.get('step', 1)
-                            coordinates_dict[traj_index] = interpolate.linear(
-                                index, t=t, traj=trajectory, step=step)
-                        else:
-                            coordinates_dict[
-                                traj_index] = trajectory.get_coordinates(index)
-                    else:
-                        coordinates_dict[traj_index] = np.empty((0),
-                                                                dtype='f4')
-                except (IndexError, ValueError):
-                    coordinates_dict[traj_index] = np.empty((0), dtype='f4')
-
-            self.set_coordinates(coordinates_dict,
-                    render_params=render_params,
-                    movie_making=movie_making)
+            coordinates_dict = self._get_coordinates_dict(index)
+            self.set_coordinates(coordinates_dict, render_params=render_params, movie_making=movie_making)
         else:
             print("no trajectory available")
 
+    def _get_coordinates_dict(self, index):
+        coordinates_dict = {}
+        for trajectory in self._trajlist:
+            traj_index = self._ngl_component_ids.index(trajectory.id)
+            coordinates_dict[traj_index] = self._get_trajectory_coordinates(trajectory, index, traj_index)
+        return coordinates_dict
+
+    def _get_trajectory_coordinates(self, trajectory, index, traj_index):
+        try:
+            if trajectory.shown:
+                if self.player.interpolate:
+                    t = self.player.iparams.get('t', 0.5)
+                    step = self.player.iparams.get('step', 1)
+                    return interpolate.linear(index, t=t, traj=trajectory, step=step)
+                else:
+                    return trajectory.get_coordinates(index)
+            else:
+                return np.empty((0), dtype='f4')
+        except (IndexError, ValueError):
+            return np.empty((0), dtype='f4')
+
     def set_coordinates(self, arr_dict, movie_making=False,
             render_params=None):
-        # type: (Dict[int, np.ndarray]) -> None
         """Used for update coordinates of a given trajectory
         >>> # arr: numpy array, ndim=2
         >>> # update coordinates of 1st trajectory
@@ -1089,26 +1094,26 @@ class NGLWidget(DOMWidget):
     def _handle_nglview_custom_msg(self, _, msg, buffers):
         self._ngl_msg = msg
 
-        msg_type = self._ngl_msg.get('type')
-        if msg_type == 'request_frame':
-            self._handle_request_frame()
-        elif msg_type == 'updateIDs':
-            self._handle_update_ids()
-        elif msg_type == 'removeComponent':
-            self._handle_remove_component()
-        elif msg_type == 'repr_parameters':
-            self._handle_repr_parameters()
-        elif msg_type == 'request_loaded':
-            self._handle_request_loaded()
-        elif msg_type == 'request_repr_dict':
-            self._handle_request_repr_dict()
-        elif msg_type == 'stage_parameters':
-            self._handle_stage_parameters()
-        elif msg_type == 'async_message':
-            self._handle_async_message()
-        elif msg_type == 'image_data':
-            self._handle_image_data()
+        msg_type = MessageType(self._ngl_msg.get('type'))
 
+        if msg_type == MessageType.REQUEST_FRAME:
+            self._handle_request_frame()
+        elif msg_type == MessageType.UPDATE_IDS:
+            self._handle_update_ids()
+        elif msg_type == MessageType.REMOVE_COMPONENT:
+            self._handle_remove_component()
+        elif msg_type == MessageType.REPR_PARAMETERS:
+            self._handle_repr_parameters()
+        elif msg_type == MessageType.REQUEST_LOADED:
+            self._handle_request_loaded()
+        elif msg_type == MessageType.REQUEST_REPR_DICT:
+            self._handle_request_repr_dict()
+        elif msg_type == MessageType.STAGE_PARAMETERS:
+            self._handle_stage_parameters()
+        elif msg_type == MessageType.ASYNC_MESSAGE:
+            self._handle_async_message()
+        elif msg_type == MessageType.IMAGE_DATA:
+            self._handle_image_data()
     def _request_repr_parameters(self, component=0, repr_index=0):
         if self.n_components > 0:
             self._remote_call('requestReprParameters',
@@ -1229,62 +1234,62 @@ class NGLWidget(DOMWidget):
         self._update_component_auto_completion()
         return self[-1]
 
-    def _load_data(self, obj, **kwargs):
+    def _load_data(self, data_object, **kwargs):
         '''
-
         Parameters
         ----------
-        obj : nglview.Structure or any object having 'get_structure_string' method or
-              string buffer (open(fn).read())
+        data_object : nglview.Structure or any object having 'get_structure_string' method or
+                      string buffer (open(fn).read())
         '''
-        kwargs2 = _camelize_dict(kwargs)
+        camelized_kwargs = _camelize_dict(kwargs)
 
         try:
-            is_url = FileManager(obj).is_url
+            is_url = FileManager(data_object).is_url
         except NameError:
             is_url = False
 
-        if 'defaultRepresentation' not in kwargs2:
-            kwargs2['defaultRepresentation'] = True
+        if 'defaultRepresentation' not in camelized_kwargs:
+            camelized_kwargs['defaultRepresentation'] = True
 
-        if not is_url:
-            if hasattr(obj, 'get_structure_string'):
-                blob = obj.get_structure_string()
-                kwargs2['ext'] = obj.ext
-                passing_buffer = True
-                binary = False
-            else:
-                fh = FileManager(obj,
-                                 ext=kwargs.get('ext'),
-                                 compressed=kwargs.get('compressed'))
-                # assume passing string
-                blob = fh.read(force_buffer=True)
-                passing_buffer = True
-
-                if fh.ext is None and passing_buffer:
-                    raise ValueError('must provide extension')
-
-                kwargs2['ext'] = fh.ext
-                binary = fh.is_binary
-                use_filename = fh.use_filename
-
-            if binary and not use_filename:
-                # send base64
-                blob = base64.b64encode(blob).decode('utf8')
-            blob_type = 'blob' if passing_buffer else 'path'
-            args = [{'type': blob_type, 'data': blob, 'binary': binary}]
+        if is_url:
+            blob_type, blob, is_binary = self._get_url_blob(data_object)
         else:
-            # is_url
-            blob_type = 'url'
-            url = obj
-            args = [{'type': blob_type, 'data': url, 'binary': False}]
+            blob_type, blob, is_binary = self._get_object_blob(data_object, kwargs, camelized_kwargs)
 
-        name = py_utils.get_name(obj, **kwargs2)
-        self._ngl_component_names.append(name)
-        self._remote_call("loadFile",
-                          target='Stage',
-                          args=args,
-                          kwargs=kwargs2)
+        args = [{'type': blob_type, 'data': blob, 'binary': is_binary}]
+        object_name = py_utils.get_name(data_object, **camelized_kwargs)
+        self._ngl_component_names.append(object_name)
+        self._remote_call("loadFile", target='Stage', args=args, kwargs=camelized_kwargs)
+
+    def _get_url_blob(self, url):
+        # is_url
+        return 'url', url, False
+
+    def _get_object_blob(self, data_object, kwargs, camelized_kwargs):
+        if hasattr(data_object, 'get_structure_string'):
+            # nglview.Structure or any object having 'get_structure_string' method
+            structure_string = data_object.get_structure_string()
+            camelized_kwargs['ext'] = data_object.ext
+            is_passing_buffer = True
+            is_binary_data = False
+        else:
+            # string buffer (open(fn).read())
+            file_handler = FileManager(data_object, ext=kwargs.get('ext'), compressed=kwargs.get('compressed'))
+            structure_string = file_handler.read(force_buffer=True)
+            is_passing_buffer = True
+
+            if file_handler.ext is None and is_passing_buffer:
+                raise ValueError('must provide extension')
+
+            camelized_kwargs['ext'] = file_handler.ext
+            is_binary_data = file_handler.is_binary
+            use_filename = file_handler.use_filename
+
+        if is_binary_data and not use_filename:
+            # send base64
+            structure_string = base64.b64encode(structure_string).decode('utf8')
+
+        return 'blob' if is_passing_buffer else 'path', structure_string, is_binary_data
 
     def remove_component(self, c):
         """remove component by its uuid.
@@ -1365,7 +1370,9 @@ class NGLWidget(DOMWidget):
         args = [] if args is None else args
         kwargs = {} if kwargs is None else kwargs
 
+
         msg = {}
+
 
         if 'component_index' in kwargs:
             msg['component_index'] = kwargs.pop('component_index')
@@ -1373,6 +1380,7 @@ class NGLWidget(DOMWidget):
             msg['repr_index'] = kwargs.pop('repr_index')
         if 'default' in kwargs:
             kwargs['defaultRepresentation'] = kwargs.pop('default')
+
 
         # Color handling
         reconstruc_color_scheme = False
@@ -1386,6 +1394,7 @@ class NGLWidget(DOMWidget):
             assert isinstance(kwargs['colorVolume'], ComponentViewer)
             kwargs['colorVolume'] = kwargs['colorVolume']._index
 
+
         msg['target'] = target
         msg['type'] = 'call_method'
         msg['methodName'] = method_name
@@ -1397,28 +1406,25 @@ class NGLWidget(DOMWidget):
         return msg
 
     def _trim_message(self, messages):
-        messages = messages[:]
+        """
+        This function trims the messages based on certain conditions.
+        """
 
-        remove_comps = [(index, msg['args'][0])
-                        for index, msg in enumerate(messages)
-                        if msg['methodName'] == 'removeComponent']
+        # Create a list of tuples containing the index and the first argument of the message
+        # for messages where the method name is 'removeComponent'
+        remove_comps = [(i, msg['args'][0]) for i, msg in enumerate(messages) if msg['methodName'] == 'removeComponent']
 
         if not remove_comps:
             return messages
 
-        load_comps = [
-            index for index, msg in enumerate(messages)
-            if msg['methodName'] in ('loadFile', 'addShape')
-        ]
+        # Create a list of indices for messages where the method name is either 'loadFile' or 'addShape'
+        load_comps = [i for i, msg in enumerate(messages) if msg['methodName'] in ('loadFile', 'addShape')]
 
-        messages_rm = [r[0] for r in remove_comps]
-        messages_rm += [load_comps[r[1]] for r in remove_comps]
-        messages_rm = set(messages_rm)
+        # Create a set of indices to remove from the messages
+        messages_rm = set(i for r in remove_comps for i in (r[0], load_comps[r[1]]))
 
-        return [
-            msg for i, msg in enumerate(messages)
-            if i not in messages_rm
-        ]
+        # Return a new list of messages that excludes the messages with the indices in messages_rm
+        return [msg for i, msg in enumerate(messages) if i not in messages_rm]
 
     def _remote_call(self,
                      method_name,
@@ -1491,32 +1497,18 @@ class NGLWidget(DOMWidget):
         """
         traj_ids = {traj.id for traj in self._trajlist}
 
-        if indices == 'all':
-            indices_ = set(range(self.n_components))
-        else:
-            indices_ = set(indices)
+        indices_ = set(range(self.n_components)) if indices == 'all' else set(indices)
 
         for index, comp_id in enumerate(self._ngl_component_ids):
-            if comp_id in traj_ids:
-                traj = self._get_traj_by_id(comp_id)
-            else:
-                traj = None
-            if index in indices_:
-                args = [
-                    True,
-                ]
-                if traj is not None:
-                    traj.shown = True
-            else:
-                args = [
-                    False,
-                ]
-                if traj is not None:
-                    traj.shown = False
+            traj = self._get_traj_by_id(comp_id) if comp_id in traj_ids else None
+            is_visible = index in indices_
+
+            if traj is not None:
+                traj.shown = is_visible
 
             self._remote_call("setVisibility",
                               target='compList',
-                              args=args,
+                              args=[is_visible],
                               kwargs={'component_index': index},
                               **kwargs)
 

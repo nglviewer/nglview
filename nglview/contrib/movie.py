@@ -1,4 +1,5 @@
-from typing import List
+from dataclasses import dataclass, field
+from typing import Any, Callable, Dict, List, Optional
 try:
     import moviepy.editor as mpy
 except ImportError:
@@ -13,17 +14,13 @@ from ipywidgets import Button, Output, IntProgress
 from itertools import tee
 
 
+@dataclass
 class MovieMaker:
-    """ Unstable API
+    """
 
     Parameters
     ----------
     view : NGLWidget
-    download_folder : str or None
-        Folder that stores images. You can not arbitarily set this folder. It must be
-        the download directory of the web browser you are using.
-        If None, $HOME/Downloads/ will be used.
-        NOTE: This is DEPRECATED (used with `make_old_impl`)
     prefix : str, default 'movie'
         prefix name of rendered image.
     output : str, default 'my_movie.gif'
@@ -33,10 +30,6 @@ class MovieMaker:
         frame per second
     start, stop, step : int, default (0, -1, 1)
         how many frames you want to render.
-    skip_render : bool, default False
-        if True, do not render any frame and uses existings images in `download_folder`
-        for movie making.
-        if False, perform rendering first.
     timeout : a number (second), default 0.1
         The waiting time between rendering two consecutive frames.
         This option should be only used with `perframe_hook` option.
@@ -59,9 +52,8 @@ class MovieMaker:
     >>> traj = pt.load(nv.datafiles.XTC, top=nv.datafiles.PDB)
     >>> view = nv.show_pytraj(traj)
     >>> from nglview.contrib.movie import MovieMaker
-    >>> download_folder = '/Users/xxx/Downloads'
     >>> output = 'my.gif'
-    >>> mov = MovieMaker(view, download_folder=download_folder, output=output)
+    >>> mov = MovieMaker(view, output=output)
     >>> mov.make()
 
     >>> # write avi format
@@ -87,39 +79,23 @@ class MovieMaker:
         conda install freeimage
 
     """
+    view: Any
+    prefix: str = 'movie'
+    output: str = 'my_movie.gif'
+    fps: int = 8
+    start: int = 0
+    stop: int = -1
+    step: int = 1
+    timeout: float = 0.1
+    in_memory: bool = False
+    perframe_hook: Optional[Callable] = None
+    render_params: Dict = field(default_factory=lambda: dict(factor=4, antialias=True, trim=False, transparent=False))
+    moviepy_params: Dict = field(default_factory=dict)
 
-    def __init__(self,
-                 view,
-                 download_folder=None,
-                 prefix='movie',
-                 output='my_movie.gif',
-                 fps=8,
-                 start=0,
-                 stop=-1,
-                 step=1,
-                 skip_render=False,
-                 timeout=0.1,
-                 in_memory=False,
-                 perframe_hook=None,
-                 render_params=None,
-                 moviepy_params=None):
-        if download_folder is None:
-            download_folder = os.getenv('HOME', '') + '/Downloads/'
-        self.view = view
-        self.skip_render = skip_render
-        self.prefix = prefix
-        self.download_folder = download_folder
-        self.timeout = timeout
-        self.fps = fps
-        self.in_memory = in_memory
-        self.render_params = render_params or dict(
-            factor=4, antialias=True, trim=False, transparent=False)
-        self.moviepy_params = moviepy_params or {}
-        self.perframe_hook = perframe_hook
-        self.output = output
-        if stop < 0:
-            stop = self.view.max_frame + 1
-        self._time_range = range(start, stop, step)
+    def __post_init__(self):
+        if self.stop < 0:
+            self.stop = self.view.max_frame + 1
+        self._time_range = range(self.start, self.stop, self.step)
         self._iframe = iter(self._time_range)
         self._progress = IntProgress(max=len(self._time_range) - 1)
         self._woutput = Output()
@@ -130,74 +106,39 @@ class MovieMaker:
     def sleep(self):
         time.sleep(self.timeout)
 
-    def make_old_impl(self, in_memory=False):
-        # TODO : make base class so we can reuse this with sandbox/base.py
-        progress = IntProgress(
-            description='Rendering...', max=len(self._time_range) - 1)
-        self._event = threading.Event()
+    def _set_frame_and_hook(self, frame):
+        """Set frame and hook for the view."""
+        self.view.frame = frame
+        time.sleep(self.timeout)
+        self.perframe_hook(self.view)
+        time.sleep(self.timeout)
+        self.view._set_coordinates(
+            frame, movie_making=True, render_params=self.render_params)
 
-        def _make(event):
-            image_files = []
-            iw = None
-            if not self.skip_render:
-                for i in self._time_range:
-                    progress.value = i
-                    if not event.is_set():
-                        self.view.frame = i
-                        self.sleep()
-                        if self.perframe_hook:
-                            self.perframe_hook(self.view)
-                        self.sleep()
-                        if not self.in_memory:
-                            self.view.download_image(
-                                self.prefix + '.' + str(i) + '.png',
-                                **self.render_params)
-                        else:
-                            iw = self.view.render_image(**self.render_params)
-                        self.sleep()
-                        if self.in_memory:
-                            rgb = self._base64_to_ndarray(
-                                self.view._image_data)
-                            self._image_array.append(rgb)
-                            if iw:
-                                iw.close()  # free memory
-                if not self.in_memory:
-                    template = "{}/{}.{}.png"
-                    image_files = [
-                        image_dir
-                        for image_dir in (template.format(
-                            self.download_folder, self.prefix, str(i))
-                                          for i in self._time_range)
-                        if os.path.exists(image_dir)
-                    ]
-                else:
-                    image_files = self._image_array
-            if not self._event.is_set():
-                progress.description = "Writing ..."
-                clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
-                with Output():
-                    if self.output.endswith('.gif'):
-                        clip.write_gif(
-                            self.output,
-                            fps=self.fps,
-                            verbose=False,
-                            **self.moviepy_params)
+    def _handle_msg(self, widget, msg, buffers, image_array, iframe, movie, keep_data):
+        """Handle messages from the view."""
+        if msg['type'] == 'movie_image_data':
+            image_array.append(msg.get('data'))
+            try:
+                frame = next(iframe)
+                self.perframe_hook and self._set_frame_and_hook(frame)
+                self._progress.value = frame
+            except StopIteration:
+                if movie:
+                    self._progress.description = 'Making movie...'
+                    with self._woutput:
+                        # suppress moviepy's log
+                        self._make_from_array(image_array)
+                    if not os.path.exists(self.output):
+                        self._progress.description = "ERROR: Check the maker's log"
                     else:
-                        clip.write_videofile(
-                            self.output, fps=self.fps, **self.moviepy_params)
-                self._image_array = []
-                progress.description = 'Done'
-                time.sleep(1)
-                progress.close()
-
-        self.thread = threading.Thread(target=_make, args=(self._event, ))
-        self.thread.daemon = True
-        self.thread.start()
-        return progress
+                        self._progress.description = 'Done'
+                self._remove_on_msg()
+                if keep_data:
+                    self._image_array = image_array
 
     def make(self, movie=True, keep_data=False):
         """
-
         Parameters
         ----------
         keep_data: bool
@@ -211,47 +152,14 @@ class MovieMaker:
         iframe = iter(self._time_range)
         frame = next(iframe)
 
-        def hook(frame):
-            self.view.frame = frame
-            time.sleep(self.timeout)
-            self.perframe_hook(self.view)
-            time.sleep(self.timeout)
-
         # trigger movie making communication between backend and frontend
-        self.perframe_hook and hook(frame)
-        self.view._set_coordinates(
-            frame, movie_making=True, render_params=self.render_params)
+        self.perframe_hook and self._set_frame_and_hook(frame)
         self._progress.description = 'Rendering ...'
 
-        def on_msg(widget, msg, buffers):
-            if msg['type'] == 'movie_image_data':
-                image_array.append(msg.get('data'))
-                try:
-                    frame = next(iframe)
-                    self.perframe_hook and hook(frame)
-                    self.view._set_coordinates(
-                        frame,
-                        movie_making=True,
-                        render_params=self.render_params)
-                    self._progress.value = frame
-                except StopIteration:
-                    if movie:
-                        self._progress.description = 'Making movie...'
-                        with self._woutput:
-                            # suppress moviepy's log
-                            self._make_from_array(image_array)
-                        if not os.path.exists(self.output):
-                            self._progress.description = "ERROR: Check the maker's log"
-                        else:
-                            self._progress.description = 'Done'
-                    self._remove_on_msg()
-                    if keep_data:
-                        self._image_array = image_array
-
-        self._on_msg = on_msg
+        self._on_msg = lambda widget, msg, buffers: self._handle_msg(widget, msg, buffers, image_array, iframe, movie, keep_data)
         # FIXME: if exception happens, the on_msg callback will be never removed
         # from `self.view`
-        self.view.on_msg(on_msg)
+        self.view.on_msg(self._on_msg)
         return self._progress
 
     def _remove_on_msg(self):
