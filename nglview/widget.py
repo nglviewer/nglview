@@ -7,7 +7,7 @@ import uuid
 from logging import getLogger
 
 import ipywidgets as widgets
-import ipywidgets.embed
+from ipywidgets import embed
 import numpy as np
 from IPython.display import display
 from ipywidgets import (Image, Box, DOMWidget, HBox, VBox, IntSlider, Output, Play, Widget,
@@ -85,9 +85,6 @@ def write_html(fp, views, frame_range=None):
     >>> nglview.write_html('index.html', [view], frame_range=(0, 5)) # doctest: +SKIP
     """
     views = isinstance(views, DOMWidget) and [views] or views
-    embed = ipywidgets.embed
-    color = None
-    theme = None
 
     for _, v in _INIT_VIEWS.items():
         views.insert(0, v)
