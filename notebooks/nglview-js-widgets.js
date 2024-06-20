@@ -1,1 +1,0 @@
-../nglview/static/index.js
