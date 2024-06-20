@@ -458,16 +458,15 @@ export
         this.handleResize(); // FIXME: really need this?
     }
 
-    updateCoordinatesFromDict(cdict, frame_index) {
+    updateCoordinatesFromDict(cdict, frameIndex) {
         // update coordinates for given "index"
         // cdict = Dict[int, List[base64]]
-        var keys = Object.keys(cdict).filter(k => (k !== 'n_frames'));
+        const keys = Object.keys(cdict).filter(k => k !== 'n_frames');
 
-        for (var i = 0; i < keys.length; i++) {
-            var traj_index = keys[i];
-            var coordinates = this.decode_base64(cdict[traj_index][frame_index]);
+        for (const key of keys) {
+            const coordinates = this.decode_base64(cdict[key][frameIndex]);
             if (coordinates && coordinates.byteLength > 0) {
-                this.updateCoordinates(coordinates, traj_index);
+                this.updateCoordinates(coordinates, key);
             }
         }
     }
