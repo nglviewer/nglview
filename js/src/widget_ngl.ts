@@ -682,78 +682,65 @@ class NGLView extends widgets.DOMWidgetView{
     }
 
 
-    setVisibilityForRepr(component_index, repr_index, value) {
-        // value = True/False
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index];
+        setVisibilityForRepr(component_index: number, repr_index: number, value: boolean) {
+        const component = this.stage.compList[component_index];
+        const repr = component?.reprList[repr_index];
 
-        if (repr) {
-            repr.setVisibility(value);
-        }
+        repr?.setVisibility(value);
     }
 
-    removeRepresentation(component_index, repr_index) {
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index]
+    removeRepresentation(component_index: number, repr_index: number) {
+        const component = this.stage.compList[component_index];
+        const repr = component?.reprList[repr_index];
 
         if (repr) {
             component.removeRepresentation(repr);
         }
     }
 
-    removeRepresentationsByName(repr_name, component_index) {
-        var component = this.stage.compList[component_index];
+    removeRepresentationsByName(repr_name: string, component_index: number) {
+        const component = this.stage.compList[component_index];
 
-        if (component) {
-            component.reprList.forEach(function(repr) {
-                if (repr.name == repr_name) {
-                    component.removeRepresentation(repr);
-                }
-            })
-        }
+        component?.reprList.forEach((repr) => {
+            if (repr.name === repr_name) {
+                component.removeRepresentation(repr);
+            }
+        });
     }
 
-    updateRepresentationForComponent(repr_index, component_index, params) {
-        var component = this.stage.compList[component_index];
-        var that = this;
-        var repr = component.reprList[repr_index];
-        if (repr) {
-            repr.setParameters(params);
-        }
+    updateRepresentationForComponent(repr_index: number, component_index: number, params: any) {
+        const component = this.stage.compList[component_index];
+        const repr = component?.reprList[repr_index];
+
+        repr?.setParameters(params);
     }
 
-    updateRepresentationsByName(repr_name, component_index, params) {
-        var component = this.stage.compList[component_index];
-        var that = this;
+    updateRepresentationsByName(repr_name: string, component_index: number, params: any) {
+        const component = this.stage.compList[component_index];
 
-        if (component) {
-            component.reprList.forEach(function(repr) {
-                if (repr.name == repr_name) {
-                    repr.setParameters(params);
-                    that.request_repr_dict();
-                }
-            })
-        }
+        component?.reprList.forEach((repr) => {
+            if (repr.name === repr_name) {
+                repr.setParameters(params);
+                this.request_repr_dict();
+            }
+        });
     }
 
-    setRepresentation(name, params, component_index, repr_index) {
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index];
-        var that = this;
+    setRepresentation(name: string, params: any, component_index: number, repr_index: number) {
+        const component = this.stage.compList[component_index];
+        const repr = component?.reprList[repr_index];
 
         if (repr) {
             params['useWorker'] = false;
-            var new_repr = NGL.makeRepresentation(name, component.structure,
-                this.stage.viewer, params);
+            const new_repr = NGL.makeRepresentation(name, component.structure, this.stage.viewer, params);
             if (new_repr) {
                 repr.setRepresentation(new_repr);
                 repr.name = name;
                 component.reprList[repr_index] = repr;
-                that.request_repr_dict();
+                this.request_repr_dict();
             }
         }
     }
-
     setColorByResidue(colors, component_index, repr_index){
         var repr = this.stage.compList[component_index].reprList[repr_index];
         var schemeId = NGL.ColormakerRegistry.addScheme(function(params){
