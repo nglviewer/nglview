@@ -398,61 +398,47 @@ class NGLView extends widgets.DOMWidgetView{
         }
     }
 
-    async handleEmbed(){
-        var that = this;
-        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
-        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
-        const camera_orientation = that.model.get("_camera_orientation");
+    async handleEmbed() {
+        const { _ngl_msg_archive, _ngl_full_stage_parameters, _camera_orientation, _ngl_coordinate_resource, _ngl_repr_dict, comm } = this.model.attributes;
 
-        if (
-            Object.keys(ngl_stage_params).length === 0
-            && camera_orientation.length === 0
-        ) {
+        if (Object.keys(_ngl_full_stage_parameters).length === 0 && _camera_orientation.length === 0) {
             console.log("No state stored; initializing embedded widget for the first time.");
-            for (const msg of ngl_msg_archive) {
-                await that.on_msg(msg);
+            for (const msg of _ngl_msg_archive) {
+                await this.on_msg(msg);
             }
-            return
+            return;
         }
 
-        var loadfile_list = [];
-
-        _.each(ngl_msg_archive, function(msg: any){
-            if (msg.methodName == 'loadFile'){
+        const loadFilePromises = _ngl_msg_archive
+            .filter(msg => msg.methodName === 'loadFile')
+            .map(msg => {
                 if (msg.kwargs && msg.kwargs.defaultRepresentation) {
                     // no need to add default representation as all representations
                     // are serialized separately, also it unwantedly sets the orientation
-                    msg.kwargs.defaultRepresentation = false
-                 }
-                loadfile_list.push(that._getLoadFilePromise(msg));
-            }
-        });
+                    msg.kwargs.defaultRepresentation = false;
+                }
+                return this._getLoadFilePromise(msg);
+            });
 
-
-        var compList = await Promise.all(loadfile_list)
-        that.stage.setParameters(ngl_stage_params);
-        that.set_camera_orientation(camera_orientation);
-        that.touch();
+        const compList = await Promise.all(loadFilePromises);
+        this.stage.setParameters(_ngl_full_stage_parameters);
+        this.set_camera_orientation(_camera_orientation);
+        this.touch();
 
         // Outside notebook
-        if (that.model.comm === undefined){
-            var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
-            var n_frames = ngl_coordinate_resource['n_frames'] || 1
-            that.model.set("max_frame", n_frames-1);  // trigger updating slider and player's max
-            that.touch()
-            var model = await that.getPlayerModel()
-            var pmodel = model.get("children")[0];
-            that.listenTo(pmodel,
-                "change:value", function(){
-                    that.updateCoordinatesFromDict(ngl_coordinate_resource,
-                    pmodel.get("value"))})
+        if (comm === undefined) {
+            const n_frames = _ngl_coordinate_resource['n_frames'] || 1;
+            this.model.set("max_frame", n_frames - 1);  // trigger updating slider and player's max
+            this.touch();
+            const model = await this.getPlayerModel();
+            const pmodel = model.get("children")[0];
+            this.listenTo(pmodel, "change:value", () => this.updateCoordinatesFromDict(_ngl_coordinate_resource, pmodel.get("value")));
         }
 
-
         // fire any msg with "fire_embed"
-        for (const msg of that.model.get("_ngl_msg_archive")) {
-            if (msg.fire_embed){
-                await that.on_msg(msg);
+        for (const msg of _ngl_msg_archive) {
+            if (msg.fire_embed) {
+                await this.on_msg(msg);
             }
         }
 
@@ -460,8 +446,8 @@ class NGLView extends widgets.DOMWidgetView{
         // User might add Shape (buffer component) to the view and the buffer component
         // is not created yet via loadFile
         // https://github.com/nglviewer/nglview/issues/1003
-        that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
-        that.handleResize() // FIXME: really need this?
+        this._set_representation_from_repr_dict(_ngl_repr_dict);
+        this.handleResize(); // FIXME: really need this?
     }
 
     updateCoordinatesFromDict(cdict, frame_index){
