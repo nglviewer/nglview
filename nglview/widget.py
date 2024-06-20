@@ -51,7 +51,6 @@ _EXCLUDED_CALLBACK_AFTER_FIRING = {
 _INIT_VIEWS = {'color_maker_registry': color.ColormakerRegistry}
 _TRACKED_WIDGETS = {}
 
-
 def _deprecated(msg):
     def wrap_1(func):
         def wrap_2(*args, **kwargs):
@@ -1036,68 +1035,75 @@ class NGLWidget(DOMWidget):
                           ],
                           kwargs=params)
 
+    def _handle_request_frame(self):
+        frame = self.frame + self.player.step
+        if frame > self.max_frame:
+            frame = 0
+        elif frame < 0:
+            frame = self.max_frame
+        self.frame = frame
+
+    def _handle_update_ids(self):
+        self._ngl_view_id = self._ngl_msg['data']
+
+    def _handle_remove_component(self):
+        cindex = int(self._ngl_msg['data'])
+        self._ngl_component_ids.pop(cindex)
+
+    def _handle_repr_parameters(self):
+        data_dict = self._ngl_msg['data']
+        name = data_dict.pop('name') + '\n'
+        selection = data_dict.get('sele', '') + '\n'
+        data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
+        data_dict_json = data_dict_json.replace('null', '"null"')
+
+        if self.player.widget_repr is not None:
+            repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
+            repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
+            repr_name_text.value = name
+            repr_selection.value = selection
+
+    def _handle_request_loaded(self):
+        if not self.loaded:
+            self.loaded = False
+        self.loaded = self._ngl_msg.get('data')
+
+    def _handle_request_repr_dict(self):
+        self._ngl_repr_dict = self._ngl_msg.get('data')
+
+    def _handle_stage_parameters(self):
+        self._ngl_full_stage_parameters = self._ngl_msg.get('data')
+
+    def _handle_async_message(self):
+        if self._ngl_msg.get('data') == 'ok':
+            self._event.set()
+
+    def _handle_image_data(self):
+        self._image_data = self._ngl_msg.get('data')
+        _TRACKED_WIDGETS[self._ngl_msg.get('ID')].value = base64.b64decode(self._image_data)
+
     def _handle_nglview_custom_msg(self, _, msg, buffers):
-        # Similar signature to
-        # https://github.com/jupyter-widgets/ipywidgets/blob/b78de43e12ff26e4aa16e6e4c6844a7c82a8ee1c/python/ipywidgets/ipywidgets/widgets/widget_string.py#L122
-        # NOTE: "self" is not counted as first argument.
-        """store message sent from Javascript.
-
-        How? use view.on_msg(get_msg)
-
-        Notes: message format should be {'type': type, 'data': data}
-        _handle_nglview_custom_msg will call appropriate function to handle message "type"
-        """
         self._ngl_msg = msg
 
         msg_type = self._ngl_msg.get('type')
         if msg_type == 'request_frame':
-            frame = self.frame + self.player.step
-            if frame > self.max_frame:
-                frame = 0
-            elif frame < 0:
-                frame = self.max_frame
-            self.frame = frame
+            self._handle_request_frame()
         elif msg_type == 'updateIDs':
-            self._ngl_view_id = msg['data']
+            self._handle_update_ids()
         elif msg_type == 'removeComponent':
-            cindex = int(msg['data'])
-            self._ngl_component_ids.pop(cindex)
+            self._handle_remove_component()
         elif msg_type == 'repr_parameters':
-            data_dict = self._ngl_msg.get('data')
-            name = data_dict.pop('name') + '\n'
-            selection = data_dict.get('sele', '') + '\n'
-            # json change True to true
-            data_dict_json = json.dumps(data_dict).replace(
-                'true', 'True').replace('false', 'False')
-            data_dict_json = data_dict_json.replace('null', '"null"')
-
-            if self.player.widget_repr is not None:
-                # TODO: refactor
-                repr_name_text = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_name_text')
-                repr_selection = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_selection')
-                repr_name_text.value = name
-                repr_selection.value = selection
+            self._handle_repr_parameters()
         elif msg_type == 'request_loaded':
-            if not self.loaded:
-                # trick to trigger observe loaded
-                # so two viewers can have the same representations
-                self.loaded = False
-            self.loaded = msg.get('data')
+            self._handle_request_loaded()
         elif msg_type == 'request_repr_dict':
-            # update _repr_dict will trigger other things
-            # see _handle_repr_dict_changed
-            self._ngl_repr_dict = self._ngl_msg.get('data')
+            self._handle_request_repr_dict()
         elif msg_type == 'stage_parameters':
-            self._ngl_full_stage_parameters = msg.get('data')
+            self._handle_stage_parameters()
         elif msg_type == 'async_message':
-            if msg.get('data') == 'ok':
-                self._event.set()
+            self._handle_async_message()
         elif msg_type == 'image_data':
-            self._image_data = msg.get('data')
-            _TRACKED_WIDGETS[msg.get('ID')].value = base64.b64decode(
-                self._image_data)
+            self._handle_image_data()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         if self.n_components > 0:
