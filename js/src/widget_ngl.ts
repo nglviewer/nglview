@@ -612,71 +612,67 @@ class NGLView extends widgets.DOMWidgetView{
         return this.model.widget_manager.get_model(model_id)
     }
 
-    async createIPlayer(){
+    async createIPlayer() {
         this.player_pview = this.createView("_iplayer");
-        var view = await this.player_pview
-        var that = this;
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.bottom = '5%'
-        pe.style.left = '10%'
-        pe.style.opacity = '0.7'
-        that.stage.viewer.container.append(view.el);
-        pe.style.display = 'none'
+        const view = await this.player_pview;
+        const pe = view.el;
+        pe.style.position = 'absolute';
+        pe.style.zIndex = '100';
+        pe.style.bottom = '5%';
+        pe.style.left = '10%';
+        pe.style.opacity = '0.7';
+        this.stage.viewer.container.append(view.el);
+        pe.style.display = 'none';
     }
 
-    async createImageBtn(){
+    async createImageBtn() {
         this.image_btn_pview = this.createView("_ibtn_image");
-        var view = await this.image_btn_pview
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.top = '5%'
-        pe.style.right = '10%'
-        pe.style.opacity = '0.7'
-        pe.style.width = '35px'
+        const view = await this.image_btn_pview;
+        const pe = view.el;
+        pe.style.position = 'absolute';
+        pe.style.zIndex = '100';
+        pe.style.top = '5%';
+        pe.style.right = '10%';
+        pe.style.opacity = '0.7';
+        pe.style.width = '35px';
         this.stage.viewer.container.append(view.el);
     }
 
-    async createFullscreenBtn(){
+    async createFullscreenBtn() {
         this.btn_pview_fullscreen = this.createView("_ibtn_fullscreen");
-        var view = await this.btn_pview_fullscreen
-        var stage = this.stage;
-
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.top = '5%'
-        pe.style.right = '5%'
-        pe.style.opacity = '0.7'
-        pe.style.width = '35px'
-        pe.style.background = 'white'
-        pe.style.opacity = '0.3'
-        pe.style.display = 'none'
-        pe.onclick = function(){
+        const view = await this.btn_pview_fullscreen;
+        const pe = view.el;
+        pe.style.position = 'absolute';
+        pe.style.zIndex = '100';
+        pe.style.top = '5%';
+        pe.style.right = '5%';
+        pe.style.opacity = '0.7';
+        pe.style.width = '35px';
+        pe.style.background = 'white';
+        pe.style.opacity = '0.3';
+        pe.style.display = 'none';
+        pe.onclick = () => {
             this.stage.toggleFullscreen();
-        }.bind(this)
-        stage.viewer.container.append(view.el);
-        stage.signals.fullscreenChanged.add(function (isFullscreen) {
-          if (isFullscreen) {
-            view.model.set("icon", "compress")
-          } else {
-            view.model.set("icon", "expand")
-          }
-        })
+        };
+        this.stage.viewer.container.append(view.el);
+        this.stage.signals.fullscreenChanged.add((isFullscreen) => {
+            if (isFullscreen) {
+                view.model.set("icon", "compress");
+            } else {
+                view.model.set("icon", "expand");
+            }
+        });
     }
 
-
-    async createGUI(){
+    async createGUI() {
         this.pgui_view = this.createView("_igui");
-        var view = await this.pgui_view
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.top = '5%'
-        pe.style.right = '10%'
-        pe.style.width = '300px'
+        const view = await this.pgui_view;
+        const pe = view.el;
+        pe.style.position = 'absolute';
+        pe.style.zIndex = '100';
+        pe.style.top = '5%';
+        pe.style.right = '10%';
+        pe.style.width = '300px';
         this.stage.viewer.container.append(view.el);
     }
 
