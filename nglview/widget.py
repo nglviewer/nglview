@@ -1230,62 +1230,62 @@ class NGLWidget(DOMWidget):
         self._update_component_auto_completion()
         return self[-1]
 
-    def _load_data(self, obj, **kwargs):
+    def _load_data(self, data_object, **kwargs):
         '''
-
         Parameters
         ----------
-        obj : nglview.Structure or any object having 'get_structure_string' method or
-              string buffer (open(fn).read())
+        data_object : nglview.Structure or any object having 'get_structure_string' method or
+                      string buffer (open(fn).read())
         '''
-        kwargs2 = _camelize_dict(kwargs)
+        camelized_kwargs = _camelize_dict(kwargs)
 
         try:
-            is_url = FileManager(obj).is_url
+            is_url = FileManager(data_object).is_url
         except NameError:
             is_url = False
 
-        if 'defaultRepresentation' not in kwargs2:
-            kwargs2['defaultRepresentation'] = True
+        if 'defaultRepresentation' not in camelized_kwargs:
+            camelized_kwargs['defaultRepresentation'] = True
 
-        if not is_url:
-            if hasattr(obj, 'get_structure_string'):
-                blob = obj.get_structure_string()
-                kwargs2['ext'] = obj.ext
-                passing_buffer = True
-                binary = False
-            else:
-                fh = FileManager(obj,
-                                 ext=kwargs.get('ext'),
-                                 compressed=kwargs.get('compressed'))
-                # assume passing string
-                blob = fh.read(force_buffer=True)
-                passing_buffer = True
-
-                if fh.ext is None and passing_buffer:
-                    raise ValueError('must provide extension')
-
-                kwargs2['ext'] = fh.ext
-                binary = fh.is_binary
-                use_filename = fh.use_filename
-
-            if binary and not use_filename:
-                # send base64
-                blob = base64.b64encode(blob).decode('utf8')
-            blob_type = 'blob' if passing_buffer else 'path'
-            args = [{'type': blob_type, 'data': blob, 'binary': binary}]
+        if is_url:
+            blob_type, blob, is_binary = self._get_url_blob(data_object)
         else:
-            # is_url
-            blob_type = 'url'
-            url = obj
-            args = [{'type': blob_type, 'data': url, 'binary': False}]
+            blob_type, blob, is_binary = self._get_object_blob(data_object, kwargs, camelized_kwargs)
 
-        name = py_utils.get_name(obj, **kwargs2)
-        self._ngl_component_names.append(name)
-        self._remote_call("loadFile",
-                          target='Stage',
-                          args=args,
-                          kwargs=kwargs2)
+        args = [{'type': blob_type, 'data': blob, 'binary': is_binary}]
+        object_name = py_utils.get_name(data_object, **camelized_kwargs)
+        self._ngl_component_names.append(object_name)
+        self._remote_call("loadFile", target='Stage', args=args, kwargs=camelized_kwargs)
+
+    def _get_url_blob(self, url):
+        # is_url
+        return 'url', url, False
+
+    def _get_object_blob(self, data_object, kwargs, camelized_kwargs):
+        if hasattr(data_object, 'get_structure_string'):
+            # nglview.Structure or any object having 'get_structure_string' method
+            blob = data_object.get_structure_string()
+            camelized_kwargs['ext'] = data_object.ext
+            is_passing_buffer = True
+            is_binary = False
+        else:
+            # string buffer (open(fn).read())
+            file_handler = FileManager(data_object, ext=kwargs.get('ext'), compressed=kwargs.get('compressed'))
+            blob = file_handler.read(force_buffer=True)
+            is_passing_buffer = True
+
+            if file_handler.ext is None and is_passing_buffer:
+                raise ValueError('must provide extension')
+
+            camelized_kwargs['ext'] = file_handler.ext
+            is_binary = file_handler.is_binary
+            use_filename = file_handler.use_filename
+
+        if is_binary and not use_filename:
+            # send base64
+            blob = base64.b64encode(blob).decode('utf8')
+
+        return 'blob' if is_passing_buffer else 'path', blob, is_binary
 
     def remove_component(self, c):
         """remove component by its uuid.
