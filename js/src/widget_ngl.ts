@@ -471,19 +471,6 @@ export
         this.handleResize(); // FIXME: really need this?
     }
 
-    updateCoordinatesFromDict(cdict, frameIndex) {
-        // update coordinates for given "index"
-        // cdict = Dict[int, List[base64]]
-        const keys = Object.keys(cdict).filter(k => k !== 'n_frames');
-
-        for (const key of keys) {
-            const coordinates = this.decode_base64(cdict[key][frameIndex]);
-            if (coordinates && coordinates.byteLength > 0) {
-                this.updateCoordinates(coordinates, key);
-            }
-        }
-    }
-
     requestFrame() {
         this.send({
             'type': 'request_frame',
@@ -872,18 +859,6 @@ export
         return arraybuffer;
     }
 
-    updateCoordinates(coordinates, model) {
-        // coordinates must be ArrayBuffer (use this.decode_base64)
-        var component = this.stage.compList[model];
-        if (coordinates && component) {
-            var coords = new Float32Array(coordinates);
-            component.structure.updatePosition(coords);
-            component.updateRepresentations({
-                "position": true
-            });
-        }
-    }
-
     handleResizable() {
         this.$container.resizable({
             resize: function (event, ui) {
@@ -1086,6 +1061,31 @@ export
             default:
                 console.log('there is no method for ' + msg.target);
                 break;
+        }
+    }
+
+    updateCoordinates(coordinates, model) {
+        // coordinates must be ArrayBuffer (use this.decode_base64)
+        var component = this.stage.compList[model];
+        if (coordinates && component) {
+            var coords = new Float32Array(coordinates);
+            component.structure.updatePosition(coords);
+            component.updateRepresentations({
+                "position": true
+            });
+        }
+    }
+
+    updateCoordinatesFromDict(cdict, frameIndex) {
+        // update coordinates for given "index"
+        // cdict = Dict[int, List[base64]]
+        const keys = Object.keys(cdict).filter(k => k !== 'n_frames');
+
+        for (const key of keys) {
+            const coordinates = this.decode_base64(cdict[key][frameIndex]);
+            if (coordinates && coordinates.byteLength > 0) {
+                this.updateCoordinates(coordinates, key);
+            }
         }
     }
 
