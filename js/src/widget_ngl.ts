@@ -1203,15 +1203,12 @@ export
     }
 }
 
-// export all models and views here to make embeding a bit easier
-module.exports = {
-    'NGLView': NGLView,
-    'NGLModel': NGLModel,
-    'NGL': NGL,
-    'FullscreenModel': FullscreenModel,
-    'FullscreenView': FullscreenView,
-    'ColormakerRegistryModel': ColormakerRegistryModel,
-    'ColormakerRegistryView': ColormakerRegistryView,
-    'ThemeManagerModel': ThemeManagerModel,
-    'ThemeManagerView': ThemeManagerView,
+export {
+    NGL,
+    FullscreenModel,
+    FullscreenView,
+    ColormakerRegistryModel,
+    ColormakerRegistryView,
+    ThemeManagerModel,
+    ThemeManagerView,
 }
