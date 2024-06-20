@@ -262,7 +262,7 @@ export
             if (this._synced_model_ids.length > 0 && this._ngl_focused == 1) {
                 for (const mid of this._synced_model_ids) {
                     const model = await this.model.widget_manager.get_model(mid);
-                    for (const view of Object.values(model.views)) {
+                    for (const view of Object.values(model.views as any[])) {
                         if (view.uuid != this.uuid) {
                             view.stage.viewerControls.orient(m);
                         }
