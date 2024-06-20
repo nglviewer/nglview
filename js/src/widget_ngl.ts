@@ -206,70 +206,87 @@ export
             this.mouseOverDisplay(display);
         };
 
-        container.addEventListener('mouseover', () => mouseOverHandler('block'), false);
-        container.addEventListener('mouseout', () => mouseOverHandler('none'), false);
+        const addMouseEvents = () => {
+            container.addEventListener('mouseover', () => mouseOverHandler('block'), false);
+            container.addEventListener('mouseout', () => mouseOverHandler('none'), false);
+        };
 
-        container.addEventListener('contextmenu', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-        }, true);
+        const addContextMenuEvent = () => {
+            container.addEventListener('contextmenu', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+            }, true);
+        };
 
-        this.stage.signals.componentAdded.add((component) => {
-            this.comp_uuids.push(component.uuid);
-            const len = this.stage.compList.length;
-            this.model.set("n_components", len);
-            this.touch();
-            const comp = this.stage.compList[len - 1];
-            comp.signals.representationRemoved.add(() => this.request_repr_dict());
-            comp.signals.representationAdded.add((repr) => {
+        const addComponentEvents = () => {
+            this.stage.signals.componentAdded.add(this.componentAddedHandler.bind(this));
+            this.stage.signals.componentRemoved.add(this.componentRemovedHandler.bind(this));
+        };
+
+        const addStageEvents = () => {
+            this.stage.signals.parametersChanged.add(() => this.requestUpdateStageParameters());
+            this.stage.viewerControls.signals.changed.add(this.viewerControlsChangedHandler.bind(this));
+        };
+
+        addMouseEvents();
+        addContextMenuEvent();
+        addComponentEvents();
+        addStageEvents();
+    }
+
+    async componentAddedHandler(component) {
+        this.comp_uuids.push(component.uuid);
+        const len = this.stage.compList.length;
+        this.model.set("n_components", len);
+        this.touch();
+        const comp = this.stage.compList[len - 1];
+        comp.signals.representationRemoved.add(() => this.request_repr_dict());
+        comp.signals.representationAdded.add((repr) => {
+            this.request_repr_dict();
+            repr.signals.parametersChanged.add(() => {
+                console.log("repr.parametersChanged");
                 this.request_repr_dict();
-                repr.signals.parametersChanged.add(() => {
-                    console.log("repr.parametersChanged");
-                    this.request_repr_dict();
-                });
             });
         });
+    }
 
-        this.stage.signals.componentRemoved.add(async (component) => {
-            const cindex = this.comp_uuids.indexOf(component.uuid);
-            this.comp_uuids.splice(cindex, 1);
-            const n_components = this.stage.compList.length;
-            this.model.set("n_components", n_components);
-            this.touch();
-            console.log('componentRemoved', component, component.uuid);
+    async componentRemovedHandler(component) {
+        const cindex = this.comp_uuids.indexOf(component.uuid);
+        this.comp_uuids.splice(cindex, 1);
+        const n_components = this.stage.compList.length;
+        this.model.set("n_components", n_components);
+        this.touch();
+        console.log('componentRemoved', component, component.uuid);
 
-            const pviews = Object.values(this.model.views);
-            const views = await Promise.all(pviews);
-            console.log(views);
-            let update_backend = false;
-            for (const view of views as any[]) {
-                if ((view.uuid != this.uuid) && (view.stage.compList.length > n_components)) {
-                    view.stage.removeComponent(view.stage.compList[cindex]);
-                    update_backend = true;
-                }
+        const pviews = Object.values(this.model.views);
+        const views = await Promise.all(pviews);
+        console.log(views);
+        let update_backend = false;
+        for (const view of views as any[]) {
+            if ((view.uuid != this.uuid) && (view.stage.compList.length > n_components)) {
+                view.stage.removeComponent(view.stage.compList[cindex]);
+                update_backend = true;
             }
-            if (update_backend) {
-                console.log("should update backend");
-                this.send({ "type": "removeComponent", "data": cindex });
-            }
-        });
+        }
+        if (update_backend) {
+            console.log("should update backend");
+            this.send({ "type": "removeComponent", "data": cindex });
+        }
+    }
 
-        this.stage.signals.parametersChanged.add(() => this.requestUpdateStageParameters());
-
-        this.stage.viewerControls.signals.changed.add(async () => {
-            this.serialize_camera_orientation();
-            const m = this.stage.viewerControls.getOrientation();
-            if (this._synced_model_ids.length > 0 && this._ngl_focused == 1) {
-                for (const mid of this._synced_model_ids) {
-                    const model = await this.model.widget_manager.get_model(mid);
-                    for (const view of Object.values(model.views as any[])) {
-                        if (view.uuid != this.uuid) {
-                            view.stage.viewerControls.orient(m);
-                        }
+    async viewerControlsChangedHandler() {
+        this.serialize_camera_orientation();
+        const m = this.stage.viewerControls.getOrientation();
+        if (this._synced_model_ids.length > 0 && this._ngl_focused == 1) {
+            for (const mid of this._synced_model_ids) {
+                const model = await this.model.widget_manager.get_model(mid);
+                for (const view of Object.values(model.views as any[])) {
+                    if (view.uuid != this.uuid) {
+                        view.stage.viewerControls.orient(m);
                     }
                 }
             }
-        });
+        }
     }
 
     handlePicking() {
