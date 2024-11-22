@@ -95,6 +95,9 @@ def get_mocked_traj():
         def get_coordinates(self, frame):
             return np.random.rand(10, 3, 3)
 
+        def get_structure_string(self):
+            return 'hello'
+
     return MockedTraj()
 
 
