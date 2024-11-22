@@ -1,27 +1,21 @@
 import gzip
 import os
-import sys
-import time
 import unittest
-from functools import partial
 from io import StringIO
-from itertools import chain
 
-import ipywidgets
 import numpy as np
 import pytest
-import traitlets
-from ipykernel.comm import Comm
 from IPython.display import display
-from ipywidgets import BoundedFloatText, Button, HBox, IntText, Layout, Widget
+from ipywidgets import HBox, IntText
 from mock import MagicMock, patch
 from numpy.testing import assert_almost_equal as aa_eq
-from traitlets import TraitError, link
+from traitlets import TraitError
 
 import nglview as nv
 from nglview import NGLWidget, interpolate, js_utils, widget_utils
 from nglview.representation import RepresentationControl
-from nglview.utils.py_utils import click, decode_base64, encode_base64, submit
+from nglview.utils.py_utils import decode_base64, encode_base64
+from nglview.utils.test_utils import get_mocked_traj
 # local
 from utils import get_fn
 from utils import repr_dict as REPR_DICT
@@ -85,32 +79,6 @@ try:
     has_qcelemental = True
 except ImportError:
     has_qcelemental = False
-
-
-def get_mocked_traj():
-    class MockedTraj(nv.Structure, nv.Trajectory):
-        def __init__(self):
-            nv.Structure.__init__(self)
-            nv.Trajectory.__init__(self)
-
-        @property
-        def n_frames(self):
-            return 5
-
-        def get_coordinates(self, frame):
-            coordinates = [
-                [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
-                [[0.1, 0.1, 0.1], [1.1, 0.1, 0.1], [0.1, 1.1, 0.1]],
-                [[0.2, 0.2, 0.2], [1.2, 0.2, 0.2], [0.2, 1.2, 0.2]],
-                [[0.3, 0.3, 0.3], [1.3, 0.3, 0.3], [0.3, 1.3, 0.3]],
-                [[0.4, 0.4, 0.4], [1.4, 0.4, 0.4], [0.4, 1.4, 0.4]]
-            ]
-            return np.array(coordinates)[frame]
-
-        def get_structure_string(self):
-            return 'hello'
-
-    return MockedTraj()
 
 
 def default_view():
