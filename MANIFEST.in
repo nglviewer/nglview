@@ -1,9 +1,7 @@
 include nglview/datafiles/*
-include nglview/js/*
 recursive-include nglview/static *.*
 recursive-include nglview/staticlab *.*
 include nglview/theme/*
 include LICENSE README.md DEVELOPMENT.md CHANGELOG.md
 include setup.py
-include nglview/_version.py versioneer.py
 global-exclude *.pycinclude *.ipynb *.gif *tests/notebooks/*
