@@ -11,10 +11,7 @@ from pathlib import Path
 
 from setuptools import Command, find_packages, setup
 from setuptools.command.egg_info import egg_info
-
-from jupyter_packaging import (
-    create_cmdclass,
-)
+from jupyter_packaging import wrap_installers, get_data_files
 
 here = os.path.dirname(os.path.abspath(__file__))
 node_root = os.path.join(here, 'js')
@@ -140,10 +137,8 @@ data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
 ]
 
-cmdclass = create_cmdclass("jsdeps",
-    package_data_spec=package_data_spec,
-    data_files_spec=data_files_spec
-)
+cmdclass = wrap_installers(pre_develop="jsdeps", pre_dist="jsdeps")
+data_files = get_data_files(data_files_spec)
 cmdclass['jsdeps'] = NPM
 cmdclass['egg_info'] = js_prerelease(egg_info)
 
@@ -201,6 +196,7 @@ setup_args = {
                  ]),
     'zip_safe': False,
     'cmdclass': cmdclass,
+    'data_files': data_files,
 
     'author': 'Alexander S. Rose, Hai Nguyen',
     'author_email': 'alexander.rose@weirdbyte.de',
