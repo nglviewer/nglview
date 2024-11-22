@@ -21,7 +21,6 @@ from . import color, interpolate
 from .adaptor import Structure, Trajectory
 from .component import ComponentViewer
 from .config import BACKENDS
-from .player import TrajectoryPlayer, _dry_run
 from .remote_thread import RemoteCallThread
 from .representation import RepresentationControl
 from .shape import Shape
@@ -255,7 +254,6 @@ class NGLWidget(DOMWidget):
             if autoview:
                 self.center()
 
-        self.player = TrajectoryPlayer(self)
         self._view_width = kwargs.get('width', '')
         self._view_height = kwargs.get('height', '')
 
@@ -305,8 +303,6 @@ class NGLWidget(DOMWidget):
         player = Play(max=self.max_frame, interval=100)
         slider = IntSlider(max=self.max_frame)
         self._iplayer = HBox([player, slider])
-        self.player.widget_player = player
-        self.player.widget_player_slider = slider
 
         jslink((player, 'value'), (slider, 'value'))
         jslink((player, 'value'), (self, 'frame'))
@@ -379,12 +375,6 @@ class NGLWidget(DOMWidget):
         elif change.new == 'light':
             self._widget_theme.light()
 
-    @observe('picked')
-    def _on_picked(self, change):
-        picked = change['new']
-        if self.player.widget_picked is not None:
-            self.player.widget_picked.value = json.dumps(picked)
-
     @observe('background')
     def _update_background_color(self, change):
         color = change['new']
@@ -396,84 +386,64 @@ class NGLWidget(DOMWidget):
 
     @observe('n_components')
     def _handle_n_components_changed(self, change):
-        if self.player.widget_repr is not None:
-            component_slider = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'component_slider')
+        component_slider = widget_utils.get_widget_by_name(self, 'component_slider')
 
-            if change['new'] - 1 >= component_slider.min:
-                component_slider.max = change['new'] - 1
+        if change['new'] - 1 >= component_slider.min:
+            component_slider.max = change['new'] - 1
 
-            component_dropdown = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'component_dropdown')
-            component_dropdown.options = tuple(self._ngl_component_names)
+        component_dropdown = widget_utils.get_widget_by_name(self, 'component_dropdown')
+        component_dropdown.options = tuple(self._ngl_component_names)
 
-            if change['new'] == 0:
-                component_dropdown.options = tuple([' '])
-                component_dropdown.value = ' '
+        if change['new'] == 0:
+            component_dropdown.options = tuple([' '])
+            component_dropdown.value = ' '
 
-                component_slider.max = 0
+            component_slider.max = 0
 
-                reprlist_choices = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'reprlist_choices')
-                reprlist_choices.options = tuple([' '])
+            reprlist_choices = widget_utils.get_widget_by_name(self, 'reprlist_choices')
+            reprlist_choices.options = tuple([' '])
 
-                repr_slider = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_slider')
-                repr_slider.max = 0
+            repr_slider = widget_utils.get_widget_by_name(self, 'repr_slider')
+            repr_slider.max = 0
 
-                repr_name_text = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_name_text')
-                repr_selection = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_selection')
-                repr_name_text.value = ' '
-                repr_selection.value = ' '
+            repr_name_text = widget_utils.get_widget_by_name(self, 'repr_name_text')
+            repr_selection = widget_utils.get_widget_by_name(self, 'repr_selection')
+            repr_name_text.value = ' '
+            repr_selection.value = ' '
 
     @observe('_ngl_repr_dict')
     def _handle_repr_dict_changed(self, change):
-        if self.player.widget_repr is not None:
-            repr_slider = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'repr_slider')
-            component_slider = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'component_slider')
-            repr_name_text = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'repr_name_text')
-            repr_selection = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'repr_selection')
-            reprlist_choices = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'reprlist_choices')
-            repr_names = get_repr_names_from_dict(self._ngl_repr_dict,
-                                                  component_slider.value)
+        repr_slider = widget_utils.get_widget_by_name(self, 'repr_slider')
+        component_slider = widget_utils.get_widget_by_name(self, 'component_slider')
+        repr_name_text = widget_utils.get_widget_by_name(self, 'repr_name_text')
+        repr_selection = widget_utils.get_widget_by_name(self, 'repr_selection')
+        reprlist_choices = widget_utils.get_widget_by_name(self, 'reprlist_choices')
+        repr_names = get_repr_names_from_dict(self._ngl_repr_dict, component_slider.value)
 
-            if change['new'] == {0: {}}:
-                repr_selection.value = ''
-            else:
-                options = tuple(
-                    str(i) + '-' + name for (i, name) in enumerate(repr_names))
-                reprlist_choices.options = options
+        if change['new'] == {0: {}}:
+            repr_selection.value = ''
+        else:
+            options = tuple(str(i) + '-' + name for (i, name) in enumerate(repr_names))
+            reprlist_choices.options = options
 
-                try:
-                    value = reprlist_choices.options[repr_slider.value]
-                    if isinstance(value, tuple):
-                        # https://github.com/jupyter-widgets/ipywidgets/issues/1512
-                        value = value[0]
-                    reprlist_choices.value = value
-                except IndexError:
-                    if repr_slider.value == 0:
-                        # works fine with ipywidgets 5.2.2
-                        reprlist_choices.options = tuple([
-                            ' ',
-                        ])
-                        reprlist_choices.value = ' '
-                    else:
-                        reprlist_choices.value = reprlist_choices.options[
-                            repr_slider.value - 1]
+            try:
+                value = reprlist_choices.options[repr_slider.value]
+                if isinstance(value, tuple):
+                    # https://github.com/jupyter-widgets/ipywidgets/issues/1512
+                    value = value[0]
+                reprlist_choices.value = value
+            except IndexError:
+                if repr_slider.value == 0:
+                    # works fine with ipywidgets 5.2.2
+                    reprlist_choices.options = tuple([' '])
+                    reprlist_choices.value = ' '
+                else:
+                    reprlist_choices.value = reprlist_choices.options[repr_slider.value - 1]
 
-                # e.g: 0-cartoon
-                repr_name_text.value = reprlist_choices.value.split(
-                    '-')[-1].strip()
+            # e.g: 0-cartoon
+            repr_name_text.value = reprlist_choices.value.split('-')[-1].strip()
 
-                repr_slider.max = len(repr_names) - 1 if len(
-                    repr_names) >= 1 else len(repr_names)
+            repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
 
     def _update_max_frame(self):
         self.max_frame = max(
@@ -527,10 +497,6 @@ class NGLWidget(DOMWidget):
             super()._ipython_display_(**kwargs)
         except AttributeError:
             display(super()._repr_mimebundle_(), raw=True)
-        if self._init_gui:
-            if self._gui is None:
-                self._gui = self.player._display()
-            display(self._gui)
 
     def display(self, gui=False, style='ngl'):
         """
@@ -539,29 +505,16 @@ class NGLWidget(DOMWidget):
         ----------
         gui : bool
             If True: turn on GUI
-        style : str, {'ngl', 'ipywidgets}, default 'ngl'
-            GUI style (with gui=True)
+        style : str, {'ngl'}
+            GUI style (with gui=True).
+            Style "ipywidgets" is deprecated.
         """
         if gui:
             if style == 'ipywidgets':
-                # For the old implementation
-                # is there anyone using this?
-                self.gui_style = None # turn off the NGL's GUI
-                self._gui = self.player._display()
-                self._gui.layout.align_self = 'stretch'
-                self._gui.layout.width = '400px'
-                b = HBox([self, self._gui])
-                def on(b):
-                    self.handle_resize()
-                try:
-                    # ipywidgets < 8
-                    b.on_displayed(on)
-                except AttributeError:
-                    logger.warn(
-                        "display(style='ipywidgets') is not supported"
-                        " with this version of ipywidgets"
-                    )
-                return b
+                logger.warning(
+                    "display(style='ipywidgets') is deprecated. Please use style='ngl'."
+                )
+                return self
             elif style == 'ngl':
                 self.gui_style = 'ngl'
                 return self
@@ -746,9 +699,7 @@ class NGLWidget(DOMWidget):
         return RepresentationControl(self, component, repr_index, name=name)
 
     def _set_coordinates(self, index, movie_making=False, render_params=None):
-        # FIXME: use movie_making here seems awkward.
-        '''update coordinates for all trajectories at index-th frame
-        '''
+        '''update coordinates for all trajectories at index-th frame'''
         render_params = render_params or {}
         if self._trajlist:
             coordinates_dict = {}
@@ -757,17 +708,9 @@ class NGLWidget(DOMWidget):
 
                 try:
                     if trajectory.shown:
-                        if self.player.interpolate:
-                            t = self.player.iparams.get('t', 0.5)
-                            step = self.player.iparams.get('step', 1)
-                            coordinates_dict[traj_index] = interpolate.linear(
-                                index, t=t, traj=trajectory, step=step)
-                        else:
-                            coordinates_dict[
-                                traj_index] = trajectory.get_coordinates(index)
+                        coordinates_dict[traj_index] = trajectory.get_coordinates(index)
                     else:
-                        coordinates_dict[traj_index] = np.empty((0),
-                                                                dtype='f4')
+                        coordinates_dict[traj_index] = np.empty((0), dtype='f4')
                 except (IndexError, ValueError):
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
 
@@ -1040,7 +983,7 @@ class NGLWidget(DOMWidget):
                           kwargs=params)
 
     def _handle_request_frame(self):
-        frame = self.frame + self.player.step
+        frame = self.frame
         if frame > self.max_frame:
             frame = 0
         elif frame < 0:
@@ -1060,12 +1003,6 @@ class NGLWidget(DOMWidget):
         selection = data_dict.get('sele', '') + '\n'
         data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
         data_dict_json = data_dict_json.replace('null', '"null"')
-
-        if self.player.widget_repr is not None:
-            repr_name_text = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_name_text')
-            repr_selection = widget_utils.get_widget_by_name(self.player.widget_repr, 'repr_selection')
-            repr_name_text.value = name
-            repr_selection.value = selection
 
     def _handle_request_loaded(self):
         if not self.loaded:
