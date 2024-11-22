@@ -486,7 +486,7 @@ def test_show_text():
     nv.show_text(text)
 
 
-@unittest.skipUnless(has_ase, 'skip if not having ase')
+@pytest.mark.skipif(not has_ase, reason='skip if not having ase')
 def test_show_ase():
     from ase import Atom, Atoms
     dimer = Atoms([Atom('X', (0, 0, 0)), Atom('X', (0, 0, 1))])
@@ -494,7 +494,7 @@ def test_show_ase():
     nv.show_ase(dimer)
 
 
-@unittest.skipUnless(has_pymatgen, 'skip if not having pymatgen')
+@pytest.mark.skipif(not has_pymatgen, reason='skip if not having pymatgen')
 def test_show_pymatgen():
     from pymatgen.core import Lattice, Structure
     lattice = Lattice.cubic(4.2)
@@ -504,7 +504,7 @@ def test_show_pymatgen():
     view
 
 
-@unittest.skipUnless(has_qcelemental, 'skip if not having qcelemental')
+@pytest.mark.skipif(not has_qcelemental, reason='skip if not having qcelemental')
 def test_show_qcelemental():
     import qcelemental as qcel
 
@@ -513,7 +513,7 @@ def test_show_qcelemental():
     view
 
 
-@unittest.skipUnless(has_bio, 'skip if not having biopython')
+@pytest.mark.skipif(not has_bio, reason='skip if not having biopython')
 def test_show_biopython():
     from Bio.PDB import PDBParser
     parser = PDBParser()
@@ -521,7 +521,7 @@ def test_show_biopython():
     nv.show_biopython(structure)
 
 
-@unittest.skipUnless(has_simpletraj, 'skip if not having simpletraj')
+@pytest.mark.skipif(not has_simpletraj, reason='skip if not having simpletraj')
 def test_show_simpletraj():
     traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
     view = nv.show_simpletraj(traj)
@@ -529,14 +529,14 @@ def test_show_simpletraj():
     view.frame = 3
 
 
-@unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
+@pytest.mark.skipif(not has_mdtraj, reason='skip if not having mdtraj')
 def test_show_mdtraj():
     import mdtraj as md
     traj = md.load(nv.datafiles.PDB)
     view = nv.show_mdtraj(traj)
 
 
-@unittest.skipUnless(has_HTMD, 'skip if not having HTMD')
+@pytest.mark.skipif(not has_HTMD, reason='skip if not having HTMD')
 def test_show_htmd():
     from htmd import Molecule
     fn = nv.datafiles.PDB
@@ -550,7 +550,7 @@ def test_show_htmd():
     aa_eq(view._coordinates_dict[0], xyz_htmd)
 
 
-@unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
+@pytest.mark.skipif(not has_MDAnalysis, reason='skip if not having MDAnalysis')
 def test_show_MDAnalysis():
     from MDAnalysis import Universe
     tn, fn = nv.datafiles.PDB, nv.datafiles.PDB
@@ -558,7 +558,7 @@ def test_show_MDAnalysis():
     view = nv.show_mdanalysis(u)
 
 
-@unittest.skipUnless(has_parmed, 'skip if not having ParmEd')
+@pytest.mark.skipif(not has_parmed, reason='skip if not having ParmEd')
 def test_show_parmed():
     import parmed as pmd
     fn = nv.datafiles.PDB
