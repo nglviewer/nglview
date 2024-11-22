@@ -95,8 +95,7 @@ class NPM(Command):
             return False
 
     def should_run_npm_install(self):
-        package_json = os.path.join(node_root, 'package.json')
-        node_modules_exists = os.path.exists(self.node_modules)
+        pass
         return rebuild_nglview_js
 
     def run(self):
@@ -153,7 +152,8 @@ setup_args = {
     "use_scm_version": True,
     "setup_requires": ['setuptools_scm'],
     'description': 'IPython widget to interactively view molecular structures and trajectories.',
-    'include_package_data': True,
+    'description_file': 'README.md',
+    'description': 'IPython widget to interactively view molecular structures and trajectories.',
     'license': "MIT",
     'package_data': {
          "nglview.datafiles": ["*"],
