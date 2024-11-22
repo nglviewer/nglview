@@ -1,5 +1,19 @@
 #!/usr/bin/env python
 
+"""
+Steps:
+    - cd nglview/static
+    - git rm -rf ./*
+
+    - cd nglview/staticlab
+    - git rm -rf ./*
+
+    - cd js
+    - npm install
+    - cd ../nglview
+    - git add static staticlab
+"""
+
 import subprocess
 import sys
 from pathlib import Path
