@@ -384,67 +384,6 @@ class NGLWidget(DOMWidget):
         # self._remote_call("handleResize", target='Stage')
         self._remote_call("handleResize")
 
-    @observe('n_components')
-    def _handle_n_components_changed(self, change):
-        component_slider = widget_utils.get_widget_by_name(self, 'component_slider')
-
-        if change['new'] - 1 >= component_slider.min:
-            component_slider.max = change['new'] - 1
-
-        component_dropdown = widget_utils.get_widget_by_name(self, 'component_dropdown')
-        component_dropdown.options = tuple(self._ngl_component_names)
-
-        if change['new'] == 0:
-            component_dropdown.options = tuple([' '])
-            component_dropdown.value = ' '
-
-            component_slider.max = 0
-
-            reprlist_choices = widget_utils.get_widget_by_name(self, 'reprlist_choices')
-            reprlist_choices.options = tuple([' '])
-
-            repr_slider = widget_utils.get_widget_by_name(self, 'repr_slider')
-            repr_slider.max = 0
-
-            repr_name_text = widget_utils.get_widget_by_name(self, 'repr_name_text')
-            repr_selection = widget_utils.get_widget_by_name(self, 'repr_selection')
-            repr_name_text.value = ' '
-            repr_selection.value = ' '
-
-    @observe('_ngl_repr_dict')
-    def _handle_repr_dict_changed(self, change):
-        repr_slider = widget_utils.get_widget_by_name(self, 'repr_slider')
-        component_slider = widget_utils.get_widget_by_name(self, 'component_slider')
-        repr_name_text = widget_utils.get_widget_by_name(self, 'repr_name_text')
-        repr_selection = widget_utils.get_widget_by_name(self, 'repr_selection')
-        reprlist_choices = widget_utils.get_widget_by_name(self, 'reprlist_choices')
-        repr_names = get_repr_names_from_dict(self._ngl_repr_dict, component_slider.value)
-
-        if change['new'] == {0: {}}:
-            repr_selection.value = ''
-        else:
-            options = tuple(str(i) + '-' + name for (i, name) in enumerate(repr_names))
-            reprlist_choices.options = options
-
-            try:
-                value = reprlist_choices.options[repr_slider.value]
-                if isinstance(value, tuple):
-                    # https://github.com/jupyter-widgets/ipywidgets/issues/1512
-                    value = value[0]
-                reprlist_choices.value = value
-            except IndexError:
-                if repr_slider.value == 0:
-                    # works fine with ipywidgets 5.2.2
-                    reprlist_choices.options = tuple([' '])
-                    reprlist_choices.value = ' '
-                else:
-                    reprlist_choices.value = reprlist_choices.options[repr_slider.value - 1]
-
-            # e.g: 0-cartoon
-            repr_name_text.value = reprlist_choices.value.split('-')[-1].strip()
-
-            repr_slider.max = len(repr_names) - 1 if len(repr_names) >= 1 else len(repr_names)
-
     def _update_max_frame(self):
         self.max_frame = max(
             int(traj.n_frames) for traj in self._trajlist
