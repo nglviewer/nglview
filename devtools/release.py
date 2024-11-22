@@ -25,6 +25,4 @@ print("\nMake sure to publish npm package")
 output = subprocess.check_output(["npm", "search", "nglview-js-widgets"]).decode()
 print(output)
 
-subprocess.check_call('cd nglview/labextension && git clean -fdx .', shell=True)
-subprocess.check_call('cd js && npm install && npm run copy:labextension', shell=True)
 subprocess.check_call('python setup.py sdist', shell=True)
