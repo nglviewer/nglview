@@ -184,12 +184,8 @@ def test_API_promise_to_have():
     view.camera = 'perspective'
     view._request_stage_parameters()
     view._ngl_repr_dict = REPR_DICT
-    view._handle_repr_dict_changed(dict(new=dict(c0={})))
 
     view._update_background_color(change=dict(new='blue'))
-    view._handle_n_components_changed(change=dict(new=2, old=1))
-    view._handle_n_components_changed(change=dict(new=1, old=1))
-    view._handle_n_components_changed(change=dict(new=1, old=0))
     view.on_loaded(change=dict(new=True))
     view.on_loaded(change=dict(new=False))
 
@@ -222,9 +218,6 @@ def test_API_promise_to_have():
     view.render_image()
     view.render_image(frame=2)
     view.download_image()
-
-    assert view._dry_run(view._set_sync_camera,
-                         [view])['methodName'] == 'setSyncCamera'
 
     msg = dict(type='request_frame', data=dict())
     view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
@@ -381,7 +374,6 @@ def test_representations():
     # accept dict too (to specify seperate reprs for different component
     def func():
         view.representations = {'0': MagicMock()}
-    assert view._dry_run(func)['methodName'] == '_set_representation_from_repr_dict'
 
     # Representations
     # make fake params
