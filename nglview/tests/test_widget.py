@@ -164,8 +164,6 @@ def test_API_promise_to_have():
 
     # display
     js_utils.clean_error_output()
-    display(view.player.widget_repr)
-    view.player._display()
     view._display_image()
 
     # show
@@ -188,16 +186,7 @@ def test_API_promise_to_have():
     view._ngl_repr_dict = REPR_DICT
     view._handle_repr_dict_changed(dict(new=dict(c0={})))
 
-    # dummy
-    class DummWidget():
-        value = ''
-
-    view.player.picked_widget = DummWidget()
-
     view._update_background_color(change=dict(new='blue'))
-    tab = view.player._display()
-
-    view.player.widget_repr = view.player._make_widget_repr()
     view._handle_n_components_changed(change=dict(new=2, old=1))
     view._handle_n_components_changed(change=dict(new=1, old=1))
     view._handle_n_components_changed(change=dict(new=1, old=0))
@@ -322,7 +311,6 @@ def test_handling_n_components_changed():
     # fake updating n_components and _repr_dict from front-end
     view._ngl_repr_dict = REPR_DICT
     view.n_components = 1
-    view.player.widget_repr = view.player._make_widget_repr()
     view.remove_component(n_traj.id)
     # fake updating n_components from front-end
     view._ngl_repr_dict = {'c0': {}}
@@ -356,7 +344,6 @@ def test_coordinates_dict():
     view._send_binary = False
     view._coordinates_dict = {0: coords}
     # increase coverage for IndexError: make index=1000 (which is larger than n_frames)
-    view.player.interpolate = True
     view._set_coordinates(1000)
 
 
@@ -799,126 +786,6 @@ def test_loaded_attribute():
     view.add_trajectory(traj)
     view
 
-
-def test_player_simple():
-    view = default_view()
-
-    # dummy
-    component_slider = ipywidgets.IntSlider()
-    repr_slider = ipywidgets.IntSlider()
-
-    # dummy test
-    player = nv.player.TrajectoryPlayer(view)
-    player.smooth()
-    player.camera = 'perspective'
-    player.camera = 'orthographic'
-    player.frame
-    player.frame = 10
-    player.parameters = dict(step=2)
-    player._display()
-    player._make_button_center()
-    w = player._make_widget_preference()
-    w.children[0].value = 1.
-    player.widget_preference = None
-    w = player._make_widget_preference()
-    w.children[0].value = 1.
-    player._show_download_image()
-    player._make_text_picked()
-    player._refresh(component_slider, repr_slider)
-    player._make_widget_repr()
-    player._make_resize_notebook_slider()
-    player._make_button_export_image()
-    player._make_repr_playground()
-    player._make_widget_picked()
-    player._make_export_image_widget()
-    player._make_general_box()
-    player._update_padding()
-    player._real_time_update = True
-    player._make_widget_repr()
-    player.widget_component_slider
-    player.widget_repr_slider
-    player._create_all_tabs()
-    player._create_all_widgets()
-    player.widget_tab = None
-    player._create_all_widgets()
-    player._simplify_repr_control()
-
-    player._real_time_update = True
-    player.widget_repr_slider.value = 0
-    player.widget_repr_slider.value = 1
-    slider_notebook = player._make_resize_notebook_slider()
-    slider_notebook.value = 300
-
-    player.widget_repr_name.value = 'surface'
-    player.widget_repr_name.value = 'cartoon'
-
-
-def test_player_submit_text():
-    """ test_player_click_button """
-    view = nv.demo(gui=True)
-    submit(view.player._make_command_box())
-
-
-def test_player_click_button():
-    """ test_player_click_button """
-    view = nv.demo(gui=True)
-    view
-    view._ngl_repr_dict = REPR_DICT
-    view.player._create_all_widgets()
-    view.player.widget_export_image = view.player._make_button_export_image()
-    button_iter = chain.from_iterable([
-        view.player.widget_repr_control_buttons.children,
-        [
-            view.player._show_download_image(),
-            view.player._make_button_center(),
-            view.player.widget_export_image.children[0].children[0],
-            view.player.widget_repr_add.children[0],
-        ],
-        [
-            w for w in view.player.widget_preference.children
-            if isinstance(w, Button)
-        ],
-    ])
-    for button in button_iter:
-        click(button)
-
-
-def test_player_link_to_ipywidgets():
-    view = default_view()
-
-    int_text = IntText(2)
-    float_text = BoundedFloatText(40, min=10)
-    HBox([int_text, float_text])
-    link((int_text, 'value'), (view.player, 'step'))
-    link((float_text, 'value'), (view.player, 'delay'))
-
-    assert view.player.step == 2
-    assert view.player.delay == 40
-
-    float_text.value = 100
-    assert view.player.delay == 100
-
-    float_text.value = 0.00
-    # we set min=10
-    assert view.player.delay == 10
-
-
-def test_player_interpolation():
-    view = default_view()
-
-    view.player.interpolate = True
-    assert view.player.iparams.get('type') == 'linear'
-    assert view.player.iparams.get('step') == 1
-
-
-def test_player_picked():
-    view = nv.demo()
-    s = dict(x=3)
-    view.player.widget_picked = view.player._make_text_picked()
-    view.picked = s
-    assert view.player.widget_picked.value == '{"x": 3}'
-
-
 def test_widget_utils():
     box = HBox()
     i0 = IntText()
@@ -946,19 +813,6 @@ def test_adaptor_raise():
 def test_theme():
     from nglview import theme
     # FIXME: fill me
-
-
-def test_player_click_tab():
-    view = nv.demo()
-    gui = view.player._display()
-    assert isinstance(gui, ipywidgets.Tab)
-
-    for i, child in enumerate(gui.children):
-        try:
-            gui.selected_index = i
-            assert isinstance(child, ipywidgets.Box)
-        except TraitError:
-            pass
 
 
 def test_interpolate():
