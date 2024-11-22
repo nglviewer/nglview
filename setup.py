@@ -64,9 +64,6 @@ setup_args = {
          "nglview.staticlab": ["*"],
      },
     'data_files': data_files,
-    'tests_require': [
-        'pytest'
-    ],
     'install_requires': [
         'ipywidgets>=8',
         'notebook>=7',
