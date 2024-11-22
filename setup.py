@@ -137,7 +137,13 @@ data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
 ]
 
-cmdclass = wrap_installers(pre_develop="jsdeps", pre_dist="jsdeps")
+def pre_develop():
+    pass
+
+def pre_dist():
+    pass
+
+cmdclass = wrap_installers(pre_develop=pre_develop, pre_dist=pre_dist)
 data_files = get_data_files(data_files_spec)
 cmdclass['jsdeps'] = NPM
 cmdclass['egg_info'] = js_prerelease(egg_info)
