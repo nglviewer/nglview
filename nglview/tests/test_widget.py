@@ -95,10 +95,17 @@ def get_mocked_traj():
 
         @property
         def n_frames(self):
-            return 10
+            return 5
 
         def get_coordinates(self, frame):
-            return np.random.rand(10, 3, 3)
+            coordinates = [
+                [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
+                [[0.1, 0.1, 0.1], [1.1, 0.1, 0.1], [0.1, 1.1, 0.1]],
+                [[0.2, 0.2, 0.2], [1.2, 0.2, 0.2], [0.2, 1.2, 0.2]],
+                [[0.3, 0.3, 0.3], [1.3, 0.3, 0.3], [0.3, 1.3, 0.3]],
+                [[0.4, 0.4, 0.4], [1.4, 0.4, 0.4], [0.4, 1.4, 0.4]]
+            ]
+            return np.array(coordinates)[frame]
 
         def get_structure_string(self):
             return 'hello'
