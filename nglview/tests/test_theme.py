@@ -3,8 +3,8 @@ from nglview.theme import ThemeManager
 
 
 def test_theme():
-    m  = ThemeManager()
-    assert m is ThemeManager() # singleton
+    m = ThemeManager()
+    assert m is ThemeManager()  # singleton
     assert m._theme_css == ''
     m.dark()
     assert m._theme == 'dark'

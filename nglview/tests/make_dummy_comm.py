@@ -63,6 +63,7 @@ if NEW_COMM_PACKAGE:
     orig_create_comm = comm.create_comm
     orig_get_comm_manager = comm.get_comm_manager
 
+
 def setup_test_comm():
     if NEW_COMM_PACKAGE:
         comm.create_comm = dummy_create_comm
@@ -73,9 +74,12 @@ def setup_test_comm():
     Widget.comm.klass = DummyComm
     ipywidgets.widgets.widget.Comm = DummyComm
     _widget_attrs['_repr_mimebundle_'] = Widget._repr_mimebundle_
+
     def raise_not_implemented(*args, **kwargs):
         raise NotImplementedError()
+
     Widget._repr_mimebundle_ = raise_not_implemented
+
 
 def teardown_test_comm():
     if NEW_COMM_PACKAGE:
@@ -93,11 +97,14 @@ def teardown_test_comm():
             setattr(Widget, attr, value)
     _widget_attrs.clear()
 
+
 def setup():
     setup_test_comm()
 
+
 def teardown():
     teardown_test_comm()
+
 
 def call_method(method, *args, **kwargs):
     method(*args, **kwargs)

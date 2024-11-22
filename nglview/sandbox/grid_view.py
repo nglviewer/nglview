@@ -43,6 +43,7 @@ document.onkeydown = function(event){
 
 
 class GridBoxNGL(GridBox):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._ngl_class_id = None
@@ -69,6 +70,7 @@ class GridBoxNGL(GridBox):
 
 
 class GridBoxViewAndPlayer(GridBoxNGL):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._view = self.children[0]

@@ -34,8 +34,7 @@ def _relayout(box, form_item_layout):
                 kid,
             ], layout=form_item_layout)
         else:
-            box2 = Box([Label(value=label_value), kid],
-                       layout=form_item_layout)
+            box2 = Box([Label(value=label_value), kid], layout=form_item_layout)
         form_items.append(box2)
 
     return form_items

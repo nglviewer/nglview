@@ -16,14 +16,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: [3.9]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
     - name: Checkout nglview repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Cache conda
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       env:
         CACHE_NUMBER: 2  # Increase this value to reset cache if .github/nglview-gha.yml has not changed
       with:
@@ -32,7 +32,7 @@ jobs:
           ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('.github/nglview-gha.yml') }}
 
     - name: Set up conda environment
-      uses: conda-incubator/setup-miniconda@v2
+      uses: conda-incubator/setup-miniconda@v3
       with:
         auto-update-conda: true
         auto-activate-base: false

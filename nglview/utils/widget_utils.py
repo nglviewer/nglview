@@ -31,8 +31,7 @@ def get_widget_by_name(box, widget_name):
 
     if children is not None:
         for widget in children:
-            if hasattr(widget,
-                       '_ngl_name') and widget._ngl_name == widget_name:
+            if hasattr(widget, '_ngl_name') and widget._ngl_name == widget_name:
                 return widget
     return None
 

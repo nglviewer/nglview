@@ -132,8 +132,8 @@ class MovieMaker:
 
     def make_old_impl(self, in_memory=False):
         # TODO : make base class so we can reuse this with sandbox/base.py
-        progress = IntProgress(
-            description='Rendering...', max=len(self._time_range) - 1)
+        progress = IntProgress(description='Rendering...',
+                               max=len(self._time_range) - 1)
         self._event = threading.Event()
 
         def _make(event):
@@ -156,18 +156,16 @@ class MovieMaker:
                             iw = self.view.render_image(**self.render_params)
                         self.sleep()
                         if self.in_memory:
-                            rgb = self._base64_to_ndarray(
-                                self.view._image_data)
+                            rgb = self._base64_to_ndarray(self.view._image_data)
                             self._image_array.append(rgb)
                             if iw:
                                 iw.close()  # free memory
                 if not self.in_memory:
                     template = "{}/{}.{}.png"
                     image_files = [
-                        image_dir
-                        for image_dir in (template.format(
+                        image_dir for image_dir in (template.format(
                             self.download_folder, self.prefix, str(i))
-                                          for i in self._time_range)
+                                                    for i in self._time_range)
                         if os.path.exists(image_dir)
                     ]
                 else:
@@ -177,20 +175,20 @@ class MovieMaker:
                 clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
                 with Output():
                     if self.output.endswith('.gif'):
-                        clip.write_gif(
-                            self.output,
-                            fps=self.fps,
-                            verbose=False,
-                            **self.moviepy_params)
+                        clip.write_gif(self.output,
+                                       fps=self.fps,
+                                       verbose=False,
+                                       **self.moviepy_params)
                     else:
-                        clip.write_videofile(
-                            self.output, fps=self.fps, **self.moviepy_params)
+                        clip.write_videofile(self.output,
+                                             fps=self.fps,
+                                             **self.moviepy_params)
                 self._image_array = []
                 progress.description = 'Done'
                 time.sleep(1)
                 progress.close()
 
-        self.thread = threading.Thread(target=_make, args=(self._event, ))
+        self.thread = threading.Thread(target=_make, args=(self._event,))
         self.thread.daemon = True
         self.thread.start()
         return progress
@@ -219,20 +217,20 @@ class MovieMaker:
 
         # trigger movie making communication between backend and frontend
         self.perframe_hook and hook(frame)
-        self.view._set_coordinates(
-            frame, movie_making=True, render_params=self.render_params)
+        self.view._set_coordinates(frame,
+                                   movie_making=True,
+                                   render_params=self.render_params)
         self._progress.description = 'Rendering ...'
 
-        def on_msg(widget, msg, _):
+        def on_msg(widget, msg, buffers):
             if msg['type'] == 'movie_image_data':
                 image_array.append(msg.get('data'))
                 try:
                     frame = next(iframe)
                     self.perframe_hook and hook(frame)
-                    self.view._set_coordinates(
-                        frame,
-                        movie_making=True,
-                        render_params=self.render_params)
+                    self.view._set_coordinates(frame,
+                                               movie_making=True,
+                                               render_params=self.render_params)
                     self._progress.value = frame
                 except StopIteration:
                     if movie:
@@ -262,15 +260,15 @@ class MovieMaker:
         clip = mpy.ImageSequenceClip(image_files, fps=self.fps)
         with self._woutput:
             if self.output.endswith('.gif'):
-                clip.write_gif(
-                    self.output,
-                    fps=self.fps,
-                    verbose=False,
-                    **self.moviepy_params)
+                clip.write_gif(self.output,
+                               fps=self.fps,
+                               verbose=False,
+                               **self.moviepy_params)
             else:
 
-                clip.write_videofile(
-                    self.output, fps=self.fps, **self.moviepy_params)
+                clip.write_videofile(self.output,
+                                     fps=self.fps,
+                                     **self.moviepy_params)
 
     def interupt(self):
         """ Stop making process """
@@ -287,4 +285,3 @@ class MovieMaker:
         im_bytes = io.BytesIO(im_bytes)
         # convert to numpy RGB value (for moviepy.editor.VideoClip)
         return np.array(Image.open(im_bytes))
-

@@ -1,1 +1,1 @@
-__frontend_version__ = '3.1.0'
+__frontend_version__ = '3.1.4'

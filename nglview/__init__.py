@@ -1,28 +1,29 @@
 import warnings
 
-# for doc
 from . import adaptor, datafiles, show, widget
-from ._version import get_versions
 from .adaptor import *
 from .base_adaptor import *
-# TODO: do not use import *
-# interface
 from .config import BACKENDS
 from .data_source import DatasourceRegistry
 from .show import *
-# utils
 from .utils import js_utils, widget_utils
 from .widget import NGLWidget, write_html
 
-__version__ = get_versions()['version']
-del get_versions
+import pkg_resources
+
+try:
+    __version__ = pkg_resources.get_distribution("nglview").version
+except pkg_resources.DistributionNotFound:
+    __version__ = "unknown"
+
+del pkg_resources
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
 
+
 # Register nbextension
-
-
+# FIXME: do we still need this?
 def _jupyter_nbextension_paths():
     return [{
         'section': 'notebook',
@@ -33,4 +34,4 @@ def _jupyter_nbextension_paths():
 
 
 __all__ = ['NGLWidget', 'write_html'
-           ] + widget.__all__ + adaptor.__all__ + show.__all__
+          ] + widget.__all__ + adaptor.__all__ + show.__all__

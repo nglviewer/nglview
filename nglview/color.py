@@ -5,7 +5,6 @@ from ._frontend import __frontend_version__
 from IPython.display import display
 import time
 
-
 COLOR_SCHEMES = [
     " ", "picking", "random", "uniform", "atomindex", "residueindex",
     "chainindex", "modelindex", "sstruc", "element", "resname", "bfactor",
@@ -13,7 +12,6 @@ COLOR_SCHEMES = [
 ]
 
 _USER_COLOR_DICT = {}
-
 
 
 class _ColorScheme:
@@ -38,12 +36,14 @@ class _ColormakerRegistry(BaseWidget):
     _model_name = Unicode("ColormakerRegistryModel").tag(sync=True)
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
-    _msg_q = List().tag(sync=True) # overwrite BaseWidget's trait to avoid caling base method in frontend
+    _msg_q = List().tag(
+        sync=True
+    )  # overwrite BaseWidget's trait to avoid caling base method in frontend
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         try:
-            get_ipython() # only display in notebook
+            get_ipython()  # only display in notebook
             self._ipython_display_()
         except NameError:
             pass

@@ -3,6 +3,7 @@ import os
 from mock import MagicMock, patch
 
 import nglview
+from nglview.utils.test_utils import get_mocked_traj
 from make_dummy_comm import *
 import PIL.Image
 
@@ -13,7 +14,7 @@ def test_movie_maker(mock_image, ImageSequenceClip):
     from nglview.contrib.movie import MovieMaker
     ImageSequenceClip.write_gif = MagicMock()
     ImageSequenceClip.write_videofile = MagicMock()
-    traj = nglview.SimpletrajTrajectory(nglview.datafiles.XTC, nglview.datafiles.PDB)
+    traj = get_mocked_traj()
     view = nglview.show_simpletraj(traj)
 
     movie = MovieMaker(view,

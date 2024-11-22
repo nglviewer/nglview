@@ -206,8 +206,8 @@ class FileManager:
         '''
         if self._compressed is None:
             if self.is_filename or self.is_url:
-                return (self.src.endswith('gz') or self.src.endswith('zip')
-                        or self.src.endswith('bz2'))
+                return (self.src.endswith('gz') or self.src.endswith('zip') or
+                        self.src.endswith('bz2'))
             else:
                 return False
         else:
@@ -237,8 +237,8 @@ class FileManager:
         if self._ext is not None:
             return self._ext
         else:
-            if hasattr(self.src, 'read') or (not self.is_filename
-                                             and not self.is_url):
+            if hasattr(self.src, 'read') or (not self.is_filename and
+                                             not self.is_url):
                 raise ValueError(
                     "you must provide file extension if using file-like object or text content"
                 )
@@ -267,5 +267,5 @@ class FileManager:
     def is_url(self):
         url_ext = ['http', 'rcsb://', 'data://'] + \
                   [f"{k}://" for k in DatasourceRegistry.sources]
-        return (isinstance(self.src, str)
-                and self.src.startswith(tuple(url_ext)))
+        return (isinstance(self.src, str) and
+                self.src.startswith(tuple(url_ext)))

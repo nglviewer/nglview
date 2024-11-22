@@ -8,8 +8,7 @@ from .adaptor import (ASEStructure, ASETrajectory, BiopythonStructure,
                       ProdyStructure, ProdyTrajectory, PyTrajTrajectory,
                       QCElementalStructure, RosettaStructure,
                       SchrodingerStructure, SchrodingerTrajectory,
-                      RdkitStructure,
-                      TextStructure)
+                      RdkitStructure, TextStructure)
 from .widget import NGLWidget
 
 __all__ = [
@@ -371,7 +370,7 @@ def show_rdkit(rdkit_mol, **kwargs):
     ext = kwargs.pop("fmt", "pdb")
     conf_id = kwargs.pop("conf_id", -1)
     struc = RdkitStructure(rdkit_mol, ext=ext, conf_id=conf_id)
-    return  NGLWidget(struc, **kwargs)
+    return NGLWidget(struc, **kwargs)
 
 
 def show_mdanalysis(atomgroup, **kwargs):

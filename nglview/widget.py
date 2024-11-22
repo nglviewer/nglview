@@ -1,16 +1,17 @@
 import base64
 import json
+import re
 import threading
 import time
 import uuid
 from logging import getLogger
 
 import ipywidgets as widgets
-import ipywidgets.embed
+from ipywidgets import embed
 import numpy as np
 from IPython.display import display
-from ipywidgets import (Image, Box, DOMWidget, HBox, VBox, IntSlider, Output, Play, Widget,
-                        jslink)
+from ipywidgets import (Image, Box, DOMWidget, HBox, VBox, IntSlider, Output,
+                        Play, Widget, jslink)
 from ipywidgets import widget as _widget
 from traitlets import (Bool, CaselessStrEnum, Dict, Instance, Int, Integer,
                        List, Unicode, observe, validate)
@@ -20,7 +21,6 @@ from . import color, interpolate
 from .adaptor import Structure, Trajectory
 from .component import ComponentViewer
 from .config import BACKENDS
-from .player import TrajectoryPlayer, _dry_run
 from .remote_thread import RemoteCallThread
 from .representation import RepresentationControl
 from .shape import Shape
@@ -53,7 +53,9 @@ _TRACKED_WIDGETS = {}
 
 
 def _deprecated(msg):
+
     def wrap_1(func):
+
         def wrap_2(*args, **kwargs):
             logger.warn(msg)
             return func(*args, **kwargs)
@@ -85,9 +87,6 @@ def write_html(fp, views, frame_range=None):
     >>> nglview.write_html('index.html', [view], frame_range=(0, 5)) # doctest: +SKIP
     """
     views = isinstance(views, DOMWidget) and [views] or views
-    embed = ipywidgets.embed
-    color = None
-    theme = None
 
     for _, v in _INIT_VIEWS.items():
         views.insert(0, v)
@@ -111,6 +110,13 @@ def write_html(fp, views, frame_range=None):
     snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
     snippet += '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">\n'
     snippet += embed.embed_snippet(views)
+    # hacky thing for https://github.com/nglviewer/nglview/issues/1107
+    # NGL must be fixed before we can remove this hack
+    _frontend = {'__frontend_version__': __frontend_version__}
+    pattern = r'("model_module":\s*"nglview-js-widgets",\s*"model_module_version":\s*)"' + re.escape(
+        _frontend['__frontend_version__']) + '",'
+    replacement = r'\g<1>"3.0.8",'
+    snippet = re.sub(pattern, replacement, snippet)
     html_code = embed.html_template.format(title='nglview-demo',
                                            snippet=snippet)
 
@@ -124,7 +130,6 @@ def write_html(fp, views, frame_range=None):
             f.write(html_code)
 
     _unset_serialization(views)
-
 
 
 class NGLWidget(DOMWidget):
@@ -145,8 +150,8 @@ class NGLWidget(DOMWidget):
     loaded = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
     n_components = Int(0).tag(sync=True)
-    _view_width = Unicode().tag(sync=True) # px
-    _view_height = Unicode().tag(sync=True) # px
+    _view_width = Unicode().tag(sync=True)  # px
+    _view_height = Unicode().tag(sync=True)  # px
     _scene_position = Dict().tag(sync=True)
     _scene_rotation = Dict().tag(sync=True)
     # hack to always display movie
@@ -168,7 +173,8 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
-    _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
+    _gui_theme = CaselessStrEnum(['dark', 'light'],
+                                 allow_none=True).tag(sync=True)
     _widget_theme = None
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
@@ -180,10 +186,11 @@ class NGLWidget(DOMWidget):
     # instance
     _iplayer = Instance(widgets.Box,
                         allow_none=True).tag(sync=True, **widget_serialization)
-    _igui = Instance(widgets.Tab,
-                     allow_none=True).tag(sync=True, **widget_serialization)
+    _igui = Instance(widgets.Tab, allow_none=True).tag(sync=True,
+                                                       **widget_serialization)
     _ibtn_fullscreen = Instance(widgets.Button,
-            allow_none=True).tag(sync=True, **widget_serialization)
+                                allow_none=True).tag(sync=True,
+                                                     **widget_serialization)
 
     def __init__(self,
                  structure=None,
@@ -208,7 +215,7 @@ class NGLWidget(DOMWidget):
         self.stage = Stage(view=self)
         self.control = ViewerControl(view=self)
         self._handle_msg_thread = threading.Thread(
-            target=self.on_msg, args=(self._handle_custom_msg, ))
+            target=self.on_msg, args=(self._handle_nglview_custom_msg,))
         # # register to get data from JS side
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
@@ -228,8 +235,8 @@ class NGLWidget(DOMWidget):
         else:
             kwargs['default_representation'] = default
 
-        autoview = 'center' not in kwargs or ('center' in kwargs
-                                              and kwargs.pop('center'))
+        autoview = 'center' not in kwargs or ('center' in kwargs and
+                                              kwargs.pop('center'))
         # NOTE: Using `pop` to avoid passing `center` to NGL.
 
         if parameters:
@@ -253,7 +260,6 @@ class NGLWidget(DOMWidget):
             if autoview:
                 self.center()
 
-        self.player = TrajectoryPlayer(self)
         self._view_width = kwargs.get('width', '')
         self._view_height = kwargs.get('height', '')
 
@@ -270,8 +276,8 @@ class NGLWidget(DOMWidget):
         # onclick is implemented in frontend
         self._ibtn_fullscreen = button
 
-
     def _sync_with_layout(self):
+
         def on_change_layout(change):
             new = change['new']
             if change['name'] == 'width':
@@ -303,8 +309,6 @@ class NGLWidget(DOMWidget):
         player = Play(max=self.max_frame, interval=100)
         slider = IntSlider(max=self.max_frame)
         self._iplayer = HBox([player, slider])
-        self.player.widget_player = player
-        self.player.widget_player_slider = slider
 
         jslink((player, 'value'), (slider, 'value'))
         jslink((player, 'value'), (self, 'frame'))
@@ -334,7 +338,7 @@ class NGLWidget(DOMWidget):
     @camera.setter
     def camera(self, value):
         """
-        
+
         Parameters
         ----------
         value : str, {'perspective', 'orthographic'}
@@ -377,12 +381,6 @@ class NGLWidget(DOMWidget):
         elif change.new == 'light':
             self._widget_theme.light()
 
-    @observe('picked')
-    def _on_picked(self, change):
-        picked = change['new']
-        if self.player.widget_picked is not None:
-            self.player.widget_picked.value = json.dumps(picked)
-
     @observe('background')
     def _update_background_color(self, change):
         color = change['new']
@@ -392,91 +390,11 @@ class NGLWidget(DOMWidget):
         # self._remote_call("handleResize", target='Stage')
         self._remote_call("handleResize")
 
-    @observe('n_components')
-    def _handle_n_components_changed(self, change):
-        if self.player.widget_repr is not None:
-            component_slider = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'component_slider')
-
-            if change['new'] - 1 >= component_slider.min:
-                component_slider.max = change['new'] - 1
-
-            component_dropdown = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'component_dropdown')
-            component_dropdown.options = tuple(self._ngl_component_names)
-
-            if change['new'] == 0:
-                component_dropdown.options = tuple([' '])
-                component_dropdown.value = ' '
-
-                component_slider.max = 0
-
-                reprlist_choices = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'reprlist_choices')
-                reprlist_choices.options = tuple([' '])
-
-                repr_slider = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_slider')
-                repr_slider.max = 0
-
-                repr_name_text = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_name_text')
-                repr_selection = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_selection')
-                repr_name_text.value = ' '
-                repr_selection.value = ' '
-
-    @observe('_ngl_repr_dict')
-    def _handle_repr_dict_changed(self, change):
-        if self.player.widget_repr is not None:
-            repr_slider = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'repr_slider')
-            component_slider = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'component_slider')
-            repr_name_text = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'repr_name_text')
-            repr_selection = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'repr_selection')
-            reprlist_choices = widget_utils.get_widget_by_name(
-                self.player.widget_repr, 'reprlist_choices')
-            repr_names = get_repr_names_from_dict(self._ngl_repr_dict,
-                                                  component_slider.value)
-
-            if change['new'] == {0: {}}:
-                repr_selection.value = ''
-            else:
-                options = tuple(
-                    str(i) + '-' + name for (i, name) in enumerate(repr_names))
-                reprlist_choices.options = options
-
-                try:
-                    value = reprlist_choices.options[repr_slider.value]
-                    if isinstance(value, tuple):
-                        # https://github.com/jupyter-widgets/ipywidgets/issues/1512
-                        value = value[0]
-                    reprlist_choices.value = value
-                except IndexError:
-                    if repr_slider.value == 0:
-                        # works fine with ipywidgets 5.2.2
-                        reprlist_choices.options = tuple([
-                            ' ',
-                        ])
-                        reprlist_choices.value = ' '
-                    else:
-                        reprlist_choices.value = reprlist_choices.options[
-                            repr_slider.value - 1]
-
-                # e.g: 0-cartoon
-                repr_name_text.value = reprlist_choices.value.split(
-                    '-')[-1].strip()
-
-                repr_slider.max = len(repr_names) - 1 if len(
-                    repr_names) >= 1 else len(repr_names)
-
     def _update_max_frame(self):
         self.max_frame = max(
-            int(traj.n_frames) for traj in self._trajlist
-            if hasattr(traj, 'n_frames')) - 1 # index starts from 0
+            int(traj.n_frames)
+            for traj in self._trajlist
+            if hasattr(traj, 'n_frames')) - 1  # index starts from 0
 
     def _wait_until_finished(self, timeout=0.0001):
         # NGL need to send 'finished' signal to
@@ -511,6 +429,7 @@ class NGLWidget(DOMWidget):
             self._fire_callbacks(self._ngl_displayed_callbacks_before_loaded)
 
     def _fire_callbacks(self, callbacks):
+
         def _call(event):
             for callback in callbacks:
                 callback(self)
@@ -525,10 +444,6 @@ class NGLWidget(DOMWidget):
             super()._ipython_display_(**kwargs)
         except AttributeError:
             display(super()._repr_mimebundle_(), raw=True)
-        if self._init_gui:
-            if self._gui is None:
-                self._gui = self.player._display()
-            display(self._gui)
 
     def display(self, gui=False, style='ngl'):
         """
@@ -537,29 +452,16 @@ class NGLWidget(DOMWidget):
         ----------
         gui : bool
             If True: turn on GUI
-        style : str, {'ngl', 'ipywidgets}, default 'ngl'
-            GUI style (with gui=True)
+        style : str, {'ngl'}
+            GUI style (with gui=True).
+            Style "ipywidgets" is deprecated.
         """
         if gui:
             if style == 'ipywidgets':
-                # For the old implementation
-                # is there anyone using this?
-                self.gui_style = None # turn off the NGL's GUI
-                self._gui = self.player._display()
-                self._gui.layout.align_self = 'stretch'
-                self._gui.layout.width = '400px'
-                b = HBox([self, self._gui])
-                def on(b):
-                    self.handle_resize()
-                try:
-                    # ipywidgets < 8
-                    b.on_displayed(on)
-                except AttributeError:
-                    logger.warn(
-                        "display(style='ipywidgets') is not supported"
-                        " with this version of ipywidgets"
-                    )
-                return b
+                logger.warning(
+                    "display(style='ipywidgets') is deprecated. Please use style='ngl'."
+                )
+                return self
             elif style == 'ngl':
                 self.gui_style = 'ngl'
                 return self
@@ -592,15 +494,15 @@ class NGLWidget(DOMWidget):
 
     def _set_unsync_repr(self, other_views):
         model_ids = {v._model_id for v in other_views}
-        self._synced_repr_model_ids = list(set(self._synced_repr_model_ids) - model_ids)
+        self._synced_repr_model_ids = list(
+            set(self._synced_repr_model_ids) - model_ids)
         self._remote_call("setSyncRepr",
                           target="Widget",
                           args=[self._synced_repr_model_ids])
 
     def _set_sync_camera(self, other_views):
         model_ids = {v._model_id for v in other_views}
-        self._synced_model_ids = sorted(
-            set(self._synced_model_ids) | model_ids)
+        self._synced_model_ids = sorted(set(self._synced_model_ids) | model_ids)
         self._remote_call("setSyncCamera",
                           target="Widget",
                           args=[self._synced_model_ids])
@@ -659,8 +561,7 @@ class NGLWidget(DOMWidget):
     @representations.setter
     def representations(self, reps):
         if isinstance(reps, dict):
-            self._remote_call("_set_representation_from_repr_dict",
-                    args=[reps])
+            self._remote_call("_set_representation_from_repr_dict", args=[reps])
         else:
             self._representations = reps[:]
             for index in range(len(self._ngl_component_ids)):
@@ -696,7 +597,7 @@ class NGLWidget(DOMWidget):
 
     def set_representations(self, representations, component=0):
         """
-        
+
         Parameters
         ----------
         representations : list of dict
@@ -724,8 +625,7 @@ class NGLWidget(DOMWidget):
                           target='Widget',
                           args=[repr_name, component])
 
-    def _update_representations_by_name(self, repr_name, component=0,
-                                        **kwargs):
+    def _update_representations_by_name(self, repr_name, component=0, **kwargs):
         kwargs = _camelize_dict(kwargs)
         self._remote_call('updateRepresentationsByName',
                           target='Widget',
@@ -744,9 +644,7 @@ class NGLWidget(DOMWidget):
         return RepresentationControl(self, component, repr_index, name=name)
 
     def _set_coordinates(self, index, movie_making=False, render_params=None):
-        # FIXME: use movie_making here seems awkward.
-        '''update coordinates for all trajectories at index-th frame
-        '''
+        '''update coordinates for all trajectories at index-th frame'''
         render_params = render_params or {}
         if self._trajlist:
             coordinates_dict = {}
@@ -755,28 +653,20 @@ class NGLWidget(DOMWidget):
 
                 try:
                     if trajectory.shown:
-                        if self.player.interpolate:
-                            t = self.player.iparams.get('t', 0.5)
-                            step = self.player.iparams.get('step', 1)
-                            coordinates_dict[traj_index] = interpolate.linear(
-                                index, t=t, traj=trajectory, step=step)
-                        else:
-                            coordinates_dict[
-                                traj_index] = trajectory.get_coordinates(index)
+                        coordinates_dict[
+                            traj_index] = trajectory.get_coordinates(index)
                     else:
-                        coordinates_dict[traj_index] = np.empty((0),
-                                                                dtype='f4')
+                        coordinates_dict[traj_index] = np.empty((0), dtype='f4')
                 except (IndexError, ValueError):
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
 
             self.set_coordinates(coordinates_dict,
-                    render_params=render_params,
-                    movie_making=movie_making)
+                                 render_params=render_params,
+                                 movie_making=movie_making)
         else:
             print("no trajectory available")
 
-    def set_coordinates(self, arr_dict, movie_making=False,
-            render_params=None):
+    def set_coordinates(self, arr_dict, movie_making=False, render_params=None):
         # type: (Dict[int, np.ndarray]) -> None
         """Used for update coordinates of a given trajectory
         >>> # arr: numpy array, ndim=2
@@ -792,22 +682,20 @@ class NGLWidget(DOMWidget):
             buffers.append(arr.astype('f4').tobytes())
             coordinates_meta[index] = index
         msg = {
-                'type': 'binary_single',
-                'data': coordinates_meta,
-            }
+            'type': 'binary_single',
+            'data': coordinates_meta,
+        }
         if movie_making:
             msg['movie_making'] = movie_making
             msg['render_params'] = render_params
 
-        self.send(
-            msg,
-            buffers=buffers)
+        self.send(msg, buffers=buffers)
 
     @observe('frame')
     def _on_frame_changed(self, change):
         """set and send coordinates at current frame
         """
-        self._set_coordinates(self.frame)
+        self._set_coordinates(change['new'])
 
     def clear(self, *args, **kwargs):
         '''shortcut of `clear_representations`
@@ -842,7 +730,7 @@ class NGLWidget(DOMWidget):
         Notes
         -----
         Supported shape: 'mesh', 'sphere', 'ellipsoid', 'cylinder', 'cone', 'arrow'.
-        
+
         See also
         --------
         {ngl_url}
@@ -856,7 +744,10 @@ class NGLWidget(DOMWidget):
         >>> c = view._add_shape([sphere, arrow], name='my_shape')
         """
 
-        self._remote_call('addShape', target='Widget', args=[name, shapes], fire_embed=True)
+        self._remote_call('addShape',
+                          target='Widget',
+                          args=[name, shapes],
+                          fire_embed=True)
 
         # Added to remain in sync with the JS components
         # Similarly to _loadData
@@ -985,7 +876,7 @@ class NGLWidget(DOMWidget):
         --------
             # tell NGL to render send image data to notebook.
             view.render_image()
-            
+
             # make sure to call `get_image` method
             view.get_image()
 
@@ -1037,65 +928,71 @@ class NGLWidget(DOMWidget):
                           ],
                           kwargs=params)
 
-    def _handle_custom_msg(self, msg, buffers):
-        """store message sent from Javascript.
+    def _handle_request_frame(self):
+        frame = self.frame + 1
+        if frame > self.max_frame:
+            frame = 0
+        elif frame < 0:
+            frame = self.max_frame
+        self.frame = frame
 
-        How? use view.on_msg(get_msg)
+    def _handle_update_ids(self):
+        self._ngl_view_id = self._ngl_msg['data']
 
-        Notes: message format should be {'type': type, 'data': data}
-        _handle_custom_msg will call appropriate function to handle message "type"
-        """
+    def _handle_remove_component(self):
+        cindex = int(self._ngl_msg['data'])
+        self._ngl_component_ids.pop(cindex)
+
+    def _handle_repr_parameters(self):
+        data_dict = self._ngl_msg['data']
+        name = data_dict.pop('name') + '\n'
+        selection = data_dict.get('sele', '') + '\n'
+        data_dict_json = json.dumps(data_dict).replace('true', 'True').replace(
+            'false', 'False')
+        data_dict_json = data_dict_json.replace('null', '"null"')
+
+    def _handle_request_loaded(self):
+        if not self.loaded:
+            self.loaded = False
+        self.loaded = self._ngl_msg.get('data')
+
+    def _handle_request_repr_dict(self):
+        self._ngl_repr_dict = self._ngl_msg.get('data')
+
+    def _handle_stage_parameters(self):
+        self._ngl_full_stage_parameters = self._ngl_msg.get('data')
+
+    def _handle_async_message(self):
+        if self._ngl_msg.get('data') == 'ok':
+            self._event.set()
+
+    def _handle_image_data(self):
+        self._image_data = self._ngl_msg.get('data')
+        _TRACKED_WIDGETS[self._ngl_msg.get('ID')].value = base64.b64decode(
+            self._image_data)
+
+    def _handle_nglview_custom_msg(self, _, msg, buffers):
         self._ngl_msg = msg
 
         msg_type = self._ngl_msg.get('type')
         if msg_type == 'request_frame':
-            frame = self.frame + self.player.step
-            if frame > self.max_frame:
-                frame = 0
-            elif frame < 0:
-                frame = self.max_frame
-            self.frame = frame
+            self._handle_request_frame()
         elif msg_type == 'updateIDs':
-            self._ngl_view_id = msg['data']
+            self._handle_update_ids()
         elif msg_type == 'removeComponent':
-            cindex = int(msg['data'])
-            self._ngl_component_ids.pop(cindex)
+            self._handle_remove_component()
         elif msg_type == 'repr_parameters':
-            data_dict = self._ngl_msg.get('data')
-            name = data_dict.pop('name') + '\n'
-            selection = data_dict.get('sele', '') + '\n'
-            # json change True to true
-            data_dict_json = json.dumps(data_dict).replace(
-                'true', 'True').replace('false', 'False')
-            data_dict_json = data_dict_json.replace('null', '"null"')
-
-            if self.player.widget_repr is not None:
-                # TODO: refactor
-                repr_name_text = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_name_text')
-                repr_selection = widget_utils.get_widget_by_name(
-                    self.player.widget_repr, 'repr_selection')
-                repr_name_text.value = name
-                repr_selection.value = selection
+            self._handle_repr_parameters()
         elif msg_type == 'request_loaded':
-            if not self.loaded:
-                # trick to trigger observe loaded
-                # so two viewers can have the same representations
-                self.loaded = False
-            self.loaded = msg.get('data')
+            self._handle_request_loaded()
         elif msg_type == 'request_repr_dict':
-            # update _repr_dict will trigger other things
-            # see _handle_repr_dict_changed
-            self._ngl_repr_dict = self._ngl_msg.get('data')
+            self._handle_request_repr_dict()
         elif msg_type == 'stage_parameters':
-            self._ngl_full_stage_parameters = msg.get('data')
+            self._handle_stage_parameters()
         elif msg_type == 'async_message':
-            if msg.get('data') == 'ok':
-                self._event.set()
+            self._handle_async_message()
         elif msg_type == 'image_data':
-            self._image_data = msg.get('data')
-            _TRACKED_WIDGETS[msg.get('ID')].value = base64.b64decode(
-                self._image_data)
+            self._handle_image_data()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         if self.n_components > 0:
@@ -1175,7 +1072,7 @@ class NGLWidget(DOMWidget):
         >>> import nglview
         >>> view = nglview.NGLWidget()
         >>> c = view.add_pdbid('1tsu')
-        >>> # which is equal to 
+        >>> # which is equal to
         >>> # view.add_component('rcsb://1tsu.pdb')
         '''
         return self.add_component(f'rcsb://{pdbid}.pdb', **kwargs)
@@ -1269,10 +1166,7 @@ class NGLWidget(DOMWidget):
 
         name = py_utils.get_name(obj, **kwargs2)
         self._ngl_component_names.append(name)
-        self._remote_call("loadFile",
-                          target='Stage',
-                          args=args,
-                          kwargs=kwargs2)
+        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs2)
 
     def remove_component(self, c):
         """remove component by its uuid.
@@ -1323,7 +1217,7 @@ class NGLWidget(DOMWidget):
                              kwargs=None,
                              **other_kwargs):
         """call NGL's methods from Python.
-        
+
         Parameters
         ----------
         method_name : str
@@ -1403,10 +1297,7 @@ class NGLWidget(DOMWidget):
         messages_rm += [load_comps[r[1]] for r in remove_comps]
         messages_rm = set(messages_rm)
 
-        return [
-            msg for i, msg in enumerate(messages)
-            if i not in messages_rm
-        ]
+        return [msg for i, msg in enumerate(messages) if i not in messages_rm]
 
     def _remote_call(self,
                      method_name,
@@ -1530,10 +1421,7 @@ class NGLWidget(DOMWidget):
         self._execute_js_code(code, **kwargs)
 
     def _execute_js_code(self, code, **kwargs):
-        self._remote_call('executeCode',
-                          target='Widget',
-                          args=[code],
-                          **kwargs)
+        self._remote_call('executeCode', target='Widget', args=[code], **kwargs)
 
     def _update_component_auto_completion(self):
         trajids = [traj.id for traj in self._trajlist]
