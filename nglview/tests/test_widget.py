@@ -88,10 +88,14 @@ except ImportError:
 
 
 def get_mocked_traj():
-    traj = MagicMock()
-    traj.get_coordinates.return_value = np.random.rand(10, 3, 3)
-    traj.n_frames = 10
-    return traj
+    class MockedTraj(nv.Structure):
+        def __init__(self):
+            self.n_frames = 10
+
+        def get_coordinates(self, frame):
+            return np.random.rand(10, 3, 3)
+
+    return MockedTraj()
 
 
 def default_view():
