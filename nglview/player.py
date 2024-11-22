@@ -191,7 +191,7 @@ class TrajectoryPlayer(HasTraits):
 
     @_cature_msg
     def _make_button_center(self):
-        self.btn_center = Button(description=' Center', icon='fa-bullseye')
+        self.btn_center = Button(description=' Center', icon='bullseye')
 
         @self.btn_center.on_click
         def on_click(_):
@@ -274,7 +274,7 @@ class TrajectoryPlayer(HasTraits):
 
     def _show_download_image(self):
         # "interactive" does not work for True/False in ipywidgets 4 yet.
-        button = Button(description=' Screenshot', icon='fa-camera')
+        button = Button(description=' Screenshot', icon='camera')
 
         @button.on_click
         def on_click(button):
@@ -308,16 +308,16 @@ class TrajectoryPlayer(HasTraits):
                                   repr_selection):
         button_refresh = Button(description=' Refresh',
                                 tooltip='Get representation info',
-                                icon='fa-refresh')
+                                icon='refresh')
         button_center_selection = Button(description=' Center',
                                          tooltip='center selected atoms',
-                                         icon='fa-bullseye')
+                                         icon='bullseye')
         button_center_selection._ngl_name = 'button_center_selection'
         button_hide = Button(description=' Hide',
-                             icon='fa-eye-slash',
+                             icon='eye-slash',
                              tooltip='Hide/Show current representation')
         button_remove = Button(description=' Remove',
-                               icon='fa-trash',
+                               icon='trash',
                                tooltip='Remove current representation')
 
         @button_refresh.on_click
@@ -670,7 +670,7 @@ class TrajectoryPlayer(HasTraits):
 
         button_clear = Button(description='clear',
                               button_style='info',
-                              icon='fa-eraser')
+                              icon='eraser')
 
         @button_clear.on_click
         def on_clear(button_clear):
