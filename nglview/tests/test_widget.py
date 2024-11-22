@@ -88,9 +88,14 @@ except ImportError:
 
 
 def get_mocked_traj():
-    class MockedTraj(nv.Structure):
+    class MockedTraj(nv.Structure, nv.Trajectory):
         def __init__(self):
-            self.n_frames = 10
+            nv.Structure.__init__(self)
+            nv.Trajectory.__init__(self)
+
+        @property
+        def n_frames(self):
+            return 10
 
         def get_coordinates(self, frame):
             return np.random.rand(10, 3, 3)

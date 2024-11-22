@@ -691,7 +691,7 @@ class NGLWidget(DOMWidget):
     def _on_frame_changed(self, change):
         """set and send coordinates at current frame
         """
-        self._set_coordinates(self.frame)
+        self._set_coordinates(change['new'])
 
     def clear(self, *args, **kwargs):
         '''shortcut of `clear_representations`
