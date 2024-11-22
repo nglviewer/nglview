@@ -21,8 +21,6 @@ log.info('$PATH=%s' % os.environ['PATH'])
 def update_package_data(distribution):
     """update package_data to catch changes during setup"""
     build_py = distribution.get_command_obj('build_py')
-    # distribution.package_data = find_package_data()
-    # re-init build_py options which load package_data
     build_py.finalize_options()
 
 
@@ -39,7 +37,7 @@ data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(lab_path), "**"),
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
     ("share/jupyter/nbextensions/%s" % labext_name, str(lab_path), "**"),
-    ("etc/jupyter/nbconfig/notebook.d", [str(HERE / "nglview-js-widgets.json")]),
+    ("etc/jupyter/nbconfig/notebook.d", str(HERE), "nglview-js-widgets.json"),
 ]
 
 def pre_develop():
@@ -87,17 +85,7 @@ setup_args = {
         "htmd": ["htmd"],
         "qcelemental": ["qcelemental"],
     },
-    'packages': set(find_packages() +
-                ['nglview',
-                 'nglview.static',
-                 'nglview.staticlab',
-                 'nglview.theme',
-                 'nglview.datafiles',
-                 'nglview.utils',
-                 'nglview.tests',
-                 'nglview.sandbox',
-                 'nglview.contrib',
-                 ]),
+    'packages': find_packages(),
     'zip_safe': False,
     'cmdclass': cmdclass,
     'author': 'Alexander S. Rose, Hai Nguyen',
