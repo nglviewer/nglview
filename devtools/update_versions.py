@@ -7,18 +7,6 @@ from packaging.version import parse as parse_version
 
 version = sys.argv[1]
 HERE = Path(__file__).parents[1].resolve().absolute()
-sys.path.insert(0, str(HERE))
-
-import versioneer
-dirty_version = versioneer.get_version()
-clean_version = dirty_version.split('+')[0]
-
-print(f"Current nglview version = {dirty_version}")
-print(f"Front end version = {version}")
-
-if parse_version(clean_version) != parse_version(version):
-    print("WARNING: Current nglview version should be equal to front end version")
-
 pkg_file = HERE / "js/package.json"
 
 content = []
