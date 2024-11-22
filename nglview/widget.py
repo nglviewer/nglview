@@ -922,7 +922,7 @@ class NGLWidget(DOMWidget):
                           kwargs=params)
 
     def _handle_request_frame(self):
-        frame = self.frame
+        frame = self.frame + 1
         if frame > self.max_frame:
             frame = 0
         elif frame < 0:
