@@ -3,14 +3,10 @@ to correctly distribute the notebook and lab extensions.
 """
 
 import os
-import subprocess
-import sys
 from distutils import log
-from subprocess import check_call
 from pathlib import Path
 
-from setuptools import Command, find_packages, setup
-from setuptools.command.egg_info import egg_info
+from setuptools import find_packages, setup
 from jupyter_packaging import wrap_installers, get_data_files
 
 here = os.path.dirname(os.path.abspath(__file__))
