@@ -1,5 +1,5 @@
 [build-system]
-requires = ["jupyter_packaging>=0.7.9", "setuptools>=40.8.0", "wheel", "versioneer-518"]
+requires = ["jupyter_packaging>=0.7.9", "setuptools>=75.6.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
