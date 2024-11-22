@@ -353,7 +353,7 @@ def test_load_data():
 
     # raise if passing dummy name
 
-    with pytest.raises(NameError):
+    with pytest.raises(ValueError, match='you must provide file extension if using file-like object or text content'):
         view._load_data("hahahaha")
 
     # load PyTrajectory
