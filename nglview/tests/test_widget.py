@@ -87,13 +87,16 @@ except ImportError:
     has_qcelemental = False
 
 
-def get_simple_traj():
-    return nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
+def get_mocked_traj():
+    traj = MagicMock()
+    traj.get_coordinates.return_value = np.random.rand(10, 3, 3)
+    traj.n_frames = 10
+    return traj
 
 
 def default_view():
     view = nv.NGLWidget()
-    view.add_trajectory(get_simple_traj())
+    view.add_trajectory(get_mocked_traj())
     return view
 
 
@@ -175,7 +178,7 @@ def test_API_promise_to_have():
     # other backends will be tested in other sections
 
     # constructor
-    ngl_traj = get_simple_traj()
+    ngl_traj = get_mocked_traj()
     nv.NGLWidget(ngl_traj, parameters=dict(background_color='black'))
     nv.NGLWidget(ngl_traj, representations=[dict(type='cartoon', params={})])
 
@@ -299,7 +302,7 @@ def test_API_promise_to_have_add_more_backend():
 
 def test_handling_n_components_changed():
     view = nv.NGLWidget()
-    n_traj = get_simple_traj()
+    n_traj = get_mocked_traj()
     view.add_trajectory(n_traj)
     # fake updating n_components and _repr_dict from front-end
     view._ngl_repr_dict = REPR_DICT
@@ -327,7 +330,7 @@ def test_base_adaptor():
 
 
 def test_coordinates_dict():
-    traj = get_simple_traj()
+    traj = get_mocked_traj()
     view = nv.NGLWidget(traj)
     view.frame = 1
     coords = view._coordinates_dict[0]
@@ -357,7 +360,7 @@ def test_load_data():
         view._load_data("hahahaha")
 
     # load PyTrajectory
-    t0 = get_simple_traj()
+    t0 = get_mocked_traj()
     view._load_data(t0)
 
     # load current folder
@@ -635,8 +638,8 @@ def test_component_for_duck_typing():
 def test_trajectory_show_hide_sending_cooridnates():
     view = NGLWidget()
 
-    traj0 = get_simple_traj()
-    traj1 = get_simple_traj()
+    traj0 = get_mocked_traj()
+    traj1 = get_mocked_traj()
 
     view.add_trajectory(traj0)
     view.add_trajectory(traj1)
@@ -730,7 +733,7 @@ def test_add_structure():
 def test_add_struture_then_trajectory():
     view = nv.show_structure_file(get_fn('tz2.pdb'))
     view.loaded = True
-    traj = get_simple_traj()
+    traj = get_mocked_traj()
     view.add_trajectory(traj)
     view.frame = 3
     coords = view._coordinates_dict[1].copy()
@@ -741,7 +744,7 @@ def test_add_struture_then_trajectory():
 
 
 def test_loaded_attribute():
-    traj = get_simple_traj()
+    traj = get_mocked_traj()
     structure = nv.FileStructure(nv.datafiles.PDB)
 
     # False, empty constructor
@@ -811,7 +814,7 @@ def test_theme():
 
 def test_interpolate():
     # dummy test
-    traj = get_simple_traj()
+    traj = get_mocked_traj()
     interpolate.linear(0, 0.4, traj, step=1)
 
 
@@ -863,8 +866,8 @@ def test_write_html(mock_unset):
     import ipywidgets.embed as embed
 
     tm = ThemeManager()
-    traj0 = get_simple_traj()
-    traj1 = get_simple_traj()
+    traj0 = get_mocked_traj()
+    traj1 = get_mocked_traj()
     view = nv.NGLWidget()
     view.add_trajectory(traj0)
     view.add_trajectory(traj1)
