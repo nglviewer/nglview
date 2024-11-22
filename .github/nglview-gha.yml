@@ -29,7 +29,3 @@ dependencies:
   - mdtraj
   - ambertools # have both pytraj and parmed
   - pip
-  - pip:
-    - simpletraj
-
-

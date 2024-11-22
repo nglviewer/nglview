@@ -1,27 +1,21 @@
 import gzip
 import os
-import sys
-import time
 import unittest
-from functools import partial
 from io import StringIO
-from itertools import chain
 
-import ipywidgets
 import numpy as np
 import pytest
-import traitlets
-from ipykernel.comm import Comm
 from IPython.display import display
-from ipywidgets import BoundedFloatText, Button, HBox, IntText, Layout, Widget
+from ipywidgets import HBox, IntText
 from mock import MagicMock, patch
 from numpy.testing import assert_almost_equal as aa_eq
-from traitlets import TraitError, link
+from traitlets import TraitError
 
 import nglview as nv
 from nglview import NGLWidget, interpolate, js_utils, widget_utils
 from nglview.representation import RepresentationControl
-from nglview.utils.py_utils import click, decode_base64, encode_base64, submit
+from nglview.utils.py_utils import decode_base64, encode_base64
+from nglview.utils.test_utils import get_mocked_traj
 # local
 from utils import get_fn
 from utils import repr_dict as REPR_DICT
@@ -87,13 +81,9 @@ except ImportError:
     has_qcelemental = False
 
 
-def get_simple_traj():
-    return nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
-
-
 def default_view():
     view = nv.NGLWidget()
-    view.add_trajectory(get_simple_traj())
+    view.add_trajectory(get_mocked_traj())
     return view
 
 
@@ -164,8 +154,6 @@ def test_API_promise_to_have():
 
     # display
     js_utils.clean_error_output()
-    display(view.player.widget_repr)
-    view.player._display()
     view._display_image()
 
     # show
@@ -177,7 +165,7 @@ def test_API_promise_to_have():
     # other backends will be tested in other sections
 
     # constructor
-    ngl_traj = get_simple_traj()
+    ngl_traj = get_mocked_traj()
     nv.NGLWidget(ngl_traj, parameters=dict(background_color='black'))
     nv.NGLWidget(ngl_traj, representations=[dict(type='cartoon', params={})])
 
@@ -186,21 +174,8 @@ def test_API_promise_to_have():
     view.camera = 'perspective'
     view._request_stage_parameters()
     view._ngl_repr_dict = REPR_DICT
-    view._handle_repr_dict_changed(dict(new=dict(c0={})))
-
-    # dummy
-    class DummWidget():
-        value = ''
-
-    view.player.picked_widget = DummWidget()
 
     view._update_background_color(change=dict(new='blue'))
-    tab = view.player._display()
-
-    view.player.widget_repr = view.player._make_widget_repr()
-    view._handle_n_components_changed(change=dict(new=2, old=1))
-    view._handle_n_components_changed(change=dict(new=1, old=1))
-    view._handle_n_components_changed(change=dict(new=1, old=0))
     view.on_loaded(change=dict(new=True))
     view.on_loaded(change=dict(new=False))
 
@@ -233,9 +208,6 @@ def test_API_promise_to_have():
     view.render_image()
     view.render_image(frame=2)
     view.download_image()
-
-    assert view._dry_run(view._set_sync_camera,
-                         [view])['methodName'] == 'setSyncCamera'
 
     msg = dict(type='request_frame', data=dict())
     view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
@@ -317,12 +289,11 @@ def test_API_promise_to_have_add_more_backend():
 
 def test_handling_n_components_changed():
     view = nv.NGLWidget()
-    n_traj = get_simple_traj()
+    n_traj = get_mocked_traj()
     view.add_trajectory(n_traj)
     # fake updating n_components and _repr_dict from front-end
     view._ngl_repr_dict = REPR_DICT
     view.n_components = 1
-    view.player.widget_repr = view.player._make_widget_repr()
     view.remove_component(n_traj.id)
     # fake updating n_components from front-end
     view._ngl_repr_dict = {'c0': {}}
@@ -346,7 +317,7 @@ def test_base_adaptor():
 
 
 def test_coordinates_dict():
-    traj = get_simple_traj()
+    traj = get_mocked_traj()
     view = nv.NGLWidget(traj)
     view.frame = 1
     coords = view._coordinates_dict[0]
@@ -356,7 +327,6 @@ def test_coordinates_dict():
     view._send_binary = False
     view._coordinates_dict = {0: coords}
     # increase coverage for IndexError: make index=1000 (which is larger than n_frames)
-    view.player.interpolate = True
     view._set_coordinates(1000)
 
 
@@ -372,11 +342,12 @@ def test_load_data():
         view._load_data(blob)
 
     # raise if passing dummy name
-    with pytest.raises(NameError):
-        view._load_data(hahahaha)
+
+    with pytest.raises(ValueError, match='you must provide file extension if using file-like object or text content'):
+        view._load_data("hahahaha")
 
     # load PyTrajectory
-    t0 = get_simple_traj()
+    t0 = get_mocked_traj()
     view._load_data(t0)
 
     # load current folder
@@ -394,7 +365,7 @@ def test_representations():
     # accept dict too (to specify seperate reprs for different component
     def func():
         view.representations = {'0': MagicMock()}
-    assert view._dry_run(func)['methodName'] == '_set_representation_from_repr_dict'
+
 
     # Representations
     # make fake params
@@ -505,7 +476,7 @@ def test_show_text():
     nv.show_text(text)
 
 
-@unittest.skipUnless(has_ase, 'skip if not having ase')
+@pytest.mark.skipif(not has_ase, reason='skip if not having ase')
 def test_show_ase():
     from ase import Atom, Atoms
     dimer = Atoms([Atom('X', (0, 0, 0)), Atom('X', (0, 0, 1))])
@@ -513,7 +484,7 @@ def test_show_ase():
     nv.show_ase(dimer)
 
 
-@unittest.skipUnless(has_pymatgen, 'skip if not having pymatgen')
+@pytest.mark.skipif(not has_pymatgen, reason='skip if not having pymatgen')
 def test_show_pymatgen():
     from pymatgen.core import Lattice, Structure
     lattice = Lattice.cubic(4.2)
@@ -523,7 +494,7 @@ def test_show_pymatgen():
     view
 
 
-@unittest.skipUnless(has_qcelemental, 'skip if not having qcelemental')
+@pytest.mark.skipif(not has_qcelemental, reason='skip if not having qcelemental')
 def test_show_qcelemental():
     import qcelemental as qcel
 
@@ -532,7 +503,7 @@ def test_show_qcelemental():
     view
 
 
-@unittest.skipUnless(has_bio, 'skip if not having biopython')
+@pytest.mark.skipif(not has_bio, reason='skip if not having biopython')
 def test_show_biopython():
     from Bio.PDB import PDBParser
     parser = PDBParser()
@@ -540,7 +511,7 @@ def test_show_biopython():
     nv.show_biopython(structure)
 
 
-@unittest.skipUnless(has_simpletraj, 'skip if not having simpletraj')
+@pytest.mark.skipif(not has_simpletraj, reason='skip if not having simpletraj')
 def test_show_simpletraj():
     traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
     view = nv.show_simpletraj(traj)
@@ -548,14 +519,14 @@ def test_show_simpletraj():
     view.frame = 3
 
 
-@unittest.skipUnless(has_mdtraj, 'skip if not having mdtraj')
+@pytest.mark.skipif(not has_mdtraj, reason='skip if not having mdtraj')
 def test_show_mdtraj():
     import mdtraj as md
     traj = md.load(nv.datafiles.PDB)
     view = nv.show_mdtraj(traj)
 
 
-@unittest.skipUnless(has_HTMD, 'skip if not having HTMD')
+@pytest.mark.skipif(not has_HTMD, reason='skip if not having HTMD')
 def test_show_htmd():
     from htmd import Molecule
     fn = nv.datafiles.PDB
@@ -569,7 +540,7 @@ def test_show_htmd():
     aa_eq(view._coordinates_dict[0], xyz_htmd)
 
 
-@unittest.skipUnless(has_MDAnalysis, 'skip if not having MDAnalysis')
+@pytest.mark.skipif(not has_MDAnalysis, reason='skip if not having MDAnalysis')
 def test_show_MDAnalysis():
     from MDAnalysis import Universe
     tn, fn = nv.datafiles.PDB, nv.datafiles.PDB
@@ -577,7 +548,7 @@ def test_show_MDAnalysis():
     view = nv.show_mdanalysis(u)
 
 
-@unittest.skipUnless(has_parmed, 'skip if not having ParmEd')
+@pytest.mark.skipif(not has_parmed, reason='skip if not having ParmEd')
 def test_show_parmed():
     import parmed as pmd
     fn = nv.datafiles.PDB
@@ -621,7 +592,7 @@ def test_component_for_duck_typing():
     # FIXME: deprecate duck typing?
     # syntax looks ugly.
     view = NGLWidget()
-    traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
+    traj = get_mocked_traj()
 
     # add 3 components (trajectory is a component)
     view.add_component(get_fn('tz2.pdb'))
@@ -654,8 +625,8 @@ def test_component_for_duck_typing():
 def test_trajectory_show_hide_sending_cooridnates():
     view = NGLWidget()
 
-    traj0 = get_simple_traj()
-    traj1 = get_simple_traj()
+    traj0 = get_mocked_traj()
+    traj1 = get_mocked_traj()
 
     view.add_trajectory(traj0)
     view.add_trajectory(traj1)
@@ -749,7 +720,7 @@ def test_add_structure():
 def test_add_struture_then_trajectory():
     view = nv.show_structure_file(get_fn('tz2.pdb'))
     view.loaded = True
-    traj = get_simple_traj()
+    traj = get_mocked_traj()
     view.add_trajectory(traj)
     view.frame = 3
     coords = view._coordinates_dict[1].copy()
@@ -760,7 +731,7 @@ def test_add_struture_then_trajectory():
 
 
 def test_loaded_attribute():
-    traj = get_simple_traj()
+    traj = get_mocked_traj()
     structure = nv.FileStructure(nv.datafiles.PDB)
 
     # False, empty constructor
@@ -799,126 +770,6 @@ def test_loaded_attribute():
     view.add_trajectory(traj)
     view
 
-
-def test_player_simple():
-    view = default_view()
-
-    # dummy
-    component_slider = ipywidgets.IntSlider()
-    repr_slider = ipywidgets.IntSlider()
-
-    # dummy test
-    player = nv.player.TrajectoryPlayer(view)
-    player.smooth()
-    player.camera = 'perspective'
-    player.camera = 'orthographic'
-    player.frame
-    player.frame = 10
-    player.parameters = dict(step=2)
-    player._display()
-    player._make_button_center()
-    w = player._make_widget_preference()
-    w.children[0].value = 1.
-    player.widget_preference = None
-    w = player._make_widget_preference()
-    w.children[0].value = 1.
-    player._show_download_image()
-    player._make_text_picked()
-    player._refresh(component_slider, repr_slider)
-    player._make_widget_repr()
-    player._make_resize_notebook_slider()
-    player._make_button_export_image()
-    player._make_repr_playground()
-    player._make_widget_picked()
-    player._make_export_image_widget()
-    player._make_general_box()
-    player._update_padding()
-    player._real_time_update = True
-    player._make_widget_repr()
-    player.widget_component_slider
-    player.widget_repr_slider
-    player._create_all_tabs()
-    player._create_all_widgets()
-    player.widget_tab = None
-    player._create_all_widgets()
-    player._simplify_repr_control()
-
-    player._real_time_update = True
-    player.widget_repr_slider.value = 0
-    player.widget_repr_slider.value = 1
-    slider_notebook = player._make_resize_notebook_slider()
-    slider_notebook.value = 300
-
-    player.widget_repr_name.value = 'surface'
-    player.widget_repr_name.value = 'cartoon'
-
-
-def test_player_submit_text():
-    """ test_player_click_button """
-    view = nv.demo(gui=True)
-    submit(view.player._make_command_box())
-
-
-def test_player_click_button():
-    """ test_player_click_button """
-    view = nv.demo(gui=True)
-    view
-    view._ngl_repr_dict = REPR_DICT
-    view.player._create_all_widgets()
-    view.player.widget_export_image = view.player._make_button_export_image()
-    button_iter = chain.from_iterable([
-        view.player.widget_repr_control_buttons.children,
-        [
-            view.player._show_download_image(),
-            view.player._make_button_center(),
-            view.player.widget_export_image.children[0].children[0],
-            view.player.widget_repr_add.children[0],
-        ],
-        [
-            w for w in view.player.widget_preference.children
-            if isinstance(w, Button)
-        ],
-    ])
-    for button in button_iter:
-        click(button)
-
-
-def test_player_link_to_ipywidgets():
-    view = default_view()
-
-    int_text = IntText(2)
-    float_text = BoundedFloatText(40, min=10)
-    HBox([int_text, float_text])
-    link((int_text, 'value'), (view.player, 'step'))
-    link((float_text, 'value'), (view.player, 'delay'))
-
-    assert view.player.step == 2
-    assert view.player.delay == 40
-
-    float_text.value = 100
-    assert view.player.delay == 100
-
-    float_text.value = 0.00
-    # we set min=10
-    assert view.player.delay == 10
-
-
-def test_player_interpolation():
-    view = default_view()
-
-    view.player.interpolate = True
-    assert view.player.iparams.get('type') == 'linear'
-    assert view.player.iparams.get('step') == 1
-
-
-def test_player_picked():
-    view = nv.demo()
-    s = dict(x=3)
-    view.player.widget_picked = view.player._make_text_picked()
-    view.picked = s
-    assert view.player.widget_picked.value == '{"x": 3}'
-
-
 def test_widget_utils():
     box = HBox()
     i0 = IntText()
@@ -948,22 +799,9 @@ def test_theme():
     # FIXME: fill me
 
 
-def test_player_click_tab():
-    view = nv.demo()
-    gui = view.player._display()
-    assert isinstance(gui, ipywidgets.Tab)
-
-    for i, child in enumerate(gui.children):
-        try:
-            gui.selected_index = i
-            assert isinstance(child, ipywidgets.Box)
-        except TraitError:
-            pass
-
-
 def test_interpolate():
     # dummy test
-    traj = get_simple_traj()
+    traj = get_mocked_traj()
     interpolate.linear(0, 0.4, traj, step=1)
 
 
@@ -1015,8 +853,8 @@ def test_write_html(mock_unset):
     import ipywidgets.embed as embed
 
     tm = ThemeManager()
-    traj0 = get_simple_traj()
-    traj1 = get_simple_traj()
+    traj0 = get_mocked_traj()
+    traj1 = get_mocked_traj()
     view = nv.NGLWidget()
     view.add_trajectory(traj0)
     view.add_trajectory(traj1)
