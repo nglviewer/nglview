@@ -352,8 +352,9 @@ def test_load_data():
         view._load_data(blob)
 
     # raise if passing dummy name
+
     with pytest.raises(NameError):
-        view._load_data(hahahaha)
+        view._load_data("hahahaha")
 
     # load PyTrajectory
     t0 = get_simple_traj()
@@ -374,6 +375,7 @@ def test_representations():
     # accept dict too (to specify seperate reprs for different component
     def func():
         view.representations = {'0': MagicMock()}
+
 
     # Representations
     # make fake params
