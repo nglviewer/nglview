@@ -29,7 +29,7 @@ def update_package_data(distribution):
 HERE = Path(__file__).parent.resolve()
 # The name of the project
 name = "nglview-js-widgets"
-lab_path = (HERE / "nglview"/ "staticlab")
+lab_path = (HERE / "nglview" / "staticlab")
 package_data_spec = {
     name: ["*"],
 }
@@ -38,6 +38,8 @@ labext_name = "nglview-js-widgets"
 data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(lab_path), "**"),
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
+    ("share/jupyter/nbextensions/%s" % labext_name, str(lab_path), "**"),
+    ("etc/jupyter/nbconfig/notebook.d", [str(HERE / "nglview-js-widgets.json")]),
 ]
 
 def pre_develop():
@@ -54,8 +56,8 @@ setup_args = {
     "use_scm_version": True,
     "setup_requires": ['setuptools_scm'],
     'description': 'IPython widget to interactively view molecular structures and trajectories.',
-    'description_file': 'README.md',
-    'description': 'IPython widget to interactively view molecular structures and trajectories.',
+    'long_description': open('README.md').read(),
+    'long_description_content_type': 'text/markdown',
     'license': "MIT",
     'package_data': {
          "nglview.datafiles": ["*"],
@@ -63,20 +65,14 @@ setup_args = {
          "nglview.static": ["*"],
          "nglview.staticlab": ["*"],
      },
-    'data_files': [
-        ('share/jupyter/nbextensions/nglview-js-widgets', [
-         'nglview/static/extension.js',
-         'nglview/static/index.js',
-         'nglview/static/index.js.map',
-        ]),
-        ('etc/jupyter/nbconfig/notebook.d' , ['nglview-js-widgets.json'])
-    ],
+    'data_files': data_files,
     'tests_require': [
         'pytest'
     ],
     'install_requires': [
         'ipywidgets>=8',
         'notebook>=7',
+        'jupyterlab>=3',
         'jupyterlab_widgets',
         'numpy',
     ],
@@ -104,8 +100,6 @@ setup_args = {
                  ]),
     'zip_safe': False,
     'cmdclass': cmdclass,
-    'data_files': data_files,
-
     'author': 'Alexander S. Rose, Hai Nguyen',
     'author_email': 'alexander.rose@weirdbyte.de',
     'url': 'https://github.com/arose/nglview',
