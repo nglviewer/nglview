@@ -21,6 +21,7 @@ del pkg_resources
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
 
+
 # Register nbextension
 # FIXME: do we still need this?
 def _jupyter_nbextension_paths():
@@ -33,4 +34,4 @@ def _jupyter_nbextension_paths():
 
 
 __all__ = ['NGLWidget', 'write_html'
-           ] + widget.__all__ + adaptor.__all__ + show.__all__
+          ] + widget.__all__ + adaptor.__all__ + show.__all__

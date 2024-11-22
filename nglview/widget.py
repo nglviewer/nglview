@@ -10,8 +10,8 @@ import ipywidgets as widgets
 from ipywidgets import embed
 import numpy as np
 from IPython.display import display
-from ipywidgets import (Image, Box, DOMWidget, HBox, VBox, IntSlider, Output, Play, Widget,
-                        jslink)
+from ipywidgets import (Image, Box, DOMWidget, HBox, VBox, IntSlider, Output,
+                        Play, Widget, jslink)
 from ipywidgets import widget as _widget
 from traitlets import (Bool, CaselessStrEnum, Dict, Instance, Int, Integer,
                        List, Unicode, observe, validate)
@@ -51,8 +51,11 @@ _EXCLUDED_CALLBACK_AFTER_FIRING = {
 _INIT_VIEWS = {'color_maker_registry': color.ColormakerRegistry}
 _TRACKED_WIDGETS = {}
 
+
 def _deprecated(msg):
+
     def wrap_1(func):
+
         def wrap_2(*args, **kwargs):
             logger.warn(msg)
             return func(*args, **kwargs)
@@ -110,7 +113,8 @@ def write_html(fp, views, frame_range=None):
     # hacky thing for https://github.com/nglviewer/nglview/issues/1107
     # NGL must be fixed before we can remove this hack
     _frontend = {'__frontend_version__': __frontend_version__}
-    pattern = r'("model_module":\s*"nglview-js-widgets",\s*"model_module_version":\s*)"' + re.escape(_frontend['__frontend_version__']) + '",'
+    pattern = r'("model_module":\s*"nglview-js-widgets",\s*"model_module_version":\s*)"' + re.escape(
+        _frontend['__frontend_version__']) + '",'
     replacement = r'\g<1>"3.0.8",'
     snippet = re.sub(pattern, replacement, snippet)
     html_code = embed.html_template.format(title='nglview-demo',
@@ -126,7 +130,6 @@ def write_html(fp, views, frame_range=None):
             f.write(html_code)
 
     _unset_serialization(views)
-
 
 
 class NGLWidget(DOMWidget):
@@ -147,8 +150,8 @@ class NGLWidget(DOMWidget):
     loaded = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
     n_components = Int(0).tag(sync=True)
-    _view_width = Unicode().tag(sync=True) # px
-    _view_height = Unicode().tag(sync=True) # px
+    _view_width = Unicode().tag(sync=True)  # px
+    _view_height = Unicode().tag(sync=True)  # px
     _scene_position = Dict().tag(sync=True)
     _scene_rotation = Dict().tag(sync=True)
     # hack to always display movie
@@ -170,7 +173,8 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
-    _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
+    _gui_theme = CaselessStrEnum(['dark', 'light'],
+                                 allow_none=True).tag(sync=True)
     _widget_theme = None
     _ngl_serialize = Bool(False).tag(sync=True)
     _ngl_msg_archive = List().tag(sync=True)
@@ -182,10 +186,11 @@ class NGLWidget(DOMWidget):
     # instance
     _iplayer = Instance(widgets.Box,
                         allow_none=True).tag(sync=True, **widget_serialization)
-    _igui = Instance(widgets.Tab,
-                     allow_none=True).tag(sync=True, **widget_serialization)
+    _igui = Instance(widgets.Tab, allow_none=True).tag(sync=True,
+                                                       **widget_serialization)
     _ibtn_fullscreen = Instance(widgets.Button,
-            allow_none=True).tag(sync=True, **widget_serialization)
+                                allow_none=True).tag(sync=True,
+                                                     **widget_serialization)
 
     def __init__(self,
                  structure=None,
@@ -208,7 +213,7 @@ class NGLWidget(DOMWidget):
         self.stage = Stage(view=self)
         self.control = ViewerControl(view=self)
         self._handle_msg_thread = threading.Thread(
-            target=self.on_msg, args=(self._handle_nglview_custom_msg, ))
+            target=self.on_msg, args=(self._handle_nglview_custom_msg,))
         # # register to get data from JS side
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
@@ -229,8 +234,8 @@ class NGLWidget(DOMWidget):
             if 'default' in kwargs:
                 kwargs['default_representation'] = kwargs['default']
 
-        autoview = 'center' not in kwargs or ('center' in kwargs
-                                              and kwargs.pop('center'))
+        autoview = 'center' not in kwargs or ('center' in kwargs and
+                                              kwargs.pop('center'))
         # NOTE: Using `pop` to avoid passing `center` to NGL.
 
         if parameters:
@@ -270,8 +275,8 @@ class NGLWidget(DOMWidget):
         # onclick is implemented in frontend
         self._ibtn_fullscreen = button
 
-
     def _sync_with_layout(self):
+
         def on_change_layout(change):
             new = change['new']
             if change['name'] == 'width':
@@ -386,8 +391,9 @@ class NGLWidget(DOMWidget):
 
     def _update_max_frame(self):
         self.max_frame = max(
-            int(traj.n_frames) for traj in self._trajlist
-            if hasattr(traj, 'n_frames')) - 1 # index starts from 0
+            int(traj.n_frames)
+            for traj in self._trajlist
+            if hasattr(traj, 'n_frames')) - 1  # index starts from 0
 
     def _wait_until_finished(self, timeout=0.0001):
         # NGL need to send 'finished' signal to
@@ -422,6 +428,7 @@ class NGLWidget(DOMWidget):
             self._fire_callbacks(self._ngl_displayed_callbacks_before_loaded)
 
     def _fire_callbacks(self, callbacks):
+
         def _call(event):
             for callback in callbacks:
                 callback(self)
@@ -486,15 +493,15 @@ class NGLWidget(DOMWidget):
 
     def _set_unsync_repr(self, other_views):
         model_ids = {v._model_id for v in other_views}
-        self._synced_repr_model_ids = list(set(self._synced_repr_model_ids) - model_ids)
+        self._synced_repr_model_ids = list(
+            set(self._synced_repr_model_ids) - model_ids)
         self._remote_call("setSyncRepr",
                           target="Widget",
                           args=[self._synced_repr_model_ids])
 
     def _set_sync_camera(self, other_views):
         model_ids = {v._model_id for v in other_views}
-        self._synced_model_ids = sorted(
-            set(self._synced_model_ids) | model_ids)
+        self._synced_model_ids = sorted(set(self._synced_model_ids) | model_ids)
         self._remote_call("setSyncCamera",
                           target="Widget",
                           args=[self._synced_model_ids])
@@ -553,8 +560,7 @@ class NGLWidget(DOMWidget):
     @representations.setter
     def representations(self, reps):
         if isinstance(reps, dict):
-            self._remote_call("_set_representation_from_repr_dict",
-                    args=[reps])
+            self._remote_call("_set_representation_from_repr_dict", args=[reps])
         else:
             self._representations = reps[:]
             for index in range(len(self._ngl_component_ids)):
@@ -618,8 +624,7 @@ class NGLWidget(DOMWidget):
                           target='Widget',
                           args=[repr_name, component])
 
-    def _update_representations_by_name(self, repr_name, component=0,
-                                        **kwargs):
+    def _update_representations_by_name(self, repr_name, component=0, **kwargs):
         kwargs = _camelize_dict(kwargs)
         self._remote_call('updateRepresentationsByName',
                           target='Widget',
@@ -647,20 +652,20 @@ class NGLWidget(DOMWidget):
 
                 try:
                     if trajectory.shown:
-                        coordinates_dict[traj_index] = trajectory.get_coordinates(index)
+                        coordinates_dict[
+                            traj_index] = trajectory.get_coordinates(index)
                     else:
                         coordinates_dict[traj_index] = np.empty((0), dtype='f4')
                 except (IndexError, ValueError):
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
 
             self.set_coordinates(coordinates_dict,
-                    render_params=render_params,
-                    movie_making=movie_making)
+                                 render_params=render_params,
+                                 movie_making=movie_making)
         else:
             print("no trajectory available")
 
-    def set_coordinates(self, arr_dict, movie_making=False,
-            render_params=None):
+    def set_coordinates(self, arr_dict, movie_making=False, render_params=None):
         # type: (Dict[int, np.ndarray]) -> None
         """Used for update coordinates of a given trajectory
         >>> # arr: numpy array, ndim=2
@@ -676,16 +681,14 @@ class NGLWidget(DOMWidget):
             buffers.append(arr.astype('f4').tobytes())
             coordinates_meta[index] = index
         msg = {
-                'type': 'binary_single',
-                'data': coordinates_meta,
-            }
+            'type': 'binary_single',
+            'data': coordinates_meta,
+        }
         if movie_making:
             msg['movie_making'] = movie_making
             msg['render_params'] = render_params
 
-        self.send(
-            msg,
-            buffers=buffers)
+        self.send(msg, buffers=buffers)
 
     @observe('frame')
     def _on_frame_changed(self, change):
@@ -740,7 +743,10 @@ class NGLWidget(DOMWidget):
         >>> c = view._add_shape([sphere, arrow], name='my_shape')
         """
 
-        self._remote_call('addShape', target='Widget', args=[name, shapes], fire_embed=True)
+        self._remote_call('addShape',
+                          target='Widget',
+                          args=[name, shapes],
+                          fire_embed=True)
 
         # Added to remain in sync with the JS components
         # Similarly to _loadData
@@ -940,7 +946,8 @@ class NGLWidget(DOMWidget):
         data_dict = self._ngl_msg['data']
         name = data_dict.pop('name') + '\n'
         selection = data_dict.get('sele', '') + '\n'
-        data_dict_json = json.dumps(data_dict).replace('true', 'True').replace('false', 'False')
+        data_dict_json = json.dumps(data_dict).replace('true', 'True').replace(
+            'false', 'False')
         data_dict_json = data_dict_json.replace('null', '"null"')
 
     def _handle_request_loaded(self):
@@ -960,7 +967,8 @@ class NGLWidget(DOMWidget):
 
     def _handle_image_data(self):
         self._image_data = self._ngl_msg.get('data')
-        _TRACKED_WIDGETS[self._ngl_msg.get('ID')].value = base64.b64decode(self._image_data)
+        _TRACKED_WIDGETS[self._ngl_msg.get('ID')].value = base64.b64decode(
+            self._image_data)
 
     def _handle_nglview_custom_msg(self, _, msg, buffers):
         self._ngl_msg = msg
@@ -1157,10 +1165,7 @@ class NGLWidget(DOMWidget):
 
         name = py_utils.get_name(obj, **kwargs2)
         self._ngl_component_names.append(name)
-        self._remote_call("loadFile",
-                          target='Stage',
-                          args=args,
-                          kwargs=kwargs2)
+        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs2)
 
     def remove_component(self, c):
         """remove component by its uuid.
@@ -1291,10 +1296,7 @@ class NGLWidget(DOMWidget):
         messages_rm += [load_comps[r[1]] for r in remove_comps]
         messages_rm = set(messages_rm)
 
-        return [
-            msg for i, msg in enumerate(messages)
-            if i not in messages_rm
-        ]
+        return [msg for i, msg in enumerate(messages) if i not in messages_rm]
 
     def _remote_call(self,
                      method_name,
@@ -1418,10 +1420,7 @@ class NGLWidget(DOMWidget):
         self._execute_js_code(code, **kwargs)
 
     def _execute_js_code(self, code, **kwargs):
-        self._remote_call('executeCode',
-                          target='Widget',
-                          args=[code],
-                          **kwargs)
+        self._remote_call('executeCode', target='Widget', args=[code], **kwargs)
 
     def _update_component_auto_completion(self):
         trajids = [traj.id for traj in self._trajlist]

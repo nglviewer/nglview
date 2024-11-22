@@ -65,7 +65,7 @@ class AmberMD(BaseMD):
                 self._update_coordinates(traj[0].xyz)
 
         # non-blocking so we can use other Jupyter's cells
-        self.thread = threading.Thread(target=_update, args=(self.event, ))
+        self.thread = threading.Thread(target=_update, args=(self.event,))
         self.thread.daemon = True
         self.thread.start()
 

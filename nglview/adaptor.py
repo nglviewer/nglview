@@ -62,6 +62,7 @@ def _get_structure_string(write_method, suffix='.pdb'):
 
 
 class register_backend:
+
     def __init__(self, package_name):
         # package_name must match exactly to your Python package
         self.package_name = package_name
@@ -72,6 +73,7 @@ class register_backend:
 
 
 class FileStructure(Structure):
+
     def __init__(self, path):
         super().__init__()
         self.fm = FileManager(path)
@@ -84,6 +86,7 @@ class FileStructure(Structure):
 
 
 class TextStructure(Structure):
+
     def __init__(self, text, ext='pdb', params={}):
         super().__init__()
         self.path = ''
@@ -97,6 +100,7 @@ class TextStructure(Structure):
 
 @register_backend('rdkit')
 class RdkitStructure(Structure):
+
     def __init__(self, rdkit_mol, ext="pdb", conf_id=-1):
         super().__init__()
         self.path = ''
@@ -114,6 +118,7 @@ class RdkitStructure(Structure):
 
 
 class PdbIdStructure(Structure):
+
     def __init__(self, pdbid):
         super().__init__()
         self.pdbid = pdbid
@@ -126,6 +131,7 @@ class PdbIdStructure(Structure):
 
 
 class ASEStructure(Structure):
+
     def __init__(self, ase_atoms, ext='pdb', params={}):
         super().__init__()
         self.path = ''
@@ -138,6 +144,7 @@ class ASEStructure(Structure):
 
 
 class IODataStructure(Structure):
+
     def __init__(self, obj):
         super().__init__()
         self._obj = obj
@@ -152,6 +159,7 @@ class IODataStructure(Structure):
 
 
 class QCElementalStructure(Structure):
+
     def __init__(self, obj):
         super().__init__()
         self._obj = obj
@@ -166,6 +174,7 @@ class Psi4Structure(QCElementalStructure):
 
 
 class OpenbabelStructure(Structure):
+
     def __init__(self, obj):
         super().__init__()
         self._obj = obj
@@ -183,6 +192,7 @@ class OpenbabelStructure(Structure):
 
 
 class BiopythonStructure(Structure):
+
     def __init__(self, entity, ext='pdb', params={}):
         super().__init__()
         self.path = ''
@@ -201,6 +211,7 @@ class BiopythonStructure(Structure):
 
 
 class IOTBXStructure(Structure):
+
     def __init__(self, obj, ext='pdb', params={}):
         """
         obj must have as_pdb_string method
@@ -216,6 +227,7 @@ class IOTBXStructure(Structure):
 
 
 class RosettaStructure(Structure):
+
     def __init__(self, pose, ext='pdb', params={}):
         # type: (pyrosetta.rosetta.core.pose.Pose, str, Dict) -> None
         super().__init__()
@@ -230,6 +242,7 @@ class RosettaStructure(Structure):
 
 @register_backend('prody')
 class ProdyStructure(Structure):
+
     def __init__(self, obj):
         super().__init__()
         self._obj = obj
@@ -251,6 +264,7 @@ class ProdyStructure(Structure):
 
 @register_backend('prody')
 class ProdyTrajectory(Trajectory, ProdyStructure):
+
     def __init__(self, obj):
         ProdyStructure.__init__(self, obj)
 
@@ -370,6 +384,7 @@ class PyTrajTrajectory(Trajectory, Structure):
 
 @register_backend('parmed')
 class ParmEdStructure(Structure):
+
     def __init__(self, structure):
         self._structure = structure
         self.only_save_1st_model = True

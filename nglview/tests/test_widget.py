@@ -227,7 +227,7 @@ def test_API_promise_to_have():
     view.frame = -1
     msg = dict(type='request_frame', data=dict())
     # async_message
-    msg  = {'type': 'async_message', 'data': 'ok'}
+    msg = {'type': 'async_message', 'data': 'ok'}
     view._handle_nglview_custom_msg(None, msg, [])
     # render_image
     r = view.render_image()
@@ -280,6 +280,7 @@ def test_add_trajectory():
 
 
 def test_API_promise_to_have_add_more_backend():
+
     @nv.register_backend('dummy')
     class MyLovelyClass(nv.Structure, nv.Trajectory):
         pass
@@ -343,7 +344,11 @@ def test_load_data():
 
     # raise if passing dummy name
 
-    with pytest.raises(ValueError, match='you must provide file extension if using file-like object or text content'):
+    with pytest.raises(
+            ValueError,
+            match=
+            'you must provide file extension if using file-like object or text content'
+    ):
         view._load_data("hahahaha")
 
     # load PyTrajectory
@@ -365,7 +370,6 @@ def test_representations():
     # accept dict too (to specify seperate reprs for different component
     def func():
         view.representations = {'0': MagicMock()}
-
 
     # Representations
     # make fake params
@@ -488,13 +492,13 @@ def test_show_ase():
 def test_show_pymatgen():
     from pymatgen.core import Lattice, Structure
     lattice = Lattice.cubic(4.2)
-    structure = Structure(lattice, ["Cs", "Cl"],
-                             [[0, 0, 0], [0.5, 0.5, 0.5]])
+    structure = Structure(lattice, ["Cs", "Cl"], [[0, 0, 0], [0.5, 0.5, 0.5]])
     view = nv.show_pymatgen(structure)
     view
 
 
-@pytest.mark.skipif(not has_qcelemental, reason='skip if not having qcelemental')
+@pytest.mark.skipif(not has_qcelemental,
+                    reason='skip if not having qcelemental')
 def test_show_qcelemental():
     import qcelemental as qcel
 
@@ -703,8 +707,8 @@ def test_trajectory_show_hide_sending_cooridnates():
 def test_existing_js_files():
     from glob import glob
     jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*js'))
-    mapfiles = glob(
-        os.path.join(os.path.dirname(nv.__file__), 'static', '*map'))
+    mapfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static',
+                                 '*map'))
 
     assert len(jsfiles) == 2
     assert len(mapfiles) == 1
@@ -769,6 +773,7 @@ def test_loaded_attribute():
     view.loaded = True
     view.add_trajectory(traj)
     view
+
 
 def test_widget_utils():
     box = HBox()

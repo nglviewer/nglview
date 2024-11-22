@@ -21,8 +21,8 @@ class ComponentViewer:
         widget_utils._add_repr_method_shortcut(self, self._view)
         self._borrow_attribute(self._view, [
             'clear_representations', '_remove_representations_by_name',
-            '_update_representations_by_name', 'center_view', 'center',
-            'clear', 'set_representations'
+            '_update_representations_by_name', 'center_view', 'center', 'clear',
+            'set_representations'
         ], ['get_structure_string', 'get_coordinates', 'n_frames'])
 
     @property

@@ -14,12 +14,14 @@ def _write(*args, **kargs):
 
 
 class MockStructure:
+
     def as_pdb_string(self):
         with open(nglview.datafiles.PDB) as fh:
             return fh.read()
 
 
 class MockRosettaPose:
+
     def dump_pdb(self, _):
         _write()
 
@@ -69,7 +71,9 @@ def test_show_iotbx():
 
 
 def test_show_iodata():
+
     class MockIO:
+
         def to_file(self, fname):
             with open(fname, 'w') as fh:
                 fh.write("""3
@@ -83,7 +87,9 @@ H   -0.7838370000   -0.4922360000   -0.0000000000""")
 
 
 def test_show_qcelemental_show_psi4():
+
     class MockMol:
+
         def to_string(self, format):
             return '1\nHe\nHe                    0.000000000000     0.000000000000     0.000000000000\n'
 
@@ -114,6 +120,7 @@ def test_show_prody():
     sys.modules['prody'] = prody
 
     class MockEnsemble:
+
         def __getitem__(self, index):
             return 0
 
@@ -121,7 +128,9 @@ def test_show_prody():
             return 1
 
         def getConformation(self, index):
+
             class Struct:
+
                 def getCoords(self):
                     return
 
@@ -136,7 +145,6 @@ def test_show_prody():
     st = MagicMock()
     nglview.show_prody(st)
     assert prody.writePDB.called
-
 
 
 try:

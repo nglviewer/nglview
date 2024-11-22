@@ -33,8 +33,9 @@ repr_dict = {
                 'lazy': False,
                 'linewidth': 2,
                 'matrix': {
-                    'elements':
-                    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+                    'elements': [
+                        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+                    ]
                 },
                 'metalness': 0,
                 'opacity': 1,
@@ -81,8 +82,9 @@ repr_dict = {
                 'lineOnly': False,
                 'linewidth': 2,
                 'matrix': {
-                    'elements':
-                    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+                    'elements': [
+                        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+                    ]
                 },
                 'metalness': 0,
                 'opacity': 1,
@@ -129,8 +131,9 @@ repr_dict = {
                 'lineOnly': False,
                 'linewidth': 2,
                 'matrix': {
-                    'elements':
-                    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+                    'elements': [
+                        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+                    ]
                 },
                 'metalness': 0,
                 'multipleBond': 'off',
