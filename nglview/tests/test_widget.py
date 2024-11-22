@@ -592,7 +592,7 @@ def test_component_for_duck_typing():
     # FIXME: deprecate duck typing?
     # syntax looks ugly.
     view = NGLWidget()
-    traj = nv.SimpletrajTrajectory(nv.datafiles.XTC, nv.datafiles.GRO)
+    traj = get_mocked_traj()
 
     # add 3 components (trajectory is a component)
     view.add_component(get_fn('tz2.pdb'))
