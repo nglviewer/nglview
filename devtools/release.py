@@ -20,7 +20,7 @@ print("front_end_version", front_end_version)
 
 if front_end_version != latest_tag:
     print(f"WARNING: Version mismatch between front_end_version {front_end_version} and latest_tag {latest_tag}")
-    time.sleep(2)
+    time.sleep(5)
 
 print("\nMake sure to publish npm package")
 output = subprocess.check_output(["npm", "search", "nglview-js-widgets"]).decode()
