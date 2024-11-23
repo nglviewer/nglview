@@ -198,7 +198,14 @@ class NGLWidget(DOMWidget):
                  parameters=None,
                  **kwargs):
         super().__init__(**kwargs)
+        self._initialize_attributes(kwargs)
+        self._initialize_threads()
+        self._initialize_components(structure, representations, parameters, kwargs)
+        self._initialize_layout(kwargs)
+        self._create_player()
+        self._create_ibtn_fullscreen()
 
+    def _initialize_attributes(self, kwargs):
         self._gui = None
         self._init_gui = kwargs.pop('gui', False)
         self._theme = kwargs.pop('theme', 'default')
@@ -212,18 +219,21 @@ class NGLWidget(DOMWidget):
         self.shape = Shape(view=self)
         self.stage = Stage(view=self)
         self.control = ViewerControl(view=self)
+        self._trajlist = []
+        self._ngl_component_ids = []
+
+    def _initialize_threads(self):
         self._handle_msg_thread = threading.Thread(
             target=self.on_msg, args=(self._handle_nglview_custom_msg,))
-        # # register to get data from JS side
+        # register to get data from JS side
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
         self._remote_call_thread = RemoteCallThread(
             self,
             registered_funcs=['loadFile', 'replaceStructure', '_exportImage'])
         self._remote_call_thread.start()
-        self._trajlist = []
-        self._ngl_component_ids = []
 
+    def _initialize_components(self, structure, representations, parameters, kwargs):
         if representations:
             # Must be set here before calling
             # add_trajectory or add_struture
@@ -234,9 +244,8 @@ class NGLWidget(DOMWidget):
             if 'default' in kwargs:
                 kwargs['default_representation'] = kwargs['default']
 
-        autoview = 'center' not in kwargs or ('center' in kwargs and
-                                              kwargs.pop('center'))
         # NOTE: Using `pop` to avoid passing `center` to NGL.
+        autoview = 'center' not in kwargs or ('center' in kwargs and kwargs.pop('center'))
 
         if parameters:
             self.parameters = parameters
@@ -244,8 +253,7 @@ class NGLWidget(DOMWidget):
             name = py_utils.get_name(structure, **kwargs)
             self.add_trajectory(structure, name=name, **kwargs)
         elif isinstance(structure, (list, tuple)):
-            trajectories = structure
-            for trajectory in trajectories:
+            for trajectory in structure:
                 name = py_utils.get_name(trajectory, **kwargs)
                 self.add_trajectory(trajectory, name=name, **kwargs)
         else:
@@ -259,15 +267,12 @@ class NGLWidget(DOMWidget):
             if autoview:
                 self.center()
 
+    def _initialize_layout(self, kwargs):
         self._view_width = kwargs.get('width', '')
         self._view_height = kwargs.get('height', '')
-
         # Updating only self.layout.{width, height} don't handle
         # resizing NGL widget properly.
         self._sync_with_layout()
-        # self.layout.width = 'auto'
-        self._create_player()
-        self._create_ibtn_fullscreen()
 
     def _create_ibtn_fullscreen(self):
         button = widgets.Button(icon='compress')
