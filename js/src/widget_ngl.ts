@@ -1009,8 +1009,6 @@ export
             var arr_str;
             reader.onload = function () {
                 arr_str = (reader.result as string).replace("data:image/png;base64,", "");
-                // this.model.set("_image_data", arr_str);
-                // this.touch();
                 this.send({
                     "data": arr_str,
                     "type": "movie_image_data",
@@ -1022,8 +1020,7 @@ export
         }
     }
 
-
-    _handleLoadFileFinished() {
+    async _handleLoadFileFinished() {
         this.send({ 'type': 'async_message', 'data': 'ok' });
     }
 
@@ -1087,122 +1084,111 @@ export
     }
 
     async on_msg(msg) {
-        // TODO: re-organize
-        if (('ngl_view_id' in msg) && (msg.ngl_view_id !== this.ngl_view_id)) {
-            return
+        if (msg.type === 'call_method') {
+            await this.handleCallMethod(msg);
+        } else if (msg.type === 'base64_single') {
+            this.handleBase64Single(msg.data);
+        } else if (msg.type === 'binary_single') {
+            this.handleBinarySingle(msg);
+        } else if (msg.type === 'movie_image_data') {
+            this.handleMovieMaking(msg.render_params);
+        } else if (msg.type === 'get') {
+            this.handleGetRequest(msg.data);
         }
-        if (msg.type == 'call_method') {
-            var index, component, func, stage;
-            var new_args = msg.args.slice();
-            new_args.push(msg.kwargs);
+    }
 
-            // handle color
-            if (msg.methodName == 'addRepresentation' &&
-                msg.reconstruc_color_scheme) {
-                msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
-            }
-            if ("colorVolume" in msg.kwargs) {
-                // backend only send component index
-                // so we need to convert to 'volume' data
-                index = msg.kwargs["colorVolume"];
-                msg.kwargs["colorVolume"] = this.stage.compList[index].volume;
-            }
+    async handleCallMethod(msg) {
+        var index, component, func, stage;
+        var new_args = msg.args.slice();
+        new_args.push(msg.kwargs);
 
-            switch (msg.target) {
-                case 'Stage':
-                    var stage_func = this.stage[msg.methodName];
-                    stage = this.stage;
-                    if (msg.methodName == 'screenshot') {
-                        NGL.screenshot(this.stage.viewer, msg.kwargs);
-                    } else if (msg.methodName == 'removeComponent') {
-                        index = msg.args[0];
-                        component = this.stage.compList[index];
-                        this.stage.removeComponent(component);
-                    } else if (msg.methodName == 'loadFile') {
-                        if (this.model.views.length > 1 && msg.kwargs &&
-                            msg.kwargs.defaultRepresentation) {
-                            // no need to add default representation as all representations
-                            // are serialized separately, also it unwantedly sets the orientation
-                            msg.kwargs.defaultRepresentation = false
-                        }
-                        await this._handleStageLoadFile(msg);
-                    } else {
-                        stage_func.apply(stage, new_args);
-                    }
-                    break;
-                case 'Viewer':
-                    var viewer = this.stage.viewer;
-                    func = this.stage.viewer[msg.methodName];
-                    func.apply(viewer, new_args);
-                    break;
-                case 'viewerControls':
-                    var controls = this.stage.viewerControls;
-                    func = controls[msg.methodName];
-                    func.apply(controls, new_args);
-                    break;
-                case 'compList':
-                    index = msg['component_index'];
-                    component = this.stage.compList[index];
-                    func = component[msg.methodName];
-                    func.apply(component, new_args);
-                    break;
-                case 'Widget':
-                    func = this[msg.methodName];
-                    if (func) {
-                        func.apply(this, new_args);
-                    } else {
-                        // send error message to Python?
-                        console.log('can not create func for ' + msg.methodName);
-                    }
-                    break;
-                case 'Representation':
-                    var component_index = msg['component_index'];
-                    var repr_index = msg['repr_index'];
-                    component = this.stage.compList[component_index];
-                    var repr = component.reprList[repr_index];
-                    func = repr[msg.methodName];
-                    if (repr && func) {
-                        func.apply(repr, new_args);
-                    }
-                    break;
-                default:
-                    console.log('there is no method for ' + msg.target);
-                    break;
-            }
-        } else if (msg.type == 'base64_single') {
-            var coordinatesDict = msg.data;
-            var keys = Object.keys(coordinatesDict);
+        if (msg.methodName === 'addRepresentation' && msg.reconstruc_color_scheme) {
+            msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
+        }
+        if ("colorVolume" in msg.kwargs) {
+            index = msg.kwargs["colorVolume"];
+            msg.kwargs["colorVolume"] = this.stage.compList[index].volume;
+        }
 
-            for (var i = 0; i < keys.length; i++) {
-                var traj_index = keys[i];
-                var coordinates = this.decode_base64(coordinatesDict[traj_index]);
-                if (coordinates && coordinates.byteLength > 0) {
-                    this.updateCoordinates(coordinates, traj_index);
-                }
-            }
-        } else if (msg.type == 'binary_single') {
-            var coordinateMeta = msg.data;
-            keys = Object.keys(coordinateMeta);
+        switch (msg.target) {
+            case 'Stage':
+                await this.handleStageMethod(msg, new_args);
+                break;
+            case 'Viewer':
+                this.stage.viewer[msg.methodName].apply(this.stage.viewer, new_args);
+                break;
+            case 'viewerControls':
+                this.stage.viewerControls[msg.methodName].apply(this.stage.viewerControls, new_args);
+                break;
+            case 'compList':
+                component = this.stage.compList[msg.component_index];
+                component[msg.methodName].apply(component, new_args);
+                break;
+            case 'Widget':
+                this[msg.methodName].apply(this, new_args);
+                break;
+            case 'Representation':
+                component = this.stage.compList[msg.component_index];
+                var repr = component.reprList[msg.repr_index];
+                repr[msg.methodName].apply(repr, new_args);
+                break;
+            default:
+                console.log('Unknown target: ' + msg.target);
+                break;
+        }
+    }
 
-            for (i = 0; i < keys.length; i++) {
-                traj_index = keys[i];
-                coordinates = new Float32Array(msg.buffers[i].buffer);
-                if (coordinates.byteLength > 0) {
-                    this.updateCoordinates(coordinates, traj_index);
-                }
+    async handleStageMethod(msg, new_args) {
+        var stage_func = this.stage[msg.methodName];
+        if (msg.methodName === 'screenshot') {
+            NGL.screenshot(this.stage.viewer, msg.kwargs);
+        } else if (msg.methodName === 'removeComponent') {
+            var component = this.stage.compList[msg.args[0]];
+            this.stage.removeComponent(component);
+        } else if (msg.methodName === 'loadFile') {
+            if (this.model.views.length > 1 && msg.kwargs && msg.kwargs.defaultRepresentation) {
+                msg.kwargs.defaultRepresentation = false;
             }
-            if (msg.movie_making) {
-                this.handleMovieMaking(msg.render_params)
+            await this._handleStageLoadFile(msg);
+        } else {
+            stage_func.apply(this.stage, new_args);
+        }
+    }
+
+    handleBase64Single(coordinatesDict) {
+        var keys = Object.keys(coordinatesDict);
+        for (var i = 0; i < keys.length; i++) {
+            var traj_index = keys[i];
+            var coordinates = this.decode_base64(coordinatesDict[traj_index]);
+            if (coordinates && coordinates.byteLength > 0) {
+                this.updateCoordinates(coordinates, traj_index);
             }
-        } else if (msg.type == 'get') {
-            if (msg.data == 'camera') {
-                this.send(JSON.stringify(this.stage.viewer.camera));
-            } else if (msg.data == 'parameters') {
-                this.send(JSON.stringify(this.stage.parameters));
-            } else {
-                console.log("Number of components", this.stage.compList.length);
-                console.log("ngl_view_id", this.ngl_view_id);
+        }
+    }
+
+    handleBinarySingle(msg) {
+        var coordinateMeta = msg.data;
+        var keys = Object.keys(coordinateMeta);
+        for (var i = 0; i < keys.length; i++) {
+            var traj_index = keys[i];
+            var coordinates = new Float32Array(msg.buffers[i].buffer);
+            if (coordinates.byteLength > 0) {
+                this.updateCoordinates(coordinates, traj_index);
             }
+        }
+        if (msg.movie_making) {
+            this.handleMovieMaking(msg.render_params);
+        }
+    }
+
+    handleGetRequest(data) {
+        if (data === 'camera') {
+            this.send(JSON.stringify(this.stage.viewer.camera));
+        } else if (data === 'parameters') {
+            this.send(JSON.stringify(this.stage.parameters));
+        } else {
+            console.log("Number of components", this.stage.compList.length);
+            console.log("ngl_view_id", this.ngl_view_id);
         }
     }
 }
