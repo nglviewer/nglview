@@ -46,7 +46,7 @@ jobs:
 
     - name: Run tests
       run: |
-        python -m pytest -vs nglview/tests --cov=nglview --cov-report=html --disable-pytest-warnings
+        python -m pytest -vs tests --cov=nglview --cov-report=html --disable-pytest-warnings
 
     - name: Check installation with pip
       run: |
