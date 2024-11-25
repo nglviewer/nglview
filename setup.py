@@ -28,6 +28,7 @@ HERE = Path(__file__).parent.resolve()
 # The name of the project
 name = "nglview-js-widgets"
 lab_path = (HERE / "nglview" / "staticlab")
+nb_path = (HERE / "nglview" / "static")
 package_data_spec = {
     name: ["*"],
 }
@@ -36,7 +37,7 @@ labext_name = "nglview-js-widgets"
 data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(lab_path), "**"),
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
-    ("share/jupyter/nbextensions/%s" % labext_name, str(lab_path), "**"),
+    ("share/jupyter/nbextensions/%s" % labext_name, str(nb_path), "**"),
     ("etc/jupyter/nbconfig/notebook.d", str(HERE), "nglview-js-widgets.json"),
 ]
 
