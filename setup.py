@@ -26,14 +26,13 @@ def update_package_data(distribution):
 
 HERE = Path(__file__).parent.resolve()
 # The name of the project
-name = "nglview-js-widgets"
 lab_path = (HERE / "nglview" / "staticlab")
 nb_path = (HERE / "nglview" / "static")
+labext_name = "nglview-js-widgets"
 package_data_spec = {
-    name: ["*"],
+    labext_name: ["*"],
 }
 
-labext_name = "nglview-js-widgets"
 data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(lab_path), "**"),
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
@@ -94,16 +93,12 @@ setup_args = {
         'jupyter',
         'widgets',
     ],
-    'python_requires': '>=3.6',
+    'python_requires': '>=3.7',
     'classifiers': [
-        'Development Status :: 4 - Beta',
         'Framework :: IPython',
-        'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: JavaScript',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Multimedia :: Graphics',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
