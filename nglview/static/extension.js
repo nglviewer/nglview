@@ -1,1 +1,0 @@
-define((()=>{return e={252:e=>{window.require&&window.require.config({map:{"*":{"nglview-js-widgets":"nbextensions/nglview-js-widgets/index"}}}),e.exports={load_ipython_extension:function(){}}}},n={},function i(r){var o=n[r];if(void 0!==o)return o.exports;var t=n[r]={exports:{}};return e[r](t,t.exports,i),t.exports}(252);var e,n}));
