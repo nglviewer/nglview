@@ -8,6 +8,15 @@ var rules = [
     { test: /\.css$/, use: ['style-loader', 'css-loader'] },
     { test: /\.less$/, use: ['style-loader', 'css-loader', 'less-loader'] },
     { test: /\.(jpg|png|gif)$/, use: "file-loader" },
+    {
+        test: /\.js$/,
+        use: {
+            loader: 'babel-loader',
+            options: {
+                plugins: ['@babel/plugin-proposal-object-rest-spread']
+            }
+        }
+    }
 ]
 
 
