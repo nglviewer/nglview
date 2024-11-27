@@ -4,21 +4,19 @@ var version = require('./package.json').version;
 // Custom webpack rules are generally the same for all webpack bundles, hence
 // stored in a separate local variable.
 var rules = [
-    { test: /\.json$/, use: 'json-loader' },
-    { test: /\.css$/, use: ['style-loader', 'css-loader'] },
-    { test: /\.less$/, use: ['style-loader', 'css-loader', 'less-loader'] },
-    { test: /\.(jpg|png|gif)$/, use: "file-loader" },
-    {
-        test: /\.js$/,
-        use: {
-            loader: 'babel-loader',
-            options: {
-                plugins: ['@babel/plugin-proposal-object-rest-spread']
-            }
-        }
-    }
-]
-
+  { test: /\.css$/, use: ["style-loader", "css-loader"] },
+  { test: /\.less$/, use: ["style-loader", "css-loader", "less-loader"] },
+  { test: /\.(jpg|png|gif)$/, use: "file-loader" },
+  {
+    test: /\.js$/,
+    use: {
+      loader: "babel-loader",
+      options: {
+        plugins: ["@babel/plugin-transform-object-rest-spread"],
+      },
+    },
+  },
+];
 
 module.exports = [
     {// Notebook extension
@@ -34,7 +32,8 @@ module.exports = [
             filename: 'extension.js',
             path: path.resolve(__dirname, '..', 'nglview', 'static'),
             libraryTarget: 'amd'
-        }
+        },
+        mode: 'production'
     },
     {// Bundle for the notebook containing the custom widget views and models
         //
@@ -52,7 +51,8 @@ module.exports = [
         module: {
             rules: rules
         },
-        externals: ['@jupyter-widgets/base']
+        externals: ['@jupyter-widgets/base'],
+        mode: 'production'
     },
     {// Embeddable nglview bundle
         //
@@ -79,6 +79,7 @@ module.exports = [
         module: {
             rules: rules
         },
-        externals: ['@jupyter-widgets/base', "jquery-ui"]
+        externals: ['@jupyter-widgets/base', "jquery-ui"],
+        mode: 'production'
     }
 ];

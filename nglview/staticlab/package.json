@@ -60,7 +60,7 @@
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "lodash": "^4.17.4",
-    "ngl": "2.2.2",
+    "ngl": "2.4.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -73,18 +73,22 @@
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "babel-register": "^6.11.6",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "css-loader": "^0.23.1",
     "eslint": "^8.5.6",
-    "file-loader": "^1.1.6",
-    "json-loader": "^0.5.4",
+    "file-loader": "^6.2.0",
+    "json-loader": "^0.5.7",
     "mkdirp": "^1.0.3",
-    "ngl": "2.2.2",
+    "ngl": "2.4.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.1",
     "rimraf": "^3.0.2",
     "style-loader": "^0.13.1",
     "typescript": "~5.4.5",
-    "webpack": "^3.12.0"
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4",
+    "babel-loader": "^8.2.2",
+    "@babel/plugin-transform-object-rest-spread": "^7.14.5"
   },
   "sideEffects": [
     "style/*.css",
@@ -101,7 +105,7 @@
       }
     },
     "_build": {
-      "load": "static/remoteEntry.c1114fc85c238ca05f16.js",
+      "load": "static/remoteEntry.df5d72f5e51317b2b0e3.js",
       "extension": "./extension",
       "style": "./style"
     }
