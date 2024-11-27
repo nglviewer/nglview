@@ -84,7 +84,7 @@
     "rimraf": "^3.0.2",
     "style-loader": "^0.13.1",
     "typescript": "~5.4.5",
-    "webpack": "^3.12.0"
+    "webpack": "^5.96.1"
   },
   "sideEffects": [
     "style/*.css",
