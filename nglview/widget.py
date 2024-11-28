@@ -1,23 +1,21 @@
 import base64
 import json
-import re
 import threading
 import time
 import uuid
 from logging import getLogger
+from contextlib import contextmanager
 
-import ipywidgets as widgets
-from ipywidgets import embed
 import numpy as np
 from IPython.display import display
-from ipywidgets import (Image, Box, DOMWidget, HBox, VBox, IntSlider, Output,
-                        Play, Widget, jslink)
+import ipywidgets as widgets
+from ipywidgets import (Image, Box, DOMWidget, HBox, IntSlider, Play, jslink)
+from ipywidgets import embed
 from ipywidgets import widget as _widget
 from traitlets import (Bool, CaselessStrEnum, Dict, Instance, Int, Integer,
                        List, Unicode, observe, validate)
-import traitlets
 
-from . import color, interpolate
+from . import color
 from .adaptor import Structure, Trajectory
 from .component import ComponentViewer
 from .config import BACKENDS
@@ -31,7 +29,6 @@ from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
                              seq_to_string)
 from .viewer_control import ViewerControl
 from ._frontend import __frontend_version__
-from .base import BaseWidget
 
 logger = getLogger(__name__)
 
@@ -84,43 +81,49 @@ def write_html(fp, views, frame_range=None):
     >>> nglview.write_html('index.html', [view]) # doctest: +SKIP
     >>> nglview.write_html('index.html', [view], frame_range=(0, 5)) # doctest: +SKIP
     """
-    views = isinstance(views, DOMWidget) and [views] or views
+    views = [views] if isinstance(views, DOMWidget) else views
 
     for _, v in _INIT_VIEWS.items():
         views.insert(0, v)
 
-    def _set_serialization(views):
-        for view in views:
-            if hasattr(view, '_set_serialization'):
-                view._set_serialization(frame_range=frame_range)
-            elif isinstance(view, Box):
-                _set_serialization(view.children)
+    @contextmanager
+    def manage_serialization(views):
+        def _set_serialization(views):
+            for view in views:
+                if hasattr(view, '_set_serialization'):
+                    view._set_serialization(frame_range=frame_range)
+                elif isinstance(view, Box):
+                    _set_serialization(view.children)
 
-    def _unset_serialization(views):
-        for view in views:
-            if hasattr(view, '_unset_serialization'):
-                view._unset_serialization()
-            elif isinstance(view, Box):
-                _unset_serialization(view.children)
+        def _unset_serialization(views):
+            for view in views:
+                if hasattr(view, '_unset_serialization'):
+                    view._unset_serialization()
+                elif isinstance(view, Box):
+                    _unset_serialization(view.children)
 
-    _set_serialization(views)
-    # FIXME: allow add jquery-ui link?
-    snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
-    snippet += '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">\n'
-    snippet += embed.embed_snippet(views)
-    html_code = embed.html_template.format(title='nglview-demo',
-                                           snippet=snippet)
+        _set_serialization(views)
+        try:
+            yield
+        finally:
+            _unset_serialization(views)
 
-    # from ipywidgets
-    # Check if fp is writable:
-    if hasattr(fp, 'write'):
-        fp.write(html_code)
-    else:
-        # Assume fp is a filename:
-        with open(fp, "w") as f:
-            f.write(html_code)
+    with manage_serialization(views):
+        snippet = (
+            '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
+            '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">\n'
+            + embed.embed_snippet(views)
+        )
+        html_code = embed.html_template.format(title='nglview-embed', snippet=snippet)
 
-    _unset_serialization(views)
+        # from ipywidgets
+        # Check if fp is writable:
+        if hasattr(fp, 'write'):
+            fp.write(html_code)
+        else:
+            # Assume fp is a filename:
+            with open(fp, "w") as f:
+                f.write(html_code)
 
 
 class NGLWidget(DOMWidget):
@@ -131,31 +134,15 @@ class NGLWidget(DOMWidget):
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
     _ngl_version = Unicode().tag(sync=True)
-    # _model_name = Unicode("NGLView").tag(sync=True)
-    # _model_module = Unicode("nglview-js-widgets").tag(sync=True)
+
+    # View and model attributes
     _image_data = Unicode().tag(sync=False)
-    # use Integer here, because mdtraj uses a long datatype here on Python-2.7
-    frame = Integer().tag(sync=True)
-    max_frame = Int(0).tag(sync=True)
-    background = Unicode('white').tag(sync=True)
-    loaded = Bool(False).tag(sync=False)
-    picked = Dict().tag(sync=True)
-    n_components = Int(0).tag(sync=True)
     _view_width = Unicode().tag(sync=True)  # px
     _view_height = Unicode().tag(sync=True)  # px
     _scene_position = Dict().tag(sync=True)
     _scene_rotation = Dict().tag(sync=True)
-    # hack to always display movie
-    # TODO: remove _parameters?
-    _parameters = Dict().tag(sync=False)
-    _ngl_full_stage_parameters = Dict().tag(sync=True)
-    _ngl_original_stage_parameters = Dict().tag(sync=True)
-    _coordinates_dict = Dict().tag(sync=False)
-    _camera_str = CaselessStrEnum(['perspective', 'orthographic'],
-                                  default_value='orthographic').tag(sync=True)
+    _camera_str = CaselessStrEnum(['perspective', 'orthographic'], default_value='orthographic').tag(sync=True)
     _camera_orientation = List().tag(sync=True)
-    _synced_model_ids = List().tag(sync=True)
-    _synced_repr_model_ids = List().tag(sync=True)
     _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
@@ -164,24 +151,36 @@ class NGLWidget(DOMWidget):
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
-    _gui_theme = CaselessStrEnum(['dark', 'light'],
-                                 allow_none=True).tag(sync=True)
+    _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
     _widget_theme = None
-    _ngl_serialize = Bool(False).tag(sync=True)
-    _ngl_msg_archive = List().tag(sync=True)
-    _ngl_coordinate_resource = Dict().tag(sync=True)
+
+    # Frame and background attributes
+    frame = Integer().tag(sync=True)
+    max_frame = Int(0).tag(sync=True)
+    background = Unicode('white').tag(sync=True)
+
+    # Component and parameter attributes
+    n_components = Int(0).tag(sync=True)
+    _parameters = Dict().tag(sync=False)
+    _ngl_full_stage_parameters = Dict().tag(sync=True)
+    _ngl_original_stage_parameters = Dict().tag(sync=True)
+    _coordinates_dict = Dict().tag(sync=False)
     _representations = List().tag(sync=False)
     _ngl_color_dict = Dict().tag(sync=True)
     _player_dict = Dict().tag(sync=True)
 
-    # instance
-    _iplayer = Instance(widgets.Box,
-                        allow_none=True).tag(sync=True, **widget_serialization)
-    _igui = Instance(widgets.Tab, allow_none=True).tag(sync=True,
-                                                       **widget_serialization)
-    _ibtn_fullscreen = Instance(widgets.Button,
-                                allow_none=True).tag(sync=True,
-                                                     **widget_serialization)
+    # State and synchronization attributes
+    loaded = Bool(False).tag(sync=False)
+    picked = Dict().tag(sync=True)
+    _synced_model_ids = List().tag(sync=True)
+    _synced_repr_model_ids = List().tag(sync=True)
+    _ngl_serialize = Bool(False).tag(sync=True)
+    _ngl_msg_archive = List().tag(sync=True)
+    _ngl_coordinate_resource = Dict().tag(sync=True)
+
+    _iplayer = Instance(widgets.Box, allow_none=True).tag(sync=True, **widget_serialization)
+    _igui = Instance(widgets.Tab, allow_none=True).tag(sync=True, **widget_serialization)
+    _ibtn_fullscreen = Instance(widgets.Button, allow_none=True).tag(sync=True, **widget_serialization)
 
     def __init__(self,
                  structure=None,
@@ -972,24 +971,21 @@ class NGLWidget(DOMWidget):
         self._ngl_msg = msg
 
         msg_type = self._ngl_msg.get('type')
-        if msg_type == 'request_frame':
-            self._handle_request_frame()
-        elif msg_type == 'updateIDs':
-            self._handle_update_ids()
-        elif msg_type == 'removeComponent':
-            self._handle_remove_component()
-        elif msg_type == 'repr_parameters':
-            self._handle_repr_parameters()
-        elif msg_type == 'request_loaded':
-            self._handle_request_loaded()
-        elif msg_type == 'request_repr_dict':
-            self._handle_request_repr_dict()
-        elif msg_type == 'stage_parameters':
-            self._handle_stage_parameters()
-        elif msg_type == 'async_message':
-            self._handle_async_message()
-        elif msg_type == 'image_data':
-            self._handle_image_data()
+        handlers = {
+            'request_frame': self._handle_request_frame,
+            'updateIDs': self._handle_update_ids,
+            'removeComponent': self._handle_remove_component,
+            'repr_parameters': self._handle_repr_parameters,
+            'request_loaded': self._handle_request_loaded,
+            'request_repr_dict': self._handle_request_repr_dict,
+            'stage_parameters': self._handle_stage_parameters,
+            'async_message': self._handle_async_message,
+            'image_data': self._handle_image_data,
+        }
+
+        handler = handlers.get(msg_type)
+        if handler:
+            handler()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         if self.n_components > 0:
@@ -1112,58 +1108,61 @@ class NGLWidget(DOMWidget):
         return self[-1]
 
     def _load_data(self, obj, **kwargs):
-        '''
-
+        """
         Parameters
         ----------
         obj : nglview.Structure or any object having 'get_structure_string' method or
               string buffer (open(fn).read())
-        '''
-        kwargs2 = _camelize_dict(kwargs)
+        """
+        kwargs = _camelize_dict(kwargs)
 
         try:
             is_url = FileManager(obj).is_url
         except NameError:
             is_url = False
 
-        if 'defaultRepresentation' not in kwargs2:
-            kwargs2['defaultRepresentation'] = True
+        if 'defaultRepresentation' not in kwargs:
+            kwargs['defaultRepresentation'] = True
 
-        if not is_url:
-            if hasattr(obj, 'get_structure_string'):
-                blob = obj.get_structure_string()
-                kwargs2['ext'] = obj.ext
-                passing_buffer = True
-                binary = False
-            else:
-                fh = FileManager(obj,
-                                 ext=kwargs.get('ext'),
-                                 compressed=kwargs.get('compressed'))
-                # assume passing string
-                blob = fh.read(force_buffer=True)
-                passing_buffer = True
-
-                if fh.ext is None and passing_buffer:
-                    raise ValueError('must provide extension')
-
-                kwargs2['ext'] = fh.ext
-                binary = fh.is_binary
-                use_filename = fh.use_filename
-
-            if binary and not use_filename:
-                # send base64
-                blob = base64.b64encode(blob).decode('utf8')
-            blob_type = 'blob' if passing_buffer else 'path'
-            args = [{'type': blob_type, 'data': blob, 'binary': binary}]
+        if is_url:
+            self._load_data_from_url(obj, kwargs)
         else:
-            # is_url
-            blob_type = 'url'
-            url = obj
-            args = [{'type': blob_type, 'data': url, 'binary': False}]
+            self._load_data_from_object(obj, kwargs)
 
-        name = py_utils.get_name(obj, **kwargs2)
+    def _load_data_from_url(self, url, kwargs):
+        args = [{'type': 'url', 'data': url, 'binary': False}]
+        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs)
+
+    def _load_data_from_object(self, obj, kwargs):
+        if hasattr(obj, 'get_structure_string'):
+            blob, ext, binary = self._get_structure_string_data(obj)
+        else:
+            blob, ext, binary, use_filename = self._get_file_manager_data(obj, kwargs)
+
+        if binary and not use_filename:
+            blob = base64.b64encode(blob).decode('utf8')
+
+        args = [{'type': 'blob', 'data': blob, 'binary': binary}]
+        kwargs['ext'] = ext
+        name = py_utils.get_name(obj, **kwargs)
         self._ngl_component_names.append(name)
-        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs2)
+        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs)
+
+    def _get_structure_string_data(self, obj):
+        blob = obj.get_structure_string()
+        ext = obj.ext
+        binary = False
+        return blob, ext, binary
+
+    def _get_file_manager_data(self, obj, kwargs):
+        fh = FileManager(obj, ext=kwargs.get('ext'), compressed=kwargs.get('compressed'))
+        blob = fh.read(force_buffer=True)
+        if fh.ext is None:
+            raise ValueError('must provide extension')
+        ext = fh.ext
+        binary = fh.is_binary
+        use_filename = fh.use_filename
+        return blob, ext, binary, use_filename
 
     def remove_component(self, c):
         """remove component by its uuid.
