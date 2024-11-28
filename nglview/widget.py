@@ -1107,33 +1107,33 @@ class NGLWidget(DOMWidget):
         self._update_component_auto_completion()
         return self[-1]
 
-    def _load_data(self, obj, **kwargs):
+     def _load_data(self, obj, **kwargs):
         """
         Parameters
         ----------
         obj : nglview.Structure or any object having 'get_structure_string' method or
               string buffer (open(fn).read())
         """
-        kwargs2 = _camelize_dict(kwargs)
+        kwargs = _camelize_dict(kwargs)
 
         try:
             is_url = FileManager(obj).is_url
         except NameError:
             is_url = False
 
-        if 'defaultRepresentation' not in kwargs2:
-            kwargs2['defaultRepresentation'] = True
+        if 'defaultRepresentation' not in kwargs:
+            kwargs['defaultRepresentation'] = True
 
         if is_url:
-            self._load_data_from_url(obj, kwargs2)
+            self._load_data_from_url(obj, kwargs)
         else:
-            self._load_data_from_object(obj, kwargs2, kwargs)
+            self._load_data_from_object(obj, kwargs)
 
-    def _load_data_from_url(self, url, kwargs2):
+    def _load_data_from_url(self, url, kwargs):
         args = [{'type': 'url', 'data': url, 'binary': False}]
-        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs2)
+        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs)
 
-    def _load_data_from_object(self, obj, kwargs2, kwargs):
+    def _load_data_from_object(self, obj, kwargs):
         if hasattr(obj, 'get_structure_string'):
             blob, ext, binary = self._get_structure_string_data(obj)
         else:
@@ -1143,10 +1143,10 @@ class NGLWidget(DOMWidget):
             blob = base64.b64encode(blob).decode('utf8')
 
         args = [{'type': 'blob', 'data': blob, 'binary': binary}]
-        kwargs2['ext'] = ext
-        name = py_utils.get_name(obj, **kwargs2)
+        kwargs['ext'] = ext
+        name = py_utils.get_name(obj, **kwargs)
         self._ngl_component_names.append(name)
-        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs2)
+        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs)
 
     def _get_structure_string_data(self, obj):
         blob = obj.get_structure_string()
