@@ -16,7 +16,7 @@ import { StageWidget } from "./gui"
 import { FullscreenModel, FullscreenView } from "./fullscreen"
 import { ColormakerRegistryModel, ColormakerRegistryView } from "./color"
 import { ThemeManagerModel, ThemeManagerView } from "./theme"
-import { IMessage } from './messageInterface';
+import { IMessage, IMessageSchema } from './messageInterface';
 
 NGL.nglview_debug = false
 
@@ -68,24 +68,6 @@ export
             _view_module_version: require("../package.json").version,
         });
     }
-}
-
-interface IMessage {
-    type: string;
-    data?: any;
-    ID?: string;
-    render_params?: any;
-    methodName?: string;
-    target?: string;
-    args?: any[];
-    kwargs?: any;
-    component_index?: number;
-    repr_index?: number;
-    last_child?: boolean;
-    reconstruc_color_scheme?: boolean;
-    movie_making?: boolean;
-    buffers?: any[];
-    content?: any;
 }
 
 export
@@ -899,7 +881,7 @@ export
             i, p = 0,
             encoded1, encoded2, encoded3, encoded4;
 
-        if (base64[base0.length - 1] === "=") {
+        if (base64[base64.length - 1] === "=") {
             bufferLength--;
             if (base64[base64.length - 2] === "=") {
                 bufferLength--;
@@ -1103,6 +1085,13 @@ export
     }
 
     async on_msg(msg: IMessage) {
+        try {
+            await IMessageSchema.validate(msg);
+        } catch (error) {
+            console.error('Invalid message:', error);
+            return;
+        }
+
         switch (msg.type) {
             case 'call_method':
                 await this.handleCallMethod(msg);
