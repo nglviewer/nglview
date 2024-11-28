@@ -1,5 +1,5 @@
-traitlets==4.3.2
-ipywidgets==7
+traitlets
+ipywidgets
 
 mock
 coverage
@@ -7,7 +7,7 @@ coveralls
 nose # for mdtraj's get_fn
 pytest
 
-pandas==0.24
+panda
 ase
 parmed
 pytraj
@@ -16,7 +16,7 @@ pymatgen
 simpletraj
 
 # movie making
-matplotlib==2.0.2
+matplotlib
 moviepy==0.2.2.11
-imageio==1.6
-pillow==10.3.0
+imageio
+pillow
