@@ -1,23 +1,20 @@
 import base64
 import json
-import re
 import threading
 import time
 import uuid
 from logging import getLogger
 
-import ipywidgets as widgets
-from ipywidgets import embed
 import numpy as np
 from IPython.display import display
-from ipywidgets import (Image, Box, DOMWidget, HBox, VBox, IntSlider, Output,
-                        Play, Widget, jslink)
+import ipywidgets as widgets
+from ipywidgets import (Image, Box, DOMWidget, HBox, IntSlider, Play, jslink)
+from ipywidgets import embed
 from ipywidgets import widget as _widget
 from traitlets import (Bool, CaselessStrEnum, Dict, Instance, Int, Integer,
                        List, Unicode, observe, validate)
-import traitlets
 
-from . import color, interpolate
+from . import color
 from .adaptor import Structure, Trajectory
 from .component import ComponentViewer
 from .config import BACKENDS
@@ -31,7 +28,6 @@ from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
                              seq_to_string)
 from .viewer_control import ViewerControl
 from ._frontend import __frontend_version__
-from .base import BaseWidget
 
 logger = getLogger(__name__)
 
@@ -86,43 +82,49 @@ def write_html(fp, views, frame_range=None):
     >>> nglview.write_html('index.html', [view]) # doctest: +SKIP
     >>> nglview.write_html('index.html', [view], frame_range=(0, 5)) # doctest: +SKIP
     """
-    views = isinstance(views, DOMWidget) and [views] or views
+    views = [views] if isinstance(views, DOMWidget) else views
 
     for _, v in _INIT_VIEWS.items():
         views.insert(0, v)
 
-    def _set_serialization(views):
-        for view in views:
-            if hasattr(view, '_set_serialization'):
-                view._set_serialization(frame_range=frame_range)
-            elif isinstance(view, Box):
-                _set_serialization(view.children)
+    @contextmanager
+    def manage_serialization(views):
+        def _set_serialization(views):
+            for view in views:
+                if hasattr(view, '_set_serialization'):
+                    view._set_serialization(frame_range=frame_range)
+                elif isinstance(view, Box):
+                    _set_serialization(view.children)
 
-    def _unset_serialization(views):
-        for view in views:
-            if hasattr(view, '_unset_serialization'):
-                view._unset_serialization()
-            elif isinstance(view, Box):
-                _unset_serialization(view.children)
+        def _unset_serialization(views):
+            for view in views:
+                if hasattr(view, '_unset_serialization'):
+                    view._unset_serialization()
+                elif isinstance(view, Box):
+                    _unset_serialization(view.children)
 
-    _set_serialization(views)
-    # FIXME: allow add jquery-ui link?
-    snippet = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
-    snippet += '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">\n'
-    snippet += embed.embed_snippet(views)
-    html_code = embed.html_template.format(title='nglview-demo',
-                                           snippet=snippet)
+        _set_serialization(views)
+        try:
+            yield
+        finally:
+            _unset_serialization(views)
 
-    # from ipywidgets
-    # Check if fp is writable:
-    if hasattr(fp, 'write'):
-        fp.write(html_code)
-    else:
-        # Assume fp is a filename:
-        with open(fp, "w") as f:
-            f.write(html_code)
+    with manage_serialization(views):
+        snippet = (
+            '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.css">\n'
+            '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">\n'
+            + embed.embed_snippet(views)
+        )
+        html_code = embed.html_template.format(title='nglview-embed', snippet=snippet)
 
-    _unset_serialization(views)
+        # from ipywidgets
+        # Check if fp is writable:
+        if hasattr(fp, 'write'):
+            fp.write(html_code)
+        else:
+            # Assume fp is a filename:
+            with open(fp, "w") as f:
+                f.write(html_code)
 
 
 class NGLWidget(DOMWidget):
