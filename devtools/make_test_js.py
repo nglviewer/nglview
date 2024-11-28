@@ -14,7 +14,7 @@ parser.add_argument('--travis', action='store_true')
 parser.add_argument('-n', '--nb', nargs='?')
 args = parser.parse_args()
 
-api_root_dir = 'nglview/tests/notebooks/api/'
+api_root_dir = 'tests/notebooks/api/'
 
 notebook_names_for_travis  = [
              'test_no_gui_demo.ipynb',
@@ -30,10 +30,10 @@ elif args.api:
 elif args.single:
     notebooks = [args.nb]
 else:
-    notebooks = ['nglview/tests/notebooks/dummy.ipynb',]
+    notebooks = ['tests/notebooks/dummy.ipynb',]
     
-    notebooks += (glob('nglview/tests/notebooks/test*ipynb') +
-                glob('nglview/tests/notebooks/api/test*ipynb'))
+    notebooks += (glob('tests/notebooks/test*ipynb') +
+                glob('tests/notebooks/api/test*ipynb'))
 
 # shuffle(notebooks)
 def get_cell_length(nb):
@@ -75,13 +75,13 @@ if __name__ == '__main__':
     all_notebooks = '\n'.join(body_template % (notebook, notebook, n_cells)
                               for (notebook, n_cells) in notebooks_with_cell_lengths)
 
-    fn = 'nglview/tests/js/test.js'
+    fn = 'tests/js/test.js'
     with open(fn, 'w') as fh:
         fh.write(head + all_notebooks + tail)
 
     for nb_abspath, n_cells in notebooks_with_cell_lengths:
         basename = os.path.basename(nb_abspath)
-        js_fn = os.path.join('nglview/tests/js',
+        js_fn = os.path.join('tests/js',
                 os.path.splitext(basename)[0] + '.js')
         with open(js_fn, 'w') as fh:
             body = body_template % (nb_abspath, nb_abspath, n_cells)
