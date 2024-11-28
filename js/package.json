@@ -35,7 +35,7 @@
   },
   "scripts": {
     "prepublish": "yarn build:prod && webpack && yarn run copy:labextension",
-    "copy:labextension": "cp -r nglview-js-widgets/labextension/* ../nglview/staticlab/",
+    "copy:labextension": "cp -r nglview-js-widgets/labextension/* ../nglview/labextension/",
     "build": "yarn run build:lib && yarn run build:labextension:dev",
     "build:prod": "yarn run build:lib && yarn run build:labextension",
     "build:labextension": "jupyter labextension build .",

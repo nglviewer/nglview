@@ -5,13 +5,13 @@ Steps:
     - cd nglview/static
     - git rm -rf ./*
 
-    - cd nglview/staticlab
+    - cd nglview/labextension
     - git rm -rf ./*
 
     - cd js
     - npm install
     - cd ../nglview
-    - git add static staticlab
+    - git add static labextension
 """
 
 import subprocess
