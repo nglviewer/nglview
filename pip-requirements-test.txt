@@ -17,6 +17,6 @@ simpletraj
 
 # movie making
 matplotlib
-moviepy
+moviepy==0.2.2.11
 imageio
 pillow
