@@ -265,13 +265,16 @@ export
         }, this);
 
         this.stage.viewerControls.signals.changed.add(function () {
-            this.serialize_camera_orientation();
+            setTimeout(() => {
+                // https://github.com/nglviewer/nglview/issues/948#issuecomment-898121063
+                this.serialize_camera_orientation();
+            }, 100);
+
             var m = this.stage.viewerControls.getOrientation();
             if (that._synced_model_ids.length > 0 && that._ngl_focused == 1) {
                 that._synced_model_ids.forEach(async function (mid) {
                     var model = await that.model.widget_manager.get_model(mid)
                     for (var k in model.views) {
-                        var pview = model.views[k];
                         var view = await model.views[k]
                         if (view.uuid != that.uuid) {
                             view.stage.viewerControls.orient(m);
