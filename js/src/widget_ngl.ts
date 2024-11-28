@@ -16,6 +16,7 @@ import { StageWidget } from "./gui"
 import { FullscreenModel, FullscreenView } from "./fullscreen"
 import { ColormakerRegistryModel, ColormakerRegistryView } from "./color"
 import { ThemeManagerModel, ThemeManagerView } from "./theme"
+import { IMessage } from './messageInterface';
 
 NGL.nglview_debug = false
 
@@ -67,6 +68,24 @@ export
             _view_module_version: require("../package.json").version,
         });
     }
+}
+
+interface IMessage {
+    type: string;
+    data?: any;
+    ID?: string;
+    render_params?: any;
+    methodName?: string;
+    target?: string;
+    args?: any[];
+    kwargs?: any;
+    component_index?: number;
+    repr_index?: number;
+    last_child?: boolean;
+    reconstruc_color_scheme?: boolean;
+    movie_making?: boolean;
+    buffers?: any[];
+    content?: any;
 }
 
 export
@@ -150,19 +169,19 @@ export
     }
 
     handleMessage() {
-        this.model.on("msg:custom", function (msg) {
+        this.model.on("msg:custom", (msg: IMessage) => {
             this.on_msg(msg);
-        }, this);
+        });
 
         if (this.model.comm) {
-            this.model.comm.on_msg(function (msg) {
+            this.model.comm.on_msg((msg: IMessage) => {
                 var buffers = msg.buffers;
                 var content = msg.content.data.content;
                 if (buffers.length && content) {
                     content.buffers = buffers;
                 }
                 this.model._handle_comm_msg.call(this.model, msg);
-            }.bind(this));
+            });
         }
     }
 
@@ -880,7 +899,7 @@ export
             i, p = 0,
             encoded1, encoded2, encoded3, encoded4;
 
-        if (base64[base64.length - 1] === "=") {
+        if (base64[base0.length - 1] === "=") {
             bufferLength--;
             if (base64[base64.length - 2] === "=") {
                 bufferLength--;
@@ -1083,17 +1102,53 @@ export
         return label
     }
 
-    async on_msg(msg) {
-        if (msg.type === 'call_method') {
-            await this.handleCallMethod(msg);
-        } else if (msg.type === 'base64_single') {
-            this.handleBase64Single(msg.data);
-        } else if (msg.type === 'binary_single') {
-            this.handleBinarySingle(msg);
-        } else if (msg.type === 'movie_image_data') {
-            this.handleMovieMaking(msg.render_params);
-        } else if (msg.type === 'get') {
-            this.handleGetRequest(msg.data);
+    async on_msg(msg: IMessage) {
+        switch (msg.type) {
+            case 'call_method':
+                await this.handleCallMethod(msg);
+                break;
+            case 'base64_single':
+                this.handleBase64Single(msg.data);
+                break;
+            case 'binary_single':
+                this.handleBinarySingle(msg);
+                break;
+            case 'movie_image_data':
+                this.handleMovieMaking(msg.render_params);
+                break;
+            case 'get':
+                this.handleGetRequest(msg.data);
+                break;
+            case 'request_frame':
+                this.requestFrame();
+                break;
+            case 'updateIDs':
+                this.updateIDs(msg.data);
+                break;
+            case 'removeComponent':
+                this.removeComponent(msg.data);
+                break;
+            case 'repr_parameters':
+                this.requestReprParameters(msg.component_index, msg.repr_index);
+                break;
+            case 'request_loaded':
+                this.requestLoaded();
+                break;
+            case 'request_repr_dict':
+                this.request_repr_dict();
+                break;
+            case 'stage_parameters':
+                this.requestUpdateStageParameters();
+                break;
+            case 'async_message':
+                this.sendAsyncMessage(msg.data);
+                break;
+            case 'image_data':
+                this.handleImageData(msg.ID, msg.data);
+                break;
+            default:
+                console.log('Unknown message type: ' + msg.type);
+                break;
         }
     }
 
@@ -1190,6 +1245,36 @@ export
             console.log("Number of components", this.stage.compList.length);
             console.log("ngl_view_id", this.ngl_view_id);
         }
+    }
+
+    updateIDs(data: any) {
+        var ngl_view_ids = this.model.get("_ngl_view_id");
+        ngl_view_ids.push(this.ngl_view_id);
+        this.send({ "type": "updateIDs", "data": ngl_view_ids });
+    }
+
+    removeComponent(index: number) {
+        var component = this.stage.compList[index];
+        this.stage.removeComponent(component);
+    }
+
+    requestLoaded() {
+        this.send({
+            'type': 'request_loaded',
+            'data': true
+        });
+    }
+
+    sendAsyncMessage(data: any) {
+        this.send({ 'type': 'async_message', 'data': data });
+    }
+
+    handleImageData(ID: string, data: any) {
+        this.send({
+            "data": data,
+            "type": "image_data",
+            "ID": ID,
+        });
     }
 }
 
