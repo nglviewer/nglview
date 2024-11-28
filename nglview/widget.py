@@ -66,17 +66,15 @@ def _deprecated(msg):
 
 
 def write_html(fp, views, frame_range=None):
-    # type: (str, List[NGLWidget]) -> None
-    """EXPERIMENTAL. Likely will be changed.
-
-    Make html file to display a list of views. For further options, please
-    check `ipywidgets.embed` module.
+    """
+    Write html file to display a list of views.
 
     Parameters
     ----------
     fp : str or file handle
     views : a DOMWidget view or a list of views.
     frame_range : None or a tuple of int
+        if None, do not serialize coordinates
 
     Examples
     --------
@@ -287,6 +285,8 @@ class NGLWidget(DOMWidget):
     def _set_serialization(self, frame_range=None):
         self._ngl_serialize = True
         resource = self._ngl_coordinate_resource
+        if frame_range is None and self._trajlist:
+            print("frame_range is not provided. Do not serialize coordinates. Default to use current frame.")
         if frame_range is not None:
             for t_index, traj in enumerate(self._trajlist):
                 resource[t_index] = []
