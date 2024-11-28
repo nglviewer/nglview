@@ -1,1 +1,0 @@
-(self.webpackChunknglview_js_widgets=self.webpackChunknglview_js_widgets||[]).push([[869],{1869:(e,i,s)=>{var t=s(8509),g=s(8251);e.exports={id:"nglview-js-widgets",requires:[g.IJupyterWidgetRegistry],activate:function(e,i){i.registerWidget({name:"nglview-js-widgets",version:t.version,exports:t})},autoStart:!0}}}]);
