@@ -1108,13 +1108,12 @@ class NGLWidget(DOMWidget):
         return self[-1]
 
     def _load_data(self, obj, **kwargs):
-        '''
-
+        """
         Parameters
         ----------
         obj : nglview.Structure or any object having 'get_structure_string' method or
               string buffer (open(fn).read())
-        '''
+        """
         kwargs2 = _camelize_dict(kwargs)
 
         try:
@@ -1125,41 +1124,45 @@ class NGLWidget(DOMWidget):
         if 'defaultRepresentation' not in kwargs2:
             kwargs2['defaultRepresentation'] = True
 
-        if not is_url:
-            if hasattr(obj, 'get_structure_string'):
-                blob = obj.get_structure_string()
-                kwargs2['ext'] = obj.ext
-                passing_buffer = True
-                binary = False
-            else:
-                fh = FileManager(obj,
-                                 ext=kwargs.get('ext'),
-                                 compressed=kwargs.get('compressed'))
-                # assume passing string
-                blob = fh.read(force_buffer=True)
-                passing_buffer = True
-
-                if fh.ext is None and passing_buffer:
-                    raise ValueError('must provide extension')
-
-                kwargs2['ext'] = fh.ext
-                binary = fh.is_binary
-                use_filename = fh.use_filename
-
-            if binary and not use_filename:
-                # send base64
-                blob = base64.b64encode(blob).decode('utf8')
-            blob_type = 'blob' if passing_buffer else 'path'
-            args = [{'type': blob_type, 'data': blob, 'binary': binary}]
+        if is_url:
+            self._load_data_from_url(obj, kwargs2)
         else:
-            # is_url
-            blob_type = 'url'
-            url = obj
-            args = [{'type': blob_type, 'data': url, 'binary': False}]
+            self._load_data_from_object(obj, kwargs2, kwargs)
 
+    def _load_data_from_url(self, url, kwargs2):
+        args = [{'type': 'url', 'data': url, 'binary': False}]
+        self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs2)
+
+    def _load_data_from_object(self, obj, kwargs2, kwargs):
+        if hasattr(obj, 'get_structure_string'):
+            blob, ext, binary = self._get_structure_string_data(obj)
+        else:
+            blob, ext, binary, use_filename = self._get_file_manager_data(obj, kwargs)
+
+        if binary and not use_filename:
+            blob = base64.b64encode(blob).decode('utf8')
+
+        args = [{'type': 'blob', 'data': blob, 'binary': binary}]
+        kwargs2['ext'] = ext
         name = py_utils.get_name(obj, **kwargs2)
         self._ngl_component_names.append(name)
         self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs2)
+
+    def _get_structure_string_data(self, obj):
+        blob = obj.get_structure_string()
+        ext = obj.ext
+        binary = False
+        return blob, ext, binary
+
+    def _get_file_manager_data(self, obj, kwargs):
+        fh = FileManager(obj, ext=kwargs.get('ext'), compressed=kwargs.get('compressed'))
+        blob = fh.read(force_buffer=True)
+        if fh.ext is None:
+            raise ValueError('must provide extension')
+        ext = fh.ext
+        binary = fh.is_binary
+        use_filename = fh.use_filename
+        return blob, ext, binary, use_filename
 
     def remove_component(self, c):
         """remove component by its uuid.
