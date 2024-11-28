@@ -971,24 +971,21 @@ class NGLWidget(DOMWidget):
         self._ngl_msg = msg
 
         msg_type = self._ngl_msg.get('type')
-        if msg_type == 'request_frame':
-            self._handle_request_frame()
-        elif msg_type == 'updateIDs':
-            self._handle_update_ids()
-        elif msg_type == 'removeComponent':
-            self._handle_remove_component()
-        elif msg_type == 'repr_parameters':
-            self._handle_repr_parameters()
-        elif msg_type == 'request_loaded':
-            self._handle_request_loaded()
-        elif msg_type == 'request_repr_dict':
-            self._handle_request_repr_dict()
-        elif msg_type == 'stage_parameters':
-            self._handle_stage_parameters()
-        elif msg_type == 'async_message':
-            self._handle_async_message()
-        elif msg_type == 'image_data':
-            self._handle_image_data()
+        handlers = {
+            'request_frame': self._handle_request_frame,
+            'updateIDs': self._handle_update_ids,
+            'removeComponent': self._handle_remove_component,
+            'repr_parameters': self._handle_repr_parameters,
+            'request_loaded': self._handle_request_loaded,
+            'request_repr_dict': self._handle_request_repr_dict,
+            'stage_parameters': self._handle_stage_parameters,
+            'async_message': self._handle_async_message,
+            'image_data': self._handle_image_data,
+        }
+
+        handler = handlers.get(msg_type)
+        if handler:
+            handler()
 
     def _request_repr_parameters(self, component=0, repr_index=0):
         if self.n_components > 0:
