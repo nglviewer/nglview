@@ -6,8 +6,9 @@ from pathlib import Path
 
 def get_extension_paths():
     base_dir = Path(sys.prefix)
-    nbextension_dest = base_dir / "share" / "jupyter" / "nbextensions" / "nglview"
-    labextension_dest = base_dir / "share" / "jupyter" / "labextensions" / "nglview"
+    nglview_js_widgets = "nglview-js-widgets"
+    nbextension_dest = base_dir / "share" / "jupyter" / "nbextensions" / nglview_js_widgets
+    labextension_dest = base_dir / "share" / "jupyter" / "labextensions" / nglview_js_widgets
     return nbextension_dest, labextension_dest
 
 
@@ -39,8 +40,9 @@ def main():
 
     nbextension_dest, labextension_dest = get_extension_paths()
 
-    nbextension_source = Path('nglview') / 'nbextension'
-    labextension_source = Path('nglview') / 'labextension'
+    base_dir = Path(__file__).resolve().parent.parent
+    nbextension_source = base_dir / 'nglview' / 'nbextension'
+    labextension_source = base_dir / 'nglview' / 'labextension'
 
     if args.delete:
         remove_symlink(nbextension_dest)
