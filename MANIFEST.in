@@ -1,5 +1,5 @@
 include nglview/datafiles/*
-recursive-include nglview/static *.*
+recursive-include nglview/nbextension *.*
 recursive-include nglview/labextension *.*
 include nglview/theme/*
 include LICENSE README.md DEVELOPMENT.md CHANGELOG.md

@@ -1,19 +1,5 @@
 #!/usr/bin/env python
 
-"""
-Steps:
-    - cd nglview/static
-    - git rm -rf ./*
-
-    - cd nglview/labextension
-    - git rm -rf ./*
-
-    - cd js
-    - npm install
-    - cd ../nglview
-    - git add static labextension
-"""
-
 import subprocess
 import sys
 from pathlib import Path

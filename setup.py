@@ -27,7 +27,7 @@ def update_package_data(distribution):
 HERE = Path(__file__).parent.resolve()
 # The name of the project
 lab_path = (HERE / "nglview" / "labextension")
-nb_path = (HERE / "nglview" / "static")
+nb_path = (HERE / "nglview" / "nbextension")
 assert (nb_path/"index.js").exists(), "index.js not found in %s. Make sure to build the frontend assets and install the JupyterLab extension." % nb_path
 assert (lab_path/"package.json").exists(), "package.json not found in %s. Make sure to build the frontend assets and install the JupyterLab extension." % lab_path
 labext_name = "nglview-js-widgets"
@@ -62,7 +62,7 @@ setup_args = {
     'package_data': {
          "nglview.datafiles": ["*"],
          "nglview.theme": ["*"],
-         "nglview.static": ["*"],
+         "nglview.nbextension": ["*"],
          "nglview.labextension": ["*"],
      },
     'data_files': data_files,
