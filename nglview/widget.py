@@ -1107,7 +1107,7 @@ class NGLWidget(DOMWidget):
         self._update_component_auto_completion()
         return self[-1]
 
-     def _load_data(self, obj, **kwargs):
+    def _load_data(self, obj, **kwargs):
         """
         Parameters
         ----------
