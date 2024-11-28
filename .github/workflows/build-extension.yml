@@ -11,10 +11,15 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Install node
+
+    - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-       node-version: '20.x'
+        node-version: 'lts/*'
+
+    - name: Install Yarn
+      run: corepack enable
+
     - name: Install Python
       uses: actions/setup-python@v4
       with:
@@ -33,6 +38,7 @@ jobs:
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"
+
     - name: Setup yarn cache
       uses: actions/cache@v3
       id: yarn-cache
@@ -44,9 +50,10 @@ jobs:
 
     - name: Install dependencies
       run: python -m pip install -U jupyterlab jupyter_packaging jupyterlab_widgets
+
     - name: Use existing lockfile
       run: yarn install --frozen-lockfile
+
     - name: Build the extension
       working-directory: js
-      run: |
-        npm install
+      run: npm install
