@@ -35,7 +35,7 @@ with warnings.catch_warnings():
 def _jupyter_nbextension_paths():
     return [{
         'section': 'notebook',
-        'src': 'static',
+        'src': 'nbextension',
         'dest': 'nglview-js-widgets',
         'require': 'nglview-js-widgets/extension'
     }]

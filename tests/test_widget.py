@@ -706,9 +706,8 @@ def test_trajectory_show_hide_sending_cooridnates():
 
 def test_existing_js_files():
     from glob import glob
-    jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static', '*js'))
-    mapfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'static',
-                                 '*map'))
+    jsfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'nbextension', '*js'))
+    mapfiles = glob(os.path.join(os.path.dirname(nv.__file__), 'nbextension', '*map'))
 
     assert len(jsfiles) == 2
     assert len(mapfiles) == 1
