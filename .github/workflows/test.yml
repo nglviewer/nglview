@@ -1,7 +1,6 @@
 name: Test
 
 on:
-  push:
   pull_request:
   workflow_dispatch:
 
@@ -43,6 +42,20 @@ jobs:
         channel-priority: true
         python-version: ${{ matrix.python-version }}
         use-only-tar-bz2: false  # https://github.com/conda-incubator/setup-miniconda/issues/264
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+
+    - name: Install Yarn
+      run: corepack enable
+
+    - name: Build labextension
+      run: |
+        cd js
+        npm install
+        cd ..
 
     - name: Run tests
       run: |
