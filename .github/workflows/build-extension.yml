@@ -1,9 +1,6 @@
 name: Build extension
 
 on:
-  push:
-    branches:
-    - '*'
   pull_request:
     branches:
     - '*'
@@ -18,7 +15,6 @@ jobs:
       uses: actions/setup-node@v3
       with:
        node-version: '20.x'
-       npm-version: '10.9.0'
     - name: Install Python
       uses: actions/setup-python@v4
       with:
