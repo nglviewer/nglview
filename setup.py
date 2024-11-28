@@ -28,6 +28,8 @@ HERE = Path(__file__).parent.resolve()
 # The name of the project
 lab_path = (HERE / "nglview" / "staticlab")
 nb_path = (HERE / "nglview" / "static")
+assert (nb_path/"index.js").exists(), "index.js not found in %s" % nb_path
+assert (lab_path/"static/package.json").exists(), "package.json not found in %s" % lab_path
 labext_name = "nglview-js-widgets"
 package_data_spec = {
     labext_name: ["*"],
