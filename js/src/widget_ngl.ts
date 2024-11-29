@@ -60,17 +60,16 @@ export
 export
     class NGLView extends widgets.DOMWidgetView {
     render() {
-        this.beforeDisplay()
-        this.displayed.then(function () {
+        this.beforeDisplay();
+        this.displayed.then(() => {
             // move all below code inside 'displayed'
             // to make sure the NGLView and NGLModel are created
-            this.createStage()
-            this.handlePicking()
-            this.handleSignals()
-            this.handleMessage()
-            this.finalizeDisplay()
-        }.bind(this));
-
+            this.createStage();
+            this.handlePicking();
+            this.handleSignals();
+            this.handleMessage();
+            this.finalizeDisplay();
+        });
     }
 
     beforeDisplay() {
@@ -283,8 +282,7 @@ export
             .css("opacity", "0.7")
             .appendTo(this.$container);
 
-        var that = this;
-        this.stage.signals.clicked.add(function (pd) {
+        this.stage.signals.clicked.add((pd) => {
             if (pd) {
                 this.model.set('picked', {}); //refresh signal
                 this.touch();
@@ -318,7 +316,7 @@ export
 
                 this.$pickingInfo.text(pickingText);
             }
-        }, this);
+        });
     }
 
     async mouseOverDisplay(type) {
@@ -655,13 +653,13 @@ export
             this.stage.toggleFullscreen();
         }.bind(this)
         stage.viewer.container.append(view.el);
-        stage.signals.fullscreenChanged.add(function (isFullscreen) {
+        stage.signals.fullscreenChanged.add((isFullscreen) => {
             if (isFullscreen) {
-                view.model.set("icon", "compress")
+                view.model.set("icon", "compress");
             } else {
-                view.model.set("icon", "expand")
+                view.model.set("icon", "expand");
             }
-        })
+        });
     }
 
 
@@ -702,38 +700,36 @@ export
         }
     }
 
-    removeRepresentationsByName(repr_name, component_index) {
+    removeRepresentationsByName = (repr_name, component_index) => {
         var component = this.stage.compList[component_index];
 
         if (component) {
-            component.reprList.forEach(function (repr) {
+            component.reprList.forEach((repr) => {
                 if (repr.name == repr_name) {
                     component.removeRepresentation(repr);
                 }
-            })
+            });
         }
     }
 
-    updateRepresentationForComponent(repr_index, component_index, params) {
+    updateRepresentationForComponent = (repr_index, component_index, params) => {
         var component = this.stage.compList[component_index];
-        var that = this;
         var repr = component.reprList[repr_index];
         if (repr) {
             repr.setParameters(params);
         }
     }
 
-    updateRepresentationsByName(repr_name, component_index, params) {
+    updateRepresentationsByName = (repr_name, component_index, params) => {
         var component = this.stage.compList[component_index];
-        var that = this;
 
         if (component) {
-            component.reprList.forEach(function (repr) {
+            component.reprList.forEach((repr) => {
                 if (repr.name == repr_name) {
                     repr.setParameters(params);
-                    that.request_repr_dict();
+                    this.request_repr_dict();
                 }
-            })
+            });
         }
     }
 
@@ -755,12 +751,12 @@ export
         }
     }
 
-    setColorByResidue(colors, component_index, repr_index) {
+    setColorByResidue = (colors, component_index, repr_index) => {
         var repr = this.stage.compList[component_index].reprList[repr_index];
-        var schemeId = NGL.ColormakerRegistry.addScheme(function (params) {
-            this.atomColor = function (atom) {
+        var schemeId = NGL.ColormakerRegistry.addScheme((params) => {
+            this.atomColor = (atom) => {
                 var color = colors[atom.residueIndex];
-                return color
+                return color;
             };
             params; // to pass eslint; ack;
         });
@@ -826,16 +822,16 @@ export
 
     async replaceStructure(structure) {
         var blob = new Blob([structure.data], { type: "text/plain" });
-        var stage = this.stage
+        var stage = this.stage;
         var params = structure.params || {};
         params.ext = structure.ext;
         params.defaultRepresentation = false;
         var comp = this.stage.compList[0];
         var representations = comp.reprList.slice();
         var old_orientation = this.stage.viewerControls.getOrientation();
-        var component = await this.stage.loadFile(blob, params)
+        var component = await this.stage.loadFile(blob, params);
         stage.viewerControls.orient(old_orientation);
-        representations.forEach(function (repr) {
+        representations.forEach((repr) => {
             var repr_name = repr.name;
             var repr_params = repr.repr.getParameters();
             // Note: not using repr.repr.type, repr.repr.params
