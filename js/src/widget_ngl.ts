@@ -1,7 +1,5 @@
-var Jupyter
 var widgets = require("@jupyter-widgets/base")
 var NGL = require('ngl')
-var BaseView = require('./base').BaseView
 import * as $ from 'jquery'
 import * as _ from 'underscore'
 import "./lib/signals.min.js"
@@ -45,14 +43,6 @@ function generateUUID() {
 }
 
 
-async function createView(that, trait_name) {
-    // Create a view for the model with given `trait_name`
-    // e.g: in backend, 'view.<trait_name>`
-    console.log("Creating view for model " + trait_name);
-    var manager = that.model.widget_manager
-    var model_id = that.model.get(trait_name).replace("IPY_MODEL_", "");
-    return await manager.create_view(await manager.get_model(model_id))
-}
 
 
 export
@@ -72,17 +62,16 @@ export
 export
     class NGLView extends widgets.DOMWidgetView {
     render() {
-        this.beforeDisplay()
-        this.displayed.then(function () {
+        this.beforeDisplay();
+        this.displayed.then(() => {
             // move all below code inside 'displayed'
             // to make sure the NGLView and NGLModel are created
-            this.createStage()
-            this.handlePicking()
-            this.handleSignals()
-            this.handleMessage()
-            this.finalizeDisplay()
-        }.bind(this));
-
+            this.createStage();
+            this.handlePicking();
+            this.handleSignals();
+            this.handleMessage();
+            this.finalizeDisplay();
+        });
     }
 
     beforeDisplay() {
@@ -112,7 +101,6 @@ export
             stage_params["backgroundColor"] = "white"
         }
         NGL.useWorker = false;
-        var view_parent = this.options.parent
         this.stage = new NGL.Stage(undefined)
         this.$container = $(this.stage.viewer.container);
         this.$el.append(this.$container)
@@ -150,19 +138,19 @@ export
     }
 
     handleMessage() {
-        this.model.on("msg:custom", function (msg) {
+        this.model.on("msg:custom", (msg) => {
             this.on_msg(msg);
-        }, this);
+        });
 
         if (this.model.comm) {
-            this.model.comm.on_msg(function (msg) {
+            this.model.comm.on_msg((msg) => {
                 var buffers = msg.buffers;
                 var content = msg.content.data.content;
                 if (buffers.length && content) {
                     content.buffers = buffers;
                 }
                 this.model._handle_comm_msg.call(this.model, msg);
-            }.bind(this));
+            });
         }
     }
 
@@ -210,21 +198,21 @@ export
             e.preventDefault();
         }, true);
 
-        this.stage.signals.componentAdded.add(function (component) {
-            this.comp_uuids.push(component.uuid)
+        this.stage.signals.componentAdded.add((component) => {
+            this.comp_uuids.push(component.uuid);
             var len = this.stage.compList.length;
             this.model.set("n_components", len);
             this.touch();
             var comp = this.stage.compList[len - 1];
-            comp.signals.representationRemoved.add(function () {
-                that.request_repr_dict();
+            comp.signals.representationRemoved.add(() => {
+                this.request_repr_dict();
             });
-            comp.signals.representationAdded.add(function (repr) {
-                that.request_repr_dict();
-                repr.signals.parametersChanged.add(function () {
-                    console.log("repr.parametersChanged")
-                    that.request_repr_dict();
-                })
+            comp.signals.representationAdded.add((repr) => {
+                this.request_repr_dict();
+                repr.signals.parametersChanged.add(() => {
+                    console.log("repr.parametersChanged");
+                    this.request_repr_dict();
+                });
             });
         }, this);
 
@@ -264,7 +252,7 @@ export
             this.requestUpdateStageParameters();
         }, this);
 
-        this.stage.viewerControls.signals.changed.add(function () {
+        this.stage.viewerControls.signals.changed.add(() => {
             setTimeout(() => {
                 // https://github.com/nglviewer/nglview/issues/948#issuecomment-898121063
                 this.serialize_camera_orientation();
@@ -272,17 +260,17 @@ export
 
             var m = this.stage.viewerControls.getOrientation();
             if (that._synced_model_ids.length > 0 && that._ngl_focused == 1) {
-                that._synced_model_ids.forEach(async function (mid) {
-                    var model = await that.model.widget_manager.get_model(mid)
+                that._synced_model_ids.forEach(async (mid) => {
+                    var model = await that.model.widget_manager.get_model(mid);
                     for (var k in model.views) {
-                        var view = await model.views[k]
+                        var view = await model.views[k];
                         if (view.uuid != that.uuid) {
                             view.stage.viewerControls.orient(m);
                         }
                     }
-                })
+                });
             }
-        }.bind(this));
+        });
 
     }
 
@@ -296,8 +284,7 @@ export
             .css("opacity", "0.7")
             .appendTo(this.$container);
 
-        var that = this;
-        this.stage.signals.clicked.add(function (pd) {
+        this.stage.signals.clicked.add((pd) => {
             if (pd) {
                 this.model.set('picked', {}); //refresh signal
                 this.touch();
@@ -432,7 +419,6 @@ export
         });
 
 
-        var compList = await Promise.all(loadfile_list)
         that.stage.setParameters(ngl_stage_params);
         that.set_camera_orientation(camera_orientation);
         that.touch();
@@ -668,7 +654,7 @@ export
             this.stage.toggleFullscreen();
         }.bind(this)
         stage.viewer.container.append(view.el);
-        stage.signals.fullscreenChanged.add(function (isFullscreen) {
+        stage.signals.fullscreenChanged.add((isFullscreen) => {
             if (isFullscreen) {
                 view.model.set("icon", "compress")
             } else {
@@ -719,7 +705,7 @@ export
         var component = this.stage.compList[component_index];
 
         if (component) {
-            component.reprList.forEach(function (repr) {
+            component.reprList.forEach((repr) => {
                 if (repr.name == repr_name) {
                     component.removeRepresentation(repr);
                 }
@@ -729,7 +715,6 @@ export
 
     updateRepresentationForComponent(repr_index, component_index, params) {
         var component = this.stage.compList[component_index];
-        var that = this;
         var repr = component.reprList[repr_index];
         if (repr) {
             repr.setParameters(params);
@@ -741,7 +726,7 @@ export
         var that = this;
 
         if (component) {
-            component.reprList.forEach(function (repr) {
+            component.reprList.forEach((repr) => {
                 if (repr.name == repr_name) {
                     repr.setParameters(params);
                     that.request_repr_dict();
@@ -770,7 +755,7 @@ export
 
     setColorByResidue(colors, component_index, repr_index) {
         var repr = this.stage.compList[component_index].reprList[repr_index];
-        var schemeId = NGL.ColormakerRegistry.addScheme(function (params) {
+        var schemeId = NGL.ColormakerRegistry.addScheme((params) => {
             this.atomColor = function (atom) {
                 var color = colors[atom.residueIndex];
                 return color
@@ -848,7 +833,7 @@ export
         var old_orientation = this.stage.viewerControls.getOrientation();
         var component = await this.stage.loadFile(blob, params)
         stage.viewerControls.orient(old_orientation);
-        representations.forEach(function (repr) {
+        representations.forEach((repr) => {
             var repr_name = repr.name;
             var repr_params = repr.repr.getParameters();
             // Note: not using repr.repr.type, repr.repr.params
@@ -1044,7 +1029,6 @@ export
             }
             return this.stage.loadFile(blob, msg.kwargs)
         } else {
-            var file = new File([""], args0.data);
             // FIXME: if not "any", typescipt complains there is no
             // "exists" method.
             var path = "";
@@ -1073,7 +1057,6 @@ export
         if (this.ngl_view_id != this.get_last_child_id() && msg.last_child) {
             return
         }
-        var o = await this._getLoadFilePromise(msg)
         this._handleLoadFileFinished();
     }
 
@@ -1101,7 +1084,7 @@ export
     }
 
     async handleCallMethod(msg) {
-        var index, component, func, stage;
+        var index, component;
         var new_args = msg.args.slice();
         new_args.push(msg.kwargs);
 
