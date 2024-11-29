@@ -1,0 +1,21 @@
+name: Test
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: ./.github/workflows/template.yml
+    steps:
+    - name: Generate JS test files
+      run: |
+        python3 devtools/make_test_js.py --api
+
+    - name: Start Jupyter Lab
+      run: |
+        nohup jupyter lab --no-browser --port=8888 &
+        sleep 10
+
+    - name: Run Nightwatch tests
+      run: npx nightwatch
