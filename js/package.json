@@ -35,7 +35,7 @@
   },
   "scripts": {
     "prepublish": "yarn build:prod && webpack && yarn run copy:labextension",
-    "copy:labextension": "cp -r nglview-js-widgets/labextension/* ../nglview/staticlab/",
+    "copy:labextension": "mkdir -p ../nglview/labextension && cp -r nglview-js-widgets/labextension/* ../nglview/labextension/",
     "build": "yarn run build:lib && yarn run build:labextension:dev",
     "build:prod": "yarn run build:lib && yarn run build:labextension",
     "build:labextension": "jupyter labextension build .",
@@ -52,6 +52,7 @@
     "watch": "run-p watch:src watch:labextension",
     "watch:src": "tsc -w",
     "watch:labextension": "jupyter labextension watch .",
+    "watch:install": "nodemon --watch src/widget_ngl.ts --exec 'npm install'",
     "test": "mocha"
   },
   "dependencies": {
@@ -89,7 +90,8 @@
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4",
     "babel-loader": "^8.2.2",
-    "@babel/plugin-transform-object-rest-spread": "^7.14.5"
+    "@babel/plugin-transform-object-rest-spread": "^7.14.5",
+    "nodemon": "^2.0.22"
   },
   "sideEffects": [
     "style/*.css",
