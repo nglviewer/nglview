@@ -1,7 +1,5 @@
-var Jupyter
 var widgets = require("@jupyter-widgets/base")
 var NGL = require('ngl')
-var BaseView = require('./base').BaseView
 import * as $ from 'jquery'
 import * as _ from 'underscore'
 import "./lib/signals.min.js"
@@ -42,16 +40,6 @@ function generateUUID() {
     }
 
     return uuid.join('')
-}
-
-
-async function createView(that, trait_name) {
-    // Create a view for the model with given `trait_name`
-    // e.g: in backend, 'view.<trait_name>`
-    console.log("Creating view for model " + trait_name);
-    var manager = that.model.widget_manager
-    var model_id = that.model.get(trait_name).replace("IPY_MODEL_", "");
-    return await manager.create_view(await manager.get_model(model_id))
 }
 
 
@@ -112,7 +100,6 @@ export
             stage_params["backgroundColor"] = "white"
         }
         NGL.useWorker = false;
-        var view_parent = this.options.parent
         this.stage = new NGL.Stage(undefined)
         this.$container = $(this.stage.viewer.container);
         this.$el.append(this.$container)
@@ -432,7 +419,7 @@ export
         });
 
 
-        var compList = await Promise.all(loadfile_list)
+        await Promise.all(loadfile_list)
         that.stage.setParameters(ngl_stage_params);
         that.set_camera_orientation(camera_orientation);
         that.touch();
