@@ -1,5 +1,5 @@
 {
-  "src_folders" : ["nglview/tests/js"],
+  "src_folders" : ["tests/js"],
   "output_folder" : "reports",
   "custom_commands_path" : "nbtests/jscommands/",
   "custom_assertions_path" : "",
@@ -29,7 +29,7 @@
         "enabled" : false,
         "path" : ""
       },
-      
+
       "desiredCapabilities": {
         "browserName": "chrome",
         "javascriptEnabled": true,

@@ -66,3 +66,35 @@ jobs:
         python setup.py sdist
         pip install dist/*gz
         python -c "import nglview as nv; print(nv.__version__)"
+
+  nightwatch:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout nglview repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+
+    - name: Install dependencies
+      run: |
+        npm install
+        pip install jupyterlab
+
+    - name: Install nglview
+      run: pip install .
+
+    - name: Generate test files
+      run: |
+        python3 devtools/make_test_js.py --api
+
+    - name: Start Jupyter Lab
+      run: |
+        nohup jupyter lab --no-browser --port=8888 &
+        sleep 10
+
+    - name: Run Nightwatch tests
+      run: npx nightwatch
