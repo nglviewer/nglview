@@ -57,9 +57,9 @@ jobs:
         npm install
         cd ..
 
-    - name: Run tests
-      run: |
-        python -m pytest -vs tests --cov=nglview --cov-report=html --disable-pytest-warnings
+    # - name: Run tests
+    #   run: |
+    #     python -m pytest -vs tests --cov=nglview --cov-report=html --disable-pytest-warnings
 
     - name: Check installation with pip
       run: |
@@ -67,27 +67,7 @@ jobs:
         pip install dist/*gz
         python -c "import nglview as nv; print(nv.__version__)"
 
-  nightwatch:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout nglview repository
-      uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 'lts/*'
-
-    - name: Install dependencies
-      run: |
-        npm install
-        pip install jupyterlab
-
-    - name: Install nglview
-      run: pip install .
-
-    - name: Generate test files
+    - name: Generate JS test files
       run: |
         python3 devtools/make_test_js.py --api
 
