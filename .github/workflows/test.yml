@@ -1,12 +1,68 @@
-name: Test Python tests
+name: Test
 
 on:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
-    uses: ./.github/workflows/template.yml
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+
     steps:
+    - name: Checkout nglview repository
+      uses: actions/checkout@v4
+
+    - name: Cache conda
+      uses: actions/cache@v4
+      env:
+        CACHE_NUMBER: 2  # Increase this value to reset cache if .github/nglview-gha.yml has not changed
+      with:
+        path: ~/conda_pkgs_dir
+        key:
+          ${{ matrix.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('.github/nglview-gha.yml') }}
+
+    - name: Set up conda environment
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        auto-activate-base: false
+        activate-environment: nglview-gha
+        environment-file: .github/nglview-gha.yml
+        mamba-version: "*"
+        channels: conda-forge
+        channel-priority: true
+        python-version: ${{ matrix.python-version }}
+        use-only-tar-bz2: false  # https://github.com/conda-incubator/setup-miniconda/issues/264
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+
+    - name: Install Yarn
+      run: corepack enable
+
+    - name: Build labextension
+      run: |
+        cd js
+        npm install
+        cd ..
+
     - name: Run tests
       run: |
         python -m pytest -vs tests --cov=nglview --cov-report=html --disable-pytest-warnings
+
+    - name: Check installation with pip
+      run: |
+        python setup.py sdist
+        pip install dist/*gz
+        python -c "import nglview as nv; print(nv.__version__)"
