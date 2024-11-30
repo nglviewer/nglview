@@ -69,6 +69,9 @@ jobs:
         nohup jupyter notebook --no-browser --port=8888 &
         sleep 10
 
+    - name: Clone nbtests repository
+      run: git clone https://github.com/hainm/nbtests.git
+
     - name: Run Nightwatch tests
       run: npx nightwatch
 
