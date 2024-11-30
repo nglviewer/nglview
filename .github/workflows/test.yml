@@ -51,6 +51,9 @@ jobs:
     - name: Install Yarn
       run: corepack enable
 
+    - name: Install Nightwatch
+      run: npm install -g nightwatch
+
     - name: Build labextension
       run: |
         cd js
@@ -60,6 +63,14 @@ jobs:
     - name: Run tests
       run: |
         python -m pytest -vs tests --cov=nglview --cov-report=html --disable-pytest-warnings
+
+    - name: Launch Jupyter Notebook server
+      run: |
+        nohup jupyter notebook --no-browser --port=8888 &
+        sleep 10
+
+    - name: Run Nightwatch tests
+      run: npx nightwatch
 
     - name: Check installation with pip
       run: |
