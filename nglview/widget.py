@@ -144,6 +144,7 @@ class BaseWidget(DOMWidget):
         self._handle_msg_thread = threading.Thread(target=self.on_msg, args=(self._handle_custom_widget_msg,))
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
+        self._state = None
 
     def _handle_custom_widget_msg(self, _, msg, buffers):
         pass
@@ -164,6 +165,9 @@ class BaseWidget(DOMWidget):
         msg.update(other_kwargs)
         return msg
 
+    def _js(self, code, **kwargs):
+        self._remote_call('executeCode', target='Widget', args=[code], **kwargs)
+
     @observe('loaded')
     def on_loaded(self, change):
         if change['new']:
@@ -183,6 +187,21 @@ class BaseWidget(DOMWidget):
 
     def _wait_until_finished(self, timeout=0.0001):
         pass
+
+    @observe('frame')
+    def _on_frame_changed(self, change):
+        """set and send coordinates at current frame
+        """
+        self._set_coordinates(change['new'])
+
+    def render_image(self):
+        image = widgets.Image()
+        self._js(f"this.exportImage('{image.model_id}')")
+        # image.value will be updated in _handle_custom_widget_msg
+        return image
+
+    def handle_resize(self):
+        self._js("this.plugin.handleResize()")
 
 
 class NGLWidget(BaseWidget):
