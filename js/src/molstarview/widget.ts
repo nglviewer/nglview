@@ -5,8 +5,9 @@ import { createPluginUI } from 'molstar/lib/mol-plugin-ui';
 import * as molStructure from 'molstar/lib/mol-plugin-state/actions/structure';
 import { BuiltInTrajectoryFormat } from 'molstar/lib/mol-plugin-state/formats/trajectory';
 import { PluginCommands } from 'molstar/lib/mol-plugin/commands';
-// require('molstar/lib/mol-plugin-ui/skin/light.scss'); // FIXME: loader issue for labextension building.
+import './light.css'; // FIXME: loader issue for labextension building.
 import * as representation from "./representation";
+
 
 // import { basicSpec } from "./ui"
 
@@ -28,20 +29,28 @@ import * as representation from "./representation";
 
 // When serialiazing the entire widget state for embedding, only values that
 // differ from the defaults will be specified.
-var MolstarModel = widgets.DOMWidgetModel.extend({
-    defaults: _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
-        _model_name: 'MolstarModel',
-        _view_name: 'MolstarView',
-        _model_module: 'molstarview-widget',
-        _view_module: 'molstarview-widget',
-        _model_module_version: '0.1.0', // FIXME: require('../package.json').version,
-        _view_module_version: '0.1.0', // FIXME: require('../package.json').version,
-    })
-});
-
+export class MolstarModel extends widgets.DOMWidgetModel {
+    defaults() {
+        return {
+            ...super.defaults(),
+            _model_name: 'MolstarModel',
+            _view_name: 'MolstarView',
+            _model_module: 'molstarview-widget',
+            _view_module: 'molstarview-widget',
+            _model_module_version: require("../package.json").version,
+            _view_module_version: require("../package.json").version,
+        };
+    }
+}
 
 // Custom View. Renders the widget model.
-var MolstarView = widgets.DOMWidgetView.extend({
+export class MolstarView extends widgets.DOMWidgetView  {
+    plugin: any;
+    container: any;
+    isLeader: boolean;
+    _focused: boolean;
+    _synced_model_ids: any;
+
     // Defines how the widget gets rendered into the DOM
     async render() {
         this.handleMessage();
@@ -52,14 +61,14 @@ var MolstarView = widgets.DOMWidgetView.extend({
             }
             await this.finalizeDisplay();
         });
-    },
+    }
 
     async initializeDisplay() {
         this.setupContainer();
         this.plugin = await createPluginUI(this.container);
         this._focused = false;
         await this.checkLeaderView();
-    },
+    }
 
     setupContainer() {
         const container = document.createElement('div');
@@ -67,15 +76,16 @@ var MolstarView = widgets.DOMWidgetView.extend({
         container.style.height = '600px';
         this.el.appendChild(container);
         this.container = container;
-    },
+    }
 
     async checkLeaderView() {
         console.log('Find a leader view');
-        this.isLeader = this.model.views.length < 2;
+        const views = await Promise.all(Object.values(this.model.views));
+        this.isLeader = views.length < 2;
         var hasLeader = false;
 
         for (var k in this.model.views) {
-            var view = await this.model.views[k];
+            var view = await this.model.views[k] as MolstarView;
             if (view.isLeader) {
                 hasLeader = true;
                 break;
@@ -84,7 +94,7 @@ var MolstarView = widgets.DOMWidgetView.extend({
 
         if (!hasLeader) {
             for (var k in this.model.views) {
-                var view = await this.model.views[k];
+                var view = await this.model.views[k] as MolstarView;
                 view.isLeader = true;
                 hasLeader = true;
                 break;
@@ -93,7 +103,7 @@ var MolstarView = widgets.DOMWidgetView.extend({
 
         if (!this.isLeader) {
             for (var k in this.model.views) {
-                var view = await this.model.views[k];
+                var view = await this.model.views[k] as MolstarView;
                 if (view.isLeader) {
                     var data = await view.plugin.state.getSnapshot();
                     await this.plugin.state.setSnapshot(data);
@@ -101,29 +111,28 @@ var MolstarView = widgets.DOMWidgetView.extend({
                 }
             }
         }
-    },
+    }
 
     handleSignals() {
-        var that = this;
-        this.container.addEventListener('mouseover', function(e: any) {
-            that._focused = 1;
-            e; // linter
-            that.mouseOverDisplay('block');
-        }, false);
+        // this.container.addEventListener('mouseover', (e: any) => {
+        //     this._focused = true;
+        //     e; // linter
+        //     this.mouseOverDisplay('block');
+        // }, false);
 
-        this.container.addEventListener('mouseout', function(e: any) {
-            that._focused = 0;
-            e; // linter
-            that.mouseOverDisplay('none');
-        }, false);
-    },
+        // this.container.addEventListener('mouseout', (e: any) => {
+        //     this._focused = false;
+        //     e; // linter
+        //     this.mouseOverDisplay('none');
+        // }, false);
+    }
 
     async finalizeDisplay() {
         this.send({
             'type': 'request_loaded',
             'data': true
         });
-    },
+    }
 
     // from molstar: https://github.com/molstar/molstar/blob/d1e17785b8404eec280ad04a6285ad9429c5c9f3/src/apps/viewer/app.ts#L219-L223
     async loadStructureFromData(
@@ -142,7 +151,7 @@ var MolstarView = widgets.DOMWidgetView.extend({
             console.log('Calling loadStructureFromData without preset');
             await this.plugin.builders.structure.createModel(trajectory);
         }
-    },
+    }
 
     // from molstar: https://github.com/molstar/molstar/blob/d1e17785b8404eec280ad04a6285ad9429c5c9f3/src/apps/viewer/app.ts#L219-L223
     // this method is taken from the Viewer class
@@ -164,11 +173,11 @@ var MolstarView = widgets.DOMWidgetView.extend({
                 }
             }
         }));
-    },
+    }
 
     executeCode(code: any) {
         eval(code);
-    },
+    }
 
     on_msg(msg: any) {
         if (msg.type == 'call_method') {
@@ -188,7 +197,7 @@ var MolstarView = widgets.DOMWidgetView.extend({
         } else if (msg.type == 'binary_single') {
             this.handleBinaryMessage(msg);
         }
-    },
+    }
 
     handleBinaryMessage(msg: any) {
         var coordinateMeta = msg.data;
@@ -202,12 +211,12 @@ var MolstarView = widgets.DOMWidgetView.extend({
                 this.updateCoordinates(coordinates, traj_index);
             }
         }
-    },
+    }
 
     handleEmbed() {
         var snaphShot = this.model.get("molstate");
         this.setState(snaphShot);
-    },
+    }
 
     handleMessage() {
         this.model.on("msg:custom", (msg: any) => {
@@ -224,14 +233,14 @@ var MolstarView = widgets.DOMWidgetView.extend({
                 this.model._handle_comm_msg.call(this.model, msg);
             });
         }
-    },
+    }
 
     updateCoordinates(coordinates: any, modelIndex: any) {
         var component = 0; // FIXME
         if (coordinates && typeof component != 'undefined') {
             // FIXME: update
         }
-    },
+    }
 
     exportImage(modelId: any) {
         this.plugin.helpers.viewportScreenshot.getImageDataUri().then((data: string) => {
@@ -239,11 +248,11 @@ var MolstarView = widgets.DOMWidgetView.extend({
             var msg = { "type": "exportImage", "data": data, "model_id": modelId };
             this.send(msg);
         });
-    },
+    }
 
     downloadState() {
         PluginCommands.State.Snapshots.DownloadToFile(this.plugin, { type: 'json' });
-    },
+    }
 
     async getState() {
         if (this.isLeader) {
@@ -251,50 +260,50 @@ var MolstarView = widgets.DOMWidgetView.extend({
             this.model.set("molstate", data);
             this.touch();
         }
-    },
+    }
 
     async setState(data: any) {
         await this.plugin.state.setSnapshot(data);
-    },
+    }
 
     addRepresentation(params: any, modelIndex: any) {
         representation.addRepresentation(this.plugin, params, modelIndex);
-    },
+    }
 
     removeRepresentation(modelIndex: any) {
         var st = this.plugin.managers.structure.hierarchy.current.structures[modelIndex];
         this.plugin.managers.structure.component.removeRepresentations(st.components);
-    },
+    }
 
     resetCamera() {
         PluginCommands.Camera.Reset(this.plugin, {});
-    },
+    }
 
     setCamera(params: any) {
         var durationMs = 0.0;
         this.plugin.canvas3d.requestCameraReset({ durationMs, params });
-    },
+    }
 
     getCamera() {
         var snapshot = this.plugin.canvas3d.camera.getSnapshot();
         this.send({ "type": "getCamera", "data": snapshot });
-    },
+    }
 
     syncCamera() {
         var that = this;
         if (that._synced_model_ids.length > 0 && that._focused) {
             that._synced_model_ids.forEach(async function(mid: any) {
-                var model = await that.model.widget_manager.get_model(mid);
+                var model = await that.model.widget_manager.get_model(mid) as MolstarModel;
                 for (var k in model.views) {
-                    var view = await model.views[k];
+                    var view = await model.views[k] as MolstarView;
                     if (view !== that) {
                         view.setCamera(that.plugin.canvas3d.camera.getSnapshot());
                     }
                 }
             });
         }
-    },
-});
+    }
+};
 
 module.exports = {
     'MolstarModel': MolstarModel,
