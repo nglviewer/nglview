@@ -5,7 +5,8 @@ import { createPluginUI } from 'molstar/lib/mol-plugin-ui';
 import * as molStructure from 'molstar/lib/mol-plugin-state/actions/structure';
 import { BuiltInTrajectoryFormat } from 'molstar/lib/mol-plugin-state/formats/trajectory';
 import { PluginCommands } from 'molstar/lib/mol-plugin/commands';
-import './light.css'; // FIXME: loader issue for labextension building.
+import { PLUGIN_VERSION } from 'molstar/lib/mol-plugin/version';
+import './light.css'; // npx sass node_modules/molstar/lib/mol-plugin-ui/skin/light.scss > light.css
 import * as representation from "./representation";
 
 
@@ -53,6 +54,9 @@ export class MolstarView extends widgets.DOMWidgetView  {
 
     // Defines how the widget gets rendered into the DOM
     async render() {
+        this.model.set('_molstar_version', PLUGIN_VERSION);
+        this.touch(); // touch the model to trigger the first update
+        console.log('Molstar version: ', PLUGIN_VERSION);
         this.handleMessage();
         this.displayed.then(async () => {
             await this.initializeDisplay();

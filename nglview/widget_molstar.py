@@ -30,6 +30,7 @@ class MolstarView(widgets.DOMWidget):
     frame = Integer().tag(sync=True)
     loaded = Bool(False).tag(sync=False)
     molstate = Dict().tag(sync=True)
+    _molstar_version = Unicode().tag(sync=True)
 
     def __init__(self):
         super().__init__()
