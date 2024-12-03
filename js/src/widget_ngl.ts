@@ -14,6 +14,7 @@ import { StageWidget } from "./gui"
 import { FullscreenModel, FullscreenView } from "./fullscreen"
 import { ColormakerRegistryModel, ColormakerRegistryView } from "./color"
 import { ThemeManagerModel, ThemeManagerView } from "./theme"
+import { MolstarModel, MolstarView } from "./molstarview/widget"
 
 NGL.nglview_debug = false
 
@@ -43,8 +44,7 @@ function generateUUID() {
 }
 
 
-export
-    class NGLModel extends widgets.DOMWidgetModel {
+export class NGLModel extends widgets.DOMWidgetModel {
     defaults() {
         return _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
             _model_name: 'NGLModel',
@@ -1190,4 +1190,6 @@ module.exports = {
     'ColormakerRegistryView': ColormakerRegistryView,
     'ThemeManagerModel': ThemeManagerModel,
     'ThemeManagerView': ThemeManagerView,
+    'MolstarModel': MolstarModel,
+    'MolstarView': MolstarView,
 }
