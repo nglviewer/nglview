@@ -38,22 +38,12 @@ class MolstarView(BaseWidget):
         self._trajlist = []
         self._callbacks_before_loaded = []
         self._event = threading.Event()
-        self._remote_call_thread = RemoteCallThread(
-            self,
-            registered_funcs=[])
-        self._remote_call_thread.daemon = True
-        self._remote_call_thread.start()
-        self._handle_msg_thread = threading.Thread(
-            target=self.on_msg, args=(self._molstar_handle_message, ))
-        # register to get data from JS side
-        self._handle_msg_thread.daemon = True
-        self._handle_msg_thread.start()
         self._state = None
 
     def render_image(self):
         image = widgets.Image()
         self._js(f"this.exportImage('{image.model_id}')")
-        # image.value will be updated in _molstar_handle_message
+        # image.value will be updated in _handle_custom_widget_msg
         return image
 
     def handle_resize(self):
@@ -64,21 +54,6 @@ class MolstarView(BaseWidget):
         if change['new']:
             self._fire_callbacks(self._callbacks_before_loaded)
 
-    def _thread_run(self, func, *args):
-        thread = threading.Thread(
-            target=func,
-            args=args,
-        )
-        thread.daemon = True
-        thread.start()
-        return thread
-
-    def _fire_callbacks(self, callbacks):
-        def _call(event):
-            for callback in callbacks:
-                callback(self)
-        self._thread_run(_call, self._event)
-
     def _wait_until_finished(self, timeout=0.0001):
         # FIXME: dummy for now
         pass
@@ -88,7 +63,7 @@ class MolstarView(BaseWidget):
                           target="Widget",
                           args=[data, format, preset])
 
-    def _molstar_handle_message(self, widget, msg, buffers):
+    def _handle_custom_widget_msg(self, widget, msg, buffers):
         msg_type = msg.get("type")
         data = msg.get("data")
         if msg_type == "exportImage":

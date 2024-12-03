@@ -141,11 +141,11 @@ class BaseWidget(DOMWidget):
         self._remote_call_thread = RemoteCallThread(self, registered_funcs=[])
         self._remote_call_thread.daemon = True
         self._remote_call_thread.start()
-        self._handle_msg_thread = threading.Thread(target=self.on_msg, args=(self._handle_custom_msg,))
+        self._handle_msg_thread = threading.Thread(target=self.on_msg, args=(self._handle_custom_widget_msg,))
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
 
-    def _handle_custom_msg(self, _, msg, buffers):
+    def _handle_custom_widget_msg(self, _, msg, buffers):
         pass
 
     def _remote_call(self, method_name, target='Widget', args=None, kwargs=None, **other_kwargs):
@@ -242,7 +242,6 @@ class NGLWidget(BaseWidget):
                  **kwargs):
         super().__init__(**kwargs)
         self._initialize_attributes(kwargs)
-        self._initialize_threads()
         self._initialize_components(structure, representations, parameters, kwargs)
         self._initialize_layout(kwargs)
         self._create_player()
@@ -264,17 +263,6 @@ class NGLWidget(BaseWidget):
         self.control = ViewerControl(view=self)
         self._trajlist = []
         self._ngl_component_ids = []
-
-    def _initialize_threads(self):
-        self._handle_msg_thread = threading.Thread(
-            target=self.on_msg, args=(self._handle_nglview_custom_msg,))
-        # register to get data from JS side
-        self._handle_msg_thread.daemon = True
-        self._handle_msg_thread.start()
-        self._remote_call_thread = RemoteCallThread(
-            self,
-            registered_funcs=['loadFile', 'replaceStructure', '_exportImage'])
-        self._remote_call_thread.start()
 
     def _initialize_components(self, structure, representations, parameters, kwargs):
         if representations:
