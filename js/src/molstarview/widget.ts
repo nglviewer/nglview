@@ -35,10 +35,10 @@ export class MolstarModel extends widgets.DOMWidgetModel {
             ...super.defaults(),
             _model_name: 'MolstarModel',
             _view_name: 'MolstarView',
-            _model_module: 'molstarview-widget',
-            _view_module: 'molstarview-widget',
-            _model_module_version: require("../package.json").version,
-            _view_module_version: require("../package.json").version,
+            _model_module: 'nglview-js-widgets',
+            _view_module: 'nglview-js-widgets',
+            _model_module_version: require("../../package.json").version,
+            _view_module_version: require("../../package.json").version,
         };
     }
 }
