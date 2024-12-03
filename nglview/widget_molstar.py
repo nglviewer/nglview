@@ -5,13 +5,12 @@ import ipywidgets as widgets
 from traitlets import (Bool, Dict, Integer,
                        Unicode, observe)
 from ._frontend import __frontend_version__
-from .widget import BaseWidget
 
 from .remote_thread import RemoteCallThread
 
 
 @widgets.register
-class MolstarView(BaseWidget):
+class MolstarView(widgets.DOMWidget):
     # Name of the widget view class in front-end
     _view_name = Unicode('MolstarView').tag(sync=True)
 
@@ -38,8 +37,57 @@ class MolstarView(BaseWidget):
         self._trajlist = []
         self._callbacks_before_loaded = []
         self._event = threading.Event()
+        self._remote_call_thread = RemoteCallThread(
+            self,
+            registered_funcs=[])
+        self._remote_call_thread.daemon = True
+        self._remote_call_thread.start()
+        self._handle_msg_thread = threading.Thread(
+            target=self.on_msg, args=(self._molstar_handle_message, ))
+        # register to get data from JS side
+        self._handle_msg_thread.daemon = True
+        self._handle_msg_thread.start()
+        self._state = None
 
-    def _handle_custom_widget_msg(self, widget, msg, buffers):
+    def render_image(self):
+        image = widgets.Image()
+        self._js(f"this.exportImage('{image.model_id}')")
+        # image.value will be updated in _molstar_handle_message
+        return image
+
+    def handle_resize(self):
+        self._js("this.plugin.handleResize()")
+
+    @observe('loaded')
+    def on_loaded(self, change):
+        if change['new']:
+            self._fire_callbacks(self._callbacks_before_loaded)
+
+    def _thread_run(self, func, *args):
+        thread = threading.Thread(
+            target=func,
+            args=args,
+        )
+        thread.daemon = True
+        thread.start()
+        return thread
+
+    def _fire_callbacks(self, callbacks):
+        def _call(event):
+            for callback in callbacks:
+                callback(self)
+        self._thread_run(_call, self._event)
+
+    def _wait_until_finished(self, timeout=0.0001):
+        # FIXME: dummy for now
+        pass
+
+    def _load_structure_data(self, data: str, format: str = 'pdb', preset="default"):
+        self._remote_call("loadStructureFromData",
+                          target="Widget",
+                          args=[data, format, preset])
+
+    def _molstar_handle_message(self, widget, msg, buffers):
         msg_type = msg.get("type")
         data = msg.get("data")
         if msg_type == "exportImage":
@@ -56,6 +104,60 @@ class MolstarView(BaseWidget):
             self.loaded = msg.get('data')
         elif msg_type == 'getCamera':
             self._molcamera = data
+
+    def render_image(self):
+        image = widgets.Image()
+        self._js(f"this.exportImage('{image.model_id}')")
+        # image.value will be updated in _molview_handle_message
+        return image
+
+    def _js(self, code, **kwargs):
+        # nglview code
+        self._remote_call('executeCode',
+                          target='Widget',
+                          args=[code],
+                          **kwargs)
+
+    def _remote_call(self,
+                     method_name,
+                     target='Widget',
+                     args=None,
+                     kwargs=None,
+                     **other_kwargs):
+
+        # adapted from nglview
+        msg = self._get_remote_call_msg(method_name,
+                                        target=target,
+                                        args=args,
+                                        kwargs=kwargs,
+                                        **other_kwargs)
+        def callback(widget, msg=msg):
+            widget.send(msg)
+
+        callback._method_name = method_name
+        callback._msg = msg
+
+        if self.loaded:
+            self._remote_call_thread.q.append(callback)
+        else:
+            # send later
+            # all callbacks will be called right after widget is loaded
+            self._callbacks_before_loaded.append(callback)
+
+    def _get_remote_call_msg(self,
+                             method_name,
+                             target='Widget',
+                             args=None,
+                             kwargs=None,
+                             **other_kwargs):
+        # adapted from nglview
+        msg = {}
+        msg['target'] = target
+        msg['type'] = 'call_method'
+        msg['methodName'] = method_name
+        msg['args'] = args
+        msg['kwargs'] = kwargs
+        return msg
 
     def add_trajectory(self, trajectory):
         self._load_structure_data(trajectory.get_structure_string(),
