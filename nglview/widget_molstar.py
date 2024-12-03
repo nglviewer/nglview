@@ -21,7 +21,7 @@ class MolstarView(widgets.DOMWidget):
     _view_module = Unicode('nglview-js-widgets').tag(sync=True)
 
     # Name of the front-end module containing widget model
-    _model_module = Unicode('molstarview-widget').tag(sync=True)
+    _model_module = Unicode('nglview-js-widgets').tag(sync=True)
 
     # Version of the front-end module containing widget view
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
