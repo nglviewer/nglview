@@ -6,6 +6,7 @@ import * as molStructure from 'molstar/lib/mol-plugin-state/actions/structure';
 import { BuiltInTrajectoryFormat } from 'molstar/lib/mol-plugin-state/formats/trajectory';
 import { PluginCommands } from 'molstar/lib/mol-plugin/commands';
 import { PLUGIN_VERSION } from 'molstar/lib/mol-plugin/version';
+import { TrajectoryFromModelAndCoordinates } from 'molstar/lib/mol-plugin-state/transforms/model';
 import './light.css'; // npx sass node_modules/molstar/lib/mol-plugin-ui/skin/light.scss > light.css
 import * as representation from "./representation";
 
@@ -239,11 +240,15 @@ export class MolstarView extends widgets.DOMWidgetView  {
         }
     }
 
-    updateCoordinates(coordinates: any, modelIndex: any) {
-        var component = 0; // FIXME
-        if (coordinates && typeof component != 'undefined') {
-            // FIXME: update
-        }
+    async updateCoordinates(coordinates: any, modelIndex: any) {
+        console.log('Updating coordinates for model index', modelIndex);
+        const model = this.plugin.managers.structure.hierarchy.current.structures[modelIndex];
+        await this.plugin.build().toRoot()
+            .apply(TrajectoryFromModelAndCoordinates, {
+                modelRef: model.ref,
+                coordinatesRef: coordinates
+            }, { dependsOn: [model.ref, coordinates] })
+            .commit();
     }
 
     exportImage(modelId: any) {
