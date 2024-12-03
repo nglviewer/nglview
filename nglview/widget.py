@@ -126,13 +126,68 @@ def write_html(fp, views, frame_range=None):
                 f.write(html_code)
 
 
-class NGLWidget(DOMWidget):
-    _view_name = Unicode("NGLView").tag(sync=True)
+class BaseWidget(DOMWidget):
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
-    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
-    _model_name = Unicode("NGLModel").tag(sync=True)
     _model_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+    loaded = Bool(False).tag(sync=False)
+    frame = Integer().tag(sync=True)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._event = threading.Event()
+        self._callbacks_before_loaded = []
+        self._remote_call_thread = RemoteCallThread(self, registered_funcs=[])
+        self._remote_call_thread.daemon = True
+        self._remote_call_thread.start()
+        self._handle_msg_thread = threading.Thread(target=self.on_msg, args=(self._handle_custom_msg,))
+        self._handle_msg_thread.daemon = True
+        self._handle_msg_thread.start()
+
+    def _handle_custom_msg(self, _, msg, buffers):
+        pass
+
+    def _remote_call(self, method_name, target='Widget', args=None, kwargs=None, **other_kwargs):
+        msg = self._get_remote_call_msg(method_name, target=target, args=args, kwargs=kwargs, **other_kwargs)
+        def callback(widget, msg=msg):
+            widget.send(msg)
+        callback._method_name = method_name
+        callback._msg = msg
+        if self.loaded:
+            self._remote_call_thread.q.append(callback)
+        else:
+            self._callbacks_before_loaded.append(callback)
+
+    def _get_remote_call_msg(self, method_name, target='Widget', args=None, kwargs=None, **other_kwargs):
+        msg = {'target': target, 'type': 'call_method', 'methodName': method_name, 'args': args or [], 'kwargs': kwargs or {}}
+        msg.update(other_kwargs)
+        return msg
+
+    @observe('loaded')
+    def on_loaded(self, change):
+        if change['new']:
+            self._fire_callbacks(self._callbacks_before_loaded)
+
+    def _fire_callbacks(self, callbacks):
+        def _call(event):
+            for callback in callbacks:
+                callback(self)
+        self._thread_run(_call, self._event)
+
+    def _thread_run(self, func, *args):
+        thread = threading.Thread(target=func, args=args)
+        thread.daemon = True
+        thread.start()
+        return thread
+
+    def _wait_until_finished(self, timeout=0.0001):
+        pass
+
+
+class NGLWidget(BaseWidget):
+    _view_name = Unicode("NGLView").tag(sync=True)
+    _model_name = Unicode("NGLModel").tag(sync=True)
     _ngl_version = Unicode().tag(sync=True)
 
     # View and model attributes
@@ -155,7 +210,6 @@ class NGLWidget(DOMWidget):
     _widget_theme = None
 
     # Frame and background attributes
-    frame = Integer().tag(sync=True)
     max_frame = Int(0).tag(sync=True)
     background = Unicode('white').tag(sync=True)
 
@@ -170,7 +224,6 @@ class NGLWidget(DOMWidget):
     _player_dict = Dict().tag(sync=True)
 
     # State and synchronization attributes
-    loaded = Bool(False).tag(sync=False)
     picked = Dict().tag(sync=True)
     _synced_model_ids = List().tag(sync=True)
     _synced_repr_model_ids = List().tag(sync=True)

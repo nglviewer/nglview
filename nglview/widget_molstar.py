@@ -5,12 +5,13 @@ import ipywidgets as widgets
 from traitlets import (Bool, Dict, Integer,
                        Unicode, observe)
 from ._frontend import __frontend_version__
+from .widget import BaseWidget
 
 from .remote_thread import RemoteCallThread
 
 
 @widgets.register
-class MolstarView(widgets.DOMWidget):
+class MolstarView(BaseWidget):
     # Name of the widget view class in front-end
     _view_name = Unicode('MolstarView').tag(sync=True)
 
