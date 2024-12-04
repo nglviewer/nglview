@@ -9,6 +9,7 @@ import { PLUGIN_VERSION } from 'molstar/lib/mol-plugin/version';
 import './light.css'; // npx sass node_modules/molstar/lib/mol-plugin-ui/skin/light.scss > light.css
 import * as representation from "./representation";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
+import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context';
 
 
 // import { basicSpec } from "./ui"
@@ -47,8 +48,8 @@ export class MolstarModel extends widgets.DOMWidgetModel {
 
 // Custom View. Renders the widget model.
 export class MolstarView extends widgets.DOMWidgetView  {
-    plugin: any;
-    container: any;
+    plugin: PluginUIContext;
+    container: HTMLDivElement;
     isLeader: boolean;
     _focused: boolean;
     _synced_model_ids: any;
