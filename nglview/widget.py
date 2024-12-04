@@ -187,7 +187,7 @@ class NGLWidget(WidgetBase):
                  representations=None,
                  parameters=None,
                  **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(structure=structure, representations=representations, parameters=parameters, **kwargs)
         self._initialize_attributes(kwargs)
         self._initialize_threads()
         self._initialize_components(structure, representations, parameters, kwargs)
@@ -314,6 +314,47 @@ class NGLWidget(WidgetBase):
     def _unset_serialization(self):
         self._ngl_serialize = False
         self._ngl_coordinate_resource = {}
+
+    @property
+    def parameters(self):
+        return self._parameters
+
+    @parameters.setter
+    def parameters(self, params):
+        params = _camelize_dict(params)
+        self._parameters = params
+        self._remote_call('setParameters', target='Widget', args=[
+            params,
+        ])
+
+    @property
+    def camera(self):
+        return self._camera_str
+
+    @camera.setter
+    def camera(self, value):
+        """
+
+        Parameters
+        ----------
+        value : str, {'perspective', 'orthographic'}
+        """
+        self._camera_str = value
+        # use _remote_call so this function can be called right after
+        # self is displayed
+        self._remote_call("setParameters",
+                          target='Stage',
+                          kwargs=dict(cameraType=self._camera_str))
+
+    def _set_camera_orientation(self, arr):
+        self._remote_call('set_camera_orientation',
+                          target='Widget',
+                          args=[
+                              arr,
+                          ])
+
+    def _request_stage_parameters(self):
+        self._remote_call('requestUpdateStageParameters', target='Widget')
 
     @validate('gui_style')
     def _validate_gui_style(self, proposal):
@@ -880,7 +921,7 @@ class NGLWidget(WidgetBase):
         _TRACKED_WIDGETS[self._ngl_msg.get('ID')].value = base64.b64decode(
             self._image_data)
 
-    def _handle_nglview_custom_message(self, _, msg, buffers):
+    def _handle_nglview_custom_msg(self, _, msg, buffers):
         self._ngl_msg = msg
 
         msg_type = self._ngl_msg.get('type')
