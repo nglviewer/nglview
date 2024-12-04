@@ -61,12 +61,6 @@ class MolstarView(WidgetBase):
         if change['new']:
             self._fire_callbacks(self._callbacks_before_loaded)
 
-    def _fire_callbacks(self, callbacks):
-        def _call(event):
-            for callback in callbacks:
-                callback(self)
-        self._thread_run(_call, self._event)
-
     def _load_structure_data(self, data: str, format: str = 'pdb', preset="default"):
         self._remote_call("loadStructureFromData",
                           target="Widget",

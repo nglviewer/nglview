@@ -204,7 +204,7 @@ class NGLWidget(WidgetBase):
         self._image_array = []
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._event = threading.Event()
-        self._ngl_displayed_callbacks_before_loaded = []
+        self._callbacks_before_loaded = []
         widget_utils._add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
         self.stage = Stage(view=self)
@@ -1273,7 +1273,7 @@ class NGLWidget(WidgetBase):
         else:
             # send later
             # all callbacks will be called right after widget is loaded
-            self._ngl_displayed_callbacks_before_loaded.append(callback)
+            self._callbacks_before_loaded.append(callback)
 
         if callback._method_name not in _EXCLUDED_CALLBACK_AFTER_FIRING and \
            (not other_kwargs.get("fire_once", False)):
