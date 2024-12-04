@@ -35,6 +35,9 @@ class WidgetBase(widgets.DOMWidget):
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
 
+    def _handle_nglview_custom_message(self, widget, msg, buffers):
+        raise NotImplementedError()
+
     def render_image(self):
         image = widgets.Image()
         self._js(f"this.exportImage('{image.model_id}')")

@@ -74,11 +74,8 @@ class MolstarView(WidgetBase):
                                   'pdb')
         self._molstar_component_ids.append(struc.id)
 
-    @observe('frame')
-    def _on_frame_changed(self, change):
-        """set and send coordinates at current frame
-        """
-        self._set_coordinates(self.frame)
+    def add_component(self, component):
+        raise NotImplementedError()
 
     def add_representation(self, **params):
         params = _camelize_dict(params)
