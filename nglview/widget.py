@@ -7,7 +7,6 @@ from logging import getLogger
 from contextlib import contextmanager
 
 import numpy as np
-from IPython.display import display
 import ipywidgets as widgets
 from ipywidgets import (Image, Box, DOMWidget, HBox, IntSlider, Play, jslink)
 from ipywidgets import embed
@@ -343,33 +342,7 @@ class NGLWidget(WidgetBase):
         self.stage.set_parameters(background_color=color)
 
     def handle_resize(self):
-        # self._remote_call("handleResize", target='Stage')
         self._remote_call("handleResize")
-
-    def _update_max_frame(self):
-        self.max_frame = max(
-            int(traj.n_frames)
-            for traj in self._trajlist
-            if hasattr(traj, 'n_frames')) - 1  # index starts from 0
-
-    def _run_on_another_thread(self, func, *args):
-        # use `event` to singal
-        # func(*args)
-        thread = threading.Thread(
-            target=func,
-            args=args,
-        )
-        thread.daemon = True
-        thread.start()
-        return thread
-
-    @observe('loaded')
-    def on_loaded(self, change):
-        # trick for firefox on Linux
-        time.sleep(0.1)
-
-        if change['new']:
-            self._fire_callbacks(self._ngl_displayed_callbacks_before_loaded)
 
     def _fire_callbacks(self, callbacks):
 
@@ -379,14 +352,7 @@ class NGLWidget(WidgetBase):
                 if callback._method_name == 'loadFile':
                     self._wait_until_finished()
 
-        self._run_on_another_thread(_call, self._event)
-
-    def _ipython_display_(self, **kwargs):
-        try:
-            # ipywidgets < 8
-            super()._ipython_display_(**kwargs)
-        except AttributeError:
-            display(super()._repr_mimebundle_(), raw=True)
+        self._thread_run(_call, self._event)
 
     def display(self, gui=False, style='ngl'):
         """
@@ -914,7 +880,7 @@ class NGLWidget(WidgetBase):
         _TRACKED_WIDGETS[self._ngl_msg.get('ID')].value = base64.b64decode(
             self._image_data)
 
-    def _handle_nglview_custom_msg(self, _, msg, buffers):
+    def _handle_nglview_custom_message(self, _, msg, buffers):
         self._ngl_msg = msg
 
         msg_type = self._ngl_msg.get('type')

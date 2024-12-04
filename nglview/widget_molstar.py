@@ -84,39 +84,6 @@ class MolstarView(WidgetBase):
                                   'pdb')
         self._molstar_component_ids.append(struc.id)
 
-    def _update_max_frame(self):
-        self.max_frame = max(
-            int(traj.n_frames) for traj in self._trajlist
-            if hasattr(traj, 'n_frames')) - 1 # index starts from 0
-
-    def _set_coordinates(self, index):
-        '''update coordinates for all trajectories at index-th frame
-        '''
-        if self._trajlist:
-            coordinates_dict = {}
-            for trajectory in self._trajlist:
-                traj_index = self._molstar_component_ids.index(trajectory.id)
-                try:
-                    coordinates_dict[traj_index] = trajectory.get_coordinates(
-                        index)
-                except (IndexError, ValueError):
-                    coordinates_dict[traj_index] = np.empty((0), dtype='f4')
-            self._send_coordinates(coordinates_dict)
-
-    def _send_coordinates(self, arr_dict):
-        self._coordinates_dict = arr_dict
-
-        buffers = []
-        coords_indices = dict()
-        for index, arr in self._coordinates_dict.items():
-            buffers.append(arr.astype('f4').tobytes())
-            coords_indices[index] = index
-        msg = {
-            'type': 'binary_single',
-            'data': coords_indices,
-        }
-        self.send(msg, buffers=buffers)
-
     @observe('frame')
     def _on_frame_changed(self, change):
         """set and send coordinates at current frame

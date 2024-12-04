@@ -1,9 +1,9 @@
 import threading
-import base64
 import time
 import ipywidgets as widgets
-from traitlets import Bool, Dict, Integer, Unicode, observe
+from traitlets import Bool, Integer, observe
 from .remote_thread import RemoteCallThread
+from IPython.display import display
 
 class WidgetBase(widgets.DOMWidget):
     frame = Integer().tag(sync=True)
@@ -35,6 +35,8 @@ class WidgetBase(widgets.DOMWidget):
 
     @observe('loaded')
     def on_loaded(self, change):
+        # trick for firefox on Linux
+        time.sleep(0.1)
         if change['new']:
             self._fire_callbacks(self._callbacks_before_loaded)
 
@@ -49,6 +51,11 @@ class WidgetBase(widgets.DOMWidget):
             for callback in callbacks:
                 callback(self)
         self._thread_run(_call, self._event)
+
+    def _update_max_frame(self):
+        self.max_frame = max(
+            int(traj.n_frames) for traj in self._trajlist
+            if hasattr(traj, 'n_frames')) - 1 # index starts from 0
 
     def _wait_until_finished(self, timeout=0.0001):
         self._event.clear()
@@ -107,3 +114,10 @@ class WidgetBase(widgets.DOMWidget):
     @observe('frame')
     def _on_frame_changed(self, change):
         self._set_coordinates(self.frame)
+
+    def _ipython_display_(self, **kwargs):
+        try:
+            # ipywidgets < 8
+            super()._ipython_display_(**kwargs)
+        except AttributeError:
+            display(super()._repr_mimebundle_(), raw=True)
