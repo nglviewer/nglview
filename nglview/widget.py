@@ -128,11 +128,7 @@ def write_html(fp, views, frame_range=None):
 
 class NGLWidget(WidgetBase):
     _view_name = Unicode("NGLView").tag(sync=True)
-    _view_module = Unicode("nglview-js-widgets").tag(sync=True)
-    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_name = Unicode("NGLModel").tag(sync=True)
-    _model_module = Unicode("nglview-js-widgets").tag(sync=True)
-    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
     _ngl_version = Unicode().tag(sync=True)
 
         # View and model attributes
@@ -592,60 +588,6 @@ class NGLWidget(WidgetBase):
             name = ''
 
         return RepresentationControl(self, component, repr_index, name=name)
-
-    def _set_coordinates(self, index, movie_making=False, render_params=None):
-        '''update coordinates for all trajectories at index-th frame'''
-        render_params = render_params or {}
-        if self._trajlist:
-            coordinates_dict = {}
-            for trajectory in self._trajlist:
-                traj_index = self._ngl_component_ids.index(trajectory.id)
-
-                try:
-                    if trajectory.shown:
-                        coordinates_dict[
-                            traj_index] = trajectory.get_coordinates(index)
-                    else:
-                        coordinates_dict[traj_index] = np.empty((0), dtype='f4')
-                except (IndexError, ValueError):
-                    coordinates_dict[traj_index] = np.empty((0), dtype='f4')
-
-            self.set_coordinates(coordinates_dict,
-                                 render_params=render_params,
-                                 movie_making=movie_making)
-        else:
-            print("no trajectory available")
-
-    def set_coordinates(self, arr_dict, movie_making=False, render_params=None):
-        # type: (Dict[int, np.ndarray]) -> None
-        """Used for update coordinates of a given trajectory
-        >>> # arr: numpy array, ndim=2
-        >>> # update coordinates of 1st trajectory
-        >>> view.set_coordinates({0: arr})# doctest: +SKIP
-        """
-        render_params = render_params or {}
-        self._coordinates_dict = arr_dict
-
-        buffers = []
-        coordinates_meta = dict()
-        for index, arr in self._coordinates_dict.items():
-            buffers.append(arr.astype('f4').tobytes())
-            coordinates_meta[index] = index
-        msg = {
-            'type': 'binary_single',
-            'data': coordinates_meta,
-        }
-        if movie_making:
-            msg['movie_making'] = movie_making
-            msg['render_params'] = render_params
-
-        self.send(msg, buffers=buffers)
-
-    @observe('frame')
-    def _on_frame_changed(self, change):
-        """set and send coordinates at current frame
-        """
-        self._set_coordinates(change['new'])
 
     def clear(self, *args, **kwargs):
         '''shortcut of `clear_representations`

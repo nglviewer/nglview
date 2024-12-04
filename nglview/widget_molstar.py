@@ -1,5 +1,4 @@
 # Code is copied/adapted from nglview
-import threading
 import base64
 import ipywidgets as widgets
 from traitlets import (Bool, Dict, Integer,
@@ -7,7 +6,6 @@ from traitlets import (Bool, Dict, Integer,
 from ._frontend import __frontend_version__
 from .widget_base import WidgetBase
 
-from .remote_thread import RemoteCallThread
 
 
 @widgets.register

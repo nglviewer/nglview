@@ -1,11 +1,19 @@
 import threading
 import time
 import ipywidgets as widgets
-from traitlets import Bool, Integer, observe
+from traitlets import Bool, Integer, observe, Unicode
 from .remote_thread import RemoteCallThread
 from IPython.display import display
+import numpy as np
+
+from ._frontend import __frontend_version__
 
 class WidgetBase(widgets.DOMWidget):
+    _view_module = Unicode('nglview-js-widgets').tag(sync=True)
+    _model_module = Unicode('nglview-js-widgets').tag(sync=True)
+    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+
     frame = Integer().tag(sync=True)
     loaded = Bool(False).tag(sync=False)
     _component_ids = []
@@ -92,30 +100,55 @@ class WidgetBase(widgets.DOMWidget):
     def _update_max_frame(self):
         self.max_frame = max(int(traj.n_frames) for traj in self._trajlist if hasattr(traj, 'n_frames')) - 1
 
-    def _set_coordinates(self, index):
+    def _set_coordinates(self, index, movie_making=False, render_params=None):
+        '''update coordinates for all trajectories at index-th frame'''
+        render_params = render_params or {}
         if self._trajlist:
             coordinates_dict = {}
             for trajectory in self._trajlist:
-                traj_index = self._component_ids.index(trajectory.id)
+                traj_index = self._ngl_component_ids.index(trajectory.id)
+
                 try:
-                    coordinates_dict[traj_index] = trajectory.get_coordinates(index)
+                    if trajectory.shown:
+                        coordinates_dict[traj_index] = trajectory.get_coordinates(index)
+                    else:
+                        coordinates_dict[traj_index] = np.empty((0), dtype='f4')
                 except (IndexError, ValueError):
                     coordinates_dict[traj_index] = np.empty((0), dtype='f4')
-            self._send_coordinates(coordinates_dict)
 
-    def _send_coordinates(self, arr_dict):
+            self.set_coordinates(coordinates_dict,
+                                render_params=render_params,
+                                movie_making=movie_making)
+        else:
+            print("no trajectory available")
+
+    def set_coordinates(self, arr_dict, movie_making=False, render_params=None):
+        """Used for update coordinates of a given trajectory
+        >>> # arr: numpy array, ndim=2
+        >>> # update coordinates of 1st trajectory
+        >>> view.set_coordinates({0: arr})# doctest: +SKIP
+        """
+        render_params = render_params or {}
         self._coordinates_dict = arr_dict
+
         buffers = []
-        coords_indices = dict()
+        coordinates_meta = dict()
         for index, arr in self._coordinates_dict.items():
             buffers.append(arr.astype('f4').tobytes())
-            coords_indices[index] = index
-        msg = {'type': 'binary_single', 'data': coords_indices}
+            coordinates_meta[index] = index
+        msg = {
+            'type': 'binary_single',
+            'data': coordinates_meta,
+        }
+        if movie_making:
+            msg['movie_making'] = movie_making
+            msg['render_params'] = render_params
+
         self.send(msg, buffers=buffers)
 
     @observe('frame')
     def _on_frame_changed(self, change):
-        self._set_coordinates(self.frame)
+        self._set_coordinates(change['new'])
 
     def _ipython_display_(self, **kwargs):
         try:
