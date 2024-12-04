@@ -29,6 +29,7 @@ from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
                              seq_to_string)
 from .viewer_control import ViewerControl
 from ._frontend import __frontend_version__
+from .widget_base import WidgetBase
 
 logger = getLogger(__name__)
 
@@ -126,7 +127,7 @@ def write_html(fp, views, frame_range=None):
                 f.write(html_code)
 
 
-class NGLWidget(DOMWidget):
+class NGLWidget(WidgetBase):
     _view_name = Unicode("NGLView").tag(sync=True)
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
@@ -135,7 +136,7 @@ class NGLWidget(DOMWidget):
     _model_module_version = Unicode(__frontend_version__).tag(sync=True)
     _ngl_version = Unicode().tag(sync=True)
 
-    # View and model attributes
+        # View and model attributes
     _image_data = Unicode().tag(sync=False)
     _view_width = Unicode().tag(sync=True)  # px
     _view_height = Unicode().tag(sync=True)  # px
@@ -314,47 +315,6 @@ class NGLWidget(DOMWidget):
     def _unset_serialization(self):
         self._ngl_serialize = False
         self._ngl_coordinate_resource = {}
-
-    @property
-    def parameters(self):
-        return self._parameters
-
-    @parameters.setter
-    def parameters(self, params):
-        params = _camelize_dict(params)
-        self._parameters = params
-        self._remote_call('setParameters', target='Widget', args=[
-            params,
-        ])
-
-    @property
-    def camera(self):
-        return self._camera_str
-
-    @camera.setter
-    def camera(self, value):
-        """
-
-        Parameters
-        ----------
-        value : str, {'perspective', 'orthographic'}
-        """
-        self._camera_str = value
-        # use _remote_call so this function can be called right after
-        # self is displayed
-        self._remote_call("setParameters",
-                          target='Stage',
-                          kwargs=dict(cameraType=self._camera_str))
-
-    def _set_camera_orientation(self, arr):
-        self._remote_call('set_camera_orientation',
-                          target='Widget',
-                          args=[
-                              arr,
-                          ])
-
-    def _request_stage_parameters(self):
-        self._remote_call('requestUpdateStageParameters', target='Widget')
 
     @validate('gui_style')
     def _validate_gui_style(self, proposal):
@@ -1452,10 +1412,10 @@ class Fullscreen(DOMWidget):
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_name = Unicode("FullscreenModel").tag(sync=True)
-    _model_module = Unicode("nglview-js-widgets").tag(sync=True)
-    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
+    _model_module = Unicode("nglview-js-widgets").tag(sync(True))
+    _model_module_version = Unicode(__frontend_version__).tag(sync(True))
 
-    _is_fullscreen = Bool().tag(sync=True)
+    _is_fullscreen = Bool().tag(sync(True))
 
     def __init__(self, target, views):
         super().__init__()

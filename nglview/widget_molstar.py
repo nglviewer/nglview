@@ -5,12 +5,13 @@ import ipywidgets as widgets
 from traitlets import (Bool, Dict, Integer,
                        Unicode, observe)
 from ._frontend import __frontend_version__
+from .widget_base import WidgetBase
 
 from .remote_thread import RemoteCallThread
 
 
 @widgets.register
-class MolstarView(widgets.DOMWidget):
+class MolstarView(WidgetBase):
     # Name of the widget view class in front-end
     _view_name = Unicode('MolstarView').tag(sync=True)
 
@@ -35,58 +36,7 @@ class MolstarView(widgets.DOMWidget):
     def __init__(self):
         super().__init__()
         self._molstar_component_ids = []
-        self._trajlist = []
-        self._callbacks_before_loaded = []
-        self._event = threading.Event()
-        self._remote_call_thread = RemoteCallThread(
-            self,
-            registered_funcs=[])
-        self._remote_call_thread.daemon = True
-        self._remote_call_thread.start()
-        self._handle_msg_thread = threading.Thread(
-            target=self.on_msg, args=(self._molstar_handle_message, ))
-        # register to get data from JS side
-        self._handle_msg_thread.daemon = True
-        self._handle_msg_thread.start()
         self._state = None
-
-    def render_image(self):
-        image = widgets.Image()
-        self._js(f"this.exportImage('{image.model_id}')")
-        # image.value will be updated in _molstar_handle_message
-        return image
-
-    def handle_resize(self):
-        self._js("this.plugin.handleResize()")
-
-    @observe('loaded')
-    def on_loaded(self, change):
-        if change['new']:
-            self._fire_callbacks(self._callbacks_before_loaded)
-
-    def _thread_run(self, func, *args):
-        thread = threading.Thread(
-            target=func,
-            args=args,
-        )
-        thread.daemon = True
-        thread.start()
-        return thread
-
-    def _fire_callbacks(self, callbacks):
-        def _call(event):
-            for callback in callbacks:
-                callback(self)
-        self._thread_run(_call, self._event)
-
-    def _wait_until_finished(self, timeout=0.0001):
-        # FIXME: dummy for now
-        pass
-
-    def _load_structure_data(self, data: str, format: str = 'pdb', preset="default"):
-        self._remote_call("loadStructureFromData",
-                          target="Widget",
-                          args=[data, format, preset])
 
     def _molstar_handle_message(self, widget, msg, buffers):
         msg_type = msg.get("type")
@@ -106,59 +56,25 @@ class MolstarView(widgets.DOMWidget):
         elif msg_type == 'getCamera':
             self._molcamera = data
 
-    def render_image(self):
-        image = widgets.Image()
-        self._js(f"this.exportImage('{image.model_id}')")
-        # image.value will be updated in _molview_handle_message
-        return image
+    @observe('loaded')
+    def on_loaded(self, change):
+        if change['new']:
+            self._fire_callbacks(self._callbacks_before_loaded)
 
-    def _js(self, code, **kwargs):
-        # nglview code
-        self._remote_call('executeCode',
-                          target='Widget',
-                          args=[code],
-                          **kwargs)
+    def _fire_callbacks(self, callbacks):
+        def _call(event):
+            for callback in callbacks:
+                callback(self)
+        self._thread_run(_call, self._event)
 
-    def _remote_call(self,
-                     method_name,
-                     target='Widget',
-                     args=None,
-                     kwargs=None,
-                     **other_kwargs):
+    def _wait_until_finished(self, timeout=0.0001):
+        # FIXME: dummy for now
+        pass
 
-        # adapted from nglview
-        msg = self._get_remote_call_msg(method_name,
-                                        target=target,
-                                        args=args,
-                                        kwargs=kwargs,
-                                        **other_kwargs)
-        def callback(widget, msg=msg):
-            widget.send(msg)
-
-        callback._method_name = method_name
-        callback._msg = msg
-
-        if self.loaded:
-            self._remote_call_thread.q.append(callback)
-        else:
-            # send later
-            # all callbacks will be called right after widget is loaded
-            self._callbacks_before_loaded.append(callback)
-
-    def _get_remote_call_msg(self,
-                             method_name,
-                             target='Widget',
-                             args=None,
-                             kwargs=None,
-                             **other_kwargs):
-        # adapted from nglview
-        msg = {}
-        msg['target'] = target
-        msg['type'] = 'call_method'
-        msg['methodName'] = method_name
-        msg['args'] = args
-        msg['kwargs'] = kwargs
-        return msg
+    def _load_structure_data(self, data: str, format: str = 'pdb', preset="default"):
+        self._remote_call("loadStructureFromData",
+                          target="Widget",
+                          args=[data, format, preset])
 
     def add_trajectory(self, trajectory):
         self._load_structure_data(trajectory.get_structure_string(),
