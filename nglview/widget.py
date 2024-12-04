@@ -1412,10 +1412,10 @@ class Fullscreen(DOMWidget):
     _view_module = Unicode("nglview-js-widgets").tag(sync=True)
     _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_name = Unicode("FullscreenModel").tag(sync=True)
-    _model_module = Unicode("nglview-js-widgets").tag(sync(True))
-    _model_module_version = Unicode(__frontend_version__).tag(sync(True))
+    _model_module = Unicode("nglview-js-widgets").tag(sync=True)
+    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
 
-    _is_fullscreen = Bool().tag(sync(True))
+    _is_fullscreen = Bool().tag(sync=True)
 
     def __init__(self, target, views):
         super().__init__()
