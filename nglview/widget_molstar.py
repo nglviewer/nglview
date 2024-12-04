@@ -5,6 +5,9 @@ from traitlets import (Bool, Dict, Integer,
                        Unicode, observe)
 from ._frontend import __frontend_version__
 from .widget_base import WidgetBase
+from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
+                             encode_base64, get_repr_names_from_dict,
+                             seq_to_string)
 
 
 
@@ -81,3 +84,23 @@ class MolstarView(WidgetBase):
         """set and send coordinates at current frame
         """
         self._set_coordinates(self.frame)
+
+    def add_representation(self, **params):
+        params = _camelize_dict(params)
+
+        if 'component' in params:
+            model_index = params.pop('component')
+        else:
+            model_index = 0
+
+        for k, v in params.items():
+            try:
+                params[k] = v.strip()
+            except AttributeError:
+                # e.g.: opacity=0.4
+                params[k] = v
+
+        self._remote_call('addRepresentation',
+                          args=[
+                              params, model_index
+                          ])
