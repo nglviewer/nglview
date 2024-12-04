@@ -62,7 +62,7 @@
     "jquery-ui": "^1.12.1",
     "lodash": "^4.17.4",
     "ngl": "2.4.0",
-    "molstar": "3.9.0",
+    "molstar": "4.9.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
