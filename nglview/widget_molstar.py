@@ -13,22 +13,9 @@ from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
 
 @widgets.register
 class MolstarView(WidgetBase):
-    # Name of the widget view class in front-end
     _view_name = Unicode('MolstarView').tag(sync=True)
-
-    # Name of the widget model class in front-end
     _model_name = Unicode('MolstarModel').tag(sync=True)
 
-    # Name of the front-end module containing widget view
-    _view_module = Unicode('nglview-js-widgets').tag(sync=True)
-
-    # Name of the front-end module containing widget model
-    _model_module = Unicode('nglview-js-widgets').tag(sync=True)
-
-    # Version of the front-end module containing widget view
-    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
-    # Version of the front-end module containing widget model
-    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
     frame = Integer().tag(sync=True)
     loaded = Bool(False).tag(sync=False)
     molstate = Dict().tag(sync=True)
