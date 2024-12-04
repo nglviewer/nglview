@@ -38,7 +38,7 @@ class MolstarView(WidgetBase):
         self._molstar_component_ids = []
         self._state = None
 
-    def _molstar_handle_message(self, widget, msg, buffers):
+    def _handle_nglview_custom_message(self, widget, msg, buffers):
         msg_type = msg.get("type")
         data = msg.get("data")
         if msg_type == "exportImage":
@@ -66,10 +66,6 @@ class MolstarView(WidgetBase):
             for callback in callbacks:
                 callback(self)
         self._thread_run(_call, self._event)
-
-    def _wait_until_finished(self, timeout=0.0001):
-        # FIXME: dummy for now
-        pass
 
     def _load_structure_data(self, data: str, format: str = 'pdb', preset="default"):
         self._remote_call("loadStructureFromData",

@@ -352,19 +352,6 @@ class NGLWidget(WidgetBase):
             for traj in self._trajlist
             if hasattr(traj, 'n_frames')) - 1  # index starts from 0
 
-    def _wait_until_finished(self, timeout=0.0001):
-        # NGL need to send 'finished' signal to
-        # backend
-        self._event.clear()
-        while True:
-            # idle to make room for waiting for
-            # "finished" event sent from JS
-            time.sleep(timeout)
-            if self._event.is_set():
-                # if event is set from another thread
-                # break while True
-                break
-
     def _run_on_another_thread(self, func, *args):
         # use `event` to singal
         # func(*args)

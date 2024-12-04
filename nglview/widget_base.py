@@ -1,5 +1,6 @@
 import threading
 import base64
+import time
 import ipywidgets as widgets
 from traitlets import Bool, Dict, Integer, Unicode, observe
 from .remote_thread import RemoteCallThread
@@ -14,10 +15,13 @@ class WidgetBase(widgets.DOMWidget):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._initialize_threads()
+
+    def _initialize_threads(self):
         self._remote_call_thread = RemoteCallThread(self, registered_funcs=[])
         self._remote_call_thread.daemon = True
         self._remote_call_thread.start()
-        self._handle_msg_thread = threading.Thread(target=self.on_msg, args=(self._handle_message,))
+        self._handle_msg_thread = threading.Thread(target=self.on_msg, args=(self._handle_nglview_custom_message,))
         self._handle_msg_thread.daemon = True
         self._handle_msg_thread.start()
 
@@ -47,7 +51,15 @@ class WidgetBase(widgets.DOMWidget):
         self._thread_run(_call, self._event)
 
     def _wait_until_finished(self, timeout=0.0001):
-        pass
+        self._event.clear()
+        while True:
+            # idle to make room for waiting for
+            # "finished" event sent from JS
+            time.sleep(timeout)
+            if self._event.is_set():
+                # if event is set from another thread
+                # break while True
+                break
 
     def _js(self, code, **kwargs):
         self._remote_call('executeCode', target='Widget', args=[code], **kwargs)
