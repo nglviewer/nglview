@@ -6,9 +6,11 @@ import * as molStructure from 'molstar/lib/mol-plugin-state/actions/structure';
 import { BuiltInTrajectoryFormat } from 'molstar/lib/mol-plugin-state/formats/trajectory';
 import { PluginCommands } from 'molstar/lib/mol-plugin/commands';
 import { PLUGIN_VERSION } from 'molstar/lib/mol-plugin/version';
-import { TrajectoryFromModelAndCoordinates } from 'molstar/lib/mol-plugin-state/transforms/model';
+import { trajectoryFromModelAndCoordinates } from 'molstar/lib/mol-plugin-state/transforms/model';
 import './light.css'; // npx sass node_modules/molstar/lib/mol-plugin-ui/skin/light.scss > light.css
 import * as representation from "./representation";
+import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context';
+import { Model } from 'molstar/lib/mol-model/structure';
 
 
 // import { basicSpec } from "./ui"
@@ -47,11 +49,11 @@ export class MolstarModel extends widgets.DOMWidgetModel {
 
 // Custom View. Renders the widget model.
 export class MolstarView extends widgets.DOMWidgetView  {
-    plugin: any;
+    plugin: PluginUIContext;
     container: any;
     isLeader: boolean;
     _focused: boolean;
-    _synced_model_ids: any;
+    _synced_model_ids: string[];
 
     // Defines how the widget gets rendered into the DOM
     async render() {
@@ -213,7 +215,7 @@ export class MolstarView extends widgets.DOMWidgetView  {
             var traj_index = keys[i];
             coordinates = new Float32Array(msg.buffers[i].buffer);
             if (coordinates.byteLength > 0) {
-                this.updateCoordinates(coordinates, traj_index);
+                this.updateCoordinates(coordinates, parseInt(traj_index));
             }
         }
     }
@@ -240,15 +242,43 @@ export class MolstarView extends widgets.DOMWidgetView  {
         }
     }
 
-    async updateCoordinates(coordinates: any, modelIndex: any) {
-        console.log('Updating coordinates for model index', modelIndex);
-        const model = this.plugin.managers.structure.hierarchy.current.structures[modelIndex];
-        await this.plugin.build().toRoot()
-            .apply(TrajectoryFromModelAndCoordinates, {
-                modelRef: model.ref,
-                coordinatesRef: coordinates
-            }, { dependsOn: [model.ref, coordinates] })
-            .commit();
+    async updateModelFromCoordinates(st, coordinates: Float32Array): Promise<void> {
+        const updatedModel = await this.WithConformation(st, coordinates);
+        // Update the model in the plugin's structure hierarchy
+        this.plugin.managers.structure.hierarchy.updateStructure(st, updatedModel);
+    }
+
+    async updateCoordinates(coordinates: Float32Array, modelIndex: number) {
+        const st = this.plugin.managers.structure.hierarchy.current.structures[modelIndex];
+        try {
+            await this.plugin.dataTransaction(async () => {
+                await this.updateModelFromCoordinates(st, coordinates);
+            });
+        } catch (error) {
+            console.error('Failed to update coordinates:', error);
+        }
+    }
+
+    async WithConformation(model: Model, coordinates: Float32Array): Promise<Model> {
+        const atomicConformation = model.atomicConformation;
+        const updatedConformation = {
+            ...atomicConformation,
+            coordinates: coordinates
+        };
+        await this.plugin.state.data.applyAction(
+            trajectoryFromModelAndCoordinates({
+                modelRef: model,
+                coordinatesRef: updatedConformation.coordinates
+            }),
+            {
+                modelRef: model,
+                coordinatesRef: updatedConformation.coordinates
+            }
+        );
+        return {
+            ...model,
+            atomicConformation: updatedConformation
+        };
     }
 
     exportImage(modelId: any) {
@@ -290,7 +320,7 @@ export class MolstarView extends widgets.DOMWidgetView  {
 
     setCamera(params: any) {
         var durationMs = 0.0;
-        this.plugin.canvas3d.requestCameraReset({ durationMs, params });
+        this.plugin.canvas3d.requestCameraReset({ durationMs, snapshot: params });
     }
 
     getCamera() {
@@ -313,6 +343,7 @@ export class MolstarView extends widgets.DOMWidgetView  {
         }
     }
 };
+
 
 module.exports = {
     'MolstarModel': MolstarModel,
