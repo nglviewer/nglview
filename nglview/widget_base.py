@@ -14,7 +14,9 @@ class WidgetBase(widgets.DOMWidget):
     _event = threading.Event()
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        # Extract recognized arguments
+        recognized_kwargs = {k: v for k, v in kwargs.items() if k in self.trait_names()}
+        super().__init__(**recognized_kwargs)
         self._initialize_threads()
 
     def _initialize_threads(self):
