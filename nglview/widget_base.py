@@ -97,9 +97,6 @@ class WidgetBase(widgets.DOMWidget):
         msg.update(other_kwargs)
         return msg
 
-    def _update_max_frame(self):
-        self.max_frame = max(int(traj.n_frames) for traj in self._trajlist if hasattr(traj, 'n_frames')) - 1
-
     def _set_coordinates(self, index, movie_making=False, render_params=None):
         '''update coordinates for all trajectories at index-th frame'''
         render_params = render_params or {}

@@ -42,25 +42,33 @@ class MolstarView(WidgetBase):
     def _handle_nglview_custom_message(self, widget, msg, buffers):
         msg_type = msg.get("type")
         data = msg.get("data")
-        if msg_type == "exportImage":
-            image = widgets.Widget.widgets[msg.get("model_id")]
-            image.value = base64.b64decode(data)
-        elif msg_type == "state":
-            self._state = data
-        elif msg_type == 'request_loaded':
-            if not self.loaded:
-                # FIXME: doublecheck this
-                # trick to trigger observe loaded
-                # so two viewers can have the same representations
-                self.loaded = False
-            self.loaded = msg.get('data')
-        elif msg_type == 'getCamera':
-            self._molcamera = data
 
-    @observe('loaded')
-    def on_loaded(self, change):
-        if change['new']:
-            self._fire_callbacks(self._callbacks_before_loaded)
+        if msg_type == "exportImage":
+            self._handle_export_image(msg)
+        elif msg_type == "state":
+            self._handle_state(data)
+        elif msg_type == 'request_loaded':
+            self._handle_request_loaded(msg)
+        elif msg_type == 'getCamera':
+            self._handle_get_camera(data)
+
+    def _handle_export_image(self, msg):
+        image = widgets.Widget.widgets[msg.get("model_id")]
+        image.value = base64.b64decode(msg.get("data"))
+
+    def _handle_state(self, data):
+        self._state = data
+
+    def _handle_request_loaded(self, msg):
+        if not self.loaded:
+            # FIXME: doublecheck this
+            # trick to trigger observe loaded
+            # so two viewers can have the same representations
+            self.loaded = False
+        self.loaded = msg.get('data')
+
+    def _handle_get_camera(self, data):
+        self._molcamera = data
 
     def _load_structure_data(self, data: str, format: str = 'pdb', preset="default"):
         self._remote_call("loadStructureFromData",
