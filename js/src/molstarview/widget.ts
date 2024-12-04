@@ -8,6 +8,7 @@ import { PluginCommands } from 'molstar/lib/mol-plugin/commands';
 import { PLUGIN_VERSION } from 'molstar/lib/mol-plugin/version';
 import './light.css'; // npx sass node_modules/molstar/lib/mol-plugin-ui/skin/light.scss > light.css
 import * as representation from "./representation";
+import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
 
 
 // import { basicSpec } from "./ui"
@@ -69,7 +70,16 @@ export class MolstarView extends widgets.DOMWidgetView  {
 
     async initializeDisplay() {
         this.setupContainer();
-        this.plugin = await createPluginUI(this.container);
+        this.plugin = await createPluginUI({
+            target: this.container,
+            render: (component, container) => {
+                renderReact18(component, container);
+            },
+            spec: undefined, // or provide a PluginUISpec object if needed
+            onBeforeUIRender: async (ctx) => {
+                // Implement the onBeforeUIRender logic here
+            }
+        });
         this._focused = false;
         await this.checkLeaderView();
     }
