@@ -410,9 +410,6 @@ Acknowledgment
 ==============
 - Funding: Hai Nguyen is supported by NIH Grant GM103297, "The Center for HIV RNA Studies" (2015 to 02-2017).
 - Many thanks to `nglview` [contributors](https://github.com/arose/nglview/graphs/contributors)
-- [dunovank/jupyter-themes](https://github.com/dunovank/jupyter-themes): for `oceans16` theme
-- [base64-arraybuffer](https://github.com/niklasvh/base64-arraybuffer)
-- [ipywidgets](https://github.com/jupyter-widgets/ipywidgets)
 
 Cite
 ====
