@@ -9,6 +9,9 @@ import { PLUGIN_VERSION } from 'molstar/lib/mol-plugin/version';
 import './light.css'; // npx sass node_modules/molstar/lib/mol-plugin-ui/skin/light.scss > light.css
 import * as representation from "./representation";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
+import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context';
+import { loadMVS } from 'molstar/lib/extensions/mvs/load';
+import { MVSData } from 'molstar/lib/extensions/mvs/mvs-data';
 
 
 // import { basicSpec } from "./ui"
@@ -47,7 +50,7 @@ export class MolstarModel extends widgets.DOMWidgetModel {
 
 // Custom View. Renders the widget model.
 export class MolstarView extends widgets.DOMWidgetView  {
-    plugin: any;
+    plugin: PluginUIContext;
     container: any;
     isLeader: boolean;
     _focused: boolean;
@@ -295,7 +298,7 @@ export class MolstarView extends widgets.DOMWidgetView  {
 
     setCamera(params: any) {
         var durationMs = 0.0;
-        this.plugin.canvas3d.requestCameraReset({ durationMs, params });
+        this.plugin.canvas3d.requestCameraReset({ durationMs, ...params });
     }
 
     getCamera() {
@@ -315,6 +318,14 @@ export class MolstarView extends widgets.DOMWidgetView  {
                     }
                 }
             });
+        }
+    }
+
+    async loadMolstarSpec(spec: MVSData, options: any) {
+        try {
+            await loadMVS(this.plugin, spec, options);
+        } catch (error) {
+            console.error('Error loading Molstar spec:', error);
         }
     }
 };
