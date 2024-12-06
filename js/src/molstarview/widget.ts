@@ -321,12 +321,13 @@ export class MolstarView extends widgets.DOMWidgetView  {
         }
     }
 
-    async loadMolstarSpec(spec: MVSData, options: any) {
+    async loadMolstarSpec(spec_json: string, options: any) {
+        const data = MVSData.fromMVSJ(spec_json);
         try {
-            await loadMVS(this.plugin, spec, options);
+            await loadMVS(this.plugin, data, options);
         } catch (error) {
             console.error('Error loading Molstar spec:', error);
-        }
+        };
     }
 };
 
