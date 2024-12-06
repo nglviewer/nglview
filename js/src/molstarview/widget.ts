@@ -323,6 +323,7 @@ export class MolstarView extends widgets.DOMWidgetView  {
 
     async loadMolstarSpec(spec_json: string, options: any) {
         const data = MVSData.fromMVSJ(spec_json);
+        console.log('Loading Molstar spec:', data);
         try {
             await loadMVS(this.plugin, data, options);
         } catch (error) {
