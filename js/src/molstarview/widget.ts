@@ -12,6 +12,9 @@ import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
 import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context';
 import { loadMVS } from 'molstar/lib/extensions/mvs/load';
 import { MVSData } from 'molstar/lib/extensions/mvs/mvs-data';
+import { MolViewSpec } from 'molstar/lib/extensions/mvs/behavior';
+import { PluginSpec } from 'molstar/lib/mol-plugin/spec';
+import { PluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
 
 
 // import { basicSpec } from "./ui"
@@ -73,12 +76,15 @@ export class MolstarView extends widgets.DOMWidgetView  {
 
     async initializeDisplay() {
         this.setupContainer();
+        var spec: PluginUISpec = {
+            behaviors: [PluginSpec.Behavior(MolViewSpec)]
+        }
         this.plugin = await createPluginUI({
             target: this.container,
             render: (component, container) => {
                 renderReact18(component, container);
             },
-            spec: undefined, // or provide a PluginUISpec object if needed
+            spec: spec,
             onBeforeUIRender: async (ctx) => {
                 // Implement the onBeforeUIRender logic here
             }

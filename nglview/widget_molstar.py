@@ -96,3 +96,7 @@ class MolstarView(WidgetBase):
                           args=[
                               params, model_index
                           ])
+
+    def load_spec(self, state, **options):
+        self._remote_call('loadMolstarSpec',
+                  args=[state, options])
