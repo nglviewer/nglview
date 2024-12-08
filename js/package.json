@@ -63,7 +63,8 @@
     "lodash": "^4.17.4",
     "ngl": "2.4.0",
     "molstar": "4.9.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "yup": "^1.0.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.0.5 || ^4",

@@ -29,6 +29,7 @@ from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
 from .viewer_control import ViewerControl
 from ._frontend import __frontend_version__
 from .widget_base import WidgetBase
+from .message_interface import IMessage
 
 logger = getLogger(__name__)
 
@@ -829,14 +830,14 @@ class NGLWidget(WidgetBase):
         self.frame = frame
 
     def _handle_update_ids(self):
-        self._ngl_view_id = self._ngl_msg['data']
+        self._ngl_view_id = self._ngl_msg.data
 
     def _handle_remove_component(self):
-        cindex = int(self._ngl_msg['data'])
+        cindex = int(self._ngl_msg.data)
         self._ngl_component_ids.pop(cindex)
 
     def _handle_repr_parameters(self):
-        data_dict = self._ngl_msg['data']
+        data_dict = self._ngl_msg.data
         name = data_dict.pop('name') + '\n'
         selection = data_dict.get('sele', '') + '\n'
         data_dict_json = json.dumps(data_dict).replace('true', 'True').replace(
@@ -846,27 +847,26 @@ class NGLWidget(WidgetBase):
     def _handle_request_loaded(self):
         if not self.loaded:
             self.loaded = False
-        self.loaded = self._ngl_msg.get('data')
+        self.loaded = self._ngl_msg.data
 
     def _handle_request_repr_dict(self):
-        self._ngl_repr_dict = self._ngl_msg.get('data')
+        self._ngl_repr_dict = self._ngl_msg.data
 
     def _handle_stage_parameters(self):
-        self._ngl_full_stage_parameters = self._ngl_msg.get('data')
+        self._ngl_full_stage_parameters = self._ngl_msg.data
 
     def _handle_async_message(self):
-        if self._ngl_msg.get('data') == 'ok':
+        if self._ngl_msg.data == 'ok':
             self._event.set()
 
     def _handle_image_data(self):
-        self._image_data = self._ngl_msg.get('data')
-        _TRACKED_WIDGETS[self._ngl_msg.get('ID')].value = base64.b64decode(
-            self._image_data)
+        self._image_data = self._ngl_msg.data
+        _TRACKED_WIDGETS[self._ngl_msg.ID].value = base64.b64decode(self._image_data)
 
     def _handle_nglview_custom_msg(self, _, msg, buffers):
-        self._ngl_msg = msg
+        self._ngl_msg = IMessage(**msg)
 
-        msg_type = self._ngl_msg.get('type')
+        msg_type = self._ngl_msg.type
         handlers = {
             'request_frame': self._handle_request_frame,
             'updateIDs': self._handle_update_ids,
