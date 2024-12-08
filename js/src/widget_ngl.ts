@@ -482,7 +482,7 @@ export class NGLView extends widgets.DOMWidgetView {
             i, p = 0,
             encoded1, encoded2, encoded3, encoded4;
 
-        if (base64[base.length - 1] === "=") {
+        if (base64[base64.length - 1] === "=") {
             bufferLength--;
             if (base64[base64.length - 2] === "=") {
                 bufferLength--;
