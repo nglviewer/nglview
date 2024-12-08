@@ -9,6 +9,12 @@ import { PLUGIN_VERSION } from 'molstar/lib/mol-plugin/version';
 import './light.css'; // npx sass node_modules/molstar/lib/mol-plugin-ui/skin/light.scss > light.css
 import * as representation from "./representation";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
+import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context';
+import { loadMVS } from 'molstar/lib/extensions/mvs/load';
+import { MVSData } from 'molstar/lib/extensions/mvs/mvs-data';
+import { MolViewSpec } from 'molstar/lib/extensions/mvs/behavior';
+import { PluginUISpec  } from 'molstar/lib/mol-plugin-ui/spec';
+import { DefaultPluginSpec, PluginSpec } from 'molstar/lib/mol-plugin/spec';
 
 
 // import { basicSpec } from "./ui"
@@ -47,7 +53,7 @@ export class MolstarModel extends widgets.DOMWidgetModel {
 
 // Custom View. Renders the widget model.
 export class MolstarView extends widgets.DOMWidgetView  {
-    plugin: any;
+    plugin: PluginUIContext;
     container: any;
     isLeader: boolean;
     _focused: boolean;
@@ -70,12 +76,21 @@ export class MolstarView extends widgets.DOMWidgetView  {
 
     async initializeDisplay() {
         this.setupContainer();
+
+        var defaultSpec = DefaultPluginSpec();
+        var spec: PluginUISpec = {
+            ...defaultSpec,
+            behaviors: [
+            ...defaultSpec.behaviors,
+            PluginSpec.Behavior(MolViewSpec)
+            ]
+        };
         this.plugin = await createPluginUI({
             target: this.container,
             render: (component, container) => {
                 renderReact18(component, container);
             },
-            spec: undefined, // or provide a PluginUISpec object if needed
+            spec: spec,
             onBeforeUIRender: async (ctx) => {
                 // Implement the onBeforeUIRender logic here
             }
@@ -295,7 +310,7 @@ export class MolstarView extends widgets.DOMWidgetView  {
 
     setCamera(params: any) {
         var durationMs = 0.0;
-        this.plugin.canvas3d.requestCameraReset({ durationMs, params });
+        this.plugin.canvas3d.requestCameraReset({ durationMs, ...params });
     }
 
     getCamera() {
@@ -316,6 +331,16 @@ export class MolstarView extends widgets.DOMWidgetView  {
                 }
             });
         }
+    }
+
+    async loadMolstarSpec(spec_json: string, options: any) {
+        const data = MVSData.fromMVSJ(spec_json);
+        console.log('Loading Molstar spec:', data);
+        try {
+            await loadMVS(this.plugin, data, options);
+        } catch (error) {
+            console.error('Error loading Molstar spec:', error);
+        };
     }
 };
 

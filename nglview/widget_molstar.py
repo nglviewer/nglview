@@ -1,13 +1,12 @@
 # Code is copied/adapted from nglview
 import base64
 import ipywidgets as widgets
+from .utils import widget_utils
 from traitlets import (Bool, Dict, Integer,
-                       Unicode, observe)
+                       Unicode)
 from ._frontend import __frontend_version__
 from .widget_base import WidgetBase
-from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
-                             encode_base64, get_repr_names_from_dict,
-                             seq_to_string)
+from .utils.py_utils import (_camelize_dict)
 
 
 
@@ -25,6 +24,7 @@ class MolstarView(WidgetBase):
         super().__init__()
         self._molstar_component_ids = []
         self._state = None
+        widget_utils._add_repr_method_shortcut(self, self)
 
     def _handle_nglview_custom_message(self, widget, msg, buffers):
         msg_type = msg.get("type")
@@ -96,3 +96,7 @@ class MolstarView(WidgetBase):
                           args=[
                               params, model_index
                           ])
+
+    def load_spec(self, state, **options):
+        self._remote_call('loadMolstarSpec',
+                  args=[state, options])
