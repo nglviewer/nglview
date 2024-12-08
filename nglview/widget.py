@@ -7,7 +7,6 @@ from logging import getLogger
 from contextlib import contextmanager
 
 import numpy as np
-from IPython.display import display
 import ipywidgets as widgets
 from ipywidgets import (Image, Box, DOMWidget, HBox, IntSlider, Play, jslink)
 from ipywidgets import embed
@@ -29,6 +28,7 @@ from .utils.py_utils import (FileManager, _camelize_dict, _update_url,
                              seq_to_string)
 from .viewer_control import ViewerControl
 from ._frontend import __frontend_version__
+from .widget_base import WidgetBase
 
 logger = getLogger(__name__)
 
@@ -126,16 +126,12 @@ def write_html(fp, views, frame_range=None):
                 f.write(html_code)
 
 
-class NGLWidget(DOMWidget):
+class NGLWidget(WidgetBase):
     _view_name = Unicode("NGLView").tag(sync=True)
-    _view_module = Unicode("nglview-js-widgets").tag(sync=True)
-    _view_module_version = Unicode(__frontend_version__).tag(sync=True)
     _model_name = Unicode("NGLModel").tag(sync=True)
-    _model_module = Unicode("nglview-js-widgets").tag(sync=True)
-    _model_module_version = Unicode(__frontend_version__).tag(sync=True)
     _ngl_version = Unicode().tag(sync=True)
 
-    # View and model attributes
+        # View and model attributes
     _image_data = Unicode().tag(sync=False)
     _view_width = Unicode().tag(sync=True)  # px
     _view_height = Unicode().tag(sync=True)  # px
@@ -187,7 +183,7 @@ class NGLWidget(DOMWidget):
                  representations=None,
                  parameters=None,
                  **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(structure=structure, representations=representations, parameters=parameters, **kwargs)
         self._initialize_attributes(kwargs)
         self._initialize_threads()
         self._initialize_components(structure, representations, parameters, kwargs)
@@ -204,7 +200,7 @@ class NGLWidget(DOMWidget):
         self._image_array = []
         # do not use _displayed_callbacks since there is another Widget._display_callbacks
         self._event = threading.Event()
-        self._ngl_displayed_callbacks_before_loaded = []
+        self._callbacks_before_loaded = []
         widget_utils._add_repr_method_shortcut(self, self)
         self.shape = Shape(view=self)
         self.stage = Stage(view=self)
@@ -383,46 +379,7 @@ class NGLWidget(DOMWidget):
         self.stage.set_parameters(background_color=color)
 
     def handle_resize(self):
-        # self._remote_call("handleResize", target='Stage')
         self._remote_call("handleResize")
-
-    def _update_max_frame(self):
-        self.max_frame = max(
-            int(traj.n_frames)
-            for traj in self._trajlist
-            if hasattr(traj, 'n_frames')) - 1  # index starts from 0
-
-    def _wait_until_finished(self, timeout=0.0001):
-        # NGL need to send 'finished' signal to
-        # backend
-        self._event.clear()
-        while True:
-            # idle to make room for waiting for
-            # "finished" event sent from JS
-            time.sleep(timeout)
-            if self._event.is_set():
-                # if event is set from another thread
-                # break while True
-                break
-
-    def _run_on_another_thread(self, func, *args):
-        # use `event` to singal
-        # func(*args)
-        thread = threading.Thread(
-            target=func,
-            args=args,
-        )
-        thread.daemon = True
-        thread.start()
-        return thread
-
-    @observe('loaded')
-    def on_loaded(self, change):
-        # trick for firefox on Linux
-        time.sleep(0.1)
-
-        if change['new']:
-            self._fire_callbacks(self._ngl_displayed_callbacks_before_loaded)
 
     def _fire_callbacks(self, callbacks):
 
@@ -432,14 +389,7 @@ class NGLWidget(DOMWidget):
                 if callback._method_name == 'loadFile':
                     self._wait_until_finished()
 
-        self._run_on_another_thread(_call, self._event)
-
-    def _ipython_display_(self, **kwargs):
-        try:
-            # ipywidgets < 8
-            super()._ipython_display_(**kwargs)
-        except AttributeError:
-            display(super()._repr_mimebundle_(), raw=True)
+        self._thread_run(_call, self._event)
 
     def display(self, gui=False, style='ngl'):
         """
@@ -638,60 +588,6 @@ class NGLWidget(DOMWidget):
             name = ''
 
         return RepresentationControl(self, component, repr_index, name=name)
-
-    def _set_coordinates(self, index, movie_making=False, render_params=None):
-        '''update coordinates for all trajectories at index-th frame'''
-        render_params = render_params or {}
-        if self._trajlist:
-            coordinates_dict = {}
-            for trajectory in self._trajlist:
-                traj_index = self._ngl_component_ids.index(trajectory.id)
-
-                try:
-                    if trajectory.shown:
-                        coordinates_dict[
-                            traj_index] = trajectory.get_coordinates(index)
-                    else:
-                        coordinates_dict[traj_index] = np.empty((0), dtype='f4')
-                except (IndexError, ValueError):
-                    coordinates_dict[traj_index] = np.empty((0), dtype='f4')
-
-            self.set_coordinates(coordinates_dict,
-                                 render_params=render_params,
-                                 movie_making=movie_making)
-        else:
-            print("no trajectory available")
-
-    def set_coordinates(self, arr_dict, movie_making=False, render_params=None):
-        # type: (Dict[int, np.ndarray]) -> None
-        """Used for update coordinates of a given trajectory
-        >>> # arr: numpy array, ndim=2
-        >>> # update coordinates of 1st trajectory
-        >>> view.set_coordinates({0: arr})# doctest: +SKIP
-        """
-        render_params = render_params or {}
-        self._coordinates_dict = arr_dict
-
-        buffers = []
-        coordinates_meta = dict()
-        for index, arr in self._coordinates_dict.items():
-            buffers.append(arr.astype('f4').tobytes())
-            coordinates_meta[index] = index
-        msg = {
-            'type': 'binary_single',
-            'data': coordinates_meta,
-        }
-        if movie_making:
-            msg['movie_making'] = movie_making
-            msg['render_params'] = render_params
-
-        self.send(msg, buffers=buffers)
-
-    @observe('frame')
-    def _on_frame_changed(self, change):
-        """set and send coordinates at current frame
-        """
-        self._set_coordinates(change['new'])
 
     def clear(self, *args, **kwargs):
         '''shortcut of `clear_representations`
@@ -1319,7 +1215,7 @@ class NGLWidget(DOMWidget):
         else:
             # send later
             # all callbacks will be called right after widget is loaded
-            self._ngl_displayed_callbacks_before_loaded.append(callback)
+            self._callbacks_before_loaded.append(callback)
 
         if callback._method_name not in _EXCLUDED_CALLBACK_AFTER_FIRING and \
            (not other_kwargs.get("fire_once", False)):

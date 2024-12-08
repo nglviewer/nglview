@@ -837,7 +837,7 @@ def test_queuing_messages():
     view.add_component(nv.datafiles.PDB)
     view.download_image()
     view
-    assert [f._method_name for f in view._ngl_displayed_callbacks_before_loaded] == \
+    assert [f._method_name for f in view._callbacks_before_loaded] == \
            [
             'loadFile',
             '_downloadImage']

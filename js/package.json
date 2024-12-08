@@ -40,7 +40,7 @@
     "build:prod": "yarn run build:lib && yarn run build:labextension",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
-    "build:lib": "tsc",
+    "build:lib": "tsc && mkdir -p lib/molstarview && cp src/molstarview/*.css lib/molstarview/",
     "clean": "yarn run clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "clean:labextension": "rimraf myextension/labextension",
@@ -52,7 +52,7 @@
     "watch": "run-p watch:src watch:labextension",
     "watch:src": "tsc -w",
     "watch:labextension": "jupyter labextension watch .",
-    "watch:install": "nodemon --watch src/widget_ngl.ts --exec 'npm install'",
+    "watch:prepublish": "nodemon --watch src --watch package.json --exec 'date && npm run prepublish && date'",
     "test": "mocha"
   },
   "dependencies": {
@@ -62,6 +62,7 @@
     "jquery-ui": "^1.12.1",
     "lodash": "^4.17.4",
     "ngl": "2.4.0",
+    "molstar": "4.9.0",
     "underscore": "^1.8.3",
     "yup": "^1.0.0"
   },
