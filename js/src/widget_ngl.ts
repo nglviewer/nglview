@@ -1,5 +1,5 @@
 var widgets = require("@jupyter-widgets/base")
-var NGL = require('ngl')
+import * as NGL from "ngl"
 import * as $ from 'jquery'
 import * as _ from 'underscore'
 import "./lib/signals.min.js"
@@ -16,7 +16,6 @@ import { ColormakerRegistryModel, ColormakerRegistryView } from "./color"
 import { ThemeManagerModel, ThemeManagerView } from "./theme"
 import { MolstarModel, MolstarView } from "./molstarview/widget"
 
-NGL.nglview_debug = false
 
 // From NGL
 // http://www.broofa.com/Tools/Math.uuid.htm
@@ -59,6 +58,8 @@ export class NGLModel extends widgets.DOMWidgetModel {
 
 export
     class NGLView extends widgets.DOMWidgetView {
+    stage: NGL.Stage
+
     render() {
         this.beforeDisplay();
         this.displayed.then(() => {
@@ -98,7 +99,6 @@ export
         if (!("backgroundColor" in stage_params)) {
             stage_params["backgroundColor"] = "white"
         }
-        NGL.useWorker = false;
         this.stage = new NGL.Stage(undefined)
         this.$container = $(this.stage.viewer.container);
         this.$el.append(this.$container)
@@ -459,7 +459,7 @@ export
         var keys = Object.keys(cdict).filter(k => (k !== 'n_frames'));
 
         for (var i = 0; i < keys.length; i++) {
-            var traj_index = keys[i];
+            var traj_index = parseInt(keys[i], 10);
             var coordinates = this.decode_base64(cdict[traj_index][frame_index]);
             if (coordinates && coordinates.byteLength > 0) {
                 this.updateCoordinates(coordinates, traj_index);
@@ -720,34 +720,16 @@ export
         }
     }
 
-    updateRepresentationsByName = (repr_name, component_index, params) => {
-        var component = this.stage.compList[component_index];
+    updateRepresentationsByName = (repr_name: string, component_index: number, params: any): void => {
+        const component = this.stage.compList[component_index];
 
         if (component) {
-            component.reprList.forEach((repr) => {
-                if (repr.name == repr_name) {
+            component.reprList.forEach((repr: any) => {
+                if (repr.name === repr_name) {
                     repr.setParameters(params);
                     this.request_repr_dict();
                 }
             });
-        }
-    }
-
-    setRepresentation(name, params, component_index, repr_index) {
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index];
-        var that = this;
-
-        if (repr) {
-            params['useWorker'] = false;
-            var new_repr = NGL.makeRepresentation(name, component.structure,
-                this.stage.viewer, params);
-            if (new_repr) {
-                repr.setRepresentation(new_repr);
-                repr.name = name;
-                component.reprList[repr_index] = repr;
-                that.request_repr_dict();
-            }
         }
     }
 
@@ -791,13 +773,15 @@ export
             // shape.func(params);
         }
         var shapeComp = this.stage.addComponentFromObject(shape);
-        shapeComp.addRepresentation("buffer");
+        if (shapeComp) {
+            shapeComp.addRepresentation("buffer", {});
+        }
     }
 
     addBuffer(name, kwargs) {
         var class_dict = {
             "arrow": NGL.ArrowBuffer,
-            "box": NGL.BoXbuffer,
+            "box": NGL.BoxBuffer,
             "cone": NGL.ConeBuffer,
             "cylinder": NGL.CylinderBuffer,
             "ellipsoid": NGL.EllipsoidBuffer,
@@ -817,7 +801,9 @@ export
         var buffer = new buffer_class(params);
         shape.addBuffer(buffer);
         var shapeComp = this.stage.addComponentFromObject(shape);
-        shapeComp.addRepresentation("buffer");
+        if (shapeComp) {
+            shapeComp.addRepresentation("buffer", {});
+        }
     }
 
     async replaceStructure(structure) {
@@ -836,7 +822,9 @@ export
             var repr_params = repr.repr.getParameters();
             // Note: not using repr.repr.type, repr.repr.params
             // since seems to me that repr.repr.params won't return correct "sele"
-            component.addRepresentation(repr_name, repr_params);
+            if (component) {
+                component.addRepresentation(repr_name, repr_params);
+            }
         });
         stage.removeComponent(comp);
         this._handleLoadFileFinished();
@@ -846,7 +834,7 @@ export
         // superpose two components with given params
         var component0 = this.stage.compList[cindex0];
         var component1 = this.stage.compList[cindex1];
-        component1.superpose(component0, align, sele0, sele1);
+        (component1 as NGL.StructureComponent).superpose(component0 as NGL.StructureComponent, align, sele0, sele1);
     }
 
     decode_base64(base64) {
@@ -890,12 +878,12 @@ export
         return arraybuffer;
     }
 
-    updateCoordinates(coordinates, model) {
+    updateCoordinates(coordinates: ArrayBuffer, model: number) {
         // coordinates must be ArrayBuffer (use this.decode_base64)
         var component = this.stage.compList[model];
         if (coordinates && component) {
             var coords = new Float32Array(coordinates);
-            component.structure.updatePosition(coords);
+            (component as NGL.StructureComponent).structure.updatePosition(coords);
             component.updateRepresentations({
                 "position": true
             });
@@ -1091,10 +1079,12 @@ export
         if (msg.methodName === 'addRepresentation' && msg.reconstruc_color_scheme) {
             msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
         }
-        if ("colorVolume" in msg.kwargs) {
-            index = msg.kwargs["colorVolume"];
-            msg.kwargs["colorVolume"] = this.stage.compList[index].volume;
-        }
+
+        // FIXME:  Property 'volume' does not exist on type 'Component'.
+        // if ("colorVolume" in msg.kwargs) {
+        //     index = msg.kwargs["colorVolume"];
+        //     msg.kwargs["colorVolume"] = this.stage.compList[index].volume;
+        // }
 
         switch (msg.target) {
             case 'Stage':
@@ -1126,9 +1116,7 @@ export
 
     async handleStageMethod(msg, new_args) {
         var stage_func = this.stage[msg.methodName];
-        if (msg.methodName === 'screenshot') {
-            NGL.screenshot(this.stage.viewer, msg.kwargs);
-        } else if (msg.methodName === 'removeComponent') {
+        if (msg.methodName === 'removeComponent') {
             var component = this.stage.compList[msg.args[0]];
             this.stage.removeComponent(component);
         } else if (msg.methodName === 'loadFile') {
@@ -1144,7 +1132,7 @@ export
     handleBase64Single(coordinatesDict) {
         var keys = Object.keys(coordinatesDict);
         for (var i = 0; i < keys.length; i++) {
-            var traj_index = keys[i];
+            var traj_index = parseInt(keys[i], 10);
             var coordinates = this.decode_base64(coordinatesDict[traj_index]);
             if (coordinates && coordinates.byteLength > 0) {
                 this.updateCoordinates(coordinates, traj_index);
@@ -1156,7 +1144,7 @@ export
         var coordinateMeta = msg.data;
         var keys = Object.keys(coordinateMeta);
         for (var i = 0; i < keys.length; i++) {
-            var traj_index = keys[i];
+            var traj_index = parseInt(keys[i], 10);
             var coordinates = new Float32Array(msg.buffers[i].buffer);
             if (coordinates.byteLength > 0) {
                 this.updateCoordinates(coordinates, traj_index);
