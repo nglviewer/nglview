@@ -268,17 +268,7 @@ export class NGLView extends widgets.DOMWidgetView {
     }
 
     async createIPlayer() {
-        this.player_pview = this.createView("_iplayer");
-        var view = await this.player_pview
-        var that = this;
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.bottom = '5%'
-        pe.style.left = '10%'
-        pe.style.opacity = '0.7'
-        that.stage.viewer.container.append(view.el);
-        pe.style.display = 'none'
+        this.uiManager.createIPlayer();
     }
 
     async createImageBtn() {
