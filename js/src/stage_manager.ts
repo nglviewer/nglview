@@ -1,5 +1,6 @@
 import * as NGL from "ngl";
 import { NGLView } from "./widget_ngl";
+import * as $ from "jquery";
 
 export class StageManager {
     stage: NGL.Stage;
