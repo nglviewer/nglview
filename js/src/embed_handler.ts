@@ -1,5 +1,6 @@
 
 import { NGLView } from "./widget_ngl";
+import * as NGL from 'ngl';
 
 export class EmbedHandler {
     view: NGLView;
