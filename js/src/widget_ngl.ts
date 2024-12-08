@@ -33,7 +33,7 @@ function generateUUID() {
     let r
 
     for (let i = 0; i < 36; i++) {
-        if (i === 8 || i === 13 || i === 18 || i === 23) {
+        if (i === 8 || i === 13 || i === 18) {
             uuid[i] = '-'
         } else if (i === 14) {
             uuid[i] = '4'
@@ -272,59 +272,16 @@ export class NGLView extends widgets.DOMWidgetView {
     }
 
     async createImageBtn() {
-        this.image_btn_pview = this.createView("_ibtn_image");
-        var view = await this.image_btn_pview
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.top = '5%'
-        pe.style.right = '10%'
-        pe.style.opacity = '0.7'
-        pe.style.width = '35px'
-        this.stage.viewer.container.append(view.el);
+        this.uiManager.createImageBtn();
     }
 
     async createFullscreenBtn() {
-        this.btn_pview_fullscreen = this.createView("_ibtn_fullscreen");
-        var view = await this.btn_pview_fullscreen
-        var stage = this.stage;
-
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.top = '5%'
-        pe.style.right = '5%'
-        pe.style.opacity = '0.7'
-        pe.style.width = '35px'
-        pe.style.background = 'white'
-        pe.style.opacity = '0.3'
-        pe.style.display = 'none'
-        pe.onclick = function () {
-            this.stage.toggleFullscreen();
-        }.bind(this)
-        stage.viewer.container.append(view.el);
-        stage.signals.fullscreenChanged.add((isFullscreen) => {
-            if (isFullscreen) {
-                view.model.set("icon", "compress");
-            } else {
-                view.model.set("icon", "expand");
-            }
-        });
+        this.uiManager.createFullscreenBtn();
     }
-
 
     async createGUI() {
-        this.pgui_view = this.createView("_igui");
-        var view = await this.pgui_view
-        var pe = view.el
-        pe.style.position = 'absolute'
-        pe.style.zIndex = 100
-        pe.style.top = '5%'
-        pe.style.right = '10%'
-        pe.style.width = '300px'
-        this.stage.viewer.container.append(view.el);
+        this.uiManager.createGUI();
     }
-
 
     createNglGUI() {
         this.stage_widget = new StageWidget(this)
