@@ -15,6 +15,12 @@ import { FullscreenModel, FullscreenView } from "./fullscreen"
 import { ColormakerRegistryModel, ColormakerRegistryView } from "./color"
 import { ThemeManagerModel, ThemeManagerView } from "./theme"
 import { MolstarModel, MolstarView } from "./molstarview/widget"
+import { StageManager } from "./stage_manager"
+import { EventHandler } from "./event_handler"
+import { UIManager } from "./ui_manager"
+import { EmbedHandler } from "./embed_handler"
+import { RepresentationHandler } from "./representation_handler"
+import { MessageHandler } from "./message_handler"
 
 
 // From NGL
@@ -56,19 +62,31 @@ export class NGLModel extends widgets.DOMWidgetModel {
     }
 }
 
-export
-    class NGLView extends widgets.DOMWidgetView {
-    stage: NGL.Stage
+export class NGLView extends widgets.DOMWidgetView {
+    stageManager: StageManager;
+    eventHandler: EventHandler;
+    uiManager: UIManager;
+    embedHandler: EmbedHandler;
+    representationHandler: RepresentationHandler;
+    messageHandler: MessageHandler;
+
+    constructor(options: any) {
+        super(options);
+        this.stageManager = new StageManager(this);
+        this.eventHandler = new EventHandler(this);
+        this.uiManager = new UIManager(this);
+        this.embedHandler = new EmbedHandler(this);
+        this.representationHandler = new RepresentationHandler(this);
+        this.messageHandler = new MessageHandler(this);
+    }
 
     render() {
         this.beforeDisplay();
         this.displayed.then(() => {
-            // move all below code inside 'displayed'
-            // to make sure the NGLView and NGLModel are created
-            this.createStage();
-            this.handlePicking();
-            this.handleSignals();
-            this.handleMessage();
+            this.stageManager.createStage();
+            this.eventHandler.handlePicking();
+            this.eventHandler.handleSignals();
+            this.eventHandler.handleMessage();
             this.finalizeDisplay();
         });
     }
@@ -77,81 +95,17 @@ export
         this.model.on("change:_parameters", this.parametersChanged, this);
         this.model.on("change:gui_style", this.GUIStyleChanged, this);
         this.model.set('_ngl_version', NGL.Version);
-        this._ngl_focused = 0
-        this.uuid = generateUUID()
-        this.stage_widget = undefined
-        this.comp_uuids = []
+        this._ngl_focused = 0;
+        this.uuid = generateUUID();
+        this.stage_widget = undefined;
+        this.comp_uuids = [];
         this._synced_model_ids = this.model.get("_synced_model_ids");
-        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids")
+        this._synced_repr_model_ids = this.model.get("_synced_repr_model_ids");
 
-        if (this.isEmbeded()) {
-            // embed mode
-            this._handleEmbedBeforeStage()
+        if (this.embedHandler.isEmbeded()) {
+            this.embedHandler._handleEmbedBeforeStage();
         }
     }
-
-    createStage() {
-        // init NGL stage
-        var stage_params = {
-            // Shallow copy so that _ngl_full_stage_parameters is not updated yet
-            ...this.model.get("_ngl_full_stage_parameters")
-        };
-        if (!("backgroundColor" in stage_params)) {
-            stage_params["backgroundColor"] = "white"
-        }
-        this.stage = new NGL.Stage(undefined)
-        this.$container = $(this.stage.viewer.container);
-        this.$el.append(this.$container)
-        this.stage.setParameters(stage_params);
-        this.$container = $(this.stage.viewer.container);
-        this.handleResizable()
-        this.ngl_view_id = this.uuid
-        this.touch();
-        var that = this;
-        var width = this.model.get("_view_width") || this.$el.parent().width() + "px";
-        var height = this.model.get("_view_height") || "300px";
-        this.setSize(width, height);
-        this.createFullscreenBtn(); // FIXME: move up?
-        this.createIPlayer(); // FIXME: move up?
-        this.GUIStyleChanged(); // must be called after displaying to get correct width and height
-
-        this.$container.resizable(
-            "option", "maxWidth", this.$el.parent().width()
-        );
-        if (this.isEmbeded()) {
-            console.log("Embed mode for NGLView")
-            that.handleEmbed();
-        } else {
-            this.requestUpdateStageParameters();
-            if (this.model.views.length == 1) {
-                this.serialize_camera_orientation();
-            } else {
-                this.set_camera_orientation(that.model.get("_camera_orientation"));
-            }
-        }
-    }
-
-    isEmbeded() {
-        return (this.model.get("_ngl_serialize") || (this.model.comm == undefined))
-    }
-
-    handleMessage() {
-        this.model.on("msg:custom", function (msg) {
-            this.on_msg(msg);
-        }, this);
-
-        if (this.model.comm) {
-            this.model.comm.on_msg(function (msg) {
-                var buffers = msg.buffers;
-                var content = msg.content.data.content;
-                if (buffers.length && content) {
-                    content.buffers = buffers;
-                }
-                this.model._handle_comm_msg.call(this.model, msg);
-            }.bind(this));
-        }
-    }
-
 
     finalizeDisplay() {
         // for callbacks from Python
@@ -174,149 +128,6 @@ export
         // FIXME: Why below doesn't update _ngl_view_id in backend?
         // this.model.set("_ngl_view_id", ngl_view_ids)
         // this.touch()
-    }
-
-    handleSignals() {
-        var container = this.stage.viewer.container;
-        var that = this;
-        container.addEventListener('mouseover', function (e) {
-            that._ngl_focused = 1;
-            e; // linter
-            that.mouseOverDisplay('block')
-        }, false);
-
-        container.addEventListener('mouseout', function (e) {
-            that._ngl_focused = 0;
-            e; // linter
-            that.mouseOverDisplay('none')
-        }, false);
-
-        container.addEventListener('contextmenu', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-        }, true);
-
-        this.stage.signals.componentAdded.add(function (component) {
-            this.comp_uuids.push(component.uuid)
-            var len = this.stage.compList.length;
-            this.model.set("n_components", len);
-            this.touch();
-            var comp = this.stage.compList[len - 1];
-            comp.signals.representationRemoved.add(function () {
-                that.request_repr_dict();
-            });
-            comp.signals.representationAdded.add(function (repr) {
-                that.request_repr_dict();
-                repr.signals.parametersChanged.add(function () {
-                    console.log("repr.parametersChanged")
-                    that.request_repr_dict();
-                })
-            });
-        }, this);
-
-        this.stage.signals.componentRemoved.add(async function (component) {
-            var that = this
-            var cindex = this.comp_uuids.indexOf(component.uuid)
-            this.comp_uuids.splice(cindex, 1)
-            var n_components = this.stage.compList.length
-            this.model.set("n_components", n_components)
-            this.touch()
-            console.log('componentRemoved', component, component.uuid)
-
-            var pviews = []
-            for (var k in this.model.views) {
-                pviews.push(this.model.views[k])
-            }
-
-            var views = await Promise.all(pviews)
-            console.log(views)
-            var update_backend = false
-            for (var k in views) {
-                var view = views[k]
-                if ((view.uuid != that.uuid) && (view.stage.compList.length > n_components)) {
-                    // remove component from NGL's GUI
-                    // pass
-                    view.stage.removeComponent(view.stage.compList[cindex])
-                    update_backend = true
-                }
-            }
-            if (update_backend) {
-                console.log("should update backend")
-                that.send({ "type": "removeComponent", "data": cindex })
-            }
-        }, this);
-
-        this.stage.signals.parametersChanged.add(function () {
-            this.requestUpdateStageParameters();
-        }, this);
-
-        this.stage.viewerControls.signals.changed.add(function () {
-            setTimeout(() => {
-                // https://github.com/nglviewer/nglview/issues/948#issuecomment-898121063
-                this.serialize_camera_orientation();
-            }, 100);
-
-            var m = this.stage.viewerControls.getOrientation();
-            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1) {
-                that._synced_model_ids.forEach(async function (mid) {
-                    var model = await that.model.widget_manager.get_model(mid)
-                    for (var k in model.views) {
-                        var view = await model.views[k]
-                        if (view.uuid != that.uuid) {
-                            view.stage.viewerControls.orient(m);
-                        }
-                    }
-                })
-            }
-        }.bind(this));
-
-    }
-
-    handlePicking() {
-        this.$pickingInfo = $("<div></div>")
-            .css("position", "absolute")
-            .css("top", "5%")
-            .css("left", "3%")
-            .css("background-color", "white")
-            .css("padding", "2px 5px 2px 5px")
-            .css("opacity", "0.7")
-            .appendTo(this.$container);
-
-        this.stage.signals.clicked.add((pd) => {
-            if (pd) {
-                this.model.set('picked', {}); //refresh signal
-                this.touch();
-
-                var pd2 = {} as any;
-                var pickingText = "";
-                if (pd.atom) {
-                    pd2.atom1 = pd.atom.toObject();
-                    pd2.atom1.name = pd.atom.qualifiedName();
-                    pickingText = "Atom: " + pd2.atom1.name;
-                } else if (pd.bond) {
-                    pd2.bond = pd.bond.toObject();
-                    pd2.atom1 = pd.bond.atom1.toObject();
-                    pd2.atom1.name = pd.bond.atom1.qualifiedName();
-                    pd2.atom2 = pd.bond.atom2.toObject();
-                    pd2.atom2.name = pd.bond.atom2.qualifiedName();
-                    pickingText = "Bond: " + pd2.atom1.name + " - " + pd2.atom2.name;
-                }
-                if (pd.instance) pd2.instance = pd.instance;
-
-                var n_components = this.stage.compList.length;
-                for (var i = 0; i < n_components; i++) {
-                    var comp = this.stage.compList[i];
-                    if (comp.uuid == pd.component.uuid) {
-                        pd2.component = i;
-                    }
-                }
-
-                this.model.set('picked', pd2);
-                this.touch();
-
-                this.$pickingInfo.text(pickingText);
-            }
-        });
     }
 
     async mouseOverDisplay(type) {
@@ -372,87 +183,6 @@ export
         eval(code);
     }
 
-    _handleEmbedBeforeStage() {
-        // Only need to reconstruct colors in embeding mode (outside notebook)
-        // FIXME: remove this function
-        var that = this
-        var ngl_color_dict = that.model.get("_ngl_color_dict");
-        var label
-        // Old API (_ColorScheme)
-        for (label in ngl_color_dict) {
-            if (!NGL.ColormakerRegistry.hasScheme(label)) {
-                that.addColorScheme(ngl_color_dict[label], label);
-            }
-        }
-    }
-
-    async handleEmbed() {
-        var that = this;
-        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
-        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
-        const camera_orientation = that.model.get("_camera_orientation");
-
-        if (
-            Object.keys(ngl_stage_params).length === 0
-            && camera_orientation.length === 0
-        ) {
-            console.log("No state stored; initializing embedded widget for the first time.");
-            for (const msg of ngl_msg_archive) {
-                await that.on_msg(msg);
-            }
-            return
-        }
-
-        var loadfile_list = [];
-
-        _.each(ngl_msg_archive, function (msg: any) {
-            if (msg.methodName == 'loadFile') {
-                if (msg.kwargs && msg.kwargs.defaultRepresentation) {
-                    // no need to add default representation as all representations
-                    // are serialized separately, also it unwantedly sets the orientation
-                    msg.kwargs.defaultRepresentation = false
-                }
-                loadfile_list.push(that._getLoadFilePromise(msg));
-            }
-        });
-
-
-        await Promise.all(loadfile_list)
-        that.stage.setParameters(ngl_stage_params);
-        that.set_camera_orientation(camera_orientation);
-        that.touch();
-
-        // Outside notebook
-        if (that.model.comm === undefined) {
-            var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
-            var n_frames = ngl_coordinate_resource['n_frames'] || 1
-            that.model.set("max_frame", n_frames - 1);  // trigger updating slider and player's max
-            that.touch()
-            var model = await that.getPlayerModel()
-            var pmodel = model.get("children")[0];
-            that.listenTo(pmodel,
-                "change:value", function () {
-                    that.updateCoordinatesFromDict(ngl_coordinate_resource,
-                        pmodel.get("value"))
-                })
-        }
-
-
-        // fire any msg with "fire_embed"
-        for (const msg of that.model.get("_ngl_msg_archive")) {
-            if (msg.fire_embed) {
-                await that.on_msg(msg);
-            }
-        }
-
-        // Must call _set_representation_from_repr_dict after "fire_embed"
-        // User might add Shape (buffer component) to the view and the buffer component
-        // is not created yet via loadFile
-        // https://github.com/nglviewer/nglview/issues/1003
-        that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"))
-        that.handleResize() // FIXME: really need this?
-    }
-
     updateCoordinatesFromDict(cdict, frame_index) {
         // update coordinates for given "index"
         // cdict = Dict[int, List[base64]]
@@ -481,87 +211,31 @@ export
     }
 
     requestReprParameters(component_index, repr_index) {
-        var comp = this.stage.compList[component_index];
-        var repr = comp.reprList[repr_index];
-        var msg = repr.repr.getParameters();
-
-        if (msg) {
-            msg['name'] = repr.name;
-            this.send({
-                'type': 'repr_parameters',
-                'data': msg
-            });
-        }
+        this.representationHandler.requestReprParameters(component_index, repr_index);
     }
 
     request_repr_dict() {
-        var repr_dict = this.getReprDictFrontEnd()
-        this.send({
-            // make sure we are using "request_repr_dict" name
-            // in backend too.
-            'type': 'request_repr_dict',
-            'data': repr_dict,
-        });
-        var that = this
-        if (that._synced_repr_model_ids.length > 0) {
-            that._synced_repr_model_ids.forEach(async function (mid) {
-                var model = await that.model.widget_manager.get_model(mid)
-                for (var k in model.views) {
-                    var view = await model.views[k];
-                    // not sync with itself
-                    if (view.uuid != that.uuid) {
-                        view._set_representation_from_repr_dict(repr_dict)
-                    }
-                }
-            })
-        }
+        this.representationHandler.request_repr_dict();
     }
 
     getReprDictFrontEnd() {
-        var repr_dict = {};
-        var n_components = this.stage.compList.length;
-        for (var i = 0; i < n_components; i++) {
-            var comp = this.stage.compList[i];
-            repr_dict[i] = {};
-            var msgi = repr_dict[i];
-            for (var j = 0; j < comp.reprList.length; j++) {
-                var repr = comp.reprList[j];
-                msgi[j] = {};
-                msgi[j]['type'] = repr.name;
-                msgi[j]['params'] = repr.repr.getParameters();
-            }
-        }
-        return repr_dict
+        return this.representationHandler.getReprDictFrontEnd();
     }
 
     syncReprForAllViews() {
-        var repr_dict_backend = this.model.get("_ngl_repr_dict")
-        var repr_dict_frontend = this.getReprDictFrontEnd()
-        if (JSON.stringify(repr_dict_frontend) !== JSON.stringify(repr_dict_backend)) {
-            this._set_representation_from_repr_dict(repr_dict_backend)
-        }
+        this.representationHandler.syncReprForAllViews();
     }
 
     async syncReprWithMe() {
-        // Make sure views of the same model has the same representations
-        // Only needed if we use Sidebar that connects to specific view.
-        var that = this
-        var repr_dict = this.getReprDictFrontEnd()
-        for (var k in this.model.views) {
-            var v = await this.model.views[k]
-            if (v.uuid != that.uuid) {
-                v._set_representation_from_repr_dict(repr_dict)
-            }
-        }
-        this.request_repr_dict()
+        await this.representationHandler.syncReprWithMe();
     }
 
     setSyncRepr(model_ids) {
-        this._synced_repr_model_ids = model_ids
+        this.representationHandler.setSyncRepr(model_ids);
     }
 
     setSyncCamera(model_ids) {
-        this._synced_model_ids = model_ids
+        this._synced_model_ids = model_ids;
     }
 
     viewXZPlane() {
@@ -571,25 +245,11 @@ export
     }
 
     set_representation_from_backend() {
-        var repr_dict = this.model.get('_ngl_repr_dict')
-        this._set_representation_from_repr_dict(repr_dict)
+        this.representationHandler.set_representation_from_backend();
     }
 
     _set_representation_from_repr_dict(repr_dict) {
-        var compList = this.stage.compList
-        if (compList.length > 0) {
-            for (var index in repr_dict) {
-                var comp = compList[index];
-                comp.removeAllRepresentations();
-                var reprlist = repr_dict[index];
-                for (var j in reprlist) {
-                    var repr = reprlist[j];
-                    if (repr) {
-                        comp.addRepresentation(repr.type, repr.params);
-                    }
-                }
-            }
-        }
+        this.representationHandler._set_representation_from_repr_dict(repr_dict);
     }
 
     async createView(trait_name) {
@@ -692,6 +352,7 @@ export
     }
 
     removeRepresentation(component_index, repr_index) {
+        // value = True/False
         var component = this.stage.compList[component_index];
         var repr = component.reprList[repr_index]
 
@@ -854,7 +515,7 @@ export
             i, p = 0,
             encoded1, encoded2, encoded3, encoded4;
 
-        if (base64[base64.length - 1] === "=") {
+        if (base64[base.length - 1] === "=") {
             bufferLength--;
             if (base64[base64.length - 2] === "=") {
                 bufferLength--;
@@ -976,7 +637,6 @@ export
     }
 
     async handleMovieMaking(render_params) {
-        console.log('handleMovieMaking: render_params', render_params)
         if (this.ngl_view_id == this.get_last_child_id()) {
             var blob = await this.stage.makeImage(render_params)
             var reader = new FileReader();
@@ -1058,112 +718,27 @@ export
     }
 
     async on_msg(msg) {
-        if (msg.type === 'call_method') {
-            await this.handleCallMethod(msg);
-        } else if (msg.type === 'base64_single') {
-            this.handleBase64Single(msg.data);
-        } else if (msg.type === 'binary_single') {
-            this.handleBinarySingle(msg);
-        } else if (msg.type === 'movie_image_data') {
-            this.handleMovieMaking(msg.render_params);
-        } else if (msg.type === 'get') {
-            this.handleGetRequest(msg.data);
-        }
+        this.messageHandler.on_msg(msg);
     }
 
     async handleCallMethod(msg) {
-        var index, component, func, stage;
-        var new_args = msg.args.slice();
-        new_args.push(msg.kwargs);
-
-        if (msg.methodName === 'addRepresentation' && msg.reconstruc_color_scheme) {
-            msg.kwargs.color = this.addColorScheme(msg.kwargs.color, msg.kwargs.color_label);
-        }
-
-        // FIXME:  Property 'volume' does not exist on type 'Component'.
-        // if ("colorVolume" in msg.kwargs) {
-        //     index = msg.kwargs["colorVolume"];
-        //     msg.kwargs["colorVolume"] = this.stage.compList[index].volume;
-        // }
-
-        switch (msg.target) {
-            case 'Stage':
-                await this.handleStageMethod(msg, new_args);
-                break;
-            case 'Viewer':
-                this.stage.viewer[msg.methodName].apply(this.stage.viewer, new_args);
-                break;
-            case 'viewerControls':
-                this.stage.viewerControls[msg.methodName].apply(this.stage.viewerControls, new_args);
-                break;
-            case 'compList':
-                component = this.stage.compList[msg.component_index];
-                component[msg.methodName].apply(component, new_args);
-                break;
-            case 'Widget':
-                this[msg.methodName].apply(this, new_args);
-                break;
-            case 'Representation':
-                component = this.stage.compList[msg.component_index];
-                var repr = component.reprList[msg.repr_index];
-                repr[msg.methodName].apply(repr, new_args);
-                break;
-            default:
-                console.log('Unknown target: ' + msg.target);
-                break;
-        }
+        this.messageHandler.handleCallMethod(msg);
     }
 
     async handleStageMethod(msg, new_args) {
-        var stage_func = this.stage[msg.methodName];
-        if (msg.methodName === 'removeComponent') {
-            var component = this.stage.compList[msg.args[0]];
-            this.stage.removeComponent(component);
-        } else if (msg.methodName === 'loadFile') {
-            if (this.model.views.length > 1 && msg.kwargs && msg.kwargs.defaultRepresentation) {
-                msg.kwargs.defaultRepresentation = false;
-            }
-            await this._handleStageLoadFile(msg);
-        } else {
-            stage_func.apply(this.stage, new_args);
-        }
+        this.messageHandler.handleStageMethod(msg, new_args);
     }
 
     handleBase64Single(coordinatesDict) {
-        var keys = Object.keys(coordinatesDict);
-        for (var i = 0; i < keys.length; i++) {
-            var traj_index = parseInt(keys[i], 10);
-            var coordinates = this.decode_base64(coordinatesDict[traj_index]);
-            if (coordinates && coordinates.byteLength > 0) {
-                this.updateCoordinates(coordinates, traj_index);
-            }
-        }
+        this.messageHandler.handleBase64Single(coordinatesDict);
     }
 
     handleBinarySingle(msg) {
-        var coordinateMeta = msg.data;
-        var keys = Object.keys(coordinateMeta);
-        for (var i = 0; i < keys.length; i++) {
-            var traj_index = parseInt(keys[i], 10);
-            var coordinates = new Float32Array(msg.buffers[i].buffer);
-            if (coordinates.byteLength > 0) {
-                this.updateCoordinates(coordinates, traj_index);
-            }
-        }
-        if (msg.movie_making) {
-            this.handleMovieMaking(msg.render_params);
-        }
+        this.messageHandler.handleBinarySingle(msg);
     }
 
     handleGetRequest(data) {
-        if (data === 'camera') {
-            this.send(JSON.stringify(this.stage.viewer.camera));
-        } else if (data === 'parameters') {
-            this.send(JSON.stringify(this.stage.parameters));
-        } else {
-            console.log("Number of components", this.stage.compList.length);
-            console.log("ngl_view_id", this.ngl_view_id);
-        }
+        this.messageHandler.handleGetRequest(data);
     }
 }
 
