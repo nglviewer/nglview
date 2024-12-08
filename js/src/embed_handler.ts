@@ -1,6 +1,6 @@
-
 import { NGLView } from "./widget_ngl";
 import * as NGL from 'ngl';
+import * as _ from 'lodash';
 
 export class EmbedHandler {
     view: NGLView;

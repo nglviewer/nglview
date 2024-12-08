@@ -1,4 +1,3 @@
-
 import { NGLView } from "./widget_ngl";
 
 export class RepresentationHandler {
@@ -103,5 +102,36 @@ export class RepresentationHandler {
                 }
             }
         }
+    }
+
+    setVisibilityForRepr(component_index, repr_index, value) {
+        var comp = this.view.stage.compList[component_index];
+        var repr = comp.reprList[repr_index];
+        repr.setVisibility(value);
+    }
+
+    removeRepresentation(component_index, repr_index) {
+        var comp = this.view.stage.compList[component_index];
+        comp.removeRepresentation(comp.reprList[repr_index]);
+    }
+
+    removeRepresentationsByName(repr_name, component_index) {
+        var comp = this.view.stage.compList[component_index];
+        comp.reprList = comp.reprList.filter(repr => repr.name !== repr_name);
+    }
+
+    updateRepresentationForComponent(repr_index, component_index, params) {
+        var comp = this.view.stage.compList[component_index];
+        var repr = comp.reprList[repr_index];
+        repr.setParameters(params);
+    }
+
+    updateRepresentationsByName(repr_name, component_index, params) {
+        var comp = this.view.stage.compList[component_index];
+        comp.reprList.forEach(repr => {
+            if (repr.name === repr_name) {
+                repr.setParameters(params);
+            }
+        });
     }
 }
