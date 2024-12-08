@@ -342,56 +342,23 @@ export class NGLView extends widgets.DOMWidgetView {
 
 
     setVisibilityForRepr(component_index, repr_index, value) {
-        // value = True/False
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index];
-
-        if (repr) {
-            repr.setVisibility(value);
-        }
+        this.representationHandler.setVisibilityForRepr(component_index, repr_index, value);
     }
 
     removeRepresentation(component_index, repr_index) {
-        // value = True/False
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index]
-
-        if (repr) {
-            component.removeRepresentation(repr);
-        }
+        this.representationHandler.removeRepresentation(component_index, repr_index);
     }
 
-    removeRepresentationsByName = (repr_name, component_index) => {
-        var component = this.stage.compList[component_index];
-
-        if (component) {
-            component.reprList.forEach((repr) => {
-                if (repr.name == repr_name) {
-                    component.removeRepresentation(repr);
-                }
-            });
-        }
+    removeRepresentationsByName(repr_name, component_index) {
+        this.representationHandler.removeRepresentationsByName(repr_name, component_index);
     }
 
-    updateRepresentationForComponent = (repr_index, component_index, params) => {
-        var component = this.stage.compList[component_index];
-        var repr = component.reprList[repr_index];
-        if (repr) {
-            repr.setParameters(params);
-        }
+    updateRepresentationForComponent(repr_index, component_index, params) {
+        this.representationHandler.updateRepresentationForComponent(repr_index, component_index, params);
     }
 
-    updateRepresentationsByName = (repr_name: string, component_index: number, params: any): void => {
-        const component = this.stage.compList[component_index];
-
-        if (component) {
-            component.reprList.forEach((repr: any) => {
-                if (repr.name === repr_name) {
-                    repr.setParameters(params);
-                    this.request_repr_dict();
-                }
-            });
-        }
+    updateRepresentationsByName(repr_name, component_index, params) {
+        this.representationHandler.updateRepresentationsByName(repr_name, component_index, params);
     }
 
     setColorByResidue = (colors, component_index, repr_index) => {
