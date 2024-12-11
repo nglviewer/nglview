@@ -132,25 +132,23 @@ export class NGLView extends widgets.DOMWidgetView {
     }
 
     async mouseOverDisplay(type) {
-        var that = this;
         if (this.btn_pview_fullscreen) {
-            var btn = await this.btn_pview_fullscreen
-            btn.el.style.display = type
-            if (that.stage_widget) {
+            var btn = await this.btn_pview_fullscreen;
+            btn.el.style.display = type;
+            if (this.stage_widget) {
                 // If NGL's GUI exists, use its fullscreen button.
-                btn.el.style.display = 'none'
+                btn.el.style.display = 'none';
             }
         }
 
-        var that = this;
         if (this.player_pview) {
-            var v = await this.player_pview
-            v.el.style.display = type
+            var v = await this.player_pview;
+            v.el.style.display = type;
             // Need to check if max_frame is available (otherwise NaN)
             // https://github.com/jupyter-widgets/ipywidgets/issues/2485
-            if (!that.model.get("max_frame") || (that.model.get("max_frame") == 0)) {
+            if (!this.model.get("max_frame") || (this.model.get("max_frame") == 0)) {
                 // always hide if there's no trajectory.
-                v.el.style.display = 'none'
+                v.el.style.display = 'none';
             }
         }
     }
