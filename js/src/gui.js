@@ -2,10 +2,11 @@
  * @file  Gui
  * @author Alexander Rose <alexander.rose@weirdbyte.de>
  */
-var NGL = require('ngl');
-var UI = require('./ui/ui.js').UI;
-var signals = require("./lib/signals.min.js");
 
+// NOTE: This file is a modified version of the original file
+import * as  NGL from 'ngl';
+import { UI } from './ui/ui.js';
+import signals from './lib/signals.min.js';
 
 HTMLElement.prototype.getBoundingClientRect = (function () {
   // workaround for ie11 behavior with disconnected dom nodes
@@ -139,7 +140,7 @@ NGL.Preferences.prototype = {
 
 // Stage
 
-class StageWidget{
+export class StageWidget{
   constructor(view){
       // view: NGLView of NGLModel
       var el
@@ -268,7 +269,7 @@ class StageWidget{
 
           var w = ew - sw + 'px'
 
-          stage.viewer.container.style.width = w 
+          stage.viewer.container.style.width = w
           stage.handleResize()
       }
 
