@@ -69,6 +69,7 @@ export class NGLView extends widgets.DOMWidgetView {
     embedHandler: EmbedHandler;
     representationHandler: RepresentationHandler;
     messageHandler: MessageHandler;
+    model: NGLModel;
 
     constructor(options: any) {
         super(options);

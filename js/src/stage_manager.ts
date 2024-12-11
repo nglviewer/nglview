@@ -25,7 +25,6 @@ export class StageManager {
         this.view.handleResizable();
         this.view.ngl_view_id = this.view.uuid;
         this.view.touch();
-        var that = this.view;
         var width = this.view.model.get("_view_width") || this.view.$el.parent().width() + "px";
         var height = this.view.model.get("_view_height") || "300px";
         this.setSize(width, height);
@@ -36,15 +35,15 @@ export class StageManager {
         this.view.$container.resizable(
             "option", "maxWidth", this.view.$el.parent().width()
         );
-        if (this.view.isEmbeded()) {
+        if (this.view.embedHandler.isEmbeded()) {
             console.log("Embed mode for NGLView");
-            that.handleEmbed();
+            this.view.handleEmbed();
         } else {
             this.view.requestUpdateStageParameters();
             if (this.view.model.views.length == 1) {
                 this.view.serialize_camera_orientation();
             } else {
-                this.view.set_camera_orientation(that.model.get("_camera_orientation"));
+                this.view.set_camera_orientation(this.view.model.get("_camera_orientation"));
             }
         }
     }
