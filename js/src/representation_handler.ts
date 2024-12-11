@@ -27,13 +27,12 @@ export class RepresentationHandler {
             'type': 'request_repr_dict',
             'data': repr_dict,
         });
-        var that = this.view;
-        if (that._synced_repr_model_ids.length > 0) {
-            that._synced_repr_model_ids.forEach(async function (mid) {
-                var model = await that.model.widget_manager.get_model(mid);
+        if (this.view._synced_repr_model_ids.length > 0) {
+            this.view._synced_repr_model_ids.forEach(async (mid) => {
+                var model = await this.view.model.widget_manager.get_model(mid);
                 for (var k in model.views) {
                     var view = await model.views[k];
-                    if (view.uuid != that.uuid) {
+                    if (view.uuid != this.view.uuid) {
                         view._set_representation_from_repr_dict(repr_dict);
                     }
                 }
@@ -67,11 +66,10 @@ export class RepresentationHandler {
     }
 
     async syncReprWithMe() {
-        var that = this.view;
         var repr_dict = this.getReprDictFrontEnd();
         for (var k in this.view.model.views) {
             var v = await this.view.model.views[k];
-            if (v.uuid != that.uuid) {
+            if (v.uuid != this.view.uuid) {
                 v._set_representation_from_repr_dict(repr_dict);
             }
         }
