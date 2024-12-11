@@ -14,10 +14,9 @@ export class EmbedHandler {
     }
 
     async handleEmbed() {
-        var that = this.view;
-        var ngl_msg_archive = that.model.get("_ngl_msg_archive");
-        var ngl_stage_params = that.model.get('_ngl_full_stage_parameters');
-        const camera_orientation = that.model.get("_camera_orientation");
+        var ngl_msg_archive = this.view.model.get("_ngl_msg_archive");
+        var ngl_stage_params = this.view.model.get('_ngl_full_stage_parameters');
+        const camera_orientation = this.view.model.get("_camera_orientation");
 
         if (
             Object.keys(ngl_stage_params).length === 0
@@ -25,56 +24,55 @@ export class EmbedHandler {
         ) {
             console.log("No state stored; initializing embedded widget for the first time.");
             for (const msg of ngl_msg_archive) {
-                await that.on_msg(msg);
+                await this.view.on_msg(msg);
             }
             return;
         }
 
         var loadfile_list = [];
 
-        _.each(ngl_msg_archive, function (msg: any) {
+        _.each(ngl_msg_archive, (msg: any) => {
             if (msg.methodName == 'loadFile') {
                 if (msg.kwargs && msg.kwargs.defaultRepresentation) {
                     msg.kwargs.defaultRepresentation = false;
                 }
-                loadfile_list.push(that._getLoadFilePromise(msg));
+                loadfile_list.push(this.view._getLoadFilePromise(msg));
             }
         });
 
         await Promise.all(loadfile_list);
-        that.stage.setParameters(ngl_stage_params);
-        that.set_camera_orientation(camera_orientation);
-        that.touch();
+        this.view.stage.setParameters(ngl_stage_params);
+        this.view.set_camera_orientation(camera_orientation);
+        this.view.touch();
 
-        if (that.model.comm === undefined) {
-            var ngl_coordinate_resource = that.model.get("_ngl_coordinate_resource");
+        if (this.view.model.comm === undefined) {
+            var ngl_coordinate_resource = this.view.model.get("_ngl_coordinate_resource");
             var n_frames = ngl_coordinate_resource['n_frames'] || 1;
-            that.model.set("max_frame", n_frames - 1);
-            that.touch();
-            var model = await that.getPlayerModel();
+            this.view.model.set("max_frame", n_frames - 1);
+            this.view.touch();
+            var model = await this.view.getPlayerModel();
             var pmodel = model.get("children")[0];
-            that.listenTo(pmodel, "change:value", function () {
-                that.updateCoordinatesFromDict(ngl_coordinate_resource, pmodel.get("value"));
+            this.view.listenTo(pmodel, "change:value", () => {
+                this.view.updateCoordinatesFromDict(ngl_coordinate_resource, pmodel.get("value"));
             });
         }
 
-        for (const msg of that.model.get("_ngl_msg_archive")) {
+        for (const msg of this.view.model.get("_ngl_msg_archive")) {
             if (msg.fire_embed) {
-                await that.on_msg(msg);
+                await this.view.on_msg(msg);
             }
         }
 
-        that._set_representation_from_repr_dict(that.model.get("_ngl_repr_dict"));
-        that.handleResize();
+        this.view._set_representation_from_repr_dict(this.view.model.get("_ngl_repr_dict"));
+        this.view.handleResize();
     }
 
     _handleEmbedBeforeStage() {
-        var that = this.view;
-        var ngl_color_dict = that.model.get("_ngl_color_dict");
+        var ngl_color_dict = this.view.model.get("_ngl_color_dict");
         var label;
         for (label in ngl_color_dict) {
             if (!NGL.ColormakerRegistry.hasScheme(label)) {
-                that.addColorScheme(ngl_color_dict[label], label);
+                this.view.addColorScheme(ngl_color_dict[label], label);
             }
         }
     }
