@@ -117,7 +117,7 @@ export class NGLView extends widgets.DOMWidgetView {
         var state_params = this.stage.getParameters();
         this.model.set('_ngl_original_stage_parameters', state_params);
         this.touch();
-        if (!this.isEmbeded() && this.stage.compList.length < this.model.get("n_components")) {
+        if (!this.embedHandler.isEmbeded() && this.stage.compList.length < this.model.get("n_components")) {
             // only call this in notebook to avoid calling handleEmbed twice in embeded mode.
             this.handleEmbed()
         }

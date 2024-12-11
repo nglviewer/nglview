@@ -162,4 +162,48 @@ export class EventHandler {
             }
         });
     }
+
+    async mouseOverDisplay(type) {
+        var that = this.view;
+        if (this.view.btn_pview_fullscreen) {
+            var btn = await this.view.btn_pview_fullscreen
+            btn.el.style.display = type
+            if (that.stage_widget) {
+                // If NGL's GUI exists, use its fullscreen button.
+                btn.el.style.display = 'none'
+            }
+        }
+
+        if (this.view.player_pview) {
+            var v = await this.view.player_pview
+            v.el.style.display = type
+            // Need to check if max_frame is available (otherwise NaN)
+            // https://github.com/jupyter-widgets/ipywidgets/issues/2485
+            if (!that.model.get("max_frame") || (that.model.get("max_frame") == 0)) {
+                // always hide if there's no trajectory.
+                v.el.style.display = 'none'
+            }
+        }
+    }
+
+    parametersChanged() {
+        var _parameters = this.view.model.get("_parameters");
+        this.view.setParameters(_parameters);
+    }
+
+    GUIStyleChanged() {
+        var style = this.view.model.get("gui_style");
+        if (style === 'ngl') {
+            this.view.createNglGUI();
+        } else {
+            if (this.view.stage_widget) {
+                this.view.stage_widget.dispose()
+                this.view.stage_widget = undefined
+                this.view.$container.resizable("enable")
+                var width = this.view.$el.parent().width() + "px";
+                var height = this.view.$el.parent().height() + "px";
+                this.view.setSize(width, height);
+            }
+        }
+    }
 }
