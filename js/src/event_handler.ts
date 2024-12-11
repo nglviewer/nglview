@@ -1,4 +1,5 @@
 import { NGLModel, NGLView } from "./widget_ngl";
+import * as $ from 'jquery'
 
 export class EventHandler {
     view: NGLView;

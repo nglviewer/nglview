@@ -1,5 +1,4 @@
 import { StageWidget } from "./gui";
-import { StageManager } from "./stage_manager";
 import { NGLView } from "./widget_ngl";
 import * as NGL from 'ngl';
 
