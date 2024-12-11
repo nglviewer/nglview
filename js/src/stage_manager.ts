@@ -1,6 +1,7 @@
 import * as NGL from "ngl";
 import { NGLView } from "./widget_ngl";
 import * as $ from "jquery";
+import { WidgetView } from "@jupyter-widgets/base";
 
 export class StageManager {
     stage: NGL.Stage;
@@ -10,7 +11,7 @@ export class StageManager {
         this.view = view;
     }
 
-    createStage() {
+    async createStage() {
         var stage_params = {
             ...this.view.model.get("_ngl_full_stage_parameters")
         };
@@ -37,10 +38,12 @@ export class StageManager {
         );
         if (this.view.embedHandler.isEmbeded()) {
             console.log("Embed mode for NGLView");
-            this.view.handleEmbed();
+            this.view.embedHandler.handleEmbed();
         } else {
             this.view.requestUpdateStageParameters();
-            if (this.view.model.views.length == 1) {
+            const viewsDict = await this.view.model.views;
+            const views = await Promise.all(Object.values(viewsDict));
+            if (views.length === 1) {
                 this.view.serialize_camera_orientation();
             } else {
                 this.view.set_camera_orientation(this.view.model.get("_camera_orientation"));

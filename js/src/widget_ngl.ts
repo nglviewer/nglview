@@ -78,7 +78,7 @@ export class NGLView extends widgets.DOMWidgetView {
     $container: any;
     ngl_view_id: string;
     uuid: string;
-    stage_widget: typeof StageWidget;
+    stage_widget: StageWidget;
     _ngl_focused: number;
     comp_uuids: string[];
     _synced_model_ids: string[];

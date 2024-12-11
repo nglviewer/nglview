@@ -1,3 +1,4 @@
+import { StageWidget } from "./gui";
 import { StageManager } from "./stage_manager";
 import { NGLView } from "./widget_ngl";
 import * as NGL from 'ngl';
@@ -76,6 +77,6 @@ export class UIManager {
     }
 
     createNglGUI() {
-        this.view.stage_widget = new StageManager(this.view);
+        this.view.stage_widget = new StageWidget(this.view);
     }
 }
