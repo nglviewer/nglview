@@ -9,17 +9,16 @@ export class EventHandler {
 
     handleSignals = () => {
         var container = this.view.stage.viewer.container;
-        var that = this.view;
         container.addEventListener('mouseover', (e) => {
-            that._ngl_focused = 1;
+            this.view._ngl_focused = 1;
             e; // linter
-            that.mouseOverDisplay('block');
+            this.view.mouseOverDisplay('block');
         }, false);
 
         container.addEventListener('mouseout', (e) => {
-            that._ngl_focused = 0;
+            this.view._ngl_focused = 0;
             e; // linter
-            that.mouseOverDisplay('none');
+            this.view.mouseOverDisplay('none');
         }, false);
 
         container.addEventListener('contextmenu', (e) => {
@@ -34,19 +33,18 @@ export class EventHandler {
             this.view.touch();
             var comp = this.view.stage.compList[len - 1];
             comp.signals.representationRemoved.add(() => {
-                that.request_repr_dict();
+                this.view.request_repr_dict();
             });
             comp.signals.representationAdded.add((repr) => {
-                that.request_repr_dict();
+                this.view.request_repr_dict();
                 repr.signals.parametersChanged.add(() => {
                     console.log("repr.parametersChanged");
-                    that.request_repr_dict();
+                    this.view.request_repr_dict();
                 });
             });
         }, this.view);
 
         this.view.stage.signals.componentRemoved.add(async (component) => {
-            var that = this.view;
             var cindex = this.view.comp_uuids.indexOf(component.uuid);
             this.view.comp_uuids.splice(cindex, 1);
             var n_components = this.view.stage.compList.length;
@@ -64,14 +62,14 @@ export class EventHandler {
             var update_backend = false;
             for (var k in views) {
                 var view = views[k];
-                if ((view.uuid != that.uuid) && (view.stage.compList.length > n_components)) {
+                if ((view.uuid != this.view.uuid) && (view.stage.compList.length > n_components)) {
                     view.stage.removeComponent(view.stage.compList[cindex]);
                     update_backend = true;
                 }
             }
             if (update_backend) {
                 console.log("should update backend");
-                that.send({ "type": "removeComponent", "data": cindex });
+                this.view.send({ "type": "removeComponent", "data": cindex });
             }
         }, this.view);
 
@@ -85,12 +83,12 @@ export class EventHandler {
             }, 100);
 
             var m = this.view.stage.viewerControls.getOrientation();
-            if (that._synced_model_ids.length > 0 && that._ngl_focused == 1) {
-                that._synced_model_ids.forEach(async (mid) => {
-                    var model = await that.model.widget_manager.get_model(mid);
+            if (this.view._synced_model_ids.length > 0 && this.view._ngl_focused == 1) {
+                this.view._synced_model_ids.forEach(async (mid) => {
+                    var model = await this.view.model.widget_manager.get_model(mid);
                     for (var k in model.views) {
                         var view = await model.views[k];
-                        if (view.uuid != that.uuid) {
+                        if (view.uuid != this.view.uuid) {
                             view.stage.viewerControls.orient(m);
                         }
                     }
@@ -164,11 +162,10 @@ export class EventHandler {
     }
 
     async mouseOverDisplay(type) {
-        var that = this.view;
         if (this.view.btn_pview_fullscreen) {
             var btn = await this.view.btn_pview_fullscreen
             btn.el.style.display = type
-            if (that.stage_widget) {
+            if (this.view.stage_widget) {
                 // If NGL's GUI exists, use its fullscreen button.
                 btn.el.style.display = 'none'
             }
@@ -179,7 +176,7 @@ export class EventHandler {
             v.el.style.display = type
             // Need to check if max_frame is available (otherwise NaN)
             // https://github.com/jupyter-widgets/ipywidgets/issues/2485
-            if (!that.model.get("max_frame") || (that.model.get("max_frame") == 0)) {
+            if (!this.view.model.get("max_frame") || (this.view.model.get("max_frame") == 0)) {
                 // always hide if there's no trajectory.
                 v.el.style.display = 'none'
             }
