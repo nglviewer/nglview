@@ -1,4 +1,4 @@
-var widgets = require("@jupyter-widgets/base")
+import * as widgets from "@jupyter-widgets/base"
 import * as NGL from "ngl"
 import * as $ from 'jquery'
 import * as _ from 'underscore'
@@ -63,6 +63,7 @@ export class NGLModel extends widgets.DOMWidgetModel {
 }
 
 export class NGLView extends widgets.DOMWidgetView {
+    stage: NGL.Stage;
     stageManager: StageManager;
     eventHandler: EventHandler;
     uiManager: UIManager;
@@ -70,6 +71,20 @@ export class NGLView extends widgets.DOMWidgetView {
     representationHandler: RepresentationHandler;
     messageHandler: MessageHandler;
     model: NGLModel;
+    player_pview: Promise<any>;
+    btn_pview_fullscreen: Promise<any>;
+    image_btn_pview: Promise<any>;
+    pgui_view: Promise<any>;
+    $container: any;
+    ngl_view_id: string;
+    uuid: string;
+    stage_widget: typeof StageWidget;
+    _ngl_focused: number;
+    comp_uuids: string[];
+    _synced_model_ids: string[];
+    _synced_repr_model_ids: string[];
+    atomColor: any;
+
 
     constructor(options: any) {
         super(options);
@@ -120,7 +135,7 @@ export class NGLView extends widgets.DOMWidgetView {
         this.touch();
         if (!this.embedHandler.isEmbeded() && this.stage.compList.length < this.model.get("n_components")) {
             // only call this in notebook to avoid calling handleEmbed twice in embeded mode.
-            this.handleEmbed()
+            this.embedHandler.handleEmbed()
         }
         var ngl_view_ids = this.model.get("_ngl_view_id")
         ngl_view_ids.push(this.ngl_view_id)

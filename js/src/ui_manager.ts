@@ -1,5 +1,6 @@
 import { StageManager } from "./stage_manager";
 import { NGLView } from "./widget_ngl";
+import * as NGL from 'ngl';
 
 export class UIManager {
     view: NGLView;
@@ -11,7 +12,7 @@ export class UIManager {
     async createFullscreenBtn() {
         this.view.btn_pview_fullscreen = this.view.createView("_ibtn_fullscreen");
         var view = await this.view.btn_pview_fullscreen;
-        var stage = this.view.stage;
+        var stage: NGL.Stage = this.view.stage;
 
         var pe = view.el;
         pe.style.position = 'absolute';
