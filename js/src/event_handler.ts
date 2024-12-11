@@ -1,4 +1,4 @@
-import { NGLView } from "./widget_ngl";
+import { NGLModel, NGLView } from "./widget_ngl";
 
 export class EventHandler {
     view: NGLView;
@@ -85,9 +85,9 @@ export class EventHandler {
             var m = this.view.stage.viewerControls.getOrientation();
             if (this.view._synced_model_ids.length > 0 && this.view._ngl_focused == 1) {
                 this.view._synced_model_ids.forEach(async (mid) => {
-                    var model = await this.view.model.widget_manager.get_model(mid);
+                    var model = await this.view.model.widget_manager.get_model(mid) as NGLModel;
                     for (var k in model.views) {
-                        var view = await model.views[k];
+                        var view = await model.views[k] as NGLView;
                         if (view.uuid != this.view.uuid) {
                             view.stage.viewerControls.orient(m);
                         }

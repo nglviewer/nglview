@@ -65,7 +65,8 @@ export class MessageHandler {
             var component = this.view.stage.compList[msg.args[0]];
             this.view.stage.removeComponent(component);
         } else if (msg.methodName === 'loadFile') {
-            if (this.view.model.views.length > 1 && msg.kwargs && msg.kwargs.defaultRepresentation) {
+            var views = this.view.model.views;
+            if (Object.keys(views).length > 1 && msg.kwargs && msg.kwargs.defaultRepresentation) {
                 msg.kwargs.defaultRepresentation = false;
             }
             await this.view._handleStageLoadFile(msg);

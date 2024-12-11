@@ -84,6 +84,7 @@ export class NGLView extends widgets.DOMWidgetView {
     _synced_model_ids: string[];
     _synced_repr_model_ids: string[];
     atomColor: any;
+    $pickingInfo: any;
 
 
     constructor(options: any) {
