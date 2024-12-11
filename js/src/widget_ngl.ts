@@ -101,6 +101,7 @@ export class NGLView extends widgets.DOMWidgetView {
         this.beforeDisplay();
         this.displayed.then(() => {
             this.stageManager.createStage();
+            this.stage = this.stageManager.stage;
             this.eventHandler.handlePicking();
             this.eventHandler.handleSignals();
             this.eventHandler.handleMessage();
