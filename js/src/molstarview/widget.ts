@@ -10,6 +10,7 @@ import './light.css'; // npx sass node_modules/molstar/lib/mol-plugin-ui/skin/li
 import * as representation from "./representation";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
 import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context';
+import { ModelWithCoordinates } from 'molstar/lib/mol-plugin-state/transforms/model';
 import { loadMVS } from 'molstar/lib/extensions/mvs/load';
 import { MVSData } from 'molstar/lib/extensions/mvs/mvs-data';
 import { MolViewSpec } from 'molstar/lib/extensions/mvs/behavior';
@@ -264,11 +265,39 @@ export class MolstarView extends widgets.DOMWidgetView  {
         }
     }
 
-    updateCoordinates(coordinates: any, modelIndex: any) {
-        var component = 0; // FIXME
-        if (coordinates && typeof component != 'undefined') {
-            // FIXME: update
+    async updateCoordinates(coordinates: any, modelIndex: any) {
+        const n_atoms = coordinates.length / 3;
+        const x = new Float32Array(n_atoms);
+        const y = new Float32Array(n_atoms);
+        const z = new Float32Array(n_atoms);
+
+        for (let i = 0; i < n_atoms; i++) {
+            x[i] = coordinates[i * 3];
+            y[i] = coordinates[i * 3 + 1];
+            z[i] = coordinates[i * 3 + 2];
         }
+        const plugin = this.plugin;
+
+        // Check if the coordinates node already exists
+        const existingNode = plugin.state.data.selectQ(q => q.byRef('coordinatesNode'))[modelIndex];
+
+        if (!existingNode) {
+            // Insert the coordinates node if it doesn't exist
+            var hierarchy = this.plugin.managers.structure.hierarchy.current
+            var model = hierarchy!.models[modelIndex];
+            const coordinatesNode = await plugin.build().to(model.cell).insert(ModelWithCoordinates).commit();
+        }
+        // Update the existing coordinates node
+        await plugin.build().to(existingNode).update({
+            atomicCoordinateFrame: {
+                elementCount: x.length,
+                time: { value: 0, unit: 'step' },
+                xyzOrdering: { isIdentity: true },
+                x: x,
+                y: y,
+                z: z
+            }
+        }).commit();
     }
 
     exportImage(modelId: any) {
