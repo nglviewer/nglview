@@ -101,7 +101,8 @@ export class MolstarView extends widgets.DOMWidgetView  {
     }
 
     setupContainer() {
-        const container = document.createElement('div');
+        var container = document.createElement('div');
+        container.id = 'container-' + Math.random().toString(36).substring(2, 11);
         container.style.width = '800px';
         container.style.height = '600px';
         this.el.appendChild(container);
