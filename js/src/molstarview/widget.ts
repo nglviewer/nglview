@@ -10,6 +10,7 @@ import './light.css'; // npx sass node_modules/molstar/lib/mol-plugin-ui/skin/li
 import * as representation from "./representation";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
 import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context';
+import { ModelWithCoordinates } from 'molstar/lib/mol-plugin-state/transforms/model';
 import { loadMVS } from 'molstar/lib/extensions/mvs/load';
 import { MVSData } from 'molstar/lib/extensions/mvs/mvs-data';
 import { MolViewSpec } from 'molstar/lib/extensions/mvs/behavior';
@@ -100,7 +101,8 @@ export class MolstarView extends widgets.DOMWidgetView  {
     }
 
     setupContainer() {
-        const container = document.createElement('div');
+        var container = document.createElement('div');
+        container.id = 'container-' + Math.random().toString(36).substring(2, 11);
         container.style.width = '800px';
         container.style.height = '600px';
         this.el.appendChild(container);
@@ -170,16 +172,9 @@ export class MolstarView extends widgets.DOMWidgetView  {
         preset?: any,
         options?: { dataLabel?: string }
     ) {
-        const _data = await this.plugin.builders.data.rawData({ data, label: options?.dataLabel });
-        const trajectory = await this.plugin.builders.structure.parseTrajectory(_data, format);
-
-        if (preset) {
-            console.log("Calling loadStructureFromData with preset", preset);
-            await this.plugin.builders.structure.hierarchy.applyPreset(trajectory, preset);
-        } else {
-            console.log('Calling loadStructureFromData without preset');
-            await this.plugin.builders.structure.createModel(trajectory);
-        }
+        const rawData = await this.plugin.builders.data.rawData({ data, label: options?.dataLabel });
+        const trajectory = await this.plugin.builders.structure.parseTrajectory(rawData, format);
+        await this.plugin.builders.structure.hierarchy.applyPreset(trajectory, preset);
     }
 
     // from molstar: https://github.com/molstar/molstar/blob/d1e17785b8404eec280ad04a6285ad9429c5c9f3/src/apps/viewer/app.ts#L219-L223
@@ -264,10 +259,50 @@ export class MolstarView extends widgets.DOMWidgetView  {
         }
     }
 
-    updateCoordinates(coordinates: any, modelIndex: any) {
-        var component = 0; // FIXME
-        if (coordinates && typeof component != 'undefined') {
-            // FIXME: update
+    async updateCoordinates(coordinates: any, modelIndex: any) {
+        const n_atoms = coordinates.length / 3;
+        const x = new Float32Array(n_atoms);
+        const y = new Float32Array(n_atoms);
+        const z = new Float32Array(n_atoms);
+
+        for (let i = 0; i < n_atoms; i++) {
+            x[i] = coordinates[i * 3];
+            y[i] = coordinates[i * 3 + 1];
+            z[i] = coordinates[i * 3 + 2];
+        }
+        const plugin = this.plugin;
+
+        // Check if the coordinates node already exists
+        const existingNode = plugin.state.data.selectQ(q => q.byRef('coordinatesNode'))[0]; // FIXME
+        console.log("this.plugin.managers.structure.hierarchy.current.trajectories", this.plugin.managers.structure.hierarchy.current.trajectories);
+        if (!existingNode) {
+            console.log("Insert the coordinates node if it doesn't exist");
+            var hierarchy = this.plugin.managers.structure.hierarchy.current.trajectories[modelIndex]; // FIXME: is this correct?
+            var model = hierarchy.models[modelIndex]; // FIXME: is this correct?
+            const coordinatesNode = await plugin.build().to(model.cell).insert(ModelWithCoordinates).commit();
+
+            await plugin.build().to(coordinatesNode).update({
+                atomicCoordinateFrame: {
+                    elementCount: x.length,
+                    time: { value: 0, unit: 'step' },
+                    xyzOrdering: { isIdentity: true },
+                    x: x,
+                    y: y,
+                    z: z
+                }
+            }).commit();
+        } else {
+            console.log("Update the existing coordinates node");
+            await plugin.build().to(existingNode).update({
+                atomicCoordinateFrame: {
+                    elementCount: x.length,
+                    time: { value: 0, unit: 'step' },
+                    xyzOrdering: { isIdentity: true },
+                    x: x,
+                    y: y,
+                    z: z
+                }
+            }).commit();
         }
     }
 
