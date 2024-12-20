@@ -428,12 +428,12 @@ def test_add_new_shape():
 
     # Shape
     c1 = view.shape.add_arrow([1, 2, 7], [30, 3, 3], [1, 0, 1], 1.0)
-    assert len(view._ngl_component_ids) == 2
+    assert len(view._view_component_ids) == 2
     view.remove_component(c0)
-    assert len(view._ngl_component_ids) == 1
+    assert len(view._view_component_ids) == 1
 
     view.remove_component(c1)
-    assert len(view._ngl_component_ids) == 0
+    assert len(view._view_component_ids) == 0
 
 
 def test_add_buffer():
@@ -620,7 +620,7 @@ def test_component_for_duck_typing():
     view.remove_component(c0.id)
     # c1 become 1st component
     assert not hasattr(view, 'component_2')
-    assert len(view._ngl_component_ids) == 2
+    assert len(view._view_component_ids) == 2
 
     # negative indexing
     assert view[0]._index == c1._index
