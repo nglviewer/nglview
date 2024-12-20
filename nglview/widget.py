@@ -141,8 +141,8 @@ class NGLWidget(WidgetBase):
     _camera_orientation = List().tag(sync=True)
     _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
-    _ngl_component_ids = List().tag(sync=False)
-    _ngl_component_names = List().tag(sync=False)
+    _view_component_ids = List().tag(sync=False)
+    _view_component_names = List().tag(sync=False)
     _ngl_msg = None
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
@@ -206,7 +206,7 @@ class NGLWidget(WidgetBase):
         self.stage = Stage(view=self)
         self.control = ViewerControl(view=self)
         self._trajlist = []
-        self._ngl_component_ids = []
+        self._view_component_ids = []
 
     def _initialize_threads(self):
         self._handle_msg_thread = threading.Thread(
@@ -510,7 +510,7 @@ class NGLWidget(WidgetBase):
             self._remote_call("_set_representation_from_repr_dict", args=[reps])
         else:
             self._representations = reps[:]
-            for index in range(len(self._ngl_component_ids)):
+            for index in range(len(self._view_component_ids)):
                 self.set_representations(reps)
 
     def update_representation(self, component=0, repr_index=0, **parameters):
@@ -644,10 +644,10 @@ class NGLWidget(WidgetBase):
         # Added to remain in sync with the JS components
         # Similarly to _loadData
         cid = str(uuid.uuid4())
-        self._ngl_component_ids.append(cid)
+        self._view_component_ids.append(cid)
 
         comp_name = py_utils.get_name(self.shape)
-        self._ngl_component_names.append(comp_name)
+        self._view_component_names.append(comp_name)
 
         self._update_component_auto_completion()
         return ComponentViewer(self, cid)
@@ -833,7 +833,7 @@ class NGLWidget(WidgetBase):
 
     def _handle_remove_component(self):
         cindex = int(self._ngl_msg['data'])
-        self._ngl_component_ids.pop(cindex)
+        self._view_component_ids.pop(cindex)
 
     def _handle_repr_parameters(self):
         data_dict = self._ngl_msg['data']
@@ -910,9 +910,9 @@ class NGLWidget(WidgetBase):
         if not isinstance(structure, Structure):
             raise ValueError(f'{structure} is not an instance of Structure')
         self._load_data(structure, **kwargs)
-        self._ngl_component_ids.append(structure.id)
+        self._view_component_ids.append(structure.id)
         if self.n_components > 1:
-            self.center_view(component=len(self._ngl_component_ids) - 1)
+            self.center_view(component=len(self._view_component_ids) - 1)
         self._update_component_auto_completion()
         return self[-1]
 
@@ -949,7 +949,7 @@ class NGLWidget(WidgetBase):
         setattr(trajectory, 'shown', True)
         self._trajlist.append(trajectory)
         self._update_max_frame()
-        self._ngl_component_ids.append(trajectory.id)
+        self._view_component_ids.append(trajectory.id)
         self._update_component_auto_completion()
         return self[-1]
 
@@ -999,7 +999,7 @@ class NGLWidget(WidgetBase):
 
         self._load_data(filename, **kwargs)
         # assign an ID
-        self._ngl_component_ids.append(str(uuid.uuid4()))
+        self._view_component_ids.append(str(uuid.uuid4()))
         self._update_component_auto_completion()
         return self[-1]
 
@@ -1041,7 +1041,7 @@ class NGLWidget(WidgetBase):
         args = [{'type': 'blob', 'data': blob, 'binary': binary}]
         kwargs['ext'] = ext
         name = py_utils.get_name(obj, **kwargs)
-        self._ngl_component_names.append(name)
+        self._view_component_names.append(name)
         self._remote_call("loadFile", target='Stage', args=args, kwargs=kwargs)
 
     def _get_structure_string_data(self, obj):
@@ -1087,9 +1087,9 @@ class NGLWidget(WidgetBase):
             for traj in self._trajlist:
                 if traj.id == component_id:
                     self._trajlist.remove(traj)
-        component_index = self._ngl_component_ids.index(component_id)
-        self._ngl_component_ids.remove(component_id)
-        self._ngl_component_names.pop(component_index)
+        component_index = self._view_component_ids.index(component_id)
+        self._view_component_ids.remove(component_id)
+        self._view_component_names.pop(component_index)
 
         self._remote_call('removeComponent',
                           target='Stage',
@@ -1237,7 +1237,7 @@ class NGLWidget(WidgetBase):
         traj_ids = {traj.id for traj in self._trajlist}
 
         for index in indices:
-            comp_id = self._ngl_component_ids[index]
+            comp_id = self._view_component_ids[index]
             if comp_id in traj_ids:
                 traj = self._get_traj_by_id(comp_id)
                 traj.shown = False
@@ -1267,7 +1267,7 @@ class NGLWidget(WidgetBase):
         else:
             indices_ = set(indices)
 
-        for index, comp_id in enumerate(self._ngl_component_ids):
+        for index, comp_id in enumerate(self._view_component_ids):
             if comp_id in traj_ids:
                 traj = self._get_traj_by_id(comp_id)
             else:
@@ -1305,7 +1305,7 @@ class NGLWidget(WidgetBase):
         return display.Image(im_bytes)
 
     def _clear_component_auto_completion(self):
-        for index, _ in enumerate(self._ngl_component_ids):
+        for index, _ in enumerate(self._view_component_ids):
             name = 'component_' + str(index)
             delattr(self, name)
 
@@ -1318,7 +1318,7 @@ class NGLWidget(WidgetBase):
     def _update_component_auto_completion(self):
         trajids = [traj.id for traj in self._trajlist]
 
-        for index, cid in enumerate(self._ngl_component_ids):
+        for index, cid in enumerate(self._view_component_ids):
             comp = ComponentViewer(self, cid)
             name = 'component_' + str(index)
             setattr(self, name, comp)
@@ -1331,13 +1331,13 @@ class NGLWidget(WidgetBase):
         """return ComponentViewer
         """
         postive_index = py_utils.get_positive_index(
-            index, len(self._ngl_component_ids))
-        return ComponentViewer(self, self._ngl_component_ids[postive_index])
+            index, len(self._view_component_ids))
+        return ComponentViewer(self, self._view_component_ids[postive_index])
 
     def __iter__(self):
         """return ComponentViewer
         """
-        for i, _ in enumerate(self._ngl_component_ids):
+        for i, _ in enumerate(self._view_component_ids):
             yield self[i]
 
 
