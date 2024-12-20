@@ -16,6 +16,7 @@ import { MVSData } from 'molstar/lib/extensions/mvs/mvs-data';
 import { MolViewSpec } from 'molstar/lib/extensions/mvs/behavior';
 import { PluginUISpec  } from 'molstar/lib/mol-plugin-ui/spec';
 import { DefaultPluginSpec, PluginSpec } from 'molstar/lib/mol-plugin/spec';
+import { exec } from 'child_process';
 
 
 // import { basicSpec } from "./ui"
@@ -59,6 +60,7 @@ export class MolstarView extends widgets.DOMWidgetView  {
     isLeader: boolean;
     _focused: boolean;
     _synced_model_ids: any;
+    coordinateNode: ModelWithCoordinates;
 
     // Defines how the widget gets rendered into the DOM
     async render() {
@@ -174,7 +176,8 @@ export class MolstarView extends widgets.DOMWidgetView  {
     ) {
         const rawData = await this.plugin.builders.data.rawData({ data, label: options?.dataLabel });
         const trajectory = await this.plugin.builders.structure.parseTrajectory(rawData, format);
-        await this.plugin.builders.structure.hierarchy.applyPreset(trajectory, preset);
+        const model = await this.plugin.builders.structure.hierarchy.applyPreset(trajectory, preset);
+        await this.plugin.build().to(model as any).insert(ModelWithCoordinates).commit();
     }
 
     // from molstar: https://github.com/molstar/molstar/blob/d1e17785b8404eec280ad04a6285ad9429c5c9f3/src/apps/viewer/app.ts#L219-L223
@@ -271,39 +274,20 @@ export class MolstarView extends widgets.DOMWidgetView  {
             z[i] = coordinates[i * 3 + 2];
         }
         const plugin = this.plugin;
+        const model = this.plugin.managers.structure.hierarchy.current.structures[modelIndex];
 
         // Check if the coordinates node already exists
-        const existingNode = plugin.state.data.selectQ(q => q.byRef('coordinatesNode'))[0]; // FIXME
-        console.log("this.plugin.managers.structure.hierarchy.current.trajectories", this.plugin.managers.structure.hierarchy.current.trajectories);
-        if (!existingNode) {
-            console.log("Insert the coordinates node if it doesn't exist");
-            var hierarchy = this.plugin.managers.structure.hierarchy.current.trajectories[modelIndex]; // FIXME: is this correct?
-            var model = hierarchy.models[modelIndex]; // FIXME: is this correct?
-            const coordinatesNode = await plugin.build().to(model.cell).insert(ModelWithCoordinates).commit();
-
-            await plugin.build().to(coordinatesNode).update({
-                atomicCoordinateFrame: {
-                    elementCount: x.length,
-                    time: { value: 0, unit: 'step' },
-                    xyzOrdering: { isIdentity: true },
-                    x: x,
-                    y: y,
-                    z: z
-                }
-            }).commit();
-        } else {
-            console.log("Update the existing coordinates node");
-            await plugin.build().to(existingNode).update({
-                atomicCoordinateFrame: {
-                    elementCount: x.length,
-                    time: { value: 0, unit: 'step' },
-                    xyzOrdering: { isIdentity: true },
-                    x: x,
-                    y: y,
-                    z: z
-                }
-            }).commit();
-        }
+        const existingNode = this.plugin.state.data.selectQ(q => q.byRef(model.cell.transform.ref).children().withTransformer(ModelWithCoordinates))[0];
+        await plugin.build().to(existingNode).update({
+            atomicCoordinateFrame: {
+                elementCount: x.length,
+                time: { value: 0, unit: 'step' },
+                xyzOrdering: { isIdentity: true },
+                x: x,
+                y: y,
+                z: z
+            }
+        }).commit();
     }
 
     exportImage(modelId: any) {
