@@ -78,7 +78,7 @@ def test_add_trajectory(mock_load_structure_data, mock_update_max_frame,
                                                      'pdb')
     mock_update_max_frame.assert_called_once()
     assert mock_trajectory in molstar_view._trajlist
-    assert 'test_id' in molstar_view._molstar_component_ids
+    assert 'test_id' in molstar_view._view_component_ids
 
 
 @patch('nglview.widget_molstar.MolstarView._load_structure_data')
@@ -89,7 +89,7 @@ def test_add_structure(mock_load_structure_data, molstar_view):
     molstar_view.add_structure(mock_structure)
     mock_load_structure_data.assert_called_once_with('test_structure_string',
                                                      'pdb')
-    assert 'test_id' in molstar_view._molstar_component_ids
+    assert 'test_id' in molstar_view._view_component_ids
 
 
 # FIXME: failed tests. Why?
