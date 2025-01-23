@@ -25,8 +25,6 @@ class WidgetBase(widgets.DOMWidget):
         self._callbacks_before_loaded = []
         self._event = threading.Event()
         self._trajlist = []
-        self._callbacks_before_loaded = []
-        self._event = threading.Event()
         self._initialize_threads()
 
     def _initialize_threads(self):
