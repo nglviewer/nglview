@@ -131,7 +131,7 @@ class NGLWidget(WidgetBase):
     _model_name = Unicode("NGLModel").tag(sync=True)
     _ngl_version = Unicode().tag(sync=True)
 
-        # View and model attributes
+    # View and model attributes
     _image_data = Unicode().tag(sync=False)
     _view_width = Unicode().tag(sync=True)  # px
     _view_height = Unicode().tag(sync=True)  # px
@@ -143,12 +143,10 @@ class NGLWidget(WidgetBase):
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
     _ngl_component_names = List().tag(sync=False)
-    _ngl_msg = None
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
     _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
-    _widget_theme = None
 
     # Frame and background attributes
     frame = Integer().tag(sync=True)
@@ -184,6 +182,8 @@ class NGLWidget(WidgetBase):
                  parameters=None,
                  **kwargs):
         super().__init__(structure=structure, representations=representations, parameters=parameters, **kwargs)
+        self._ngl_msg = None
+        self._widget_theme = None
         self._initialize_attributes(kwargs)
         self._initialize_threads()
         self._initialize_components(structure, representations, parameters, kwargs)
