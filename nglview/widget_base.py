@@ -16,9 +16,6 @@ class WidgetBase(widgets.DOMWidget):
 
     frame = Integer().tag(sync=True)
     loaded = Bool(False).tag(sync=False)
-    _component_ids = []
-    _callbacks_before_loaded = []
-    _event = threading.Event()
 
     def __init__(self, **kwargs):
         # Extract recognized arguments
@@ -26,6 +23,8 @@ class WidgetBase(widgets.DOMWidget):
         super().__init__(**recognized_kwargs)
         self._view_component_ids = []
         self._trajlist = []
+        self._callbacks_before_loaded = []
+        self._event = threading.Event()
         self._initialize_threads()
 
     def _initialize_threads(self):

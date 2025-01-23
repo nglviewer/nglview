@@ -131,7 +131,7 @@ class NGLWidget(WidgetBase):
     _model_name = Unicode("NGLModel").tag(sync=True)
     _ngl_version = Unicode().tag(sync=True)
 
-        # View and model attributes
+    # View and model attributes
     _image_data = Unicode().tag(sync=False)
     _view_width = Unicode().tag(sync=True)  # px
     _view_height = Unicode().tag(sync=True)  # px
