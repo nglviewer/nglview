@@ -141,14 +141,12 @@ class NGLWidget(WidgetBase):
     _camera_orientation = List().tag(sync=True)
     _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
-    _view_component_ids = List().tag(sync=False)
-    _view_component_names = List().tag(sync=False)
-    _ngl_msg = None
+    _ngl_component_ids = List().tag(sync=False)
+    _ngl_component_names = List().tag(sync=False)
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
     _gui_theme = CaselessStrEnum(['dark', 'light'], allow_none=True).tag(sync=True)
-    _widget_theme = None
 
     # Frame and background attributes
     frame = Integer().tag(sync=True)
@@ -184,6 +182,8 @@ class NGLWidget(WidgetBase):
                  parameters=None,
                  **kwargs):
         super().__init__(structure=structure, representations=representations, parameters=parameters, **kwargs)
+        self._ngl_msg = None
+        self._widget_theme = None
         self._initialize_attributes(kwargs)
         self._initialize_threads()
         self._initialize_components(structure, representations, parameters, kwargs)

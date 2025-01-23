@@ -22,6 +22,8 @@ class WidgetBase(widgets.DOMWidget):
         recognized_kwargs = {k: v for k, v in kwargs.items() if k in self.trait_names()}
         super().__init__(**recognized_kwargs)
         self._view_component_ids = []
+        self._callbacks_before_loaded = []
+        self._event = threading.Event()
         self._trajlist = []
         self._callbacks_before_loaded = []
         self._event = threading.Event()
