@@ -142,7 +142,7 @@ class NGLWidget(WidgetBase):
     _ngl_view_id = List().tag(sync=True)
     _ngl_repr_dict = Dict().tag(sync=True)
     _ngl_component_ids = List().tag(sync=False)
-    _ngl_component_names = List().tag(sync=False)
+    _view_component_names = List().tag(sync=False)
     _send_binary = Bool(True).tag(sync=False)
     _init_gui = Bool(False).tag(sync=False)
     gui_style = CaselessStrEnum(['ngl'], allow_none=True).tag(sync=True)
