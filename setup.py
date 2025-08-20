@@ -71,7 +71,7 @@ setup_args = {
          "nglview.labextension": ["*"],
      },
     'data_files': data_files,
-    'setup_requires': ['jupyter_packaging']
+    'setup_requires': ['jupyter_packaging>=0.12.2']
     'install_requires': [
         'ipywidgets>=8',
         'notebook>=7',
