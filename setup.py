@@ -7,7 +7,6 @@ from distutils import log
 from pathlib import Path
 
 from setuptools import find_packages, setup
-from jupyter_packaging import wrap_installers, get_data_files
 
 here = os.path.dirname(os.path.abspath(__file__))
 node_root = os.path.join(here, 'js')
@@ -48,8 +47,14 @@ def pre_develop():
 def pre_dist():
     pass
 
-cmdclass = wrap_installers(pre_develop=pre_develop, pre_dist=pre_dist)
-data_files = get_data_files(data_files_spec)
+try:
+    from jupyter_packaging import wrap_installers, get_data_files
+
+    cmdclass = wrap_installers(pre_develop=pre_develop, pre_dist=pre_dist)
+    data_files = get_data_files(data_files_spec)
+except ImportError:
+    cmdclass = {}
+    data_files = {}
 
 setup_args = {
     'name': 'nglview',
@@ -66,6 +71,7 @@ setup_args = {
          "nglview.labextension": ["*"],
      },
     'data_files': data_files,
+    'setup_requires': ['jupyter_packaging']
     'install_requires': [
         'ipywidgets>=8',
         'notebook>=7',
