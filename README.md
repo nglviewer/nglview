@@ -289,7 +289,7 @@ Interaction controls
 Movie making
 ------------
 
-Require: moviepy (`pip install moviepy`)
+Require: moviepy (`pip install moviepy<2.0.0`)
 
 ```python
 from nglview.contrib.movie import MovieMaker
