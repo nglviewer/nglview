@@ -22,7 +22,7 @@ dependencies:
   - matplotlib
   - moviepy<2.0.0
   - imageio
-  - pillow
+  - pillow<11.2.1
   - numpy<2.3.0
   - rdkit
   - mdanalysis

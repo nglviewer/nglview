@@ -34,4 +34,4 @@ dependencies:
     - matplotlib
     - moviepy
     - imageio
-    - pillow
+    - pillow<11.2.1
