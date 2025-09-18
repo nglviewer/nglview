@@ -11,12 +11,12 @@ from .utils import js_utils, widget_utils
 from .widget import NGLWidget, write_html
 
 if sys.version_info >= (3, 8):
-    import importlib.metadata
+    import importlib.metadata as importlib_metadata
     try:
-        __version__ = importlib.metadata.version("nglview")
-    except importlib.metadata.PackageNotFoundError:
+        __version__ = importlib_metadata.version("nglview")
+    except importlib_metadata.PackageNotFoundError:
         __version__ = "unknown"
-    del importlib.metadata
+    del importlib_metadata
 else:
     # pkg_resources is deprecated, only use it if importlib.metadata is not available (Python < 3.8)
     import pkg_resources
