@@ -19,7 +19,7 @@ dependencies:
     - coveralls
 
     # Scientific
-    - numpy
+    - numpy<2.3
     - pandas
     - ase
     - parmed

@@ -23,7 +23,7 @@ dependencies:
   - moviepy
   - imageio
   - pillow
-  - numpy
+  - numpy<2.3.0
   - rdkit
   - mdanalysis
   - mdtraj
