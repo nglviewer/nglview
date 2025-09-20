@@ -1,13 +1,13 @@
 import gzip
 import os
 import unittest
+from unittest.mock import MagicMock, patch
 from io import StringIO
 
 import numpy as np
 import pytest
 from IPython.display import display
 from ipywidgets import HBox, IntText
-from mock import MagicMock, patch
 from numpy.testing import assert_almost_equal as aa_eq
 from traitlets import TraitError
 

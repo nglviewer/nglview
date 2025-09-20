@@ -1,9 +1,9 @@
+from unittest.mock import MagicMock, patch
 import sys
 import subprocess
 
 import unittest
 import numpy as np
-from mock import MagicMock, patch
 
 import nglview
 
