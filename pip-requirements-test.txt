@@ -19,4 +19,4 @@ simpletraj
 matplotlib
 moviepy==0.2.2.11
 imageio
-pillow
+pillow<11.2.1
