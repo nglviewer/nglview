@@ -12,7 +12,7 @@ export PATH=/opt/conda/bin/:$PATH
 conda update --yes --all
 conda install --yes conda-build anaconda-client numpy matplotlib
 conda info
-conda install --yes jupyter notebook nose numpy mock coverage cython netcdf4
+conda install --yes jupyter notebook nose numpy coverage cython netcdf4
 # pytraj
 pip install pytraj
 # mdanalysis
