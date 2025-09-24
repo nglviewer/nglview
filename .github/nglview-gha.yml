@@ -24,6 +24,7 @@ dependencies:
   - imageio
   - pillow<11.2.1
   - numpy
+  - numpy<2.3.0
   - rdkit
   - mdanalysis
   - mdtraj
