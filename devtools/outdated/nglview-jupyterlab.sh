@@ -12,7 +12,7 @@ ipywidgets_version=7.1.2
 echo "nglview root folder: $nglview_src"
 echo "Creating env $env"
 
-conda create -n $env python=${python_version} numpy nomkl -y
+conda create -n $env python=${python_version} numpy<2.3 nomkl -y
 source activate $env
 conda install setuptools -c conda-forge --force -y
 conda install notebook==${notebook_version} -c conda-forge -y
