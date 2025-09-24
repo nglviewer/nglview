@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-  "jupyter_packaging>=0.7.9; python_version<3.13",
-  "jupyter_packaging>=0.12.2; python_version>=3.13",
+  "jupyter_packaging>=0.7.9; python_version<'3.13'",
+  "jupyter_packaging>=0.12.2; python_version>='3.13'",
   "setuptools>=75.6.0",
   "wheel",
 ]
