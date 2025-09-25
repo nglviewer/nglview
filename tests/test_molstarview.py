@@ -1,6 +1,7 @@
 import base64
-import pytest
 from unittest.mock import patch, MagicMock
+
+import pytest
 from nglview.widget_molstar import MolstarView
 
 

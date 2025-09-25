@@ -1,7 +1,8 @@
+from unittest.mock import patch, call, ANY
+
 import nglview as nv
 from nglview.color import ColormakerRegistry as cm
 from nglview.color import _ColormakerRegistry
-from mock import patch, call, ANY
 
 
 def test_color_scheme():

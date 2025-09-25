@@ -1,6 +1,4 @@
-import os
-
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import nglview
 from nglview.utils.test_utils import get_mocked_traj
