@@ -1,248 +1,248 @@
-# import gzip
-# import os
-# import unittest
-# from unittest.mock import MagicMock, patch
-# from io import StringIO
+import gzip
+import os
+import unittest
+from unittest.mock import MagicMock, patch
+from io import StringIO
 
-# import numpy as np
-# import pytest
-# from IPython.display import display
-# from ipywidgets import HBox, IntText
-# from numpy.testing import assert_almost_equal as aa_eq
-# from traitlets import TraitError
+import numpy as np
+import pytest
+from IPython.display import display
+from ipywidgets import HBox, IntText
+from numpy.testing import assert_almost_equal as aa_eq
+from traitlets import TraitError
 
-# import nglview as nv
-# from nglview import NGLWidget, interpolate, js_utils, widget_utils
-# from nglview.representation import RepresentationControl
-# from nglview.utils.py_utils import decode_base64, encode_base64
-# from nglview.utils.test_utils import get_mocked_traj
-# # local
-# from utils import get_fn
-# from utils import repr_dict as REPR_DICT
+import nglview as nv
+from nglview import NGLWidget, interpolate, js_utils, widget_utils
+from nglview.representation import RepresentationControl
+from nglview.utils.py_utils import decode_base64, encode_base64
+from nglview.utils.test_utils import get_mocked_traj
+# local
+from utils import get_fn
+from utils import repr_dict as REPR_DICT
 
-# try:
-#     import simpletraj
-#     has_simpletraj = True
-# except ImportError:
-#     has_simpletraj = False
+try:
+    import simpletraj
+    has_simpletraj = True
+except ImportError:
+    has_simpletraj = False
 
-# try:
-#     import pytraj as pt
-#     has_pytraj = True
-# except ImportError:
-#     pt = None
-#     has_pytraj = False
+try:
+    import pytraj as pt
+    has_pytraj = True
+except ImportError:
+    pt = None
+    has_pytraj = False
 
-# try:
-#     import mdtraj as md
-#     has_mdtraj = True
-# except ImportError:
-#     has_mdtraj = False
-# try:
-#     import parmed as pmd
-#     has_parmed = True
-# except ImportError:
-#     has_parmed = False
+try:
+    import mdtraj as md
+    has_mdtraj = True
+except ImportError:
+    has_mdtraj = False
+try:
+    import parmed as pmd
+    has_parmed = True
+except ImportError:
+    has_parmed = False
 
-# try:
-#     import MDAnalysis
-#     has_MDAnalysis = True
-# except ImportError:
-#     has_MDAnalysis = False
+try:
+    import MDAnalysis
+    has_MDAnalysis = True
+except ImportError:
+    has_MDAnalysis = False
 
-# try:
-#     import htmd
-#     has_HTMD = True
-# except ImportError:
-#     has_HTMD = False
+try:
+    import htmd
+    has_HTMD = True
+except ImportError:
+    has_HTMD = False
 
-# try:
-#     import ase
-#     has_ase = True
-# except ImportError:
-#     has_ase = False
+try:
+    import ase
+    has_ase = True
+except ImportError:
+    has_ase = False
 
-# try:
-#     import pymatgen
-#     has_pymatgen = True
-# except ImportError:
-#     has_pymatgen = False
+try:
+    import pymatgen
+    has_pymatgen = True
+except ImportError:
+    has_pymatgen = False
 
-# try:
-#     import Bio.PDB
-#     has_bio = True
-# except ImportError:
-#     has_bio = False
+try:
+    import Bio.PDB
+    has_bio = True
+except ImportError:
+    has_bio = False
 
-# try:
-#     import qcelemental
-#     has_qcelemental = True
-# except ImportError:
-#     has_qcelemental = False
-
-
-# def default_view():
-#     view = nv.NGLWidget()
-#     view.add_trajectory(get_mocked_traj())
-#     return view
+try:
+    import qcelemental
+    has_qcelemental = True
+except ImportError:
+    has_qcelemental = False
 
 
-# #-----------------------------------------------------------------------------
-# # NGLView stuff
-# #-----------------------------------------------------------------------------
-
-# DEFAULT_REPR = [{
-#     'params': {
-#         'sele': 'polymer'
-#     },
-#     'type': 'cartoon'
-# }, {
-#     'params': {
-#         'sele': 'hetero OR mol'
-#     },
-#     'type': 'ball+stick'
-# }, {
-#     "type": "ball+stick",
-#     "params": {
-#         "sele": "not protein and not nucleic"
-#     }
-# }]
+def default_view():
+    view = nv.NGLWidget()
+    view.add_trajectory(get_mocked_traj())
+    return view
 
 
-# def _assert_dict_list_equal(listdict0, listdict1):
-#     for (dict0, dict1) in zip(listdict0, listdict1):
-#         for (key0, key1) in zip(sorted(dict0.keys()), sorted(dict1.keys())):
-#             assert key0 == key1
-#             assert dict0.get(key0) == dict1.get(key1)
+#-----------------------------------------------------------------------------
+# NGLView stuff
+#-----------------------------------------------------------------------------
+
+DEFAULT_REPR = [{
+    'params': {
+        'sele': 'polymer'
+    },
+    'type': 'cartoon'
+}, {
+    'params': {
+        'sele': 'hetero OR mol'
+    },
+    'type': 'ball+stick'
+}, {
+    "type": "ball+stick",
+    "params": {
+        "sele": "not protein and not nucleic"
+    }
+}]
 
 
-# def test_API_promise_to_have():
+def _assert_dict_list_equal(listdict0, listdict1):
+    for (dict0, dict1) in zip(listdict0, listdict1):
+        for (key0, key1) in zip(sorted(dict0.keys()), sorted(dict1.keys())):
+            assert key0 == key1
+            assert dict0.get(key0) == dict1.get(key1)
 
-#     # for Jupyter notebook extension
-#     nv._jupyter_nbextension_paths()
 
-#     view = nv.demo()
+def test_API_promise_to_have():
 
-#     # trigger _set_size
-#     with patch.object(view, '_remote_call') as mock_call:
-#         view.layout.width = '100px'
-#         view.layout.height = '500px'
-#         mock_call.assert_called_with('setSize',
-#                                      args=['', '500px'],
-#                                      target='Widget')
+    # for Jupyter notebook extension
+    nv._jupyter_nbextension_paths()
 
-#     # Structure
-#     structure = nv.Structure()
-#     structure.get_structure_string
-#     assert hasattr(structure, 'id')
-#     assert hasattr(structure, 'ext')
-#     assert hasattr(structure, 'params')
+    view = nv.demo()
 
-#     # Widget
-#     nv.NGLWidget._set_coordinates
+    # trigger _set_size
+    with patch.object(view, '_remote_call') as mock_call:
+        view.layout.width = '100px'
+        view.layout.height = '500px'
+        mock_call.assert_called_with('setSize',
+                                     args=['', '500px'],
+                                     target='Widget')
 
-#     nv.NGLWidget.add_component
-#     nv.NGLWidget.add_trajectory
-#     nv.NGLWidget._coordinates_dict
-#     nv.NGLWidget.set_representations
-#     nv.NGLWidget.clear
-#     nv.NGLWidget.center
+    # Structure
+    structure = nv.Structure()
+    structure.get_structure_string
+    assert hasattr(structure, 'id')
+    assert hasattr(structure, 'ext')
+    assert hasattr(structure, 'params')
 
-#     # add component
-#     view.add_component('rcsb://1tsu.pdb')
-#     view.add_pdbid('1tsu')
+    # Widget
+    nv.NGLWidget._set_coordinates
 
-#     # display
-#     js_utils.clean_error_output()
-#     view._display_image()
+    nv.NGLWidget.add_component
+    nv.NGLWidget.add_trajectory
+    nv.NGLWidget._coordinates_dict
+    nv.NGLWidget.set_representations
+    nv.NGLWidget.clear
+    nv.NGLWidget.center
 
-#     # show
-#     try:
-#         nv.show_pdbid('1tsu')
-#     except:
-#         pass
-#     nv.show_url('https://dummy.pdb')
-#     # other backends will be tested in other sections
+    # add component
+    view.add_component('rcsb://1tsu.pdb')
+    view.add_pdbid('1tsu')
 
-#     # constructor
-#     ngl_traj = get_mocked_traj()
-#     nv.NGLWidget(ngl_traj, parameters=dict(background_color='black'))
-#     nv.NGLWidget(ngl_traj, representations=[dict(type='cartoon', params={})])
+    # display
+    js_utils.clean_error_output()
+    view._display_image()
 
-#     view.parameters
-#     view.camera
-#     view.camera = 'perspective'
-#     view._request_stage_parameters()
-#     view._ngl_repr_dict = REPR_DICT
+    # show
+    try:
+        nv.show_pdbid('1tsu')
+    except:
+        pass
+    nv.show_url('https://dummy.pdb')
+    # other backends will be tested in other sections
 
-#     view._update_background_color(change=dict(new='blue'))
-#     view.on_loaded(change=dict(new=True))
-#     view.on_loaded(change=dict(new=False))
+    # constructor
+    ngl_traj = get_mocked_traj()
+    nv.NGLWidget(ngl_traj, parameters=dict(background_color='black'))
+    nv.NGLWidget(ngl_traj, representations=[dict(type='cartoon', params={})])
 
-#     view._first_time_loaded = False
-#     view
-#     view._first_time_loaded = True
-#     view
-#     view._init_gui = True
-#     view
-#     view._theme = 'dark'
-#     view
+    view.parameters
+    view.camera
+    view.camera = 'perspective'
+    view._request_stage_parameters()
+    view._ngl_repr_dict = REPR_DICT
 
-#     view.display(gui=True, style='ngl')
-#     view.display(gui=False)
-#     view.display(gui=True, style='ipywidgets')
-#     view._set_sync_camera([view])
-#     view._set_unsync_camera([view])
-#     view._set_selection('.CA')
-#     view.color_by('atomindex')
-#     representations = [dict(type='cartoon', params=dict())]
-#     view.representations = representations
-#     repr_parameters = dict(opacity=0.3, params=dict())
-#     view.update_representation(parameters=repr_parameters)
-#     view._remove_representation()
-#     view.clear()
-#     view.add_representation('surface', selection='*', useWorker=True)
-#     view.add_representation('surface', selection='*', component=1)
-#     view.center()
-#     view._on_render_image(change=dict(new='xyz'))
-#     view.render_image()
-#     view.render_image(frame=2)
-#     view.download_image()
+    view._update_background_color(change=dict(new='blue'))
+    view.on_loaded(change=dict(new=True))
+    view.on_loaded(change=dict(new=False))
 
-#     msg = dict(type='request_frame', data=dict())
-#     view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
-#     msg = dict(type='repr_parameters', data=dict(name='hello'))
-#     view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
-#     view.loaded = True
-#     msg = dict(type='request_loaded', data=True)
-#     view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
-#     view.loaded = False
-#     msg = dict(type='request_loaded', data=True)
-#     view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
-#     msg = dict(type='all_reprs_info', data=REPR_DICT)
-#     view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
-#     msg = dict(type='stage_parameters', data=dict())
-#     view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
-#     # test negative frame (it will be set to self.count - 1)
-#     view.frame = -1
-#     msg = dict(type='request_frame', data=dict())
-#     # async_message
-#     msg = {'type': 'async_message', 'data': 'ok'}
-#     view._handle_nglview_custom_msg(None, msg, [])
-#     # render_image
-#     r = view.render_image()
-#     msg = {'type': 'image_data', 'ID': r.model_id, 'data': b'YmxhIGJsYQ=='}
-#     view._handle_nglview_custom_msg(None, msg, [])
-#     view.loaded = True
-#     view.show_only([
-#         0,
-#     ])
-#     view._js_console()
-#     view._get_full_params()
+    view._first_time_loaded = False
+    view
+    view._first_time_loaded = True
+    view
+    view._init_gui = True
+    view
+    view._theme = 'dark'
+    view
 
-#     # iter
-#     for c in view:
-#         assert isinstance(c, nv.widget.ComponentViewer)
+    view.display(gui=True, style='ngl')
+    view.display(gui=False)
+    view.display(gui=True, style='ipywidgets')
+    view._set_sync_camera([view])
+    view._set_unsync_camera([view])
+    view._set_selection('.CA')
+    view.color_by('atomindex')
+    representations = [dict(type='cartoon', params=dict())]
+    view.representations = representations
+    repr_parameters = dict(opacity=0.3, params=dict())
+    view.update_representation(parameters=repr_parameters)
+    view._remove_representation()
+    view.clear()
+    view.add_representation('surface', selection='*', useWorker=True)
+    view.add_representation('surface', selection='*', component=1)
+    view.center()
+    view._on_render_image(change=dict(new='xyz'))
+    view.render_image()
+    view.render_image(frame=2)
+    view.download_image()
+
+    msg = dict(type='request_frame', data=dict())
+    view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
+    msg = dict(type='repr_parameters', data=dict(name='hello'))
+    view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
+    view.loaded = True
+    msg = dict(type='request_loaded', data=True)
+    view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
+    view.loaded = False
+    msg = dict(type='request_loaded', data=True)
+    view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
+    msg = dict(type='all_reprs_info', data=REPR_DICT)
+    view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
+    msg = dict(type='stage_parameters', data=dict())
+    view._handle_nglview_custom_msg(None, msg=msg, buffers=[])
+    # test negative frame (it will be set to self.count - 1)
+    view.frame = -1
+    msg = dict(type='request_frame', data=dict())
+    # async_message
+    msg = {'type': 'async_message', 'data': 'ok'}
+    view._handle_nglview_custom_msg(None, msg, [])
+    # render_image
+    r = view.render_image()
+    msg = {'type': 'image_data', 'ID': r.model_id, 'data': b'YmxhIGJsYQ=='}
+    view._handle_nglview_custom_msg(None, msg, [])
+    view.loaded = True
+    view.show_only([
+        0,
+    ])
+    view._js_console()
+    view._get_full_params()
+
+    # iter
+    for c in view:
+        assert isinstance(c, nv.widget.ComponentViewer)
 
 
 # @unittest.skipUnless(has_pytraj, 'skip if not having pytraj')
