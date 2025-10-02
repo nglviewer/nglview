@@ -6,6 +6,7 @@ from traitlets import (Bool, Dict, Integer,
                        Unicode)
 from ._frontend import __frontend_version__
 from .widget_base import WidgetBase
+from .adaptor import Trajectory, Structure
 from .utils.py_utils import (_camelize_dict)
 
 
@@ -22,7 +23,6 @@ class MolstarView(WidgetBase):
 
     def __init__(self):
         super().__init__()
-        self._molstar_component_ids = []
         self._state = None
         widget_utils._add_repr_method_shortcut(self, self)
 
@@ -62,17 +62,17 @@ class MolstarView(WidgetBase):
                           target="Widget",
                           args=[data, format, preset])
 
-    def add_trajectory(self, trajectory):
+    def add_trajectory(self, trajectory: Trajectory):
         self._load_structure_data(trajectory.get_structure_string(),
                                   'pdb')  # FIXME
         self._trajlist.append(trajectory)
         self._update_max_frame()
-        self._molstar_component_ids.append(trajectory.id)
+        self._view_component_ids.append(trajectory.id)
 
-    def add_structure(self, struc):
+    def add_structure(self, struc: Structure):
         self._load_structure_data(struc.get_structure_string(),
                                   'pdb')
-        self._molstar_component_ids.append(struc.id)
+        self._view_component_ids.append(struc.id)
 
     def add_component(self, component):
         raise NotImplementedError()

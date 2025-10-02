@@ -32,7 +32,7 @@ class ComponentViewer:
     @property
     def _index(self):
         # FIXME: not use private attribute from `self._view`
-        return self._view._ngl_component_ids.index(self._id)
+        return self._view._view_component_ids.index(self._id)
 
     def set_coordinates(self, coordinates):
         """
