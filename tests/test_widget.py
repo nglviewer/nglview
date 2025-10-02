@@ -3,6 +3,7 @@ import os
 import unittest
 from unittest.mock import MagicMock, patch
 from io import StringIO
+import sys
 
 import numpy as np
 import pytest
@@ -254,19 +255,25 @@ def test_add_trajectory():
         view.frame = 1000
         view.frame = 0
 
-    # p_traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
-    # view.add_trajectory(p_traj)
+    # FIXME: remove this workaround.
+    # https://github.com/nglviewer/nglview/pull/1167#issuecomment-3360759056
+    with_pytraj = sys.version_info < (3, 13)
+    offset = 0 if with_pytraj else 1
+
+    if with_pytraj:
+        p_traj = pt.load(nv.datafiles.TRR, nv.datafiles.PDB)
+        view.add_trajectory(p_traj)
     m_traj = md.load(nv.datafiles.XTC, top=nv.datafiles.PDB)
     view.add_trajectory(m_traj)
     # trigger updating coordinates
     update_coords()
-    assert len(view._coordinates_dict.keys()) == 2 - 1
+    assert len(view._coordinates_dict.keys()) == 2 - offset
     if has_MDAnalysis:
         from MDAnalysis import Universe
         mda_traj = Universe(nv.datafiles.PDB, nv.datafiles.TRR)
         view.add_trajectory(mda_traj)
         update_coords()
-        assert len(view._coordinates_dict.keys()) == 3 - 1
+        assert len(view._coordinates_dict.keys()) == 3 - offset
     if has_HTMD:
         from htmd import Molecule
         htmd_traj = Molecule(nv.datafiles.PDB)
@@ -274,9 +281,9 @@ def test_add_trajectory():
         view.add_trajectory(htmd_traj)
         update_coords()
         if has_MDAnalysis:
-            assert len(view._coordinates_dict.keys()) == 4 - 1
+            assert len(view._coordinates_dict.keys()) == 4 - offset
         else:
-            assert len(view._coordinates_dict.keys()) == 3 - 1
+            assert len(view._coordinates_dict.keys()) == 3 - offset
 
 
 def test_API_promise_to_have_add_more_backend():
