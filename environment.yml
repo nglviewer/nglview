@@ -18,7 +18,7 @@ dependencies:
     - coveralls
 
     # Scientific
-    - numpy<2.3
+    - numpy
     - pandas
     - ase
     - parmed
@@ -33,4 +33,4 @@ dependencies:
     - matplotlib
     - moviepy
     - imageio
-    - pillow<11.2.1
+    - pillow
