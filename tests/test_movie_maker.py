@@ -6,7 +6,7 @@ from make_dummy_comm import *
 import PIL.Image
 
 
-@patch('moviepy.editor.ImageSequenceClip')
+@patch('moviepy.video.io.ImageSequenceClip')
 @patch('PIL.Image')
 def test_movie_maker(mock_image, ImageSequenceClip):
     from nglview.contrib.movie import MovieMaker
