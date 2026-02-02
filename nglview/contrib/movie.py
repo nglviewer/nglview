@@ -1,10 +1,10 @@
 from typing import List
 try:
-    import moviepy.editor as mpy
+    import moviepy.video.io as mpy
 except ImportError:
     print("You have to install moviepy, imageio and ffmeg")
-    print("pip install moviepy==0.2.2.11")
-    print("pip install imageio==1.6")
+    print("pip install moviepy==2.2.1")
+    print("pip install imageio==2.5")
 
 import os
 import threading

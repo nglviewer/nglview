@@ -71,7 +71,7 @@ setup_args = {
         'notebook>=7',
         'jupyterlab>=3',
         'jupyterlab_widgets',
-        'numpy<2.3',
+        'numpy',
     ],
     'extras_require': {
         "simpletraj": ["simpletraj"],

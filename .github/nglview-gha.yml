@@ -21,9 +21,8 @@ dependencies:
   - matplotlib
   - moviepy
   - imageio
-  - pillow<11.2.1
+  - pillow
   - numpy
-  - numpy<2.3.0
   - rdkit
   - mdanalysis
   - mdtraj
